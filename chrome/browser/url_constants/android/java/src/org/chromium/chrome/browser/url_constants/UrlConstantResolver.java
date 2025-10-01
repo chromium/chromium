@@ -31,11 +31,11 @@ public class UrlConstantResolver {
         return getUrlOverrideIfPresent(UrlConstants.NTP_URL);
     }
 
-    public String getBookmarksNativeUrl() {
+    public String getBookmarksPageUrl() {
         return getUrlOverrideIfPresent(UrlConstants.BOOKMARKS_NATIVE_URL);
     }
 
-    public String getNativeHistoryUrl() {
+    public String getHistoryPageUrl() {
         return getUrlOverrideIfPresent(UrlConstants.NATIVE_HISTORY_URL);
     }
 

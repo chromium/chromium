@@ -82,8 +82,8 @@ public class UrlConstantResolverFactoryUnitTest {
     public void testOriginalResolver_FeatureDisabled() {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
         assertEquals(UrlConstants.NTP_URL, resolver.getNtpUrl());
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksNativeUrl());
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getNativeHistoryUrl());
+        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
+        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
     }
 
     @Test
@@ -102,10 +102,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(true);
-        assertEquals(UrlConstants.BOOKMARKS_URL, resolver.getBookmarksNativeUrl());
+        assertEquals(UrlConstants.BOOKMARKS_URL, resolver.getBookmarksPageUrl());
 
         ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(false);
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksNativeUrl());
+        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
     }
 
     @Test
@@ -113,10 +113,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(true);
-        assertEquals(UrlConstants.HISTORY_URL, resolver.getNativeHistoryUrl());
+        assertEquals(UrlConstants.HISTORY_URL, resolver.getHistoryPageUrl());
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(false);
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getNativeHistoryUrl());
+        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
     }
 
     @Test
@@ -125,8 +125,8 @@ public class UrlConstantResolverFactoryUnitTest {
         when(mProfile.isIncognitoBranded()).thenReturn(true);
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
         assertEquals(UrlConstants.NTP_URL, resolver.getNtpUrl());
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksNativeUrl());
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getNativeHistoryUrl());
+        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
+        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
     }
 
     @Test
@@ -147,10 +147,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(true);
-        assertEquals(UrlConstants.BOOKMARKS_URL, resolver.getBookmarksNativeUrl());
+        assertEquals(UrlConstants.BOOKMARKS_URL, resolver.getBookmarksPageUrl());
 
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(false);
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksNativeUrl());
+        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
     }
 
     @Test
@@ -159,6 +159,6 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(true);
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getNativeHistoryUrl());
+        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
     }
 }
