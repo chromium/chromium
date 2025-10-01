@@ -54,6 +54,7 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
       content::RenderProcessHost* process_host) override;
 
   // content::RenderProcessHostObserver:
+  void RenderProcessReady(content::RenderProcessHost* process_host) override;
   void RenderProcessExited(
       content::RenderProcessHost* process_host,
       const content::ChildProcessTerminationInfo& info) override;
@@ -63,6 +64,8 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
  private:
   friend class base::NoDestructor<WebCacheManager>;
   FRIEND_TEST_ALL_PREFIXES(WebCacheManagerTest, AddRemoveRendererTest);
+  FRIEND_TEST_ALL_PREFIXES(WebCacheManagerTest, OnlyClearCacheWhenProcessReady);
+  FRIEND_TEST_ALL_PREFIXES(WebCacheManagerTest, PreExistingRenderProcessHost);
 
   // This class is a singleton.  Do not instantiate directly. Call GetInstance()
   // instead.

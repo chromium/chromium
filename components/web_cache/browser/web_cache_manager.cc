@@ -19,7 +19,11 @@ WebCacheManager::WebCacheManager() {
   // cannot observe the creation of the previous processes.
   for (auto iter(content::RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
-    Add(iter.GetCurrentValue());
+    content::RenderProcessHost* process_host = iter.GetCurrentValue();
+    OnRenderProcessHostCreated(process_host);
+    if (process_host->IsReady()) {
+      RenderProcessReady(process_host);
+    }
   }
 }
 
@@ -48,8 +52,16 @@ void WebCacheManager::ClearCacheOnNavigation() {
 
 void WebCacheManager::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
+  // If the host is reused after the process exited, it is possible to get a
+  // second created notification for the same host.
+  if (!rph_observations_.IsObservingSource(process_host)) {
+    rph_observations_.AddObservation(process_host);
+  }
+}
+
+void WebCacheManager::RenderProcessReady(
+    content::RenderProcessHost* process_host) {
   Add(process_host);
-  rph_observations_.AddObservation(process_host);
 }
 
 void WebCacheManager::RenderProcessExited(
@@ -66,7 +78,8 @@ void WebCacheManager::RenderProcessHostDestroyed(
 
 void WebCacheManager::ClearCacheForProcess(content::ChildProcessId process_id) {
   auto it = web_cache_services_.find(process_id);
-  if (it != web_cache_services_.end()) {
+  if (it != web_cache_services_.end() &&
+      content::RenderProcessHost::FromID(process_id)->IsReady()) {
     it->second->ClearCache(false);
   }
 }
@@ -74,7 +87,13 @@ void WebCacheManager::ClearCacheForProcess(content::ChildProcessId process_id) {
 void WebCacheManager::ClearRendererCache(
     WebCacheManager::ClearCacheOccasion occasion) {
   for (auto& service : web_cache_services_) {
-    service.second->ClearCache(occasion == ON_NAVIGATION);
+    // It is possible to have a renderer host that is not ready and is still
+    // present in 'web_cache_services_' because the notification has not reach
+    // this instance. This can happen if  'ClearRendererCache' is called by an
+    // other observer during 'RenderProcessHostImpl::ProcessDied'.
+    if (content::RenderProcessHost::FromID(service.first)->IsReady()) {
+      service.second->ClearCache(occasion == ON_NAVIGATION);
+    }
   }
 }
 
