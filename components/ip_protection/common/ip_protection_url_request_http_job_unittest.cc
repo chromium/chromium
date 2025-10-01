@@ -57,6 +57,35 @@ net::ProxyChain GetIpProtectionProxyChain() {
   return net::ProxyChain::ForIpProtection({proxy_server_a, proxy_server_b});
 }
 
+// A wrapper around SocketDataProvider that owns the reads and writes.
+struct SocketDataWrapper {
+  std::unique_ptr<net::StaticSocketDataProvider> socket_data;
+  // Might be empty if the request only mocks connection.
+  std::vector<net::MockWrite> writes;
+  std::vector<net::MockRead> reads;
+};
+
+SocketDataWrapper CreateRequestFailsSocketData() {
+  SocketDataWrapper wrapper;
+  wrapper.socket_data = std::make_unique<net::StaticSocketDataProvider>();
+  wrapper.socket_data->set_connect_data(
+      net::MockConnect(net::SYNCHRONOUS, net::ERR_CONNECTION_RESET));
+  return wrapper;
+}
+
+SocketDataWrapper CreateDirectRequestSucceedsSocketData() {
+  SocketDataWrapper wrapper;
+  wrapper.writes.emplace_back(kSimpleGetMockWrite);
+
+  wrapper.reads.emplace_back(kResponseHeaders);
+  wrapper.reads.emplace_back(kResponseBody);
+  wrapper.reads.emplace_back(net::ASYNC, net::OK);
+
+  wrapper.socket_data = std::make_unique<net::StaticSocketDataProvider>(
+      wrapper.reads, wrapper.writes);
+  return wrapper;
+}
+
 class MockIpProtectionCore : public IpProtectionCore {
  public:
   MockIpProtectionCore() = default;
@@ -143,7 +172,12 @@ class UrlRequestContextWrapper {
                                    TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
+  void AddSocketDataProvider(SocketDataWrapper& wrapper) {
+    socket_factory_.AddSocketDataProvider(wrapper.socket_data.get());
+  }
+
  private:
+  std::vector<SocketDataWrapper> socket_data_providers_;
   net::MockClientSocketFactory socket_factory_;
   MockIpProtectionCore ipp_core_;
   IpProtectionProxyDelegate proxy_delegate_{&ipp_core_};
@@ -152,6 +186,65 @@ class UrlRequestContextWrapper {
 
 class IpProtectionUrlRequestHttpJobTest : public testing::Test {
  protected:
+  enum class RequestMetricsExpectations {
+    // Metrics recorded for a successful request i.e. a request that used
+    // an IPP ProxyChain (which can be direct when DirectOnly is enabled.)
+    kSuccess,
+    // Metrics recorded for requests that fell back to direct.
+    kDirectFallback,
+    // Metrics recorded for requests that used a direct ProxyChain and no
+    // IP Protection chains.
+    kDirectOnly,
+  };
+
+  void CheckRequestMetrics(const base::HistogramTester& histograms,
+                           RequestMetricsExpectations expectations) {
+    using enum RequestMetricsExpectations;
+    // These are always recorded for any IPP-eligible request.
+    EXPECT_THAT(
+        histograms.GetAllSamples("NetworkService.IpProtection.ProxyResolution"),
+        base::BucketsAre(
+            base::Bucket(ProxyResolutionResult::kAttemptProxy, 1)));
+    EXPECT_EQ(histograms.GetAllSamples("Net.HttpJob.TotalTime").size(), 1u);
+
+    if (expectations == kSuccess) {
+      histograms.ExpectUniqueSample("Net.HttpJob.IpProtection.BytesSent",
+                                    std::size(kSimpleGetMockWrite),
+                                    /*expected_bucket_count=*/1);
+    } else {
+      EXPECT_THAT(
+          histograms.GetAllSamples("Net.HttpJob.IpProtection.BytesSent"),
+          base::BucketsAre());
+    }
+
+    if (expectations == kSuccess || expectations == kDirectFallback) {
+      histograms.ExpectUniqueSample("Net.HttpJob.IpProtection.BytesSent2",
+                                    std::size(kSimpleGetMockWrite),
+                                    /*expected_bucket_count=*/1);
+    } else {
+      EXPECT_THAT(
+          histograms.GetAllSamples("Net.HttpJob.IpProtection.BytesSent2"),
+          base::BucketsAre());
+    }
+
+    EXPECT_EQ(
+        histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached")
+            .size(),
+        (expectations == kSuccess) ? 1u : 0u);
+
+    EXPECT_EQ(
+        histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached3")
+            .size(),
+        (expectations == kSuccess || expectations == kDirectFallback) ? 1u
+                                                                      : 0u);
+
+    EXPECT_EQ(histograms
+                  .GetAllSamples(
+                      "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2")
+                  .size(),
+              (expectations == kDirectFallback) ? 1u : 0u);
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
@@ -166,18 +259,11 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, FallbackToDirect) {
   request_context.ipp_core().SetProxyList({GetIpProtectionProxyChain()});
 
   // Mock a request to the proxy that fails.
-  net::MockConnect mock_connect_1(net::SYNCHRONOUS, net::ERR_CONNECTION_RESET);
-  net::StaticSocketDataProvider connect_data_1;
-  connect_data_1.set_connect_data(mock_connect_1);
-  request_context.socket_factory().AddSocketDataProvider(&connect_data_1);
-
+  auto connect_data = CreateRequestFailsSocketData();
+  request_context.AddSocketDataProvider(connect_data);
   // Mock a direct request that succeeds.
-  net::MockWrite writes[] = {net::MockWrite(kSimpleGetMockWrite)};
-  net::MockRead reads[] = {net::MockRead(kResponseHeaders),
-                           net::MockRead(kResponseBody),
-                           net::MockRead(net::ASYNC, net::OK)};
-  net::StaticSocketDataProvider socket_data(reads, writes);
-  request_context.socket_factory().AddSocketDataProvider(&socket_data);
+  auto direct_data = CreateDirectRequestSucceedsSocketData();
+  request_context.AddSocketDataProvider(direct_data);
 
   net::TestDelegate delegate;
   base::HistogramTester histograms;
@@ -190,34 +276,14 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, FallbackToDirect) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteBytes(direct_data.writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadBytes(direct_data.reads),
+            request->GetTotalReceivedBytes());
 
   // Since we fall back to direct, after trying the proxy chain, we expect a
   // direct IP Protection proxy chain.
   EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
-  EXPECT_THAT(
-      histograms.GetAllSamples("NetworkService.IpProtection.ProxyResolution"),
-      base::BucketsAre(base::Bucket(ProxyResolutionResult::kAttemptProxy, 1)));
-
-  EXPECT_THAT(histograms.GetAllSamples("Net.HttpJob.IpProtection.BytesSent"),
-              base::BucketsAre());
-  histograms.ExpectUniqueSample("Net.HttpJob.IpProtection.BytesSent2",
-                                std::size(kSimpleGetMockWrite),
-                                /*expected_bucket_count=*/1);
-  EXPECT_THAT(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached"),
-      base::BucketsAre());
-  EXPECT_EQ(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached3")
-          .size(),
-      1u);
-  EXPECT_EQ(histograms
-                .GetAllSamples(
-                    "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2")
-                .size(),
-            1u);
-  EXPECT_EQ(histograms.GetAllSamples("Net.HttpJob.TotalTime").size(), 1u);
+  CheckRequestMetrics(histograms, RequestMetricsExpectations::kDirectFallback);
 }
 
 TEST_F(IpProtectionUrlRequestHttpJobTest, NoProxies) {
@@ -228,12 +294,8 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, NoProxies) {
   request_context.ipp_core().SetProxyList({});
 
   // Mock a direct request that succeeds.
-  net::MockWrite writes[] = {net::MockWrite(kSimpleGetMockWrite)};
-  net::MockRead reads[] = {net::MockRead(kResponseHeaders),
-                           net::MockRead(kResponseBody),
-                           net::MockRead(net::ASYNC, net::OK)};
-  net::StaticSocketDataProvider socket_data(reads, writes);
-  request_context.socket_factory().AddSocketDataProvider(&socket_data);
+  auto direct_data = CreateDirectRequestSucceedsSocketData();
+  request_context.AddSocketDataProvider(direct_data);
 
   base::HistogramTester histograms;
   net::TestDelegate delegate;
@@ -246,31 +308,12 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, NoProxies) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteBytes(direct_data.writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadBytes(direct_data.reads),
+            request->GetTotalReceivedBytes());
 
   EXPECT_EQ(net::ProxyChain::Direct(), request->proxy_chain());
-  EXPECT_THAT(
-      histograms.GetAllSamples("NetworkService.IpProtection.ProxyResolution"),
-      base::BucketsAre(base::Bucket(ProxyResolutionResult::kAttemptProxy, 1)));
-
-  // IP Protection metrics are not recorded because the request was made using
-  // a direct proxy chain only.
-  EXPECT_THAT(histograms.GetAllSamples("Net.HttpJob.IpProtection.BytesSent"),
-              base::BucketsAre());
-  EXPECT_THAT(histograms.GetAllSamples("Net.HttpJob.IpProtection.BytesSent2"),
-              base::BucketsAre());
-  EXPECT_THAT(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached"),
-      base::BucketsAre());
-  EXPECT_THAT(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached3"),
-      base::BucketsAre());
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2"),
-              base::BucketsAre());
-
-  EXPECT_EQ(histograms.GetAllSamples("Net.HttpJob.TotalTime").size(), 1u);
+  CheckRequestMetrics(histograms, RequestMetricsExpectations::kDirectOnly);
 }
 
 TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
@@ -285,14 +328,10 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
   request_context.ipp_core().SetProxyList({GetIpProtectionProxyChain()});
 
   // Mock a direct request that succeeds.
-  base::HistogramTester histograms;
-  net::MockWrite writes[] = {net::MockWrite(kSimpleGetMockWrite)};
-  net::MockRead reads[] = {net::MockRead(kResponseHeaders),
-                           net::MockRead(kResponseBody),
-                           net::MockRead(net::ASYNC, net::OK)};
-  net::StaticSocketDataProvider socket_data(reads, writes);
-  request_context.socket_factory().AddSocketDataProvider(&socket_data);
+  auto direct_data = CreateDirectRequestSucceedsSocketData();
+  request_context.AddSocketDataProvider(direct_data);
 
+  base::HistogramTester histograms;
   net::TestDelegate delegate;
   std::unique_ptr<net::URLRequest> request =
       request_context.CreateRequest(GURL(kUrl), &delegate);
@@ -303,38 +342,15 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteBytes(direct_data.writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadBytes(direct_data.reads),
+            request->GetTotalReceivedBytes());
 
   EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
-  EXPECT_THAT(
-      histograms.GetAllSamples("NetworkService.IpProtection.ProxyResolution"),
-      base::BucketsAre(base::Bucket(ProxyResolutionResult::kAttemptProxy, 1)));
-
-  // Even though we only used a direct proxy chain, all IP Protection metrics
-  // are recorded because the IpPrivacyDirectOnly feature param is enabled.
-  histograms.ExpectUniqueSample("Net.HttpJob.IpProtection.BytesSent",
-                                std::size(kSimpleGetMockWrite),
-                                /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample("Net.HttpJob.IpProtection.BytesSent2",
-                                std::size(kSimpleGetMockWrite),
-                                /*expected_bucket_count=*/1);
-  EXPECT_EQ(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached")
-          .size(),
-      1u);
-  EXPECT_EQ(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached3")
-          .size(),
-      1u);
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2"),
-              base::BucketsAre());
-
-  EXPECT_EQ(histograms.GetAllSamples("Net.HttpJob.TotalTime").size(), 1u);
+  CheckRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
 }
 
-TEST_F(IpProtectionUrlRequestHttpJobTest, MetricsBadProxyChain) {
+TEST_F(IpProtectionUrlRequestHttpJobTest, BadProxyChain) {
   base::test::ScopedFeatureList scoped_feature_list(
       net::features::kEnableIpProtectionProxy);
 
@@ -343,20 +359,14 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, MetricsBadProxyChain) {
 
   {
     // Mock a request to the proxy that fails.
-    net::MockConnect mock_connect_1(net::SYNCHRONOUS,
-                                    net::ERR_CONNECTION_RESET);
-    net::StaticSocketDataProvider connect_data_1;
-    connect_data_1.set_connect_data(mock_connect_1);
-    request_context.socket_factory().AddSocketDataProvider(&connect_data_1);
+    auto connect_data = CreateRequestFailsSocketData();
+    request_context.AddSocketDataProvider(connect_data);
 
     // Mock a direct request that succeeds.
-    net::MockWrite writes[] = {net::MockWrite(kSimpleGetMockWrite)};
-    net::MockRead reads[] = {net::MockRead(kResponseHeaders),
-                             net::MockRead(kResponseBody),
-                             net::MockRead(net::ASYNC, net::OK)};
-    net::StaticSocketDataProvider socket_data(reads, writes);
-    request_context.socket_factory().AddSocketDataProvider(&socket_data);
+    auto direct_data = CreateDirectRequestSucceedsSocketData();
+    request_context.AddSocketDataProvider(direct_data);
 
+    base::HistogramTester histograms;
     net::TestDelegate delegate;
     std::unique_ptr<net::URLRequest> request =
         request_context.CreateRequest(GURL(kUrl), &delegate);
@@ -368,18 +378,15 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, MetricsBadProxyChain) {
     EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
     EXPECT_THAT(request_context.proxy_resolution_service().proxy_retry_info(),
                 Contains(Key(GetIpProtectionProxyChain())));
+    CheckRequestMetrics(histograms,
+                        RequestMetricsExpectations::kDirectFallback);
   }
 
-  base::HistogramTester histograms;
-
   // Mock a direct request that succeeds.
-  net::MockWrite writes[] = {net::MockWrite(kSimpleGetMockWrite)};
-  net::MockRead reads[] = {net::MockRead(kResponseHeaders),
-                           net::MockRead(kResponseBody),
-                           net::MockRead(net::ASYNC, net::OK)};
-  net::StaticSocketDataProvider socket_data(reads, writes);
-  request_context.socket_factory().AddSocketDataProvider(&socket_data);
+  auto direct_data = CreateDirectRequestSucceedsSocketData();
+  request_context.AddSocketDataProvider(direct_data);
 
+  base::HistogramTester histograms;
   net::TestDelegate delegate;
   std::unique_ptr<net::URLRequest> request =
       request_context.CreateRequest(GURL(kUrl), &delegate);
@@ -391,27 +398,7 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, MetricsBadProxyChain) {
   EXPECT_THAT(delegate.request_status(), IsOk());
 
   EXPECT_EQ(net::ProxyChain::Direct(), request->proxy_chain());
-  EXPECT_THAT(
-      histograms.GetAllSamples("NetworkService.IpProtection.ProxyResolution"),
-      base::BucketsAre(base::Bucket(ProxyResolutionResult::kAttemptProxy, 1)));
-
-  // IP Protection metrics are not recorded because the second request was made
-  // using a direct proxy chain only.
-  EXPECT_THAT(histograms.GetAllSamples("Net.HttpJob.IpProtection.BytesSent"),
-              base::BucketsAre());
-  EXPECT_THAT(histograms.GetAllSamples("Net.HttpJob.IpProtection.BytesSent2"),
-              base::BucketsAre());
-  EXPECT_THAT(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached"),
-      base::BucketsAre());
-  EXPECT_THAT(
-      histograms.GetAllSamples("Net.HttpJob.IpProtection.TotalTimeNotCached3"),
-      base::BucketsAre());
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2"),
-              base::BucketsAre());
-
-  EXPECT_EQ(histograms.GetAllSamples("Net.HttpJob.TotalTime").size(), 1u);
+  CheckRequestMetrics(histograms, RequestMetricsExpectations::kDirectOnly);
 }
 
 }  // namespace ip_protection
