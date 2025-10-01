@@ -298,8 +298,10 @@ if (is_win) {
     deps = [
       ":with_no_strings",
       "//base",
+      "//base/test:test_support",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
 
