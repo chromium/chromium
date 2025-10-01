@@ -139,6 +139,7 @@ const standardNumberPadCodes: Set<number> = new Set([
 const acerSplitModifierKeyboardWithNumpadBoards = [
   'ruke',
   'jubileum',
+  'ruken',
 ];
 
 const DISPLAY_TOAST_INDEFINITELY_MS = 0;
