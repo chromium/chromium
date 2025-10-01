@@ -382,10 +382,6 @@ void PredictionManager::StartModelDownload(
       optimization_target, download_url.is_valid()
                                ? ModelDeliveryEvent::kDownloadServiceRequest
                                : ModelDeliveryEvent::kDownloadURLInvalid);
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.PredictionManager.IsDownloadUrlValid." +
-          GetStringNameForOptimizationTarget(optimization_target),
-      download_url.is_valid());
 }
 
 void PredictionManager::MaybeDownloadOrUpdatePredictionModel(

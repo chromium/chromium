@@ -1013,9 +1013,6 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
       "OptimizationGuide.PredictionManager."
       "DownloadServiceAvailabilityBlockedFetch",
       false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionManager.IsDownloadUrlValid.PainfulPageLoad",
-      true, 1);
 
   EXPECT_EQ(prediction_model_download_manager()->last_requested_download(),
             GURL("https://example.com/model"));
