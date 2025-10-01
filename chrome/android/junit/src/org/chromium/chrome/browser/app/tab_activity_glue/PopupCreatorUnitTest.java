@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.Display;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.insets.InsetObserver;
 
 /** Unit test for {@link PopupCreator}. */
@@ -60,7 +62,8 @@ public class PopupCreatorUnitTest {
     @Mock Tab mTab;
     @Mock WindowAndroid mWindow;
     @Mock DisplayAndroid mDisplay;
-    @Mock DisplayAndroid mSecondDisplay;
+    @Mock DisplayAndroid mExternalDisplay;
+    @Mock DisplayAndroidManager mDisplayAndroidManager;
     @Mock ReparentingTask mReparentingTask;
     @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
     @Mock Context mContext;
@@ -70,15 +73,52 @@ public class PopupCreatorUnitTest {
 
     private static final int DISPLAY_ID = 73;
     private static final float DENSITY = 1.0f;
+    private static final Rect BOUNDS = new Rect(0, 0, 1920, 1080);
     private static final Rect LOCAL_BOUNDS = new Rect(0, 0, 1920, 1080);
+
+    private static final int EXTERNAL_DISPLAY_ID = 101;
+    private static final float EXTERNAL_DISPLAY_DENSITY = 2.0f;
+    private static final Rect EXTERNAL_DISPLAY_BOUNDS = new Rect(-290, -1250, 2210, 0);
+    private static final Rect EXTERNAL_DISPLAY_LOCAL_BOUNDS = new Rect(0, 0, 5000, 2500);
+
+    private static final Insets LAST_RAW_WINDOW_INSETS = Insets.of(12, 34, 56, 78);
+    private static final int CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT = 20;
+    private static final int TOOLBAR_HAIRLIUNE_HEIGHT = 9;
 
     @Before
     public void setup() {
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+
         PopupCreator.setReparentingTaskForTesting(mReparentingTask);
         PopupCreator.setInsetsForecastForTesting(Insets.NONE);
+
         doReturn(DISPLAY_ID).when(mDisplay).getDisplayId();
         doReturn(DENSITY).when(mDisplay).getDipScale();
+        doReturn(BOUNDS).when(mDisplay).getBounds();
         doReturn(LOCAL_BOUNDS).when(mDisplay).getLocalBounds();
+        doReturn(mContext).when(mDisplay).getWindowContext();
+
+        doReturn(EXTERNAL_DISPLAY_ID).when(mExternalDisplay).getDisplayId();
+        doReturn(EXTERNAL_DISPLAY_DENSITY).when(mExternalDisplay).getDipScale();
+        doReturn(EXTERNAL_DISPLAY_BOUNDS).when(mExternalDisplay).getBounds();
+        doReturn(EXTERNAL_DISPLAY_LOCAL_BOUNDS).when(mExternalDisplay).getLocalBounds();
+        doReturn(mContext).when(mExternalDisplay).getWindowContext();
+
+        doReturn(mWindow).when(mTab).getWindowAndroid();
+        doReturn(mDisplay).when(mWindow).getDisplay();
+        doReturn(mInsetObserver).when(mWindow).getInsetObserver();
+        doReturn(mWindowInsetsCompat).when(mInsetObserver).getLastRawWindowInsets();
+        doReturn(LAST_RAW_WINDOW_INSETS)
+                .when(mWindowInsetsCompat)
+                .getInsets(WindowInsetsCompat.Type.captionBar());
+
+        doReturn(mResources).when(mContext).getResources();
+        doReturn(CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.custom_tabs_control_container_height);
+        doReturn(TOOLBAR_HAIRLIUNE_HEIGHT)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
     }
 
     @Test
@@ -128,7 +168,8 @@ public class PopupCreatorUnitTest {
 
     @Test
     public void testIntentParams() {
-        PopupCreator.moveTabToNewPopup(mTab, new WindowFeatures(), mDisplay);
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
@@ -146,17 +187,6 @@ public class PopupCreatorUnitTest {
                 "The intent sent to reparenting task doesn't specify FLAG_ACTIVITY_NEW_TASK",
                 Intent.FLAG_ACTIVITY_NEW_TASK,
                 sentIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
-    }
-
-    @Test
-    public void testIntentParams_passesWindowFeatures() {
-        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
-
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
-        Intent sentIntent = captor.getValue();
-
         Assert.assertEquals(
                 "The intent sent to reparenting task doesn't specify a correct Bundle of requested"
                         + " window features",
@@ -174,27 +204,36 @@ public class PopupCreatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
     public void testActivityOptionsSetWhenWindowFeaturesComplete() {
-        WindowFeatures windowFeatures = new WindowFeatures(100, 200, 300, 400);
+        final WindowFeatures windowFeatures =
+                new WindowFeatures(100, 200, 300, 400); // left, top, width, height
+        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Assert.assertEquals(
                 "The launch display ID specified in ActivityOptions is incorrect",
                 DISPLAY_ID,
                 activityOptions.getLaunchDisplayId());
-        Assert.assertNotNull(
-                "The launch bounds specified in ActivityOptions are null",
+        Assert.assertEquals(
+                "The launch bounds specified in ActivityOptions are incorrect",
+                windowBounds,
                 activityOptions.getLaunchBounds());
     }
 
     @Test
-    public void testNullBoundsWhenWindowFeaturesDegenerated() {
+    public void testActivityOptionsWhenWindowFeaturesDegenerated() {
         WindowFeatures windowFeatures = new WindowFeatures(null, null, null, 100);
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
+        Assert.assertEquals(
+                "The launch display ID specified in ActivityOptions should be invalid",
+                Display.INVALID_DISPLAY,
+                activityOptions.getLaunchDisplayId());
         Assert.assertNull(
                 "The launch bounds specified in ActivityOptions should be null",
                 activityOptions.getLaunchBounds());
@@ -203,21 +242,27 @@ public class PopupCreatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
     public void testSizeIsPreservedIfSpecifiedInWindowFeatures() {
-        WindowFeatures windowFeatures = new WindowFeatures(null, null, 300, 400);
+        final WindowFeatures windowFeatures =
+                new WindowFeatures(null, null, 300, 400); // left, top, width, height
+        final Rect windowBounds = new Rect(0, 0, 300, 400); // left, top, right, bottom
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Rect launchBounds = activityOptions.getLaunchBounds();
-        Rect targetBounds = new Rect(0, 0, 300, 400);
-        launchBounds.offsetTo(0, 0);
-        targetBounds.offsetTo(0, 0);
 
         Assert.assertEquals(
-                "The launch bounds specified in ActivityOptions have not preserved the size"
-                        + " provided",
-                targetBounds,
-                launchBounds);
+                "The launch bounds specified in ActivityOptions have not preserved the provided"
+                        + " width",
+                windowBounds.width(),
+                launchBounds.width());
+        Assert.assertEquals(
+                "The launch bounds specified in ActivityOptions have not preserved the provided"
+                        + " height",
+                windowBounds.height(),
+                launchBounds.height());
     }
 
     @Test
@@ -225,9 +270,13 @@ public class PopupCreatorUnitTest {
     public void testRequestedBoundsAreClampedToDisplayBounds_predictionFlagDisabled() {
         final Rect displayLocalBounds = new Rect(0, 0, 600, 800);
         doReturn(displayLocalBounds).when(mDisplay).getLocalBounds();
-        WindowFeatures windowFeatures = new WindowFeatures(-100, -100, 1000, 1000);
+        final WindowFeatures windowFeatures =
+                new WindowFeatures(-100, -100, 1000, 1000); // left, top, width, height
+        final Rect windowBounds = new Rect(-100, -100, 900, 900); // left, top, right, bottom
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         Rect launchBounds = getActivityOptionsPassedToReparentingTask().getLaunchBounds();
 
         Assert.assertTrue(
@@ -240,9 +289,13 @@ public class PopupCreatorUnitTest {
     public void testRequestedBoundsAreClampedToDisplayBounds_predictionFlagEnabled() {
         final Rect displayLocalBounds = new Rect(0, 0, 600, 800);
         doReturn(displayLocalBounds).when(mDisplay).getLocalBounds();
-        WindowFeatures windowFeatures = new WindowFeatures(-100, -100, 1000, 1000);
+        final WindowFeatures windowFeatures =
+                new WindowFeatures(-100, -100, 1000, 1000); // left, top, width, height
+        final Rect windowBounds = new Rect(-100, -100, 900, 900); // left, top, right, bottom
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         Rect launchBounds = getActivityOptionsPassedToReparentingTask().getLaunchBounds();
 
         Assert.assertTrue(
@@ -257,32 +310,37 @@ public class PopupCreatorUnitTest {
                 Insets.of(-12, -34, -56, -78)); // left, top, right, bottom
         WindowFeatures windowFeatures =
                 new WindowFeatures(100, 200, 300, 400); // left, top, width, height
+        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Rect launchBounds = activityOptions.getLaunchBounds();
-        Rect targetBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
 
         Assert.assertEquals(
                 "The launch bounds specified in ActivityOptions are incorrect",
-                targetBounds,
+                windowBounds,
                 launchBounds);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
     public void testInsetsForecastUsedForNewPopups_flagEnabled() {
-        PopupCreator.setInsetsForecastForTesting(
-                Insets.of(-12, -34, -56, -78)); // left, top, right, bottom
         WindowFeatures windowFeatures =
                 new WindowFeatures(100, 200, 300, 400); // left, top, width, height
+        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
+        final Insets insets = Insets.of(-12, -34, -56, -78); // left, top, right, bottom
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.setInsetsForecastForTesting(insets);
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Rect launchBounds = activityOptions.getLaunchBounds();
-        Rect targetBounds =
+        final Rect targetBounds =
                 new Rect(100 - 12, 200 - 34, 400 + 56, 600 + 78); // left, top, right, bottom
 
         Assert.assertEquals(
@@ -296,22 +354,10 @@ public class PopupCreatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
     public void testPopupInsetsForecastUseExpectedValues() {
         PopupCreator.setInsetsForecastForTesting(null);
-        doReturn(mWindow).when(mTab).getWindowAndroid();
-        doReturn(mDisplay).when(mWindow).getDisplay();
-        doReturn(mInsetObserver).when(mWindow).getInsetObserver();
-        doReturn(mWindowInsetsCompat).when(mInsetObserver).getLastRawWindowInsets();
-        doReturn(mContext).when(mDisplay).getWindowContext();
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(29)
-                .when(mResources)
-                .getDimensionPixelSize(R.dimen.custom_tabs_control_container_height);
-        doReturn(Insets.of(12, 34, 56, 78))
-                .when(mWindowInsetsCompat)
-                .getInsets(WindowInsetsCompat.Type.captionBar());
 
         Assert.assertEquals(
                 "The insets returned are invalid",
-                Insets.of(0, 0, -(12 + 56), -(34 + 29 + 78)),
+                Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
                 PopupCreator.getPopupInsetsForecast(mWindow, mDisplay));
     }
 
@@ -319,26 +365,40 @@ public class PopupCreatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
     public void testPopupInsetsForecastUseExpectedValuesCrossDisplays() {
         PopupCreator.setInsetsForecastForTesting(null);
-        doReturn(mWindow).when(mTab).getWindowAndroid();
-        doReturn(mDisplay).when(mWindow).getDisplay();
-        doReturn(mInsetObserver).when(mWindow).getInsetObserver();
-        doReturn(mWindowInsetsCompat).when(mInsetObserver).getLastRawWindowInsets();
-
-        doReturn(DISPLAY_ID + 1).when(mSecondDisplay).getDisplayId();
-        doReturn(2.0f).when(mSecondDisplay).getDipScale();
-        doReturn(mContext).when(mSecondDisplay).getWindowContext();
-        doReturn(mResources).when(mContext).getResources();
-
-        doReturn(46)
-                .when(mResources)
-                .getDimensionPixelSize(R.dimen.custom_tabs_control_container_height);
-        doReturn(Insets.of(12, 34, 56, 78))
-                .when(mWindowInsetsCompat)
-                .getInsets(WindowInsetsCompat.Type.captionBar());
 
         Assert.assertEquals(
                 "The insets returned are invalid",
-                Insets.of(0, 0, -(24 + 112), -(68 + 46 + 156)),
-                PopupCreator.getPopupInsetsForecast(mWindow, mSecondDisplay));
+                Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
+                PopupCreator.getPopupInsetsForecast(mWindow, mExternalDisplay));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
+    public void testPopupOnExternalDisplay() {
+        final WindowFeatures windowFeatures =
+                new WindowFeatures(-390, -1350, 300, 400); // left, top, width, height
+        final Rect windowBounds = new Rect(-390, -1350, -90, -950); // left, top, right, bottom
+
+        doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
+
+        final Rect targetBounds =
+                new Rect(
+                        0,
+                        0,
+                        (300 + 12 + 56) * 2,
+                        (400 + 34 + 78) * 2 + 20 + 9); // left, top, right, bottom
+        Assert.assertEquals(
+                "The launch display ID specified in ActivityOptions is incorrect",
+                EXTERNAL_DISPLAY_ID,
+                activityOptions.getLaunchDisplayId());
+        Assert.assertEquals(
+                "The launch bounds specified in ActivityOptions is incorrect",
+                targetBounds,
+                activityOptions.getLaunchBounds());
     }
 }

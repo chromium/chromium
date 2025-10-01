@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.media.AudioManager;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -67,6 +66,7 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -286,7 +286,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         if (openingPopup) {
             assert window != null;
-            PopupCreator.moveTabToNewPopup(tab, windowFeatures, window.getDisplay());
+            PopupCreator.moveTabToNewPopup(tab, windowFeatures);
         }
 
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
@@ -367,14 +367,19 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             return;
         }
 
-        WindowAndroid window = mTab.getWindowAndroid();
-        if (window == null) return;
-        final Pair<Integer, Rect> localCoordinatesPx =
-                DisplayUtil.getLocalCoordinatesPx(new RectF(bounds), window.getDisplay());
+        final Pair<DisplayAndroid, Rect> localCoordinates =
+                DisplayUtil.convertGlobalDipToLocalPxCoordinates(bounds);
+        if (localCoordinates == null) {
+            return;
+        }
+
+        final DisplayAndroid display = localCoordinates.first;
+        final Rect localBounds = localCoordinates.second;
+
         delegate.moveTaskTo(
                 appTask,
-                localCoordinatesPx.first,
-                DisplayUtil.clampWindowToDisplay(localCoordinatesPx.second, window.getDisplay()));
+                display.getDisplayId(),
+                DisplayUtil.clampWindowToDisplay(localBounds, display));
     }
 
     @Override

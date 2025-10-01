@@ -361,7 +361,8 @@ public class DisplayAndroidManager {
      * @return {@link DisplayAndroid} that most closely intersects the given rectangle, or {@code
      *     null} if no matching display is found.
      */
-    /* package */ @Nullable DisplayAndroid getDisplayMatching(Rect matchRect) {
+    @VisibleForTesting
+    public @Nullable DisplayAndroid getDisplayMatching(Rect matchRect) {
         if (mNativePointer == 0) {
             return null;
         }

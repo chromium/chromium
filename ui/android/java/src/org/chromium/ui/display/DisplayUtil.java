@@ -384,58 +384,20 @@ public abstract class DisplayUtil {
     }
 
     /**
-     * Translates rectangles between global work area coordinates (as in Web API spec) and local
-     * coordinates (display ID and pixel coordinates relative to the origin of the display).
-     * Currently it uses only the current display which has to be explicitly provided as an
-     * argument. This additional argument will be removed when proper multi-display support is
-     * landed in Android as we will use solely global coordinates provided to determine the target
-     * display.
-     *
-     * @param globalCoordinatesDp Global coordinates in dp.
-     * @param targetDisplay Target display of the resulting local coordinates.
-     * @return A pair of display ID and local coordinates in px.
-     */
-    public static Pair<Integer, Rect> getLocalCoordinatesPx(
-            RectF globalCoordinatesDp, DisplayAndroid targetDisplay) {
-        return Pair.create(
-                targetDisplay.getDisplayId(),
-                convertDipToPixelDisplayCoordinates(
-                        globalCoordinatesDp, targetDisplay.getDipScale()));
-    }
-
-    /**
-     * Convert DIP display coordinates to pixel coordinates.
-     *
-     * @param dipDisplayCoordinates Display coordinates in DIP.
-     * @param displayDensity Display density.
-     * @return Display coordinates in pixels.
-     */
-    public static Rect convertDipToPixelDisplayCoordinates(
-            RectF dipDisplayCoordinates, float displayDensity) {
-        int leftPx = Math.round(dipDisplayCoordinates.left * displayDensity);
-        int topPx = Math.round(dipDisplayCoordinates.top * displayDensity);
-        int rightPx = Math.round(dipDisplayCoordinates.right * displayDensity);
-        int bottomPx = Math.round(dipDisplayCoordinates.bottom * displayDensity);
-
-        return new Rect(leftPx, topPx, rightPx, bottomPx);
-    }
-
-    /**
      * Converts global dip coordinates (as in Web API spec) to local coordinates (display and pixel
      * coordinates relative to the origin of the display). Display is chosen by the most
-     * intersection area. If none of the displays intersect with the given area a pair of {null,
-     * null} is returned.
+     * intersection area. If none of the displays intersect with the given area null is returned.
      *
      * @param globalDipCoordinates Global coordinates in dip.
      * @return A pair of {@link DisplayAndroid} and local coordinates in pixels.
      */
-    public static Pair<DisplayAndroid, Rect> convertGlobalDipToLocalPxCoordinates(
+    public static @Nullable Pair<DisplayAndroid, Rect> convertGlobalDipToLocalPxCoordinates(
             Rect globalDipCoordinates) {
         DisplayAndroid display =
                 DisplayAndroidManager.getInstance().getDisplayMatching(globalDipCoordinates);
 
         if (display == null) {
-            return Pair.create(null, null);
+            return null;
         }
 
         final Rect displayGlobalDipBounds = display.getBounds();

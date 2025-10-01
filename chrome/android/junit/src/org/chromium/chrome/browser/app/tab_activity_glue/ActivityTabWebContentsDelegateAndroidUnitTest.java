@@ -53,8 +53,8 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.shadows.ShadowColorUtils;
 import org.chromium.url.GURL;
@@ -66,9 +66,7 @@ import java.util.function.Supplier;
 
 /** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowColorUtils.class, ShadowWebContentsDarkModeController.class})
+@Config(shadows = {ShadowColorUtils.class, ShadowWebContentsDarkModeController.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures({
     ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
@@ -148,16 +146,16 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock ActivityManager mActivityManager;
     @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
-    // TODO(https://crbug.com/411002260): remove when Android Display Topology API is available to
-    // Chrome and it is not needed to pass the display from ATWCDA into PopupCreator
-    @Mock WindowAndroid mWindowAndroid;
     @Mock DisplayAndroid mDisplayAndroid;
+    @Mock DisplayAndroidManager mDisplayAndroidManager;
+    @Mock AppTask mAppTask;
 
     GURL mUrl1 = new GURL("https://url1.com");
     GURL mUrl2 = new GURL("https://url2.com");
 
     private static final int TEST_DISPLAY_ID = 73;
     private static final float TEST_DENSITY = 1.0f;
+    private static final Rect TEST_BOUNDS = new Rect(0, 0, 1920, 1080);
     private static final Rect TEST_LOCAL_BOUNDS = new Rect(0, 0, 1920, 1080);
 
     private TestActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
@@ -167,6 +165,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
                         mTab, mActivity, mTabCreatorManager, mTabGroupModelFilter);
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
+        AndroidTaskUtils.setAppTaskForTesting(mAppTask);
 
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mProfile).when(mTab).getProfile();
@@ -174,11 +175,12 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
 
-        doReturn(mWindowAndroid).when(mTab).getWindowAndroid();
-        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
         doReturn(TEST_DISPLAY_ID).when(mDisplayAndroid).getDisplayId();
         doReturn(TEST_DENSITY).when(mDisplayAndroid).getDipScale();
+        doReturn(TEST_BOUNDS).when(mDisplayAndroid).getBounds();
         doReturn(TEST_LOCAL_BOUNDS).when(mDisplayAndroid).getLocalBounds();
+
+        doReturn(mDisplayAndroid).when(mDisplayAndroidManager).getDisplayMatching(any());
     }
 
     @After
@@ -342,25 +344,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testSetContentsBoundsCallsDelegate() {
-        mTabWebContentsDelegateAndroid.setIsPopup(true);
-        final AppTask mockAppTask = mock(AppTask.class);
-        AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
-
-        mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
-
-        verify(mFlaggedApiDelegate).moveTaskTo(any(), eq(TEST_DISPLAY_ID), any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsClampsBounds() {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
-        final AppTask mockAppTask = mock(AppTask.class);
-        AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
-
         mTabWebContentsDelegateAndroid.setContentsBounds(
                 mWebContents, new Rect(-100, -100, 2000, 2000));
 
@@ -376,21 +361,16 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsNoOpIfFlagDisabled() {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
-        final AppTask mockAppTask = mock(AppTask.class);
-        AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
 
-        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), eq(TEST_DISPLAY_ID), any());
+        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsNoOpIfDelegateNull() {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
-        final AppTask mockAppTask = mock(AppTask.class);
-        AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
         AconfigFlaggedApiDelegate.setInstanceForTesting(null);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
@@ -401,13 +381,21 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsNoOpIfNotPopup() {
         mTabWebContentsDelegateAndroid.setIsPopup(false);
-        final AppTask mockAppTask = mock(AppTask.class);
-        AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
 
-        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), eq(TEST_DISPLAY_ID), any());
+        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testSetContentsBoundsNoOpIfNoDisplayMatching() {
+        doReturn(null).when(mDisplayAndroidManager).getDisplayMatching(any());
+
+        mTabWebContentsDelegateAndroid.setIsPopup(true);
+        mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
+
+        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
     private void assertForceDarkEnabledForWebContents(boolean isEnabled) {
