@@ -76,7 +76,7 @@ public class BookmarkActivity extends SnackbarActivity {
                                         view, getEdgeToEdgeSupplier()),
                         /* backPressManager= */ null);
         String url = getIntent().getDataString();
-        if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
+        if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_NATIVE_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
         setContentView(mBookmarkManagerCoordinator.getView());
         mOnKeyDownHandler =

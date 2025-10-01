@@ -88,7 +88,7 @@ public class BookmarkOpenerTest {
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
 
         if (mActivityTestRule.getActivity().isTablet()) {
-            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
+            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
             mItemsContainer =
                     mActivityTestRule
                             .getActivity()

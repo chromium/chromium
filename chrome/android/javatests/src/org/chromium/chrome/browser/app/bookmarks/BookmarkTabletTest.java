@@ -79,7 +79,7 @@ public class BookmarkTabletTest {
     private void openBookmarkManager() throws InterruptedException {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
-        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
+        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
         mItemsContainer =
                 mActivityTestRule.getActivity().findViewById(R.id.selectable_list_recycler_view);
         mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
@@ -167,7 +167,7 @@ public class BookmarkTabletTest {
                                 }
                             });
                 });
-        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
+        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
         assertEquals(0, callbackHelper.getCallCount());
     }

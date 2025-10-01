@@ -78,7 +78,8 @@ public class BookmarkUiStateTest {
     @Test
     public void testCreateStateFromUrl() {
         BookmarkUiState rootFolderState =
-                BookmarkUiState.createStateFromUrl(UrlConstants.BOOKMARKS_URL, mBookmarkModel);
+                BookmarkUiState.createStateFromUrl(
+                        UrlConstants.BOOKMARKS_NATIVE_URL, mBookmarkModel);
         assertEquals(rootFolderState, BookmarkUiState.createFolderState(mRoot, mBookmarkModel));
 
         BookmarkUiState invalidFolderState =

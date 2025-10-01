@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.isBookmarksPageOverridden;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -44,7 +47,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     public void showBookmarkManager(
             Activity activity, @Nullable Tab tab, Profile profile, @Nullable BookmarkId folderId) {
         ThreadUtils.assertOnUiThread();
-        String url = getFirstUrlToLoad(folderId);
+        String url = getFirstUrlToLoad(folderId, profile);
         boolean isIncognito = profile.isOffTheRecord();
 
         if (ChromeSharedPreferences.getInstance()
@@ -94,7 +97,8 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     public String getLastUsedUrl() {
         return ChromeSharedPreferences.getInstance()
                 .readString(
-                        ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, UrlConstants.BOOKMARKS_URL);
+                        ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL,
+                        UrlConstants.BOOKMARKS_NATIVE_URL);
     }
 
     private void showBookmarkManagerOnPhone(Activity activity, String url, Profile profile) {
@@ -140,9 +144,11 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     }
 
     // Returns the first URL to load.
-    private String getFirstUrlToLoad(@Nullable BookmarkId folderId) {
+    private String getFirstUrlToLoad(@Nullable BookmarkId folderId, Profile profile) {
         String url;
-        if (folderId == null) {
+        if (isBookmarksPageOverridden(profile.isIncognitoBranded())) {
+            url = UrlConstantResolverFactory.getForProfile(profile).getBookmarksPageUrl();
+        } else if (folderId == null) {
             // Load most recently visited bookmark folder.
             url = getLastUsedUrl();
         } else {
@@ -150,7 +156,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
             url = BookmarkUiState.createFolderUrl(folderId).toString();
         }
 
-        return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_URL : url;
+        return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_NATIVE_URL : url;
     }
 
     private Intent getEditActivityIntent(Context context, Profile profile, BookmarkId bookmarkId) {

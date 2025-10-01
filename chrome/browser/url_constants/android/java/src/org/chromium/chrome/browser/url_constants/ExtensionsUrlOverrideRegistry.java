@@ -43,6 +43,13 @@ public class ExtensionsUrlOverrideRegistry {
         return getPrefs().readBoolean(buildKey(EXTENSIONS_BOOKMARKS_URL_OVERRIDE_ENABLED), false);
     }
 
+    /** Returns true if an extension has overridden the bookmarks page. */
+    public static boolean isBookmarksPageOverridden(boolean isIncognito) {
+        return isIncognito
+                ? getIncognitoBookmarksPageOverrideEnabled()
+                : getBookmarksPageOverrideEnabled();
+    }
+
     /** Returns true if an extension has overridden the bookmarks page for incognito mode. */
     public static boolean getIncognitoBookmarksPageOverrideEnabled() {
         return getPrefs()

@@ -208,7 +208,7 @@ public class ScreenshotCaptureTest {
     public void testNavigatingAwayFromNativeBookmarkToNormalPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
         mActivityTestRule
-                .startOnUrlTo(UrlConstants.BOOKMARKS_URL)
+                .startOnUrlTo(UrlConstants.BOOKMARKS_NATIVE_URL)
                 .executeTriggerWithoutTransition();
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
