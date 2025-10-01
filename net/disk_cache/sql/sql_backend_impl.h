@@ -148,6 +148,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // data, overwrite existing data, or append to the entry. The operation is
   // scheduled via the `ExclusiveOperationCoordinator` to ensure proper
   // serialization.
+  // If the backend is deleted during execution, the callback will be called
+  // with net::ERR_ABORTED.
   void WriteEntryData(const CacheEntryKey& key,
                       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
                       int64_t old_body_end,
@@ -156,11 +158,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                       scoped_refptr<net::IOBuffer> buffer,
                       int buf_len,
                       bool truncate,
-                      SqlPersistentStore::ErrorCallback callback);
+                      CompletionOnceCallback callback);
 
   // Reads data from an entry's body (stream 1). The operation is scheduled via
   // the `ExclusiveOperationCoordinator`. `sparse_reading` controls whether
   // gaps in the data are filled with zeros or cause the read to stop.
+  // If the backend is deleted during execution, the callback will be called
+  // with net::ERR_ABORTED.
   void ReadEntryData(const CacheEntryKey& key,
                      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
                      int64_t offset,
@@ -168,11 +172,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                      int buf_len,
                      int64_t body_end,
                      bool sparse_reading,
-                     SqlPersistentStore::IntOrErrorCallback callback);
+                     CompletionOnceCallback callback);
 
   // Finds the available contiguous range of data for a given entry. The
   // operation is scheduled via the `ExclusiveOperationCoordinator` to ensure
   // proper serialization.
+  // If the backend is deleted during execution, the callback will be called
+  // with net::ERR_ABORTED.
   void GetEntryAvailableRange(
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,

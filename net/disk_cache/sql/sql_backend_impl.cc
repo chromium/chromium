@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -76,6 +77,36 @@ bool CheckFakeIndexFile(const base::FilePath& path) {
   base::UmaHistogramEnumeration("Net.SqlDiskCache.FakeIndexFileError", error);
   return error == FakeIndexFileError::kOkNew ||
          error == FakeIndexFileError::kOkExisting;
+}
+
+// Wraps a OnceCallback. If the returned callback is destroyed without being
+// run, the original callback is run with `abort_result`.
+// This ensures that the callback is always run, even if the operation is
+// cancelled or the owner is destroyed.
+template <typename ResultType>
+base::OnceCallback<void(ResultType)> WrapCallbackWithAbortError(
+    base::OnceCallback<void(ResultType)> callback,
+    ResultType abort_result) {
+  CHECK(callback);
+  auto [success_cb, failure_cb] = base::SplitOnceCallback(std::move(callback));
+
+  // The ScopedClosureRunner will run the `failure_cb` with `abort_result` if
+  // it's destroyed before being released.
+  auto runner = std::make_unique<base::ScopedClosureRunner>(
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(std::move(failure_cb), abort_result)));
+
+  // The returned callback represents the "success" path.
+  return base::BindOnce(
+      [](std::unique_ptr<base::ScopedClosureRunner> runner,
+         base::OnceCallback<void(ResultType)> cb, ResultType result) {
+        // Release the runner to prevent the failure callback from running on
+        // destruction.
+        std::ignore = runner->Release();
+        // Run the success callback with the provided result.
+        std::move(cb).Run(std::move(result));
+      },
+      std::move(runner), std::move(success_cb));
 }
 
 // A helper to handle methods that may complete synchronously.
@@ -945,13 +976,24 @@ void SqlBackendImpl::WriteEntryData(
     scoped_refptr<net::IOBuffer> buffer,
     int buf_len,
     bool truncate,
-    SqlPersistentStore::ErrorCallback callback) {
+    CompletionOnceCallback callback) {
   in_flight_entry_modifications_[key].emplace_back(res_id_or_error, body_end);
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
-      key, base::BindOnce(&SqlBackendImpl::HandleWriteEntryDataOperation,
-                          weak_factory_.GetWeakPtr(), key, res_id_or_error,
-                          old_body_end, offset, std::move(buffer), buf_len,
-                          truncate, std::move(callback)));
+      key,
+      base::BindOnce(&SqlBackendImpl::HandleWriteEntryDataOperation,
+                     weak_factory_.GetWeakPtr(), key, res_id_or_error,
+                     old_body_end, offset, std::move(buffer), buf_len, truncate,
+                     base::BindOnce(
+                         [](CompletionOnceCallback callback, int buf_len,
+                            SqlPersistentStore::Error result) {
+                           std::move(callback).Run(
+                               result == SqlPersistentStore::Error::kOk
+                                   ? buf_len
+                                   : net::ERR_FAILED);
+                         },
+                         WrapCallbackWithAbortError<int>(std::move(callback),
+                                                         net::ERR_ABORTED),
+                         buf_len)));
 }
 
 void SqlBackendImpl::HandleWriteEntryDataOperation(
@@ -987,12 +1029,19 @@ void SqlBackendImpl::ReadEntryData(
     int buf_len,
     int64_t body_end,
     bool sparse_reading,
-    SqlPersistentStore::IntOrErrorCallback callback) {
+    CompletionOnceCallback callback) {
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key, base::BindOnce(&SqlBackendImpl::HandleReadEntryDataOperation,
                           weak_factory_.GetWeakPtr(), res_id_or_error, offset,
                           std::move(buffer), buf_len, body_end, sparse_reading,
-                          std::move(callback)));
+                          base::BindOnce(
+                              [](CompletionOnceCallback callback,
+                                 SqlPersistentStore::IntOrError result) {
+                                std::move(callback).Run(
+                                    result.value_or(net::ERR_FAILED));
+                              },
+                              WrapCallbackWithAbortError<int>(
+                                  std::move(callback), net::ERR_ABORTED))));
 }
 
 void SqlBackendImpl::HandleReadEntryDataOperation(
@@ -1027,7 +1076,8 @@ void SqlBackendImpl::GetEntryAvailableRange(
       key,
       base::BindOnce(&SqlBackendImpl::HandleGetEntryAvailableRangeOperation,
                      weak_factory_.GetWeakPtr(), res_id_or_error, offset, len,
-                     std::move(callback)));
+                     WrapCallbackWithAbortError<const RangeResult&>(
+                         std::move(callback), RangeResult(net::ERR_ABORTED))));
 }
 
 void SqlBackendImpl::HandleGetEntryAvailableRangeOperation(
