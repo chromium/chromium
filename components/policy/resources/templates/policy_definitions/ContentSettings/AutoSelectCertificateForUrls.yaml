@@ -1,6 +1,6 @@
 caption: Automatically select client certificates for these sites
 desc: |-
-  Setting the policy lets you make a list of URL patterns that specify sites for which Chrome can automatically select a client certificate. The value is an array of stringified JSON dictionaries, each with the form <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE">{ "pattern": "$URL_PATTERN", "filter" : $FILTER }</ph>, where <ph name="URL_PATTERN_PLACEHOLDER">$URL_PATTERN</ph> is a content setting pattern. <ph name="FILTER_PLACEHOLDER">$FILTER</ph> restricts the client certificates the browser automatically selects from. Independent of the filter, only certificates that match the server's certificate request are selected.
+  Setting the policy lets you make a list of URL patterns that specify sites for which Chrome can automatically select a client certificate. The value is an array of stringified JSON dictionaries, each with the form <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE">{ "pattern": "$URL_PATTERN", "filter" : $FILTER }</ph>, where <ph name="URL_PATTERN_PLACEHOLDER">$URL_PATTERN</ph> is a content setting pattern. <ph name="FILTER_PLACEHOLDER">$FILTER</ph> restricts the client certificates the browser automatically selects from. Independent of the filter, only certificates that match the server's certificate request are selected. On Android, Chrome can only select client certificates that it has provisioned itself; it cannot access certificates installed at the operating system level.
 
         Examples for the usage of the <ph name="FILTER_PLACEHOLDER">$FILTER</ph> section:
 
@@ -26,7 +26,6 @@ features:
   per_profile: true
 future_on:
 - fuchsia
-- android
 owners:
 - chromeos-commercial-networking-team@google.com
 - miersh@google.com
@@ -37,6 +36,7 @@ schema:
 supported_on:
 - chrome.*:15-
 - chrome_os:15-
+- android:143-
 tags:
 - website-sharing
 type: list
