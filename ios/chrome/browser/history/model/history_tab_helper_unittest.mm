@@ -90,6 +90,76 @@ class HistoryTabHelperTest : public PlatformTest {
 
 }  // namespace
 
+class HistoryTabHelperVisitedFilteringTest
+    : public HistoryTabHelperTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HistoryTabHelperVisitedFilteringTest() {
+    scoped_feature_list_.InitWithFeatureState(history::kVisitedLinksOn404,
+                                              GetParam());
+  }
+
+  void SetUp() override { HistoryTabHelperTest::SetUp(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
+  bool are_404s_eligible_for_history =
+      base::FeatureList::IsEnabled(history::kVisitedLinksOn404);
+  HistoryTabHelper* helper = HistoryTabHelper::FromWebState(&web_state_);
+  GURL test_url("https://www.google.com/");
+
+  // Simulate a user navigating to a forbidden resource.
+  std::unique_ptr<web::NavigationItem> item_403 = web::NavigationItem::Create();
+  item_403->SetVirtualURL(test_url);
+
+  web::FakeNavigationContext context_403;
+  context_403.SetUrl(test_url);
+  context_403.SetHasCommitted(true);
+
+  std::string raw_response_headers_403 = "HTTP/1.1 403 Forbidden\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers_403 =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers_403);
+  DCHECK(response_headers_403);
+  context_403.SetResponseHeaders(response_headers_403);
+
+  history::HistoryAddPageArgs args_403 =
+      helper->CreateHistoryAddPageArgs(item_403.get(), &context_403);
+
+  // We should never be filtering out 403 navigations when determining NTP most
+  // visited. This is because all error navigations other than 404 are
+  // eligible.
+  EXPECT_EQ(args_403.consider_for_ntp_most_visited, true);
+
+  // Simulate a user navigating to a resource that is not found.
+  std::unique_ptr<web::NavigationItem> item_404 = web::NavigationItem::Create();
+  item_404->SetVirtualURL(test_url);
+
+  web::FakeNavigationContext context_404;
+  context_404.SetUrl(test_url);
+  context_404.SetHasCommitted(true);
+
+  std::string raw_response_headers_404 = "HTTP/1.1 404 Not Found\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers_404 =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers_404);
+  DCHECK(response_headers_404);
+  context_404.SetResponseHeaders(response_headers_404);
+
+  history::HistoryAddPageArgs args_404 =
+      helper->CreateHistoryAddPageArgs(item_404.get(), &context_404);
+
+  // If 404 error navigations are recorded in history, we should filter them out
+  // when determining NTP most visited.
+  EXPECT_EQ(args_404.consider_for_ntp_most_visited,
+            !are_404s_eligible_for_history);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HistoryTabHelperVisitedFilteringTest,
+                         ::testing::Bool());
+
 // Tests that different urls can have different titles.
 TEST_F(HistoryTabHelperTest, MultipleURLsWithTitles) {
   GURL first_url("https://first.google.com/");

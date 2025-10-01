@@ -114,14 +114,24 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // contribute to Most Visited.
   const bool content_suggestions_navigation = ui::PageTransitionCoreTypeIs(
       transition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  const bool consider_for_ntp_most_visited =
-      !content_suggestions_navigation &&
-      referrer_url != kReadingListReferrerURL;
 
   const int http_response_code =
       navigation_context->GetResponseHeaders()
           ? navigation_context->GetResponseHeaders()->response_code()
           : 0;
+
+  // If `history::kVisitedLinksOn404` is enabled, visits to
+  // reachable URLs that result in a 404 response will be saved to history. We
+  // don't want to count error navigations as visits when calculating the Most
+  // Visited, so we filter them out here.
+  const bool status_code_qualifies_for_ntp_most_visited =
+      !(base::FeatureList::IsEnabled(history::kVisitedLinksOn404) &&
+        http_response_code == 404);
+
+  const bool consider_for_ntp_most_visited =
+      status_code_qualifies_for_ntp_most_visited &&
+      !content_suggestions_navigation &&
+      referrer_url != kReadingListReferrerURL;
 
   // Hide navigations that result in an error in order to prevent the omnibox
   // from suggesting URLs that have never been navigated to successfully.
