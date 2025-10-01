@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PERSIST_TAB_CONTEXT_BROWSER_AGENT_H_
 
 #import "base/scoped_observation.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_state_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -70,6 +71,17 @@ class PersistTabContextBrowserAgent
   // observe scene state changes such as the application being backgrounded, in
   // which case the last tab's page context should be saved to storage.
   __strong PersistTabContextStateAgent* persist_tab_context_state_agent_;
+
+  // Profile-specific file path to store page contexts at in the app's cache.
+  base::FilePath storage_directory_path_;
+
+  // The sequenced task runner ensures that async tasks that are posted to it
+  // execute in the same order as they were scheduled. This will be used to
+  // ensure the creation of the user-specific directory is done before a write,
+  // read or delete operation can be attempted. The task runner is created with
+  // MayBlock, BEST_EFFORT task priority and SKIP_ON_SHUTDOWN task shutdown
+  // behaviour.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<PersistTabContextBrowserAgent> weak_factory_{this};
 };

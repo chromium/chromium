@@ -4,16 +4,92 @@
 
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/task/thread_pool.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/shared/model/paths/paths_internal.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
 // TODO(crbug.com/445963646): Add metrics logging to browser agent.
 // TODO(crbug.com/447646545): Add test coverage for persist tab context
 
+namespace {
+
+constexpr std::string kPageContextPrefix = "page_context_";
+constexpr std::string kProtoSuffix = ".proto";
+constexpr std::string kPersistedTabContexts = "persisted_tab_contexts";
+
+// Constructs the full file path for a given webstate_unique_id within the
+// storage directory.
+base::FilePath GetContextFilePath(const base::FilePath& storage_directory_path,
+                                  const std::string& webstate_unique_id) {
+  std::string filename = kPageContextPrefix + webstate_unique_id + kProtoSuffix;
+  return storage_directory_path.Append(filename);
+}
+
+// Writes serialized page contexts containing web state URLs, titles, APCs and
+// inner text to a user-specific storage path located in the app's cache.
+void WriteContextToStorage(std::string_view serialized_page_context,
+                           const std::string& webstate_unique_id,
+                           base::FilePath storage_directory_path) {
+  if (storage_directory_path.empty()) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    return;
+  }
+
+  base::FilePath file_path =
+      GetContextFilePath(storage_directory_path, webstate_unique_id);
+
+  if (!base::WriteFile(file_path, serialized_page_context)) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+  }
+}
+
+void DeleteContextFromStorage(const std::string& webstate_unique_id,
+                              base::FilePath storage_directory_path) {
+  if (storage_directory_path.empty()) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    return;
+  }
+
+  base::FilePath file_path =
+      GetContextFilePath(storage_directory_path, webstate_unique_id);
+
+  if (!base::DeleteFile(file_path)) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    return;
+  }
+}
+
+// Creates the profile-specific directory in which serialized page contexts will
+// be stored. This function is scheduled using the sequenced task runner to
+// ensure it is created before any attempts are made to write, read or delete
+// to/from the directory while improving performance by only creating it once.
+void CreateStorageDirectory(const base::FilePath& storage_directory_path) {
+  if (!base::CreateDirectory(storage_directory_path)) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+  }
+}
+
+}  // namespace
+
 PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
-    : BrowserUserData(browser) {
+    : BrowserUserData(browser),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  ProfileIOS* profile = browser->GetProfile();
+  CHECK(profile);
+  base::FilePath cache_directory_path;
+  ios::GetUserCacheDirectory(profile->GetStatePath(), &cache_directory_path);
+  storage_directory_path_ = cache_directory_path.Append(kPersistedTabContexts);
+  task_runner_->PostTask(FROM_HERE, base::BindOnce(&CreateStorageDirectory,
+                                                   storage_directory_path_));
   StartObserving(browser, Policy::kAccordingToFeature);
   persist_tab_context_state_agent_ = [[PersistTabContextStateAgent alloc]
       initWithTransitionCallback:
@@ -47,12 +123,18 @@ void PersistTabContextBrowserAgent::OnPageContextExtracted(
     const std::string& webstate_unique_id,
     PageContextWrapperCallbackResponse response) {
   if (!response.has_value()) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
     return;
   }
+  // TODO(crbug.com/445963646): Add metrics logging to browser agent.
 
-  // TODO(crbug.com/445959483): Serialize page context in response to the format
-  // in which it will be stored.
-  // TODO(crbug.com/447356981): Write serialized page context to storage.
+  std::string serialized_page_context;
+  response.value()->SerializeToString(&serialized_page_context);
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WriteContextToStorage, std::move(serialized_page_context),
+                     webstate_unique_id, storage_directory_path_));
 }
 
 void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
@@ -91,7 +173,16 @@ void PersistTabContextBrowserAgent::OnWebStateRemoved(
 
 void PersistTabContextBrowserAgent::OnWebStateDeleted(
     web::WebState* web_state) {
-  // TODO(crbug.com/447358513): Read and deserialize page context from storage.
+  if (!web_state) {
+    return;
+  }
+
+  std::string webstate_unique_id =
+      base::NumberToString(web_state->GetUniqueIdentifier().identifier());
+
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DeleteContextFromStorage, webstate_unique_id,
+                                storage_directory_path_));
 }
 
 void PersistTabContextBrowserAgent::OnActiveWebStateChanged(
