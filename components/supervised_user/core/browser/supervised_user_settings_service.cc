@@ -172,7 +172,6 @@ void SupervisedUserSettingsService::SetActive(bool active) {
   } else {
     RemoveLocalSetting(supervised_user::kSigninAllowed);
     RemoveLocalSetting(supervised_user::kCookiesAlwaysAllowed);
-    RemoveLocalSetting(supervised_user::kGeolocationDisabled);
   }
 
   InformSubscribers();
