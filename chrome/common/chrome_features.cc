@@ -668,6 +668,13 @@ BASE_FEATURE(GlicExtensions, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(GlicMultitabUnderlines, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(GlicWindowDragRegions, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(GlicCaaGuestError, base::FEATURE_ENABLED_BY_DEFAULT);
+extern const base::FeatureParam<std::string> kGlicCaaLinkUrl{
+    &kGlicCaaGuestError, "glic-caa-link-url", "https://gemini.google.com/"};
+extern const base::FeatureParam<std::string> kGlicCaaLinkText{
+    &kGlicCaaGuestError, "glic-caa-link-text", "gemini.google.com"};
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 // Force Privacy Guide to be available even if it would be unavailable
 // otherwise. This is meant for development and test purposes only.

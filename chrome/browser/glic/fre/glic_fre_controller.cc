@@ -263,6 +263,10 @@ void GlicFreController::DismissFre(mojom::FreWebUiState panel) {
     case mojom::FreWebUiState::kError:
       base::RecordAction(base::UserMetricsAction("Glic.Fre.ErrorPanelClosed"));
       break;
+    case mojom::FreWebUiState::kDisabledByAdmin:
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Fre.DisabledByAdminPanelClosed"));
+      break;
     case mojom::FreWebUiState::kOffline:
       base::RecordAction(
           base::UserMetricsAction("Glic.Fre.OfflinePanelClosed"));

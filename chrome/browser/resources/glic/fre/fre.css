@@ -35,7 +35,7 @@ body {
 }
 
 .header {
-  padding: 12px 20px 12px 12px;
+  padding: 12px 20px 12px 20px;
   height: var(--header-height);
   display: flex;
   justify-content: right;
@@ -112,6 +112,26 @@ p {
   justify-content: start;
 }
 
+#disabledByAdminPanel .panel {
+  align-items: center;
+}
+
+#disabledByAdminPanel .header {
+  position: absolute;
+  left: 0;
+  right: 0;
+  justify-content: space-between;
+}
+
+#disabledByAdminPanel .card {
+  justify-content: center;
+  align-items: center;
+}
+
+#disabledByAdminPanel .icon {
+  --iron-icon-fill-color: var(--cr-fallback-color-primary);
+}
+
 /* Skeleton loader styles */
 .skeleton-loader-block {
   width: 100%;
@@ -184,4 +204,10 @@ p {
   100% {
   background-color: var(--color--surface-container-light);
   }
+}
+
+a[href] {
+  color: var(--cr-link-color);
+  cursor: pointer;
+  text-decoration: underline;
 }

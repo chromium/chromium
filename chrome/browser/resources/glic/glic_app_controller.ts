@@ -155,6 +155,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     $.disabledByAdminCloseButton.addEventListener('click', () => {
       this.browserProxy.handler.closePanel();
     });
+    $.disabledByAdminPanel.querySelector('a')?.addEventListener('click', () => {
+      this.openDisabledByAdminLink();
+    });
     $.signInButton.addEventListener('click', () => {
       this.signIn();
     });
@@ -241,6 +244,12 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         }
         break;
     }
+  }
+
+  webviewDeniedByAdmin() {
+    $.disabledByAdminPanel.classList.toggle(
+        'show-disabled-by-admin-link', true);
+    this.setState(WebUiState.kDisabledByAdmin);
   }
 
   private setState(newState: WebUiState): void {
@@ -425,6 +434,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         this.setState(WebUiState.kUnavailable);
         return;
       case ProfileReadyState.kDisabledByAdmin:
+        $.disabledByAdminPanel.classList.toggle(
+            'show-disabled-by-admin-link', false);
         this.setState(WebUiState.kDisabledByAdmin);
         return;
       case ProfileReadyState.kSignInRequired:
@@ -703,6 +714,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
           this.setState(WebUiState.kUnavailable);
           break;
         case ProfileReadyState.kDisabledByAdmin:
+          $.disabledByAdminPanel.classList.toggle(
+              'show-disabled-by-admin-link', false);
           this.setState(WebUiState.kDisabledByAdmin);
           break;
         case ProfileReadyState.kSignInRequired:
@@ -715,5 +728,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
           break;
       }
     }
+  }
+
+  openDisabledByAdminLink(): void {
+    this.browserProxy.handler.openDisabledByAdminLinkAndClosePanel();
   }
 }
