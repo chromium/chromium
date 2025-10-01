@@ -362,6 +362,7 @@
 #include "chrome/browser/ui/lens/lens_keyed_service_factory.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
@@ -1003,6 +1004,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   visited_url_ranking::VisitedURLRankingServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   InstantServiceFactory::GetInstance();
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  IOSPromoTriggerServiceFactory::GetInstance();
 #endif
   IpProtectionCoreHostFactory::GetInstance();
 #if BUILDFLAG(IS_WIN)

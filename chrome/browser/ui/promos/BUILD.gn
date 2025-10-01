@@ -32,3 +32,34 @@ source_set("impl") {
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
+
+if (!is_android) {
+  source_set("service") {
+    sources = [
+      "ios_promo_trigger_service.cc",
+      "ios_promo_trigger_service.h",
+      "ios_promo_trigger_service_factory.cc",
+      "ios_promo_trigger_service_factory.h",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/promos:utils",
+      "//components/keyed_service/core",
+      "//components/sharing_message",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "ios_promo_trigger_service_unittest.cc" ]
+    deps = [
+      ":service",
+      "//base/test:test_support",
+      "//chrome/browser/promos:utils",
+      "//chrome/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
