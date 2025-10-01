@@ -14,6 +14,7 @@
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
@@ -208,12 +209,8 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
         [[SearchEngineChoiceCoordinatorTestDelegate alloc] init];
     coordinator_.delegate = coordinator_delegate_;
     OCMExpect([search_engine_choice_view_controller_mock_
-        setActionDelegate:[OCMArg checkWithBlock:^(
-                                      id<SearchEngineChoiceActionDelegate>
-                                          delegate) {
-          search_engine_choice_action_delegate_ = delegate;
-          return YES;
-        }]]);
+        setActionDelegate:AssignValueToVariable(
+                              search_engine_choice_action_delegate_)]);
     OCMExpect([search_engine_choice_mediator_mock_
         setConsumer:search_engine_choice_view_controller_mock_]);
     OCMExpect([search_engine_choice_view_controller_mock_

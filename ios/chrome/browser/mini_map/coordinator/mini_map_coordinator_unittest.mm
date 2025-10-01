@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -213,12 +214,7 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
 
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
+      configureCompletion:AssignValueToVariable(completion_block)]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
@@ -252,12 +248,7 @@ TEST_F(MiniMapCoordinatorTest, TestLinkDismissMap) {
 
   OCMExpect([mini_map_controller configureURL:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
+      configureCompletion:AssignValueToVariable(completion_block)]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
@@ -291,12 +282,7 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
+      configureCompletion:AssignValueToVariable(completion_block)]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
@@ -331,12 +317,8 @@ TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller configureCompletion:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletionWithSearchQuery:
-          [OCMArg checkWithBlock:^BOOL(
-                      MiniMapControllerCompletionWithString block) {
-            completion_block = block;
-            return YES;
-          }]]);
+      configureCompletionWithSearchQuery:AssignValueToVariable(
+                                             completion_block)]);
   OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
                                        leadingButtonTitle:[OCMArg any]
                                       trailingButtonTitle:[OCMArg any]
@@ -371,28 +353,15 @@ TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
 
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
+      configureCompletion:AssignValueToVariable(completion_block)]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller
       configureFooterWithTitle:[OCMArg any]
             leadingButtonTitle:[OCMArg any]
            trailingButtonTitle:[OCMArg any]
-           leadingButtonAction:[OCMArg checkWithBlock:^BOOL(
-                                           BlockWithViewController block) {
-             left_button_block = block;
-             return YES;
-           }]
-          trailingButtonAction:[OCMArg checkWithBlock:^BOOL(
-                                           BlockWithViewController block) {
-            right_button_block = block;
-            return YES;
-          }]]);
+           leadingButtonAction:AssignValueToVariable(left_button_block)
+          trailingButtonAction:AssignValueToVariable(right_button_block)]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);

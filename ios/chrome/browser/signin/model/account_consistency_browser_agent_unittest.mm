@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -137,10 +138,7 @@ class AccountConsistencyBrowserAgentWithSeparateProfilesTest
 TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithNoURL) {
   __block OpenNewTabCommand* received_command = nil;
   OCMExpect([application_commands_mock_
-      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
-        received_command = command;
-        return YES;
-      }]]);
+      openURLInNewTab:AssignValueToVariable(received_command)]);
   agent_->OnGoIncognito(GURL());
   EXPECT_NE(received_command, nil);
   EXPECT_TRUE(received_command.inIncognito);
@@ -154,10 +152,7 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithURL) {
   GURL url("http://www.example.com");
   __block OpenNewTabCommand* received_command = nil;
   OCMExpect([application_commands_mock_
-      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
-        received_command = command;
-        return YES;
-      }]]);
+      openURLInNewTab:AssignValueToVariable(received_command)]);
   agent_->OnGoIncognito(url);
   EXPECT_NE(received_command, nil);
   EXPECT_TRUE(received_command.inIncognito);

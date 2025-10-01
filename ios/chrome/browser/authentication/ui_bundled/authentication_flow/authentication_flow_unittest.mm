@@ -25,6 +25,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
@@ -192,14 +193,11 @@ class AuthenticationFlowTest : public PlatformTest,
       // the mock can call back into it.
       OCMExpect([(id)in_profile_performer_mock_ alloc])
           .andReturn(in_profile_performer_mock_);
-      OCMExpect([in_profile_performer_mock_
-                    initWithInProfileDelegate:[OCMArg any]
-                         changeProfileHandler:[OCMArg any]])
-          .andDo(^(NSInvocation* invocation) {
-            __unsafe_unretained id argument;
-            [invocation getArgument:&argument atIndex:2];
-            authentication_flow_in_profile_ = argument;
-          })
+      OCMExpect(
+          [in_profile_performer_mock_
+              initWithInProfileDelegate:AssignValueToVariable(
+                                            authentication_flow_in_profile_)
+                   changeProfileHandler:[OCMArg any]])
           .andReturn(in_profile_performer_mock_);
     }
 

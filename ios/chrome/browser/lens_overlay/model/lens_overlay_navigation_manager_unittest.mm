@@ -36,15 +36,10 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
     mock_mutator_ = OCMProtocolMock(@protocol(LensOverlayNavigationMutator));
 
     // Stub calls to `loadURL:omniboxText:` and store the arguments.
-    OCMStub([[mock_mutator_ ignoringNonObjectArgs] loadURL:GURL()
-                                               omniboxText:[OCMArg any]])
-        .andAssignStructParameterAtAddressToVariable(latest_loaded_url_, 0)
-        .andDo(^(NSInvocation* invocation) {
-
-          __unsafe_unretained NSString* omnibox_text;
-          [invocation getArgument:&omnibox_text atIndex:3];
-          latest_loaded_omnibox_text_ = omnibox_text;
-        });
+    OCMStub([[mock_mutator_ ignoringNonObjectArgs]
+                    loadURL:GURL()
+                omniboxText:CopyValueToVariable(latest_loaded_omnibox_text_)])
+        .andAssignStructParameterAtAddressToVariable(latest_loaded_url_, 0);
 
     manager_ = std::make_unique<LensOverlayNavigationManager>(mock_mutator_);
     manager_->SetWebState(fake_web_state_.get());

@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
@@ -39,15 +40,11 @@ class WebFrameImplTest : public web::WebTest {
     mock_frame_info_ = OCMClassMock([WKFrameInfo class]);
     mock_web_view_ = OCMClassMock([WKWebView class]);
 
-    OCMStub([mock_web_view_ evaluateJavaScript:OCMOCK_ANY
-                                       inFrame:OCMOCK_ANY
-                                inContentWorld:OCMOCK_ANY
-                             completionHandler:OCMOCK_ANY])
-        .andDo(^(NSInvocation* invocation) {
-          [invocation retainArguments];
-          [invocation getArgument:&last_received_script_ atIndex:2];
-          [invocation getArgument:&last_received_content_world_ atIndex:4];
-        });
+    OCMStub([mock_web_view_
+        evaluateJavaScript:AssignValueToVariable(last_received_script_)
+                   inFrame:OCMOCK_ANY
+            inContentWorld:AssignValueToVariable(last_received_content_world_)
+         completionHandler:OCMOCK_ANY]);
     OCMStub([mock_frame_info_ webView]).andReturn(mock_web_view_);
     NSURL* url = [[NSURL alloc]
         initWithString:base::SysUTF8ToNSString(kFrameInfoRequestUrl)];

@@ -42,4 +42,16 @@
     variable = *param;                                               \
   })
 
+#define AssignValueToVariable(variable)                    \
+  [OCMArg checkWithBlock:^BOOL(decltype(variable) param) { \
+    variable = param;                                      \
+    return YES;                                            \
+  }]
+
+#define CopyValueToVariable(variable)                      \
+  [OCMArg checkWithBlock:^BOOL(decltype(variable) param) { \
+    variable = [param copy];                               \
+    return YES;                                            \
+  }]
+
 #endif  // COMPONENTS_TEST_IOS_TEST_UTILS_H_

@@ -10,6 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_consumer.h"
@@ -589,10 +590,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   __block signin_ui::SignoutCompletionCallback completion = nil;
   OCMExpect([delegate_mock_
       signOutFromTargetRect:rect
-                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   completion = value;
-                   return true;
-                 }]]);
+                 completion:AssignValueToVariable(completion)]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ signOutFromTargetRect:rect];
   // Simulate a double tap. The second tap should be ignored.
@@ -612,10 +610,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
   __block signin_ui::SignoutCompletionCallback completion = nil;
   OCMExpect([delegate_mock_
       signOutFromTargetRect:rect
-                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   completion = value;
-                   return true;
-                 }]]);
+                 completion:AssignValueToVariable(completion)]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ signOutFromTargetRect:rect];
   // Simulate a double tap. The second tap should be ignored.

@@ -16,6 +16,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -31,37 +32,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-namespace {
-
-template <typename ArgumentType>
-  requires std::is_trivially_copyable_v<__unsafe_unretained ArgumentType>
-class ArgumentCaptor {
- public:
-  using InvocationHandlingBlock = void (^)(NSInvocation* invocation);
-
-  // Passed to `andDo` to capture an argument.
-  InvocationHandlingBlock Capture(int argumentIndex) {
-    return ^(NSInvocation* invocation) {
-      __unsafe_unretained ArgumentType capturedPtr;
-      [invocation getArgument:&capturedPtr atIndex:argumentIndex];
-      captured_value_ = capturedPtr;
-      did_capture_ = true;
-    };
-  }
-
-  // Used to obtain the captured value after the capturing happened.
-  ArgumentType Get() const {
-    CHECK(did_capture_);
-    return captured_value_;
-  }
-
- private:
-  bool did_capture_ = false;
-  ArgumentType captured_value_;
-};
-
-}  // namespace
 
 class SigninReauthCoordinatorTest : public PlatformTest {
  public:
@@ -127,14 +97,12 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
                    signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
   __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
-
-  ArgumentCaptor<SigninCompletionBlock> signin_completion_block_captor;
+  __block SigninCompletionBlock completion_block = nil;
   OCMExpect([mock_interaction_manager_
-                startAuthActivityWithViewController:OCMOCK_ANY
-                                          userEmail:base::SysUTF8ToNSString(
-                                                        account.email)
-                                         completion:OCMOCK_ANY])
-      .andDo(signin_completion_block_captor.Capture(/*argumentIndex=*/4));
+      startAuthActivityWithViewController:OCMOCK_ANY
+                                userEmail:base::SysUTF8ToNSString(account.email)
+                               completion:AssignValueToVariable(
+                                              completion_block)]);
   [reauth_coordinator start];
 
   OCMExpect([mock_delegate_ reauthFinishedWithResult:ReauthResult::kSuccess
@@ -146,7 +114,6 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
         EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
         reauth_coordinator = nil;
       });
-  SigninCompletionBlock completion_block = signin_completion_block_captor.Get();
   CHECK(completion_block);
   completion_block(identity, nil);
   // Make sure the coordinator was deallocated.
@@ -173,13 +140,12 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCancelledByUser) {
   __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
 
-  ArgumentCaptor<SigninCompletionBlock> signin_completion_block_captor;
+  __block SigninCompletionBlock completion_block = nil;
   OCMExpect([mock_interaction_manager_
-                startAuthActivityWithViewController:OCMOCK_ANY
-                                          userEmail:base::SysUTF8ToNSString(
-                                                        account.email)
-                                         completion:OCMOCK_ANY])
-      .andDo(signin_completion_block_captor.Capture(/*argumentIndex=*/4));
+      startAuthActivityWithViewController:OCMOCK_ANY
+                                userEmail:base::SysUTF8ToNSString(account.email)
+                               completion:AssignValueToVariable(
+                                              completion_block)]);
   [reauth_coordinator start];
 
   OCMExpect([[(id)mock_delegate_ ignoringNonObjectArgs]
@@ -191,7 +157,6 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCancelledByUser) {
         EXPECT_EQ(gaia_id, GaiaId());
         reauth_coordinator = nil;
       });
-  SigninCompletionBlock completion_block = signin_completion_block_captor.Get();
   CHECK(completion_block);
   // When the passed identity is is `nil`, it means that the flow was cancelled
   // by the user.
@@ -262,13 +227,12 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
   __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
 
-  ArgumentCaptor<SigninCompletionBlock> signin_completion_block_captor;
+  __block SigninCompletionBlock completion_block = nil;
   OCMExpect([mock_interaction_manager_
-                startAuthActivityWithViewController:OCMOCK_ANY
-                                          userEmail:base::SysUTF8ToNSString(
-                                                        account.email)
-                                         completion:OCMOCK_ANY])
-      .andDo(signin_completion_block_captor.Capture(/*argumentIndex=*/4));
+      startAuthActivityWithViewController:OCMOCK_ANY
+                                userEmail:base::SysUTF8ToNSString(account.email)
+                               completion:AssignValueToVariable(
+                                              completion_block)]);
   [reauth_coordinator start];
 
   OCMExpect(
@@ -281,7 +245,6 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
         EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
         reauth_coordinator = nil;
       });
-  SigninCompletionBlock completion_block = signin_completion_block_captor.Get();
   CHECK(completion_block);
   completion_block(identity, nil);
   // Make sure the coordinator was deallocated.

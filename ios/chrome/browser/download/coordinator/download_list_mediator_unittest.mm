@@ -19,6 +19,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer.h"
@@ -371,11 +372,7 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
   // Test search for "document" - should match both document.pdf and
   // document.txt.
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithKeyword:@"document"];
   [mock_consumer_ verify];
@@ -394,11 +391,7 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
 
   // Test search for "mp" - should match both video.mp4 and audio.mp3.
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithKeyword:@"mp"];
   [mock_consumer_ verify];
@@ -417,11 +410,7 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
 
   // Test search for "nonexistent" - should return empty.
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithKeyword:@"nonexistent"];
   [mock_consumer_ verify];
@@ -430,11 +419,7 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
 
   // Test empty search - should return all items.
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithKeyword:@""];
   [mock_consumer_ verify];
@@ -455,11 +440,7 @@ TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
   // Then search for "document" within PDF filter - should still find
   // document.pdf.
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithKeyword:@"document"];
   [mock_consumer_ verify];
@@ -469,11 +450,7 @@ TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
 
   // Search for "image" within PDF filter - should return empty.
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithKeyword:@"image"];
   [mock_consumer_ verify];
@@ -571,11 +548,7 @@ TEST_F(DownloadListMediatorTest,
   __block NSArray<DownloadListItem*>* capturedItems = nil;
 
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kAll];
   [mock_consumer_ verify];
@@ -752,11 +725,7 @@ TEST_F(DownloadListMediatorIncognitoTest, TestShowsAllRecords) {
   __block NSArray<DownloadListItem*>* capturedItems = nil;
 
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kAll];
   [mock_consumer_ verify];
@@ -805,11 +774,7 @@ TEST_F(DownloadListMediatorIncognitoTest, TestSearchRecordsWithKeyword) {
 
   // Search for "incognito" - should match incognito records.
   [[mock_consumer_ expect]
-      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
-                                       NSArray<DownloadListItem*>* items) {
-        capturedItems = items;
-        return YES;
-      }]];
+      setDownloadListItems:AssignValueToVariable(capturedItems)];
 
   [mediator_ filterRecordsWithKeyword:@"incognito"];
   [mock_consumer_ verify];

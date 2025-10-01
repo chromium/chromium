@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
@@ -187,18 +188,12 @@ TEST_F(SaveToDriveCoordinatorTest, ShowsAndHidesAccountPicker) {
   OCMExpect([mock_account_picker_coordinator alloc])
       .andReturn(mock_account_picker_coordinator);
   __block AccountPickerConfiguration* observed_conf = nil;
-  OCMExpect(
-      [mock_account_picker_coordinator
-          initWithBaseViewController:base_view_controller_
-                             browser:browser_.get()
-                       configuration:[OCMArg
-                                         checkWithBlock:^BOOL(
-                                             AccountPickerConfiguration* conf) {
-                                           observed_conf = conf;
-                                           return YES;
-                                         }]
-                         accessPoint:signin_metrics::AccessPoint::
-                                         kSaveToDriveIos])
+  OCMExpect([mock_account_picker_coordinator
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()
+                             configuration:AssignValueToVariable(observed_conf)
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kSaveToDriveIos])
       .andReturn(mock_account_picker_coordinator);
   OCMExpect([mock_account_picker_coordinator
       setDelegate:static_cast<id<AccountPickerCoordinatorDelegate>>(

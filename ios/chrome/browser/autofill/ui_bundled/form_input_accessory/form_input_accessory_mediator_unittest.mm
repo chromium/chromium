@@ -13,6 +13,7 @@
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -196,14 +197,10 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   __block FormSuggestionsReadyCompletion suggestionsQueryCompletion;
 
   OCMStub([providerMock
-              retrieveSuggestionsForForm:params
-                                webState:web_state_list_.GetActiveWebState()
-                accessoryViewUpdateBlock:OCMOCK_ANY])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained FormSuggestionsReadyCompletion completion;
-        [invocation getArgument:&completion atIndex:4];
-        suggestionsQueryCompletion = [completion copy];
-      });
+      retrieveSuggestionsForForm:params
+                        webState:web_state_list_.GetActiveWebState()
+        accessoryViewUpdateBlock:CopyValueToVariable(
+                                     suggestionsQueryCompletion)]);
   OCMStub([providerMock mainFillingProduct])
       .andReturn(autofill::FillingProduct::kAutocomplete);
 
@@ -255,14 +252,10 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WhenStateless) {
   __block FormSuggestionsReadyCompletion suggestionsQueryCompletion;
 
   OCMStub([providerMock
-              retrieveSuggestionsForForm:params
-                                webState:web_state_list_.GetActiveWebState()
-                accessoryViewUpdateBlock:OCMOCK_ANY])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained FormSuggestionsReadyCompletion completion;
-        [invocation getArgument:&completion atIndex:4];
-        suggestionsQueryCompletion = [completion copy];
-      });
+      retrieveSuggestionsForForm:params
+                        webState:web_state_list_.GetActiveWebState()
+        accessoryViewUpdateBlock:CopyValueToVariable(
+                                     suggestionsQueryCompletion)]);
 
   // Emit a form registration event to trigger the show suggestions code path.
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
