@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -100,8 +101,8 @@ class BrowserEncodingTest
         content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
     loop_runner->Run();
 
-    base::FilePath expected_file_name = ui_test_utils::GetTestFilePath(
-        base::FilePath(kTestDir), expected);
+    base::FilePath expected_file_name =
+        chrome_test_utils::GetTestFilePath(base::FilePath(kTestDir), expected);
 
     std::string actual_contents;
     std::string expected_contents;

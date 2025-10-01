@@ -27,8 +27,8 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
   {
     ThemeChangeWaiter wait(theme_service);
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII("theme"));
     loader.LoadExtension(path);
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
   {
     ThemeChangeWaiter wait(theme_service);
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII("theme"));
     loader.LoadExtension(path);

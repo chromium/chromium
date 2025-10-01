@@ -337,11 +337,6 @@ content::RenderFrameHost* NavigateToURLBlockUntilNavigationsComplete(
       BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
-base::FilePath GetTestFilePath(const base::FilePath& dir,
-                               const base::FilePath& file) {
-  return chrome_test_utils::GetTestFilePath(dir, file);
-}
-
 GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file) {
   return chrome_test_utils::GetTestUrl(dir, file);
 }

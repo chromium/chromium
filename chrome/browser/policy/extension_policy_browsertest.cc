@@ -95,7 +95,6 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #endif
 
@@ -913,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       extensions::ExtensionsBrowserClient::Get()->GetExtensionCache();
   extension_updater()->SetExtensionCacheForTesting(cache);
 
-  base::FilePath extension_path(ui_test_utils::GetTestFilePath(
+  base::FilePath extension_path(chrome_test_utils::GetTestFilePath(
       base::FilePath(kTestExtensionsDir), base::FilePath(kGoodCrxName)));
   cache->AllowCaching(kGoodCrxId);
 

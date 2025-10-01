@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, DownloadExtensionResource) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   auto file_path = download_items[0]->GetTargetFilePath();
 
-  base::FilePath expected_path = ui_test_utils::GetTestFilePath(
+  base::FilePath expected_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(),
       base::FilePath().AppendASCII("extensions/download/download.dat"));
 

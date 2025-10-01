@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -379,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   GURL tab_url(embedded_test_server()->GetURL("/empty.html"));
 
   // Get a url for a force installed extension.
-  base::FilePath crx_path(ui_test_utils::GetTestFilePath(
+  base::FilePath crx_path(chrome_test_utils::GetTestFilePath(
       base::FilePath().AppendASCII("devtools").AppendASCII("extensions"),
       base::FilePath().AppendASCII("options.crx")));
   extensions::ChromeTestExtensionLoader loader(browser()->profile());

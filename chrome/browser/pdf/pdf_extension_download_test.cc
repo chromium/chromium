@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -101,7 +101,7 @@ void CompareFileContent(const base::FilePath& test_file_path,
 // Generates a PDF larger than kMaxSaveBufferSize bytes.
 std::string GetLargePDFContent() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(FILE_PATH_LITERAL("pdf")),
       base::FilePath(FILE_PATH_LITERAL("test.pdf")));
   std::string content;
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingContextMenu) {
   SetAutoSelectSavePath(save_path);
   SimulateContextMenuSaveAs(extension_host, url);
 
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(FILE_PATH_LITERAL("pdf")),
       base::FilePath(FILE_PATH_LITERAL("test.pdf")));
   base::test::TestFuture<void> future;
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingDownloadButton) {
   SetAutoSelectSavePath(save_path);
   TriggerDownloadButton(extension_host);
 
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(FILE_PATH_LITERAL("pdf")),
       base::FilePath(FILE_PATH_LITERAL("test.pdf")));
   base::test::TestFuture<void> future;

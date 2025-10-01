@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/crx_verifier.h"
@@ -112,7 +113,7 @@ class InfoBarsTest : public InProcessBrowserTest {
   InfoBarsTest() = default;
 
   void InstallExtension(const char* filename) {
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII(filename));
     extensions::TestExtensionRegistryObserver observer(

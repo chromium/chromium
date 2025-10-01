@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -555,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_FindLongString) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetURL("largepage.html")));
 
-  base::FilePath path = ui_test_utils::GetTestFilePath(
+  base::FilePath path = chrome_test_utils::GetTestFilePath(
       base::FilePath().AppendASCII("find_in_page"),
       base::FilePath().AppendASCII("LongFind.txt"));
   std::string query;
@@ -615,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindWholeFileContent) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  base::FilePath path = ui_test_utils::GetTestFilePath(
+  base::FilePath path = chrome_test_utils::GetTestFilePath(
       base::FilePath().AppendASCII("find_in_page"),
       base::FilePath().AppendASCII("find_test.txt"));
   ASSERT_TRUE(
