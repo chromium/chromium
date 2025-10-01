@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TAB_TAB_STORAGE_PACKAGER_ANDROID_H_
-#define CHROME_BROWSER_TAB_TAB_STORAGE_PACKAGER_ANDROID_H_
+#ifndef CHROME_BROWSER_ANDROID_TAB_STORAGE_PACKAGER_ANDROID_H_
+#define CHROME_BROWSER_ANDROID_TAB_STORAGE_PACKAGER_ANDROID_H_
 
 #include <memory>
 #include <string>
@@ -50,4 +50,4 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_TAB_TAB_STORAGE_PACKAGER_ANDROID_H_
+#endif  // CHROME_BROWSER_ANDROID_TAB_STORAGE_PACKAGER_ANDROID_H_

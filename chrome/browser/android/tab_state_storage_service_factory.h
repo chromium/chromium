@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TAB_TAB_STATE_STORAGE_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_ANDROID_TAB_STATE_STORAGE_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_ANDROID_TAB_STATE_STORAGE_SERVICE_FACTORY_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
@@ -43,4 +43,4 @@ class TabStateStorageServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_TAB_TAB_STATE_STORAGE_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_ANDROID_TAB_STATE_STORAGE_SERVICE_FACTORY_H_

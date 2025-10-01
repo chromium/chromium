@@ -8,7 +8,6 @@
 
 #include "base/token.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
-#include "chrome/browser/tab/tab_storage_packager_android.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {

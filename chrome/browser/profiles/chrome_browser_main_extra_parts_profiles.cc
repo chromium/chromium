@@ -296,6 +296,7 @@
 #include "chrome/browser/android/omnibox/autocomplete_controller_android.h"
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
+#include "chrome/browser/android/tab_state_storage_service_factory.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
@@ -310,7 +311,6 @@
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
-#include "chrome/browser/tab/tab_state_storage_service_factory.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/discount_infos_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"

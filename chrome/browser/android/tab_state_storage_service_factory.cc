@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tab/tab_state_storage_service_factory.h"
+#include "chrome/browser/android/tab_state_storage_service_factory.h"
 
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/android/tab_storage_packager_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/jni_headers/TabStateStorageServiceFactory_jni.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
-#include "chrome/browser/tab/tab_storage_packager_android.h"
 
 namespace tabs {
 
