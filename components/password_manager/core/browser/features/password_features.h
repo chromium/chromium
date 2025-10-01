@@ -186,13 +186,6 @@ BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
-// Enables new encryption method of OSCrypt inside LoginDatabase (Stage 2).
-BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
-
-// Enables re-encryption of all passwords. Done separately for each store
-// (Stage 3).
-BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
-
 // Marks all submitted credentials as leaked, useful for testing of a password
 // leak dialog.
 BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);

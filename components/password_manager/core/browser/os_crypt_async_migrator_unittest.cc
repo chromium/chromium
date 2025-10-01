@@ -56,10 +56,6 @@ class OSCryptAsyncMigratorTest
         base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
     migrator_ =
         std::make_unique<OSCryptAsyncMigrator>(store_, GetParam(), &prefs_);
-    feature_list_.InitWithFeatures(
-        {features::kUseNewEncryptionMethod,
-         features::kEncryptAllPasswordsWithOSCryptAsync},
-        {});
   }
 
   MockPasswordStoreInterface* store() { return store_.get(); }
@@ -67,23 +63,11 @@ class OSCryptAsyncMigratorTest
   OSCryptAsyncMigrator* migrator() { return migrator_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
   scoped_refptr<MockPasswordStoreInterface> store_;
   std::unique_ptr<OSCryptAsyncMigrator> migrator_;
 };
-
-TEST_P(OSCryptAsyncMigratorTest, DoesNotNeedCleaningWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kEncryptAllPasswordsWithOSCryptAsync);
-
-  ASSERT_FALSE(prefs().GetBoolean(prefs::kAccountStoreMigratedToOSCryptAsync));
-  ASSERT_FALSE(prefs().GetBoolean(prefs::kProfileStoreMigratedToOSCryptAsync));
-
-  EXPECT_FALSE(migrator()->NeedsCleaning());
-}
 
 TEST_P(OSCryptAsyncMigratorTest, DoesNotNeedCleaningWhenCleanedBefore) {
   prefs().SetBoolean(prefs::kAccountStoreMigratedToOSCryptAsync, true);
