@@ -534,7 +534,7 @@ TEST_P(RestrictedCookieManagerTest,
   // Override isolation_info to make it explicit that its frame_origin is
   // different from the origin.
   service_->OverrideIsolationInfoForTesting(kDefaultIsolationInfo);
-  SetSessionCookie("new-name", "new-value", kOtherUrl.host().c_str(), "/");
+  SetSessionCookie("new-name", "new-value", kOtherUrl.GetHost().c_str(), "/");
 
   // Fetch cookies from the wrong origin (IsolationInfo's frame_origin) should
   // result in a bad message.

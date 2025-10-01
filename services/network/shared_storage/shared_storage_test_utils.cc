@@ -186,7 +186,7 @@ void SharedStorageResponse::SendResponse(
 std::unique_ptr<net::test_server::HttpResponse>
 HandleSharedStorageRequestSimple(std::string shared_storage_write,
                                  const net::test_server::HttpRequest& request) {
-  const auto& path = request.GetURL().path();
+  const auto& path = request.GetURL().GetPath();
   if (!base::StartsWith(path, kSharedStoragePathPrefix)) {
     return nullptr;
   }
@@ -205,7 +205,7 @@ std::unique_ptr<net::test_server::HttpResponse>
 HandleSharedStorageRequestMultiple(
     std::vector<std::string> shared_storage_write_headers,
     const net::test_server::HttpRequest& request) {
-  const auto& path = request.GetURL().path();
+  const auto& path = request.GetURL().GetPath();
   if (!base::StartsWith(path, kSharedStoragePathPrefix)) {
     return nullptr;
   }
@@ -221,7 +221,7 @@ HandleSharedStorageRequestMultiple(
         shared_storage_write_headers[SharedStorageRequestCount::Get() - 1]);
   }
   std::optional<std::string> location;
-  const std::string& query = request.GetURL().query();
+  const std::string& query = request.GetURL().GetQuery();
   if (base::StartsWith(path, MakeSharedStorageRedirectPrefix()) &&
       !query.empty()) {
     url::RawCanonOutputT<char16_t> decode_output;

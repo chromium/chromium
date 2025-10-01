@@ -5328,7 +5328,7 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
   std::unique_ptr<net::test_server::HttpResponse>
   HandleLoadWithStorageAccessRequest(
       const net::test_server::HttpRequest& request) {
-    if (!base::StartsWith(request.GetURL().path(),
+    if (!base::StartsWith(request.GetURL().GetPath(),
                           kStorageAccessRedirectLoadPath)) {
       return nullptr;
     }

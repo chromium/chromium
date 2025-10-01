@@ -1013,7 +1013,8 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
       std::optional<std::string> result =
           ConstructSignatureBase(parsed->signatures[0], request(), *headers);
       ASSERT_TRUE(result.has_value());
-      EXPECT_EQ(expected_base.str(), result.value()) << GURL(test.url).query();
+      EXPECT_EQ(expected_base.str(), result.value())
+          << GURL(test.url).GetQuery();
     }
 
     // `req`, then `name`
@@ -1040,7 +1041,8 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
       std::optional<std::string> result =
           ConstructSignatureBase(parsed->signatures[0], request(), *headers);
       ASSERT_TRUE(result.has_value());
-      EXPECT_EQ(expected_base.str(), result.value()) << GURL(test.url).query();
+      EXPECT_EQ(expected_base.str(), result.value())
+          << GURL(test.url).GetQuery();
     }
   }
 }

@@ -1209,8 +1209,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_Allowed) {
 
   // Adds an entry to allow the cross origin request beyond the CORS
   // rules.
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
@@ -1243,7 +1243,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOrigin) {
   factory_params.ignore_isolated_world_origin = false;
   ResetFactory(main_world_origin, kRendererProcessId, factory_params);
 
-  AddAllowListEntryForOrigin(isolated_world_origin, url.scheme(), url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;
@@ -1287,10 +1288,11 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOrigin_Redirect) {
   factory_params.ignore_isolated_world_origin = false;
   ResetFactory(main_world_origin, kRendererProcessId, factory_params);
 
-  AddAllowListEntryForOrigin(isolated_world_origin, url.scheme(), url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
-  AddAllowListEntryForOrigin(isolated_world_origin, new_url.scheme(),
-                             new_url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, new_url.GetScheme(),
+                             new_url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;
@@ -1339,7 +1341,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOriginIgnored) {
 
   ResetFactory(main_world_origin, kRendererProcessId);
 
-  AddAllowListEntryForOrigin(isolated_world_origin, url.scheme(), url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;
@@ -1369,11 +1372,11 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_Blocked) {
   const GURL origin("https://example.com");
   const GURL url("http://other.example.com/foo.png");
 
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
-  AddBlockListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddBlockListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
@@ -1397,8 +1400,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_NoCors) {
 
   // Adds an entry to allow the cross origin request without using
   // CORS.
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   CreateLoaderAndStart(origin, url, mojom::RequestMode::kNoCors);
@@ -1424,8 +1427,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_POST) {
 
   // Adds an entry to allow the cross origin request beyond the CORS
   // rules.
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;

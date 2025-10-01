@@ -305,7 +305,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
        OnResolveProxyBypassForWebSocketScheme) {
   auto config = mojom::CustomProxyConfig::New();
   config->rules.ParseFromString("http=foo");
-  config->rules.bypass_rules.AddRuleFromString(GURL(kWebsocketUrl).scheme() +
+  config->rules.bypass_rules.AddRuleFromString(GURL(kWebsocketUrl).GetScheme() +
                                                "://*");
   auto delegate = CreateDelegate(std::move(config));
 

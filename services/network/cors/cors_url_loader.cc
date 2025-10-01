@@ -901,7 +901,7 @@ void CorsURLLoader::StartRequest() {
            mojom::PrivateNetworkAccessPreflightResult::kNone);
 
   if (fetch_cors_flag_ && !skip_cors_enabled_scheme_check_ &&
-      !base::Contains(url::GetCorsEnabledSchemes(), request_.url.scheme())) {
+      !base::Contains(url::GetCorsEnabledSchemes(), request_.url.GetScheme())) {
     HandleComplete(URLLoaderCompletionStatus(
         CorsErrorStatus(mojom::CorsError::kCorsDisabledScheme)));
     return;

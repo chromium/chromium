@@ -349,7 +349,7 @@ struct AccessPointLess {
 GURL FormRequestURL(const std::string& api_key) {
   GURL url(kNetworkLocationBaseUrl);
   if (!api_key.empty()) {
-    std::string query(url.query());
+    std::string query(url.GetQuery());
     if (!query.empty())
       query += "&";
     query += "key=" + base::EscapeQueryParamValue(api_key, true);

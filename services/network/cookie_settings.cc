@@ -246,10 +246,10 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
     const GURL& first_party_url) const {
   return (base::Contains(secure_origin_cookies_allowed_schemes_,
-                         first_party_url.scheme()) &&
+                         first_party_url.GetScheme()) &&
           url.SchemeIsCryptographic()) ||
          (base::Contains(matching_scheme_cookies_allowed_schemes_,
-                         url.scheme()) &&
+                         url.GetScheme()) &&
           url.SchemeIs(first_party_url.scheme_piece()));
 }
 

@@ -1131,7 +1131,8 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
 TEST_P(ProxyResolvingClientSocketTest,
        OnDestinationDnsAliasesResolved_ReturnsOK) {
   const GURL kDestination("https://dest.test/");
-  std::vector<std::string> aliases({"alias1", "alias2", kDestination.host()});
+  std::vector<std::string> aliases(
+      {"alias1", "alias2", kDestination.GetHost()});
   std::set<std::string> aliases_set(aliases.begin(), aliases.end());
 
   // Create mock host resolver to return DNS aliases during host resolution.
@@ -1140,7 +1141,7 @@ TEST_P(ProxyResolvingClientSocketTest,
           /*default_result=*/net::MockHostResolverBase::RuleResolver::
               GetLocalhostResult());
   host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(
-      kDestination.host(), "2.2.2.2", std::move(aliases));
+      kDestination.GetHost(), "2.2.2.2", std::move(aliases));
 
   std::unique_ptr<net::URLRequestContextBuilder> url_request_context_builder =
       CreateBuilder("DIRECT");

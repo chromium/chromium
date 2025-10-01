@@ -585,7 +585,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleResponseSize(
       std::make_unique<net::test_server::BasicHttpResponse>();
 
   uint32_t length;
-  if (!base::StringToUint(request.GetURL().query(), &length)) {
+  if (!base::StringToUint(request.GetURL().GetQuery(), &length)) {
     ADD_FAILURE() << "Invalid length: " << request.GetURL();
   } else {
     response->set_content(std::string(length, 'a'));

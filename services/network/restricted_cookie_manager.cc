@@ -769,9 +769,10 @@ void RestrictedCookieManager::SetCanonicalCookie(
 
   // Don't allow URLs with leading dots like https://.some-weird-domain.com
   // This probably never happens.
-  if (!net::cookie_util::DomainIsHostOnly(url.host()))
+  if (!net::cookie_util::DomainIsHostOnly(url.GetHost())) {
     status.AddExclusionReason(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
+  }
 
   // For better safety, we use isolated_info_.top_frame_origin() instead of
   // top_frame_origin to create the CookieAccessDetails , eventually
@@ -1168,7 +1169,7 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
   }
 
   // Don't allow setting cookies on other domains. See crbug.com/996786.
-  if (cookie_being_set && !cookie_being_set->IsDomainMatch(url.host())) {
+  if (cookie_being_set && !cookie_being_set->IsDomainMatch(url.GetHost())) {
     receiver_.ReportBadMessage(
         "Setting cookies on other domains is disallowed.");
     return false;

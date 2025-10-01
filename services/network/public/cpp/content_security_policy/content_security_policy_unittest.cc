@@ -2262,9 +2262,10 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
     EXPECT_EQ(test.expected_result, actual);
     if (test.expected_self_origin) {
       GURL expected_self_origin(test.expected_self_origin);
-      EXPECT_EQ(expected_self_origin.scheme(),
+      EXPECT_EQ(expected_self_origin.GetScheme(),
                 required_csp->self_origin->scheme);
-      EXPECT_EQ(expected_self_origin.host(), required_csp->self_origin->host);
+      EXPECT_EQ(expected_self_origin.GetHost(),
+                required_csp->self_origin->host);
       EXPECT_EQ(expected_self_origin.EffectiveIntPort(),
                 required_csp->self_origin->port);
     }

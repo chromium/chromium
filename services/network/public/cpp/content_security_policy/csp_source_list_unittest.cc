@@ -401,7 +401,7 @@ TEST(CSPSourceList, SubsumeWithSelf) {
 
     GURL parsed_test_origin(test.origin);
     auto origin_b = mojom::CSPSource::New(
-        parsed_test_origin.scheme(), parsed_test_origin.host(),
+        parsed_test_origin.GetScheme(), parsed_test_origin.GetHost(),
         parsed_test_origin.EffectiveIntPort(), "", false, false);
     EXPECT_EQ(test.expected,
               CSPSourceListSubsumes(

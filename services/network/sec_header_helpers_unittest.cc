@@ -265,8 +265,8 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
   cors::OriginAccessList origin_access_list;
   origin_access_list.AddAllowListEntryForOrigin(
       url::Origin::Create(GURL(kPrivilegedInitiator)),  // source_origin
-      url.scheme(),                                     // protocol
-      url.host(),                                       // domain
+      url.GetScheme(),                                  // protocol
+      url.GetHost(),                                    // domain
       0,                                                // port
       mojom::CorsDomainMatchMode::kDisallowSubdomains,
       mojom::CorsPortMatchMode::kAllowAnyPort,
