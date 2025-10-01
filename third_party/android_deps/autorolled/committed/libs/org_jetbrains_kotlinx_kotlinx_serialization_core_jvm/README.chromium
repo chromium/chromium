@@ -1,6 +1,6 @@
 Name: kotlinx-serialization-core
 Short Name: kotlinx-serialization-core-jvm
-URL: https://github.com/Kotlin/kotlinx.serialization
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-serialization-core-jvm/1.7.2/kotlinx-serialization-core-jvm-1.7.2.jar
 Version: 1.7.2
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -11,6 +11,9 @@ Shipped: yes
 
 Description:
 Kotlin multiplatform serialization runtime library
+
+See also: https://github.com/Kotlin/kotlinx.serialization
+
 
 Local Modifications:
 No modifications.

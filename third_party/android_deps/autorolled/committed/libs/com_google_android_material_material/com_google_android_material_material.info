@@ -106,6 +106,7 @@ resources = [
   "res/color/m3_hint_foreground.xml",
   "res/color/m3_icon_button_icon_color_selector.xml",
   "res/color/m3_list_item_background_color_selector.xml",
+  "res/color/m3_list_item_leading_icon_color_selector.xml",
   "res/color/m3_navigation_bar_item_with_indicator_icon_tint.xml",
   "res/color/m3_navigation_bar_item_with_indicator_label_tint.xml",
   "res/color/m3_navigation_bar_ripple_color_selector.xml",

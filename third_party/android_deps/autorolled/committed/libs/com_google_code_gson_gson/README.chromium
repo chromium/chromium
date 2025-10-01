@@ -1,6 +1,6 @@
 Name: Gson
 Short Name: gson
-URL: https://github.com/google/gson
+URL: https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar
 Version: 2.13.2
 Update Mechanism: Autoroll
 License: Apache-2.0

@@ -1,6 +1,6 @@
 Name: Bouncy Castle Provider
 Short Name: bcprov-jdk18on
-URL: https://github.com/bcgit/bc-java
+URL: https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/1.81/bcprov-jdk18on-1.81.jar
 Version: 1.81
 Update Mechanism: Autoroll
 License: MIT
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 The Bouncy Castle Crypto package is a Java implementation of cryptographic algorithms. This jar contains the JCA/JCE provider and low-level API for the BC Java version 1.81 for Java 8 and later.
+
+See also: https://www.bouncycastle.org/download/bouncy-castle-java/
+
 
 Local Modifications:
 No modifications.

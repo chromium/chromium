@@ -1,6 +1,6 @@
 Name: Animal Sniffer Annotations
 Short Name: animal-sniffer-annotations
-URL: http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/
+URL: https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.24/animal-sniffer-annotations-1.24.jar
 Version: 1.24
 Update Mechanism: Autoroll
 License: MIT

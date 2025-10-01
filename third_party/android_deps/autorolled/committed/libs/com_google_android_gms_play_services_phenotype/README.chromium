@@ -1,6 +1,6 @@
 Name: play-services-phenotype
 Short Name: play-services-phenotype
-URL: https://developers.google.com/android/guides/setup
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-phenotype/17.0.0/play-services-phenotype-17.0.0.aar
 Version: 17.0.0
 Update Mechanism: Autoroll
 License: Android Software Development Kit License

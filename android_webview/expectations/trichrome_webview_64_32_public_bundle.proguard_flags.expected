@@ -648,7 +648,7 @@
   final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
 }
 
-# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.10.2.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
 # Allow R8 to optimize away the FastServiceLoader.
 # Together with ServiceLoader optimization in R8
 # this results in direct instantiation when loading Dispatchers.Main
@@ -672,7 +672,7 @@
     boolean getRECOVER_STACK_TRACES() return false;
 }
 
-# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.10.2.jar:META-INF/com.android.tools/r8/coroutines.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm.jar:META-INF/com.android.tools/r8/coroutines.pro
 # When editing this file, update the following files as well:
 # - META-INF/proguard/coroutines.pro
 # - META-INF/com.android.tools/proguard/coroutines.pro
@@ -701,7 +701,7 @@
 # An annotation used for build tooling, won't be directly accessed.
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
-# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm-1.7.2.jar:META-INF/com.android.tools/r8/kotlinx-serialization-common.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm.jar:META-INF/com.android.tools/r8/kotlinx-serialization-common.pro
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
 -if @kotlinx.serialization.Serializable class **
@@ -744,7 +744,7 @@
     private ** descriptor;
 }
 
-# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm-1.7.2.jar:META-INF/com.android.tools/r8/kotlinx-serialization-r8.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm.jar:META-INF/com.android.tools/r8/kotlinx-serialization-r8.pro
 # Rule to save runtime annotations on serializable class.
 # If the R8 full mode is used, annotations are removed from classes-files.
 #

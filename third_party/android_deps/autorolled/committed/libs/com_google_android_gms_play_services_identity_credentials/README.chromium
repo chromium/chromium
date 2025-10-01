@@ -1,6 +1,6 @@
 Name: play-services-identity-credentials
 Short Name: play-services-identity-credentials
-URL: https://developers.google.com/android/guides/setup
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-identity-credentials/16.0.0-alpha08/play-services-identity-credentials-16.0.0-alpha08.aar
 Version: 16.0.0-alpha08
 Update Mechanism: Autoroll
 License: Android Software Development Kit License

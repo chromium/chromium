@@ -1,6 +1,6 @@
 Name: Guava InternalFutureFailureAccess and InternalFutures
 Short Name: failureaccess
-URL: https://github.com/google/guava
+URL: https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar
 Version: 1.0.3
 Update Mechanism: Autoroll
 License: Apache-2.0

@@ -1,6 +1,6 @@
 Name: resources
 Short Name: resources
-URL: https://robolectric.org
+URL: https://repo.maven.apache.org/maven2/org/robolectric/resources/4.16/resources-4.16.jar
 Version: 4.16
 Update Mechanism: Autoroll
 License: Apache-2.0, MIT
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 An alternative Android testing framework.
+
+See also: https://robolectric.org
+
 
 Local Modifications:
 No modifications.

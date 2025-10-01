@@ -1,6 +1,6 @@
 Name: FindBugs-jsr305
 Short Name: jsr305
-URL: http://findbugs.sourceforge.net/
+URL: https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar
 Version: 3.0.2
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -11,6 +11,9 @@ Shipped: yes
 
 Description:
 JSR305 Annotations for Findbugs
+
+See also: http://findbugs.sourceforge.net/
+
 
 Local Modifications:
 No modifications.

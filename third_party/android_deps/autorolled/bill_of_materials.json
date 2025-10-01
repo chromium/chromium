@@ -2,7 +2,7 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.12.0-alpha08"
+        "version": "1.12.0-alpha09"
     },
     {
         "name": "activity-compose",
@@ -212,12 +212,12 @@
     {
         "name": "runtime-annotation",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.10.0-alpha04"
     },
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.10.0-alpha04"
     },
     {
         "name": "runtime-retain",
@@ -392,7 +392,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.6.0-alpha05"
+        "version": "1.6.0-beta01"
     },
     {
         "name": "credentials-play-services-auth",
@@ -592,17 +592,17 @@
     {
         "name": "lifecycle-common",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-common-java8",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-livedata",
@@ -612,7 +612,7 @@
     {
         "name": "lifecycle-livedata-core",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-livedata-core-ktx",
@@ -627,17 +627,17 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-runtime",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -667,12 +667,12 @@
     {
         "name": "lifecycle-viewmodel",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -692,12 +692,12 @@
     {
         "name": "lifecycle-viewmodel-savedstate",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha03"
+        "version": "2.10.0-alpha04"
     },
     {
         "name": "loader",
@@ -802,12 +802,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha09"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha09"
     },
     {
         "name": "navigationevent-compose",
@@ -857,17 +857,17 @@
     {
         "name": "pdf-document-service",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha06"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "pdf-viewer",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha06"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "pdf-viewer-fragment",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha06"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "preference",
@@ -907,22 +907,22 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.8.0"
+        "version": "2.8.1"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.8.0"
+        "version": "2.8.1"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.8.0"
+        "version": "2.8.1"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.8.0"
+        "version": "2.8.1"
     },
     {
         "name": "savedstate",
@@ -957,22 +957,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.6.0"
+        "version": "2.6.1"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.6.0"
+        "version": "2.6.1"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.6.0"
+        "version": "2.6.1"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.6.0"
+        "version": "2.6.1"
     },
     {
         "name": "startup-runtime",
@@ -1127,17 +1127,17 @@
     {
         "name": "window",
         "group": "androidx.window",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "window-core",
         "group": "androidx.window",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "window-core-android",
         "group": "androidx.window",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "window-extensions",
@@ -1182,7 +1182,7 @@
     {
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
-        "version": "1.0.0"
+        "version": "1.1.0"
     },
     {
         "name": "support-annotations",
@@ -1232,7 +1232,7 @@
     {
         "name": "play-services-auth-api-phone",
         "group": "com.google.android.gms",
-        "version": "18.2.0"
+        "version": "18.3.0"
     },
     {
         "name": "play-services-auth-base",
@@ -1247,12 +1247,12 @@
     {
         "name": "play-services-base",
         "group": "com.google.android.gms",
-        "version": "18.8.0"
+        "version": "18.9.0"
     },
     {
         "name": "play-services-basement",
         "group": "com.google.android.gms",
-        "version": "18.8.0"
+        "version": "18.9.0"
     },
     {
         "name": "play-services-cast",
@@ -1342,7 +1342,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.14.0-alpha04"
+        "version": "1.14.0-alpha05"
     },
     {
         "name": "core-common",
@@ -1362,7 +1362,7 @@
     {
         "name": "impress",
         "group": "com.google.ar",
-        "version": "0.0.5"
+        "version": "0.0.6"
     },
     {
         "name": "auto-service-annotations",
