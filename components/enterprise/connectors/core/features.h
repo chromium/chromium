@@ -10,9 +10,6 @@
 
 namespace enterprise_connectors {
 
-// Controls whether event reporting is enabled on Android
-BASE_DECLARE_FEATURE(kEnterpriseSecurityEventReportingOnAndroid);
-
 // Controls whether enterprise features will attempt to attach the active
 // content area user email to DLP/reporting requests on Workspace sites.
 BASE_DECLARE_FEATURE(kEnterpriseActiveUserDetection);

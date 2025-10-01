@@ -1439,18 +1439,11 @@ const char kEnterpriseBadgingForNtpFooterDescription[] =
     "includes showing the enterprise logo and the management disclaimer";
 
 #if BUILDFLAG(IS_ANDROID)
-
 const char kEnableClientCertificateProvisioningOnAndroidName[] =
     "Enable client certificate provisioning on Android";
 const char kEnableClientCertificateProvisioningOnAndroidDescription[] =
     "When enabled, client certificate provisioning from the cloud is allowed "
     "for enterprise users on Android.";
-
-const char kEnterpriseSecurityEventReportingOnAndroidName[] =
-    "Allow enterprise security event reporting";
-const char kEnterpriseSecurityEventReportingOnAndroidDescription[] =
-    "Enables enterprise security event reporting when the "
-    "OnSecurityEventEnterpriseConnector policy is turned on ";
 #endif
 
 const char kEnableExperimentalCookieFeaturesName[] =

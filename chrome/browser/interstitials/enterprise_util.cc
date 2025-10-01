@@ -117,14 +117,6 @@ void MaybeTriggerSecurityInterstitialShownEvent(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
@@ -164,14 +156,6 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       GetReportingEventRouter(web_contents);
   if (!reporting_event_router) {

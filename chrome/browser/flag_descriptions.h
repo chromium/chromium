@@ -823,11 +823,6 @@ extern const char kDisallowDocWrittenScriptsUiDescription[];
 extern const char kEnterpriseBadgingForNtpFooterName[];
 extern const char kEnterpriseBadgingForNtpFooterDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kEnterpriseSecurityEventReportingOnAndroidName[];
-extern const char kEnterpriseSecurityEventReportingOnAndroidDescription[];
-#endif  // BUILDFLAG(IS_ANDROID)
-
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 

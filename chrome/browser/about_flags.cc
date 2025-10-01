@@ -11860,13 +11860,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enterprise-security-event-reporting-on-android",
-     flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidName,
-     flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)},
-
     {"enable-client-certificate-provisioning-on-android",
      flag_descriptions::kEnableClientCertificateProvisioningOnAndroidName,
      flag_descriptions::
@@ -11874,7 +11867,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(client_certificates::features::
                             kEnableClientCertificateProvisioningOnAndroid)},
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"service-worker-auto-preload",

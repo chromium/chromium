@@ -6,9 +6,6 @@
 
 namespace enterprise_connectors {
 
-BASE_FEATURE(kEnterpriseSecurityEventReportingOnAndroid,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnterpriseActiveUserDetection, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnterpriseIframeDlpRulesSupport,

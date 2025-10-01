@@ -1199,13 +1199,6 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     bool is_federated,
     const url::SchemeHostPort& federated_origin,
     const std::u16string& login_user_name) const {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   enterprise_connectors::ReportingEventRouter* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile_);
@@ -1220,13 +1213,6 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
 void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
     const std::vector<std::pair<GURL, std::u16string>>& identities) const {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
-    return;
-  }
-#endif  //  BUILDFLAG(IS_ANDROID)
-
   enterprise_connectors::ReportingEventRouter* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile_);

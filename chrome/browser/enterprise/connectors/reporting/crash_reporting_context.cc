@@ -108,13 +108,6 @@ std::vector<crashpad::CrashReportDatabase::Report> GetNewReports(
 }
 
 void ReportCrashes() {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   CrashReportingContext* context = CrashReportingContext::GetInstance();
   if (!context->HasActiveProfile()) {
     return;

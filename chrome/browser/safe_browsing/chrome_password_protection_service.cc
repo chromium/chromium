@@ -1347,12 +1347,6 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
           "PasswordProtection.GmailReportSent",
           base::EndsWith(username_or_email, "@gmail.com"));
     }
-#else   // BUILDFLAG(IS_ANDROID)
-    if (!base::FeatureList::IsEnabled(
-            enterprise_connectors::
-                kEnterpriseSecurityEventReportingOnAndroid)) {
-      return;
-    }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     auto* reporting_event_router = enterprise_connectors::
@@ -1377,11 +1371,6 @@ void ChromePasswordProtectionService::ReportPasswordChanged() {
   if (safe_browsing_event_router) {
     safe_browsing_event_router->OnPolicySpecifiedPasswordChanged(
         GetAccountInfo().email);
-  }
-#else   // BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
-    return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
