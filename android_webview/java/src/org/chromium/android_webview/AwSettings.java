@@ -235,7 +235,7 @@ public class AwSettings {
     private final boolean mAllowGeolocationOnInsecureOrigins;
     private final boolean mDoNotUpdateSelectionOnMutatingSelectionRange;
 
-    private final boolean mPasswordEchoEnabled;
+    private boolean mPasswordEchoEnabled;
 
     // Not accessed by the native side.
     private boolean mBlockSpecialFileUrls;
@@ -1559,6 +1559,15 @@ public class AwSettings {
     private boolean getPasswordEchoEnabledLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mPasswordEchoEnabled;
+    }
+
+    public void setPasswordEchoEnabled(boolean enabled) {
+        synchronized (mAwSettingsLock) {
+            if (mPasswordEchoEnabled != enabled) {
+                mPasswordEchoEnabled = enabled;
+                mEventHandler.updateWebkitPreferencesLocked();
+            }
+        }
     }
 
     /** See {@link android.webkit.WebSettings#setDomStorageEnabled}. */

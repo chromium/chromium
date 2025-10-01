@@ -389,6 +389,7 @@ public class AwContents implements SmartClipProvider {
     private final AwScrollOffsetManager mScrollOffsetManager;
     private OverScrollGlow mOverScrollGlow;
     private final DisplayAndroidObserver mDisplayObserver;
+    private final AwPasswordEchoSettingController mPasswordEchoSettingController;
     // This can be accessed on any thread after construction. See AwContentsIoThreadClient.
     private final AwSettings mSettings;
     private final ScrollAccessibilityHelper mScrollAccessibilityHelper;
@@ -1051,6 +1052,8 @@ public class AwContents implements SmartClipProvider {
                             () -> mBrowserContext.getCookieManager().acceptCookie());
             mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl();
             mDisplayObserver = new AwDisplayAndroidObserver();
+            mPasswordEchoSettingController =
+                    new AwPasswordEchoSettingController(mSettings, mContext);
             mUpdateVisibilityRunnable = () -> updateWebContentsVisibility();
 
             AwSettings.ZoomSupportChangeListener zoomListener =
@@ -4519,6 +4522,8 @@ public class AwContents implements SmartClipProvider {
             mDisplayObserver.onDIPScaleChanged(display.getDipScale());
             display.addObserver(mDisplayObserver);
 
+            mPasswordEchoSettingController.onAttachedToWindow();
+
             mViewEventSink.onAttachedToWindow();
             AwContentsJni.get()
                     .onAttachedToWindow(
@@ -4562,6 +4567,8 @@ public class AwContents implements SmartClipProvider {
                 Log.w(TAG, "onDetachedFromWindow called when already detached. Ignoring");
                 return;
             }
+
+            mPasswordEchoSettingController.onDetachedFromWindow();
 
             mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
             detachWindowCoverageTracker();
