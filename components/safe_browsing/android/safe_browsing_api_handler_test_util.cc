@@ -43,6 +43,13 @@ void WithMockSafeBrowsingApiHandler::SetVerifyAppsResult(
       env_, static_cast<int>(result));
 }
 
+void WithMockSafeBrowsingApiHandler::SetHarmfulAppsResult(
+    HasHarmfulAppsResultStatus status,
+    int result) {
+  Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setHarmfulAppsResult(
+      env_, static_cast<int>(status), result);
+}
+
 void WithMockSafeBrowsingApiHandler::SetSafetyNetIdResultEmpty() {
   Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetIdResultEmpty(
       env_);

@@ -408,6 +408,20 @@ PendingVerifyAppsCallbacksMap& GetPendingVerifyAppsCallbacks() {
   return *pending_callbacks;
 }
 
+using PendingHarmfulAppsCallbacksMap = std::unordered_map<
+    jlong,
+    SafeBrowsingApiHandlerBridge::HasHarmfulAppsResponseCallback>;
+PendingHarmfulAppsCallbacksMap& GetPendingHarmfulAppsCallbacks() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Holds the list of callback objects that we are currently waiting to hear
+  // the result of from GmsCore.
+  // The key is a unique count-up integer.
+  static base::NoDestructor<PendingHarmfulAppsCallbacksMap>
+      pending_harmful_app_callbacks;
+  return *pending_harmful_app_callbacks;
+}
+
 // Holds the list of callback objects that we are currently waiting to hear
 // the result of getSafetyNetId() from GmsCore.
 using PendingGetSafetyNetIdCallbacksList =
@@ -550,6 +564,34 @@ void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OnVerifyAppsEnabledDone, callback_id, j_result));
+}
+
+void OnHasHarmfulAppsDone(jlong callback_id,
+                          jint j_result,
+                          jint j_num_of_apps) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  PendingHarmfulAppsCallbacksMap& pending_callbacks =
+      GetPendingHarmfulAppsCallbacks();
+  bool found = base::Contains(pending_callbacks, callback_id);
+  DCHECK(found) << "Not found in pending_harmful_apps_callbacks: "
+                << callback_id;
+  if (!found) {
+    return;
+  }
+
+  SafeBrowsingApiHandlerBridge::HasHarmfulAppsResponseCallback callback =
+      std::move(pending_callbacks[callback_id]);
+  std::move(callback).Run(static_cast<HasHarmfulAppsResultStatus>(j_result),
+                          static_cast<int>(j_num_of_apps));
+}
+
+void JNI_SafeBrowsingApiBridge_OnHasHarmfulAppsDone(JNIEnv* env,
+                                                    jlong callback_id,
+                                                    jint j_result,
+                                                    jint j_num_of_apps) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OnHasHarmfulAppsDone, callback_id, j_result,
+                                j_num_of_apps));
 }
 
 void OnGetSafetyNetIdDone(const std::string& result) {
@@ -705,6 +747,21 @@ void SafeBrowsingApiHandlerBridge::StartEnableVerifyApps(
   jlong callback_id = next_verify_apps_callback_id_++;
   GetPendingVerifyAppsCallbacks().insert({callback_id, std::move(callback)});
   Java_SafeBrowsingApiBridge_enableVerifyApps(env, callback_id);
+}
+
+void SafeBrowsingApiHandlerBridge::StartHasPotentiallyHarmfulApps(
+    HasHarmfulAppsResponseCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  JNIEnv* env = AttachCurrentThread();
+  if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
+    std::move(callback).Run(HasHarmfulAppsResultStatus::FAILED, 0);
+    return;
+  }
+
+  jlong callback_id = next_harmful_apps_callback_id_++;
+  GetPendingHarmfulAppsCallbacks().insert({callback_id, std::move(callback)});
+  Java_SafeBrowsingApiBridge_hasPotentiallyHarmfulApps(env, callback_id);
 }
 
 void SafeBrowsingApiHandlerBridge::StartGetSafetyNetId(

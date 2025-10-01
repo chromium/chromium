@@ -115,6 +115,15 @@ enum class VerifyAppsEnabledResult {
   kMaxValue = SUCCESS_ALREADY_ENABLED,
 };
 
+// The result status of SafetyNet.listHarmfulApps.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
+enum class HasHarmfulAppsResultStatus {
+  SUCCESS = 0,
+  TIMEOUT = 1,
+  FAILED = 2,
+  kMaxValue = FAILED,
+};
+
 // Translates |threat_type| and |threat_attributes| from the Safe Browsing API
 // into ThreatMetadata.
 ThreatMetadata GetThreatMetadataFromSafeBrowsingApi(

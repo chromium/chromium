@@ -39,6 +39,9 @@ class WithMockSafeBrowsingApiHandler {
   // Set a fake result for VerifyAppsEnabled.
   void SetVerifyAppsResult(VerifyAppsEnabledResult result);
 
+  // Set a fake result for HasPotentiallyHarmfulApps.
+  void SetHarmfulAppsResult(HasHarmfulAppsResultStatus status, int result);
+
   // Make the SafetyNetId show up as empty string.
   void SetSafetyNetIdResultEmpty();
 

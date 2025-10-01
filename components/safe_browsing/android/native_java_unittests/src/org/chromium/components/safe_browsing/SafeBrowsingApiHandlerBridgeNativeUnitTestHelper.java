@@ -31,6 +31,10 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         // #enableVerifyApps(long)}.
         private static int sVerifyAppsResult = VerifyAppsResult.FAILED;
 
+        // The results that will be returned in {@link #hasPotentiallyHarmfulApps(long)}}.
+        private static int sHarmfulAppsResultStatus = HasHarmfulAppsResultStatus.FAILED;
+        private static int sHarmfulAppsResult;
+
         // Maps to store preset values, keyed by uri.
         private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
         private static final Map<String, Boolean> sCsdDownloadAllowlistMap = new HashMap<>();
@@ -78,6 +82,12 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         }
 
         @Override
+        public void hasPotentiallyHarmfulApps(final long callbackId) {
+            mObserver.onHasHarmfulAppsDone(
+                    callbackId, sHarmfulAppsResultStatus, sHarmfulAppsResult);
+        }
+
+        @Override
         public void getSafetyNetId() {
             assert sSafetyNetApiInitializationState
                     == SafetyNetApiHandler.SafetyNetApiState.INITIALIZED_FIRST_PARTY;
@@ -105,6 +115,11 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         public static void setVerifyAppsResult(int result) {
             sVerifyAppsResult = result;
+        }
+
+        public static void setHarmfulAppsResult(int status, int result) {
+            sHarmfulAppsResultStatus = status;
+            sHarmfulAppsResult = result;
         }
 
         /** Mock the initialization state enum for tests. */
@@ -287,6 +302,11 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     @CalledByNative
     static void setVerifyAppsResult(int result) {
         MockSafetyNetApiHandler.setVerifyAppsResult(result);
+    }
+
+    @CalledByNative
+    static void setHarmfulAppsResult(int status, int result) {
+        MockSafetyNetApiHandler.setHarmfulAppsResult(status, result);
     }
 
     @CalledByNative
