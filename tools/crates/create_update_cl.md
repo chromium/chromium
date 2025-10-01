@@ -54,7 +54,9 @@ happens.
 
 Before the auto-generated CLs can be landed, you will need to get an LGTM from
 `//third_party/rust/OWNERS`.  A review checklist can be found at
-`//third_party/rust/OWNERS-review-checklist.md`.
+`//third_party/rust/OWNERS-review-checklist.md`. If you add
+chrome-third-party-rust-reviews@google.com to the "Reviewers" line, an
+OWNER will be automatically assigned.
 
 ## New transitive dependencies
 
