@@ -932,6 +932,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   // This is a save bubble, `old_entity` should not exist.
   EXPECT_FALSE(old_entity.has_value());
+  // Passport entities should always be local.
+  EXPECT_EQ(new_entity->record_type(), EntityInstance::RecordType::kLocal);
 
   // Accept the bubble.
   std::move(save_callback)
@@ -1056,6 +1058,28 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
       u"1234321");
 }
 
+// If the new entity to be saved is a walletable entity type, it should lead to
+// an entity that is stored in the server.
+TEST_F(AutofillAiManagerImportFormTest,
+       WallatableEntity_Save_RecordType_Server) {
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, VEHICLE_VIN});
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"1234321");
+
+  std::optional<EntityInstance> new_entity;
+  std::optional<EntityInstance> old_entity;
+  AutofillClient::EntitySaveOrUpdatePromptResultCallback save_callback;
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
+      .WillOnce(DoAll(SaveArg<0>(&new_entity), SaveArg<1>(&old_entity),
+                      MoveArg<2>(&save_callback)));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  // This is a save bubble, `old_entity` should not exist.
+  EXPECT_FALSE(old_entity.has_value());
+  EXPECT_EQ(new_entity->record_type(),
+            EntityInstance::RecordType::kServerWallet);
+}
+
 // This test ensures that no save prompt is shown for an entity type
 // that has no import constraints.
 TEST_F(AutofillAiManagerImportFormTest,
@@ -1123,6 +1147,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_NewInfo) {
   // An update bubble should be shown.
   ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   ASSERT_TRUE(old_entity.has_value());
+  // Passport entities are stored locally.
+  ASSERT_EQ(new_entity->record_type(), EntityInstance::RecordType::kLocal);
   // Accept the bubble.
   std::move(save_callback)
       .Run(AutofillClient::EntitySaveOrUpdatePromptResult(
@@ -1141,6 +1167,43 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_NewInfo) {
                 saved_entity, AttributeTypeName::kPassportExpirationDate,
                 /*app_locale=*/""),
             u"2020-02-01");
+}
+
+// If the entity to be updated is a walletable entity type, it should lead to an
+// entity that is stored in the server, even if the original entity is stored
+// locally.
+TEST_F(AutofillAiManagerImportFormTest,
+       WallatableEntity_Update_RecordType_Server) {
+  using enum AttributeTypeName;
+  // The submitted form will have license plate info.
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({VEHICLE_VIN, VEHICLE_LICENSE_PLATE});
+
+  // The current entity however does not.
+  EntityInstance existing_entity_without_license_plate =
+      test::GetVehicleEntityInstance({.plate = nullptr});
+  AddOrUpdateEntityInstance(existing_entity_without_license_plate);
+
+  // Set the filled values to be the same as the ones already stored in the
+  // existing entity, and also fill the expiry date.
+  form->field(0)->set_value(GetValueFromEntity(
+      existing_entity_without_license_plate, AttributeType(kVehicleVin)));
+  form->field(1)->set_value(u"12345");
+
+  std::optional<EntityInstance> new_entity;
+  std::optional<EntityInstance> old_entity;
+  AutofillClient::EntitySaveOrUpdatePromptResultCallback save_callback;
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
+      .WillOnce(DoAll(SaveArg<0>(&new_entity), SaveArg<1>(&old_entity),
+                      MoveArg<2>(&save_callback)));
+
+  // An update bubble should be shown.
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(old_entity.has_value());
+  ASSERT_EQ(existing_entity_without_license_plate, *old_entity);
+  ASSERT_EQ(old_entity->record_type(), EntityInstance::RecordType::kLocal);
+  EXPECT_EQ(new_entity->record_type(),
+            EntityInstance::RecordType::kServerWallet);
 }
 
 TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_UpdateInfo) {

@@ -408,6 +408,10 @@ void AutofillAiManager::HandleUpdatePromptResult(
 
   ClearStrikesForUpdate(entity_uuid);
   entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
+
+  // TODO(crbug.com/441742849): If the entity prior to updating is local and the
+  // resulting entity is a server one, we should delete the local entity and
+  // store the it in the server.
 }
 
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
@@ -578,9 +582,7 @@ AutofillAiManager::GetEntitySaveAndUpdatePromptCandidates(
   base::span<const EntityInstance> saved_entities =
       entity_manager->GetEntityInstances();
   std::vector<EntityInstance> observed_entities =
-      GetPossibleEntitiesFromSubmittedForm(
-          form.fields(), client_->GetAppLocale(),
-          client_->GetVariationConfigCountryCode());
+      GetPossibleEntitiesFromSubmittedForm(form.fields(), *client_);
   std::ranges::sort(observed_entities, EntityInstance::ImportOrder);
 
   std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
@@ -646,7 +648,7 @@ AutofillAiManager::GetEntitySaveAndUpdatePromptCandidates(
           EntityInstance(saved_entity.type(), std::move(new_attributes),
                          saved_entity.guid(), saved_entity.nickname(),
                          base::Time::Now(), saved_entity.use_count(),
-                         base::Time::Now(), saved_entity.record_type()),
+                         base::Time::Now(), observed_entity.record_type()),
           saved_entity);
     }
   }
@@ -673,9 +675,7 @@ AutofillAiManager::GetEntityUpstreamCandidate(const FormStructure& form) {
   }
 
   std::vector<EntityInstance> observed_entities =
-      GetPossibleEntitiesFromSubmittedForm(
-          form.fields(), client_->GetAppLocale(),
-          client_->GetVariationConfigCountryCode());
+      GetPossibleEntitiesFromSubmittedForm(form.fields(), *client_);
   if (observed_entities.empty()) {
     return {};
   }

@@ -17,6 +17,7 @@
 
 namespace autofill {
 
+class AutofillClient;
 class AutofillField;
 class EntityInstance;
 
@@ -26,8 +27,7 @@ bool AttributesMeetImportConstraints(EntityType entity_type,
 // Returns import candidates.
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     base::span<const std::unique_ptr<AutofillField>> fields,
-    const std::string& app_locale,
-    const GeoIpCountryCode& country_code);
+    const AutofillClient& client);
 
 // Returns the localized date value of `attribute`, if its FieldType is a date.
 // Otherwise returns std::nullopt.

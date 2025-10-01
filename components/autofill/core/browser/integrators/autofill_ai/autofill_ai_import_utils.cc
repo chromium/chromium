@@ -24,6 +24,8 @@
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -97,8 +99,10 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field,
 
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     base::span<const std::unique_ptr<AutofillField>> fields,
-    const std::string& app_locale,
-    const GeoIpCountryCode& country_code) {
+    const AutofillClient& client) {
+  const GeoIpCountryCode& country_code = client.GetVariationConfigCountryCode();
+  const std::string& app_locale = client.GetAppLocale();
+
   std::map<Section,
            std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
       section_to_entity_types_attributes;
@@ -186,15 +190,23 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       if (attributes.empty()) {
         continue;
       }
-      // TODO(crbug.com/436174974): Support saving server entities.
+      // Some entities can be stored in Google Wallet servers. This depends
+      // on whether the user is eligible (pref state and feature enabled)
+      // and whether the entity type is "walletable". If the entity cannot be
+      // stored on the Wallet servers, it is stored locally.
+      const EntityInstance::RecordType record_type =
+          MayPerformAutofillAiAction(client, AutofillAiAction::kImportToWallet,
+                                     entity_name)
+              ? EntityInstance::RecordType::kServerWallet
+              : EntityInstance::RecordType::kLocal;
       EntityInstance entity = EntityInstance(
-          EntityType(entity_name),
+          entity_name,
           base::ToVector(
               attributes,
               &std::pair<const AttributeType, AttributeInstance>::second),
           EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
           /*nickname=*/std::string(""), base::Time::Now(), /*use_count=*/0,
-          /*use_date=*/base::Time::Now(), EntityInstance::RecordType::kLocal);
+          /*use_date=*/base::Time::Now(), record_type);
       if (!EntitySatisfiesImportConstraints(entity)) {
         continue;
       }
