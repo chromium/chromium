@@ -5,6 +5,7 @@
 
 import json
 import logging
+import os
 import pathlib
 import subprocess
 import sys
@@ -17,9 +18,9 @@ from typing import Any
 DEFAULT_TIMEOUT_SECONDS = 600
 DEFAULT_EXTENSIONS = [
     'build-information',
-    'depot_tools',
+    'depot-tools',
     'landmines',
-    'test_landmines',
+    'test-landmines',
 ]
 
 
@@ -38,7 +39,17 @@ def _stream_reader(stream, output_list: list[str], width):
         stream.close()
 
 
-def _install_extensions(extensions: Collection[str] | None = None, ) -> None:
+def _get_env_with_overrides(
+        home: pathlib.Path | None = None) -> dict[str, str]:
+    """Returns a copy of the environment with the given overrides."""
+    env = os.environ.copy()
+    if home:
+        env['HOME'] = str(home)
+    return env
+
+
+def _install_extensions(extensions: Collection[str] | None = None,
+                        home_dir: pathlib.Path | None = None) -> None:
     # The installation script should identify the working tree as the "repo
     # root", so use the copy in the working tree with the CWD set
     # appropriately for subprocesses like `git`.
@@ -53,9 +64,19 @@ def _install_extensions(extensions: Collection[str] | None = None, ) -> None:
         pathlib.Path('agents', 'testing', 'extensions'),
         'add',
         '--copy',
+        '--skip-prompt',
         *extensions,
     ]
-    subprocess.check_call(command)
+    result = subprocess.run(command,
+                            env=_get_env_with_overrides(home=home_dir),
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            text=True,
+                            check=False)
+    logging.debug('Extension install output:\n%s', result.stdout)
+    result.check_returncode()
+    logging.debug('Installed extensions:\n%s',
+                  _get_installed_extensions(home_dir))
 
 
 def _load_templates(templates: list[str]) -> str:
@@ -89,6 +110,19 @@ def _apply_changes(changes: list[dict[str, str]]) -> None:
         else:
             raise ValueError(
                 'Invalid change object: key must be "apply" or "stage".')
+
+
+def _get_installed_extensions(home_dir: pathlib.Path | None) -> str:
+    """Returns a string listing the installed extensions."""
+    return subprocess.check_output(
+        [
+            sys.executable,
+            pathlib.Path('agents', 'extensions', 'install.py'),
+            'list',
+        ],
+        env=_get_env_with_overrides(home_dir),
+        text=True,
+    )
 
 
 def call_api(prompt: str, options: dict[str, Any],
@@ -127,8 +161,11 @@ def call_api(prompt: str, options: dict[str, Any],
     logging.debug('options: %s', json.dumps(options, indent=2))
     logging.debug('context: %s', json.dumps(context, indent=2))
 
+    home_dir_str = provider_vars.get('home_dir')
+    home_dir = pathlib.Path(home_dir_str) if home_dir_str else None
+
     extensions = provider_config.get('extensions', DEFAULT_EXTENSIONS)
-    _install_extensions(extensions)
+    _install_extensions(extensions, home_dir=home_dir)
 
     templates = provider_config.get('templates', [])
     template_prompt = _load_templates(templates)
@@ -150,6 +187,7 @@ def call_api(prompt: str, options: dict[str, Any],
             stderr=subprocess.STDOUT,
             text=True,
             universal_newlines=True,
+            env=_get_env_with_overrides(home_dir),
         )
         if process.stdin:
             process.stdin.write(f'{system_prompt}\n\n{prompt}')

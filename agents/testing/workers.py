@@ -12,6 +12,7 @@ import pathlib
 import queue
 import shutil
 import subprocess
+import tempfile
 import threading
 import time
 
@@ -252,13 +253,16 @@ class WorkerThread(threading.Thread):
         Args:
             test_path: The path to the Promptfoo test config file to run.
         """
-        with WorkDir(
-                f'workdir-{self._worker_index}',
-                checkout_helpers.get_gclient_root(),
-                self._worker_options.clean,
-                self._worker_options.verbose,
-                self._worker_options.force,
-        ) as workdir:
+        with (
+                WorkDir(
+                    f'workdir-{self._worker_index}',
+                    checkout_helpers.get_gclient_root(),
+                    self._worker_options.clean,
+                    self._worker_options.verbose,
+                    self._worker_options.force,
+                ) as workdir,
+                tempfile.TemporaryDirectory() as home_dir,
+        ):
             command = [
                 'eval',
                 '-j',
@@ -271,6 +275,8 @@ class WorkerThread(threading.Thread):
                 str(test_path),
                 '--var',
                 f'console_width={self._console_width}',
+                '--var',
+                f'home_dir={home_dir}',
             ]
             if self._worker_options.sandbox:
                 command.extend(['--var', 'sandbox=True'])

@@ -19,9 +19,10 @@ class GeminiProviderUnittest(unittest.TestCase):
         self.mock_popen = popen_patcher.start()
         self.addCleanup(popen_patcher.stop)
 
-        check_call_patcher = unittest.mock.patch('subprocess.check_call')
-        self.mock_check_call = check_call_patcher.start()
-        self.addCleanup(check_call_patcher.stop)
+        run_patcher = unittest.mock.patch('subprocess.run')
+        self.mock_run = run_patcher.start()
+        self.mock_run.return_value = unittest.mock.MagicMock(returncode=0)
+        self.addCleanup(run_patcher.stop)
 
         mock_process = unittest.mock.MagicMock()
         mock_process.stdin = unittest.mock.MagicMock()
@@ -52,6 +53,26 @@ class GeminiProviderUnittest(unittest.TestCase):
         self.mock_popen.assert_called_once()
         popen_args = self.mock_popen.call_args[0][0]
         self.assertEqual(popen_args, [str(gemini_cli_bin), '-y'])
+
+    def test_call_api_with_home_dir(self):
+        """Tests that HOME is set in the environment when home_dir is set."""
+        options = {'config': {}}
+        home_dir = str(pathlib.Path('/', 'test', 'home'))
+        context = {'vars': {'home_dir': home_dir}}
+
+        gemini_provider.call_api('test prompt', options, context)
+
+        # Check the environment for the main Popen call
+        self.mock_popen.assert_called_once()
+        popen_kwargs = self.mock_popen.call_args.kwargs
+        self.assertIn('env', popen_kwargs)
+        self.assertEqual(popen_kwargs['env']['HOME'], home_dir)
+
+        # Check the environment for the _install_extensions run call
+        self.mock_run.assert_called()
+        run_kwargs = self.mock_run.call_args.kwargs
+        self.assertIn('env', run_kwargs)
+        self.assertEqual(run_kwargs['env']['HOME'], home_dir)
 
 
 if __name__ == '__main__':
