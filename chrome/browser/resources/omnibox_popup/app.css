@@ -24,7 +24,7 @@
   --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
   --color-searchbox-results-background: var(--color-omnibox-results-background);
   --color-searchbox-results-button-hover: var(--color-omnibox-results-icon-hovered);
-  --color-searchbox-results-dim-selected: var(--color-omnibox-result-text-dimmed-selected);
+  --color-searchbox-results-dim-selected: var(--color-omnibox-results-text-dimmed-selected);
   --color-searchbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-foreground-dimmed: var(--color-omnibox-results-text-dimmed);
   --color-searchbox-results-foreground: var(--color-omnibox-text);
