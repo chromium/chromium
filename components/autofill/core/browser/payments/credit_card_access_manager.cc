@@ -1783,7 +1783,7 @@ void CreditCardAccessManager::OnCreditCardFetched(
     bool card_was_fetched_from_cache) {
   auto* form_data_importer = autofill_client().GetFormDataImporter();
   CHECK(form_data_importer);
-  auto context = form_data_importer->fetched_payments_data_context();
+  auto& context = form_data_importer->fetched_payments_data_context();
   context.fetched_card_instrument_id = card.instrument_id();
   context.card_was_fetched_from_cache = card_was_fetched_from_cache;
   std::move(on_credit_card_fetched_callback_).Run(card);
