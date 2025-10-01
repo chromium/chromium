@@ -1459,38 +1459,32 @@ public class ExternalNavigationHandler {
             final ExternalNavigationParams params,
             final Intent intent,
             final GURL fallbackUrl) {
-        if (shouldLaunch) {
-            try {
-                startActivity(intent, params);
-                if (params.getRequiredAsyncActionTakenCallback() != null) {
-                    params.getRequiredAsyncActionTakenCallback()
-                            .onResult(
-                                    AsyncActionTakenParams.forExternalIntentLaunched(
-                                            mDelegate.canCloseTabOnIncognitoIntentLaunch(),
-                                            params));
-                }
-                return;
-            } catch (ActivityNotFoundException e) {
-                // The activity that we thought was going to handle the intent
-                // no longer exists, so catch the exception and fall through to handling the
-                // fallback URL.
-            }
-        }
-
-        OverrideUrlLoadingResult result = handleFallbackUrl(params, fallbackUrl, false);
-        if (params.getRequiredAsyncActionTakenCallback() != null) {
-            if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
-                // There was no fallback URL and we can't handle the URL the intent was targeting.
-                // In this case we'll return to the last committed URL.
-                params.getRequiredAsyncActionTakenCallback()
-                        .onResult(AsyncActionTakenParams.forNoAction());
-            } else {
-                assert result.getResultType()
-                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB;
+        if (shouldLaunch
+                && startActivity(intent, params).getResultType()
+                        != OverrideUrlLoadingResultType.NO_OVERRIDE) {
+            // The external intent was launched successfully.
+            if (params.getRequiredAsyncActionTakenCallback() != null) {
                 params.getRequiredAsyncActionTakenCallback()
                         .onResult(
-                                AsyncActionTakenParams.forNavigate(result.getTargetUrl(), params));
+                                AsyncActionTakenParams.forExternalIntentLaunched(
+                                        mDelegate.canCloseTabOnIncognitoIntentLaunch(), params));
             }
+            return;
+        }
+
+        // Handle fallback logic if the user declined or launching the intent failed.
+        if (params.getRequiredAsyncActionTakenCallback() == null) return;
+
+        OverrideUrlLoadingResult result = handleFallbackUrl(params, fallbackUrl, false);
+        if (result.getResultType() == OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB) {
+            params.getRequiredAsyncActionTakenCallback()
+                    .onResult(AsyncActionTakenParams.forNavigate(result.getTargetUrl(), params));
+        } else {
+            // There was no fallback URL and we can't handle the URL the intent was targeting.
+            // In this case we'll return to the last committed URL.
+            assert result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE;
+            params.getRequiredAsyncActionTakenCallback()
+                    .onResult(AsyncActionTakenParams.forNoAction());
         }
     }
 
