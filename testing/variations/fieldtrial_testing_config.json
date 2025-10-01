@@ -24078,7 +24078,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PreventDuplicateImageDecodes",
-                        "SendExplicitDecodeRequestsImmediately",
                         "SpeculativeImageDecodes"
                     ]
                 }
