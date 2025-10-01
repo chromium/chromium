@@ -132,13 +132,17 @@ TEST(ManagedPrinterConfigFromDict, DictWithUsbDeviceId) {
   auto printer_dict = Dict().Set(
       "usb_device_id", Dict()
           .Set("vendor_id", 123)
-          .Set("product_id", 456));
+          .Set("product_id", 456)
+          .Set("usb_protocol", 1));
 
   auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
 
   ManagedPrinterConfiguration expected;
   expected.mutable_usb_device_id()->set_vendor_id(123);
   expected.mutable_usb_device_id()->set_product_id(456);
+  expected.mutable_usb_device_id()->set_usb_protocol(
+      ManagedPrinterConfiguration_UsbProtocol::
+          ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_LEGACY_USB);
   ASSERT_TRUE(managed_printer.has_value());
   EXPECT_THAT(*managed_printer, EqualsProto(expected));
 }
@@ -170,6 +174,29 @@ TEST(ManagedPrinterConfigFromDict, DictWithBothUriAndUsbDeviceId) {
       .Set("usb_device_id", Dict()
           .Set("vendor_id", 123)
           .Set("product_id", 456));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ASSERT_FALSE(managed_printer.has_value());
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithInvalidUsbDeviceId_MissingProtocol) {
+  auto printer_dict = Dict()
+      .Set("usb_device_id", Dict()
+          .Set("vendor_id", 123)
+          .Set("product_id", 456));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ASSERT_FALSE(managed_printer.has_value());
+}
+
+TEST(ManagedPrinterConfigFromDict, DictWithInvalidUsbDeviceId_InvalidProtocol) {
+  auto printer_dict = Dict()
+      .Set("usb_device_id", Dict()
+          .Set("vendor_id", 123)
+          .Set("product_id", 456)
+          .Set("usb_protocol", 0));
 
   auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
 

@@ -36,6 +36,7 @@ const char kAutoconf[] = "autoconf";
 // UsbDeviceId field names.
 const char kVendorId[] = "vendor_id";
 const char kProductId[] = "product_id";
+const char kUsbProtocol[] = "usb_protocol";
 
 std::optional<ManagedPrinterConfiguration::PpdResource> PpdResourceFromDict(
     const base::Value::Dict& ppd_resource) {
@@ -111,14 +112,22 @@ std::optional<Printer::PpdReference> ManagedPpdResourceToPpdReference(
   return ppd_reference;
 }
 
-std::optional<ManagedPrinterConfiguration::UsbDeviceId> UsbDeviceIdFromDict(
-    const base::Value::Dict& dict) {
+std::optional<ManagedPrinterConfiguration::UsbDeviceId>
+UsbDeviceIdProtoFromDict(const base::Value::Dict& dict) {
   std::optional<int> vendor_id = dict.FindInt(kVendorId);
   std::optional<int> product_id = dict.FindInt(kProductId);
+  std::optional<int> usb_protocol = dict.FindInt(kUsbProtocol);
 
   // Verify values exist and are integers.
   if (!vendor_id.has_value() || !product_id.has_value()) {
     LOG(WARNING) << "vendor_id or product_id missing or not an int: "
+                 << dict.DebugString();
+    return std::nullopt;
+  }
+
+  // Verify usb_protocol exists and is an integer.
+  if (!usb_protocol.has_value()) {
+    LOG(WARNING) << "usb_protocol missing or not an int: "
                  << dict.DebugString();
     return std::nullopt;
   }
@@ -133,9 +142,21 @@ std::optional<ManagedPrinterConfiguration::UsbDeviceId> UsbDeviceIdFromDict(
     return std::nullopt;
   }
 
+  if (!ManagedPrinterConfiguration_UsbProtocol_IsValid(usb_protocol.value()) ||
+      usb_protocol.value() ==
+          ManagedPrinterConfiguration_UsbProtocol::
+              ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_UNSPECIFIED) {
+    LOG(WARNING) << "UsbProtocol value invalid: " << usb_protocol.value();
+    return std::nullopt;
+  }
+
   auto usb_device_id = ManagedPrinterConfiguration::UsbDeviceId();
   usb_device_id.set_vendor_id(vendor_id.value());
   usb_device_id.set_product_id(product_id.value());
+  usb_device_id.set_usb_protocol(
+      static_cast<ManagedPrinterConfiguration_UsbProtocol>(
+          usb_protocol.value()));
+
   return usb_device_id;
 }
 
@@ -170,7 +191,7 @@ std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
     result.set_uri(*uri);
   }
   if (usb_device_id_dict) {
-    auto usb_device_id = UsbDeviceIdFromDict(*usb_device_id_dict);
+    auto usb_device_id = UsbDeviceIdProtoFromDict(*usb_device_id_dict);
     if (!usb_device_id.has_value()) {
       LOG(WARNING) << base::StringPrintf(
           "Could not convert a dictionary to UsbDeviceId: "
