@@ -606,7 +606,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                 InnerTextBridge.getInnerText(
                                         webContents.getMainFrame(),
                                         result -> {
-                                            if (result.isEmpty()) {
+                                            if (result == null) {
                                                 PageContentProviderMetrics.recordPageProviderEvent(
                                                         requestType,
                                                         Format.TEXT,
@@ -616,8 +616,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                                         new Exception("Error during extraction"));
                                             } else {
                                                 pageContentFuture.complete(
-                                                        result.get()
-                                                                .getBytes(StandardCharsets.UTF_8));
+                                                        result.getBytes(StandardCharsets.UTF_8));
                                             }
                                         });
                             }

@@ -59,7 +59,6 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -212,11 +211,11 @@ public class PageContentProviderImplUnitTest {
     private void setInnerTextExtractionResult(String result, int resultDelayMs) {
         doAnswer(
                         invocationOnMock -> {
-                            Callback<Optional<String>> callback =
-                                    (Callback<Optional<String>>)
+                            Callback<String> callback =
+                                    (Callback<String>)
                                             invocationOnMock.getArgument(1, Callback.class);
                             mFakeTimeTestRule.advanceMillis(resultDelayMs);
-                            callback.onResult(Optional.of(result));
+                            callback.onResult(result);
                             return null;
                         })
                 .when(mInnerTextNatives)
@@ -240,11 +239,11 @@ public class PageContentProviderImplUnitTest {
     private void setInnerTextExtractionError(int resultDelayMs) {
         doAnswer(
                         invocationOnMock -> {
-                            Callback<Optional<String>> callback =
-                                    (Callback<Optional<String>>)
+                            Callback<String> callback =
+                                    (Callback<String>)
                                             invocationOnMock.getArgument(1, Callback.class);
                             mFakeTimeTestRule.advanceMillis(resultDelayMs);
-                            callback.onResult(Optional.empty());
+                            callback.onResult(null);
                             return null;
                         })
                 .when(mInnerTextNatives)

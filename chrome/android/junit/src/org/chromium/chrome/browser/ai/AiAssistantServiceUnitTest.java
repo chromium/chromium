@@ -82,7 +82,6 @@ import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 /** Unit tests for {@link AiAssistantService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -568,10 +567,10 @@ public class AiAssistantServiceUnitTest {
     private void setInnerTextExtractionResult(String result) {
         doAnswer(
                         invocationOnMock -> {
-                            Callback<Optional<String>> callback =
-                                    (Callback<Optional<String>>)
+                            Callback<String> callback =
+                                    (Callback<String>)
                                             invocationOnMock.getArgument(1, Callback.class);
-                            callback.onResult(Optional.of(result));
+                            callback.onResult(result);
                             return null;
                         })
                 .when(mInnerTextNatives)
