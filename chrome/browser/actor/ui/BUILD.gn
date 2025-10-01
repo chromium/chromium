@@ -78,8 +78,6 @@ source_set("states") {
     "states/handoff_button_state.h",
   ]
 
-  sources = [ "states/actor_overlay_state.cc" ]
-
   public_deps = [ "//chrome/browser/actor:types" ]
 }
 
