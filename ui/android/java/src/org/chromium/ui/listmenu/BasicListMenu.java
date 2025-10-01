@@ -38,6 +38,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * An implementation of a list menu. Uses app_menu_layout as the default layout of menu and
@@ -120,6 +121,8 @@ public class BasicListMenu implements ListMenu {
     private final ModelList mContentModelList;
     private final ModelListAdapter mContentAdapter;
 
+    private final ContentListOnScrollChangeListener mScrollChangeListener;
+
     private final List<Runnable> mClickRunnables = new ArrayList<>();
 
     /**
@@ -182,7 +185,9 @@ public class BasicListMenu implements ListMenu {
         mHeaderModelList.addObserver(observer);
         mContentModelList.addObserver(observer);
 
-        mContentListView.setOnScrollChangeListener(new ContentListOnScrollChangeListener(hairline));
+        mScrollChangeListener =
+                new ContentListOnScrollChangeListener(hairline, () -> !mHeaderModelList.isEmpty());
+        mContentListView.setOnScrollChangeListener(mScrollChangeListener);
     }
 
     @Override
@@ -267,19 +272,38 @@ public class BasicListMenu implements ListMenu {
     private static class ContentListOnScrollChangeListener implements View.OnScrollChangeListener {
 
         private final View mDivider;
+        private final Supplier<Boolean> mShowHairlinePrecondition;
         private int mVisibility = INVISIBLE; // "Cache" so we don't set visibility per scroll event
 
-        ContentListOnScrollChangeListener(View divider) {
+        /**
+         * Creates a {@link ContentListOnScrollChangeListener}.
+         *
+         * @param divider The divider whose appearance to control.
+         * @param showHairlinePrecondition A {@link Supplier}. This is checked before showing the
+         *     hairline. If false, hairline should not be shown.
+         */
+        ContentListOnScrollChangeListener(
+                View divider, Supplier<Boolean> showHairlinePrecondition) {
             mDivider = divider;
+            mShowHairlinePrecondition = showHairlinePrecondition;
         }
 
         @Override
         public void onScrollChange(
                 View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-            int desiredVisibility = scrollY == 0 ? INVISIBLE : VISIBLE;
-            if (desiredVisibility != mVisibility) {
-                mVisibility = desiredVisibility;
-                mDivider.setVisibility(desiredVisibility);
+            if (view instanceof ListView listView) {
+                @Nullable View firstChild = listView.getChildAt(0);
+                if (firstChild == null) return;
+                // Estimation of list scroll Y, assuming that children are the same height.
+                int listScrollY =
+                        -firstChild.getTop()
+                                + (listView.getFirstVisiblePosition() * firstChild.getHeight());
+                int desiredVisibility =
+                        (mShowHairlinePrecondition.get() && listScrollY > 0) ? VISIBLE : INVISIBLE;
+                if (desiredVisibility != mVisibility) {
+                    mVisibility = desiredVisibility;
+                    mDivider.setVisibility(desiredVisibility);
+                }
             }
         }
     }
@@ -288,5 +312,9 @@ public class BasicListMenu implements ListMenu {
         mContentAdapter
                 .getView(i, new View(mListMenuLayout.getContext()), (ViewGroup) mListMenuLayout)
                 .performClick();
+    }
+
+    public View.OnScrollChangeListener getScrollChangeListenerForTesting() {
+        return mScrollChangeListener;
     }
 }

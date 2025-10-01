@@ -7,10 +7,15 @@ package org.chromium.components.browser_ui.widget.listmenu;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.LinearLayout.LayoutParams;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ListView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
@@ -37,13 +42,18 @@ import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuFlyoutController;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,46 +89,35 @@ public class BrowserUiListMenuRenderTest {
 
     private View mView;
 
-    private void setup(boolean nightMode, boolean incognito) {
+    private void setup(ModelList data, boolean nightMode, boolean incognito) {
         Activity activity = mActivityTestRule.launchActivity(null);
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightMode);
         mRenderTestRule.setNightModeEnabled(nightMode);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ModelList data = new ModelList();
-                    data.add(
-                            new ListItemBuilder()
-                                    .withTitleRes(R.string.test_primary_1)
-                                    .withStartIconRes(R.drawable.ic_check_googblue_24dp)
-                                    .build());
-                    data.add(
-                            new ListItemBuilder()
-                                    .withTitleRes(R.string.test_primary_1)
-                                    .withStartIconRes(R.drawable.ic_check_googblue_24dp)
-                                    .withEnabled(false)
-                                    .build());
-                    data.add(
-                            new ListItemBuilder()
-                                    .withTitleRes(R.string.test_primary_1)
-                                    .withEndIconRes(R.drawable.ic_check_googblue_24dp)
-                                    .build());
-                    data.add(
-                            new ListItemBuilder()
-                                    .withTitleRes(R.string.test_primary_1)
-                                    .withEndIconRes(R.drawable.ic_check_googblue_24dp)
-                                    .withEnabled(false)
-                                    .build());
-                    data.add(buildSimpleMenuItem(R.string.test_primary_1));
-                    data.add(
-                            new ListItemBuilder()
-                                    .withTitleRes(R.string.test_primary_1)
-                                    .withEnabled(false)
-                                    .build());
-                    data.add(BasicListMenu.buildMenuDivider(incognito));
-
                     ListMenu.Delegate delegate = item -> {};
                     BasicListMenu listMenu =
                             BrowserUiListMenuUtils.getBasicListMenu(activity, data, delegate);
+                    listMenu.setupCallbacksRecursively(
+                            () -> {},
+                            true,
+                            new ListMenuFlyoutController<BasicListMenu>(
+                                    new ListMenuFlyoutController.FlyoutHandler<BasicListMenu>() {
+                                        @Override
+                                        public List<
+                                                        ListMenuFlyoutController.FlyoutPopupEntry<
+                                                                BasicListMenu>>
+                                                getFlyoutWindows() {
+                                            return Collections.emptyList();
+                                        }
+
+                                        @Override
+                                        public void addFlyoutWindow(
+                                                ListItem item, View view, int levelOfHoveredItem) {}
+
+                                        @Override
+                                        public void removeFlyoutWindows(int removeFromIndex) {}
+                                    }));
                     mView = listMenu.getContentView();
                     mView.setBackground(
                             AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
@@ -138,7 +137,10 @@ public class BrowserUiListMenuRenderTest {
     @Feature({"RenderTest"})
     @UseMethodParameter(NightModeParams.class)
     public void testRender_BasicListMenu(boolean nightMode) throws IOException {
-        setup(nightMode, /* incognito= */ false);
+        setup(
+                getModelListWithoutSubmenu(/* incognito= */ false),
+                nightMode,
+                /* incognito= */ false);
         mRenderTestRule.render(mView, "basic_list_menu");
     }
 
@@ -147,7 +149,89 @@ public class BrowserUiListMenuRenderTest {
     @UseMethodParameter(NightModeOnlyParameterProvider.class)
     @Feature({"RenderTest"})
     public void testRender_BasicListMenu_Incognito(boolean nightMode) throws IOException {
-        setup(nightMode, /* incognito= */ true);
+        setup(getModelListWithoutSubmenu(/* incognito= */ true), nightMode, /* incognito= */ true);
         mRenderTestRule.render(mView, "basic_list_menu_incognito");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @UseMethodParameter(NightModeParams.class)
+    public void testRender_BasicListMenu_SubmenuScroll(boolean nightMode) throws IOException {
+        setup(getModelListWithSubmenu(/* incognito= */ false), nightMode, /* incognito= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Make the view small so the content will become scrollable.
+                    mActivityTestRule
+                            .getActivity()
+                            .setContentView(mView, new LayoutParams(500, 500));
+                    ListView contentView = mView.findViewById(R.id.menu_list);
+                    ListItem item = (ListItem) contentView.getItemAtPosition(0);
+                    item.model.get(CLICK_LISTENER).onClick(mView);
+                    contentView.scrollListBy(5);
+                });
+        mRenderTestRule.render(mView, "basic_list_menu_submenu_scroll");
+    }
+
+    private static List<ListItem> getListItems(boolean incognito) {
+        List<ListItem> listItems = new ArrayList<>();
+        listItems.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.test_primary_1)
+                        .withStartIconRes(R.drawable.ic_check_googblue_24dp)
+                        .build());
+        listItems.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.test_primary_1)
+                        .withStartIconRes(R.drawable.ic_check_googblue_24dp)
+                        .withEnabled(false)
+                        .build());
+        listItems.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.test_primary_1)
+                        .withEndIconRes(R.drawable.ic_check_googblue_24dp)
+                        .build());
+        listItems.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.test_primary_1)
+                        .withEndIconRes(R.drawable.ic_check_googblue_24dp)
+                        .withEnabled(false)
+                        .build());
+        listItems.add(buildSimpleMenuItem(R.string.test_primary_1));
+        listItems.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.test_primary_1)
+                        .withEnabled(false)
+                        .build());
+        listItems.add(BasicListMenu.buildMenuDivider(incognito));
+        return listItems;
+    }
+
+    private static ModelList getModelListWithoutSubmenu(boolean incognito) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModelList data = new ModelList();
+                    for (ListItem listItem : getListItems(incognito)) {
+                        data.add(listItem);
+                    }
+                    return data;
+                });
+    }
+
+    private static ModelList getModelListWithSubmenu(boolean incognito) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModelList data = new ModelList();
+                    List<ListItem> listItems = getListItems(incognito);
+                    data.add(
+                            new ListItem(
+                                    MENU_ITEM_WITH_SUBMENU,
+                                    new PropertyModel.Builder(
+                                                    ListMenuSubmenuItemProperties.ALL_KEYS)
+                                            .with(TITLE, "test_label")
+                                            .with(SUBMENU_ITEMS, listItems)
+                                            .build()));
+                    return data;
+                });
     }
 }
