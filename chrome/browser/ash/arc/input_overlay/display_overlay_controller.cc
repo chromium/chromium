@@ -250,7 +250,6 @@ void DisplayOverlayController::AddNewAction(ActionType action_type,
 }
 
 void DisplayOverlayController::RemoveAction(Action* action) {
-  // TODO(b/270973654): Show delete confirmation dialog here.
   touch_injector_->RemoveAction(action);
 }
 
