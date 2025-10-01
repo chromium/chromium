@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -144,12 +145,18 @@ class TabGridViewBinder {
             PropertyModel model,
             ViewLookupCachingFrameLayout view,
             @Nullable PropertyKey propertyKey) {
-        if (TabProperties.TITLE == propertyKey) {
+        if (TabProperties.TITLE == propertyKey || TabProperties.IS_PINNED == propertyKey) {
             String title = model.get(TabProperties.TITLE);
             TextView tabTitleView = view.fastFindViewById(R.id.tab_title);
             tabTitleView.setText(title);
+            final @StringRes int contentDescriptionStringId;
+            if (model.containsKey(TabProperties.IS_PINNED) && model.get(TabProperties.IS_PINNED)) {
+                contentDescriptionStringId = R.string.accessibility_tabstrip_tab_pinned;
+            } else {
+                contentDescriptionStringId = R.string.accessibility_tabstrip_tab;
+            }
             tabTitleView.setContentDescription(
-                    view.getResources().getString(R.string.accessibility_tabstrip_tab, title));
+                    view.getResources().getString(contentDescriptionStringId, title));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             updateColor(
                     view,
