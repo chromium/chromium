@@ -992,13 +992,31 @@ chromium-metrics-reviews@google.com.
         name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd"/>
     <variant name="SubmitUpdateDisplayTreeToPresentationCompositorFrame"/>
     <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.BufferAvailableToBufferReady"/>
+    <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.BufferReadyToLatch"/>
+    <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.LatchToSwapEnd"/>
+    <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw"/>
+    <variant
         name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.RecieveUpdateDisplayTreeToStartPrepareToDraw"/>
     <variant
         name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SendUpdateDisplayTreeToRecieveUpdateDisplayTree"/>
     <variant
         name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartDrawLayersToSubmitCompositorFrame"/>
     <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartDrawToSwapStart"/>
+    <variant
         name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartPrepareToDrawToStartDrawLayers"/>
+    <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SubmitToReceiveCompositorFrame"/>
+    <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame"/>
+    <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapStartToBufferAvailable"/>
+    <variant
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapStartToSwapEnd"/>
     <variant name="TotalLatency"/>
   </token>
 </histogram>
