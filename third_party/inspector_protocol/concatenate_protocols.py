@@ -59,7 +59,7 @@ def main(argv):
     assert stamp_filename
     with open(deps_filename, "w") as deps_file:
       deps_file.write("%s: %s\n" % (
-        stamp_filename, " ".join(source_set)))
+        stamp_filename, " ".join(sorted(source_set))))
 
 
 if __name__ == '__main__':
