@@ -6,9 +6,11 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/test/test_util.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -22,7 +24,11 @@ namespace {
 class DistilledPageJsTest : public content::ContentBrowserTest {
  protected:
   explicit DistilledPageJsTest()
-      : content::ContentBrowserTest(), distilled_page_(nullptr) {}
+      : content::ContentBrowserTest(), distilled_page_(nullptr) {
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndDisableFeature(kReaderModeDistillInApp);
+#endif
+  }
   ~DistilledPageJsTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -42,6 +48,7 @@ class DistilledPageJsTest : public content::ContentBrowserTest {
   }
 
   std::unique_ptr<FakeDistilledPage> distilled_page_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Pincher is only used on Android.

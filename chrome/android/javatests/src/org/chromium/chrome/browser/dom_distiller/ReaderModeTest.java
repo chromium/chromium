@@ -122,6 +122,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
     public void testReaderModePromptShownForIncognitoTabs() {
         // Note: For BrApp messages are only used on incognito tabs. Regular tabs use the MTB.
         mDownloadTestRule.newIncognitoTabFromMenu();
@@ -131,6 +132,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
     public void testReaderModeInCct() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivityTab();
@@ -203,6 +205,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
     public void testReaderModeInCct_Incognito() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         openReaderModeInIncognitoCct();

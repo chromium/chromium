@@ -882,6 +882,30 @@
             ]
         }
     ],
+    "AndroidReaderModeImproveAppExperience": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledBothReadabilityDistillerAndTriggering",
+                    "params": {
+                        "heuristic_min_content_length": "160",
+                        "heuristic_min_score": "50",
+                        "min_content_length": "100",
+                        "show_cpa": "true",
+                        "use_distiller": "true",
+                        "use_heuristic": "true"
+                    },
+                    "enable_features": [
+                        "ReaderModeDistillInApp",
+                        "ReaderModeUseReadability"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidReaderModeImprovements": [
         {
             "platforms": [
@@ -898,25 +922,6 @@
                     },
                     "enable_features": [
                         "ReaderModeImprovements"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidReaderModeUseReadability": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDistillerOnly",
-                    "params": {
-                        "use_distiller": "true",
-                        "use_heuristic": "false"
-                    },
-                    "enable_features": [
-                        "ReaderModeUseReadability"
                     ]
                 }
             ]
