@@ -1,4 +1,5 @@
 # This list tracks all current users of libpng.
+#
 # libpng is actively being migrated, and calls to libpng should instead go
 # through Skia's `SkPngRustDecoder`. No new entries should be added to this
 # list.
@@ -29,8 +30,20 @@ visibility = [
 
   # Other dependency edges that seem like Chrome => ... => libpng dependencies
   # but really aren't.  TODO: Clarify this comment in follow-up CLs.
-  "//third_party/libwebp:*",
   "//third_party/weston/*",
+]
+
+# Dependencies that do not really flow into Chrome binaries.
+visibility += [
+  # `build/config/android/*.gni` =>
+  #     => `libwebp:cwebp` (`executable`)
+  #     => `libwebp:imagedec`
+  #     => `libpng` dependency.
+  # The `cwebp` `executable` is used during build process, but depending on it
+  # does not result in linking the `libpng` library into Chrome binary.  See
+  # also `cwebp_exe_allowed_visibility` in
+  # `//third_party/libwebp/visibility.gni`.
+  "//third_party/libwebp:imagedec",
 ]
 
 # Test/tool-only dependencies under `//third_party/angle`

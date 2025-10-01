@@ -5,8 +5,6 @@
 
 # This is appended to the visibility list of every public target
 allowed_visibility = [
-  "//android_webview/*",
-  "//chrome/android/*",
   "//chrome/browser/ui/tab_contents/*",
   "//chrome/renderer:*",
   "//chrome/test:*",
@@ -14,9 +12,15 @@ allowed_visibility = [
   "//skia:*",
   "//third_party/blink/renderer/*",
   "//third_party/libwebp/*",
+]
 
-  # Note: Presubmit complains about this being a disallowed import,
-  # but it's not actually an import.
+# This is the visibility list of `cwebp` executable (which is used during
+# Chromium build when targeting Android).  This is a *separate* visibility list
+# because depending on the `cwebp` executable doesn't result in having `libwebp`
+# linked into the browser binary.
+cwebp_exe_allowed_visibility = [
+  "//android_webview/*",
+  "//chrome/android/*",
   "//clank/android_webview/*",
   "//clank/java/*",
 ]

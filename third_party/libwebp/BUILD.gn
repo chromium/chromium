@@ -705,6 +705,8 @@ if (current_toolchain == host_toolchain) {
       configs += [ "//build/config/compiler:optimize_max" ]
     }
 
+    visibility = []
+    visibility = [ ":cwebp" ]
     deps = [
       ":imageio_util",
       ":libwebp_webp",
@@ -714,29 +716,9 @@ if (current_toolchain == host_toolchain) {
     configs += [ ":libwebp_public_config" ]
   }
 
-  source_set("imageenc") {
-    sources = [
-      "src/examples/unicode.h",
-      "src/imageio/image_enc.c",
-      "src/imageio/image_enc.h",
-    ]
-    configs += [ ":libwebp_config" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    if (set_opt_level) {
-      configs -= [ "//build/config/compiler:default_optimization" ]
-      configs += [ "//build/config/compiler:optimize_max" ]
-    }
-
-    deps = [
-      ":imageio_util",
-      ":libwebp_webp",
-    ]
-    configs += [ ":libwebp_public_config" ]
-  }
-
   executable("cwebp") {
-    visibility += allowed_visibility
+    visibility = []
+    visibility = cwebp_exe_allowed_visibility
 
     sources = [
       "src/examples/cwebp.c",
@@ -750,34 +732,6 @@ if (current_toolchain == host_toolchain) {
       ":imageio_util",
       ":libwebp",
       ":libwebp_sharpyuv",
-      ":libwebp_webp",
-      "//base",
-      "//build/win:default_exe_manifest",
-    ]
-    configs += [ ":libwebp_config" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    if (set_opt_level) {
-      configs -= [ "//build/config/compiler:default_optimization" ]
-      configs += [ "//build/config/compiler:optimize_max" ]
-    }
-  }
-
-  executable("dwebp") {
-    visibility += allowed_visibility
-
-    sources = [
-      "src/examples/dwebp.c",
-      "src/examples/stopwatch.h",
-      "src/examples/unicode.h",
-    ]
-
-    deps = [
-      ":example_util",
-      ":imagedec",
-      ":imageenc",
-      ":imageio_util",
-      ":libwebp",
       ":libwebp_webp",
       "//base",
       "//build/win:default_exe_manifest",
