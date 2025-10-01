@@ -1275,20 +1275,6 @@ const char kMediaSessionEnterPictureInPictureDescription[] =
     "Enables the 'enterpictureinpicture' MediaSessionAction to allow websites "
     "to register an action handler for entering picture-in-picture.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kMvcUpdateViewWhenModelChangedName[] =
-    "MVC Update View when Model Changed";
-const char kMvcUpdateViewWhenModelChangedDescription[] =
-    "Performance optimization to the MVC framework where a View is only "
-    "updated when the corresponding Model changes.";
-
-const char kReloadTabUiResourcesIfChangedName[] =
-    "Reload Tab UIResources if changed";
-const char kReloadTabUiResourcesIfChangedDescription[] =
-    "Performance optimization to the Tab Strip to reload UIResources when "
-    "producing a frame only if they have been re-rendered.";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 const char kCollaborationEntrepriseV2Name[] = "Collaboration Entreprise V2";
 const char kCollaborationEntrepriseV2Description[] =
     "Enables the collaboration feature for entreprise users within the same "

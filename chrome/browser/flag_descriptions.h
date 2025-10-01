@@ -413,14 +413,6 @@ extern const char kMediaPlaybackWhileNotVisiblePermissionPolicyDescription[];
 extern const char kMediaSessionEnterPictureInPictureName[];
 extern const char kMediaSessionEnterPictureInPictureDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kMvcUpdateViewWhenModelChangedName[];
-extern const char kMvcUpdateViewWhenModelChangedDescription[];
-
-extern const char kReloadTabUiResourcesIfChangedName[];
-extern const char kReloadTabUiResourcesIfChangedDescription[];
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 

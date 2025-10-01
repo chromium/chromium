@@ -916,7 +916,7 @@ BASE_FEATURE(kMostVisitedTilesReselect, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMultiInstanceApplicationStatusCleanup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMvcUpdateViewWhenModelChanged, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMvcUpdateViewWhenModelChanged, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNativePageTransitionHardwareCapture,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1001,7 +1001,7 @@ BASE_FEATURE(kRelatedSearchesAllLanguage, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRelatedSearchesSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReloadTabUiResourcesIfChanged, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReloadTabUiResourcesIfChanged, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRemoveTabFocusOnShowingAndSelect,
              base::FEATURE_ENABLED_BY_DEFAULT);

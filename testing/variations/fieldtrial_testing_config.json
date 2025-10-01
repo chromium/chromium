@@ -24807,22 +24807,6 @@
             ]
         }
     ],
-    "TabletTabStripOptimizations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MvcUpdateViewWhenModelChanged",
-                        "ReloadTabUiResourcesIfChanged"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabstripComboButton": [
         {
             "platforms": [
