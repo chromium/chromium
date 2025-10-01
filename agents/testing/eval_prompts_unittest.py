@@ -5,6 +5,7 @@
 """Tests for eval_prompts."""
 
 import io
+import itertools
 import os
 import pathlib
 import subprocess
@@ -698,6 +699,130 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.mock_worker_pool.assert_called_once()
         self.assertEqual(self.mock_worker_pool.call_args[0][2].gemini_cli_bin,
                          pathlib.Path('/custom/gemini'))
+
+
+class ParseArgsUnittest(unittest.TestCase):
+    """Unit tests for the `_parse_args` function."""
+
+    def setUp(self):
+        """Set up patches for the tests."""
+        argv_patcher = mock.patch('sys.argv', new_callable=list)
+        self.mock_argv = argv_patcher.start()
+        self.addCleanup(argv_patcher.stop)
+
+    def test_parse_args_no_args(self):
+        """Tests that default values are correct with no arguments."""
+        self.mock_argv[:] = ['eval_prompts.py']
+        args = eval_prompts._parse_args()
+        self.assertFalse(args.no_clean)
+        self.assertFalse(args.force)
+        self.assertFalse(args.no_build)
+        self.assertFalse(args.verbose)
+        self.assertFalse(args.print_output_on_success)
+        self.assertIsNone(args.filter)
+        self.assertIsNone(args.shard_index)
+        self.assertIsNone(args.total_shards)
+        self.assertIsNone(args.promptfoo_bin)
+        self.assertIsNone(args.promptfoo_version)
+        self.assertIsNone(args.promptfoo_revision)
+        self.assertFalse(args.sandbox)
+        self.assertIsNone(args.gemini_cli_bin)
+        self.assertEqual(args.parallel_workers, 1)
+        self.assertEqual(args.retries, 0)
+
+    def test_parse_args_all_checkout_args(self):
+        """Tests that all checkout arguments are parsed correctly."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--no-clean', '--force', '--no-build'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertTrue(args.no_clean)
+        self.assertTrue(args.force)
+        self.assertTrue(args.no_build)
+
+    def test_parse_args_all_output_args(self):
+        """Tests that all output arguments are parsed correctly."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--verbose', '--print-output-on-success'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertTrue(args.verbose)
+        self.assertTrue(args.print_output_on_success)
+
+    def test_parse_args_all_test_selection_args(self):
+        """Tests that all test selection arguments are parsed correctly."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--filter', 'my_filter', '--shard-index', '1',
+            '--total-shards', '3'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.filter, 'my_filter')
+        self.assertEqual(args.shard_index, 1)
+        self.assertEqual(args.total_shards, 3)
+
+    def test_parse_args_all_gemini_cli_args(self):
+        """Tests that all gemini-cli arguments are parsed correctly."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--sandbox', '--gemini-cli-bin',
+            '/path/to/gemini'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertTrue(args.sandbox)
+        self.assertEqual(args.gemini_cli_bin, pathlib.Path('/path/to/gemini'))
+
+    def test_parse_args_all_test_runner_args(self):
+        """Tests that all test runner arguments are parsed correctly."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--parallel-workers', '4', '--retries', '2'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.parallel_workers, 4)
+        self.assertEqual(args.retries, 2)
+
+    def test_parse_args_promptfoo_bin(self):
+        """Tests --promptfoo-bin."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--promptfoo-bin', '/path/to/promptfoo'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.promptfoo_bin,
+                         pathlib.Path('/path/to/promptfoo'))
+
+    def test_parse_args_promptfoo_version(self):
+        """Tests --install-promptfoo-from-npm with a version."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--install-promptfoo-from-npm', '0.40.0'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.promptfoo_version, '0.40.0')
+
+    def test_parse_args_promptfoo_revision(self):
+        """Tests --install-promptfoo-from-src with a revision."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--install-promptfoo-from-src', 'my-rev'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.promptfoo_revision, 'my-rev')
+
+    def test_parse_args_promptfoo_exclusive_group(self):
+        """Tests that mutually exclusive promptfoo arguments raise an error."""
+        arg_groups = [
+            ['--promptfoo-bin', '/path/to/promptfoo'],
+            ['--install-promptfoo-from-npm'],
+            ['--install-promptfoo-from-src'],
+        ]
+        for arg_group1, arg_group2 in itertools.combinations(arg_groups, 2):
+            with self.subTest(args1=arg_group1, args2=arg_group2):
+                self.mock_argv[:] = (['eval_prompts.py'] + arg_group1 +
+                                     arg_group2)
+                # stderr mocked to silence the automatic help output by the
+                # parser when parsing fails.
+                with (
+                        self.assertRaises(SystemExit),
+                        mock.patch('sys.stderr', new_callable=io.StringIO),
+                ):
+                    eval_prompts._parse_args()
+
 
 
 if __name__ == '__main__':

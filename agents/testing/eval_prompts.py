@@ -291,58 +291,51 @@ def _parse_args() -> argparse.Namespace:
         An argparse.Namespace containing all parsed known arguments.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--no-clean',
-                        action='store_true',
-                        help='Do not clean up the workdir after evaluation.')
-    parser.add_argument(
-        '--sandbox',
-        default=False,
-        action=argparse.BooleanOptionalAction,
-        help='Use a sandbox for running gemini-cli. This should only be '
-        'disabled for local testing.',
-    )
-    parser.add_argument('--force',
-                        '-f',
-                        action='store_true',
-                        help='Force execution, deleting existing workdirs if '
-                        'they exist.')
-    parser.add_argument('--verbose',
-                        '-v',
-                        action='store_true',
-                        help='Print debug information.')
-    parser.add_argument(
+    group = parser.add_argument_group('Checkout Arguments')
+    group.add_argument('--no-clean',
+                       action='store_true',
+                       help='Do not clean up the workdir after evaluation.')
+    group.add_argument('--force',
+                       '-f',
+                       action='store_true',
+                       help='Force execution, deleting existing workdirs if '
+                       'they exist.')
+    group.add_argument('--no-build',
+                       action='store_true',
+                       help='Do not build out/Default.')
+
+    group = parser.add_argument_group('Output Arguments')
+    group.add_argument('--verbose',
+                       '-v',
+                       action='store_true',
+                       help='Print debug information.')
+    group.add_argument(
         '--print-output-on-success',
         action='store_true',
         help=('Print test output even when a test succeeds. By default, '
               'output is only surfaced when a test fails.'))
-    parser.add_argument('--filter',
-                        help='Only run configs that contain this substring.')
-    parser.add_argument(
-        '--parallel-workers',
-        type=int,
-        default=1,
-        help=('The number of parallel workers to run tests in. Changing this '
-              'is not recommended if the Chromium checkout being used is not '
-              'on btrfs.'))
-    parser.add_argument(
+
+    group = parser.add_argument_group('Test Selection Arguments')
+    group.add_argument('--filter',
+                       help='Only run configs that contain this substring.')
+    group.add_argument(
         '--shard-index',
         type=int,
         help=(f'The index of the current shard. If set, --total-shards must '
               f'also be set. Can also be set via {_SHARD_INDEX_ENV_VAR}.'))
-    parser.add_argument(
+    group.add_argument(
         '--total-shards',
         type=int,
         help=(f'The total number of shards used to run these tests. If set, '
               f'--shard-index must also be set. Can also be set via '
               f'{_TOTAL_SHARDS_ENV_VAR}.'))
-    parser.add_argument('--no-build',
-                        action='store_true',
-                        help='Do not build out/Default.')
-    parser.add_argument('--retries',
-                        type=int,
-                        default=0,
-                        help='Number of times to retry a failed test.')
-    promptfoo_install_group = parser.add_mutually_exclusive_group()
+
+    group = parser.add_argument_group('Promptfoo Arguments')
+    promptfoo_install_group = group.add_mutually_exclusive_group()
+    promptfoo_install_group.add_argument(
+        '--promptfoo-bin',
+        type=pathlib.Path,
+        help='Path to a custom promptfoo binary to use.')
     promptfoo_install_group.add_argument(
         '--install-promptfoo-from-npm',
         metavar='VERSION',
@@ -359,12 +352,32 @@ def _parse_args() -> argparse.Namespace:
         const='main',
         help=('Build promptfoo from the given source revision. If no revision '
               'is specified, ToT will be used.'))
-    parser.add_argument('--gemini-cli-bin',
-                        type=pathlib.Path,
-                        help='Path to a custom gemini-cli binary to use.')
-    parser.add_argument('--promptfoo-bin',
-                        type=pathlib.Path,
-                        help='Path to a custom promptfoo binary to use.')
+
+    group = parser.add_argument_group('gemini-cli Arguments')
+    group.add_argument(
+        '--sandbox',
+        default=False,
+        action=argparse.BooleanOptionalAction,
+        help='Use a sandbox for running gemini-cli. This should only be '
+        'disabled for local testing.',
+    )
+    group.add_argument('--gemini-cli-bin',
+                       type=pathlib.Path,
+                       help='Path to a custom gemini-cli binary to use.')
+
+    group = parser.add_argument_group('Test Runner Arguments')
+    group.add_argument(
+        '--parallel-workers',
+        type=int,
+        default=1,
+        help=('The number of parallel workers to run tests in. Changing this '
+              'is not recommended if the Chromium checkout being used is not '
+              'on btrfs.'))
+    group.add_argument('--retries',
+                       type=int,
+                       default=0,
+                       help='Number of times to retry a failed test.')
+
     return parser.parse_args()
 
 
