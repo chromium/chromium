@@ -137,6 +137,10 @@ const char kMediaPlaybackTotalTimeForSessionHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
     "MediaPlayback.TotalTimeForSession";
 
+const char kMediaPlaybackTotalPlaybackTimeHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+    "MediaPlayback.TotalPlaybackTime";
+
 const char kBrowserInitiatedHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
     "BrowserInitiated.PromptResultV2";
@@ -2712,6 +2716,46 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
       kMediaPlaybackTotalTimeHistogram);
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(5000));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       MediaPlaybackTotalPlaybackTimeRecorded) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  // Trigger metric recording.
+  base::HistogramTester histograms;
+  SwitchToNewTabAndWaitForAutoPip();
+  // Playing for 5000 ms
+  test_clock.Advance(base::Milliseconds(5000));
+  PauseVideo(web_contents);
+  WaitForMediaSessionPaused(web_contents);
+  // Paused for 2000 ms.
+  test_clock.Advance(base::Milliseconds(2000));
+  PlayVideo(web_contents);
+  WaitForMediaSessionPlaying(web_contents);
+  // Playing for 3000 ms
+  test_clock.Advance(base::Milliseconds(3000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Verify expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectTotalCount(kMediaPlaybackTotalPlaybackTimeHistogram, 1);
+  histograms.ExpectBucketCount(kMediaPlaybackTotalPlaybackTimeHistogram, 8000,
+                               1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

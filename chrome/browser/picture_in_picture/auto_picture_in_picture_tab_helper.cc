@@ -135,6 +135,22 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
       clock_->NowTicks() - current_enter_pip_time_.value();
   current_enter_pip_time_ = std::nullopt;
 
+  // Calculate total playback time for the duration of the pip window.
+  std::optional<base::TimeDelta> total_playback_time = std::nullopt;
+  if (current_pip_playback_time_) {
+    // Start with the existing recorded PiP playback time.
+    total_playback_time = current_pip_playback_time_.value();
+
+    if (playing_start_time_) {
+      // Add additional time elapsed since the video started playing in PiP.
+      total_playback_time.value() +=
+          clock_->NowTicks() - playing_start_time_.value();
+    }
+  }
+  // Reset playback time related fields.
+  playing_start_time_ = std::nullopt;
+  current_pip_playback_time_ = std::nullopt;
+
   if (auto_pip_trigger_reason_ ==
       media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -171,6 +187,13 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
         "MediaPlayback.TotalTimeV2",
         total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
+    if (total_playback_time) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+          "MediaPlayback.TotalPlaybackTime",
+          total_playback_time.value(), base::Milliseconds(1), base::Hours(10),
+          100);
+    }
   } else if (auto_pip_trigger_reason_ == media::PictureInPictureEventsInfo::
                                              AutoPipReason::kBrowserInitiated) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -275,6 +298,7 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
   }
 
   if (AreAutoPictureInPicturePreconditionsMet()) {
+    current_pip_playback_time_ = base::TimeDelta();
     is_in_auto_picture_in_picture_ = true;
     auto_picture_in_picture_activation_time_ = base::TimeTicks();
     MaybeRecordPictureInPictureChanged(true);
@@ -283,6 +307,9 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
     // should immediately close the auto picture-in-picture.
     if (is_tab_activated_) {
       MaybeExitAutoPictureInPicture();
+    } else if (is_playing_) {
+      // Media is playing, start the watch time timer.
+      playing_start_time_ = clock_->NowTicks();
     }
   }
 }
@@ -349,9 +376,30 @@ void AutoPictureInPictureTabHelper::OnFocusLost(
 
 void AutoPictureInPictureTabHelper::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
-  is_playing_ =
+  const bool is_playing =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;
+
+  // If the playing state hasn't changed, nothing more to do.
+  if (is_playing_ == is_playing) {
+    return;
+  }
+  is_playing_ = is_playing;
+
+  // Watch time tracking is only relevant if we are currently in Auto PiP.
+  if (!is_in_auto_picture_in_picture_) {
+    return;
+  }
+
+  if (is_playing_) {
+    // Media started playing: record the start time.
+    playing_start_time_ = clock_->NowTicks();
+  } else if (playing_start_time_) {
+    // Media paused/stopped: calculate and accumulate watch time.
+    current_pip_playback_time_.value() +=
+        clock_->NowTicks() - playing_start_time_.value();
+    playing_start_time_ = std::nullopt;
+  }
 }
 
 void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(

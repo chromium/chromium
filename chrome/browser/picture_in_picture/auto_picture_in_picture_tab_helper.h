@@ -398,6 +398,12 @@ class AutoPictureInPictureTabHelper
   // `EnterAutoPictureInPicture` method.
   std::optional<base::TimeTicks> current_enter_pip_time_;
 
+  // Set to the current time when the media starts playing.
+  std::optional<base::TimeTicks> playing_start_time_;
+
+  // The total accumulated playback time in picture in picture.
+  std::optional<base::TimeDelta> current_pip_playback_time_;
+
   // The total accumulated time spent in picture in picture due to video
   // conferencing. The accumulated time does not differentiate between the
   // different types of picture in picture windows (document vs video).
