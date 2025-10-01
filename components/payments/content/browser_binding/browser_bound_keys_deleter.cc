@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/browser_binding/browser_bound_key_deleter_android.h"
+#include "components/payments/content/browser_binding/browser_bound_keys_deleter.h"
 
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/web_payments_web_data_service.h"
@@ -11,18 +11,13 @@
 
 namespace payments {
 
-std::unique_ptr<BrowserBoundKeyDeleter> GetBrowserBoundKeyDeleterInstance(
-    scoped_refptr<WebPaymentsWebDataService> web_data_service) {
-  return std::make_unique<BrowserBoundKeyDeleterAndroid>(web_data_service);
-}
-
-BrowserBoundKeyDeleterAndroid::BrowserBoundKeyDeleterAndroid(
+BrowserBoundKeyDeleter::BrowserBoundKeyDeleter(
     scoped_refptr<WebPaymentsWebDataService> web_data_service)
     : web_data_service_(web_data_service) {}
 
-BrowserBoundKeyDeleterAndroid::~BrowserBoundKeyDeleterAndroid() = default;
+BrowserBoundKeyDeleter::~BrowserBoundKeyDeleter() = default;
 
-void BrowserBoundKeyDeleterAndroid::RemoveInvalidBBKs() {
+void BrowserBoundKeyDeleter::RemoveInvalidBBKs() {
   if (!web_data_service_) {
     // There are no browser bound keys to be removed when there is no
     // WebPaymentsWebDataService.

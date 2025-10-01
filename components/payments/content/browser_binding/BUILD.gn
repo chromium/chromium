@@ -7,7 +7,7 @@ source_set("browser_binding") {
   if (is_android) {
     deps = [ ":android" ]
   }
-  if (is_mac || is_win || is_linux || is_chromeos) {
+  if (is_mac || is_win || is_linux) {
     deps = [ ":desktop" ]
   }
 }
@@ -59,45 +59,29 @@ source_set("passkey_browser_binder_unittests") {
   ]
 }
 
-source_set("browser_bound_key_deleter") {
-  sources = [
-    "browser_bound_key_deleter.h",
-    "browser_bound_key_deleter_factory.cc",
-    "browser_bound_key_deleter_factory.h",
-  ]
-  public_deps = [
-    "//base",  # base/no_destructor.h
-    "//components/keyed_service/content",
-    "//components/payments/content:utils",
-  ]
-  deps = [
-    ":passkey_browser_binder",
-    "//components/keyed_service/content",
-    "//components/webdata_services",
-    "//content/public/browser",
-  ]
-
-  if (is_android) {
-    sources += [
-      "browser_bound_key_deleter_android.cc",
-      "browser_bound_key_deleter_android.h",
-    ]
-    deps += [
-      ":android",
-      "//components/webauthn/android",
-    ]
-  }
-
-  if (is_mac || is_win || is_linux || is_chromeos) {
-    sources += [
-      "browser_bound_key_deleter_desktop.cc",
-      "browser_bound_key_deleter_desktop.h",
-    ]
-    deps += [ ":desktop" ]
-  }
-}
-
 if (is_android) {
+  source_set("browser_bound_keys_deleter_factory") {
+    sources = [
+      "browser_bound_keys_deleter.cc",
+      "browser_bound_keys_deleter.h",
+      "browser_bound_keys_deleter_factory.cc",
+      "browser_bound_keys_deleter_factory.h",
+    ]
+    public_deps = [
+      "//base",  # base/no_destructor.h
+      "//components/keyed_service/content",
+      "//components/payments/content:utils",
+    ]
+    deps = [
+      ":android",
+      ":passkey_browser_binder",
+      "//components/keyed_service/content",
+      "//components/webauthn/android",
+      "//components/webdata_services",
+      "//content/public/browser",
+    ]
+  }
+
   source_set("android") {
     visibility = [ ":*" ]
     sources = [
@@ -105,10 +89,6 @@ if (is_android) {
       "browser_bound_key_android.h",
       "browser_bound_key_store_android.cc",
       "browser_bound_key_store_android.h",
-    ]
-    public_deps = [
-      "//components/keyed_service/content",
-      "//components/payments/content:utils",
     ]
     deps = [
       ":interface",
@@ -131,9 +111,21 @@ if (is_android) {
       "//testing/gtest",
     ]
   }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "mock_browser_bound_keys_deleter.cc",
+      "mock_browser_bound_keys_deleter.h",
+    ]
+    public_deps = [
+      ":browser_bound_keys_deleter_factory",
+      "//testing/gmock",
+    ]
+  }
 }
 
-if (is_mac || is_win || is_linux || is_chromeos) {
+if (is_mac || is_win || is_linux) {
   source_set("desktop") {
     visibility = [ ":*" ]
     sources = [
@@ -190,16 +182,4 @@ source_set("browser_bound_key_metadata") {
     "browser_bound_key_metadata.h",
   ]
   deps = [ "//base" ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "mock_browser_bound_key_deleter.cc",
-    "mock_browser_bound_key_deleter.h",
-  ]
-  public_deps = [
-    ":browser_bound_key_deleter",
-    "//testing/gmock",
-  ]
 }

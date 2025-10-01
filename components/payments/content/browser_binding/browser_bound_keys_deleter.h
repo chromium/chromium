@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_H_
-#define COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_H_
-
-#include <memory>
+#ifndef COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEYS_DELETER_H_
+#define COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEYS_DELETER_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -15,7 +13,8 @@ namespace payments {
 
 class BrowserBoundKeyDeleter : public KeyedService {
  public:
-  BrowserBoundKeyDeleter() = default;
+  explicit BrowserBoundKeyDeleter(
+      scoped_refptr<WebPaymentsWebDataService> web_data_service);
 
   // Non-copyable
   BrowserBoundKeyDeleter(const BrowserBoundKeyDeleter&) = delete;
@@ -25,17 +24,16 @@ class BrowserBoundKeyDeleter : public KeyedService {
   BrowserBoundKeyDeleter(const BrowserBoundKeyDeleter&&) = delete;
   BrowserBoundKeyDeleter operator=(const BrowserBoundKeyDeleter&&) = delete;
 
-  ~BrowserBoundKeyDeleter() override = default;
+  ~BrowserBoundKeyDeleter() override;
 
   // Starts the asynchronous process to find browser bound keys and delete them.
-  virtual void RemoveInvalidBBKs() = 0;
-};
+  // Declared virtual to allow overriding by testing mocks.
+  virtual void RemoveInvalidBBKs();
 
-// Get a platform specific instance of the BrowserBoundKeyDeleter. This function
-// has per-platform implementations.
-std::unique_ptr<BrowserBoundKeyDeleter> GetBrowserBoundKeyDeleterInstance(
-    scoped_refptr<WebPaymentsWebDataService> web_data_service);
+ private:
+  scoped_refptr<WebPaymentsWebDataService> web_data_service_;
+};
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEYS_DELETER_H_

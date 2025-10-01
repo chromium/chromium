@@ -309,7 +309,6 @@ source_set("profiles_extra_parts_impl") {
     "//components/optimization_guide/core",
     "//components/password_manager/content/browser",
     "//components/payments/content",
-    "//components/payments/content/browser_binding:browser_bound_key_deleter",
     "//components/permissions:permissions_common",
     "//components/policy/content",
     "//components/policy/content:safe_sites_navigation_throttle",
@@ -333,6 +332,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/fast_checkout",
       "//components/commerce/core:merchant_signal_db_proto",
+      "//components/payments/content/browser_binding:browser_bound_keys_deleter_factory",
     ]
   } else {
     deps += [
