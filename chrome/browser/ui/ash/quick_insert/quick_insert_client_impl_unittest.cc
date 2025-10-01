@@ -795,6 +795,4 @@ TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesOpenTab) {
   EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
 }
 
-// TODO: b/325540366 - Add QuickInsertClientImpl tests.
-
 }  // namespace
