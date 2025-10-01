@@ -59,6 +59,10 @@
                               self.profile)
                BWGService:BwgServiceFactory::GetForProfile(self.profile)
       readerModeTabHelper:readerModeTabHelper];
+
+  id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
+  _mediator.pageActionMenuHandler = pageActionMenuHandler;
   _mediator.consumer = _viewController;
 
   if (readerModeTabHelper) {
@@ -74,8 +78,7 @@
 
   _viewController.readerModeHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ReaderModeCommands);
-  _viewController.pageActionMenuHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
+  _viewController.pageActionMenuHandler = pageActionMenuHandler;
   _viewController.BWGHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
 

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -63,6 +64,7 @@
 #pragma mark - Public
 
 - (void)disconnect {
+  _readerModeTabHelper = nullptr;
   [self detachFromWebState];
 }
 
@@ -112,7 +114,8 @@
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
-  [self detachFromWebState];
+  [self disconnect];
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 
 #pragma mark - Private
