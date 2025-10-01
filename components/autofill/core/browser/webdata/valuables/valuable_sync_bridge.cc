@@ -182,8 +182,18 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
 
 std::unique_ptr<syncer::DataBatch> ValuableSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
-  // This type never commits to the server.
-  NOTREACHED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  absl::flat_hash_set<std::string> keys_set(storage_keys.begin(),
+                                            storage_keys.end());
+  std::unique_ptr<syncer::DataBatch> all_data = GetData();
+  while (all_data->HasNext()) {
+    syncer::KeyAndData item = all_data->Next();
+    if (keys_set.contains(item.first)) {
+      batch->Put(item.first, std::move(item.second));
+    }
+  }
+  return batch;
 }
 
 std::unique_ptr<syncer::DataBatch>

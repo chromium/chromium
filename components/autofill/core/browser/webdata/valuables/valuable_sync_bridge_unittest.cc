@@ -370,9 +370,48 @@ TEST_F(ValuableSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
   EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote1));
 }
 
-// Tests that `GetDataForCommit()` returns empty collection.
-TEST_F(ValuableSyncBridgeDeathTest, GetDataForCommit) {
-  EXPECT_DEATH_IF_SUPPORTED({ bridge().GetDataForCommit({}); }, ".*");
+// Tests that `GetDataForCommit()` returns only the requested loyalty cards.
+TEST_F(ValuableSyncBridgeTest, GetDataForCommit_LoyaltyCards) {
+  const LoyaltyCard card1 = TestLoyaltyCard(kId1);
+  const LoyaltyCard card2 = TestLoyaltyCard(kId2);
+  AddLoyaltyCards({card1, card2});
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetDataForCommit({kId1});
+  EXPECT_THAT(ExtractLoyaltyCardsFromDataBatch(std::move(batch)),
+              ElementsAre(card1));
+}
+
+// Tests that `GetDataForCommit()` returns only the requested entities.
+TEST_F(ValuableSyncBridgeTest, GetDataForCommit_Entities) {
+  const EntityInstance vehicle1 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000"});
+  const EntityInstance vehicle2 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  AddEntities({vehicle1, vehicle2});
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({"00000000-0000-4000-8000-300000000000"});
+  EXPECT_THAT(ExtractEntitiesFromDataBatch(std::move(batch)),
+              ElementsAre(vehicle2));
+}
+
+// Tests that `GetDataForCommit()` returns an empty batch for no keys.
+TEST_F(ValuableSyncBridgeTest, GetDataForCommit_NoKeys) {
+  const LoyaltyCard card1 = TestLoyaltyCard(kId1);
+  AddLoyaltyCards({card1});
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetDataForCommit({});
+  EXPECT_FALSE(batch->HasNext());
+}
+
+// Tests that `GetDataForCommit()` returns an empty batch for non-existent keys.
+TEST_F(ValuableSyncBridgeTest, GetDataForCommit_NonExistentKeys) {
+  const LoyaltyCard card1 = TestLoyaltyCard(kId1);
+  AddLoyaltyCards({card1});
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({"non-existent-key"});
+  EXPECT_FALSE(batch->HasNext());
 }
 
 // Tests that `GetAllDataForDebugging()` returns all loyalty cards.
