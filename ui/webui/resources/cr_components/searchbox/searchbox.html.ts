@@ -76,21 +76,50 @@ export function getHtml(this: SearchboxElement) {
     ` : ''}
   ` : ''}
 
-  <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
-      exportparts="dropdown-content"
-      role="listbox" .result="${this.result_}"
-      selected-match-index="${this.selectedMatchIndex_}"
-      @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
-      ?can-show-secondary-side="${this.canShowSecondarySide}"
-      ?had-secondary-side="${this.hadSecondarySide}"
-      @had-secondary-side-changed="${this.onHadSecondarySideChanged_}"
-      ?has-secondary-side="${this.hasSecondarySide}"
-      @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
-      @match-focusin="${this.onMatchFocusin_}"
-      @match-click="${this.onMatchClick_}"
-      ?hidden="${!this.dropdownIsVisible}"
-      ?show-thumbnail="${this.showThumbnail}">
-  </cr-searchbox-dropdown>
+  ${this.realboxLayoutMode === 'Tall' ? html`
+    <div class="dropdownContainer">
+      <contextual-entrypoint-and-carousel id="context"
+          @add-tab-context="${this.addTabContext_}"
+          @add-file-context="${this.addFileContext_}"
+          @delete-context="${this.deleteContext_}"
+          @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
+          @on-context-files-changed="${this.onContextFilesChanged_}"
+          ?show-dropdown="${this.dropdownIsVisible}">
+        <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+            exportparts="dropdown-content"
+            role="listbox" .result="${this.result_}"
+            selected-match-index="${this.selectedMatchIndex_}"
+            @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
+            ?can-show-secondary-side="${this.canShowSecondarySide}"
+            ?had-secondary-side="${this.hadSecondarySide}"
+            @had-secondary-side-changed="${this.onHadSecondarySideChanged_}"
+            ?has-secondary-side="${this.hasSecondarySide}"
+            @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
+            @match-focusin="${this.onMatchFocusin_}"
+            @match-click="${this.onMatchClick_}"
+            ?hidden="${!this.dropdownIsVisible}"
+            ?show-thumbnail="${this.showThumbnail}">
+        </cr-searchbox-dropdown>
+      </contextual-entrypoint-and-carousel>
+    </div>
+  ` : html`
+    <cr-searchbox-dropdown class="dropdownContainer" id="matches"
+        part="searchbox-dropdown"
+        exportparts="dropdown-content"
+        role="listbox" .result="${this.result_}"
+        selected-match-index="${this.selectedMatchIndex_}"
+        @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
+        ?can-show-secondary-side="${this.canShowSecondarySide}"
+        ?had-secondary-side="${this.hadSecondarySide}"
+        @had-secondary-side-changed="${this.onHadSecondarySideChanged_}"
+        ?has-secondary-side="${this.hasSecondarySide}"
+        @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
+        @match-focusin="${this.onMatchFocusin_}"
+        @match-click="${this.onMatchClick_}"
+        ?hidden="${!this.dropdownIsVisible}"
+        ?show-thumbnail="${this.showThumbnail}">
+    </cr-searchbox-dropdown>
+  `}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on
