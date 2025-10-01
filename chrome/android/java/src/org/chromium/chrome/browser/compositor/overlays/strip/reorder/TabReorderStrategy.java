@@ -273,7 +273,10 @@ public class TabReorderStrategy extends ReorderStrategyBase {
         // Do not allow reorder between pinned and unpinned tabs.
         boolean curTabPinned = curTab != null && curTab.getIsPinned();
         boolean adjTabPinned = adjTab != null && adjTab.getIsPinned();
-        if (curTabPinned != adjTabPinned) return false;
+
+        boolean crossingPinnedBound = curTabPinned != adjTabPinned;
+        boolean draggingTabOutOfGroup = isInGroup && mayDragInOrOutOfGroup;
+        if (crossingPinnedBound && !draggingTabOutOfGroup) return false;
 
         // Case A: Not interacting with tab groups.
         if (!mayDragInOrOutOfGroup) {
