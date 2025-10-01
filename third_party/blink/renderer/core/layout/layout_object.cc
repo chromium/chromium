@@ -2891,8 +2891,9 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
     }
   }
 
-  // Clip Path animations need a property update when they're composited, as it
-  // changes between mask based and path based clip.
+  // Main thread clip path animations always require paint property updates,
+  // and cc thread clip path animations require updates when stopping or
+  // starting. See: AdjustForCompositableAnimationPaint.
   if (old_style && diff.NeedsNormalPaintInvalidation() &&
       diff.ClipPathChanged()) {
     SetNeedsPaintPropertyUpdate();
