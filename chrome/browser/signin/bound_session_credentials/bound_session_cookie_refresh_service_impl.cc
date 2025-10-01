@@ -46,6 +46,10 @@ constexpr std::string_view kGoogleSessionTerminationHeader =
     "Sec-Session-Google-Termination";
 constexpr std::string_view kGoogleSessionTerminationSessionIdKey = "session_id";
 
+BASE_FEATURE(kUseDeviceBoundSessionsStorageMaskForDeletion,
+             "UseDeviceBoundSessionsStorageMaskForDeletion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Determines the precedence order of
 // `chrome::mojom::ResumeBlockedRequestsTrigger` when recording metrics.
 size_t GetResumeBlockedRequestsTriggerPriority(
@@ -498,9 +502,14 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
     content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     const base::Time begin,
     const base::Time end) {
-  // Only terminate a session if cookies are cleared.
-  // TODO(b/296372836): introduce a specific data type for bound sessions.
-  if (!(remove_mask & content::StoragePartition::REMOVE_DATA_MASK_COOKIES)) {
+  const uint32_t storage_mask =
+      base::FeatureList::IsEnabled(
+          kUseDeviceBoundSessionsStorageMaskForDeletion)
+          ? content::StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS
+          : content::StoragePartition::REMOVE_DATA_MASK_COOKIES;
+
+  // Only terminate sessions if a relevant data type is cleared.
+  if (!(remove_mask & storage_mask)) {
     return;
   }
 
