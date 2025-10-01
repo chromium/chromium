@@ -2124,10 +2124,10 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "cpu": "arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU",
+            "cpu": "arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU",
             "os": "Windows-11",
             "pool": "chrome.tests.perf",
-            "synthetic_product_name": "Inspiron 14 Plus 7441 (Dell Inc.)"
+            "synthetic_product_name": "Latitude 7455 (Dell Inc.)"
           },
           "expiration": 7200,
           "hard_timeout": 14400,
