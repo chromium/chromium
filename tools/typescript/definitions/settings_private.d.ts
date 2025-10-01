@@ -27,6 +27,7 @@ declare global {
         EXTENSION = 'EXTENSION',
         PARENT = 'PARENT',
         CHILD_RESTRICTION = 'CHILD_RESTRICTION',
+        SAFE_BROWSING_OFF = 'SAFE_BROWSING_OFF',
       }
 
       export enum Enforcement {

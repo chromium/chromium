@@ -1406,8 +1406,7 @@ IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureEnabledTest,
     JavascriptOptimizerPage) {
   RunTest("settings/v8_page_test.js",
-          "runMochaTest('V8Page', "
-          "'CheckRadioButtons_BlockOnUnfamiliarSitesFeatureEnabled')");
+          "runMochaSuite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled')");
 }
 
 class JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureDisabledTest
@@ -1428,8 +1427,7 @@ IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureDisabledTest,
     JavascriptOptimizerPage) {
   RunTest("settings/v8_page_test.js",
-          "runMochaTest('V8Page', "
-          "'CheckRadioButtons_BlockOnUnfamiliarSitesFeatureDisabled')");
+          "runMochaSuite('V8Page_BlockOnUnfamiliarSitesFeatureDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest,

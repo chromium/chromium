@@ -122,6 +122,23 @@ TEST_F(GeneratedJavascriptOptimizerPrefTest, GetPrefObject_FeatureDisabled) {
   }
 }
 
+TEST_F(GeneratedJavascriptOptimizerPrefTest, GetPrefObject_SafeBrowsingOff) {
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  PrefObject pref_object =
+      GeneratedJavascriptOptimizerPref(profile()).GetPrefObject();
+  EXPECT_EQ(settings_private_api::Enforcement::kEnforced,
+            pref_object.enforcement);
+  EXPECT_EQ(settings_private_api::ControlledBy::kSafeBrowsingOff,
+            pref_object.controlled_by);
+}
+
+TEST_F(GeneratedJavascriptOptimizerPrefTest, GetPrefObject_SafeBrowsingOn) {
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  PrefObject pref_object =
+      GeneratedJavascriptOptimizerPref(profile()).GetPrefObject();
+  EXPECT_EQ(settings_private_api::Enforcement::kNone, pref_object.enforcement);
+}
+
 TEST_F(GeneratedJavascriptOptimizerPrefTest, GetPrefObject_Policy) {
   ContentSettingsRegistry::GetInstance();
   profile()->GetTestingPrefService()->SetManagedPref(

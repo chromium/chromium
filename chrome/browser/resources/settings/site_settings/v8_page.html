@@ -33,7 +33,8 @@
             name="[[javascriptOptimizerSettingEnum_.BLOCKED_FOR_UNFAMILIAR_SITES]]"
             pref="[[prefs.generated.javascript_optimizer]]"
             label="$i18n{siteSettingsJavascriptOptimizerBlockedUnfamiliarSites}"
-            sub-label="$i18n{siteSettingsJavascriptOptimizerBlockedUnfamiliarSitesSubLabel}"
+            sub-label="[[getBlockForUnfamiliarSitesSubLabel_(
+                prefs.generated.javascript_optimizer.value)]]"
             no-collapse>
         </settings-collapse-radio-button>
       </template>

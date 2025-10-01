@@ -137,4 +137,16 @@ suite('CrPolicyPrefIndicator', function() {
     flush();
     assertEquals('matches', icon.tooltipText);
   });
+
+  test('controlledBySafeBrowsingIsOff', function() {
+    indicator.pref = {
+      key: 'foo',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.SAFE_BROWSING_OFF,
+    };
+    flush();
+    assertEquals('none', indicator.indicatorType);
+  });
 });

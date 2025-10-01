@@ -4,6 +4,8 @@
 
 #include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 
+#include <optional>
+
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,8 +43,8 @@ GeneratedJavascriptOptimizerPref::GeneratedJavascriptOptimizerPref(
     Profile* profile)
     : profile_(profile) {
   user_prefs_registrar_.Init(profile->GetPrefs());
-  user_prefs_registrar_.Add(
-      kGeneratedJavascriptOptimizerPref,
+  user_prefs_registrar_.AddMultiple(
+      {kGeneratedJavascriptOptimizerPref, prefs::kSafeBrowsingEnabled},
       base::BindRepeating(
           &GeneratedJavascriptOptimizerPref::OnPreferencesChanged,
           base::Unretained(this)));
@@ -112,6 +114,20 @@ PrefObject GeneratedJavascriptOptimizerPref::GetPrefObject() const {
     GeneratedPref::ApplyControlledByFromContentSettingSource(
         &pref_object, SettingSource::kPolicy);
   }
+
+  if (!safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs())) {
+    pref_object.enforcement =
+        extensions::api::settings_private::Enforcement::kEnforced;
+    pref_object.controlled_by =
+        extensions::api::settings_private::ControlledBy::kSafeBrowsingOff;
+    base::Value::List user_selectable_values;
+    user_selectable_values.Append(
+        base::Value(static_cast<int>(JavascriptOptimizerSetting::kAllowed)));
+    user_selectable_values.Append(
+        base::Value(static_cast<int>(JavascriptOptimizerSetting::kBlocked)));
+    pref_object.user_selectable_values = std::move(user_selectable_values);
+  }
+
   return pref_object;
 }
 

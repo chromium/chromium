@@ -17,7 +17,9 @@ bool AreV8OptimizationsDisabledOnUnfamiliarSites(const PrefService& prefs) {
          base::FeatureList::IsEnabled(
              content_settings::features::
                  kBlockV8OptimizerOnUnfamiliarSitesSetting) &&
-         prefs.GetBoolean(prefs::kJavascriptOptimizerBlockedForUnfamiliarSites);
+         prefs.GetBoolean(
+             prefs::kJavascriptOptimizerBlockedForUnfamiliarSites) &&
+         safe_browsing::IsSafeBrowsingEnabled(prefs);
 }
 
 }  // namespace site_protection
