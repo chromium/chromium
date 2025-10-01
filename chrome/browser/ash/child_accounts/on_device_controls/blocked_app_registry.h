@@ -22,8 +22,6 @@ class PrefService;
 namespace ash::on_device_controls {
 
 // Keeps track of blocked apps and persists blocked apps on the disk.
-// TODO(b/338246850): Handle app uninstall/reinstall.
-// TODO(b/338247185): Persist blocked apps in a pref.
 class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
  public:
   BlockedAppRegistry(apps::AppServiceProxy* app_service,
