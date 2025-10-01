@@ -3,6 +3,7 @@
     "ninja": {
       "gn_args": {
         "android_static_analysis": "off",
+        "enable_r8_tracerefs": true,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,
@@ -16,6 +17,7 @@
     "siso_native": {
       "gn_args": {
         "android_static_analysis": "off",
+        "enable_r8_tracerefs": true,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,

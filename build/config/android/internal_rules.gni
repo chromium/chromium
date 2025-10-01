@@ -1353,9 +1353,8 @@ if (enable_java_templates) {
     }
     _outputs += [ _mapping_path ]
 
-    _enable_checks =
-        (!defined(invoker.enable_proguard_checks) ||
-         invoker.enable_proguard_checks) && android_static_analysis != "off"
+    _enable_checks = (!defined(invoker.enable_proguard_checks) ||
+                      invoker.enable_proguard_checks) && enable_r8_tracerefs
     if (!_enable_checks) {
       _args += [ "--disable-checks" ]
     }

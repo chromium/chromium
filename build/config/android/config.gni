@@ -94,12 +94,7 @@ if (is_android) {
     # "off"
     #     Disables static analysis. Many bots set this so as to not duplicate
     #     the same analysis steps as other bots.
-    android_static_analysis = "build_server"
-    if (is_official_build) {
-      # Speed up official builds by disabling. Any failures should have already
-      # been caught by other bots.
-      android_static_analysis = "off"
-    }
+    android_static_analysis = "default"
 
     # Embed a wrap.sh file within apks to set custom environment variables.
     # Use a comma space-separated list.
@@ -107,6 +102,24 @@ if (is_android) {
     android_custom_env = ""
   }
   enable_wrap_sh = is_hwasan || is_asan || android_custom_env != ""
+
+  # Make it such that is_official_build sets android_static_analysis="off", but
+  # leaves enable_r8_tracerefs=true.
+  declare_args() {
+    # Controls whether TraceReferences checks are done (for targets with
+    # proguard_enabled=true).
+    enable_r8_tracerefs = android_static_analysis != "off"
+  }
+
+  if (android_static_analysis == "default") {
+    if (is_official_build) {
+      # Speed up official builds by disabling. Any failures should have already
+      # been caught by other bots.
+      android_static_analysis = "off"
+    } else {
+      android_static_analysis = "build_server"
+    }
+  }
 
   if (android_static_analysis == "build_server" && enable_java_templates &&
       getenv("SWARMING_TASK_ID") != "") {
