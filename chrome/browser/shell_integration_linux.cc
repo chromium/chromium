@@ -70,9 +70,30 @@
 
 namespace shell_integration_linux {
 
+namespace {
+
 const char kXdgSettings[] = "xdg-settings";
 const char kXdgSettingsDefaultBrowser[] = "default-web-browser";
 const char kXdgSettingsDefaultSchemeHandler[] = "default-url-scheme-handler";
+
+// Returns the contents of `key_file`. Assumes `key_file` is non-null.
+std::string GetFileContents(GKeyFile* key_file) {
+  std::string contents;
+  gsize length = 0;
+  gchar* data_dump = g_key_file_to_data(key_file, &length, nullptr);
+  if (data_dump) {
+    std::string_view data_view(data_dump, length);
+    if (data_view.starts_with('\n')) {
+      // Older versions of glib produce a leading newline. If this is the case,
+      // remove it to avoid double-newline after the shebang.
+      contents = data_view.substr(1);
+    } else {
+      contents = data_view;
+    }
+    g_free(data_dump);
+  }
+  return contents;
+}
 
 // Utility function to get the path to the version of a script shipped with
 // Chrome. |script| gives the name of the script. |chrome_version| returns the
@@ -204,8 +225,6 @@ std::string GetDesktopBaseName(const std::string& desktop_file_name) {
   auto remainder = base::RemoveSuffix(desktop_file_name, kDesktopExtension);
   return remainder ? std::string(*remainder) : desktop_file_name;
 }
-
-namespace {
 
 #if defined(USE_GLIB)
 // Quote a string such that it appears as one verbatim argument for the Exec
@@ -669,19 +688,7 @@ std::string GetDesktopFileContentsForCommand(
   SetActionsForDesktopApplication(command_line, key_file,
                                   std::move(action_info));
 
-  gsize length = 0;
-  gchar* data_dump = g_key_file_to_data(key_file, &length, NULL);
-  if (data_dump) {
-    // If strlen(data_dump[0]) == 0, this check will fail.
-    if (data_dump[0] == '\n') {
-      // Older versions of glib produce a leading newline. If this is the case,
-      // remove it to avoid double-newline after the shebang.
-      output_buffer += (UNSAFE_TODO(data_dump + 1));
-    } else {
-      output_buffer += data_dump;
-    }
-    g_free(data_dump);
-  }
+  output_buffer += GetFileContents(key_file);
 
   g_key_file_free(key_file);
   return output_buffer;
@@ -739,19 +746,7 @@ std::string GetDesktopFileContentsForUrlShortcut(
       IDS_DESKTOP_SHORTCUT_COMMENT, base::UTF8ToUTF16(url.spec()));
   g_key_file_set_string(key_file, kDesktopEntry, "Comment", comment.c_str());
 
-  gsize length = 0;
-  gchar* data_dump = g_key_file_to_data(key_file, &length, nullptr);
-  if (data_dump) {
-    std::string_view contents(data_dump, length);
-    if (contents.starts_with('\n')) {
-      // Older versions of glib produce a leading newline. If this is the case,
-      // remove it to avoid double-newline after the shebang.
-      output_buffer += contents.substr(1);
-    } else {
-      output_buffer += contents;
-    }
-    g_free(data_dump);
-  }
+  output_buffer += GetFileContents(key_file);
 
   g_key_file_free(key_file);
   return output_buffer;
@@ -778,20 +773,7 @@ std::string GetDirectoryFileContents(const std::u16string& title,
                           GetIconName().c_str());
   }
 
-  gsize length = 0;
-  gchar* data_dump = g_key_file_to_data(key_file, &length, NULL);
-  std::string output_buffer;
-  if (data_dump) {
-    // If strlen(data_dump[0]) == 0, this check will fail.
-    if (data_dump[0] == '\n') {
-      // Older versions of glib produce a leading newline. If this is the case,
-      // remove it to avoid double-newline after the shebang.
-      output_buffer += (UNSAFE_TODO(data_dump + 1));
-    } else {
-      output_buffer += data_dump;
-    }
-    g_free(data_dump);
-  }
+  std::string output_buffer = GetFileContents(key_file);
 
   g_key_file_free(key_file);
   return output_buffer;
