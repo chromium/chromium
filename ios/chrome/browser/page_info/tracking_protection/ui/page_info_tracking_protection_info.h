@@ -15,7 +15,14 @@
 
 // Determines whether the tracking protection section should be shown for the
 // current site.
-@property(nonatomic, assign) BOOL shouldShowTrackingProtectionUI;
+@property(nonatomic, readonly) BOOL shouldShowTrackingProtectionUI;
+
+- (instancetype)
+    initWithHasTrackingProtectionException:(BOOL)hasTrackingProtectionException
+            shouldShowTrackingProtectionUI:(BOOL)shouldShowTrackingProtectionUI
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

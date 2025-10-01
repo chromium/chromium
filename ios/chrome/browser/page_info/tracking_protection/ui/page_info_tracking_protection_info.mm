@@ -6,4 +6,16 @@
 
 @implementation PageInfoTrackingProtectionInfo
 
+- (instancetype)initWithHasTrackingProtectionException:
+                    (BOOL)hasTrackingProtectionException
+                        shouldShowTrackingProtectionUI:
+                            (BOOL)shouldShowTrackingProtectionUI {
+  self = [super init];
+  if (self) {
+    _hasTrackingProtectionException = hasTrackingProtectionException;
+    _shouldShowTrackingProtectionUI = shouldShowTrackingProtectionUI;
+  }
+  return self;
+}
+
 @end

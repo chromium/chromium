@@ -181,6 +181,8 @@
   [self.lastVisitedCoordinator stop];
   self.lastVisitedCoordinator = nil;
 
+  _trackingProtectionMediator = nil;
+
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
 

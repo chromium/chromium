@@ -254,8 +254,7 @@ const char kTrackingProtectionSettingsURL[] =
       break;
     }
     case ItemIdentifierTrackingProtectionButton: {
-      // TODO(crbug.com/442799468): Implement tap functionality for the button
-      // cell.
+      [self.trackingProtectionMutator toggleTrackingProtectionState];
       break;
     }
     case ItemIdentifierPermissionsCamera:
@@ -749,9 +748,17 @@ const char kTrackingProtectionSettingsURL[] =
 
 #pragma mark - PageInfoTrackingProtectionConsumer
 
+// Sets PageInfoTrackingProtectionInfo and updates the UI.
 - (void)setTrackingProtectionInfo:
     (PageInfoTrackingProtectionInfo*)trackingProtectionInfo {
   _trackingProtectionInfo = trackingProtectionInfo;
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[
+    @(ItemIdentifierTrackingProtection),
+    @(ItemIdentifierTrackingProtectionButton),
+  ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 @end

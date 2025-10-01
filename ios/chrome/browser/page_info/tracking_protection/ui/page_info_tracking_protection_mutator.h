@@ -9,7 +9,7 @@
 @protocol PageInfoTrackingProtectionMutator <NSObject>
 
 // Toggles tracking protection state on the current site.
-- (void)toggleTrackingProtections;
+- (void)toggleTrackingProtectionState;
 
 @end
 

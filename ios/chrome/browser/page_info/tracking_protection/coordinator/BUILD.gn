@@ -9,9 +9,11 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/page_info/tracking_protection/ui",
+    "//ios/chrome/browser/page_info/tracking_protection/ui:tracking_protection_info",
     "//ios/web/public",
   ]
 }

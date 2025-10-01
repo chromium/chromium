@@ -10,7 +10,7 @@
 // Defines APIs for the frontend ViewController to load and update the UI.
 @protocol PageInfoTrackingProtectionConsumer <NSObject>
 
-// Propagates the changes in TrackingProtection state to the ViewController.
+// Propagates PageInfoTrackingProtectionInfo to the ViewController.
 - (void)setTrackingProtectionInfo:(PageInfoTrackingProtectionInfo*)info;
 
 @end
