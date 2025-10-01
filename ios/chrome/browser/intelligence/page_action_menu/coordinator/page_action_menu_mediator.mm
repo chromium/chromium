@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
@@ -163,8 +164,11 @@
 }
 
 - (NSString*)currentSiteDomain {
-  // TODO(crbug.com/447143165): Return actual current domain.
-  return @"foo.com";
+  if (!_webState) {
+    return nil;
+  }
+  GURL url = _webState->GetLastCommittedURL();
+  return base::SysUTF8ToNSString(url.host());
 }
 
 #pragma mark - CRWWebStateObserver
