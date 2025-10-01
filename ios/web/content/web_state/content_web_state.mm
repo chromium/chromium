@@ -128,6 +128,22 @@ class ContentWebState::SerializedState {
                                               std::move(storage_loader),
                                               base::Time::Now())) {}
 
+  // Returns the current navigation title from serialized data.
+  const std::u16string& GetTitle() const {
+    const NSInteger index = session_storage_.lastCommittedItemIndex;
+    if (0 <= index &&
+        static_cast<NSUInteger>(index) < session_storage_.itemStorages.count) {
+      return session_storage_.itemStorages[index].title;
+    }
+
+    return base::EmptyString16();
+  }
+
+  // Returns the number of navigation items from serialized data.
+  int GetNavigationItemCount() const {
+    return session_storage_.itemStorages.count;
+  }
+
   CRWSessionStorage* session_storage() { return session_storage_; }
 
  private:
@@ -420,12 +436,7 @@ bool ContentWebState::ContentIsHTML() const {
 
 const std::u16string& ContentWebState::GetTitle() const {
   if (serialized_state_) {
-    CRWSessionStorage* session_storage = serialized_state_->session_storage();
-    const NSInteger index = session_storage.lastCommittedItemIndex;
-    if (0 <= index &&
-        static_cast<NSUInteger>(index) < session_storage.itemStorages.count) {
-      return session_storage.itemStorages[index].title;
-    }
+    return serialized_state_->GetTitle();
   }
   return web_contents_->GetTitle();
 }
@@ -477,10 +488,8 @@ void ContentWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
 
 int ContentWebState::GetNavigationItemCount() const {
   if (serialized_state_) {
-    CRWSessionStorage* session_storage = serialized_state_->session_storage();
-    return session_storage.itemStorages.count;
+    return serialized_state_->GetNavigationItemCount();
   }
-
   return navigation_manager_->GetItemCount();
 }
 
