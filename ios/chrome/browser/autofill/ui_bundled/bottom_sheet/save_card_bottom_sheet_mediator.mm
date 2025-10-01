@@ -25,6 +25,9 @@
 
 namespace {
 
+using SaveCreditCardPromptOverlayType =
+    autofill::autofill_metrics::SaveCreditCardPromptOverlayType;
+
 // Bridges the C++ Observer interface to the Objective-C mediator. Scoped
 // observation adds and removes this bridge as the observer of the
 // SaveCardBottomSheetModel.
@@ -120,8 +123,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
           _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
           _saveCardBottomSheetModel->save_card_delegate()
               ->GetSaveCreditCardOptions(),
-          autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
-              kBottomSheet);
+          SaveCreditCardPromptOverlayType::kBottomSheet);
       break;
     // Upload save bottomsheet is being dismissed while showing loading state
     // due to being swiped away, tab changed or link clicked.
@@ -195,13 +197,19 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
                                        _saveCardBottomSheetModel
                                            ->card_accessibility_description())];
 
+  autofill::autofill_metrics::LogSaveCreditCardPromptOfferMetricIos(
+      autofill::autofill_metrics::SaveCardPromptOffer::kShown,
+      _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
+      _saveCardBottomSheetModel->save_card_delegate()
+          ->GetSaveCreditCardOptions(),
+      SaveCreditCardPromptOverlayType::kBottomSheet);
+
   autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kShown,
       _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
       _saveCardBottomSheetModel->save_card_delegate()
           ->GetSaveCreditCardOptions(),
-      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
-          kBottomSheet);
+      SaveCreditCardPromptOverlayType::kBottomSheet);
 }
 
 #pragma mark - SaveCardBottomSheetDataSource
@@ -230,8 +238,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
       _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
       _saveCardBottomSheetModel->save_card_delegate()
           ->GetSaveCreditCardOptions(),
-      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
-          kBottomSheet);
+      SaveCreditCardPromptOverlayType::kBottomSheet);
 
   if (_saveCardBottomSheetModel->save_card_delegate()->is_for_upload()) {
     [_consumer showLoadingStateWithAccessibilityLabel:
@@ -254,8 +261,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
       _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
       _saveCardBottomSheetModel->save_card_delegate()
           ->GetSaveCreditCardOptions(),
-      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
-          kBottomSheet);
+      SaveCreditCardPromptOverlayType::kBottomSheet);
   _dismissing = YES;
   [_autofillCommandsHandler dismissSaveCardBottomSheet];
 }

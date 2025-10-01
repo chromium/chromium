@@ -79,6 +79,11 @@ class AutofillSaveCardInfoBarDelegateIOS
   void LogSaveCvcInfoBarResultMetric(
       autofill_metrics::SaveCvcPromptResultIOS metric);
 
+  // Logs whether the save credit card prompt is shown or not.
+  void LogPromptOfferMetric(
+      autofill_metrics::SaveCardPromptOffer metric,
+      autofill_metrics::SaveCreditCardPromptOverlayType overlay_type);
+
  private:
   base::OnceCallback<void(bool card_saved)>
       credit_card_upload_completion_callback_;

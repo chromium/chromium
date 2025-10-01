@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
+#import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 
 namespace autofill::autofill_metrics {
 
@@ -111,6 +112,41 @@ void LogSaveCvcPromptResultIOS(
   base::UmaHistogramEnumeration(
       SaveCvcPromptSaveDestinationSuffix("Autofill.SaveCvcPromptResult",
                                          is_uploading),
+      metric);
+}
+
+void LogSaveCreditCardPromptOfferMetricIos(
+    SaveCardPromptOffer metric,
+    bool is_upload_save,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+        save_credit_card_options,
+    SaveCreditCardPromptOverlayType overlay_type) {
+  std::string_view destination = is_upload_save ? ".Server" : ".Local";
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.SaveCreditCardPromptOffer.IOS", destination,
+       SaveCreditCardPromptOverlayTypeToMetricSuffix(overlay_type)});
+
+  base::UmaHistogramEnumeration(base_histogram_name, metric);
+
+  auto is_num_strikes_in_range = [](int strikes) {
+    return strikes >= 0 && strikes <= 2;
+  };
+
+  // To avoid emitting an arbitrary number of histograms, limit `num_strikes` to
+  // [0, 2], matching the save card's current maximum allowed strikes.
+  if (!save_credit_card_options.num_strikes ||
+      !is_num_strikes_in_range(*(save_credit_card_options.num_strikes))) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {base_histogram_name, ".NumStrikes.",
+           base::NumberToString(save_credit_card_options.num_strikes.value()),
+           SaveCreditCardPromptFixFlowSuffix(
+               save_credit_card_options.should_request_name_from_user,
+               save_credit_card_options
+                   .should_request_expiration_date_from_user)}),
       metric);
 }
 

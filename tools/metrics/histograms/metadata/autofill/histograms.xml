@@ -682,6 +682,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="Server" summary="server"/>
 </variants>
 
+<variants name="AutofillSaveCardPromptOverlayTypeForIos">
+  <variant name="Banner" summary="Infobar Banner"/>
+  <variant name="BottomSheet" summary="BottomSheet"/>
+  <variant name="Modal" summary="Infobar Modal"/>
+</variants>
+
 <variants name="AutofillSaveCardSituation">
   <variant name="RequestingCardHolderName"
       summary="explicitly requesting cardholder name"/>
@@ -6398,6 +6404,49 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
   <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
   <token key="SaveSituation" variants="AutofillSaveCardSituation"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt of the type {OverlayType} on iOS is
+    shown or not shown for a card to be saved as a {SaveDestination} card. Is
+    emitted whenever card save is offered or decision to not offer is made.
+  </summary>
+  <token key="OverlayType" variants="AutofillSaveCardPromptOverlayTypeForIos"/>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt of the type {OverlayType} on iOS is
+    shown or not shown for a card to be saved as a {SaveDestination} card, with
+    {Strikes} and which required {FixFlow}. Is emitted whenever card save is
+    offered or decision to not offer is made.
+  </summary>
+  <token key="OverlayType" variants="AutofillSaveCardPromptOverlayTypeForIos"/>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+  <token key="Strikes">
+    <variant name="0" summary="0 strikes"/>
+    <variant name="1" summary="1 strike"/>
+    <variant name="2" summary="2 strikes"/>
+  </token>
+  <token key="FixFlow">
+    <variant name="NoFixFlow" summary="no fix flow"/>
+    <variant name="RequestingCardHolderName" summary="only card holder name"/>
+    <variant name="RequestingCardHolderNameAndExpiryDate"
+        summary="card holder name and expiry date"/>
+    <variant name="RequestingExpiryDate" summary="only expiry date"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.SaveCreditCardPromptOffer.{SaveDestination}"

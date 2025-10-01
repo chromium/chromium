@@ -41,9 +41,13 @@ namespace {
 
 using LegacySaveCardPromptResult =
     autofill::autofill_metrics::LegacySaveCardPromptResult;
+using SaveCardPromptOffer = autofill::autofill_metrics::SaveCardPromptOffer;
+using SaveCardPromptResult = autofill::autofill_metrics::SaveCardPromptResult;
 using SaveCreditCardPromptResultIOS =
     autofill::autofill_metrics::SaveCreditCardPromptResultIOS;
 
+constexpr std::string_view kSaveCreditCardPromptOfferBaseHistogram =
+    "Autofill.SaveCreditCardPromptOffer.IOS";
 const std::string kSaveCreditCardPromptResultIOSPrefix =
     "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
     "NoFixFlow";
@@ -234,6 +238,17 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
     EXPECT_EQ(messages[index].linkURLs,
               (consumer.legalMessages[index]).linkURLs);
   }
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptOfferBaseHistogram, ".Server.BottomSheet"}),
+      SaveCardPromptOffer::kShown,
+      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Server.BottomSheet.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown,
+      /*expected_count=*/1);
 
   histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
                                       SaveCreditCardPromptResultIOS::kShown,
@@ -556,6 +571,16 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave, SetConsumer) {
   TestCommonAttributesOfConsumer(consumer);
   ASSERT_EQ(nil, consumer.legalMessages);
 
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptOfferBaseHistogram, ".Local.BottomSheet"}),
+      SaveCardPromptOffer::kShown,
+      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Local.BottomSheet.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown,
+      /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       kSaveCreditCardPromptResultIOSPrefixForLocalSave,
       SaveCreditCardPromptResultIOS::kShown,

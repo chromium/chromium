@@ -66,10 +66,20 @@ enum class SaveCreditCardPromptOverlayType {
 // histogram also records the number of strikes (i.e number of times the card
 // has previously been rejected to be saved) and whether a fix flow was required
 // due to missing information (e.g., cardholder name or expiration date).
+// TODO(crbug.com/430588721): Clean up this function once refactored save card
+// metrics have rolled out.
 void LogSaveCreditCardPromptResultIOS(
     SaveCreditCardPromptResultIOS metric,
     bool is_uploading,
     const payments::PaymentsAutofillClient::SaveCreditCardOptions& options,
+    SaveCreditCardPromptOverlayType overlay_type);
+
+// Logs whether the save credit card prompt is shown or not.
+void LogSaveCreditCardPromptOfferMetricIos(
+    SaveCardPromptOffer metric,
+    bool is_upload_save,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+        save_credit_card_options,
     SaveCreditCardPromptOverlayType overlay_type);
 
 // Logs when a CVC save prompt is offered on iOS.

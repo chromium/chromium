@@ -33,11 +33,14 @@
 namespace {
 
 using testing::_;
+using SaveCardPromptOffer = autofill::autofill_metrics::SaveCardPromptOffer;
 using SaveCreditCardPromptResultIOS =
     autofill::autofill_metrics::SaveCreditCardPromptResultIOS;
 using SaveCreditCardOptions =
     autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions;
 
+constexpr std::string_view kSaveCreditCardPromptOfferBaseHistogram =
+    "Autofill.SaveCreditCardPromptOffer.IOS";
 constexpr char kSaveCreditCardPromptResultHistogramStringForLocalSave[] =
     "Autofill.SaveCreditCardPromptResult.IOS.Local.Banner.NumStrikes.0."
     "NoFixFlow";
@@ -137,6 +140,15 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
        LogInfoBarBannerShownAndAcceptedForUploadSave) {
   base::HistogramTester histogram_tester;
   InitInfobar(/*for_upload=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Banner"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Server.Banner.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
+
   histogram_tester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForServerSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
@@ -155,6 +167,15 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
        LogInfoBarBannerShownAndAcceptedForLocalSave) {
   base::HistogramTester histogram_tester;
   InitInfobar(/*for_upload=*/false);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Local.Banner"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Local.Banner.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
+
   histogram_tester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForLocalSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
@@ -180,6 +201,15 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
        LogInfoBarBannerShownAndSwipedForUploadSave) {
   base::HistogramTester histogram_tester;
   InitInfobar(/*for_upload=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Banner"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Server.Banner.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
+
   histogram_tester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForServerSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
@@ -199,6 +229,14 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
   base::HistogramTester histogram_tester;
   InitInfobar(/*for_upload=*/false);
   histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Local.Banner"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Local.Banner.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
+
+  histogram_tester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForLocalSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
 
@@ -217,6 +255,14 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
   base::HistogramTester histogram_tester;
   InitInfobar(/*for_upload=*/true);
   histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Banner"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Server.Banner.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
+
+  histogram_tester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForServerSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
 
@@ -234,6 +280,15 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
        LogInfoBarBannerShownAndTimedOutForLocalSave) {
   base::HistogramTester histogram_tester;
   InitInfobar(/*for_upload=*/false);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Local.Banner"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Local.Banner.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
+
   histogram_tester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForLocalSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
