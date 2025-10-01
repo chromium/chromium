@@ -150,6 +150,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'win-10_laptop_low_end-perf_HP-Candidate',
     'win-11-processor-perf',  # One of the lightweight processors.
     'win64-builder-perf',
+    'win-arm64-snapdragon-elite-perf',
 ])
 
 PUBLIC_PERF_BUILDERS = [
@@ -296,9 +297,6 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests',
         },
     },
-    'win-arm64-builder-perf': {
-        'perf_trigger': False,
-    },
     'win-10_laptop_low_end-perf_HP-Candidate': {
         'tests': [
             {
@@ -325,27 +323,6 @@ FYI_BUILDERS = {
             'Windows-10',
             'synthetic_product_name':
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
-        },
-    },
-    'win-arm64-snapdragon-plus-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Windows-11',
-            'cpu':
-            'arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU',
-            'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
         },
     },
     'chromeos-kevin-builder-perf-fyi': {
@@ -1331,6 +1308,30 @@ BUILDERS = {
     'win-11-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
+    },
+    'win-arm64-builder-perf': {
+        'perf_trigger': False,
+    },
+    'win-arm64-snapdragon-elite-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-11',
+            'cpu':
+            'arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU',
+            'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
+        },
     },
 }
 
