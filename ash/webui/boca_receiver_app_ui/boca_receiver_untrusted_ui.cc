@@ -35,7 +35,6 @@ BocaReceiverUntrustedUIConfig::~BocaReceiverUntrustedUIConfig() = default;
 
 bool BocaReceiverUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  // TODO(crbug.com/435165759): enable based on kiosk policy.
   return features::IsBocaReceiverAppEnabled();
 }
 
