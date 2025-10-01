@@ -10,7 +10,10 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::user_scripts_test_util {
 

@@ -57,6 +57,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 
@@ -68,6 +69,8 @@
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/user_manager_impl.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

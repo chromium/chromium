@@ -7,6 +7,9 @@
 
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 class Profile;

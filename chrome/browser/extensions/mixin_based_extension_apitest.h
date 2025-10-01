@@ -7,6 +7,9 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

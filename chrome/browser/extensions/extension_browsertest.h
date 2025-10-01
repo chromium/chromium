@@ -29,6 +29,8 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class BrowserWindowInterface;
 class OwningTestTabModel;
 class Profile;

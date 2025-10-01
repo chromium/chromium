@@ -71,6 +71,8 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 namespace {
 

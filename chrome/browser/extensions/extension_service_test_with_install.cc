@@ -22,8 +22,11 @@
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 

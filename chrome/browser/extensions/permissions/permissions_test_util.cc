@@ -8,8 +8,11 @@
 #include "base/run_loop.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace permissions_test_util {

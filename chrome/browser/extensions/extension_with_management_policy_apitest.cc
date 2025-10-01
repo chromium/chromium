@@ -7,8 +7,11 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 ExtensionApiTestWithManagementPolicy::ExtensionApiTestWithManagementPolicy(
     ContextType context_type)

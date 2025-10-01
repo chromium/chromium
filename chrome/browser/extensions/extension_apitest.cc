@@ -29,6 +29,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_paths.h"
@@ -52,6 +53,8 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
