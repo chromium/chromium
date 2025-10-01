@@ -1006,10 +1006,8 @@ TEST_P(ClientResourceProviderTest, RemovedEvictedResourcesDoNotNotifyClient) {
 // callbacks are processed.
 TEST_P(ClientResourceProviderTest, EvictionNotifiesMainAndFlushes) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kEvictionUnlocksResources,
-       features::kBatchMainThreadReleaseCallbacks},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kEvictionUnlocksResources},
+                                       {});
   // Recreate to support `features::kBatchMainThreadReleaseCallbacks`.
   InitProvider();
   // Mark visible so eviction path is not inadvertently triggered.

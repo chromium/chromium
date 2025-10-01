@@ -208,8 +208,6 @@ ClientResourceProvider::ClientResourceProvider(
       impl_task_runner_(impl_task_runner),
       resource_flush_callback_(std::move(resource_flush_callback)),
       threaded_release_callbacks_supported_(
-          base::FeatureList::IsEnabled(
-              features::kBatchMainThreadReleaseCallbacks) &&
           main_task_runner_ && impl_task_runner_ &&
           main_task_runner_ != impl_task_runner_ && resource_flush_callback_) {}
 
