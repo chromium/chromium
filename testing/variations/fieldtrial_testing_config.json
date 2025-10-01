@@ -2120,6 +2120,26 @@
             ]
         }
     ],
+    "AutofillAddressDiscardWhitespaceInHouseNumber": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAddressDiscardWhitespaceInHouseNumber"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAddressSuggestionsOnTyping": [
         {
             "platforms": [
