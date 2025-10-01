@@ -5,6 +5,7 @@
 """A script to evaluate prompts using promptfoo."""
 
 import argparse
+import fnmatch
 import logging
 import os
 import pathlib
@@ -144,7 +145,8 @@ def _get_tests_to_run(
     Args:
         shard_index: The swarming shard index parsed from arguments.
         total_shards: The swarming shard total parsed from arguments.
-        test_filter: The test filter parsed from arguments.
+        test_filter: The test filter parsed from arguments. Should be a string
+            containing a ::-separated list of globs to use for filtering.
 
     Returns:
         A potentially empty list of paths, each path pointing to a valid test
@@ -153,9 +155,20 @@ def _get_tests_to_run(
     shard_index, total_shards = _determine_shard_values(
         shard_index, total_shards)
     configs_to_run = _discover_testcase_files()
-    configs_to_run.sort()
     if test_filter:
-        configs_to_run = [c for c in configs_to_run if test_filter in str(c)]
+        # Temporarily make the paths relative to the root so that filtering
+        # does not take into account any path components outside of the
+        # Chromium checkout.
+        all_string_configs = [
+            str(c.relative_to(constants.CHROMIUM_SRC)) for c in configs_to_run
+        ]
+        filtered_configs = set()
+        for f in test_filter.split('::'):
+            filtered_configs |= set(fnmatch.filter(all_string_configs, f))
+        configs_to_run = [
+            constants.CHROMIUM_SRC / pathlib.Path(c) for c in filtered_configs
+        ]
+    configs_to_run.sort()
     configs_to_run = configs_to_run[shard_index::total_shards]
     return configs_to_run
 
@@ -316,8 +329,13 @@ def _parse_args() -> argparse.Namespace:
               'output is only surfaced when a test fails.'))
 
     group = parser.add_argument_group('Test Selection Arguments')
-    group.add_argument('--filter',
-                       help='Only run configs that contain this substring.')
+    filter_group = group.add_mutually_exclusive_group()
+    filter_group.add_argument(
+        '--filter', help='A ::-separated list of globs of tests to run.')
+    filter_group.add_argument(
+        '--isolated-script-test-filter',
+        dest='filter',
+        help='Alias for --filter to conform to the isolated script standard.')
     group.add_argument(
         '--shard-index',
         type=int,

@@ -257,85 +257,99 @@ class GetTestsToRunUnittest(fake_filesystem_unittest.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
+        discover_patcher = mock.patch('eval_prompts._discover_testcase_files')
+        self.mock_discover_testcase_files = discover_patcher.start()
+        self.addCleanup(discover_patcher.stop)
 
-    @mock.patch('eval_prompts._discover_testcase_files')
-    @mock.patch('eval_prompts._determine_shard_values')
-    def test_get_tests_to_run_no_sharding_no_filter(
-            self, mock_determine_shard_values, mock_discover_testcase_files):
+        determine_shard_patcher = mock.patch(
+            'eval_prompts._determine_shard_values')
+        self.mock_determine_shard_values = determine_shard_patcher.start()
+        self.addCleanup(determine_shard_patcher.stop)
+
+        constants_patcher = mock.patch('eval_prompts.constants.CHROMIUM_SRC',
+                                       pathlib.Path('/chromium/src'))
+        self.mock_constants = constants_patcher.start()
+        self.addCleanup(constants_patcher.stop)
+
+    def test_get_tests_to_run_no_sharding_no_filter(self):
         """Tests that all tests are returned with no sharding or filtering."""
-        mock_determine_shard_values.return_value = (0, 1)
-        mock_discover_testcase_files.return_value = [
-            pathlib.Path('/test/a.yaml'),
-            pathlib.Path('/test/b.yaml'),
-            pathlib.Path('/test/c.yaml'),
+        self.mock_determine_shard_values.return_value = (0, 1)
+        self.mock_discover_testcase_files.return_value = [
+            pathlib.Path('/chromium/src/test/a.yaml'),
+            pathlib.Path('/chromium/src/test/b.yaml'),
+            pathlib.Path('/chromium/src/test/c.yaml'),
         ]
 
         result = eval_prompts._get_tests_to_run(None, None, None)
         self.assertEqual(len(result), 3)
-        self.assertIn(pathlib.Path('/test/a.yaml'), result)
-        self.assertIn(pathlib.Path('/test/b.yaml'), result)
-        self.assertIn(pathlib.Path('/test/c.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/a.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/c.yaml'), result)
 
-    @mock.patch('eval_prompts._discover_testcase_files')
-    @mock.patch('eval_prompts._determine_shard_values')
-    def test_get_tests_to_run_with_filter(self, mock_determine_shard_values,
-                                          mock_discover_testcase_files):
+    def test_get_tests_to_run_with_filter(self):
         """Tests that tests are filtered correctly."""
-        mock_determine_shard_values.return_value = (0, 1)
-        mock_discover_testcase_files.return_value = [
-            pathlib.Path('/test/a.yaml'),
-            pathlib.Path('/test/b.yaml'),
-            pathlib.Path('/test/c.yaml'),
+        self.mock_determine_shard_values.return_value = (0, 1)
+        self.mock_discover_testcase_files.return_value = [
+            pathlib.Path('/chromium/src/test/a.yaml'),
+            pathlib.Path('/chromium/src/test/b.yaml'),
+            pathlib.Path('/chromium/src/test/c.yaml'),
         ]
 
-        result = eval_prompts._get_tests_to_run(None, None, 'b.yaml')
+        result = eval_prompts._get_tests_to_run(None, None, '*/b.yaml')
         self.assertEqual(len(result), 1)
-        self.assertIn(pathlib.Path('/test/b.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result)
 
-    @mock.patch('eval_prompts._discover_testcase_files')
-    @mock.patch('eval_prompts._determine_shard_values')
-    def test_get_tests_to_run_with_sharding(self, mock_determine_shard_values,
-                                            mock_discover_testcase_files):
+    def test_get_tests_to_run_with_multiple_filters(self):
+        """Tests that tests are filtered correctly with multiple filters."""
+        self.mock_determine_shard_values.return_value = (0, 1)
+        self.mock_discover_testcase_files.return_value = [
+            pathlib.Path('/chromium/src/test/a.yaml'),
+            pathlib.Path('/chromium/src/test/b.yaml'),
+            pathlib.Path('/chromium/src/test/c.yaml'),
+        ]
+
+        result = eval_prompts._get_tests_to_run(None, None,
+                                                '*/a.yaml::*/c.yaml')
+        self.assertEqual(len(result), 2)
+        self.assertIn(pathlib.Path('/chromium/src/test/a.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/c.yaml'), result)
+
+    def test_get_tests_to_run_with_sharding(self):
         """Tests that tests are sharded correctly."""
-        mock_determine_shard_values.return_value = (1, 2)
-        mock_discover_testcase_files.return_value = [
-            pathlib.Path('/test/a.yaml'),
-            pathlib.Path('/test/b.yaml'),
-            pathlib.Path('/test/c.yaml'),
-            pathlib.Path('/test/d.yaml'),
+        self.mock_determine_shard_values.return_value = (1, 2)
+        self.mock_discover_testcase_files.return_value = [
+            pathlib.Path('/chromium/src/test/a.yaml'),
+            pathlib.Path('/chromium/src/test/b.yaml'),
+            pathlib.Path('/chromium/src/test/c.yaml'),
+            pathlib.Path('/chromium/src/test/d.yaml'),
         ]
 
         result = eval_prompts._get_tests_to_run(1, 2, None)
         self.assertEqual(len(result), 2)
         # The list is sorted before sharding
-        self.assertIn(pathlib.Path('/test/b.yaml'), result)
-        self.assertIn(pathlib.Path('/test/d.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/b.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/d.yaml'), result)
 
-    @mock.patch('eval_prompts._discover_testcase_files')
-    @mock.patch('eval_prompts._determine_shard_values')
-    def test_get_tests_to_run_with_sharding_and_filter(
-            self, mock_determine_shard_values, mock_discover_testcase_files):
+    def test_get_tests_to_run_with_sharding_and_filter(self):
         """Tests that tests are filtered and then sharded correctly."""
-        mock_determine_shard_values.return_value = (0, 2)
-        mock_discover_testcase_files.return_value = [
-            pathlib.Path('/test/a.yaml'),
-            pathlib.Path('/test/b.yaml'),
-            pathlib.Path('/test/c.yaml'),
-            pathlib.Path('/test/d_filtered.yaml'),
-            pathlib.Path('/test/e_filtered.yaml'),
+        self.mock_determine_shard_values.return_value = (0, 2)
+        self.mock_discover_testcase_files.return_value = [
+            pathlib.Path('/chromium/src/test/a.yaml'),
+            pathlib.Path('/chromium/src/test/b.yaml'),
+            pathlib.Path('/chromium/src/test/c.yaml'),
+            pathlib.Path('/chromium/src/test/d_filtered.yaml'),
+            pathlib.Path('/chromium/src/test/e_filtered.yaml'),
         ]
 
-        result = eval_prompts._get_tests_to_run(0, 2, 'filtered')
+        result = eval_prompts._get_tests_to_run(0, 2, '*filtered*')
         self.assertEqual(len(result), 1)
-        self.assertIn(pathlib.Path('/test/d_filtered.yaml'), result)
+        self.assertIn(pathlib.Path('/chromium/src/test/d_filtered.yaml'),
+                      result)
 
-    @mock.patch('eval_prompts._discover_testcase_files')
-    @mock.patch('eval_prompts._determine_shard_values')
-    def test_get_tests_to_run_no_tests_found(self, mock_determine_shard_values,
-                                             mock_discover_testcase_files):
+    def test_get_tests_to_run_no_tests_found(self):
         """Tests that an empty list is returned when no tests are found."""
-        mock_determine_shard_values.return_value = (0, 1)
-        mock_discover_testcase_files.return_value = []
+        self.mock_determine_shard_values.return_value = (0, 1)
+        self.mock_discover_testcase_files.return_value = []
 
         result = eval_prompts._get_tests_to_run(None, None, None)
         self.assertEqual(len(result), 0)
@@ -759,6 +773,28 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertEqual(args.filter, 'my_filter')
         self.assertEqual(args.shard_index, 1)
         self.assertEqual(args.total_shards, 3)
+
+    def test_parse_args_isolated_script_test_filter(self):
+        """Tests the --isolated-script-test-filter argument."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--isolated-script-test-filter', 'iso_filter'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.filter, 'iso_filter')
+
+    def test_parse_args_filter_exclusive_group(self):
+        """Tests that filter arguments are mutually exclusive."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--filter', 'a',
+            '--isolated-script-test-filter', 'b'
+        ]
+        # stderr mocked to silence the automatic help output by the parser when
+        # parsing fails.
+        with (
+                self.assertRaises(SystemExit),
+                mock.patch('sys.stderr', new_callable=io.StringIO),
+        ):
+            eval_prompts._parse_args()
 
     def test_parse_args_all_gemini_cli_args(self):
         """Tests that all gemini-cli arguments are parsed correctly."""
