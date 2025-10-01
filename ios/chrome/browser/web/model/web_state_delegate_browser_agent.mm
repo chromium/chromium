@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/insecure_form_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
@@ -374,20 +373,4 @@ void WebStateDelegateBrowserAgent::ShouldAllowCut(
     base::OnceCallback<void(bool)> callback) {
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
       ->ShouldAllowCut(std::move(callback));
-}
-
-bool WebStateDelegateBrowserAgent::CanRunOpenPanel(web::WebState* source) const
-    API_AVAILABLE(ios(18.4)) {
-  return base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu);
-}
-
-void WebStateDelegateBrowserAgent::RunOpenPanel(
-    web::WebState* source,
-    WKOpenPanelParameters* parameters,
-    WKFrameInfo* frame,
-    base::OnceCallback<void(NSArray<NSURL*>*)> completion) const
-    API_AVAILABLE(ios(18.4)) {
-  // TODO(crbug.com/441659098): Forward the request to show the upload panel to
-  // the appropriate tab helper.
-  std::move(completion).Run(nil);
 }

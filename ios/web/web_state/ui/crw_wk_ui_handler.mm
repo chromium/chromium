@@ -96,13 +96,7 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
       (webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:);
   if (selector == runOpenPanelWithParametersSelector) {
     if (@available(iOS 18.4, *)) {
-      web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
-      if (delegate) {
-        return delegate->CanRunOpenPanel(self.webStateImpl);
-      } else {
-        // If there is no delegate, then fall back to native behaviour.
-        return NO;
-      }
+      return web::GetWebClient()->CanRunOpenPanel(self.webStateImpl);
     } else {
       NOTREACHED() << "@selector(-webView:runOpenPanelWithParameters:"
                       "initiatedByFrame:completionHandler:) only exists on "
@@ -337,19 +331,13 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
               initiatedByFrame:(WKFrameInfo*)frame
              completionHandler:(void (^)(NSArray<NSURL*>*))completionHandler
     API_AVAILABLE(ios(18.4)) {
-  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
-  CHECK(delegate) << "-[CRWWKUIHandler "
-                     "webView:runOpenPanelWithParameters:initiatedByFrame:"
-                     "completionHandler:] was called while the associated "
-                     "WebState has no delegate to show an open panel.";
-  CHECK(delegate->CanRunOpenPanel(self.webStateImpl))
+  CHECK(web::GetWebClient()->CanRunOpenPanel(self.webStateImpl))
       << "-[CRWWKUIHandler "
          "webView:runOpenPanelWithParameters:initiatedByFrame:"
-         "completionHandler:] was called while the associated WebState's "
-         "delegate cannot show an open panel (delegate->CanRunOpenPanel() "
-         "returned false).";
-  delegate->RunOpenPanel(self.webStateImpl, parameters, frame,
-                         base::BindOnce(completionHandler));
+         "completionHandler:] was called while "
+         "web::GetWebClient()->CanRunOpenPanel() returned false.";
+  web::GetWebClient()->RunOpenPanel(self.webStateImpl, parameters, frame,
+                                    base::BindOnce(completionHandler));
 }
 
 #pragma mark - CRWMediaCapturePermissionPresenter

@@ -642,3 +642,19 @@ void ChromeWebClient::BuildEditMenu(web::WebState* web_state,
     tab_helper->BuildEditMenu(builder);
   }
 }
+
+bool ChromeWebClient::CanRunOpenPanel(web::WebState* source) const
+    API_AVAILABLE(ios(18.4)) {
+  return base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu);
+}
+
+void ChromeWebClient::RunOpenPanel(
+    web::WebState* source,
+    WKOpenPanelParameters* parameters,
+    WKFrameInfo* frame,
+    base::OnceCallback<void(NSArray<NSURL*>*)> completion) const
+    API_AVAILABLE(ios(18.4)) {
+  // TODO(crbug.com/441659098): Forward the request to show the upload panel to
+  // the appropriate tab helper.
+  std::move(completion).Run(nil);
+}
