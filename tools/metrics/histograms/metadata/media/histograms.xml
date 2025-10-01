@@ -5600,6 +5600,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PictureInPicture.Android.Action"
+    enum="PictureInPictureButtonAction" expires_after="2026-09-30">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records which Picture-in-Picture button was clicked. This is recorded when
+    the user clicks on a button in the Android Picture-in-Picture window.
+  </summary>
+</histogram>
+
 <histogram name="Media.PictureInPicture.Disallowed"
     enum="PictureInPictureDisallowedType" expires_after="2025-08-31">
   <owner>steimel@chromium.org</owner>

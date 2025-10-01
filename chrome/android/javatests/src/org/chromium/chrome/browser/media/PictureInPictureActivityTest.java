@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.browser.media.PictureInPictureActivity.PICTURE_IN_PICTURE_ACTION_HISTOGRAM;
 
 import android.app.Activity;
 import android.app.RemoteAction;
@@ -46,8 +47,10 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.media.PictureInPictureActivity.PictureInPictureButtonAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -275,15 +278,25 @@ public class PictureInPictureActivityTest {
         PictureInPictureActivity.MediaActionButtonsManager manager =
                 activity.mMediaActionsButtonsManager;
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.NEXT_TRACK);
         activity.updateVisibleActions(new int[] {MediaSessionAction.NEXT_TRACK});
         manager.mNextTrack.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .nextTrack(eq(NATIVE_OVERLAY));
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.PREVIOUS_TRACK);
         activity.updateVisibleActions(new int[] {MediaSessionAction.PREVIOUS_TRACK});
         manager.mPreviousTrack.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .previousTrack(eq(NATIVE_OVERLAY));
+        histogramWatcher.assertExpected();
 
         testExitOn(activity, () -> activity.close());
     }
@@ -296,15 +309,25 @@ public class PictureInPictureActivityTest {
         PictureInPictureActivity.MediaActionButtonsManager manager =
                 activity.mMediaActionsButtonsManager;
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.NEXT_SLIDE);
         activity.updateVisibleActions(new int[] {MediaSessionAction.NEXT_SLIDE});
         manager.mNextSlide.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .nextSlide(eq(NATIVE_OVERLAY));
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.PREVIOUS_SLIDE);
         activity.updateVisibleActions(new int[] {MediaSessionAction.PREVIOUS_SLIDE});
         manager.mPreviousSlide.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .previousSlide(eq(NATIVE_OVERLAY));
+        histogramWatcher.assertExpected();
 
         testExitOn(activity, () -> activity.close());
     }
@@ -318,10 +341,14 @@ public class PictureInPictureActivityTest {
         PictureInPictureActivity.MediaActionButtonsManager manager =
                 activity.mMediaActionsButtonsManager;
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM, PictureInPictureButtonAction.HIDE);
         activity.updateVisibleActions(new int[] {MediaSessionAction.EXIT_PICTURE_IN_PICTURE});
         manager.mHide.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .hide(eq(NATIVE_OVERLAY));
+        histogramWatcher.assertExpected();
 
         testExitOn(activity, () -> activity.close());
     }
@@ -397,37 +424,69 @@ public class PictureInPictureActivityTest {
         activity.setMicrophoneMuted(false);
         activity.setCameraState(true);
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.TOGGLE_MICROPHONE);
         manager.mMicrophone.getAction().getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleMicrophone(eq(NATIVE_OVERLAY), eq(false));
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.TOGGLE_CAMERA);
         manager.mCamera.getAction().getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleCamera(eq(NATIVE_OVERLAY), eq(false));
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM, PictureInPictureButtonAction.PAUSE);
         manager.mPause.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .togglePlayPause(eq(NATIVE_OVERLAY), eq(false));
+        histogramWatcher.assertExpected();
 
         activity.setPlaybackState(PlaybackState.PAUSED);
         activity.setMicrophoneMuted(true);
         activity.setCameraState(false);
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM, PictureInPictureButtonAction.PLAY);
         manager.mPlay.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .togglePlayPause(eq(NATIVE_OVERLAY), eq(true));
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.TOGGLE_MICROPHONE);
         manager.mMicrophone.getAction().getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleMicrophone(eq(NATIVE_OVERLAY), eq(true));
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                        PictureInPictureButtonAction.TOGGLE_CAMERA);
         manager.mCamera.getAction().getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleCamera(eq(NATIVE_OVERLAY), eq(true));
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PICTURE_IN_PICTURE_ACTION_HISTOGRAM, PictureInPictureButtonAction.HANG_UP);
         manager.mHangUp.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .hangUp(eq(NATIVE_OVERLAY));
+        histogramWatcher.assertExpected();
 
         testExitOn(activity, () -> activity.close());
     }

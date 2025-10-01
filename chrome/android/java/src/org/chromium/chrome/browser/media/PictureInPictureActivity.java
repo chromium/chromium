@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -39,6 +40,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.Initializer;
@@ -62,6 +64,8 @@ import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -71,6 +75,43 @@ import java.util.HashSet;
  */
 @NullMarked
 public class PictureInPictureActivity extends AsyncInitializationActivity {
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    //
+    // PictureInPictureButtonAction defined in tools/metrics/histograms/metadata/media/enums.xml
+    @IntDef({
+        PictureInPictureButtonAction.PREVIOUS_TRACK,
+        PictureInPictureButtonAction.NEXT_TRACK,
+        PictureInPictureButtonAction.PLAY,
+        PictureInPictureButtonAction.PAUSE,
+        PictureInPictureButtonAction.REPLAY,
+        PictureInPictureButtonAction.PREVIOUS_SLIDE,
+        PictureInPictureButtonAction.NEXT_SLIDE,
+        PictureInPictureButtonAction.HANG_UP,
+        PictureInPictureButtonAction.TOGGLE_MICROPHONE,
+        PictureInPictureButtonAction.TOGGLE_CAMERA,
+        PictureInPictureButtonAction.HIDE,
+        PictureInPictureButtonAction.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PictureInPictureButtonAction {
+        int PREVIOUS_TRACK = 0;
+        int NEXT_TRACK = 1;
+        int PLAY = 2;
+        int PAUSE = 3;
+        int REPLAY = 4;
+        int PREVIOUS_SLIDE = 5;
+        int NEXT_SLIDE = 6;
+        int HANG_UP = 7;
+        int TOGGLE_MICROPHONE = 8;
+        int TOGGLE_CAMERA = 9;
+        int HIDE = 10;
+        int COUNT = 11;
+    }
+
+    static final String PICTURE_IN_PICTURE_ACTION_HISTOGRAM =
+            "Media.PictureInPicture.Android.Action";
+
     // Used to filter media buttons' remote action intents.
     private static final String MEDIA_ACTION =
             "org.chromium.chrome.browser.media.PictureInPictureActivity.MediaAction";
@@ -456,6 +497,46 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         }
     }
 
+    private @PictureInPictureButtonAction int getButtonActionForMetrics(int mediaSessionAction) {
+        switch (mediaSessionAction) {
+            case MediaSessionAction.PREVIOUS_TRACK:
+                return PictureInPictureButtonAction.PREVIOUS_TRACK;
+            case MediaSessionAction.NEXT_TRACK:
+                return PictureInPictureButtonAction.NEXT_TRACK;
+            case MediaSessionAction.PLAY:
+                return mMediaActionsButtonsManager.mPlaybackState == PlaybackState.END_OF_VIDEO
+                        ? PictureInPictureButtonAction.REPLAY
+                        : PictureInPictureButtonAction.PLAY;
+            case MediaSessionAction.PAUSE:
+                return PictureInPictureButtonAction.PAUSE;
+            case MediaSessionAction.PREVIOUS_SLIDE:
+                return PictureInPictureButtonAction.PREVIOUS_SLIDE;
+            case MediaSessionAction.NEXT_SLIDE:
+                return PictureInPictureButtonAction.NEXT_SLIDE;
+            case MediaSessionAction.HANG_UP:
+                return PictureInPictureButtonAction.HANG_UP;
+            case MediaSessionAction.TOGGLE_MICROPHONE:
+                return PictureInPictureButtonAction.TOGGLE_MICROPHONE;
+            case MediaSessionAction.TOGGLE_CAMERA:
+                return PictureInPictureButtonAction.TOGGLE_CAMERA;
+            case MediaSessionAction.EXIT_PICTURE_IN_PICTURE:
+                return PictureInPictureButtonAction.HIDE;
+            default:
+                return PictureInPictureButtonAction.COUNT;
+        }
+    }
+
+    private void recordButtonAction(int mediaSessionAction) {
+        @PictureInPictureButtonAction int action = getButtonActionForMetrics(mediaSessionAction);
+
+        if (action != PictureInPictureButtonAction.COUNT) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    PICTURE_IN_PICTURE_ACTION_HISTOGRAM,
+                    action,
+                    PictureInPictureButtonAction.COUNT);
+        }
+    }
+
     private class MediaSessionBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -476,7 +557,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                             ? intent.getBooleanExtra(CONTROL_STATE, true)
                             : null;
 
-            switch (intent.getIntExtra(CONTROL_TYPE, -1)) {
+            int controlType = intent.getIntExtra(CONTROL_TYPE, -1);
+            recordButtonAction(controlType);
+
+            switch (controlType) {
                 case MediaSessionAction.PLAY:
                     PictureInPictureActivityJni.get()
                             .togglePlayPause(mNativeOverlayWindowAndroid, /* toggleOn= */ true);
@@ -517,7 +601,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                             MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)) {
                         mHideButtonClicked = true;
                         PictureInPictureActivityJni.get().hide(mNativeOverlayWindowAndroid);
-                        // TODO(crbug.com/421606013): record action usage metrics.
                     }
                     return;
                 default:

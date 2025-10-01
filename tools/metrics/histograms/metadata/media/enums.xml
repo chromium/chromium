@@ -1850,6 +1850,20 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kSoftwareDecoderOnly"/>
 </enum>
 
+<enum name="PictureInPictureButtonAction">
+  <int value="0" label="PreviousTrack"/>
+  <int value="1" label="NextTrack"/>
+  <int value="2" label="Play"/>
+  <int value="3" label="Pause"/>
+  <int value="4" label="Replay"/>
+  <int value="5" label="PreviousSlide"/>
+  <int value="6" label="NextSlide"/>
+  <int value="7" label="HangUp"/>
+  <int value="8" label="ToggleMicrophone"/>
+  <int value="9" label="ToggleCamera"/>
+  <int value="10" label="Hide"/>
+</enum>
+
 <!-- LINT.IfChange(PictureInPictureDisallowedTypeEnum) -->
 
 <enum name="PictureInPictureDisallowedType">
