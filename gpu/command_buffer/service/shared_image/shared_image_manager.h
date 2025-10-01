@@ -157,9 +157,15 @@ class GPU_GLES2_EXPORT SharedImageManager
     return display_context_on_another_thread_;
   }
 
-#if !BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OZONE)
   GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
     return gpu_memory_buffer_factory_.get();
+  }
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+  viz::VulkanContextProvider* vulkan_context_provider() {
+    return vulkan_context_provider_.get();
   }
 #endif
 
@@ -201,9 +207,10 @@ class GPU_GLES2_EXPORT SharedImageManager
 
 #if BUILDFLAG(IS_OZONE)
   bool supports_overlays_on_ozone_ = false;
+  scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
 #endif
 
-#if !BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OZONE)
   std::unique_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 #endif
 

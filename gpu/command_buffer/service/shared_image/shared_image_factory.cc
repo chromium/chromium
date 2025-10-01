@@ -714,6 +714,9 @@ SharedImageFactory::CreateNativeGpuMemoryBufferHandle(
 #if BUILDFLAG(IS_APPLE)
   return IOSurfaceImageBackingFactory::CreateGpuMemoryBufferHandle(size,
                                                                    format);
+#elif BUILDFLAG(IS_OZONE)
+  return OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
+      shared_image_manager_->vulkan_context_provider(), size, format, usage);
 #else
   auto* gmb_factory = shared_image_manager_->gpu_memory_buffer_factory();
   CHECK(gmb_factory);

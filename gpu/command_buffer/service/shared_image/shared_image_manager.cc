@@ -36,6 +36,7 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -250,7 +251,11 @@ SharedImageManager::SharedImageManager(
       dxgi_shared_handle_manager_(
           base::MakeRefCounted<DXGISharedHandleManager>())
 #endif
-#if !BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_OZONE)
+      ,
+      vulkan_context_provider_(vulkan_context_provider)
+#endif
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OZONE)
       ,
       gpu_memory_buffer_factory_(
           gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider,
