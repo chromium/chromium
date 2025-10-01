@@ -14,7 +14,7 @@ export function getHtml(this: SplitNewTabPageAppElement) {
 <div id="header">
   <cr-icon-button id="closeButton"
       iron-icon="tab-search:close"
-      aria-label="$i18n{splitViewCloseButtonAriaLabel}"
+      title="$i18n{splitViewCloseButtonAriaLabel}"
       @click="${this.onClose_}">
   </cr-icon-button>
   ${
