@@ -58,7 +58,9 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
                            bool renderer_initiated) override {
     tabs::TabInterface* tab_to_bind =
         tabs::TabInterface::GetFromContents(new_contents);
-    if (!tab_to_bind) {
+    Profile* new_tab_profile =
+        tab_to_bind->GetBrowserWindowInterface()->GetProfile();
+    if (!tab_to_bind || new_tab_profile != instance_->profile()) {
       return;
     }
 
