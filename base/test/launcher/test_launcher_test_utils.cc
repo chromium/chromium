@@ -156,7 +156,8 @@ std::optional<Value::Dict> ReadSummary(const FilePath& path) {
   const int size = 2e7;
   std::string json;
   CHECK(ReadFileToStringWithMaxSize(path, &json, size));
-  std::optional<Value> value = JSONReader::Read(json);
+  std::optional<Value> value =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (value && value->is_dict()) {
     result = std::move(*value).TakeDict();
   }

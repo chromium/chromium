@@ -80,7 +80,7 @@ class JSONPerfTest : public testing::Test {
     reporter.AddResult(kMetricWriteTime, end_write - start_write);
 
     TimeTicks start_read = TimeTicks::Now();
-    JSONReader::Read(json);
+    JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
     TimeTicks end_read = TimeTicks::Now();
     reporter.AddResult(kMetricReadTime, end_read - start_read);
   }

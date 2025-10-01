@@ -109,7 +109,8 @@ TEST(JSONValueConverterTest, ParseSimpleMessage) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -152,7 +153,8 @@ TEST(JSONValueConverterTest, ParseNestedMessage) {
       "  }]\n"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   NestedMessage message;
   base::JSONValueConverter<NestedMessage> converter;
@@ -195,7 +197,8 @@ TEST(JSONValueConverterTest, ParseFailures) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -212,7 +215,8 @@ TEST(JSONValueConverterTest, ParseWithMissingFields) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -236,7 +240,8 @@ TEST(JSONValueConverterTest, EnumParserFails) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -254,7 +259,8 @@ TEST(JSONValueConverterTest, RepeatedValueErrorInTheMiddle) {
       "  \"ints\": [1, false]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;

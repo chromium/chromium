@@ -489,7 +489,8 @@ void TraceConfig::InitializeFromConfigDict(const Value::Dict& dict) {
 }
 
 void TraceConfig::InitializeFromConfigString(std::string_view config_string) {
-  std::optional<Value> dict = JSONReader::Read(config_string);
+  std::optional<Value> dict =
+      JSONReader::Read(config_string, JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (dict && dict->is_dict()) {
     InitializeFromConfigDict(dict->GetDict());
   } else {

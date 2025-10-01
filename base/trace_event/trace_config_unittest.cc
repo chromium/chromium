@@ -359,8 +359,8 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
   EXPECT_FALSE(tc.IsEventPackageNameFilterEnabled());
   EXPECT_STREQ("", tc.ToCategoryFilterString().c_str());
 
-  std::optional<Value> default_value =
-      JSONReader::Read(kDefaultTraceConfigString);
+  std::optional<Value> default_value = JSONReader::Read(
+      kDefaultTraceConfigString, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(default_value);
   ASSERT_TRUE(default_value->is_dict());
   TraceConfig default_tc(default_value->GetDict());
@@ -371,8 +371,8 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
   EXPECT_FALSE(default_tc.IsArgumentFilterEnabled());
   EXPECT_STREQ("", default_tc.ToCategoryFilterString().c_str());
 
-  std::optional<Value> custom_value =
-      JSONReader::Read(kCustomTraceConfigString);
+  std::optional<Value> custom_value = JSONReader::Read(
+      kCustomTraceConfigString, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(custom_value);
   ASSERT_TRUE(custom_value->is_dict());
   TraceConfig custom_tc(custom_value->GetDict());

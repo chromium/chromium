@@ -415,7 +415,8 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
   std::string json(StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_FULL));
 
   // Check for valid JSON.
-  std::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
@@ -454,7 +455,8 @@ TEST_P(StatisticsRecorderTest, ToJSONOmitBuckets) {
 
   std::string json =
       StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
-  std::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
