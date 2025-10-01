@@ -61,10 +61,14 @@ template <typename T>
            std::is_same_v<T, Variant>
 struct IsSupportedDBusTypeHelper<T> : std::true_type {};
 
-template <typename T>
-concept IsSupportedDBusType = IsSupportedDBusTypeHelper<T>::value;
-
 }  // namespace internal
+
+// A concept that indicates if T is a C++ type corresponding to a valid D-Bus
+// type. All D-Bus types are supported, including primitives, arrays, maps, and
+// structs.
+template <typename T>
+concept IsSupportedDBusType = internal::IsSupportedDBusTypeHelper<T>::value;
+
 }  // namespace dbus_utils
 
 #endif  // COMPONENTS_DBUS_UTILS_TYPES_H_

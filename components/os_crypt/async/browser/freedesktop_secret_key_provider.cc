@@ -123,8 +123,8 @@ class FreedesktopSecretKeyProvider::Prompter
   using PromptCallback = base::OnceCallback<void(
       base::expected<T, FreedesktopSecretKeyProvider::ErrorDetail>)>;
 
-  template <dbus_utils::internal::StringLiteral ArgsSig,
-            dbus_utils::internal::StringLiteral RetsSig,
+  template <dbus_utils::SignatureLiteral ArgsSig,
+            dbus_utils::SignatureLiteral RetsSig,
             typename... Args>
   static void Prompt(scoped_refptr<dbus::Bus> bus,
                      dbus::ObjectProxy* object_proxy,
@@ -199,8 +199,8 @@ class FreedesktopSecretKeyProvider::Prompter
 
   void OnPromptCompletedSignal(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
-    auto dismissed = dbus_utils::internal::ReadValue<bool>(reader);
-    auto variant = dbus_utils::internal::ReadValue<dbus_utils::Variant>(reader);
+    auto dismissed = dbus_utils::ReadValue<bool>(reader);
+    auto variant = dbus_utils::ReadValue<dbus_utils::Variant>(reader);
     if (!dismissed.has_value() || !variant.has_value() ||
         reader.HasMoreData()) {
       LOG(ERROR) << "Failed to read Prompt.Completed signal args.";

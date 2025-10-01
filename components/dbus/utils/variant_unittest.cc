@@ -61,11 +61,11 @@ TEST(DBusVariantTest, VariantRoundTripString) {
 
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_variant);
+  WriteValue(writer, original_variant);
 
   // Test correct type retrieval and signature on Read
   dbus::MessageReader reader(response.get());
-  auto variant_read_back = internal::ReadValue<dbus_utils::Variant>(reader);
+  auto variant_read_back = ReadValue<dbus_utils::Variant>(reader);
   ASSERT_TRUE(variant_read_back) << "Failed to read variant";
   EXPECT_EQ(variant_read_back->signature(), "s");
 
@@ -77,7 +77,7 @@ TEST(DBusVariantTest, VariantRoundTripString) {
   // Test type mismatch clears signature
   dbus::MessageReader reader_for_mismatch(response.get());
   auto variant_for_mismatch =
-      internal::ReadValue<dbus_utils::Variant>(reader_for_mismatch);
+      ReadValue<dbus_utils::Variant>(reader_for_mismatch);
   ASSERT_TRUE(variant_for_mismatch)
       << "Failed to read variant for mismatch test";
   EXPECT_EQ(variant_for_mismatch->signature(), "s");
@@ -93,11 +93,11 @@ TEST(DBusVariantTest, VariantRoundTripInt32) {
   EXPECT_EQ(original_variant.signature(), "i");
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_variant);
+  WriteValue(writer, original_variant);
 
   // Test correct type retrieval
   dbus::MessageReader reader(response.get());
-  auto variant_read_back = internal::ReadValue<dbus_utils::Variant>(reader);
+  auto variant_read_back = ReadValue<dbus_utils::Variant>(reader);
   ASSERT_TRUE(variant_read_back) << "Failed to read variant";
   EXPECT_EQ(variant_read_back->signature(), "i");
 
@@ -115,10 +115,10 @@ TEST(DBusVariantTest, VariantRoundTripTestStruct2) {
   EXPECT_EQ(original_variant.signature(), "(isad)");
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_variant);
+  WriteValue(writer, original_variant);
 
   dbus::MessageReader reader(response.get());
-  auto variant_read_back = internal::ReadValue<Variant>(reader);
+  auto variant_read_back = ReadValue<Variant>(reader);
   ASSERT_TRUE(variant_read_back) << "Failed to read variant";
   EXPECT_EQ(variant_read_back->signature(), "(isad)");
 
@@ -136,10 +136,10 @@ TEST(DBusVariantTest, VariantRoundTripMap) {
   EXPECT_EQ(original_variant.signature(), "a{si}");
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_variant);
+  WriteValue(writer, original_variant);
 
   dbus::MessageReader reader(response.get());
-  auto variant_read_back = internal::ReadValue<dbus_utils::Variant>(reader);
+  auto variant_read_back = ReadValue<dbus_utils::Variant>(reader);
   ASSERT_TRUE(variant_read_back) << "Failed to read variant";
   EXPECT_EQ(variant_read_back->signature(), "a{si}");
 
@@ -158,10 +158,10 @@ TEST(DBusVariantTest, VariantRoundTripVectorOfTuples) {
   EXPECT_EQ(original_variant.signature(), "a(is)");
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_variant);
+  WriteValue(writer, original_variant);
 
   dbus::MessageReader reader(response.get());
-  auto variant_read_back = internal::ReadValue<dbus_utils::Variant>(reader);
+  auto variant_read_back = ReadValue<dbus_utils::Variant>(reader);
   ASSERT_TRUE(variant_read_back) << "Failed to read variant";
   EXPECT_EQ(variant_read_back->signature(), "a(is)");
 
@@ -179,10 +179,10 @@ TEST(DBusVariantTest, VariantRoundTripArrayOfInts) {
   EXPECT_EQ(original_variant.signature(), "ai");
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_variant);
+  WriteValue(writer, original_variant);
 
   dbus::MessageReader reader(response.get());
-  auto variant_read_back = internal::ReadValue<dbus_utils::Variant>(reader);
+  auto variant_read_back = ReadValue<dbus_utils::Variant>(reader);
   ASSERT_TRUE(variant_read_back) << "Failed to read variant";
   EXPECT_EQ(variant_read_back->signature(), "ai");
 
@@ -199,11 +199,10 @@ TEST(DBusVariantTest, VariantOfVariantHoldingInt) {
 
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_outer_variant);
+  WriteValue(writer, original_outer_variant);
 
   dbus::MessageReader reader(response.get());
-  auto outer_variant_read_back =
-      internal::ReadValue<dbus_utils::Variant>(reader);
+  auto outer_variant_read_back = ReadValue<dbus_utils::Variant>(reader);
   ASSERT_TRUE(outer_variant_read_back) << "Failed to read outer variant";
   EXPECT_EQ(outer_variant_read_back->signature(), "v");
   EXPECT_FALSE(reader.HasMoreData());
@@ -228,11 +227,11 @@ TEST(DBusVariantTest, VariantGetTypeSafety) {
   auto original_variant = dbus_utils::Variant::Wrap<"i">(kInnerInt);
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_variant);
+  WriteValue(writer, original_variant);
 
   // Read the variant and try to Get the wrong type.
   dbus::MessageReader reader1(response.get());
-  auto variant1 = internal::ReadValue<dbus_utils::Variant>(reader1);
+  auto variant1 = ReadValue<dbus_utils::Variant>(reader1);
   ASSERT_TRUE(variant1);
   auto str_opt = std::move(*variant1).Take<std::string>();
   EXPECT_FALSE(str_opt.has_value());
@@ -240,7 +239,7 @@ TEST(DBusVariantTest, VariantGetTypeSafety) {
   // The variant is not consumed on failed Take. Read it again to Get the
   // correct type.
   dbus::MessageReader reader2(response.get());
-  auto variant = internal::ReadValue<dbus_utils::Variant>(reader2);
+  auto variant = ReadValue<dbus_utils::Variant>(reader2);
   ASSERT_TRUE(variant);
   EXPECT_EQ(variant->signature(), "i");
   auto int_opt = std::move(*variant).Take<int32_t>();

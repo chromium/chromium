@@ -19,7 +19,7 @@ namespace {
 // Helper to get a signature as a std::string.
 template <typename T>
 std::string GetSignature() {
-  return internal::GetDBusTypeSignature<T>();
+  return GetDBusTypeSignature<T>();
 }
 
 TEST(DBusSignatureTest, GetSignature) {

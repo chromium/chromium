@@ -74,7 +74,7 @@ template <typename... Rets>
 using CallMethodResult = base::expected<std::tuple<Rets...>, CallMethodError>;
 
 // Like CallMethodResult, but the return types are specified via a signature.
-template <internal::StringLiteral RetsSignature>
+template <SignatureLiteral RetsSignature>
 using CallMethodResultSig =
     base::expected<internal::ParseDBusSignaturePack<RetsSignature>,
                    CallMethodError>;
@@ -149,8 +149,7 @@ void CallMethodImpl(dbus::ObjectProxy* proxy,
 // tuple of the return types, or a `CallMethodError`. Two template arguments are
 // required: `ArgsSignature` and `RetsSignature`, which are C string literals
 // that must match the D-Bus signature of the method arguments and reply.
-template <internal::StringLiteral ArgsSignature,
-          internal::StringLiteral RetsSignature>
+template <SignatureLiteral ArgsSignature, SignatureLiteral RetsSignature>
 void CallMethod(
     dbus::ObjectProxy* proxy,
     const std::string& interface,
@@ -165,8 +164,7 @@ void CallMethod(
 }
 
 // This is a convenience overload of CallMethod that uses the default timeout.
-template <internal::StringLiteral ArgsSignature,
-          internal::StringLiteral RetsSignature>
+template <SignatureLiteral ArgsSignature, SignatureLiteral RetsSignature>
 void CallMethod(
     dbus::ObjectProxy* proxy,
     const std::string& interface,

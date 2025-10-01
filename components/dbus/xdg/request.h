@@ -53,11 +53,11 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
           Dictionary&& options,
           ResponseCallback callback,
           const Args&... arguments)
-    requires(dbus_utils::internal::IsSupportedDBusType<Args> && ...)
+    requires(dbus_utils::IsSupportedDBusType<Args> && ...)
       : Request(std::move(bus), std::move(callback)) {
     dbus::MethodCall method_call(interface_name, method_name);
     dbus::MessageWriter writer(&method_call);
-    (dbus_utils::internal::WriteValue(writer, arguments), ...);
+    (dbus_utils::WriteValue(writer, arguments), ...);
 
     Initialize(object_proxy, &method_call, &writer, std::move(options),
                std::string());
@@ -75,14 +75,14 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
       ResponseCallback callback,
       const std::string& portal_service_name,
       const Args&... arguments)
-    requires(dbus_utils::internal::IsSupportedDBusType<Args> && ...)
+    requires(dbus_utils::IsSupportedDBusType<Args> && ...)
   {
     auto request =
         base::WrapUnique(new Request(std::move(bus), std::move(callback)));
 
     dbus::MethodCall method_call(interface_name, method_name);
     dbus::MessageWriter writer(&method_call);
-    (dbus_utils::internal::WriteValue(writer, arguments), ...);
+    (dbus_utils::WriteValue(writer, arguments), ...);
 
     request->Initialize(object_proxy, &method_call, &writer, std::move(options),
                         portal_service_name);

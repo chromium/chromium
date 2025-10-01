@@ -39,22 +39,22 @@ template <typename T>
 void TestRoundTrip(const T& original_value) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_value);
+  WriteValue(writer, original_value);
 
   dbus::MessageReader reader(response.get());
-  auto value_read_back = internal::ReadValue<T>(reader);
+  auto value_read_back = ReadValue<T>(reader);
   ASSERT_TRUE(value_read_back) << "Failed to read back type with signature: "
-                               << internal::GetDBusTypeSignature<T>();
+                               << GetDBusTypeSignature<T>();
   EXPECT_FALSE(reader.HasMoreData())
       << "Reader has more data after reading type with signature: "
-      << internal::GetDBusTypeSignature<T>();
+      << GetDBusTypeSignature<T>();
   EXPECT_EQ(original_value, value_read_back);
 }
 
 // Helper to get a signature as a std::string.
 template <typename T>
 std::string GetSignature() {
-  return internal::GetDBusTypeSignature<T>();
+  return GetDBusTypeSignature<T>();
 }
 
 TEST(DBusTypesTest, RoundTripUint8) {
@@ -222,7 +222,7 @@ TEST(DBusTypesTest, ReadStructNotEnoughDataInDBusMessage) {
   writer.CloseContainer(&struct_writer);
 
   dbus::MessageReader reader(response.get());
-  EXPECT_FALSE(internal::ReadValue<TestTuple1>(reader));
+  EXPECT_FALSE(ReadValue<TestTuple1>(reader));
 }
 
 TEST(DBusTypesTest, ReadStructTooMuchDataInDBusMessage) {
@@ -242,7 +242,7 @@ TEST(DBusTypesTest, ReadStructTooMuchDataInDBusMessage) {
   writer.CloseContainer(&struct_writer);
 
   dbus::MessageReader reader(response.get());
-  EXPECT_FALSE(internal::ReadValue<TestTuple1>(reader));
+  EXPECT_FALSE(ReadValue<TestTuple1>(reader));
 }
 
 TEST(DBusTypesTest, WriteReadMultipleTypesSequentially) {
@@ -255,16 +255,16 @@ TEST(DBusTypesTest, WriteReadMultipleTypesSequentially) {
   const bool kArgBool = true;
   const TestTuple1 kArgStruct = {1, "s", {1, 2}};
 
-  internal::WriteValue(writer, kArgString);
-  internal::WriteValue(writer, kArgUint);
-  internal::WriteValue(writer, kArgBool);
-  internal::WriteValue(writer, kArgStruct);
+  WriteValue(writer, kArgString);
+  WriteValue(writer, kArgUint);
+  WriteValue(writer, kArgBool);
+  WriteValue(writer, kArgStruct);
 
   dbus::MessageReader reader(call.get());
-  EXPECT_EQ(internal::ReadValue<std::string>(reader), kArgString);
-  EXPECT_EQ(internal::ReadValue<uint32_t>(reader), kArgUint);
-  EXPECT_EQ(internal::ReadValue<bool>(reader), kArgBool);
-  EXPECT_EQ(internal::ReadValue<TestTuple1>(reader), kArgStruct);
+  EXPECT_EQ(ReadValue<std::string>(reader), kArgString);
+  EXPECT_EQ(ReadValue<uint32_t>(reader), kArgUint);
+  EXPECT_EQ(ReadValue<bool>(reader), kArgBool);
+  EXPECT_EQ(ReadValue<TestTuple1>(reader), kArgStruct);
 }
 
 TEST(DBusTypesTest, ReadEmptyMessageFails) {
@@ -273,9 +273,9 @@ TEST(DBusTypesTest, ReadEmptyMessageFails) {
   dbus::MessageReader reader(response.get());
   EXPECT_FALSE(reader.HasMoreData());
 
-  EXPECT_FALSE(internal::ReadValue<int32_t>(reader));
-  EXPECT_FALSE(internal::ReadValue<std::string>(reader));
-  EXPECT_FALSE(internal::ReadValue<TestTuple1>(reader));
+  EXPECT_FALSE(ReadValue<int32_t>(reader));
+  EXPECT_FALSE(ReadValue<std::string>(reader));
+  EXPECT_FALSE(ReadValue<TestTuple1>(reader));
 }
 
 TEST(DBusTypesTest, RoundTripScopedFdReadablePipe) {
@@ -286,10 +286,10 @@ TEST(DBusTypesTest, RoundTripScopedFdReadablePipe) {
 
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, read_fd);
+  WriteValue(writer, read_fd);
 
   dbus::MessageReader reader(response.get());
-  auto read_fd_back = internal::ReadValue<base::ScopedFD>(reader);
+  auto read_fd_back = ReadValue<base::ScopedFD>(reader);
   ASSERT_TRUE(read_fd_back);
   EXPECT_TRUE(read_fd_back->is_valid());
 
@@ -311,10 +311,10 @@ TEST(DBusTypesTest, RoundTripVectorOfScopedFDs) {
 
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
-  internal::WriteValue(writer, original_fds);
+  WriteValue(writer, original_fds);
 
   dbus::MessageReader reader(response.get());
-  auto fds_read_back = internal::ReadValue<std::vector<base::ScopedFD>>(reader);
+  auto fds_read_back = ReadValue<std::vector<base::ScopedFD>>(reader);
   ASSERT_TRUE(fds_read_back);
 
   EXPECT_EQ(fds_read_back->size(), original_fds.size());
