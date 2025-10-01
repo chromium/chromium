@@ -22,6 +22,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/accessibility_focus_ring_controller.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
@@ -64,7 +65,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
@@ -2435,10 +2435,12 @@ void AccessibilityManager::OpenSettingsSubpage(const std::string& subpage) {
   // TODO(chrome-a11y-core): we can't open a settings page when you're on the
   // signin profile, but maybe we should notify the user and explain why?
   Profile* profile = AccessibilityManager::Get()->profile();
-  if (!ash::ProfileHelper::IsSigninProfile(profile) &&
+  if (IsUserBrowserContext(profile) &&
       chromeos::settings::IsOSSettingsSubPage(subpage)) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
-                                                                 subpage);
+    NewWindowDelegate::GetInstance()->OpenOSSettingsPage(
+        CHECK_DEREF(
+            BrowserContextHelper::Get()->GetUserByBrowserContext(profile)),
+        {.sub_page = subpage});
     if (open_settings_subpage_observer_for_test_) {
       open_settings_subpage_observer_for_test_.Run();
     }
