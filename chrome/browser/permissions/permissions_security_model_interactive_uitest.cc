@@ -1212,21 +1212,23 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
   url::Origin origin = url::Origin::Create(GetMainFrameURL());
 
   SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, blink::PermissionType::GEOLOCATION,
+      permission_controller, origin, origin, blink::PermissionType::GEOLOCATION,
       blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/false,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/false);
 
   SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, blink::PermissionType::VIDEO_CAPTURE,
+      permission_controller, origin, origin,
+      blink::PermissionType::VIDEO_CAPTURE,
       blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/false,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/true);
 
   SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, blink::PermissionType::NOTIFICATIONS,
+      permission_controller, origin, origin,
+      blink::PermissionType::NOTIFICATIONS,
       blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/true,

@@ -118,7 +118,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
         GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
     url::Origin origin = url::Origin::Create(GetTestURLFor("foo.example.com"));
     SetPermissionControllerOverrideForDevTools(
-        permission_controller, origin,
+        permission_controller, origin, origin,
         blink::PermissionType::CLIPBOARD_READ_WRITE, status);
   }
 
@@ -128,7 +128,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
         GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
     url::Origin origin = url::Origin::Create(GetTestURLFor("foo.example.com"));
     SetPermissionControllerOverrideForDevTools(
-        permission_controller, origin,
+        permission_controller, origin, origin,
         blink::PermissionType::CLIPBOARD_SANITIZED_WRITE, status);
   }
 

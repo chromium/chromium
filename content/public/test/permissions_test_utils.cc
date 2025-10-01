@@ -5,6 +5,7 @@
 #include "content/public/test/permissions_test_utils.h"
 
 #include "base/test/test_future.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
@@ -13,7 +14,8 @@ namespace content {
 
 void SetPermissionControllerOverrideForDevTools(
     PermissionController* permission_controller,
-    const std::optional<url::Origin>& origin,
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin,
     blink::PermissionType permission,
     const blink::mojom::PermissionStatus& status) {
   base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
@@ -21,7 +23,8 @@ void SetPermissionControllerOverrideForDevTools(
   PermissionControllerImpl* permission_controller_impl =
       static_cast<PermissionControllerImpl*>(permission_controller);
   permission_controller_impl->SetOverrideForDevTools(
-      origin, origin, permission, status, future.GetCallback());
+      requesting_origin, embedding_origin, permission, status,
+      future.GetCallback());
   ASSERT_EQ(future.Get(),
             PermissionControllerImpl::OverrideStatus::kOverrideSet);
 }
