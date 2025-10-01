@@ -225,7 +225,7 @@ FYI_BUILDERS = {
             'isolate':
             'performance_web_engine_test_suite',
             'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -244,7 +244,7 @@ FYI_BUILDERS = {
             'isolate':
             'performance_web_engine_test_suite',
             'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -263,7 +263,7 @@ FYI_BUILDERS = {
             'isolate':
             'performance_web_engine_test_suite',
             'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -282,7 +282,7 @@ FYI_BUILDERS = {
             'isolate':
             'performance_web_engine_test_suite',
             'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,

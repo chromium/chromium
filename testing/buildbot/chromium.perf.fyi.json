@@ -98,7 +98,6 @@
           "--test-shard-map-filename=fuchsia-perf-nsn_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
@@ -146,7 +145,6 @@
           "--test-shard-map-filename=fuchsia-perf-nsn-pgo_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
@@ -194,7 +192,6 @@
           "--test-shard-map-filename=fuchsia-perf-shk_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
@@ -242,7 +239,6 @@
           "--test-shard-map-filename=fuchsia-perf-shk-pgo_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
