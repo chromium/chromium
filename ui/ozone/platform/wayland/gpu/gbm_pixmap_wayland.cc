@@ -77,16 +77,28 @@ bool GbmPixmapWayland::InitializeBuffer(
     }
     gbm_bo_ = gbm_device->CreateBufferWithModifiers(fourcc_format, size,
                                                     gbm_flags, modifiers);
+
+    // Wayland server can announce implicit modifier support by including
+    // `DRM_FORMAT_MOD_INVALID`. For some GPU drivers, certain format+modifier
+    // combination can be sampled but not rendered to. (E.g. Some AMD gpu can
+    // sample `DRM_FORMAT_MOD_LINEAR` buffers but always create tiled buffer for
+    // rendering, while wlroots would announce MOD_LINEAR and MOD_INVALID).
+    // In such cases gbm_bo allocation may fail, where we should fallback to
+    // creation without modifiers, and leave the choices to driver.
+    if (!gbm_bo_ &&
+        buffer_manager_->AllowsImplicitModifierForBufferFormat(format)) {
+      gbm_bo_ = gbm_device->CreateBuffer(fourcc_format, size, gbm_flags);
+    }
   }
 
   if (!gbm_bo_) {
-    LOG(ERROR) << "Cannot create bo with format= "
+    LOG(ERROR) << "Cannot create bo with format="
                << gfx::BufferFormatToString(format)
                << " and usage=" << ui::NativePixmapUsageToString(usage);
     return false;
   }
 
-  DVLOG(3) << "Created gbm bo. format= " << gfx::BufferFormatToString(format)
+  DVLOG(3) << "Created gbm bo. format=" << gfx::BufferFormatToString(format)
            << " usage=" << ui::NativePixmapUsageToString(usage);
 
   visible_area_size_ = visible_area_size ? visible_area_size.value() : size;
@@ -109,12 +121,12 @@ bool GbmPixmapWayland::InitializeBufferFromHandle(
   gbm_bo_ = gbm_device->CreateBufferFromHandle(
       GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
   if (!gbm_bo_) {
-    LOG(ERROR) << "Cannot create bo with format= "
+    LOG(ERROR) << "Cannot create bo with format="
                << gfx::BufferFormatToString(format);
     return false;
   }
 
-  DVLOG(3) << "Created gbm bo. format= " << gfx::BufferFormatToString(format);
+  DVLOG(3) << "Created gbm bo. format=" << gfx::BufferFormatToString(format);
 
   visible_area_size_ = size;
   return true;

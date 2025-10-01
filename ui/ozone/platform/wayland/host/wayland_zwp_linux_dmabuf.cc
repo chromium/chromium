@@ -155,25 +155,23 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
     uint32_t fourcc_format,
     std::optional<uint64_t> modifier) {
   // Return on not supported fourcc formats.
-  if (!IsValidBufferFormat(fourcc_format))
+  if (!IsValidBufferFormat(fourcc_format)) {
     return;
-
-  uint64_t format_modifier = modifier.value_or(DRM_FORMAT_MOD_INVALID);
+  }
 
   // If the buffer format has already been stored, it must be another supported
   // modifier sent by the Wayland compositor.
   gfx::BufferFormat format = GetBufferFormatFromFourCCFormat(fourcc_format);
   auto it = supported_buffer_formats_with_modifiers_.find(format);
-  if (it != supported_buffer_formats_with_modifiers_.end()) {
-    if (format_modifier != DRM_FORMAT_MOD_INVALID)
-      it->second.emplace_back(format_modifier);
-    return;
-  } else {
+  if (it == supported_buffer_formats_with_modifiers_.end()) {
     std::vector<uint64_t> modifiers;
-    if (format_modifier != DRM_FORMAT_MOD_INVALID)
-      modifiers.emplace_back(format_modifier);
+    if (modifier.has_value()) {
+      modifiers.emplace_back(modifier.value());
+    }
     supported_buffer_formats_with_modifiers_.emplace(format,
                                                      std::move(modifiers));
+  } else if (modifier.has_value()) {
+    it->second.emplace_back(modifier.value());
   }
 }
 
@@ -197,7 +195,7 @@ void WaylandZwpLinuxDmabuf::OnModifiers(void* data,
                                         uint32_t modifier_lo) {
   if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     uint64_t modifier = static_cast<uint64_t>(modifier_hi) << 32 | modifier_lo;
-    self->AddSupportedFourCCFormatAndModifier(format, {modifier});
+    self->AddSupportedFourCCFormatAndModifier(format, modifier);
   }
 }
 

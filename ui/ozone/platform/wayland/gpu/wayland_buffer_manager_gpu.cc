@@ -4,8 +4,11 @@
 
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 
+#include <drm_fourcc.h>
+
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
@@ -356,6 +359,15 @@ WaylandBufferManagerGpu::GetModifiersForBufferFormat(
     return it->second;
   }
   return {};
+}
+
+bool WaylandBufferManagerGpu::AllowsImplicitModifierForBufferFormat(
+    gfx::BufferFormat buffer_format) const {
+  auto it = supported_buffer_formats_with_modifiers_.find(buffer_format);
+  if (it != supported_buffer_formats_with_modifiers_.end()) {
+    return base::Contains(it->second, DRM_FORMAT_MOD_INVALID);
+  }
+  return false;
 }
 
 uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
