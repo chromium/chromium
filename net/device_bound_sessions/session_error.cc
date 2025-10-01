@@ -44,6 +44,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
       return DeletionReason::kInvalidSessionParams;
     case kNetError:
     case kTransientHttpError:
+    case kBoundCookieSetForbidden:
       return std::nullopt;
     // Registration-only errors never trigger session deletion.
     case kSubdomainRegistrationWellKnownUnavailable:
@@ -59,7 +60,6 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kInvalidFederatedSession:
     case kInvalidFederatedKey:
     case kTooManyRelyingOriginLabels:
-    case kBoundCookieSetForbidden:
       NOTREACHED();
   }
 }
@@ -90,6 +90,7 @@ bool SessionError::IsServerError() const {
     case kMissingScope:
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
+    case kBoundCookieSetForbidden:
       return true;
     // Registration-only errors never get reported to the server.
     case kSubdomainRegistrationWellKnownUnavailable:
@@ -105,7 +106,6 @@ bool SessionError::IsServerError() const {
     case kInvalidFederatedSession:
     case kInvalidFederatedKey:
     case kTooManyRelyingOriginLabels:
-    case kBoundCookieSetForbidden:
       NOTREACHED();
   }
 }

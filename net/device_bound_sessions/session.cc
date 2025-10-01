@@ -494,6 +494,7 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kNetError:
       break;
     case kTransientHttpError:
+    case kBoundCookieSetForbidden:
       backoff_.InformOfRequest(/*succeeded=*/false);
       break;
     // Registration-only errors
@@ -506,7 +507,6 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kRelyingPartyWellKnownUnavailable:
     case kRelyingPartyWellKnownMalformed:
     case kTooManyRelyingOriginLabels:
-    case kBoundCookieSetForbidden:
       NOTREACHED();
   }
 }
