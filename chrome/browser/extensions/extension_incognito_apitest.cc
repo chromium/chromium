@@ -19,7 +19,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #endif

@@ -40,6 +40,7 @@ include_rules = [
   "+components/gcm_driver/instance_id",
   "+components/global_media_controls",
   "+components/google/core/common",
+  "+components/guest_view/buildflags",
   "+components/guest_view/browser",
   "+components/history_clusters/core",
   "+components/history_clusters/history_clusters_internals/webui",
