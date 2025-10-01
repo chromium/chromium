@@ -2305,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that clicking the pin button on an extensions side panel, pins the
-// extension in ToolbarActionModel.
+// extension in ToolbarActionsModel.
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        ExtensionSidePanelHasPinButton) {
   Init();

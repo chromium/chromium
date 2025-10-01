@@ -189,7 +189,7 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
       PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
   // When the SidePanelPinning feature is enabled observe changes to the
   // pinned actions so we can update the pin button appropriately.
-  // TODO(b/310910098): Observe the PinnedToolbarActionModel instead when
+  // TODO(b/310910098): Observe the PinnedToolbarActionsModel instead when
   // pinned extensions are fully merged into it.
   extensions_model_observation_.Observe(
       ToolbarActionsModel::Get(browser_view_->browser()->profile()));
@@ -294,8 +294,8 @@ void SidePanelCoordinator::UpdatePinState() {
 
   bool updated_pin_state = false;
 
-  // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
-  // PinnedToolbarActionModel are merged together.
+  // TODO(b/310910098): Clean condition up once/if ToolbarActionsModel and
+  // PinnedToolbarActionsModel are merged together.
   if (const std::optional<extensions::ExtensionId> extension_id =
           current_key()->key.extension_id();
       extension_id.has_value()) {
@@ -796,8 +796,8 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
 
   bool current_pinned_state = false;
 
-  // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
-  // PinnedToolbarActionModel are merged together.
+  // TODO(b/310910098): Clean condition up once/if ToolbarActionsModel and
+  // PinnedToolbarActionsModel are merged together.
   if (const std::optional<extensions::ExtensionId> extension_id =
           current_key()->key.extension_id();
       extension_id.has_value()) {
