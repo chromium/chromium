@@ -108,6 +108,10 @@ class ManifestToWebAppInstallInfoJob {
                       icon_url_modifications = std::nullopt,
                   IconUrlExtractionOptions icon_url_options = {});
 
+  // Returns the result of fetching the icons. Returns `kAbortedDueToFailure` if
+  // the fetch has not occurred yet.
+  IconsDownloadedResult icon_download_result() const;
+
  private:
   ManifestToWebAppInstallInfoJob(
       const blink::mojom::Manifest& manifest,
@@ -146,6 +150,8 @@ class ManifestToWebAppInstallInfoJob {
   WebAppInstallInfoConstructOptions options_;
   std::optional<WebAppInstallInfo> fallback_info_;
 
+  IconsDownloadedResult icon_fetch_result_ =
+      IconsDownloadedResult::kAbortedDueToFailure;
   InstallErrorLogEntry install_error_log_entry_;
   raw_ref<base::Value::Dict> debug_data_;
 

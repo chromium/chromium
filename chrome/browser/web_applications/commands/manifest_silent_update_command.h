@@ -110,13 +110,30 @@ class ManifestSilentUpdateCommand
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
 
  private:
+  enum class PendingInfoComparison {
+    kNotPending,
+    kHasPendingAndEquals,
+    kHasPendingAndNotEquals
+  };
+  friend std::ostream& operator<<(std::ostream& os, PendingInfoComparison);
+
   struct WebAppComparison {
     bool name_equality = false;
     bool primary_icons_equality = false;
     bool shortcut_menu_item_infos_equality = false;
     bool other_fields_equality = false;
 
-    bool HasNoChanges() const;
+    PendingInfoComparison pending_name_equality =
+        PendingInfoComparison::kNotPending;
+    PendingInfoComparison pending_primary_icons_equality =
+        PendingInfoComparison::kNotPending;
+
+    // Returns if the existing app configuration (not considering any pending
+    // update info) matches the `new_install_info`.
+    bool ExistingAppWithoutPendingEqualsNewUpdate() const;
+    // Return if the existing app configuration, with any pending update info
+    // applied, matches the `new_install_info`.
+    bool ExistingAppWithPendingEqualsNewUpdate() const;
     bool IsNameChangeOnly() const;
     bool IsSecuritySensitiveChangesOnly() const;
     base::Value::Dict ToDict() const;
@@ -141,12 +158,14 @@ class ManifestSilentUpdateCommand
 
   void FinalizeUpdateIfSilentChangesExist();
 
-  void UpdateFinalizedWritePendingInfoIfNeeded(
+  void UpdateFinalizedWritePendingInfo(
       std::optional<proto::PendingUpdateInfo> pending_update_info,
       const webapps::AppId& app_id,
       webapps::InstallResultCode code);
 
-  void WritePendingUpdateInfoThenComplete(proto::PendingUpdateInfo);
+  void WritePendingUpdateInfoThenComplete(
+      std::optional<proto::PendingUpdateInfo>,
+      ManifestSilentUpdateCheckResult result);
 
   void CompleteCommandAndSelfDestruct(
       base::Location location,
@@ -191,7 +210,7 @@ class ManifestSilentUpdateCommand
   IconBitmaps pending_manifest_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
   bool silent_update_required_ = false;
-  bool pending_updated_added_ = false;
+  bool pending_updated_changed_ = false;
 
   // Debug info.
   ManifestSilentUpdateCommandStage stage_ =

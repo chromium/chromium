@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/i18n/time_formatting.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -36,11 +38,13 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/image_visual_diff.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_app_id.h"
@@ -161,6 +165,21 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
+std::ostream& operator<<(
+    std::ostream& os,
+    ManifestSilentUpdateCommand::PendingInfoComparison value) {
+  switch (value) {
+    case ManifestSilentUpdateCommand::PendingInfoComparison::kNotPending:
+      return os << "kNotPending";
+    case ManifestSilentUpdateCommand::PendingInfoComparison::
+        kHasPendingAndNotEquals:
+      return os << "kHasPendingAndNotEquals";
+    case ManifestSilentUpdateCommand::PendingInfoComparison::
+        kHasPendingAndEquals:
+      return os << "kHasPendingAndEquals";
+  }
+}
+
 std::ostream& operator<<(std::ostream& os,
                          ManifestSilentUpdateCheckResult result) {
   switch (result) {
@@ -257,9 +276,36 @@ void ManifestSilentUpdateCommand::StartWithLock(
       params);
 }
 
-bool ManifestSilentUpdateCommand::WebAppComparison::HasNoChanges() const {
+bool ManifestSilentUpdateCommand::WebAppComparison::
+    ExistingAppWithoutPendingEqualsNewUpdate() const {
   return name_equality && primary_icons_equality &&
          shortcut_menu_item_infos_equality && other_fields_equality;
+}
+
+bool ManifestSilentUpdateCommand::WebAppComparison::
+    ExistingAppWithPendingEqualsNewUpdate() const {
+  // For an app to be considered for an update, in case of available security
+  // sensitive changes (like name and icons), the pending update info in the app
+  // has to either not exist, or if it does, should match the incoming update.
+  bool effective_name_equality;
+  if (name_equality) {
+    effective_name_equality =
+        pending_name_equality == PendingInfoComparison::kNotPending;
+  } else {
+    effective_name_equality =
+        pending_name_equality == PendingInfoComparison::kHasPendingAndEquals;
+  }
+  bool effective_primary_icon_equality;
+  if (primary_icons_equality) {
+    effective_primary_icon_equality =
+        pending_primary_icons_equality == PendingInfoComparison::kNotPending;
+  } else {
+    effective_primary_icon_equality =
+        pending_primary_icons_equality ==
+        PendingInfoComparison::kHasPendingAndEquals;
+  }
+  return effective_name_equality && effective_primary_icon_equality &&
+         other_fields_equality && shortcut_menu_item_infos_equality;
 }
 
 bool ManifestSilentUpdateCommand::WebAppComparison::IsNameChangeOnly() const {
@@ -277,7 +323,10 @@ base::Value::Dict ManifestSilentUpdateCommand::WebAppComparison::ToDict()
     const {
   return base::Value::Dict()
       .Set("name_equality", name_equality)
+      .Set("pending_name_equality", base::ToString(pending_name_equality))
       .Set("primary_icons_equality", primary_icons_equality)
+      .Set("pending_primary_icons_equality",
+           base::ToString(pending_primary_icons_equality))
       .Set("shortcut_menu_item_infos_equality",
            shortcut_menu_item_infos_equality)
       .Set("other_fields_equality", other_fields_equality);
@@ -296,8 +345,33 @@ ManifestSilentUpdateCommand::CompareWebApps(
     base::TrimWhitespace(new_install_info.title, base::TRIM_ALL, &new_title);
     return new_title == base::UTF8ToUTF16(existing_web_app.untranslated_name());
   }();
+  diff.pending_name_equality = [&]() {
+    if (!existing_web_app.pending_update_info().has_value() ||
+        !existing_web_app.pending_update_info()->has_name()) {
+      return PendingInfoComparison::kNotPending;
+    }
+    std::u16string new_title;
+    base::TrimWhitespace(new_install_info.title, base::TRIM_ALL, &new_title);
+    return new_title == base::UTF8ToUTF16(
+                            existing_web_app.pending_update_info()->name())
+               ? PendingInfoComparison::kHasPendingAndEquals
+               : PendingInfoComparison::kHasPendingAndNotEquals;
+  }();
   diff.primary_icons_equality =
       existing_web_app.trusted_icons() == new_install_info.trusted_icons;
+  diff.pending_primary_icons_equality = [&]() {
+    if (!existing_web_app.pending_update_info().has_value() ||
+        existing_web_app.pending_update_info()->trusted_icons().empty()) {
+      return PendingInfoComparison::kNotPending;
+    }
+    std::optional<std::vector<apps::IconInfo>> transformed = ParseAppIconInfos(
+        "PendingUpdateInfo",
+        existing_web_app.pending_update_info()->trusted_icons());
+    if (transformed == new_install_info.trusted_icons) {
+      return PendingInfoComparison::kHasPendingAndEquals;
+    }
+    return PendingInfoComparison::kHasPendingAndNotEquals;
+  }();
   diff.shortcut_menu_item_infos_equality =
       existing_web_app.shortcuts_menu_item_infos() ==
       new_install_info.shortcuts_menu_item_infos;
@@ -455,7 +529,8 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
           *opt_manifest, *data_retriever_.get(),
           /*background_installation=*/false,
           webapps::WebappInstallSource::MENU_BROWSER_TAB, web_contents_,
-          [](IconUrlSizeSet&) {}, GetMutableDebugValue(),
+          [](IconUrlSizeSet&) {},
+          *GetMutableDebugValue().EnsureDict("manifest_to_install_info_job"),
           base::BindOnce(
               &ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest,
               GetWeakPtr()),
@@ -488,11 +563,25 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   is_trusted_install_ = app->IsPolicyInstalledApp() || app->IsPreinstalledApp();
   web_app_diff_ = CompareWebApps(*app, *new_install_info_);
   GetMutableDebugValue().Set("web_app_diff", web_app_diff_.ToDict());
-  if (web_app_diff_.HasNoChanges()) {
+
+  // First, handle the case where the existing app (without the pending update)
+  // matches the new install, so we can clear the pending info (if there was
+  // any) and return early.
+  if (web_app_diff_.ExistingAppWithoutPendingEqualsNewUpdate()) {
+    WritePendingUpdateInfoThenComplete(
+        /*pending_update=*/std::nullopt,
+        ManifestSilentUpdateCheckResult::kAppUpToDate);
+    return;
+  }
+
+  // Exit early if the existing pending update info matches the seen data.
+  // Instead of writing pending update info, we simply exit directly.
+  if (web_app_diff_.ExistingAppWithPendingEqualsNewUpdate()) {
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kAppUpToDate);
     return;
   }
+
   // After this line, we know that something in the system needs to update.
 
   // If it's only a name change, simply skip to the end to write the pending
@@ -502,7 +591,9 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   if (web_app_diff_.IsNameChangeOnly() && !is_trusted_install_) {
     proto::PendingUpdateInfo update;
     update.set_name(base::UTF16ToUTF8(new_install_info_->title));
-    WritePendingUpdateInfoThenComplete(std::move(update));
+    WritePendingUpdateInfoThenComplete(
+        std::move(update),
+        ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
     return;
   }
 
@@ -598,8 +689,9 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
                 GetWeakPtr(), FROM_HERE)));
     return;
   }
+
   // Both of these cases should have already been handled & exited early.
-  CHECK(!web_app_diff_.HasNoChanges());
+  CHECK(!web_app_diff_.ExistingAppWithoutPendingEqualsNewUpdate());
   CHECK(!web_app_diff_.IsNameChangeOnly());
 
   std::optional<proto::PendingUpdateInfo> pending_update_info;
@@ -618,9 +710,9 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
 
     app_lock_->install_finalizer().FinalizeUpdate(
         new_install_info_->Clone(),
-        base::BindOnce(&ManifestSilentUpdateCommand::
-                           UpdateFinalizedWritePendingInfoIfNeeded,
-                       GetWeakPtr(), std::move(pending_update_info)));
+        base::BindOnce(
+            &ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfo,
+            GetWeakPtr(), std::move(pending_update_info)));
     return;
   }
   // After this line, the icon urls have changed. Those icons are either stored
@@ -628,10 +720,18 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
   // otherwise.
 
   CHECK(!new_install_info_->trusted_icons.empty());
-  CHECK(!new_install_info_->trusted_icon_bitmaps.empty());
+
+  // Fail early if the icons didn't download correctly
+  if (manifest_to_install_info_job_->icon_download_result() !=
+          IconsDownloadedResult::kCompleted ||
+      new_install_info_->trusted_icon_bitmaps.empty()) {
+    CompleteCommandAndSelfDestruct(
+        FROM_HERE,
+        ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError);
+    return;
+  }
 
   static constexpr int kLogoSizeInDialog = 96;
-
   // Now, fetch the first icon at or larger than `kLogoSizeInDialog` for both
   // the old and new icon.
   // Our icon generation logic should always generate an icon at this size or
@@ -701,23 +801,24 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
   if (silent_update_required_) {
     app_lock_->install_finalizer().FinalizeUpdate(
         new_install_info_->Clone(),
-        base::BindOnce(&ManifestSilentUpdateCommand::
-                           UpdateFinalizedWritePendingInfoIfNeeded,
-                       GetWeakPtr(), std::move(pending_update_info)));
+        base::BindOnce(
+            &ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfo,
+            GetWeakPtr(), std::move(pending_update_info)));
   } else {
     // If there is no silent update, that means it MUST be pending update.
     CHECK(pending_update_info);
-    UpdateFinalizedWritePendingInfoIfNeeded(
-        std::move(pending_update_info), app_id_,
-        webapps::InstallResultCode::kSuccessAlreadyInstalled);
+    WritePendingUpdateInfoThenComplete(
+        pending_update_info,
+        ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
   }
 }
 
-void ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfoIfNeeded(
+void ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfo(
     std::optional<proto::PendingUpdateInfo> pending_update_info,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kComparingManifestData);
+  CHECK(silent_update_required_);
   SetStage(ManifestSilentUpdateCommandStage::kFinalizingSilentManifestChanges);
   GetMutableDebugValue().Set("silent_update_install_code",
                              base::ToString(code));
@@ -730,38 +831,35 @@ void ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfoIfNeeded(
   CHECK_EQ(app_id_, app_id);
   CHECK_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
-  if (!pending_update_info.has_value()) {
-    CompleteCommandAndSelfDestruct(
-        FROM_HERE, ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
-    return;
-  }
-
-  // Update the web app with non-security sensitive changes and store security
-  // sensitive changes to pending update info.
-  WritePendingUpdateInfoThenComplete(std::move(*pending_update_info));
+  // Always write the pending update info so we clear it if it was already
+  // populated.
+  ManifestSilentUpdateCheckResult result =
+      pending_update_info.has_value()
+          ? ManifestSilentUpdateCheckResult::
+                kAppHasNonSecurityAndSecurityChanges
+          : ManifestSilentUpdateCheckResult::kAppSilentlyUpdated;
+  WritePendingUpdateInfoThenComplete(std::move(pending_update_info), result);
 }
 
+// TODO always call this to clear if it's not written
 void ManifestSilentUpdateCommand::WritePendingUpdateInfoThenComplete(
-    proto::PendingUpdateInfo pending_update) {
+    std::optional<proto::PendingUpdateInfo> pending_update,
+    ManifestSilentUpdateCheckResult result) {
   // Evaluate before `pending_update` is std::move'd.
-  bool has_pending_icons_to_write = !pending_update.trusted_icons().empty();
+  bool has_pending_icons_to_write =
+      pending_update.has_value() && !pending_update->trusted_icons().empty();
   {
     web_app::ScopedRegistryUpdate update =
         app_lock_->sync_bridge().BeginUpdate();
     web_app::WebApp* app_to_update = update->UpdateApp(app_id_);
-    // Record if we are adding a pending update if there wasn't one before, so
-    // can correctly notify observers only if there was a change.
-    pending_updated_added_ = !app_to_update->pending_update_info().has_value();
+    // Used to notify observers at the end of the command.
+    pending_updated_changed_ =
+        app_to_update->pending_update_info() != pending_update;
     CHECK(app_to_update);
     app_to_update->SetPendingUpdateInfo(std::move(pending_update));
   }
   if (!has_pending_icons_to_write) {
-    CompleteCommandAndSelfDestruct(
-        FROM_HERE,
-        silent_update_required_
-            ? ManifestSilentUpdateCheckResult::
-                  kAppHasNonSecurityAndSecurityChanges
-            : ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+    CompleteCommandAndSelfDestruct(FROM_HERE, result);
     return;
   }
   CHECK(!pending_trusted_icon_bitmaps_.empty());
@@ -774,18 +872,15 @@ void ManifestSilentUpdateCommand::WritePendingUpdateInfoThenComplete(
       app_id_, std::move(pending_trusted_icon_bitmaps_),
       std::move(pending_manifest_icon_bitmaps_),
       base::BindOnce(
-          [](bool silent_update_required, bool bitmaps_write_success) {
+          [](ManifestSilentUpdateCheckResult result,
+             bool bitmaps_write_success) {
             if (!bitmaps_write_success) {
               return ManifestSilentUpdateCheckResult::
                   kPendingIconWriteToDiskFailed;
             }
-            if (silent_update_required) {
-              return ManifestSilentUpdateCheckResult::
-                  kAppHasNonSecurityAndSecurityChanges;
-            }
-            return ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate;
+            return result;
           },
-          silent_update_required_)
+          result)
           .Then(base::BindOnce(
               &ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct,
               GetWeakPtr(), FROM_HERE)));
@@ -830,7 +925,7 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
     app_lock_->sync_bridge().SetAppManifestUpdateTime(app_id_,
                                                       app_lock_->clock().Now());
   }
-  if (pending_updated_added_) {
+  if (pending_updated_changed_) {
     app_lock_->registrar().NotifyPendingUpdateInfoChanged(
         app_id_, /*pending_update_available=*/true,
         base::PassKey<ManifestSilentUpdateCommand>());

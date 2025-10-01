@@ -488,6 +488,11 @@ void ManifestToWebAppInstallInfoJob::FetchIcons(
   FetchIconsInternal(web_contents, icon_url_modifications, icon_url_options);
 }
 
+IconsDownloadedResult ManifestToWebAppInstallInfoJob::icon_download_result()
+    const {
+  return icon_fetch_result_;
+}
+
 ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
     const blink::mojom::Manifest& manifest,
     WebAppDataRetriever& data_retriever,
@@ -715,6 +720,7 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
+  icon_fetch_result_ = result;
   base::Value::Dict* icons_downloaded =
       debug_data_->EnsureDict("icons_retrieved");
   for (const auto& [url, bitmap_vector] : icons_map) {

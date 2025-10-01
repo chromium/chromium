@@ -340,9 +340,7 @@ void PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
   // Second, start populating the `output_size_to_bitmaps` map with all the
   // parsed bitmaps, once per size.
   for (auto& icon : square_icons_matching_infos) {
-    if (!base::Contains(output_size_to_bitmaps, icon.width())) {
-      output_size_to_bitmaps[icon.width()] = icon;
-    }
+    output_size_to_bitmaps[icon.width()] = icon;
   }
 
   // Third, resize existing icons if any and populate `output_size_to_bitmaps`

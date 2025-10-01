@@ -680,10 +680,8 @@ class WebApp {
   //  - web_app.proto
   // If parsed from manifest, also add to:
   //  - GetManifestDataChanges() inside manifest_update_utils.h
-  //  - AreNonSecuritySensitiveDataChangesNeeded() inside
-  //  manifest_silent_update_command.cc, if the field is a non security
-  //  sensitive one. Please see the following link for more information:
-  //  https://www.w3.org/TR/appmanifest/#dfn-security-sensitive-members.
+  //  - ManifestSilentUpdateCommand::CompareWebApps() inside
+  //    manifest_silent_update_command.cc.
   //  - SetWebAppManifestFields()
   // If the field relates to the app icons, add revert logic for it in:
   // - ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded()

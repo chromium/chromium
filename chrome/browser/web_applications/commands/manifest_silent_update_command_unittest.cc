@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -33,12 +35,18 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 
 namespace web_app {
 class ManifestSilentUpdateCommandTest : public WebAppTest {
  public:
+  const GURL kDefaultIconUrl = GURL("https://example.com/path/def_icon.png");
+  const GURL kAppUrl = GURL("https://www.foo.bar/web_apps/basic.html");
+  static constexpr SkColor kManifestIconColor = SK_ColorCYAN;
+  static constexpr int kManifestIconSize = 96;
+
   ManifestSilentUpdateCommandTest() = default;
   ManifestSilentUpdateCommandTest(const ManifestSilentUpdateCommandTest&) =
       delete;
@@ -58,12 +66,12 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     provider->StartWithSubsystems();
     test::WaitUntilWebAppProviderAndSubsystemsReady(provider);
 
-    web_contents_manager().SetUrlLoaded(web_contents(), app_url());
+    web_contents_manager().SetUrlLoaded(web_contents(), kAppUrl);
   }
 
  protected:
   void SetupBasicInstallablePageState() {
-    auto& page_state = web_contents_manager().GetOrCreatePageState(app_url());
+    auto& page_state = web_contents_manager().GetOrCreatePageState(kAppUrl);
 
     page_state.manifest_url = GURL("https://www.example.com/manifest.json");
     page_state.has_service_worker = false;
@@ -73,26 +81,26 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
 
     // Set up manifest icon.
     blink::Manifest::ImageResource icon;
-    icon.src = default_icon_url_;
-    icon.sizes = {{manifest_icon_size_, manifest_icon_size_}};
+    icon.src = kDefaultIconUrl;
+    icon.sizes = {{kManifestIconSize, kManifestIconSize}};
     icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
     // Set icons in content.
-    web_contents_manager().GetOrCreateIconState(default_icon_url_).bitmaps = {
-        gfx::test::CreateBitmap(manifest_icon_size_, manifest_icon_color_)};
+    web_contents_manager().GetOrCreateIconState(kDefaultIconUrl).bitmaps = {
+        gfx::test::CreateBitmap(kManifestIconSize, kManifestIconColor)};
 
     // Set up manifest.
     auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = app_url();
-    manifest->id = GenerateManifestIdFromStartUrlOnly(app_url());
-    manifest->scope = app_url().GetWithoutFilename();
+    manifest->start_url = kAppUrl;
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kAppUrl);
+    manifest->scope = kAppUrl.GetWithoutFilename();
     manifest->display = DisplayMode::kStandalone;
     manifest->name = u"Foo App";
     manifest->icons = {icon};
     manifest->has_background_color = true;
-    manifest->background_color = manifest_icon_color_;
+    manifest->background_color = kManifestIconColor;
     manifest->has_theme_color = true;
-    manifest->theme_color = manifest_icon_color_;
+    manifest->theme_color = kManifestIconColor;
     manifest->has_valid_specified_start_url = true;
     auto note_taking = blink::mojom::ManifestNoteTaking::New();
     note_taking->new_note_url = GURL("https://www.foo.bar/web_apps/new_note");
@@ -115,7 +123,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
 
   blink::mojom::ManifestPtr& GetPageManifest() {
     return web_contents_manager()
-        .GetOrCreatePageState(app_url())
+        .GetOrCreatePageState(kAppUrl)
         .manifest_before_default_processing;
   }
 
@@ -159,15 +167,8 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
         .AsBitmap();
   }
 
-  GURL app_url() { return app_url_; }
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-
- private:
-  const GURL app_url_{"https://www.foo.bar/web_apps/basic.html"};
-  const GURL default_icon_url_{"https://example.com/path/def_icon.png"};
-  const SkColor manifest_icon_color_ = SK_ColorCYAN;
-  const int manifest_icon_size_ = 96;
 };
 
 TEST_F(ManifestSilentUpdateCommandTest, VerifyAppUpToDate) {
@@ -231,7 +232,7 @@ TEST_F(ManifestSilentUpdateCommandTest, EmptyStartUpdated) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& page_state = web_contents_manager().GetOrCreatePageState(app_url());
+  auto& page_state = web_contents_manager().GetOrCreatePageState(kAppUrl);
   page_state.error_code =
       webapps::InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
 
@@ -327,7 +328,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ScopeUpdatedSilently) {
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppScope(app_id),
-            app_url().GetWithoutFilename());
+            kAppUrl.GetWithoutFilename());
 
   auto& new_manifest = GetPageManifest();
   const GURL new_scope("https://www.foo.bar/new_scope/");
@@ -1070,7 +1071,7 @@ TEST_F(ManifestSilentUpdateCommandTest, VerifyNoManifestIconsAppUpToDate) {
   // Note: The InstallableParams options should cause this error to return if
   // there are no icons, but the testing dependency faking isn't quite set up
   // for this yet to happen automatically. So set this manually on the fake.
-  web_contents_manager().GetOrCreatePageState(app_url()).error_code =
+  web_contents_manager().GetOrCreatePageState(kAppUrl).error_code =
       webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
@@ -1108,7 +1109,7 @@ TEST_F(ManifestSilentUpdateCommandTest,
   // Note: The InstallableParams options should cause this error to return if
   // there are no icons, but the testing dependency faking isn't quite set up
   // for this yet to happen automatically. So set this manually on the fake.
-  web_contents_manager().GetOrCreatePageState(app_url()).error_code =
+  web_contents_manager().GetOrCreatePageState(kAppUrl).error_code =
       webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
   const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
   new_manifest->start_url = new_start_url;
@@ -1145,7 +1146,7 @@ TEST_F(ManifestSilentUpdateCommandTest,
   // Note: The InstallableParams options should cause this error to return if
   // there are no icons, but the testing dependency faking isn't quite set up
   // for this yet to happen automatically. So set this manually on the fake.
-  web_contents_manager().GetOrCreatePageState(app_url()).error_code =
+  web_contents_manager().GetOrCreatePageState(kAppUrl).error_code =
       webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
   new_manifest->name = u"New Name";
 
@@ -1160,12 +1161,154 @@ TEST_F(ManifestSilentUpdateCommandTest,
                               /*count=*/1)));
 }
 
+TEST_F(ManifestSilentUpdateCommandTest, NoIconToIcons) {
+  // Install via WebAppInstallInfo, with no icons
+  auto web_app_install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kAppUrl);
+  web_app_install_info->title = u"A Basic Web App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_install_info));
+
+  SetupBasicInstallablePageState();
+  ManifestSilentUpdateCheckResult result = RunManifestUpdateAndGetResult();
+  EXPECT_TRUE(IsAppUpdated(result));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest, IconDownloadFailure) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  // First update.
+  blink::Manifest::ImageResource second_icon;
+  second_icon.src = GURL("https://example2.com/path/def_icon.png");
+  second_icon.sizes = {{96, 96}};
+  second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  GetPageManifest()->icons = {second_icon};
+  SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest, UpdateTwiceSameManifest) {
+  // Have the silent update command triggered twice for the same 'new' manifest.
+  // The icon shouldn't be downloaded the second time, as it should be already
+  // stored in pending_update_info.
+
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  GetPageManifest()->icons = {new_icon};
+
+  SkBitmap updated_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  auto& new_icon_state = web_contents_manager().GetOrCreateIconState(
+      GURL("https://example2.com/path/def_icon.png"));
+  new_icon_state.bitmaps = {updated_bitmap};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+
+  // Run a second time, and make sure that the icon is not fetched again.
+  bool product_icon_fetched = false;
+  new_icon_state.on_icon_fetched =
+      base::BindLambdaForTesting([&]() { product_icon_fetched = true; });
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppUpToDate);
+  EXPECT_FALSE(product_icon_fetched);
+  EXPECT_TRUE(AppHasPendingUpdateInfo(app_id));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest, UpdateTwiceNewManifest) {
+  // Have the silent update command triggered twice with different icons each
+  // time. The resulting pending update info should be from the second one.
+
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  // First update.
+  blink::Manifest::ImageResource second_icon;
+  second_icon.src = GURL("https://example2.com/path/def_icon.png");
+  second_icon.sizes = {{96, 96}};
+  second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  GetPageManifest()->icons = {second_icon};
+  SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  auto& second_icon_state = web_contents_manager().GetOrCreateIconState(
+      GURL("https://example2.com/path/def_icon.png"));
+  second_icon_state.bitmaps = {second_bitmap};
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+
+  // Second update.
+  // Verify the icon is fetched.
+  blink::Manifest::ImageResource third_icon;
+  third_icon.src = GURL("https://example3.com/path/def_icon.png");
+  third_icon.sizes = {{96, 96}};
+  third_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  GetPageManifest()->icons = {third_icon};
+  SkBitmap third_bitmap = gfx::test::CreateBitmap(96, SK_ColorRED);
+  auto& third_icon_state = web_contents_manager().GetOrCreateIconState(
+      GURL("https://example3.com/path/def_icon.png"));
+  third_icon_state.bitmaps = {third_bitmap};
+  bool product_icon_fetched = false;
+  third_icon_state.on_icon_fetched =
+      base::BindLambdaForTesting([&]() { product_icon_fetched = true; });
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+  EXPECT_TRUE(product_icon_fetched);
+  EXPECT_TRUE(AppHasPendingUpdateInfo(app_id));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest, UpdateThenBackToOriginal) {
+  // Have the silent update command triggered twice, where the second reverts
+  // back to the original state, which should clear the pending update info.
+
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  // First update.
+  blink::Manifest::ImageResource second_icon;
+  second_icon.src = GURL("https://example2.com/path/def_icon.png");
+  second_icon.sizes = {{96, 96}};
+  second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  GetPageManifest()->icons = {second_icon};
+  SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  auto& second_icon_state = web_contents_manager().GetOrCreateIconState(
+      GURL("https://example2.com/path/def_icon.png"));
+  second_icon_state.bitmaps = {second_bitmap};
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+
+  // Second update - go back to the original.
+  SetupBasicInstallablePageState();
+  bool product_icon_fetched = false;
+  web_contents_manager().GetOrCreateIconState(kDefaultIconUrl).on_icon_fetched =
+      base::BindLambdaForTesting([&]() { product_icon_fetched = true; });
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppUpToDate);
+  EXPECT_FALSE(product_icon_fetched);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
+}
+
 class ManifestSilentUpdateCommandExternalAppsTest
     : public ManifestSilentUpdateCommandTest,
       public testing::WithParamInterface<ExternalInstallSource> {
  public:
   webapps::AppId InstallExternallyManagedAppFromSource() {
-    ExternalInstallOptions install_options(app_url(),
+    ExternalInstallOptions install_options(kAppUrl,
                                            /*user_display_mode=*/std::nullopt,
                                            GetParam());
 
