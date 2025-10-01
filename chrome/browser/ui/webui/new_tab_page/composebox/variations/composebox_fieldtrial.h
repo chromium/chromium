@@ -62,6 +62,8 @@ extern const base::FeatureParam<int> kMaxNumFiles;
 extern const base::FeatureParam<bool> kShowContextMenuDescription;
 // Whether to show the tools and models picker in the composebox.
 extern const base::FeatureParam<bool> kShowToolsAndModels;
+// Whether to show the create image button in the composebox context menu.
+extern const base::FeatureParam<bool> kShowCreateImageTool;
 // Whether to show a series of cycling placeholder texts on the search input UI.
 extern const base::FeatureParam<bool> kCyclingPlaceholders;
 
