@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/boca/receiver/receiver_handler_delegate.h"
 
 namespace ash::boca {
-class InvalidationServiceImpl;
+class InvalidationService;
 class InvalidationServiceDelegate;
 class SpotlightRemotingClientManager;
 }  // namespace ash::boca
@@ -42,7 +42,7 @@ class ReceiverHandlerDelegateImpl : public ReceiverHandlerDelegate {
   ~ReceiverHandlerDelegateImpl() override;
 
   // ReceiverHandlerDelegate:
-  std::unique_ptr<boca::InvalidationServiceImpl> CreateInvalidationService(
+  std::unique_ptr<boca::InvalidationService> CreateInvalidationService(
       boca::InvalidationServiceDelegate* invalidation_service_delegate)
       const override;
 

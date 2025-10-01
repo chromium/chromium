@@ -57,6 +57,7 @@ void FCMHandler::StopListeningPermanently() {
   if (instance_id_driver_->ExistsInstanceID(app_id_)) {
     instance_id_driver_->GetInstanceID(app_id_)->DeleteID(
         /*callback=*/base::DoNothing());
+    fcm_registration_token_ = std::nullopt;
     for (FCMRegistrationTokenObserver& token_observer : token_observers_) {
       token_observer.OnFCMRegistrationTokenChanged();
     }

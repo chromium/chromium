@@ -70,7 +70,11 @@ BocaReceiverUntrustedPageHandler::BocaReceiverUntrustedPageHandler(
   Init();
 }
 
-BocaReceiverUntrustedPageHandler::~BocaReceiverUntrustedPageHandler() = default;
+BocaReceiverUntrustedPageHandler::~BocaReceiverUntrustedPageHandler() {
+  if (invalidation_service_) {
+    invalidation_service_->ShutDown();
+  }
+}
 
 void BocaReceiverUntrustedPageHandler::UploadToken(
     const std::string& fcm_token,

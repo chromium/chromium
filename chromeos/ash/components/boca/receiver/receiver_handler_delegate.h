@@ -9,7 +9,7 @@
 #include <string_view>
 
 namespace ash::boca {
-class InvalidationServiceImpl;
+class InvalidationService;
 class InvalidationServiceDelegate;
 class SpotlightRemotingClientManager;
 }  // namespace ash::boca
@@ -31,9 +31,9 @@ class ReceiverHandlerDelegate {
 
   virtual ~ReceiverHandlerDelegate() = default;
 
-  virtual std::unique_ptr<boca::InvalidationServiceImpl>
-  CreateInvalidationService(boca::InvalidationServiceDelegate*
-                                invalidation_service_delegate) const = 0;
+  virtual std::unique_ptr<boca::InvalidationService> CreateInvalidationService(
+      boca::InvalidationServiceDelegate* invalidation_service_delegate)
+      const = 0;
 
   virtual std::unique_ptr<google_apis::RequestSender> CreateRequestSender(
       std::string_view requester_id,

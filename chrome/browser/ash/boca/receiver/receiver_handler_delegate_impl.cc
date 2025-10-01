@@ -46,7 +46,7 @@ ReceiverHandlerDelegateImpl::ReceiverHandlerDelegateImpl(content::WebUI* web_ui)
 
 ReceiverHandlerDelegateImpl::~ReceiverHandlerDelegateImpl() = default;
 
-std::unique_ptr<boca::InvalidationServiceImpl>
+std::unique_ptr<boca::InvalidationService>
 ReceiverHandlerDelegateImpl::CreateInvalidationService(
     boca::InvalidationServiceDelegate* invalidation_service_delegate) const {
   Profile* profile = Profile::FromWebUI(web_ui_);
