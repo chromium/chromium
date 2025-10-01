@@ -88,3 +88,10 @@ include_rules = [
   # Unsafe to use from //chrome. See //chrome/browser/DEPS.
   "-components/user_prefs/test/test_browser_context_with_prefs.h",
 ]
+
+specific_include_rules = {
+  "arc_support_host\\.cc": [
+    "+chrome/browser/ui/extensions/app_launch_params.h",
+    "+chrome/browser/ui/extensions/application_launch.h",
+  ]
+}

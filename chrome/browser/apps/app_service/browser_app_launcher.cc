@@ -170,19 +170,4 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParamsForTesting(
   return web_contents_holder;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void BrowserAppLauncher::LaunchPlayStoreWithExtensions() {
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
-          arc::kPlayStoreAppId);
-  DCHECK(extension);
-  DCHECK(extensions::util::IsAppLaunchable(arc::kPlayStoreAppId, profile_));
-  LaunchAppWithParamsImpl(
-      CreateAppLaunchParamsUserContainer(
-          profile_, extension, WindowOpenDisposition::NEW_WINDOW,
-          apps::LaunchSource::kFromChromeInternal),
-      profile_, base::DoNothing());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace apps
