@@ -892,11 +892,9 @@ bool ProtocolIs(const String& url, const char* protocol) {
   if (url.IsNull())
     return false;
   if (url.Is8Bit()) {
-    return url::FindAndCompareScheme(AsURLChar8Subtle(url).data(), url.length(),
-                                     protocol, nullptr);
+    return url::FindAndCompareScheme(AsURLChar8Subtle(url), protocol, nullptr);
   }
-  return url::FindAndCompareScheme(UNSAFE_TODO(url.Characters16()),
-                                   url.length(), protocol, nullptr);
+  return url::FindAndCompareScheme(url.View16(), protocol, nullptr);
 }
 
 void KURL::Init(const KURL& base,

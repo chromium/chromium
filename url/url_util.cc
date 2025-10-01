@@ -224,6 +224,8 @@ bool DoIsOpaqueNonSpecial(const CHAR* spec, const Component& scheme) {
   return false;
 }
 
+// TODO(crbug.com/350788890): Replace `str` and `str_len` with a
+// basic_string_view or a base::span.
 template<typename CHAR>
 bool DoFindAndCompareScheme(const CHAR* str,
                             int str_len,
@@ -759,11 +761,11 @@ bool FindAndCompareScheme(const char* str,
   return DoFindAndCompareScheme(str, str_len, compare, found_scheme);
 }
 
-bool FindAndCompareScheme(const char16_t* str,
-                          int str_len,
+bool FindAndCompareScheme(std::u16string_view str,
                           const char* compare,
                           Component* found_scheme) {
-  return DoFindAndCompareScheme(str, str_len, compare, found_scheme);
+  return DoFindAndCompareScheme(str.data(), base::checked_cast<int>(str.size()),
+                                compare, found_scheme);
 }
 
 bool DomainIs(std::string_view canonical_host,

@@ -150,23 +150,16 @@ bool FindAndCompareScheme(const char* str,
                           int str_len,
                           const char* compare,
                           Component* found_scheme);
+inline bool FindAndCompareScheme(std::string_view str,
+                                 const char* compare,
+                                 Component* found_scheme) {
+  return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),
+                              compare, found_scheme);
+}
 COMPONENT_EXPORT(URL)
-bool FindAndCompareScheme(const char16_t* str,
-                          int str_len,
+bool FindAndCompareScheme(std::u16string_view str,
                           const char* compare,
                           Component* found_scheme);
-inline bool FindAndCompareScheme(const std::string& str,
-                                 const char* compare,
-                                 Component* found_scheme) {
-  return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),
-                              compare, found_scheme);
-}
-inline bool FindAndCompareScheme(const std::u16string& str,
-                                 const char* compare,
-                                 Component* found_scheme) {
-  return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),
-                              compare, found_scheme);
-}
 
 // Returns true if the given scheme identified by |scheme| within |spec| is in
 // the list of known standard-format schemes (see AddStandardScheme).
