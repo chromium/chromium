@@ -90,7 +90,9 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
               ());
   MOCK_METHOD(void,
               ShowHistorySyncOptinUI,
-              (Profile * profile, const CoreAccountId& account_id),
+              (Profile * profile,
+               const CoreAccountId& account_id,
+               signin_metrics::AccessPoint access_point),
               ());
 };
 
@@ -280,8 +282,9 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
                                  promo_action, account_id, signin_aborted_mode,
                                  is_sync_promo, user_already_signed_in))
         .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 0 : 1);
-    EXPECT_CALL(mock_delegate_,
-                ShowHistorySyncOptinUI(browser()->profile(), account_id))
+    EXPECT_CALL(
+        mock_delegate_,
+        ShowHistorySyncOptinUI(browser()->profile(), account_id, access_point))
         .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 1 : 0);
   }
 

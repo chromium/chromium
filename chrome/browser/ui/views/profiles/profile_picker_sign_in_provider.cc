@@ -375,7 +375,8 @@ void ProfilePickerSignInProvider::FinishFlowInPickerWithSyncConfirmation(
 void ProfilePickerSignInProvider::FinishFlowInPickerWithHistorySyncOptin(
     Profile* profile,
     content::WebContents* /*contents*/,
-    const CoreAccountInfo& account_info) {
+    const CoreAccountInfo& account_info,
+    signin_metrics::AccessPoint /*access_point*/) {
   CHECK_EQ(profile, profile_.get());
   base::UmaHistogramEnumeration(kProfilePickerSignInProviderStepHistogram,
                                 SigninProviderStep::kFinishFlowHistoryOptin);

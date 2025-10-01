@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -33,6 +35,97 @@
 #include "components/sync/service/sync_service.h"
 
 namespace {
+void CheckValidAccessPointForHistoryOptin(
+    signin_metrics::AccessPoint access_point) {
+  switch (access_point) {
+    case (signin_metrics::AccessPoint::kExtensionInstallBubble):
+    case (signin_metrics::AccessPoint::kBookmarkBubble):
+    case (signin_metrics::AccessPoint::kRecentTabs):
+    case (signin_metrics::AccessPoint::kCollaborationJoinTabGroup):
+    case (signin_metrics::AccessPoint::kCollaborationShareTabGroup):
+    case (signin_metrics::AccessPoint::kPasswordBubble):
+    case (signin_metrics::AccessPoint::kAddressBubble):
+      NOTREACHED();
+    case signin_metrics::AccessPoint::kStartPage:
+    case signin_metrics::AccessPoint::kNtpLink:
+    case signin_metrics::AccessPoint::kMenu:
+    case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSupervisedUser:
+    case signin_metrics::AccessPoint::kExtensions:
+    case signin_metrics::AccessPoint::kBookmarkManager:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kDevicesPage:
+    case signin_metrics::AccessPoint::kFullscreenSigninPromo:
+    case signin_metrics::AccessPoint::kUnknown:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
+    case signin_metrics::AccessPoint::kResigninInfobar:
+    case signin_metrics::AccessPoint::kTabSwitcher:
+    case signin_metrics::AccessPoint::kMachineLogon:
+    case signin_metrics::AccessPoint::kGoogleServicesSettings:
+    case signin_metrics::AccessPoint::kSyncErrorCard:
+    case signin_metrics::AccessPoint::kForcedSignin:
+    case signin_metrics::AccessPoint::kAccountRenamed:
+    case signin_metrics::AccessPoint::kWebSignin:
+    case signin_metrics::AccessPoint::kSafetyCheck:
+    case signin_metrics::AccessPoint::kKaleidoscope:
+    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
+    case signin_metrics::AccessPoint::kSettingsSyncOffRow:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
+    case signin_metrics::AccessPoint::kDesktopSigninManager:
+    case signin_metrics::AccessPoint::kForYouFre:
+    case signin_metrics::AccessPoint::kCreatorFeedFollow:
+    case signin_metrics::AccessPoint::kReadingList:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kSetUpList:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
+    case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kTipsNotification:
+    case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
+    case signin_metrics::AccessPoint::kSigninChoiceRemembered:
+    case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kAccountMenu:
+    case signin_metrics::AccessPoint::kProductSpecifications:
+    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
+    case signin_metrics::AccessPoint::kGlicLaunchButton:
+    case signin_metrics::AccessPoint::kHistoryPage:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
+    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
+    case signin_metrics::AccessPoint::kNonModalSigninPasswordPromo:
+    case signin_metrics::AccessPoint::kNonModalSigninBookmarkPromo:
+    case signin_metrics::AccessPoint::kUserManagerWithPrefilledEmail:
+    case signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup:
+    case signin_metrics::AccessPoint::
+        kEnterpriseManagementDisclaimerAfterBrowserFocus:
+    case signin_metrics::AccessPoint::
+        kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
+      break;
+  }
+}
+
 bool AccountMayHaveCloudPolicies(Profile* profile,
                                  const AccountInfo& account_info) {
   return signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
@@ -144,14 +237,15 @@ std::unique_ptr<HistorySyncOptinHelper> HistorySyncOptinHelper::Create(
     Profile* profile,
     const AccountInfo& account_info,
     Delegate* delegate,
-    LaunchContext launch_context) {
+    LaunchContext launch_context,
+    signin_metrics::AccessPoint access_point) {
   switch (launch_context) {
     case LaunchContext::kInBrowser:
       return std::make_unique<HistorySyncOptinHelperInBrowser>(
-          identity_manager, profile, account_info, delegate);
+          identity_manager, profile, account_info, delegate, access_point);
     case LaunchContext::kInProfilePicker:
       return std::make_unique<HistorySyncOptinHelperInProfilePicker>(
-          identity_manager, profile, account_info, delegate);
+          identity_manager, profile, account_info, delegate, access_point);
   }
 }
 
@@ -159,7 +253,8 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
     signin::IdentityManager* identity_manager,
     Profile* profile,
     const AccountInfo& account_info,
-    Delegate* delegate)
+    Delegate* delegate,
+    signin_metrics::AccessPoint access_point)
     : profile_(profile),
       account_info_(account_info),
       delegate_(delegate),
@@ -172,7 +267,8 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
           /*on_account_info_fetched_callback=*/
           base::BindOnce(
               &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
-              base::Unretained(this)))) {
+              base::Unretained(this)))),
+      access_point_(access_point) {
   CHECK(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
   CHECK(delegate);
@@ -238,13 +334,15 @@ void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
                                   weak_ptr_factory_.GetWeakPtr(), /*is_history_screen_skipped=*/false));
     return;
   }
+
+  // Sanity checks that we are not in an
+  // access point that should not offer the history sync screen.
+  CheckValidAccessPointForHistoryOptin(access_point());
+
   // Currently this class is used to for entry points meant to
   // display the history sync optin screen (i.e. enabling history
   // sync is optional).
   // If sync is disabled just skip the screen.
-  // TODO(crbug.com/435191375): Once access_point is plumped to
-  // this class maybe add sanity checks that we are not in an
-  // access point with required history sync enabling.
   FinishFlowWithoutHistorySyncOptin();
 }
 
@@ -266,11 +364,13 @@ HistorySyncOptinHelperInBrowser::HistorySyncOptinHelperInBrowser(
     signin::IdentityManager* identity_manager,
     Profile* profile,
     const AccountInfo& account_info,
-    Delegate* delegate)
+    Delegate* delegate,
+    signin_metrics::AccessPoint access_point)
     : HistorySyncOptinHelper(identity_manager,
                              profile,
                              account_info,
-                             delegate) {}
+                             delegate,
+                             access_point) {}
 
 HistorySyncOptinHelperInBrowser::~HistorySyncOptinHelperInBrowser() = default;
 
@@ -288,9 +388,7 @@ bool HistorySyncOptinHelperInBrowser::
     // creating a managed profile for another account using
     // `GetAccountBeingConsideredForManagementIfAny()`.
     profile_management_disclaimer_service_->EnsureManagedProfileForAccount(
-        account_info().account_id,
-        // TODO(crbug.com/434964019): Plump or retrieve the right access point.
-        signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAfterSignin,
+        account_info().account_id, access_point(),
         std::move(profile_management_accepted_callback));
     return true;
   }
@@ -321,11 +419,13 @@ HistorySyncOptinHelperInProfilePicker::HistorySyncOptinHelperInProfilePicker(
     signin::IdentityManager* identity_manager,
     Profile* profile,
     const AccountInfo& account_info,
-    Delegate* delegate)
+    Delegate* delegate,
+    signin_metrics::AccessPoint access_point)
     : HistorySyncOptinHelper(identity_manager,
                              profile,
                              account_info,
-                             delegate) {}
+                             delegate,
+                             access_point) {}
 
 HistorySyncOptinHelperInProfilePicker::
     ~HistorySyncOptinHelperInProfilePicker() = default;

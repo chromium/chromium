@@ -173,7 +173,7 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
               (override));
   MOCK_METHOD(void,
               ShowHistorySyncOptinUI,
-              (Profile*, const CoreAccountId&),
+              (Profile*, const CoreAccountId&, signin_metrics::AccessPoint),
               (override));
 };
 
@@ -860,7 +860,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     EXPECT_CALL(
         mock_signin_ui_delegate,
-        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id));
+        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
+                               expected_access_point));
   } else {
     EXPECT_CALL(
         mock_signin_ui_delegate,
@@ -2601,7 +2602,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     EXPECT_CALL(
         mock_signin_ui_delegate_,
-        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id));
+        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
+                               default_access_point));
   } else {
     EXPECT_CALL(
         mock_signin_ui_delegate_,
@@ -2643,7 +2645,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
                                         /*expected_bucket_count=*/1);
     EXPECT_CALL(
         mock_signin_ui_delegate_,
-        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id));
+        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
+                               explicit_access_point));
     ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",

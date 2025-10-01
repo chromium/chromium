@@ -188,7 +188,9 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
                signin_metrics::AccessPoint,
                signin_metrics::PromoAction),
               (override));
-  MOCK_METHOD(void, ShowHistorySyncOptinUI, (Profile*, const CoreAccountId&));
+  MOCK_METHOD(void,
+              ShowHistorySyncOptinUI,
+              (Profile*, const CoreAccountId&, signin_metrics::AccessPoint));
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1813,7 +1815,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
       // (`kHistorySyncOptinExpansionPillOnStartup`).
       EXPECT_CALL(
           mock_signin_ui_delegate_,
-          ShowHistorySyncOptinUI(browser()->profile(), primary_account_id));
+          ShowHistorySyncOptinUI(browser()->profile(), primary_account_id,
+                                 signin_metrics::AccessPoint::
+                                     kHistorySyncOptinExpansionPillOnStartup));
       break;
     case FeaturePromoType::kSyncPromo:
       // Clicking the sync button in the profile menu should trigger the sync

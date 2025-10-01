@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -88,8 +89,9 @@ TEST_F(HistorySyncOptinServiceTest, StartFlow) {
   EXPECT_CALL(*delegate_ptr,
               ShowHistorySyncOptinScreen(profile_.get(), testing::_))
       .Times(1);
-  bool flow_started =
-      service_->StartHistorySyncOptinFlow(account_info, std::move(delegate));
+  bool flow_started = service_->StartHistorySyncOptinFlow(
+      account_info, std::move(delegate),
+      signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
 }
 
@@ -113,13 +115,15 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
           }));
 
   // Start the first flow.
-  bool flow_started =
-      service_->StartHistorySyncOptinFlow(account_info, std::move(delegate));
+  bool flow_started = service_->StartHistorySyncOptinFlow(
+      account_info, std::move(delegate),
+      signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
 
   // A second flow cannot be started.
   flow_started = service_->StartHistorySyncOptinFlow(
-      account_info, std::make_unique<MockHistorySyncOptinHelperDelegate>());
+      account_info, std::make_unique<MockHistorySyncOptinHelperDelegate>(),
+      signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_FALSE(flow_started);
 
   // Complete the first flow.
@@ -132,6 +136,7 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
               ShowHistorySyncOptinScreen(profile_.get(), testing::_))
       .Times(1);
   flow_started = service_->StartHistorySyncOptinFlow(
-      account_info, std::move(second_delegate));
+      account_info, std::move(second_delegate),
+      signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
 }

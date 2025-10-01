@@ -398,7 +398,8 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
           account.account_id, signin::ConsentLevel::kSignin, access_point);
     }
 
-    GetSigninUiDelegate()->ShowHistorySyncOptinUI(profile, account.account_id);
+    GetSigninUiDelegate()->ShowHistorySyncOptinUI(profile, account.account_id,
+                                                  access_point);
     return;
   }
 

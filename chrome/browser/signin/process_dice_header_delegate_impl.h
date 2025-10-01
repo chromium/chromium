@@ -36,8 +36,11 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   // Callback starting History syncing.
   // This is similar to `DiceTabHelper::EnableHistorySyncOptinCallback` but is a
   // once callback (vs repeating).
-  using EnableHistorySyncOptinCallback = base::OnceCallback<
-      void(Profile*, content::WebContents*, const CoreAccountInfo&)>;
+  using EnableHistorySyncOptinCallback =
+      base::OnceCallback<void(Profile*,
+                              content::WebContents*,
+                              const CoreAccountInfo&,
+                              signin_metrics::AccessPoint)>;
 
   // Callback showing a signin error UI.
   // This is similar to `DiceTabHelper::ShowSigninErrorCallback` but is a once

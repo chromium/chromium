@@ -131,7 +131,8 @@ void ProfilePickerPostSignInAdapter::Init(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     history_sync_optin_helper_ = HistorySyncOptinHelper::Create(
         identity_manager, profile_, account_info, /*delegate=*/this,
-        HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
+        HistorySyncOptinHelper::LaunchContext::kInProfilePicker,
+        signin_access_point_);
     history_sync_optin_helper_->StartHistorySyncOptinFlow();
     return;
   }

@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, GetParam());
+      &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
   // This triggers the flow that reaches the delegate's
   // `ShowHistorySyncOptinScreen`.
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, GetParam());
+      &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
 
   // This triggers the flow that reaches the delegate's
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, GetParam());
+      &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
   HistorySyncOptinHelperTestObserver history_sync_optin_helper_observer(future);
   history_sync_optin_helper->AddObserver(&history_sync_optin_helper_observer);
 
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, GetParam());
+      &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinHelperBrowserTest,
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, GetParam());
+      &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
 
   // The helper is waiting for the sync service to start before attempting
   // to show the history sync optin screen.
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinHelperBrowserTest,
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, GetParam());
+      &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
 
   EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
