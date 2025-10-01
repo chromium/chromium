@@ -193,6 +193,10 @@ void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
 bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
     BrowserContext* context,
     const Extension* extension) const {
+  // If the `OptimizeServiceWorkerStartRequests` feature is enabled, returns
+  // false (don't queue) if the worker is ready, indicating the caller should
+  // dispatch immediately. Returns true (queue) otherwise. If the feature is
+  // disabled, always returns true.
   if (base::FeatureList::IsEnabled(
           extensions_features::kOptimizeServiceWorkerStartRequests)) {
     return !IsReadyToRunTasks(context, extension);

@@ -66,10 +66,11 @@ class Extension;
 // Starting:
 //
 // A worker must be started before it can become ready to process the event
-// tasks. Every task added outside of when the worker is starting will cause
-// this class to request the worker to start. This is done this way because it
-// is difficult to know if a worker is currently running and ready to process
-// tasks.
+// tasks. When a task arrives, the task queue checks if the worker is ready. If
+// the worker is ready (and `OptimizeServiceWorkerStartRequests` is enabled),
+// the task is dispatched immediately. If the worker is not ready (or the
+// optimization is disabled), the task is queued, and the queue requests the
+// worker to start (if it hasn't already).
 //
 // `RendererDidStartServiceWorkerContext()` is called asynchronously from the
 // extension renderer process (potentially before or after
@@ -78,12 +79,16 @@ class Extension;
 //
 // Stopping:
 //
-// TODO(crbug.com/40936639): update the below once `OnStoppedSync()` is called
-// to track browser starting.
-//
-// `RendererDidStopServiceWorkerContext()` is called when the worker is stopped
-// to track renderer stopping. `RendererDidStopServiceWorkerContext()` is not
-// always guaranteed to be called.
+// The worker stopping sequence involves signals from both the renderer and the
+// browser process.
+//   * Renderer-side: `RendererDidStopServiceWorkerContext()` is called when the
+//     worker is stopped to track renderer stopping. It is not always guaranteed
+//     to be called (e.g. if the render process is destroyed).
+//   * Browser-side: `OnStoppingSync()` and `OnStoppedSync()` are called by the
+//     content layer. We expect this to always be called.
+// `ServiceWorkerState` observes all these signals and immediately resets its
+// internal state when any stop signal arrives for the currently tracked worker,
+// marking the worker as not ready for new tasks.
 //
 // Task Processing Readiness:
 //
@@ -122,17 +127,21 @@ class Extension;
 // Note that while worker registration in //content `DidRegisterServiceWorker()`
 // will finish before requesting the worker to start, there is no guarantee on
 // how the signals for their completion will be received.
-//
-//  For example `DidRegisterServiceWorker()`, `DidStartWorkerForScope()` and
-//  `RendererDidStartServiceWorkerContext()` signals are not guaranteed to
-//  finish in any order.
+// For example `DidRegisterServiceWorker()`, `DidStartWorkerForScope()` and
+// `RendererDidStartServiceWorkerContext()` signals are not guaranteed to
+// finish in any order.
 //
 // Activation Token:
 //
-// TODO(jlulejian): Explain how the activation token tracks
-// activation/deactivation and how the class uses it.
-//
-// TODO(lazyboy): Clean up queue when extension is unloaded/uninstalled.
+// When an extension is activated (e.g., loaded or updated), a unique
+// `activation_token` is generated. This token, combined with `extension_id` and
+// `browser_context_id`, forms the `SequencedContextId`. This ID is used
+// internally to track the state, pending tasks, and registration status
+// specific to that activation sequence. If the extension is deactivated and
+// reactivated, a new token is generated, allowing the system to discard stale
+// state and callbacks from the previous activation sequence. This ensures that
+// tasks from a previous instance of an extension don't get dispatched to a new
+// running instance.
 class ServiceWorkerTaskQueue
     : public KeyedService,
       public LazyContextTaskQueue,
@@ -150,17 +159,17 @@ class ServiceWorkerTaskQueue
   // `context`.
   static ServiceWorkerTaskQueue* Get(content::BrowserContext* context);
 
-  // Always returns true since we currently request a worker to start for every
-  // task sent to it.
+  // Returns true if the task should be queued before being dispatched.
   bool ShouldEnqueueTask(content::BrowserContext* context,
                          const Extension* extension) const override;
 
-  // Returns true if the service worker seems ready to run pending tasks. It
-  // only informs metrics data, not task dispatching logic.
+  // Returns true if the service worker is running and ready to execute tasks.
   bool IsReadyToRunTasks(content::BrowserContext* context,
                          const Extension* extension) const override;
 
-  // TODO(crbug.com/40276609): rename to AddPendingTaskAndMaybeDispatch.
+  // Adds a task. If the worker is ready (and optimizations are enabled), the
+  // task may be dispatched immediately. Otherwise, the task is queued, and the
+  // worker is started if necessary.
   void AddPendingTask(const LazyContextId& context_id,
                       PendingTask task) override;
 
