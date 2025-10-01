@@ -18,6 +18,9 @@ interface FrePageHandler {
   // glic WebUI.
   AcceptFre();
 
+  // Rejects the glic FRE modal dialog.
+  RejectFre();
+
   // Closes the glic FRE modal dialog. The `panel` identifies which panel was
   // closed.
   DismissFre(FreWebUiState panel);

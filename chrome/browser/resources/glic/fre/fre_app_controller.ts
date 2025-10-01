@@ -174,10 +174,10 @@ export class FreAppController {
       const source = url.searchParams.get('source');
       if (source === 'x_button') {
         chrome.metricsPrivate.recordUserAction(`Glic.Fre.CloseWithX`);
+        freHandler.dismissFre(FreWebUiState.kReady);
       } else {
-        chrome.metricsPrivate.recordUserAction('Glic.Fre.NoThanks');
+        freHandler.rejectFre();
       }
-      freHandler.dismissFre(FreWebUiState.kReady);
     }
   }
 

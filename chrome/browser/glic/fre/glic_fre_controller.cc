@@ -239,6 +239,11 @@ void GlicFreController::AcceptFre() {
   }
 }
 
+void GlicFreController::RejectFre() {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.NoThanks"));
+  DismissFre(webui_state_);
+}
+
 void GlicFreController::CloseWithReason(views::Widget::ClosedReason reason) {
   base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason", reason);
   switch (reason) {

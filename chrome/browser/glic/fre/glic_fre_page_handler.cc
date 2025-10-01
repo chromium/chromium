@@ -42,6 +42,10 @@ void GlicFrePageHandler::AcceptFre() {
   GetGlicService()->fre_controller().AcceptFre();
 }
 
+void GlicFrePageHandler::RejectFre() {
+  GetGlicService()->fre_controller().RejectFre();
+}
+
 void GlicFrePageHandler::DismissFre(mojom::FreWebUiState panel_state) {
   GetGlicService()->fre_controller().DismissFre(panel_state);
 }
