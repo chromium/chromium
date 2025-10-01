@@ -485,6 +485,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
   int web_request_count = 0;
   int enabled_not_allowlisted_count = 0;
   int disabled_not_allowlisted_count = 0;
+  int native_messaging_count = 0;
 
   struct ManifestVersion2And3Counts {
     int version_2_count = 0;
@@ -570,6 +571,11 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
     if (extension->permissions_data()->HasAPIPermission(
             mojom::APIPermissionID::kWebRequest)) {
       web_request_count++;
+    }
+
+    if (extension->permissions_data()->HasAPIPermission(
+            mojom::APIPermissionID::kNativeMessaging)) {
+      native_messaging_count++;
     }
 
     // 10 is arbitrarily chosen.
@@ -985,6 +991,8 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
   base::UmaHistogramCounts100("Extensions.WebRequestBlockingCount2",
                               web_request_blocking_count);
   base::UmaHistogramCounts100("Extensions.WebRequestCount2", web_request_count);
+  base::UmaHistogramCounts100("Extensions.Messaging.NativeMessagingCount",
+                              native_messaging_count);
   base::UmaHistogramCounts100("Extensions.NotAllowlistedEnabled2",
                               enabled_not_allowlisted_count);
   base::UmaHistogramCounts100("Extensions.NotAllowlistedDisabled2",
