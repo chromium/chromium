@@ -32,8 +32,7 @@ PassthroughDiscardableManager::DiscardableCacheValue::~DiscardableCacheValue() =
 
 PassthroughDiscardableManager::PassthroughDiscardableManager(
     const GpuPreferences& preferences)
-    : cache_(DiscardableCache::NO_AUTO_EVICT),
-      cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
+    : cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
                             ? preferences.force_gpu_mem_discardable_limit_bytes
                             : DiscardableCacheSizeLimit()) {
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
@@ -46,7 +45,6 @@ PassthroughDiscardableManager::PassthroughDiscardableManager(
 }
 
 PassthroughDiscardableManager::~PassthroughDiscardableManager() {
-  DCHECK(cache_.empty());
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
@@ -65,26 +63,10 @@ bool PassthroughDiscardableManager::OnMemoryDump(
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, total_size_);
 
-    if (!cache_.empty()) {
-      MemoryAllocatorDump* dump_avg_size =
-          pmd->CreateAllocatorDump(dump_name + "/avg_image_size");
-      dump_avg_size->AddScalar("average_size", MemoryAllocatorDump::kUnitsBytes,
-                               total_size_ / cache_.size());
-    }
-
     // Early out, no need for more detail in a BACKGROUND dump.
     return true;
   }
 
-  for (const auto& entry : cache_) {
-    std::string dump_name = base::StringPrintf(
-        "gpu/discardable_cache/cache_0x%" PRIXPTR "/entry_0x%" PRIXPTR,
-        reinterpret_cast<uintptr_t>(this),
-        reinterpret_cast<uintptr_t>(entry.second.unlocked_texture.get()));
-    MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
-    dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes, entry.second.size);
-  }
   return true;
 }
 
@@ -103,45 +85,17 @@ void PassthroughDiscardableManager::OnContextLost() {
 void PassthroughDiscardableManager::DeleteTextures(
     const gles2::ContextGroup* context_group,
     bool has_context) {
-  auto iter = cache_.begin();
-  while (iter != cache_.end()) {
-    if (iter->first.second == context_group || !context_group) {
-      iter->second.handle.ForceDelete();
-      total_size_ -= iter->second.size;
-      if (!has_context && iter->second.unlocked_texture)
-        iter->second.unlocked_texture->MarkContextLost();
-      iter = cache_.Erase(iter);
-    } else {
-      iter++;
-    }
-  }
 }
 
 void PassthroughDiscardableManager::DeleteTexture(
     uint32_t client_id,
     const gles2::ContextGroup* context_group) {
-  auto iter = cache_.Get({client_id, context_group});
-  if (iter == cache_.end())
-    return;
-
-  iter->second.handle.ForceDelete();
-  total_size_ -= iter->second.size;
-  cache_.Erase(iter);
 }
 
 void PassthroughDiscardableManager::UpdateTextureSize(
     uint32_t client_id,
     const gles2::ContextGroup* context_group,
     size_t new_size) {
-  auto iter = cache_.Get({client_id, context_group});
-  if (iter == cache_.end())
-    return;
-
-  total_size_ -= iter->second.size;
-  iter->second.size = new_size;
-  total_size_ += iter->second.size;
-
-  EnforceCacheSizeLimit(cache_size_limit_);
 }
 
 void PassthroughDiscardableManager::HandleMemoryPressure(
@@ -154,50 +108,23 @@ void PassthroughDiscardableManager::HandleMemoryPressure(
 bool PassthroughDiscardableManager::IsEntryLockedForTesting(
     uint32_t client_id,
     const gles2::ContextGroup* context_group) const {
-  auto iter = cache_.Peek({client_id, context_group});
-  CHECK(iter != cache_.end());
-  return iter->second.unlocked_texture == nullptr;
+  NOTREACHED();
 }
 
 bool PassthroughDiscardableManager::IsEntryTrackedForTesting(
     uint32_t client_id,
     const gles2::ContextGroup* context_group) const {
-  return cache_.Peek({client_id, context_group}) != cache_.end();
+  return false;
 }
 
 scoped_refptr<gles2::TexturePassthrough>
 PassthroughDiscardableManager::UnlockedTextureForTesting(
     uint32_t client_id,
     const gles2::ContextGroup* context_group) const {
-  auto iter = cache_.Peek({client_id, context_group});
-  CHECK(iter != cache_.end());
-  return iter->second.unlocked_texture;
+  NOTREACHED();
 }
 
 void PassthroughDiscardableManager::EnforceCacheSizeLimit(size_t limit) {
-  for (auto it = cache_.rbegin(); it != cache_.rend();) {
-    if (total_size_ <= limit) {
-      return;
-    }
-    if (!it->second.handle.Delete()) {
-      ++it;
-      continue;
-    }
-
-    total_size_ -= it->second.size;
-
-    GLuint client_id = it->first.first;
-    const gles2::ContextGroup* context_group = it->first.second;
-    gles2::PassthroughResources* resources =
-        context_group->passthrough_resources();
-
-    resources->texture_id_map.RemoveClientID(client_id);
-    resources->texture_object_map.RemoveClientID(client_id);
-
-    // Erase before calling texture_manager->RemoveTexture, to avoid attempting
-    // to remove the texture from entries_ twice.
-    it = cache_.Erase(it);
-  }
 }
 
 }  // namespace gpu

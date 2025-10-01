@@ -54,7 +54,7 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   // Test only functions
-  size_t NumCacheEntriesForTesting() const { return cache_.size(); }
+  size_t NumCacheEntriesForTesting() const { return 0; }
   bool IsEntryLockedForTesting(uint32_t client_id,
                                const gles2::ContextGroup* context_group) const;
   size_t TotalSizeForTesting() const { return total_size_; }
@@ -89,10 +89,6 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
   // then all textures are deleted.
   void DeleteTextures(const gles2::ContextGroup* context_group,
                       bool has_context);
-
-  using DiscardableCache =
-      base::LRUCache<DiscardableCacheKey, DiscardableCacheValue>;
-  DiscardableCache cache_;
 
   // Total size of all entries in the cache. The same as summing
   // DiscardableCacheValue::size for each entry.
