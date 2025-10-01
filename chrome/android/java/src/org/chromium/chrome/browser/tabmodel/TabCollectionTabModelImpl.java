@@ -1729,6 +1729,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         int currentIndex = indexOf(tab);
         if (currentIndex == TabList.INVALID_TAB_INDEX) return;
 
+        if (isPinned) {
+            recordPinTimestamp(tab);
+        } else {
+            recordPinnedDuration(tab);
+        }
+
         // The C++ side will adjust to a valid index.
         moveTabInternal(
                 tab,
