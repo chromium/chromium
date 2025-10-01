@@ -26,7 +26,7 @@ export function getHtml(this: SearchboxMatchElement) {
     <span id="separator" class="dim">${this.separatorText_}</span>
     <span id="description" .innerHTML="${this.descriptionHtml_}"></span>
   </div>
-  <div class="actions container" aria-hidden="true">
+  <div id="actions-container" class="actions container" aria-hidden="true">
     ${this.match.actions.map((item, index) => html`
       <div id="actions-focus-border">
         <cr-searchbox-action id="action"

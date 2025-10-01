@@ -4,11 +4,12 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
+import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {createAutocompleteMatch, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
@@ -148,5 +149,94 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
     // Clicking the button doesn't accidentally trigger navigation.
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
+  test('UpdateSelectionUpdatesClasses', async () => {
+    // Add 2 actions.
+    const match = createAutocompleteMatch();
+    match.actions.push({
+      hint: 'hint',
+      suggestionContents: 'suggestionContents',
+      iconPath: 'iconPath',
+      a11yLabel: 'a11yLabel',
+    });
+    match.actions.push({...match.actions[0]!});
+    matchEl.match = match;
+    await microtasksFinished();
+
+    // When a match is selected.
+    let selection = {
+      line: 0,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    };
+    matchEl.updateSelection(selection);
+    assertFalse(
+        !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertArrayEquals([false, false], [
+      ...matchEl.shadowRoot.querySelectorAll(
+          '#actions-container cr-searchbox-action'),
+    ].map(action => action.classList.contains('selected')));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
+
+    // When a match is unselected.
+    selection = {
+      line: 1,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    };
+    matchEl.updateSelection(selection);
+    assertFalse(
+        !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertArrayEquals([false, false], [
+      ...matchEl.shadowRoot.querySelectorAll(
+          '#actions-container cr-searchbox-action'),
+    ].map(action => action.classList.contains('selected')));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
+
+    // When the 1st action chip is selected.
+    selection = {
+      line: 0,
+      state: SelectionLineState.kFocusedButtonAction,
+      actionIndex: 0,
+    };
+    matchEl.updateSelection(selection);
+    assertTrue(
+        !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertArrayEquals([true, false], [
+      ...matchEl.shadowRoot.querySelectorAll(
+          '#actions-container cr-searchbox-action'),
+    ].map(action => action.classList.contains('selected')));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
+
+    // When the 2nd action chip is selected.
+    selection = {
+      line: 0,
+      state: SelectionLineState.kFocusedButtonAction,
+      actionIndex: 1,
+    };
+    matchEl.updateSelection(selection);
+    assertTrue(
+        !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertArrayEquals([false, true], [
+      ...matchEl.shadowRoot.querySelectorAll(
+          '#actions-container cr-searchbox-action'),
+    ].map(action => action.classList.contains('selected')));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
+
+    // When the remove button is selected.
+    selection = {
+      line: 0,
+      state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+      actionIndex: 0,
+    };
+    matchEl.updateSelection(selection);
+    assertTrue(
+        !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertArrayEquals([false, false], [
+      ...matchEl.shadowRoot.querySelectorAll(
+          '#actions-container cr-searchbox-action'),
+    ].map(action => action.classList.contains('selected')));
+    assertTrue(!!matchEl.shadowRoot.querySelector('#remove.selected'));
   });
 });
