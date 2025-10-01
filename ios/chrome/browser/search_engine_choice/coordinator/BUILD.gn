@@ -92,6 +92,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "search_engine_choice_egtest.mm",
+    "search_engine_choice_first_run_taiyaki_egtest.mm",
     "search_engine_choice_taiyaki_egtest.mm",
   ]
   deps = [
@@ -102,10 +103,12 @@ source_set("eg2_tests") {
     "//components/search_engines",
     "//components/signin/public/base:signin_switches",
     "//components/variations",
+    "//ios/chrome/browser/first_run/ui_bundled:eg2_tests",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/search_engine_choice/test:earl_grey_ui_test_util",
     "//ios/chrome/browser/search_engine_choice/ui:constants",
     "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
