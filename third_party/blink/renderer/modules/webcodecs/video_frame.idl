@@ -35,11 +35,9 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
   readonly attribute DOMRectReadOnly? visibleRect;
 
   // Rotation to apply when rendering, in degrees clockwise.
-  [RuntimeEnabled=WebCodecsOrientation]
   readonly attribute unsigned long rotation;
 
   // Whether the rendering is flipped horizontally after rotation.
-  [RuntimeEnabled=WebCodecsOrientation]
   readonly attribute boolean flip;
 
   // Display aspect ratio of visible rect, after accounting for rotation.

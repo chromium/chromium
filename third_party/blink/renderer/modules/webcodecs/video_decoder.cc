@@ -154,13 +154,11 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
   if (config.hasOptimizeForLatency())
     copy->setOptimizeForLatency(config.optimizeForLatency());
 
-  if (RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
-    if (config.hasFlip()) {
-      copy->setFlip(config.flip());
-    }
-    if (config.hasRotation()) {
-      copy->setRotation(config.rotation());
-    }
+  if (config.hasFlip()) {
+    copy->setFlip(config.flip());
+  }
+  if (config.hasRotation()) {
+    copy->setRotation(config.rotation());
   }
 
   return copy;
@@ -539,11 +537,8 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
     encryption_scheme = scheme.value();
   }
 
-  auto transformation = media::kNoTransformation;
-  if (RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
-    transformation =
-        media::VideoTransformation(config.rotation(), config.flip());
-  }
+  auto transformation =
+      media::VideoTransformation(config.rotation(), config.flip());
 
   media::VideoDecoderConfig media_config;
   media_config.Initialize(video_type.codec, video_type.profile,
@@ -699,8 +694,6 @@ media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
 }
 
 void VideoDecoder::OnActiveConfigChanged(const MediaConfigType& config) {
-  DCHECK(RuntimeEnabledFeatures::WebCodecsOrientationEnabled() ||
-         config.video_transformation() == media::kNoTransformation);
   active_transform_ = config.video_transformation();
 }
 

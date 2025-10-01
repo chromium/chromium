@@ -1553,11 +1553,8 @@ void VideoEncoder::CallOutputCallback(
     decoder_config->setCodec(active_config->codec_string);
     decoder_config->setCodedHeight(encoded_size.height());
     decoder_config->setCodedWidth(encoded_size.width());
-
-    if (RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
-      decoder_config->setRotation(output_transform.rotation);
-      decoder_config->setFlip(output_transform.mirrored);
-    }
+    decoder_config->setRotation(output_transform.rotation);
+    decoder_config->setFlip(output_transform.mirrored);
 
     if (active_config->display_size.has_value()) {
       decoder_config->setDisplayAspectHeight(
@@ -1597,11 +1594,6 @@ void VideoEncoder::ResetInternal(DOMException* ex) {
 
 void VideoEncoder::OnNewEncode(InputType* input,
                                ExceptionState& exception_state) {
-  // Ignore orientation information when the feature is disabled.
-  if (!RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
-    return;
-  }
-
   auto frame = input->frame();
   if (!frame) {
     // Let the invalid frame path be taken by calling code.
