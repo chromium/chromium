@@ -447,7 +447,11 @@ void LoginDisplayHostCommon::CancelPasswordChangedFlow() {
 
 bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   if (KioskController::Get().IsSessionStarting()) {
-    return KioskController::Get().HandleAccelerator(action);
+    KioskController::Get().HandleAccelerator(action);
+    // Mark all accelerators as handled during kiosk launch so they are not
+    // forwarded to the next accelerator target, meaning all accelerators are
+    // suppressed during the kiosk launch.
+    return true;
   }
 
   if (action == LoginAcceleratorAction::kShowFeedback) {

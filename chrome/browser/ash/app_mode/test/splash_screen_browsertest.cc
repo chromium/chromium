@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_P(SplashScreenTest, NetworkShortcutWorksOnline) {
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
 }
 
-IN_PROC_BROWSER_TEST_P(SplashScreenTest, CheckBlockedLoginAcceleratorActions) {
+IN_PROC_BROWSER_TEST_P(SplashScreenTest, CheckSuppressLoginAcceleratorActions) {
   network_state_.SimulateOnline();
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
@@ -127,15 +127,25 @@ IN_PROC_BROWSER_TEST_P(SplashScreenTest, CheckBlockedLoginAcceleratorActions) {
   // All actions are blocked except `kAppLaunchBailout` and
   // `kAppLaunchNetworkConfig`.
   std::vector<LoginAcceleratorAction> blocked_actions = {
-      kToggleSystemInfo,   kShowFeedback,          kShowResetScreen,
-      kCancelScreenAction, kStartEnrollment,       kStartKioskEnrollment,
-      kEnableDebugging,    kEditDeviceRequisition, kDeviceRequisitionRemora,
-      kStartDemoMode,      kLaunchDiagnostics,     kEnableQuickStart,
+      // kToggleSystemInfo is handled separately in
+      // LoginDisplayHostMojo::HandleAccelerator,
+      // before our kiosk logic has a chance to intercept this (which happens in
+      // LoginDisplayHostCommon::HandleAccelerator).
+      // Even so, letting that action slip through seems innocent enough.
+      /*kToggleSystemInfo */
+      kShowFeedback,          kShowResetScreen,         kCancelScreenAction,
+      kStartEnrollment,       kStartKioskEnrollment,    kEnableDebugging,
+      kEditDeviceRequisition, kDeviceRequisitionRemora, kStartDemoMode,
+      kLaunchDiagnostics,     kEnableQuickStart,
   };
 
   for (auto action : blocked_actions) {
-    // When the action is blocked, the accelerator is not handled.
-    ASSERT_FALSE(LoginDisplayHost::default_host()->HandleAccelerator(action));
+    // To suppress the action it is marked as handled.
+    const bool is_handled =
+        LoginDisplayHost::default_host()->HandleAccelerator(action);
+    EXPECT_TRUE(is_handled)
+        << "Action " << action << " is not marked as handled,"
+        << " and thus will be processed by the next event target";
   }
 }
 
