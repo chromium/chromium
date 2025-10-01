@@ -281,22 +281,26 @@ const CSSValueList* ComputedStyleUtils::CreatePositionListForLayer(
     const FillLayer& layer,
     const ComputedStyle& style) {
   CSSValueList* position_list = CSSValueList::CreateSpaceSeparated();
+  bool is_right_edge = false;
   if (layer.IsBackgroundXOriginSet()) {
     DCHECK(property.IDEquals(CSSPropertyID::kBackgroundPosition) ||
            property.IDEquals(CSSPropertyID::kMaskPosition));
-    position_list->Append(
-        *CSSIdentifierValue::Create(layer.BackgroundXOrigin()));
+    is_right_edge = layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight;
   }
-  position_list->Append(
-      *ZoomAdjustedPixelValueForLength(layer.PositionX(), style));
+  const Length& x_origin =
+      is_right_edge ? layer.PositionX().SubtractFromOneHundredPercent()
+                    : layer.PositionX();
+  position_list->Append(*ZoomAdjustedPixelValueForLength(x_origin, style));
+  bool is_bottom_edge = false;
   if (layer.IsBackgroundYOriginSet()) {
     DCHECK(property.IDEquals(CSSPropertyID::kBackgroundPosition) ||
            property.IDEquals(CSSPropertyID::kMaskPosition));
-    position_list->Append(
-        *CSSIdentifierValue::Create(layer.BackgroundYOrigin()));
+    is_bottom_edge = layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom;
   }
-  position_list->Append(
-      *ZoomAdjustedPixelValueForLength(layer.PositionY(), style));
+  const Length& y_origin =
+      is_bottom_edge ? layer.PositionY().SubtractFromOneHundredPercent()
+                     : layer.PositionY();
+  position_list->Append(*ZoomAdjustedPixelValueForLength(y_origin, style));
   return position_list;
 }
 
@@ -521,8 +525,6 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionXOrWebkitMaskPositionX(
   for (; curr_layer; curr_layer = curr_layer->Next()) {
     const Length& from_edge = curr_layer->PositionX();
     if (curr_layer->BackgroundXOrigin() == BackgroundEdgeOrigin::kRight) {
-      // TODO(crbug.com/610627): This should use two-value syntax once the
-      // parser accepts it.
       list->Append(*ZoomAdjustedPixelValueForLength(
           from_edge.SubtractFromOneHundredPercent(), style));
     } else {
@@ -539,8 +541,6 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionYOrWebkitMaskPositionY(
   for (; curr_layer; curr_layer = curr_layer->Next()) {
     const Length& from_edge = curr_layer->PositionY();
     if (curr_layer->BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom) {
-      // TODO(crbug.com/610627): This should use two-value syntax once the
-      // parser accepts it.
       list->Append(*ZoomAdjustedPixelValueForLength(
           from_edge.SubtractFromOneHundredPercent(), style));
     } else {

@@ -215,39 +215,39 @@ debug("background-position with CSS3 four values");
 style.backgroundImage = "url(resources/diamond.png)";
 style.backgroundPosition = "left 10px top 15px";
 shouldBe("style.backgroundPosition", "'left 10px top 15px'");
-shouldBe("computedStyle.backgroundPosition", "'left 10px top 15px'");
+shouldBe("computedStyle.backgroundPosition", "'10px 15px'");
 
 style.backgroundPosition = "left 10% top 30%";
 shouldBe("style.backgroundPosition", "'left 10% top 30%'");
-shouldBe("computedStyle.backgroundPosition", "'left 10% top 30%'");
+shouldBe("computedStyle.backgroundPosition", "'10% 30%'");
 
 style.backgroundPosition = "top 10% left 30%";
 shouldBe("style.backgroundPosition", "'left 30% top 10%'");
-shouldBe("computedStyle.backgroundPosition", "'left 30% top 10%'");
+shouldBe("computedStyle.backgroundPosition", "'30% 10%'");
 
 style.backgroundPosition = "right top 15px";
 shouldBe("style.backgroundPosition", "'right top 15px'");
-shouldBe("computedStyle.backgroundPosition", "'100% top 15px'");
+shouldBe("computedStyle.backgroundPosition", "'100% 15px'");
 
 style.backgroundPosition = "left 10px center";
 shouldBe("style.backgroundPosition", "'left 10px center'");
-shouldBe("computedStyle.backgroundPosition", "'left 10px 50%'");
+shouldBe("computedStyle.backgroundPosition", "'10px 50%'");
 
 style.backgroundPosition = "center top 20px";
 shouldBe("style.backgroundPosition", "'center top 20px'");
-shouldBe("computedStyle.backgroundPosition", "'50% top 20px'");
+shouldBe("computedStyle.backgroundPosition", "'50% 20px'");
 
 style.backgroundPosition = "top 20px center";
 shouldBe("style.backgroundPosition", "'center top 20px'");
-shouldBe("computedStyle.backgroundPosition", "'50% top 20px'");
+shouldBe("computedStyle.backgroundPosition", "'50% 20px'");
 
 style.backgroundPosition = "center left 30px";
 shouldBe("style.backgroundPosition", "'left 30px center'");
-shouldBe("computedStyle.backgroundPosition", "'left 30px 50%'");
+shouldBe("computedStyle.backgroundPosition", "'30px 50%'");
 
 style.backgroundPosition = "left 20% top";
 shouldBe("style.backgroundPosition", "'left 20% top'");
-shouldBe("computedStyle.backgroundPosition", "'left 20% 0%'");
+shouldBe("computedStyle.backgroundPosition", "'20% 0%'");
 
 style.backgroundPosition = "";
 shouldBe("style.backgroundPosition", "''");
@@ -375,61 +375,61 @@ style.backgroundImage = "url(resources/diamond.png), url(resources/ring.png)";
 
 style.backgroundPosition = "center, left bottom 20px";
 shouldBe("style.backgroundPosition", "'center center, left bottom 20px'");
-shouldBe("computedStyle.backgroundPosition", "'50% 50%, 0% bottom 20px'");
+shouldBe("computedStyle.backgroundPosition", "'50% 50%, 0% calc(100% - 20px)'");
 
 style.backgroundPosition = "right 20px bottom 20px, center left";
 shouldBe("style.backgroundPosition", "'right 20px bottom 20px, left center'");
-shouldBe("computedStyle.backgroundPosition", "'right 20px bottom 20px, 0% 50%'");
+shouldBe("computedStyle.backgroundPosition", "'calc(100% - 20px) calc(100% - 20px), 0% 50%'");
 
 style.backgroundPosition = "left 10px top 15px, right 20% bottom 20px";
 shouldBe("style.backgroundPosition", "'left 10px top 15px, right 20% bottom 20px'");
-shouldBe("computedStyle.backgroundPosition", "'left 10px top 15px, right 20% bottom 20px'");
+shouldBe("computedStyle.backgroundPosition", "'10px 15px, 80% calc(100% - 20px)'");
 
 style.backgroundPosition = "left 10% top, top 0px right";
 shouldBe("style.backgroundPosition", "'left 10% top, right top 0px'");
-shouldBe("computedStyle.backgroundPosition", "'left 10% 0%, 100% top 0px'");
+shouldBe("computedStyle.backgroundPosition", "'10% 0%, 100% 0px'");
 
 style.backgroundPosition = "right top 15px, bottom right 20px";
 shouldBe("style.backgroundPosition", "'right top 15px, right 20px bottom'");
-shouldBe("computedStyle.backgroundPosition", "'100% top 15px, right 20px 100%'");
+shouldBe("computedStyle.backgroundPosition", "'100% 15px, calc(100% - 20px) 100%'");
 
 debug("background-position with invalid CSS3 four values and comma, no change expected");
 style.backgroundPosition = "right top 15px, left right 20px";
 shouldBe("style.backgroundPosition", "'right top 15px, right 20px bottom'");
-shouldBe("computedStyle.backgroundPosition", "'100% top 15px, right 20px 100%'");
+shouldBe("computedStyle.backgroundPosition", "'100% 15px, calc(100% - 20px) 100%'");
 
 style.backgroundPosition = "right left 15px, left bottom 20px";
 shouldBe("style.backgroundPosition", "'right top 15px, right 20px bottom'");
-shouldBe("computedStyle.backgroundPosition", "'100% top 15px, right 20px 100%'");
+shouldBe("computedStyle.backgroundPosition", "'100% 15px, calc(100% - 20px) 100%'");
 
 style.backgroundPosition = "solid, left bottom 20px";
 shouldBe("style.backgroundPosition", "'right top 15px, right 20px bottom'");
-shouldBe("computedStyle.backgroundPosition", "'100% top 15px, right 20px 100%'");
+shouldBe("computedStyle.backgroundPosition", "'100% 15px, calc(100% - 20px) 100%'");
 
 debug("background-position inside the background shorthand");
 style.background = "top 10% left 30% / 10em gray round fixed border-box";
 shouldBe("style.background", "'left 30% top 10% / 10em round fixed border-box border-box gray'");
-shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed left 30% top 10% / 160px border-box border-box'");
+shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed 30% 10% / 160px border-box border-box'");
 
 style.background = "right top 15px / 10em gray round fixed border-box";
 shouldBe("style.background", "'right top 15px / 10em round fixed border-box border-box gray'");
-shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed 100% top 15px / 160px border-box border-box'");
+shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed 100% 15px / 160px border-box border-box'");
 
 style.background = "left 10px center / 10em gray round fixed border-box";
 shouldBe("style.background", "'left 10px center / 10em round fixed border-box border-box gray'");
-shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed left 10px 50% / 160px border-box border-box'");
+shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed 10px 50% / 160px border-box border-box'");
 
 style.background = "left 10px center round fixed border-box";
 shouldBe("style.background", "'left 10px center round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed left 10px 50% / auto border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 10px 50% / auto border-box border-box'");
 
 style.background = "center top 20px round fixed border-box";
 shouldBe("style.background", "'center top 20px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 50% top 20px / auto border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 50% 20px / auto border-box border-box'");
 
 style.background = "top 20px center round fixed border-box";
 shouldBe("style.background", "'center top 20px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 50% top 20px / auto border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 50% 20px / auto border-box border-box'");
 
 style.background = "top center round fixed border-box";
 shouldBe("style.background", "'center top round fixed border-box border-box'");
@@ -445,31 +445,31 @@ shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 50px 50
 
 style.background = "left top 60px / 50px round fixed border-box";
 shouldBe("style.background", "'left top 60px / 50px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 0% top 60px / 50px border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 0% 60px / 50px border-box border-box'");
 
 style.background = "left -20px top 60px / 50px round fixed border-box";
 shouldBe("style.background", "'left -20px top 60px / 50px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed left -20px top 60px / 50px border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed -20px 60px / 50px border-box border-box'");
 
 style.background = "border-box left 20px top / 50px round fixed";
 shouldBe("style.background", "'left 20px top / 50px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed left 20px 0% / 50px border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 20px 0% / 50px border-box border-box'");
 
 style.background = "border-box round fixed left 20px top / 50px";
 shouldBe("style.background", "'left 20px top / 50px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed left 20px 0% / 50px border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 20px 0% / 50px border-box border-box'");
 
 style.background = "border-box round fixed left 20px top 40px / 50px";
 shouldBe("style.background", "'left 20px top 40px / 50px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed left 20px top 40px / 50px border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 20px 40px / 50px border-box border-box'");
 
 style.background = "border-box round fixed left 20px top 40px";
 shouldBe("style.background", "'left 20px top 40px round fixed border-box border-box'");
-shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed left 20px top 40px / auto border-box border-box'");
+shouldBe("computedStyle.background", "'rgba(0, 0, 0, 0) none round fixed 20px 40px / auto border-box border-box'");
 
 style.background = "top 10% left 30% gray round fixed border-box";
 shouldBe("style.background", "'left 30% top 10% round fixed border-box border-box gray'");
-shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed left 30% top 10% / auto border-box border-box'");
+shouldBe("computedStyle.background", "'rgb(128, 128, 128) none round fixed 30% 10% / auto border-box border-box'");
 
 debug("background-position inside the background shorthand, some invalid cases, no changes expected");
 style.background = "";
