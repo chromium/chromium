@@ -320,7 +320,12 @@ void BookmarkButton::UpdateMaxTooltipWidth() {
 BookmarkBarPreloadPipelineManager*
 BookmarkButton::GetBookmarkBarPreloadPipelineManager() {
   tabs::TabInterface* active_tab = browser_->tab_strip_model()->GetActiveTab();
-  CHECK(active_tab);
+  // TODO(crbug.com/413259638): active_tab is only expected to be null if the
+  // tab_strip is being initialized or destroyed, but putting a CHECK had caused
+  // crbug.com/448228076.
+  if (!active_tab) {
+    return nullptr;
+  }
   return active_tab->GetTabFeatures()->bookmarkbar_preload_pipeline_manager();
 }
 
