@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
-#include <unordered_map>
 
 #include "base/threading/thread_checker.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -57,7 +57,7 @@ class MEDIA_EXPORT CdmPromiseAdapter {
 
  private:
   // A map between promise IDs and CdmPromises.
-  using PromiseMap = std::unordered_map<uint32_t, std::unique_ptr<CdmPromise>>;
+  using PromiseMap = absl::flat_hash_map<uint32_t, std::unique_ptr<CdmPromise>>;
 
   // Finds, takes the ownership of and returns the promise for |promise_id|.
   // Returns null if no promise can be found.

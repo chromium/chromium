@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -128,8 +127,8 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
 
   // Key ID <-> SessionIdDecryptionKeyMap map.
   using KeyIdToSessionKeysMap =
-      std::unordered_map<std::string,
-                         std::unique_ptr<SessionIdDecryptionKeyMap>>;
+      absl::flat_hash_map<std::string,
+                          std::unique_ptr<SessionIdDecryptionKeyMap>>;
 
   ~AesDecryptor() override;
 

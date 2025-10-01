@@ -9,7 +9,6 @@
 
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -22,6 +21,7 @@
 #include "media/base/key_systems.h"
 #include "media/base/key_systems_support_registration.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -79,9 +79,9 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
   void ResetForTesting();
 
  private:
-  using MimeTypeToCodecsMap = std::unordered_map<std::string, SupportedCodecs>;
-  using CodecMap = std::unordered_map<std::string, EmeCodec>;
-  using InitDataTypesMap = std::unordered_map<std::string, EmeInitDataType>;
+  using MimeTypeToCodecsMap = absl::flat_hash_map<std::string, SupportedCodecs>;
+  using CodecMap = absl::flat_hash_map<std::string, EmeCodec>;
+  using InitDataTypesMap = absl::flat_hash_map<std::string, EmeInitDataType>;
 
   void Initialize();
 
