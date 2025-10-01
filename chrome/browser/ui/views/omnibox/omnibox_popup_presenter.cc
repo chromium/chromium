@@ -142,7 +142,7 @@ void OmniboxPopupPresenter::OnViewBoundsChanged(View* observed_view) {
       location_bar_view_->width() +
       RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().width();
   gfx::Size min_size(width, 1);
-  gfx::Size max_size(INT_MAX, INT_MAX);
+  gfx::Size max_size(width, INT_MAX);
 
   content::RenderWidgetHostView* render_widget_host_view =
       GetWebContents()->GetRenderWidgetHostView();
