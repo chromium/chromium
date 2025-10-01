@@ -668,7 +668,7 @@ source_set("memory_buffer_sources") {
     ]
 
     public_deps += [
-      "//components/viz/common:shared_image_format",
+      "//components/viz/common/resources:shared_image_format",
       "//ui/gfx:color_space",
     ]
   }

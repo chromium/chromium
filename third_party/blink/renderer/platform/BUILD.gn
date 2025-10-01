@@ -2464,7 +2464,7 @@ source_set("blink_platform_unittests_sources") {
     "//cc",
     "//cc:test_support",
     "//components/input",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gin",
     "//media:test_support",
     "//media/capture/mojom:video_capture",

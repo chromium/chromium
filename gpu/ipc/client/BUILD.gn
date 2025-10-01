@@ -29,7 +29,7 @@ component("client") {
   deps = [
     "//base",
     "//cc/paint",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//gpu/config",

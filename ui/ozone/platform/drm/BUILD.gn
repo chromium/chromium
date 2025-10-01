@@ -126,7 +126,7 @@ source_set("gbm") {
   deps = [
     "//base",
     "//build/config/linux/libdrm",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//ipc",
     "//media:media_buildflags",
@@ -223,7 +223,7 @@ source_set("gbm_unittests") {
   deps = [
     ":gbm",
     "//base/test:test_support",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//skia",
     "//testing/gtest",
 

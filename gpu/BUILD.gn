@@ -626,7 +626,7 @@ test("gpu_unittests") {
     "//base/test:test_support",
     "//cc:test_support",
     "//cc/paint",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client:gles2_c_lib",
     "//gpu/command_buffer/client:gles2_implementation",

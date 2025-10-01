@@ -91,7 +91,7 @@ source_set("client_sources") {
 
   public_deps = [
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//skia",
   ]
   deps = [
@@ -209,7 +209,7 @@ source_set("raster_interface") {
   deps = [
     ":interface_base",
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:raster",
     "//skia",
@@ -246,7 +246,7 @@ component("gles2_implementation") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
@@ -270,7 +270,7 @@ source_set("raster_sources") {
     "//base",
     "//cc/paint",
     "//components/miracle_parameter/common",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",

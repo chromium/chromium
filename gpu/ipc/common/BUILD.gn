@@ -140,7 +140,7 @@ source_set("ipc_common_sources") {
 
   deps = [
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/config",
     "//third_party/libyuv",

@@ -12,32 +12,6 @@ import("//testing/test.gni")
 
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 
-viz_component("shared_image_format") {
-  output_name = "viz_shared_image_format"
-
-  defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
-
-  sources = [
-    "resources/resource_sizes.h",
-    "resources/shared_image_format.cc",
-    "resources/shared_image_format.h",
-    "resources/shared_image_format_utils.cc",
-    "resources/shared_image_format_utils.h",
-  ]
-  public_deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-    "//services/viz/public/mojom:singleplanar_format",
-  ]
-  deps = [
-    "//base",
-    "//skia",
-    "//third_party/angle:includes",
-    "//ui/gfx:buffer_types",
-    "//ui/gfx/geometry",
-  ]
-}
-
 always_enable_blending_for_primary = is_castos || is_cast_android
 assert(enable_cast_overlay_strategy || !always_enable_blending_for_primary)
 
@@ -301,7 +275,7 @@ viz_component("common") {
 
   public_deps = [
     ":buildflags",
-    ":shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
