@@ -970,9 +970,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        // get(): Client device hint should trigger webauthn.dll, if it exists.
        {L, ga, {cable}, {rk, has_winapi, hint_plat}, {add, winapi},
         plat_ui},
-       // But not if there's a credential match.
-       {L, ga, {usb, cable, internal}, {one_cred, has_winapi, rk, hint_plat},
-        {c(wincred1), add, winapi}, mss},
        // And otherwise it doesn't do anything because we generally assume that
        // we can enumerate platform authenticators and do a good job.
        {L, ga, {usb, cable, internal}, {rk, hint_plat}, {add}, qr},
@@ -990,13 +987,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {c(wincred1), c(wincred2), add},
        plat_ui},
       // Mix of internal credentials, and USB/NFC (empty allow list).
-      // This should offer dispatching to the Windows API for USB/NFC.
+      // This should default to Windows, and on cancel offer dispatching to the
+      // Windows API for USB/NFC.
       {L,
        ga,
        {cable},
        {two_cred, has_winapi, empty_al, has_plat},
        {c(wincred1), c(wincred2), add, winapi},
-       mss},
+       plat_ui},
 
       // Tests where Windows handles hybrid with internal credentials only.
       // This should dispatch directly to the Windows API.
@@ -1400,6 +1398,40 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
   controller.StartFlow(std::move(tai), {});
   EXPECT_EQ(model->step(), Step::kErrorWindowsHelloNotEnabled);
   EXPECT_FALSE(model->offer_try_again_in_ui);
+}
+
+// Tests that if a WebAuthn request with an empty allow-list has a matching
+// Windows Hello credential, the request is dispatched to Windows with an empty
+// allow list (i.e. no filtering takes place).
+// Regression test for https://crbug.com/448351425.
+TEST_F(AuthenticatorRequestDialogControllerTest, WinCredMatchEmptyAllowList) {
+  static constexpr char kWinAuthenticatorId[] = "win-authenticator";
+  TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kGetAssertion;
+  tai.win_is_uvpaa = true;
+  tai.recognized_credentials = {kWinCred1};
+  tai.has_win_native_api_authenticator = true;
+  tai.has_empty_allow_list = true;
+  auto model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      kWinAuthenticatorId, AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kWinNative));
+  base::RunLoop run_loop;
+  controller.SetRequestCallback(base::BindLambdaForTesting(
+      [&run_loop](const std::string& authenticator_id) {
+        EXPECT_EQ(kWinAuthenticatorId, authenticator_id);
+        run_loop.Quit();
+      }));
+  controller.SetAccountPreselectedCallback(base::BindLambdaForTesting(
+      [](device::DiscoverableCredentialMetadata cred) {
+        FAIL() << "Should not have narrowed the allow list";
+      }));
+  controller.StartFlow(std::move(tai), {});
+  EXPECT_EQ(model->step(), Step::kNotStarted);
+  run_loop.Run();
 }
 #endif
 
