@@ -54,44 +54,7 @@ source_set("inttests") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    # Explicitly reference imported headers from web_view library to avoid
-    # depending on the framework (as it is statically linked).
-    "//ios/web_view/public/cwv_export.h",
-    "//ios/web_view/public/cwv_navigation_delegate.h",
-    "//ios/web_view/public/cwv_navigation_type.h",
-    "//ios/web_view/public/cwv_web_view.h",
-    "//ios/web_view/public/cwv_web_view_configuration.h",
-    "observer.h",
-    "observer.mm",
-    "test_with_locale_and_resources.cc",
-    "test_with_locale_and_resources.h",
-    "web_view_test_util.h",
-    "web_view_test_util.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//ios/third_party/webkit",
-    "//testing/gtest",
-    "//ui/base",
-  ]
-}
-
-source_set("run_all_unittests") {
-  testonly = true
-  sources = [ "run_all_unittests.cc" ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//mojo/core/embedder",
-  ]
-}
-
-test("ios_web_view_unittests") {
+source_set("unittests") {
   testonly = true
   sources = [
     "../internal/autofill/cwv_autofill_controller_unittest.mm",
@@ -140,7 +103,6 @@ test("ios_web_view_unittests") {
   configs += [ ":unittest_config" ]
 
   deps = [
-    ":run_all_unittests",
     ":test_support",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
@@ -167,6 +129,51 @@ test("ios_web_view_unittests") {
     "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    # Explicitly reference imported headers from web_view library to avoid
+    # depending on the framework (as it is statically linked).
+    "//ios/web_view/public/cwv_export.h",
+    "//ios/web_view/public/cwv_navigation_delegate.h",
+    "//ios/web_view/public/cwv_navigation_type.h",
+    "//ios/web_view/public/cwv_web_view.h",
+    "//ios/web_view/public/cwv_web_view_configuration.h",
+    "observer.h",
+    "observer.mm",
+    "test_with_locale_and_resources.cc",
+    "test_with_locale_and_resources.h",
+    "web_view_test_util.h",
+    "web_view_test_util.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/third_party/webkit",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+source_set("run_all_unittests") {
+  testonly = true
+  sources = [ "run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+  ]
+}
+
+test("ios_web_view_unittests") {
+  testonly = true
+  deps = [
+    ":run_all_unittests",
+    ":unittests",
   ]
 
   assert_no_deps = ios_assert_no_deps
