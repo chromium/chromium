@@ -286,6 +286,8 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   titleLabel.text = l10n_util::GetNSString(IDS_IOS_AI_HUB_READER_MODE_LABEL);
   titleLabel.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
                                               UIFontWeightRegular);
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   UIStackView* labelStack = [[UIStackView alloc] initWithArrangedSubviews:@[
     titleLabel, self.readerModeOptionsButtonSubtitleLabel
@@ -335,6 +337,10 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   label.font =
       PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  label.lineBreakMode = NSLineBreakByWordWrapping;
+  label.numberOfLines = 0;
+  label.adjustsFontForContentSizeCategory = YES;
+  label.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
 
   _readerModeOptionsButtonSubtitleLabel = label;
   return _readerModeOptionsButtonSubtitleLabel;
@@ -362,6 +368,7 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
   [button addTarget:self
                 action:@selector(handleReaderModeTapped:)
       forControlEvents:UIControlEventTouchUpInside];
