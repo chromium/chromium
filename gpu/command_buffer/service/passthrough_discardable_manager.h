@@ -33,16 +33,6 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  void InitializeTexture(uint32_t client_id,
-                         const gles2::ContextGroup* context_group,
-                         size_t texture_size,
-                         ServiceDiscardableHandle handle);
-  bool UnlockTexture(uint32_t client_id,
-                     const gles2::ContextGroup* context_group,
-                     gles2::TexturePassthrough** texture_to_unbind);
-  bool LockTexture(uint32_t client_id,
-                   const gles2::ContextGroup* context_group);
-
   // Called when a context group is deleted, clean up all textures from this
   // group.
   void DeleteContextGroup(const gles2::ContextGroup* context_group,
