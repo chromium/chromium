@@ -442,6 +442,38 @@ class InteractiveTestApi {
     requires IsStateObserver<O>
   [[nodiscard]] StepBuilder StopObservingState(StateIdentifier<O> id);
 
+  // Convenience method for waiting for a state to achieve a particular value.
+  // Equivalent to:
+  // ```
+  //   PollState(id, callback, polling_interval),
+  //   WaitForState(id, value),
+  //   StopObservingState(id)
+  // ```
+  //
+  // Note that you can use different identifiers in different subsequences of an
+  // `InParallel` block, but not the same identifier.
+  //
+  // This is probably more than you need for a simple do-until loop; Use
+  // PollUntil() instead where possible.
+  template <typename T, typename C, typename M>
+  [[nodiscard]] MultiStep PollStateUntil(
+      StateIdentifier<PollingStateObserver<T>> id,
+      C&& callback,
+      M&& value,
+      base::TimeDelta polling_interval =
+          PollingStateObserver<T>::kDefaultPollingInterval);
+
+  // Convenience version of PollStateUntil which polls until `callback` becomes
+  // true; it uses a single internal identifier which means that unlike
+  // `PollStateUntil()` with different `id`s, these cannot be used in parallel.
+  template <typename C>
+    requires internal::HasSignature<C, bool()>
+  [[nodiscard]] MultiStep PollUntil(
+      C&& callback,
+      std::string description,
+      base::TimeDelta polling_interval =
+          PollingStateObserver<bool>::kDefaultPollingInterval);
+
   // Provides syntactic sugar so you can put "in any context" before an action
   // or test step rather than after. For example the following are equivalent:
   // ```
@@ -1206,6 +1238,32 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::StopObservingState(
   step.SetDescription(base::StringPrintf("StopObservingState(%s)",
                                          id.identifier().GetName().c_str()));
   return step;
+}
+
+template <typename T, typename C, typename M>
+InteractiveTestApi::MultiStep InteractiveTestApi::PollStateUntil(
+    StateIdentifier<PollingStateObserver<T>> id,
+    C&& callback,
+    M&& value,
+    base::TimeDelta polling_interval) {
+  auto steps =
+      Steps(PollState(id, std::forward<C>(callback), polling_interval),
+            WaitForState(id, std::forward<M>(value)), StopObservingState(id));
+  AddDescriptionPrefix(steps, "PollStateUntil()");
+  return steps;
+}
+
+template <typename C>
+  requires internal::HasSignature<C, bool()>
+InteractiveTestApi::MultiStep InteractiveTestApi::PollUntil(
+    C&& callback,
+    std::string description,
+    base::TimeDelta polling_interval) {
+  auto steps =
+      PollStateUntil(internal::kInteractiveTestPollUntilState,
+                     std::forward<C>(callback), true, polling_interval);
+  AddDescriptionPrefix(steps, description);
+  return steps;
 }
 
 // static

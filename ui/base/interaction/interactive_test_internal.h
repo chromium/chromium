@@ -37,6 +37,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -54,6 +55,10 @@ namespace internal {
 // events off of.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
+
+// Used by `PollUntil()`.
+DECLARE_STATE_IDENTIFIER_VALUE(PollingStateObserver<bool>,
+                               kInteractiveTestPollUntilState);
 
 inline constexpr char kInteractiveTestFailedMessagePrefix[] =
     "Interactive test failed ";

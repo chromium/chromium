@@ -208,7 +208,8 @@ Verbs fall into a number of different categories:
    - `PollViewProperty()` [Views]
    - `WaitForState()`
    - `CheckState()`
-   - `PollState()`
+   - `PollStateUntil()`
+   - `PollUntil()`
    - `PollElement()`
    - `PollView()` [Views]
    - `StopObservingState()`

@@ -28,6 +28,8 @@ namespace ui::test::internal {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
+DEFINE_STATE_IDENTIFIER_VALUE(PollingStateObserver<bool>,
+                              kInteractiveTestPollUntilState);
 
 StateObserverElement::StateObserverElement(ElementIdentifier id,
                                            ElementContext context)
