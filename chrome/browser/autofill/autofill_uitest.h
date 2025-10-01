@@ -27,6 +27,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 namespace autofill {
 
@@ -182,6 +183,7 @@ class AutofillUiTest : public InProcessBrowserTest,
       base::BindRepeating(&AutofillUiTest::HandleKeyPressEvent,
                           base::Unretained(this))};
 
+  ui::MockOsSettingsProvider os_settings_provider_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 
