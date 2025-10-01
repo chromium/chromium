@@ -42,6 +42,9 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
     : score_cache_(OmniboxFieldTrial::GetMLConfig().max_ml_score_cache_size) {
   // `model_provider` may be null for tests.
   if (OmniboxFieldTrial::IsUrlScoringModelEnabled() && model_provider) {
+    model_executor_task_runner_ =
+        base::SequencedTaskRunner::GetCurrentDefault();
+
     optimization_guide::proto::Any any_metadata;
     any_metadata.set_type_url(kAutocompleteScoringModelMetadataTypeUrl);
     optimization_guide::proto::AutocompleteScoringModelMetadata model_metadata;
@@ -50,8 +53,7 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
 
     url_scoring_model_handler_ =
         std::make_unique<AutocompleteScoringModelHandler>(
-            model_provider,
-            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+            model_provider, model_executor_task_runner_.get(),
             std::make_unique<AutocompleteScoringModelExecutor>(),
             optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
             /*model_metadata=*/any_metadata);

@@ -4,7 +4,6 @@
 
 #include "base/path_service.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
@@ -80,8 +79,7 @@ class ModelHandlerTest : public testing::Test {
     }
 
     model_handler_ = std::make_unique<TestModelHandler>(
-        model_observer_tracker(),
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+        model_observer_tracker(), task_environment_.GetMainThreadTaskRunner());
   }
 
   void ResetModelHandler(std::unique_ptr<TestModelHandler> handle = nullptr) {

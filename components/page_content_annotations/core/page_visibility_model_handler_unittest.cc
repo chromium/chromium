@@ -4,7 +4,6 @@
 
 #include "components/page_content_annotations/core/page_visibility_model_handler.h"
 
-#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -22,8 +21,7 @@ class PageVisibilityModelHandlerTest : public testing::Test {
     model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
     model_handler_ = std::make_unique<PageVisibilityModelHandler>(
-        model_provider_.get(),
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+        model_provider_.get(), task_environment_.GetMainThreadTaskRunner(),
         /*model_metadata=*/std::nullopt);
   }
 
