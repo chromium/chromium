@@ -226,7 +226,7 @@
 <translation id="3595784445906693824">要以新設定檔登入 Chrome 嗎？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用更新}=1{系統管理員要求你重新啟動 Chrome，以套用更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3597003331831379823">無法以進階權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
-<translation id="3622716124581627104">可以辨識物品或地點，也可複製或翻譯文字。使用 Google 智慧鏡頭時，系統會將頁面的螢幕截圖傳送給 Google。<ph name="LEARN_MORE" /></translation>
+<translation id="3622716124581627104">可以辨識物品或地點，也可複製或翻譯文字。使用 Google 智慧鏡頭時，系統會將網頁截圖傳送給 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
 <translation id="3635073343384702370">若有已存密碼，Chrome 可執行安全檢查</translation>
 <translation id="3667616615096815454">伺服器無法辨識應用程式，因此無法安裝。</translation>

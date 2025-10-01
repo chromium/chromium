@@ -29,7 +29,7 @@
 <translation id="1085677983426914530">无法打开“<ph name="FILENAME" />”</translation>
 <translation id="1096992026380844478">系统将根据上次备份来恢复您的同步设置。<ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
-<translation id="110491332089958282">与 Gemini 分享网页内容，以获得更符合需求的回答。当您与 Gemini 分享网页时，系统会将网页的完整内容和网址发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="110491332089958282">与 Gemini 分享网页内容，以获得更符合需求的回答。分享时，网页的完整内容和网址会发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1110772719190051587">使用面容 ID 解锁</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
@@ -140,7 +140,7 @@
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="1523567067736644845">解锁即可显示密码</translation>
 <translation id="1524563461097350801">不用了</translation>
-<translation id="1528290585275339320">开启网页内容分享功能</translation>
+<translation id="1528290585275339320">开启“分享网页内容”</translation>
 <translation id="1531038290222364269">显示标签页</translation>
 <translation id="1536390784834419204">翻译网页</translation>
 <translation id="1540800554400757039">地址第1行</translation>
@@ -1074,7 +1074,7 @@
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5211488077761630279">允许“<ph name="SITE_NAME" />”使用您的<ph name="PERMISSION" />？</translation>
 <translation id="5217245356412073535">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版视图</translation>
-<translation id="5217329997012062137">当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。</translation>
+<translation id="5217329997012062137">使用 Google 智能镜头时，相关页面的屏幕截图将会发送给 Google。</translation>
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5225388483876575107">A</translation>
@@ -1330,7 +1330,7 @@
 <translation id="6169031022444660352">如要删除所有已保存的凭据，您必须先在设备上设置密码。</translation>
 <translation id="6172428250974276014">是，将数据分开（推荐）</translation>
 <translation id="6173499589275053515">密码已保存到您的 Google 账号 <ph name="EMAIL" /> 中</translation>
-<translation id="6181969657494915430">搜索屏幕</translation>
+<translation id="6181969657494915430">搜索屏幕内容</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未读</translation>
@@ -1726,7 +1726,7 @@
 <translation id="7679915578945954324">已复制网址</translation>
 <translation id="7695953765525234038">搜索栏</translation>
 <translation id="7696316012653762532">网页翻译选项</translation>
-<translation id="7700527812567437847">使用 Google 智能镜头搜索屏幕上的内容</translation>
+<translation id="7700527812567437847">使用 Google 智能镜头搜索屏幕内容</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7708994397325774423">获取您的所有密码</translation>
 <translation id="7711440461521638739">您未重复使用任何密码</translation>

@@ -1055,7 +1055,7 @@
 <translation id="5655296450510165335">ثبت‌نام دستگاه</translation>
 <translation id="5655776422854483175">هیچ کار چاپی وجود ندارد</translation>
 <translation id="5659593005791499971">ایمیل</translation>
-<translation id="5662240986744577912">روشن/خاموش کردن صفحه حریم‌خصوصی</translation>
+<translation id="5662240986744577912">روشن/خاموش کردن صفحه حریم خصوصی</translation>
 <translation id="5669267381087807207">فعالسازی</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5674943355143004615">کاغذدیواری موردنظرتان را که می‌خواهید بسازید توصیف کنید</translation>
@@ -1809,7 +1809,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکن}=1{اسکن کردن صفحه {NUMBER_OF_PAGES}}one{اسکن کردن صفحه {NUMBER_OF_PAGES}}other{اسکن کردن صفحه {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">روستا</translation>
 <translation id="8997710128084572139">باتری دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
-<translation id="8998002498898621320">عکس واقع‌نما</translation>
+<translation id="8998002498898621320">عکس واقع‌گرایانه</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9000871120886759611">برای اینکه مطمئن شوید می‌توانید به زبان ترجیحی‌تان به اطلاعات دسترسی پیدا کنید، بازنشانی کنید. بررسی کنید که فقط از زبان‌های ترجیحی استفاده شده باشد.</translation>
 <translation id="9003499805101629690">پیتزا</translation>
