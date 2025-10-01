@@ -488,7 +488,11 @@ final class ChromeAndroidTaskImpl
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
-            if (activityWindowAndroid == null) return;
+            // https://crbug.com/445247646: minimize an app which is already minimized might make
+            // app unable to be activated again.
+            if (activityWindowAndroid == null || isMinimizedInternalLocked(activityWindowAndroid)) {
+                return;
+            }
             if (isRestoredInternalLocked(activityWindowAndroid)) {
                 mRestoredBounds = getBoundsInternalLocked();
             }
