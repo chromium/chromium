@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -168,17 +167,9 @@ gfx::Point SVGFEConvolveMatrixElement::TargetPoint() const {
 float SVGFEConvolveMatrixElement::ComputeDivisor() const {
   if (divisor_->IsSpecified())
     return divisor_->CurrentValue()->Value();
-  if (RuntimeEnabledFeatures::SvgFeConvolveMatrixZeroDivisorBehaviorEnabled()) {
-    // If the divisor is not set, then return zero to get the sum-of-matrix
-    // behavior (see FEColorMatrix::ComputeDivisor).
-    return 0;
-  }
-  float divisor_value = 0;
-  SVGNumberList* kernel_matrix = kernel_matrix_->CurrentValue();
-  uint32_t kernel_matrix_size = kernel_matrix->length();
-  for (uint32_t i = 0; i < kernel_matrix_size; ++i)
-    divisor_value += kernel_matrix->at(i)->Value();
-  return divisor_value ? divisor_value : 1;
+  // If the divisor is not set, then return zero to get the sum-of-matrix
+  // behavior (see FEColorMatrix::ComputeDivisor).
+  return 0;
 }
 
 bool SVGFEConvolveMatrixElement::SetFilterEffectAttribute(

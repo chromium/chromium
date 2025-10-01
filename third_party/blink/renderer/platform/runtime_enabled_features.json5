@@ -4827,10 +4827,6 @@
       status: "stable",
     },
     {
-      name: "SvgFeConvolveMatrixZeroDivisorBehavior",
-      status: "stable",
-    },
-    {
       name: "SvgFilterPaintsForHiddenContent",
       status: "stable",
     },
