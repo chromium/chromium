@@ -63,13 +63,13 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         @click="${this.onDeepSearchClick_}"
         ?disabled="${this.inCreateImageMode}">
       <cr-icon icon="composebox:deepSearch"></cr-icon>
-      Deep Search
+      ${this.i18n('deepSearch')}
     </button>` : ''}
     ${this.showCreateImage_ ?
     html`<button id="createImage" class="dropdown-item"
         @click="${this.onCreateImageClick_}">
       <cr-icon icon="composebox:createImage"></cr-icon>
-      Create Image
+      ${this.i18n('createImages')}
     </button>` : ''}
   </cr-action-menu>
 <!--_html_template_end_-->`;

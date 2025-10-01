@@ -42,7 +42,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       </composebox-tool-chip>
       <composebox-tool-chip
           icon="composebox:createImage"
-          label="Create Image"
+          label="${this.i18n('createImages')}"
           ?visible="${this.inCreateImageMode_}"
           @click="${this.onCreateImageClick_}">
       </composebox-tool-chip>
