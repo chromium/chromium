@@ -191,6 +191,14 @@ class FakeCatapApi : public CatapApi {
       *ioDataSize = sizeof(UInt32);
       return noErr;
     }
+    if (*in_address == kSampleRateAddress) {
+      if (!last_set_sample_rate.has_value()) {
+        return -1;
+      }
+      *reinterpret_cast<Float64*>(outData) = *last_set_sample_rate;
+      *ioDataSize = sizeof(Float64);
+      return noErr;
+    }
     if (*in_address == kTapDescriptionAddress) {
       // The tap description is returned as an ARC-managed object, so we need to
       // create a retained copy.
@@ -314,7 +322,9 @@ class FakeCatapApi : public CatapApi {
   AudioDeviceID destroyed_aggregate_device = 0;
   AudioObjectID destroyed_process_tap = 0;
 
-  // The last sample rate that was set with `AudioObjectSetPropertyData()`.
+  // The last sample rate that was set with `AudioObjectSetPropertyData()`. This
+  // is also the value that is returned by `AudioObjectGetPropertyData()` when
+  // the sample rate is requested.
   std::optional<Float64> last_set_sample_rate;
   // The last frames per buffer that was set with `AudioObjectSetPropertyData()`.
   std::optional<UInt32> last_set_frames_per_buffer;
@@ -605,6 +615,24 @@ TEST_F(CatapAudioInputStreamTest, ErrorIfDeviceIsAliveChanges) {
 
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
     fake_catap_api()->property_listener_block(1, &kDeviceIsAliveAddress);
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 1);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, ErrorIfSampleRateOfAggregateDeviceChanges) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&fake_callback_);
+
+    // No error expected if the sample rate is unchanged.
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
+    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
+
+    // Simulate that the sample rate of the aggregate device changes.
+    fake_catap_api()->last_set_sample_rate = 16000;
+    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
     EXPECT_EQ(fake_callback_.on_error_call_count(), 1);
   }
 }

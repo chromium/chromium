@@ -114,6 +114,10 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   // Configure the sample rate of the aggregate device according to `params_`.
   bool ConfigureSampleRateOfAggregateDevice();
 
+  // Returns the sample rate of the aggregate device. Returns nullopt if the
+  // sample rate could not be retrieved.
+  std::optional<double> GetSampleRateOfAggregateDevice();
+
   // Configure the frames per buffer of the aggregate device according to
   // `params_`.
   bool ConfigureFramesPerBufferOfAggregateDevice();

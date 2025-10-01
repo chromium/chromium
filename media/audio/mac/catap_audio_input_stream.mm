@@ -805,13 +805,10 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
 bool CatapAudioInputStream::ConfigureSampleRateOfAggregateDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set sample rate.
-  AudioObjectPropertyAddress property_address = {
-      kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMain};
   UInt32 property_size = sizeof(Float64);
   Float64 sample_rate = params_.sample_rate();
   OSStatus result = catap_api_->AudioObjectSetPropertyData(
-      aggregate_device_id_, &property_address, /*in_qualifier_data_size=*/0,
+      aggregate_device_id_, &kSampleRateAddress, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, property_size, &sample_rate);
   if (result != noErr) {
     SendLogMessage(
@@ -820,6 +817,23 @@ bool CatapAudioInputStream::ConfigureSampleRateOfAggregateDevice() {
     return false;
   }
   return true;
+}
+
+std::optional<double> CatapAudioInputStream::GetSampleRateOfAggregateDevice() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Get sample rate.
+  UInt32 property_size = sizeof(Float64);
+  Float64 sample_rate = 0.0;
+  OSStatus result = catap_api_->AudioObjectGetPropertyData(
+      aggregate_device_id_, &kSampleRateAddress, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, &property_size, &sample_rate);
+  if (result != noErr) {
+    SendLogMessage(
+        "%s => Could not get sample rate of the aggregate device. Status: %d",
+        __func__, result);
+    return std::nullopt;
+  }
+  return sample_rate;
 }
 
 bool CatapAudioInputStream::ConfigureFramesPerBufferOfAggregateDevice() {
@@ -906,11 +920,16 @@ void CatapAudioInputStream::ProcessPropertyChange(
     } else if (property_address == kSampleRateAddress) {
       TRACE_EVENT1("audio", "CatapAudioInputStream::ProcessPropertyChange",
                    "property", "SampleRate");
-      // The current code can't recover from a sample rate change, and will
-      // result in distorted audio. A better solution might exist, but this is
-      // a rare case so we simply report an error for now.
-      SendLogMessage("%s => Sample rate changed.", __func__);
-      OnError();
+      std::optional<double> sample_rate = GetSampleRateOfAggregateDevice();
+      if (!sample_rate.has_value() ||
+          sample_rate.value() != params_.sample_rate()) {
+        // The current code can't recover from a sample rate change, and will
+        // result in distorted audio. A better solution might exist, but this is
+        // a rare case so we simply report an error for now.
+        SendLogMessage("%s => Sample rate changed. New sample rate: %f",
+                       __func__, sample_rate.value_or(-1.0));
+        OnError();
+      }
     }
   }
 }
