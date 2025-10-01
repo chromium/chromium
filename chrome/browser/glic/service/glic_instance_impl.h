@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
-class BrowserWindowInterface;
 class Profile;
 
 namespace tabs {
@@ -77,21 +76,17 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicSharingManagerProvider implementation.
   GlicSharingManager& sharing_manager() override;
 
-  void DisassociateWindow();
-
   void AttachInstance();
   void DetachInstance();
   void CloseInstanceAndShutdown();
   bool IsShowing() const override;
-  BrowserWindowInterface* associated_bwi() const { return associated_bwi_; }
 
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(EmbedderType type, tabs::TabInterface* tab);
   void Close(EmbedderType type, tabs::TabInterface* tab);
   void Toggle(EmbedderType type, tabs::TabInterface* tab);
 
-  // Manages the association of this instance with a tab.
-  void DisassociateFromTab(tabs::TabInterface* tab);
+  void UnbindTab(tabs::TabInterface* tab);
   bool IsOrphaned() const;
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
 
@@ -182,16 +177,16 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
   void ShowInactiveSidePanelEmbedderFor(tabs::TabInterface* tab);
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
-  void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
-                                const InstanceId& instance_id);
-  void OnAssociatedTabActivated(tabs::TabInterface* tab);
+  void OnBoundTabDestroyed(tabs::TabInterface* tab,
+                           const InstanceId& instance_id);
+  void OnBoundTabActivated(tabs::TabInterface* tab);
   void OnZeroStateSuggestionsFetched(
       mojom::ZeroStateSuggestionsPtr suggestions,
       mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
           callback,
       std::vector<std::string> returned_suggestions);
   void MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key);
-  EmbedderEntry& AssociateTab(tabs::TabInterface* tab);
+  EmbedderEntry& BindTab(tabs::TabInterface* tab);
 
   using StateChangeCallbackList =
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
@@ -200,9 +195,6 @@ class GlicInstanceImpl : public GlicInstance,
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;
 
-  // The browser window this instance is associated with. This persists even
-  // when detached.
-  raw_ptr<BrowserWindowInterface> associated_bwi_ = nullptr;
   base::WeakPtr<AttachmentDelegate> attachment_delegate_;
   InstanceId id_;
 

@@ -468,7 +468,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
 
   CHECK(target_instance);
   if (current_instance && current_instance != target_instance) {
-    current_instance->DisassociateFromTab(tab);
+    current_instance->UnbindTab(tab);
   }
 
   auto* helper = GlicInstanceHelper::From(tab);
