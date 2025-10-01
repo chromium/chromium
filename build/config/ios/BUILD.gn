@@ -271,10 +271,10 @@ config("xctest_config") {
   }
 }
 
-# TODO(crbug.com/40911785): any target that uses this config will miscompile.
-# This needs to be fixed if we want to use Swift - C++ interop.
+# When you have a modulemap to define modules for the C++ code that can be
+# called from Swift, you need to include the path to the modulemap.
 config("enable_swift_cxx_interop") {
-  swiftflags = [ "-enable-experimental-cxx-interop" ]
+  swiftflags = [ "-cxx-interoperability-mode=default" ]
 }
 
 group("xctest") {
