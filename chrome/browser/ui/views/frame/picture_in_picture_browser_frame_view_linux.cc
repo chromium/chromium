@@ -128,7 +128,8 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
     CHECK(frame_background_);
     frame_background_->set_frame_color(
         GetColorProvider()->GetColor(kColorPipWindowTopBarBackground));
-    frame_background_->set_use_custom_frame(browser_widget()->UseCustomFrame());
+    frame_background_->set_use_custom_frame(
+        browser_widget()->browser_native_widget()->UseCustomFrame());
     frame_background_->set_is_active(ShouldPaintAsActive());
     frame_background_->set_theme_image(GetFrameImage());
 

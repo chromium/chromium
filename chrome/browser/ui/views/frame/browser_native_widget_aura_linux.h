@@ -24,6 +24,7 @@ class BrowserNativeWidgetAuraLinux : public BrowserNativeWidgetAura {
 
   // BrowserNativeWidgetAura:
   void OnHostClosed() override;
+  bool UseCustomFrame() const override;
 
   bool ShouldDrawRestoredFrameShadow() const;
 
@@ -35,7 +36,6 @@ class BrowserNativeWidgetAuraLinux : public BrowserNativeWidgetAura {
   // BrowserNativeWidget:
   views::Widget::InitParams GetWidgetParams(
       views::Widget::InitParams::Ownership ownership) override;
-  bool UseCustomFrame() const override;
   void TabDraggingKindChanged(TabDragKind tab_drag_kind) override;
   void ClientDestroyedWidget() override;
 

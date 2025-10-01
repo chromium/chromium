@@ -292,10 +292,6 @@ BrowserFrameView* BrowserWidget::GetFrameView() const {
   return browser_frame_view_;
 }
 
-bool BrowserWidget::UseCustomFrame() const {
-  return browser_native_widget_ && browser_native_widget_->UseCustomFrame();
-}
-
 bool BrowserWidget::ShouldSaveWindowPlacement() const {
   return browser_native_widget_ &&
          browser_native_widget_->ShouldSaveWindowPlacement();
@@ -590,10 +586,12 @@ ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
   }
 
   // frame_type.
-  key.frame_type = UseCustomFrame() ? ui::ColorProviderKey::FrameType::kChromium
+  const bool use_custom_frame =
+      browser_native_widget_ && browser_native_widget_->UseCustomFrame();
+  key.frame_type = use_custom_frame ? ui::ColorProviderKey::FrameType::kChromium
                                     : ui::ColorProviderKey::FrameType::kNative;
 #if BUILDFLAG(IS_WIN)
-  if (theme_service && theme_service->UsingDeviceTheme() && UseCustomFrame()) {
+  if (theme_service && theme_service->UsingDeviceTheme() && use_custom_frame) {
     key.frame_style = ui::ColorProviderKey::FrameStyle::kSystem;
   }
 #endif

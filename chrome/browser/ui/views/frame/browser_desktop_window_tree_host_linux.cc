@@ -84,7 +84,7 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
       browser_widget->browser_native_widget());
   native_widget_->set_host(this);
 
-  browser_widget->set_frame_type(browser_widget->UseCustomFrame()
+  browser_widget->set_frame_type(native_widget_->UseCustomFrame()
                                      ? views::Widget::FrameType::kForceCustom
                                      : views::Widget::FrameType::kForceNative);
 
@@ -223,9 +223,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   if (ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
     // Set the opaque region.
     std::vector<gfx::Rect> opaque_region;
-    if (IsShowingFrame(
-            browser_widget_->browser_native_widget()->UseCustomFrame(),
-            window_state)) {
+    if (IsShowingFrame(native_widget_->UseCustomFrame(), window_state)) {
       // The opaque region is a list of rectangles that contain only fully
       // opaque pixels of the window.  We need to convert the clipping
       // rounded-rect into this format.
@@ -351,9 +349,7 @@ gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
     ui::PlatformWindowState window_state) const {
   // If we are not showing frame, the insets should be zero.
   if (!browser_widget_ ||
-      !IsShowingFrame(
-          browser_widget_->browser_native_widget()->UseCustomFrame(),
-          window_state)) {
+      !IsShowingFrame(native_widget_->UseCustomFrame(), window_state)) {
     return gfx::Insets();
   }
 

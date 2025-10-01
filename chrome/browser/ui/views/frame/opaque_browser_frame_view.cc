@@ -13,6 +13,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
@@ -571,7 +572,8 @@ int OpaqueBrowserFrameView::GetTopAreaHeight() const {
 }
 
 bool OpaqueBrowserFrameView::UseCustomFrame() const {
-  return browser_widget()->UseCustomFrame();
+  return browser_widget()->browser_native_widget() &&
+         browser_widget()->browser_native_widget()->UseCustomFrame();
 }
 
 bool OpaqueBrowserFrameView::IsFrameCondensed() const {
@@ -631,7 +633,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     window_title_->SetBackgroundColor(frame_color);
   }
   frame_background_->set_frame_color(frame_color);
-  frame_background_->set_use_custom_frame(browser_widget()->UseCustomFrame());
+  frame_background_->set_use_custom_frame(UseCustomFrame());
   frame_background_->set_is_active(active);
   frame_background_->set_theme_image(GetFrameImage());
   frame_background_->set_theme_image_inset(
@@ -849,7 +851,7 @@ void OpaqueBrowserFrameView::WindowIconPressed() {
 
 bool OpaqueBrowserFrameView::GetShowWindowTitleBar() const {
   // Do not show the custom title bar if the system title bar option is enabled.
-  if (!browser_widget()->UseCustomFrame()) {
+  if (!UseCustomFrame()) {
     return false;
   }
 

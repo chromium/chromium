@@ -85,9 +85,6 @@ class BrowserWidget : public views::Widget,
   // Returns the FrameView of this frame.
   BrowserFrameView* GetFrameView() const;
 
-  // Returns |true| if we should use the custom frame.
-  bool UseCustomFrame() const;
-
   // Returns true when the window placement should be saved.
   bool ShouldSaveWindowPlacement() const;
 
