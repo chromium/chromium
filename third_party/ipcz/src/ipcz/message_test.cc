@@ -142,7 +142,7 @@ TEST_F(MessageTest, BasicMessage) {
   EXPECT_EQ(0u, in.header().reserved0[2]);
   EXPECT_EQ(0u, in.header().reserved0[3]);
   EXPECT_EQ(0u, in.header().reserved0[4]);
-  EXPECT_EQ(SequenceNumber(0), in.header().sequence_number);
+  EXPECT_EQ(SequenceNumber(0), in.header().node_sequence_number);
   EXPECT_EQ(0u, in.header().size % 8u);
   EXPECT_EQ(0u, in.v0()->foo);
   EXPECT_EQ(0u, in.v0()->bar);

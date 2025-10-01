@@ -347,7 +347,7 @@ void NodeLink::Transmit(Message& message) {
     return;
   }
 
-  message.header().sequence_number = GenerateOutgoingSequenceNumber();
+  message.header().node_sequence_number = GenerateOutgoingSequenceNumber();
   transport_->Transmit(message);
 }
 

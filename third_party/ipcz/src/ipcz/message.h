@@ -51,7 +51,7 @@ struct MessageHeader {
   // Used for sequencing messages along a NodeLink to preserve end-to-end
   // ordering, as NodeLink messages may be transmitted either across a driver
   // transport or queues in shared memory.
-  SequenceNumber sequence_number;
+  SequenceNumber node_sequence_number;
 
   // Offset into the message where the unified array of DriverObjectData lives,
   // or zero if there are no driver objects attached.
