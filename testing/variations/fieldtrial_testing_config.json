@@ -17901,9 +17901,9 @@
             ],
             "experiments": [
                 {
-                    "name": "VersionOne",
+                    "name": "Enabled_SyncEnablePasswordsSyncErrorMessageAlternative",
                     "params": {
-                        "version": "1"
+                        "version": "3"
                     },
                     "enable_features": [
                         "SyncEnablePasswordsSyncErrorMessageAlternative"
