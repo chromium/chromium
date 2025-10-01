@@ -38,6 +38,7 @@ public class ContentFeatureList {
             "AccessibilityManageBroadcastReceiverOnBackground";
 
     public static final String ANDROID_CAPTURE_KEY_EVENTS = "AndroidCaptureKeyEvents";
+    public static final String ANDROID_CARET_BROWSING = "AndroidCaretBrowsing";
 
     public static final String ANDROID_DEV_TOOLS_FRONTEND = "AndroidDevToolsFrontend";
 
@@ -80,6 +81,10 @@ public class ContentFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sAccessibilityDeprecateJavaNodeCacheDisableCache =
                     sAccessibilityDeprecateJavaNodeCache.newBooleanParam("disable_cache", false);
+
+    public static final MutableFlagWithSafeDefault sAndroidCaretBrowsing =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(), ContentFeatures.ANDROID_CARET_BROWSING, false);
 
     public static final MutableFlagWithSafeDefault sStrictHighRankProcessLRU =
             new MutableFlagWithSafeDefault(

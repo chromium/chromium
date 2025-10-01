@@ -40,10 +40,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -57,6 +59,7 @@ import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -70,6 +73,7 @@ import org.chromium.ui.widget.ChromeImageButton;
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
     ContentFeatureList.SMART_ZOOM
 })
+@Batch(Batch.UNIT_TESTS)
 public class AccessibilitySettingsTest {
     private AccessibilitySettings mAccessibilitySettings;
 
@@ -86,9 +90,11 @@ public class AccessibilitySettingsTest {
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapBridgeMock;
 
+    @Rule // initialize mocks
+    public MockitoRule rule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapBridgeMock);
 
         when(mDelegate.getBrowserContextHandle()).thenReturn(mContextHandleMock);
@@ -101,15 +107,6 @@ public class AccessibilitySettingsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true));
         when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(true);
-
-        mSettingsActivityTestRule.launchPreference(
-                AccessibilitySettings.class,
-                null,
-                (fragment) -> {
-                    ((AccessibilitySettings) fragment).setDelegate(mDelegate);
-                });
-        mAccessibilitySettings =
-                (AccessibilitySettings) mSettingsActivityTestRule.getPreferenceFragment();
     }
 
     @After
@@ -125,6 +122,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testForceEnableZoom() {
+        launchPreferenceUI();
         ChromeSwitchPreference forceEnableZoomPref =
                 (ChromeSwitchPreference)
                         mAccessibilitySettings.findPreference(PREF_FORCE_ENABLE_ZOOM);
@@ -153,6 +151,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testCaptionPreferences() {
+        launchPreferenceUI();
         Preference captionsPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_CAPTIONS);
         Assert.assertNotNull(captionsPref);
@@ -178,6 +177,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testImageDescriptionsPreferences_Enabled() {
+        launchPreferenceUI();
         Preference imageDescriptionsPref =
                 mAccessibilitySettings.findPreference(PREF_IMAGE_DESCRIPTIONS);
 
@@ -210,6 +210,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testPageZoomPreference_savedZoomLevelsPreference() {
+        launchPreferenceUI();
         Preference zoomInfoPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_ZOOM_INFO);
         Assert.assertNotNull(zoomInfoPref);
@@ -232,6 +233,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     @Features.EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2})
     public void testPageZoomPreference_osLevelAdjustmentPreference_visibleWhenEnabled() {
+        launchPreferenceUI();
         ChromeSwitchPreference osLevelAdjustmentPref =
                 (ChromeSwitchPreference)
                         mAccessibilitySettings.findPreference(
@@ -260,6 +262,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2})
     public void testPageZoomPreference_osLevelAdjustmentPreference_hiddenWhenDisabled() {
+        launchPreferenceUI();
         Preference osLevelAdjustmentPref =
                 mAccessibilitySettings.findPreference(
                         AccessibilitySettings.PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
@@ -273,6 +276,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testReaderModePreferenceChange() {
+        launchPreferenceUI();
         ChromeSwitchPreference readerModePref =
                 (ChromeSwitchPreference)
                         mAccessibilitySettings.findPreference(
@@ -290,6 +294,39 @@ public class AccessibilitySettingsTest {
         watcher.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.ANDROID_CARET_BROWSING})
+    public void testCaretFeatureToggle() {
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        launchPreferenceUI();
+        ChromeSwitchPreference caretBrowsingPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_CARET_BROWSING);
+        assertTrue("Caret browsing toggle should be visible", caretBrowsingPref.isVisible());
+        boolean initialValue = caretBrowsingPref.isChecked();
+
+        // The delegate has been called to fetch value when creating the page. Clear the invocations
+        // so we can verify the correct number of invocations on user click.
+        clearInvocations(mDelegate);
+
+        // First scroll to the caret browsing pref
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(R.string.caret_browsing_title))));
+        onView(withText(R.string.caret_browsing_title)).perform(click());
+
+        assertTrue(
+                "Caret option setting was not toggled",
+                initialValue != caretBrowsingPref.isChecked());
+
+        // Verify that we did set the feature value on the delegate
+        verify(mDelegate).setCaretBrowsingEnabled(any(Boolean.class));
+    }
+
     // Helper methods.
 
     private static final BaseMatcher<View> sDisabled =
@@ -304,4 +341,15 @@ public class AccessibilitySettingsTest {
                     description.appendText("View was enabled, but should have been disabled.");
                 }
             };
+
+    private void launchPreferenceUI() {
+        mSettingsActivityTestRule.launchPreference(
+                AccessibilitySettings.class,
+                null,
+                (fragment) -> {
+                    ((AccessibilitySettings) fragment).setDelegate(mDelegate);
+                });
+        mAccessibilitySettings =
+                (AccessibilitySettings) mSettingsActivityTestRule.getPreferenceFragment();
+    }
 }

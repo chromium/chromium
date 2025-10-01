@@ -41,11 +41,13 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public static final String PREF_CAPTIONS = "captions";
     public static final String PREF_ZOOM_INFO = "zoom_info";
     public static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
+    public static final String PREF_CARET_BROWSING = "caret_browsing";
 
     private PageZoomPreference mPageZoomDefaultZoomPref;
     private ChromeSwitchPreference mPageZoomIncludeOSAdjustment;
     private ChromeSwitchPreference mPageZoomAlwaysShowPref;
     private ChromeSwitchPreference mForceEnableZoomPref;
+    private ChromeSwitchPreference mCaretBrowsingPref;
     private ChromeSwitchPreference mJumpStartOmnibox;
     private AccessibilitySettingsDelegate mDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
@@ -153,9 +155,18 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             mPageZoomIncludeOSAdjustment.setVisible(false);
         }
 
-        Preference imageDescriptionsPreference =
-                findPreference(PREF_IMAGE_DESCRIPTIONS);
+        Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
         imageDescriptionsPreference.setVisible(mDelegate.shouldShowImageDescriptionsSetting());
+
+        // Caret Browsing Settings
+        mCaretBrowsingPref = findPreference(PREF_CARET_BROWSING);
+
+        if (ContentFeatureList.sAndroidCaretBrowsing.isEnabled()) {
+            mCaretBrowsingPref.setChecked(mDelegate.isCaretBrowsingEnabled());
+            mCaretBrowsingPref.setOnPreferenceChangeListener(this);
+        } else {
+            mCaretBrowsingPref.setVisible(false);
+        }
     }
 
     @Override
@@ -191,6 +202,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             // TODO(mschillaci): Implement the override behavior for OS level.
         } else if (OmniboxFeatures.KEY_JUMP_START_OMNIBOX.equals(preference.getKey())) {
             OmniboxFeatures.setJumpStartOmniboxEnabled((Boolean) newValue);
+        } else if (PREF_CARET_BROWSING.equals(preference.getKey())) {
+            mDelegate.setCaretBrowsingEnabled((Boolean) newValue);
         }
         return true;
     }

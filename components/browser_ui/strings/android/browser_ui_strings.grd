@@ -1063,6 +1063,13 @@
         Launch Chrome with the Omnibox focused, reducing start-up time on low-end devices.
       </message>
 
+      <message name="IDS_CARET_BROWSING_TITLE" desc="Title of preference that allows the user to navigate pages with a text caret.">
+        Navigate pages with a text cursor when a keyboard is attached
+      </message>
+      <message name="IDS_CARET_BROWSING_SUMMARY" desc="Summary of preference that allows the user to navigate pages with a text caret.">
+        To turn caret browsing on or off, use the shortcut F7
+      </message>
+
       <!-- Text Size Contrast -->
       <message name="IDS_TEXT_SIZE_CONTRAST_TITLE" translateable="false" desc="Title of the preference that allows the user to update the accessibility smart zoom feature that applies to the web contents.">
         Text size contrast

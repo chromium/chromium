@@ -28,6 +28,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kViewportSegments,
     &input::features::kInputOnViz,
     &features::kAndroidCaptureKeyEvents,
+    &features::kAndroidCaretBrowsing,
     &features::kAndroidDevToolsFrontend,
     &features::kAccessibilityDeprecateJavaNodeCache,
     &features::kAccessibilityDeprecateTypeAnnounce,
