@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,6 +25,15 @@
 
 namespace autofill {
 namespace {
+
+// Returns true if any of the features that use wallet public passes are
+// enabled.
+bool WalletPublicPassesEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillAiWalletVehicleRegistration) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillAiWalletFlightReservation);
+}
 
 // Creates a fallback icon used when there is no logo for loyalty card program.
 // The icon consists of the first letter of the merchant name.
@@ -102,8 +112,13 @@ Suggestion CreateLoyaltyCardSuggestion(
   suggestion.payload = Suggestion::Guid(loyalty_card.id().value());
   SetLoyaltyCardIconURL(suggestion, loyalty_card.program_logo(),
                         valuables_manager, loyalty_card.merchant_name());
-  suggestion.iph_metadata = Suggestion::IPHMetadata(
-      &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
+  if (WalletPublicPassesEnabled()) {
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHAutofillAiValuablesFeature);
+  } else {
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
+  }
   return suggestion;
 }
 

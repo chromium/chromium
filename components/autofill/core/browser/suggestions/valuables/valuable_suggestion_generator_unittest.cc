@@ -546,6 +546,34 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                    HasNoIphFeature(), HasNoIphFeature()));
 }
 
+TEST_F(ValuableSuggestionGeneratorTest,
+       GetSuggestionsForLoyaltyCards_SuggestionsUpdatedIPH) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAiWalletVehicleRegistration,
+                            features::kAutofillAiWalletFlightReservation},
+      /*disabled_features=*/{});
+  test_api(valuables_data_manager()).ClearLoyaltyCards();
+  test_api(valuables_data_manager())
+      .AddLoyaltyCard(LoyaltyCard(
+          /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
+          /*merchant_name=*/"CVS Pharmacy",
+          /*program_name=*/"CVS Extra",
+          /*program_logo=*/GURL("https://empty.url.com"),
+          /*loyalty_card_number=*/"987654321987654321",
+          {GURL("https://domain1.example")}));
+
+  raw_ptr<const base::Feature> kIphFeature =
+      &feature_engagement::kIPHAutofillAiValuablesFeature;
+  test_autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://common-domain.example/test"));
+  field().set_is_autofilled(false);
+  EXPECT_THAT(GetSuggestionsForLoyaltyCards(form().ToFormData(), &form(),
+                                            field(), &field(), client()),
+              testing::ElementsAre(HasIphFeature(kIphFeature),
+                                   HasNoIphFeature(), HasNoIphFeature()));
+}
+
 // Checks that all loyalty cards are returned as suggestion data, and
 // used for generating suggestions.
 TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
