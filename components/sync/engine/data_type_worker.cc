@@ -88,12 +88,6 @@ void LogEncryptionResult(DataType type, bool success) {
       success);
 }
 
-void LogCrossUserSharingDecryptionResult(
-    CrossUserSharingDecryptionResult result) {
-  base::UmaHistogramEnumeration("Sync.CrossUserSharingDecryptionResult",
-                                result);
-}
-
 void LogNudgedUpdateLatency(DataType type, base::TimeDelta latency) {
   base::UmaHistogramLongTimes(base::StrCat({"Sync.NudgedUpdateLatency.",
                                             DataTypeToHistogramSuffix(type)}),
@@ -282,8 +276,6 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
     sync_pb::PasswordSharingInvitationData* unencrypted_invitation_data) {
   if (!invitation.has_encrypted_password_sharing_invitation_data() ||
       !invitation.sender_info().has_cross_user_sharing_public_key()) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kInvitationMissingFields);
     DLOG(ERROR) << "The invitation is missing required fields";
     return false;
   }
@@ -297,22 +289,16 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
                                  .x25519_public_key()),
           invitation.recipient_key_version());
   if (!decrypted) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kFailedToDecryptInvitation);
     DLOG(ERROR) << "Failed to decrypt the invitation";
     return false;
   }
 
   if (!unencrypted_invitation_data->ParseFromArray(decrypted->data(),
                                                    decrypted->size())) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kFailedToParseDecryptedInvitation);
     DLOG(ERROR) << "Failed to parse the decrypted invitation";
     return false;
   }
 
-  LogCrossUserSharingDecryptionResult(
-      CrossUserSharingDecryptionResult::kSuccess);
   return true;
 }
 

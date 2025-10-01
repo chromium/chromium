@@ -126,17 +126,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="First sync"/>
 </enum>
 
-<!-- LINT.IfChange(CrossUserSharingDecryptionResult) -->
-
-<enum name="CrossUserSharingDecryptionResult">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="Invitation missing required fields"/>
-  <int value="2" label="Failed to decrypt invitation"/>
-  <int value="3" label="Failed to parse decrypted invitation"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.cc:CrossUserSharingDecryptionResult) -->
-
 <!-- LINT.IfChange(CrossUserSharingKeyPairState) -->
 
 <enum name="CrossUserSharingKeyPairState">
