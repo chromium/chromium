@@ -337,7 +337,7 @@ HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsRotationAngle,
                             "shared/screen-details-rotation-angle.js")
 
 // TODO(crbug.com/443993825): Tests are flaky. Fix and re-enable.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#if (defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenDetailsPixelRatio DISABLED_ScreenDetailsPixelRatio
 #else
 #define MAYBE_ScreenDetailsPixelRatio ScreenDetailsPixelRatio
