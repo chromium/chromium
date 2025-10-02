@@ -33,23 +33,6 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  // Called when a context group is deleted, clean up all textures from this
-  // group.
-  void DeleteContextGroup(const gles2::ContextGroup* context_group,
-                          bool has_context);
-
-  // Called when all contexts with cached textures in this manager are lost.
-  void OnContextLost();
-
-  // Called when a texture is deleted, to clean up state.
-  void DeleteTexture(uint32_t client_id,
-                     const gles2::ContextGroup* context_group);
-
-  // Called when a texture's size may have changed
-  void UpdateTextureSize(uint32_t client_id,
-                         const gles2::ContextGroup* context_group,
-                         size_t new_size);
-
   void HandleMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 

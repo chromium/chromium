@@ -1103,10 +1103,6 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteTextures(
       resources_->texture_shared_image_map.erase(client_id);
       UpdateTextureBinding(texture->target(), client_id, nullptr);
     }
-
-    // Notify the discardable manager that the texture is deleted
-    group_->passthrough_discardable_manager()->DeleteTexture(client_id,
-                                                             group_.get());
   }
   return DeleteHelper(
       non_mailbox_client_ids.size(), non_mailbox_client_ids.data(),

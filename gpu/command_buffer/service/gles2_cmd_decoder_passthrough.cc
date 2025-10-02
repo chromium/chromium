@@ -2576,13 +2576,6 @@ void GLES2DecoderPassthroughImpl::UpdateTextureSizeFromTexturePassthrough(
 
   UpdateBoundTexturePassthroughSize(api(), texture);
 
-  // If a client ID is available, notify the discardable manager of the size
-  // change
-  if (client_id != 0) {
-    group_->passthrough_discardable_manager()->UpdateTextureSize(
-        client_id, group_.get(), texture->estimated_size());
-  }
-
   if (needs_rebind) {
     GLuint old_texture =
         bound_texture.texture ? bound_texture.texture->service_id() : 0;

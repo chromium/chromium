@@ -611,10 +611,6 @@ void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
     ReportProgress();
   }
 
-  if (passthrough_discardable_manager_) {
-    passthrough_discardable_manager_->DeleteContextGroup(this, have_context);
-  }
-
   if (passthrough_resources_) {
     gl::GLApi* api = have_context ? gl::g_current_gl_context : nullptr;
     passthrough_resources_->Destroy(api, progress_reporter_);

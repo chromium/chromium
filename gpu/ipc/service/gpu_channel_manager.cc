@@ -610,7 +610,6 @@ void GpuChannelManager::LoseAllContexts() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   discardable_manager_.OnContextLost();
-  passthrough_discardable_manager_.OnContextLost();
   share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
   for (auto& kv : gpu_channels_) {
     kv.second->MarkAllContextsLost();

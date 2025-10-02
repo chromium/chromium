@@ -70,34 +70,6 @@ bool PassthroughDiscardableManager::OnMemoryDump(
   return true;
 }
 
-void PassthroughDiscardableManager::DeleteContextGroup(
-    const gles2::ContextGroup* context_group,
-    bool has_context) {
-  DCHECK(context_group);
-
-  DeleteTextures(context_group, has_context);
-}
-
-void PassthroughDiscardableManager::OnContextLost() {
-  DeleteTextures(nullptr, false);
-}
-
-void PassthroughDiscardableManager::DeleteTextures(
-    const gles2::ContextGroup* context_group,
-    bool has_context) {
-}
-
-void PassthroughDiscardableManager::DeleteTexture(
-    uint32_t client_id,
-    const gles2::ContextGroup* context_group) {
-}
-
-void PassthroughDiscardableManager::UpdateTextureSize(
-    uint32_t client_id,
-    const gles2::ContextGroup* context_group,
-    size_t new_size) {
-}
-
 void PassthroughDiscardableManager::HandleMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   size_t limit = DiscardableCacheSizeLimitForPressure(cache_size_limit_,
