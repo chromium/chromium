@@ -108,7 +108,7 @@ void NewIncognitoWindow(Profile* profile);
 void CloseWindow(BrowserWindowInterface* browser);
 content::WebContents& NewTab(Browser* browser);
 void NewTabToRight(Browser* browser);
-void CloseTab(Browser* browser);
+void CloseTab(BrowserWindowInterface* browser);
 bool CanZoomIn(content::WebContents* contents);
 bool CanZoomOut(content::WebContents* contents);
 bool CanResetZoom(content::WebContents* contents);

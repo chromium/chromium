@@ -378,12 +378,12 @@ void RecordTabCloseCount(int count) {
   base::UmaHistogramCounts100("TabStrip.Tab.HotkeyClosedCount", count);
 }
 
-void CloseSelectedTabAndRecordTabCountMetric(Browser* browser) {
+void CloseSelectedTabAndRecordTabCountMetric(BrowserWindowInterface* browser) {
   const int selected_tabs_count =
-      browser->tab_strip_model()->selection_model().size();
+      browser->GetTabStripModel()->selection_model().size();
   RecordTabCloseCount(selected_tabs_count);
 
-  browser->tab_strip_model()->CloseSelectedTabs();
+  browser->GetTabStripModel()->CloseSelectedTabs();
 }
 
 void MoveGroupToWindowImpl(Browser* source,
@@ -1121,22 +1121,22 @@ void NewTabToRight(Browser* browser) {
       TabStripModel::CommandNewTabToRight);
 }
 
-void CloseTab(Browser* browser) {
+void CloseTab(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("CloseTab_Accelerator"));
 
   // If the selection model consists of only the indices of a single split tab,
   // decide if just the active tab in the split is closed instead of all tabs in
   // the split.
   const bool only_active_split_tab_selected =
-      browser->tab_strip_model()->IsActiveTabSplit() &&
-      browser->tab_strip_model()->selection_model().size() == 2;
+      browser->GetTabStripModel()->IsActiveTabSplit() &&
+      browser->GetTabStripModel()->selection_model().size() == 2;
   if (only_active_split_tab_selected &&
       base::FeatureList::IsEnabled(
           features::kCloseActiveTabInSplitViewViaHotkey)) {
     RecordTabCloseCount(1);
 
     content::WebContents* active_web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     active_web_contents->Close();
 
     return;
@@ -1153,10 +1153,10 @@ void CloseTab(Browser* browser) {
     return;
   }
 
-  tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser->GetTabStripModel()->GetActiveTab();
   const bool single_pinned_tab_selected =
       tab->IsPinned() &&
-      browser->tab_strip_model()->selection_model().size() == 1;
+      browser->GetTabStripModel()->selection_model().size() == 1;
   if (single_pinned_tab_selected &&
       toast_controller->GetCurrentToastId() != ToastId::kClosePinnedTab) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
