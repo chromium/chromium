@@ -312,7 +312,10 @@ void FileSystemChooser::CreateAndShow(
     FileSystemChooser::ScopedObjects scoped_objects) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("FileSystem", "FileSystemChooser::CreateAndShow");
+  VLOG(1) << "Requested chooser with visibility: "
+          << static_cast<int>(web_contents->GetVisibility());
   if (web_contents->GetVisibility() == Visibility::HIDDEN) {
+    VLOG(1) << "Not showing chooser";
     AbortedCallback(std::move(callback));
     return;
   }
@@ -331,6 +334,7 @@ void FileSystemChooser::CreateAndShow(
     return;
   }
 
+  VLOG(1) << "Showing chooser";
 #if BUILDFLAG(IS_ANDROID)
   listener->dialog_->SetAcceptTypes(options.mime_types());
   listener->dialog_->SetOpenWritable(true);
@@ -403,7 +407,9 @@ FileSystemChooser::~FileSystemChooser() {
 
 void FileSystemChooser::OnVisibilityChanged(Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "Visibility changed: " << static_cast<int>(visibility);
   if (visibility == Visibility::HIDDEN) {
+    VLOG(1) << "Cancelling chooser";
     FileSelectionCanceled();
   }
 }
