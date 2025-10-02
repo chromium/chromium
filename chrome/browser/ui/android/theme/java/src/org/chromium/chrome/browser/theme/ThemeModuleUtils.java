@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.theme;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-/** Utility class for interactions with ThemeOverlayProvider. */
+/** Utility class for the theme module feature. */
 @NullMarked
 public final class ThemeModuleUtils {
     private ThemeModuleUtils() {}
