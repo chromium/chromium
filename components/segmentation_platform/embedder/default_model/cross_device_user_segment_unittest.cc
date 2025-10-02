@@ -9,6 +9,9 @@
 
 namespace segmentation_platform {
 
+using Feature = CrossDeviceUserSegment::Feature;
+using Label = CrossDeviceUserSegment::Label;
+
 class CrossDeviceUserModelTest : public DefaultModelTestBase {
  public:
   CrossDeviceUserModelTest()
@@ -24,38 +27,38 @@ TEST_F(CrossDeviceUserModelTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  ModelProvider::Request input(4, 0);
+  ModelProvider::Request input(Feature::kFeatureCount, 0);
 
   ExpectClassifierResults(input, {kNoCrossDeviceUsage});
 
-  input[0] = 2;
+  input[Feature::kFeatureDeviceCount] = 2;
   ExpectClassifierResults(input, {kCrossDeviceOther});
 
-  input[1] = 2;
+  input[Feature::kFeatureDeviceCountPhone] = 2;
   ExpectClassifierResults(input, {kCrossDeviceMobile});
 
-  input[1] = 0;
-  input[2] = 2;
+  input[Feature::kFeatureDeviceCountPhone] = 0;
+  input[Feature::kFeatureDeviceCountDesktop] = 2;
   ExpectClassifierResults(input, {kCrossDeviceDesktop});
 
-  input[2] = 0;
-  input[3] = 2;
+  input[Feature::kFeatureDeviceCountDesktop] = 0;
+  input[Feature::kFeatureDeviceCountTablet] = 2;
   ExpectClassifierResults(input, {kCrossDeviceTablet});
 
-  input[1] = 2;
-  input[2] = 2;
-  input[3] = 0;
+  input[Feature::kFeatureDeviceCountPhone] = 2;
+  input[Feature::kFeatureDeviceCountDesktop] = 2;
+  input[Feature::kFeatureDeviceCountTablet] = 0;
   ExpectClassifierResults(input, {kCrossDeviceMobileAndDesktop});
 
-  input[2] = 0;
-  input[3] = 2;
+  input[Feature::kFeatureDeviceCountDesktop] = 0;
+  input[Feature::kFeatureDeviceCountTablet] = 2;
   ExpectClassifierResults(input, {kCrossDeviceMobileAndTablet});
 
-  input[1] = 0;
-  input[2] = 2;
+  input[Feature::kFeatureDeviceCountPhone] = 0;
+  input[Feature::kFeatureDeviceCountDesktop] = 2;
   ExpectClassifierResults(input, {kCrossDeviceDesktopAndTablet});
 
-  input[1] = 2;
+  input[Feature::kFeatureDeviceCountPhone] = 2;
   ExpectClassifierResults(input, {kCrossDeviceAllDeviceTypes});
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
