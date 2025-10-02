@@ -121,6 +121,7 @@ void InteractiveTestPrivate::OnElementAdded(TrackedElement* el) {
 }
 
 void InteractiveTestPrivate::MaybeAddPivotElement(ElementContext context) {
+  CHECK(context) << "Attempted to run steps in an invalid (null) context.";
   if (!base::Contains(pivot_elements_, context)) {
     auto pivot =
         std::make_unique<TestElement>(kInteractiveTestPivotElementId, context);

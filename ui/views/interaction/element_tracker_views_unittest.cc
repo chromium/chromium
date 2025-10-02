@@ -798,23 +798,15 @@ TEST_F(ElementTrackerViewsTest, AssignTemporaryId) {
 }
 
 TEST_F(ElementTrackerViewsTest, GetNativeView) {
-  // A view not in a widget has no native view.
   auto button = std::make_unique<LabelButton>();
-  TrackedElementViews element_no_widget(button.get(), kTestElementID,
-                                        ui::ElementContext());
-  EXPECT_EQ(gfx::NativeView(), element_no_widget.GetNativeView());
 
   // Once added to a widget, it should have the widget's native view.
   auto* button_in_widget = widget_->SetContentsView(std::move(button));
-  EXPECT_EQ(widget_->GetNativeView(), element_no_widget.GetNativeView());
-
-  // The element returned from the tracker should also have the correct native
-  // view.
   button_in_widget->SetProperty(kElementIdentifierKey, kTestElementID);
-  TrackedElementViews* tracked_element =
+  TrackedElementViews* element =
       ElementTrackerViews::GetInstance()->GetElementForView(button_in_widget);
-  ASSERT_NE(nullptr, tracked_element);
-  EXPECT_EQ(widget_->GetNativeView(), tracked_element->GetNativeView());
+  ASSERT_NE(nullptr, element);
+  EXPECT_EQ(widget_->GetNativeView(), element->GetNativeView());
 }
 
 TEST_F(ElementTrackerViewsTest, TestElementSetAndGetNativeView) {

@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
@@ -188,7 +189,10 @@ class ElementTracker::GarbageCollector {
 };
 
 TrackedElement::TrackedElement(ElementIdentifier id, ElementContext context)
-    : identifier_(id), context_(context) {}
+    : identifier_(id), context_(context) {
+  CHECK(id);
+  CHECK(context);
+}
 
 TrackedElement::~TrackedElement() = default;
 
@@ -275,7 +279,12 @@ bool ElementTracker::IsElementVisible(ElementIdentifier id,
 ElementTracker::Contexts ElementTracker::GetAllContextsForTesting() const {
   Contexts result;
   for (const auto& [key, data] : element_data_) {
-    result.insert(key.second);
+    const ElementContext context = key.second;
+    // The null context is used for registering "in any context" callbacks, but
+    // is not actually a valid context.
+    if (context) {
+      result.insert(context);
+    }
   }
   return result;
 }
