@@ -4,6 +4,8 @@
 
 #include "components/viz/test/stub_gpu_service.h"
 
+#include "components/persistent_cache/backend_params.h"
+
 namespace viz {
 
 StubGpuService::StubGpuService() = default;
@@ -22,12 +24,10 @@ void StubGpuService::SetChannelDiskCacheHandle(
     int32_t client_id,
     const gpu::GpuDiskCacheHandle& handle) {}
 
-void StubGpuService::SetChannelPersistentCacheFile(
+void StubGpuService::SetChannelPersistentCacheParams(
     int32_t client_id,
     const gpu::GpuDiskCacheHandle& handle,
-    base::File db_file,
-    base::File journal_file,
-    base::UnsafeSharedMemoryRegion shared_lock) {}
+    persistent_cache::BackendParams backend_params) {}
 
 void StubGpuService::OnDiskCacheHandleDestoyed(
     const gpu::GpuDiskCacheHandle& handle) {}

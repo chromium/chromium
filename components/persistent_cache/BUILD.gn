@@ -96,6 +96,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/persistent_cache/mojom:unit_tests",
     "//sql",
     "//testing/gmock",
     "//testing/gtest",

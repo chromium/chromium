@@ -49,6 +49,10 @@ specific_include_rules = {
     "+mojo/core/embedder/embedder.h",
   ],
 
+  "stub_gpu_service\.cc": [
+    "+components/persistent_cache/backend_params.h",
+  ],
+
   "stub_gpu_service\.h": [
     "+media/media_buildflags.h",
   ],

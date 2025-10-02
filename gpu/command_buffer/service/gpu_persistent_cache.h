@@ -10,11 +10,10 @@
 #include <memory>
 #include <string_view>
 
-#include "base/files/file.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "components/persistent_cache/backend_params.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace persistent_cache {
@@ -33,9 +32,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   GpuPersistentCache(const GpuPersistentCache&) = delete;
   GpuPersistentCache& operator=(const GpuPersistentCache&) = delete;
 
-  void InitializeCache(base::File db,
-                       base::File journal_file,
-                       base::UnsafeSharedMemoryRegion shared_lock);
+  void InitializeCache(persistent_cache::BackendParams backend_params);
 
   // dawn::platform::CachingInterface implementation.
   size_t LoadData(const void* key,

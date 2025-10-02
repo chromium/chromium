@@ -4,6 +4,8 @@
 
 #include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
 
+#include <utility>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -125,7 +127,7 @@ PersistentCacheSandboxedFileFactory::PersistentCacheSandboxedFileFactory(
 PersistentCacheSandboxedFileFactory::~PersistentCacheSandboxedFileFactory() =
     default;
 
-std::optional<PersistentCacheSandboxedFiles>
+std::optional<persistent_cache::BackendParams>
 PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
                                                  const std::string& product) {
   background_task_runner_->PostTask(
@@ -154,26 +156,29 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
     return file;
   };
 
-  base::File db_file = open_and_check_file(paths.db_path);
-  if (!db_file.IsValid()) {
+  persistent_cache::BackendParams params;
+
+  params.type = persistent_cache::BackendType::kSqlite;
+  params.db_file = open_and_check_file(paths.db_path);
+  if (!params.db_file.IsValid()) {
     return std::nullopt;
   }
+  params.db_file_is_writable = true;
 
-  base::File journal_file = open_and_check_file(paths.journal_path);
-  if (!journal_file.IsValid()) {
+  params.journal_file = open_and_check_file(paths.journal_path);
+  if (!params.journal_file.IsValid()) {
     return std::nullopt;
   }
+  params.journal_file_is_writable = true;
 
-  base::UnsafeSharedMemoryRegion shared_lock =
-      base::UnsafeSharedMemoryRegion::Create(
-          sizeof(persistent_cache::LockState));
-  if (!shared_lock.IsValid()) {
+  params.shared_lock = base::UnsafeSharedMemoryRegion::Create(
+      sizeof(persistent_cache::LockState));
+  if (!params.shared_lock.IsValid()) {
     LOG(ERROR) << "Failed to create shared lock";
     return std::nullopt;
   }
 
-  return PersistentCacheSandboxedFiles{
-      std::move(db_file), std::move(journal_file), std::move(shared_lock)};
+  return params;
 }
 
 void PersistentCacheSandboxedFileFactory::CreateFilesAsync(

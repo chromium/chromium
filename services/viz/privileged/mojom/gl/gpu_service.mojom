@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "components/persistent_cache/mojom/persistent_cache.mojom";
 import "gpu/ipc/common/device_perf_info.mojom";
 import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
@@ -17,8 +18,6 @@ import "media/mojo/mojom/video_encode_accelerator.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
-import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_context_provider.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -76,14 +75,11 @@ interface GpuService {
   SetChannelDiskCacheHandle(
       int32 client_id, gpu.mojom.GpuDiskCacheHandle cache_handle);
 
-  // Sets the persistent cache files for the given channel.
-  // TODO(399642827): Change this once persistent_cache::BackendParams has mojo
-  // equivalent type
-  SetChannelPersistentCacheFile(int32 client_id,
-                                gpu.mojom.GpuDiskCacheHandle cache_handle,
-                                mojo_base.mojom.File db_file,
-                                mojo_base.mojom.File journal_file,
-                                mojo_base.mojom.UnsafeSharedMemoryRegion shared_lock);
+  // Sets the persistent cache backend parameters for the given channel.
+  SetChannelPersistentCacheParams(
+      int32 client_id,
+      gpu.mojom.GpuDiskCacheHandle cache_handle,
+      persistent_cache.mojom.ReadWriteBackendParams backend_params);
 
   // Called by the browser when the last reference to a GPU disk cache handle
   // is gone. Results in the GPU process purging the in memory copy.

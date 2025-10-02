@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,16 +24,20 @@ class GpuPersistentCacheTest : public testing::Test {
     auto db_path = temp_dir_.GetPath().AppendASCII("test.db");
     auto journal_path = temp_dir_.GetPath().AppendASCII("test.journal");
 
-    base::File db_file = CreateFile(db_path);
-    base::File journal_file = CreateFile(journal_path);
-    auto shared_lock = base::UnsafeSharedMemoryRegion::Create(
-        sizeof(persistent_cache::LockState));
-    ASSERT_TRUE(db_file.IsValid());
-    ASSERT_TRUE(journal_file.IsValid());
-    ASSERT_TRUE(shared_lock.IsValid());
+    persistent_cache::BackendParams params;
 
-    cache_.InitializeCache(std::move(db_file), std::move(journal_file),
-                           std::move(shared_lock));
+    params.type = persistent_cache::BackendType::kSqlite;
+    params.db_file = CreateFile(db_path);
+    params.db_file_is_writable = true;
+    params.journal_file = CreateFile(journal_path);
+    params.journal_file_is_writable = true;
+    params.shared_lock = base::UnsafeSharedMemoryRegion::Create(
+        sizeof(persistent_cache::LockState));
+    ASSERT_TRUE(params.db_file.IsValid());
+    ASSERT_TRUE(params.journal_file.IsValid());
+    ASSERT_TRUE(params.shared_lock.IsValid());
+
+    cache_.InitializeCache(std::move(params));
   }
 
  protected:

@@ -38,12 +38,10 @@ class TestGpuService : public viz::StubGpuService {
   TestGpuService& operator=(const TestGpuService&) = delete;
 
   // mojom::GpuService:
-  void SetChannelPersistentCacheFile(
+  void SetChannelPersistentCacheParams(
       int32_t client_id,
       const gpu::GpuDiskCacheHandle& handle,
-      base::File db_file,
-      base::File journal_file,
-      base::UnsafeSharedMemoryRegion shared_lock) override {
+      persistent_cache::BackendParams backend_params) override {
     quit_closure_.Run();
   }
 

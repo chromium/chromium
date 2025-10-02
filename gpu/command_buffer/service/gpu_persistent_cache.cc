@@ -22,19 +22,10 @@ GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix)
 GpuPersistentCache::~GpuPersistentCache() = default;
 
 void GpuPersistentCache::InitializeCache(
-    base::File db_file,
-    base::File journal_file,
-    base::UnsafeSharedMemoryRegion shared_lock) {
+    persistent_cache::BackendParams backend_params) {
   base::AutoLock auto_lock(lock_);
-  persistent_cache::BackendParams params;
-  params.type = persistent_cache::BackendType::kSqlite;
-  params.db_file = std::move(db_file);
-  params.db_file_is_writable = true;
-  params.journal_file = std::move(journal_file);
-  params.journal_file_is_writable = true;
-  params.shared_lock = std::move(shared_lock);
   persistent_cache_ =
-      persistent_cache::PersistentCache::Open(std::move(params));
+      persistent_cache::PersistentCache::Open(std::move(backend_params));
 }
 
 size_t GpuPersistentCache::LoadData(const void* key,

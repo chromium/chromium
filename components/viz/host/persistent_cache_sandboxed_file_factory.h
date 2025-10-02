@@ -8,22 +8,15 @@
 #include <optional>
 #include <string>
 
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/persistent_cache/backend_params.h"
 #include "components/viz/host/viz_host_export.h"
 
 namespace viz {
-
-struct PersistentCacheSandboxedFiles {
-  base::File db_file;
-  base::File journal_file;
-  base::UnsafeSharedMemoryRegion shared_lock;
-};
 
 // This class supports opening file handles in a persistent cache directory.
 // The handles can be forwarded to the GPU process to load & store blobs.
@@ -51,12 +44,12 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
   // `cache_id` is used to uniquely identify the cache type (e.g.,
   // 'dawngraphite'). `product` is the browser product string, used for
   // versioning. Stale files from different versions are automatically deleted.
-  std::optional<PersistentCacheSandboxedFiles> CreateFiles(
+  std::optional<persistent_cache::BackendParams> CreateFiles(
       const CacheIdString& cache_id,
       const std::string& product);
 
   using CreateFilesCallback =
-      base::OnceCallback<void(std::optional<PersistentCacheSandboxedFiles>)>;
+      base::OnceCallback<void(std::optional<persistent_cache::BackendParams>)>;
   // Similar to CreateFiles but will do asynchronously using
   // background_task_runner_. The `callback` will be triggered on the current
   // thread's task runner once the deletion is completed.

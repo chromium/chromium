@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "persistent_cache.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "persistent_cache.mojom.ReadWriteBackendParams"
+          cpp = "::persistent_cache::BackendParams"
+          forward_declaration =
+              "namespace persistent_cache { struct BackendParams; }"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//components/persistent_cache/mojom/persistent_cache_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//components/persistent_cache/mojom/persistent_cache_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//components/persistent_cache" ]
+      traits_deps = [ "//mojo/public/cpp/base:shared_typemap_traits" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "persistent_cache_mojom_traits_unittest.cc" ]
+  deps = [
+    ":mojom",
+    "//base",
+    "//components/persistent_cache",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}
