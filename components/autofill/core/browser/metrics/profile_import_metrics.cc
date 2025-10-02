@@ -212,6 +212,7 @@ void LogSilentUpdatesProfileImportType(AutofillProfileImportType import_type) {
 
 void LogNewProfileImportDecision(
     AutofillClient::AddressPromptUserDecision decision,
+    const ProfileImportMetadata& profile_import_metadata,
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfile& import_candidate,
     std::string_view app_locale) {
@@ -235,6 +236,10 @@ void LogNewProfileImportDecision(
       base::UmaHistogramEnumeration(
           base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);
     }
+  }
+  if (profile_import_metadata.observed_split_zip) {
+    base::UmaHistogramEnumeration(
+        "Autofill.ProfileImport.SplitZipFields.NewProfileDecision", decision);
   }
 }
 

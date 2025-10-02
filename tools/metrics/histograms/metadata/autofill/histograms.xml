@@ -5652,6 +5652,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.SplitZipFields.NewProfileDecision"
+    enum="AutofillProfileImportDecision" expires_after="2026-05-01">
+  <owner>mmaryia@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the user's decision for storing a new address profile extracted from a
+    form with non-empty split zip code fields on form submission. This metric is
+    emitted at the end of an import process once the user-provided import
+    decision is final.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.StorageNewAddressIsSavedTo"
     enum="AutofillProfileRecordType" expires_after="2026-02-22">
   <owner>amelies@google.com</owner>

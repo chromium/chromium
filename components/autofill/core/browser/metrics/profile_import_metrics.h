@@ -169,10 +169,12 @@ void LogSilentUpdatesProfileImportType(AutofillProfileImportType import_type);
 // Logs the user decision for importing a new profile with variants for ready
 // users (users who have at least one profile stored already) and non-ready
 // users. Besides this, decision is also recorded for the subset of ready users
-// who have a a quasi-duplicate profile stored, and also in a separate histogram
-// for all users.
+// who have a quasi-duplicate profile stored, and also in a separate histogram
+// for all users. Additionally, decision is logged for profiles extracted from
+// forms with split zip code fields.
 void LogNewProfileImportDecision(
     AutofillClient::AddressPromptUserDecision decision,
+    const ProfileImportMetadata& profile_import_metadata,
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfile& import_candidate,
     std::string_view app_locale);

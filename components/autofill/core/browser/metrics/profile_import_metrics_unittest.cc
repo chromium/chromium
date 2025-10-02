@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -496,8 +497,9 @@ TEST_F(AutofillProfileImportMetricsTest,
       AutofillClient::AddressPromptUserDecision::kAccepted;
   AutofillProfile import_candidate = test::GetFullProfile();
   base::HistogramTester histogram_tester;
-  LogNewProfileImportDecision(kExpectedDecision, /*existing_profiles=*/{},
-                              import_candidate, "en-US");
+  LogNewProfileImportDecision(kExpectedDecision, ProfileImportMetadata(),
+                              /*existing_profiles=*/{}, import_candidate,
+                              "en-US");
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
       1);
@@ -516,8 +518,8 @@ TEST_F(AutofillProfileImportMetricsTest,
   existing_profile.SetRawInfo(FieldType::NAME_FULL, u"First Last");
   AutofillProfile import_candidate = test::GetFullProfile();
   base::HistogramTester histogram_tester;
-  LogNewProfileImportDecision(kExpectedDecision, {&existing_profile},
-                              import_candidate, "en-US");
+  LogNewProfileImportDecision(kExpectedDecision, ProfileImportMetadata(),
+                              {&existing_profile}, import_candidate, "en-US");
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
       1);
@@ -548,6 +550,24 @@ TEST_F(AutofillProfileImportMetricsTest, EmitsStorageNewProfileIsSavedTo) {
   histogram_tester.ExpectBucketCount(
       "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
       AutofillProfile::RecordType::kAccount, 1);
+}
+
+// Tests that the user decision for importing a new profile extracted from a
+// form with split zip code fields is emitted.
+TEST_F(AutofillProfileImportMetricsTest,
+       EmitsSplitZipFieldsNewProfileImportDecision) {
+  const auto kExpectedDecision =
+      AutofillClient::AddressPromptUserDecision::kAccepted;
+  AutofillProfile import_candidate = test::GetFullProfile();
+  ProfileImportMetadata metadata;
+  metadata.observed_split_zip = true;
+  base::HistogramTester histogram_tester;
+  LogNewProfileImportDecision(kExpectedDecision, metadata,
+                              /*existing_profiles=*/{}, import_candidate,
+                              "en-US");
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.SplitZipFields.NewProfileDecision",
+      kExpectedDecision, 1);
 }
 
 // Test that after submitting the address form zipcode separator and length

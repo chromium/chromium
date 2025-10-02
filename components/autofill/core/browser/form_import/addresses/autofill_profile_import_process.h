@@ -113,6 +113,8 @@ struct ProfileImportMetadata {
   // GUIDs of `AutofillProfile`s that were used to fill the form. Empty if the
   // user edited any of the filled fields in the form.
   base::flat_set<std::string> unedited_autofilled_profile_guids;
+  // Tracks if the submitted form contained non-empty split zip fields.
+  bool observed_split_zip = false;
 };
 
 // This class holds the state associated with the import of an AutofillProfile

@@ -546,6 +546,15 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     }
   }
 
+  // Track if the form contains split zip fields such that at least zip prefix
+  // field is not empty for metrics. It's enough to verify
+  // ADDRESS_HOME_ZIP_PREFIX because a field can be classified as
+  // ADDRESS_HOME_ZIP_PREFIX only if the next field is ADDRESS_HOME_ZIP_SUFFIX.
+  // Note that the value of ADDRESS_HOME_ZIP_SUFFIX can be empty in the USA,
+  // since the suffix is an optional part of the zip code.
+  import_metadata.observed_split_zip =
+      candidate_profile.HasRawInfo(ADDRESS_HOME_ZIP_PREFIX);
+
   if (!SetPhoneNumber(candidate_profile, combined_phone)) {
     candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
     import_metadata.phone_import_status = PhoneImportStatus::kInvalid;

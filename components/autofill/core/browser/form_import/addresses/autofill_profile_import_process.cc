@@ -629,7 +629,7 @@ void ProfileImportProcess::CollectMetrics(
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     autofill_metrics::LogNewProfileImportDecision(
-        user_decision_, existing_profiles,
+        user_decision_, import_metadata_, existing_profiles,
         UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
         app_locale_);
     LogUkmMetrics(num_edited_fields);
