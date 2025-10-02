@@ -96,6 +96,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         public final ActivityWindowAndroid mMockActivityWindowAndroid;
         public final Activity mMockActivity;
         public final ActivityLifecycleDispatcher mMockActivityLifecycleDispatcher;
+        public final DisplayAndroid mMockDisplayAndroid;
 
         /** Mock {@link WindowManager} for {@link #mMockActivity}. */
         public final WindowManager mMockWindowManager;
@@ -104,10 +105,12 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 ActivityWindowAndroid mockActivityWindowAndroid,
                 Activity mockActivity,
                 ActivityLifecycleDispatcher mockActivityLifecycleDispatcher,
+                DisplayAndroid mockDisplayAndroid,
                 WindowManager mockWindowManager) {
             mMockActivityWindowAndroid = mockActivityWindowAndroid;
             mMockActivity = mockActivity;
             mMockActivityLifecycleDispatcher = mockActivityLifecycleDispatcher;
+            mMockDisplayAndroid = mockDisplayAndroid;
             mMockWindowManager = mockWindowManager;
         }
     }
@@ -190,6 +193,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 .thenReturn(mockActivityManager);
         when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
                 .thenReturn(mockActivityLifecycleDispatcher);
+
+        when(mockDisplay.getDipScale()).thenReturn(1.0f);
+
         when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
         when(mockActivityWindowAndroid.getDisplay()).thenReturn(mockDisplay);
         when(mockActivityWindowAndroid.getInsetObserver()).thenReturn(mockInsetObserver);
@@ -199,6 +205,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         mockActivityWindowAndroid,
                         mockActivity,
                         mockActivityLifecycleDispatcher,
+                        mockDisplay,
                         mockWindowManager);
         sActivityWindowAndroidMocks.put(taskId, mocks);
         return mocks;

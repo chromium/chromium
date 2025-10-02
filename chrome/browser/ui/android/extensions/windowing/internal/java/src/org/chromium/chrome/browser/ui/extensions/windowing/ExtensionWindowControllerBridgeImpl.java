@@ -98,7 +98,7 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
     }
 
     @Override
-    public void onTaskBoundsChanged(Rect newBounds) {
+    public void onTaskBoundsChanged(Rect newBoundsInDp) {
         if (mNativeExtensionWindowControllerBridge != 0) {
             ExtensionWindowControllerBridgeImplJni.get()
                     .onTaskBoundsChanged(mNativeExtensionWindowControllerBridge);

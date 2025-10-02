@@ -109,6 +109,6 @@ final class AndroidBaseWindowNativeUnitTestSupport {
     @CalledByNative
     private void setFakeBounds(int left, int top, int right, int bottom) {
         assert mockingDetails(mChromeAndroidTask).isMock();
-        when(mChromeAndroidTask.getBounds()).thenReturn(new Rect(left, top, right, bottom));
+        when(mChromeAndroidTask.getBoundsInDp()).thenReturn(new Rect(left, top, right, bottom));
     }
 }

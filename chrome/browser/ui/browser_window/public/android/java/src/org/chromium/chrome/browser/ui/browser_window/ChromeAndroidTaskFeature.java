@@ -36,9 +36,9 @@ public interface ChromeAndroidTaskFeature {
     /**
      * Called by a {@link ChromeAndroidTask} when the Task (window) bounds are changed.
      *
-     * @param newBounds The new Task bounds.
+     * @param newBoundsInDp The new Task bounds.
      */
-    void onTaskBoundsChanged(Rect newBounds);
+    void onTaskBoundsChanged(Rect newBoundsInDp);
 
     /**
      * Called by a {@link ChromeAndroidTask} when the Task (window) has gained or lost focus.

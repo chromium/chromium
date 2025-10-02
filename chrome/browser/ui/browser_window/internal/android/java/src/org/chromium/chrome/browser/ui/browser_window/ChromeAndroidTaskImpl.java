@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 
 import java.lang.ref.WeakReference;
@@ -119,11 +120,11 @@ final class ChromeAndroidTaskImpl
     private WeakReference<ActivityWindowAndroid> mActivityWindowAndroid = new WeakReference<>(null);
 
     /** Last Task (window) bounds updated by {@link #onConfigurationChanged(Configuration)}. */
-    private @Nullable Rect mLastBoundsOnConfigChanged;
+    private @Nullable Rect mLastBoundsInDpOnConfigChanged;
 
     /** Non-maximized bounds of the task even when currently maximized or minimized. */
     @GuardedBy("mActivityWindowAndroidLock")
-    private @Nullable Rect mRestoredBounds;
+    private @Nullable Rect mRestoredBoundsInPx;
 
     /**
      * Listener for window insets animation.
@@ -144,7 +145,7 @@ final class ChromeAndroidTaskImpl
                                 getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
                         if (activityWindowAndroid == null) return;
                         mIsRestored = isRestoredInternalLocked(activityWindowAndroid);
-                        mBoundsBeforeAnimation = getBoundsInternalLocked();
+                        mBoundsBeforeAnimation = getCurrentBoundsInPxLocked(activityWindowAndroid);
                     }
                 }
 
@@ -166,7 +167,7 @@ final class ChromeAndroidTaskImpl
 
                         boolean isFullscreen = isFullscreenInternalLocked(activityWindowAndroid);
                         if (mIsRestored && isFullscreen) {
-                            mRestoredBounds = mBoundsBeforeAnimation;
+                            mRestoredBoundsInPx = mBoundsBeforeAnimation;
                         }
                     }
                 }
@@ -338,9 +339,20 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public Rect getRestoredBounds() {
+    public Rect getRestoredBoundsInDp() {
         synchronized (mActivityWindowAndroidLock) {
-            return mRestoredBounds == null ? getBoundsInternalLocked() : mRestoredBounds;
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) {
+                return new Rect();
+            }
+
+            Rect restoredBoundsInPx =
+                    mRestoredBoundsInPx == null
+                            ? getCurrentBoundsInPxLocked(activityWindowAndroid)
+                            : mRestoredBoundsInPx;
+            return DisplayUtil.scaleToEnclosingRect(
+                    restoredBoundsInPx, 1.0f / activityWindowAndroid.getDisplay().getDipScale());
         }
     }
 
@@ -357,9 +369,15 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public Rect getBounds() {
+    public Rect getBoundsInDp() {
         synchronized (mActivityWindowAndroidLock) {
-            return getBoundsInternalLocked();
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) {
+                return new Rect();
+            }
+
+            return getCurrentBoundsInDpLocked(activityWindowAndroid);
         }
     }
 
@@ -412,14 +430,20 @@ final class ChromeAndroidTaskImpl
         // getBoundsInternalLocked()).
         synchronized (mFeaturesLock) {
             synchronized (mActivityWindowAndroidLock) {
-                var newBounds = getBoundsInternalLocked();
-                if (newBounds.equals(mLastBoundsOnConfigChanged)) {
+                var activityWindowAndroid =
+                        getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+                if (activityWindowAndroid == null) {
                     return;
                 }
 
-                mLastBoundsOnConfigChanged = newBounds;
+                var newBoundsInDp = getCurrentBoundsInDpLocked(activityWindowAndroid);
+                if (newBoundsInDp.equals(mLastBoundsInDpOnConfigChanged)) {
+                    return;
+                }
+
+                mLastBoundsInDpOnConfigChanged = newBoundsInDp;
                 for (var feature : mFeatures) {
-                    feature.onTaskBoundsChanged(newBounds);
+                    feature.onTaskBoundsChanged(newBoundsInDp);
                 }
             }
         }
@@ -471,10 +495,10 @@ final class ChromeAndroidTaskImpl
             // No maximize action in non desktop window mode.
             if (!activity.isInMultiWindowMode()) return;
             if (isRestoredInternalLocked(activityWindowAndroid)) {
-                mRestoredBounds = getBoundsInternalLocked();
+                mRestoredBoundsInPx = getCurrentBoundsInPxLocked(activityWindowAndroid);
             }
-            Rect maximizedBounds = getMaximizedBounds(activity.getWindowManager());
-            setBoundsInternalLocked(activity, activityWindowAndroid.getDisplay(), maximizedBounds);
+            Rect maximizedBounds = getMaxBoundsInPx(activity.getWindowManager());
+            setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), maximizedBounds);
         }
     }
 
@@ -494,7 +518,7 @@ final class ChromeAndroidTaskImpl
                 return;
             }
             if (isRestoredInternalLocked(activityWindowAndroid)) {
-                mRestoredBounds = getBoundsInternalLocked();
+                mRestoredBoundsInPx = getCurrentBoundsInPxLocked(activityWindowAndroid);
             }
             getActivity(activityWindowAndroid).moveTaskToBack(/* nonRoot= */ true);
         }
@@ -507,20 +531,24 @@ final class ChromeAndroidTaskImpl
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
             if (activityWindowAndroid == null) return;
             Activity activity = activityWindowAndroid.getActivity().get();
-            if (activity == null || mRestoredBounds == null) return;
-            setBoundsInternalLocked(activity, activityWindowAndroid.getDisplay(), mRestoredBounds);
+            if (activity == null || mRestoredBoundsInPx == null) return;
+            setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), mRestoredBoundsInPx);
         }
     }
 
     @Override
-    public void setBounds(Rect bounds) {
+    public void setBoundsInDp(Rect boundsInDp) {
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
             if (activityWindowAndroid == null) return;
             Activity activity = activityWindowAndroid.getActivity().get();
             if (activity == null) return;
-            setBoundsInternalLocked(activity, activityWindowAndroid.getDisplay(), bounds);
+
+            Rect boundsInPx =
+                    DisplayUtil.scaleToEnclosingRect(
+                            boundsInDp, activityWindowAndroid.getDisplay().getDipScale());
+            setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), boundsInPx);
         }
     }
 
@@ -675,16 +703,24 @@ final class ChromeAndroidTaskImpl
     }
 
     @GuardedBy("mActivityWindowAndroidLock")
-    private Rect getBoundsInternalLocked() {
+    private Rect getCurrentBoundsInDpLocked(ActivityWindowAndroid activityWindowAndroid) {
+        Rect boundsInPx = getCurrentBoundsInPxLocked(activityWindowAndroid);
+        return DisplayUtil.scaleToEnclosingRect(
+                boundsInPx, 1.0f / activityWindowAndroid.getDisplay().getDipScale());
+    }
+
+    @GuardedBy("mActivityWindowAndroidLock")
+    private Rect getCurrentBoundsInPxLocked(ActivityWindowAndroid activityWindowAndroid) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            Log.w(TAG, "getBoundsInternal() requires Android R+; returning an empty Rect()");
+            Log.w(TAG, "getBoundsInPxLocked() requires Android R+; returning an empty Rect()");
             return new Rect();
         }
 
-        var activityWindowAndroid = getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
-        if (activityWindowAndroid == null) return new Rect();
         Activity activity = activityWindowAndroid.getActivity().get();
-        if (activity == null) return new Rect();
+        if (activity == null) {
+            return new Rect();
+        }
+
         return activity.getWindowManager().getCurrentWindowMetrics().getBounds();
     }
 
@@ -715,8 +751,8 @@ final class ChromeAndroidTaskImpl
         if (activity == null) return false;
         if (activity.isInMultiWindowMode()) {
             // Desktop windowing mode is also a multi-window mode.
-            return getBoundsInternalLocked()
-                    .equals(getMaximizedBounds(activity.getWindowManager()));
+            return getCurrentBoundsInPxLocked(activityWindowAndroid)
+                    .equals(getMaxBoundsInPx(activity.getWindowManager()));
         } else {
             // In non-multi-window mode, Chrome is maximized by default.
             return true;
@@ -749,7 +785,7 @@ final class ChromeAndroidTaskImpl
     }
 
     @GuardedBy("mActivityWindowAndroidLock")
-    private void setBoundsInternalLocked(Activity activity, DisplayAndroid display, Rect bounds) {
+    private void setBoundsInPxLocked(Activity activity, DisplayAndroid display, Rect boundsInPx) {
         var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
         if (aconfigFlaggedApiDelegate == null) {
             Log.w(TAG, "Unable to set bounds: AconfigFlaggedApiDelegate isn't available");
@@ -767,7 +803,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        aconfigFlaggedApiDelegate.moveTaskTo(appTask, displayId, bounds);
+        aconfigFlaggedApiDelegate.moveTaskTo(appTask, displayId, boundsInPx);
     }
 
     @GuardedBy("mActivityWindowAndroidLock")
@@ -783,7 +819,7 @@ final class ChromeAndroidTaskImpl
     }
 
     @RequiresApi(api = VERSION_CODES.R)
-    private static Rect getMaximizedBounds(WindowManager windowManager) {
+    private static Rect getMaxBoundsInPx(WindowManager windowManager) {
         var insets =
                 windowManager
                         .getMaximumWindowMetrics()
@@ -794,9 +830,9 @@ final class ChromeAndroidTaskImpl
                 0, insets.top, fullscreenBounds.right, fullscreenBounds.bottom - insets.bottom);
     }
 
-    @Nullable Rect getRestoredBoundsForTesting() {
+    @Nullable Rect getRestoredBoundsInPxForTesting() {
         synchronized (mActivityWindowAndroidLock) {
-            return mRestoredBounds;
+            return mRestoredBoundsInPx;
         }
     }
 }

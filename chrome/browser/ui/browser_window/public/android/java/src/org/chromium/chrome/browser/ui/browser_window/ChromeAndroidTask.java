@@ -144,7 +144,7 @@ public interface ChromeAndroidTask {
     boolean isFullscreen();
 
     /** Non-maximized bounds of the task even when currently maximized or minimized. */
-    Rect getRestoredBounds();
+    Rect getRestoredBoundsInDp();
 
     /**
      * Returns the most recent timestamp when this {@link ChromeAndroidTask} became active, i.e.,
@@ -159,7 +159,7 @@ public interface ChromeAndroidTask {
     Profile getProfile();
 
     /** Returns current bounds of the window. */
-    Rect getBounds();
+    Rect getBoundsInDp();
 
     /** Shows this {@link ChromeAndroidTask} or activates it if it's already visible. */
     void show();
@@ -200,9 +200,9 @@ public interface ChromeAndroidTask {
     /**
      * Sets the {@link ChromeAndroidTask}'s size and position to the specified values.
      *
-     * @param bounds The new bounds of the {@link ChromeAndroidTask}.
+     * @param boundsInDp The new bounds of the {@link ChromeAndroidTask}.
      */
-    void setBounds(Rect bounds);
+    void setBoundsInDp(Rect boundsInDp);
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
