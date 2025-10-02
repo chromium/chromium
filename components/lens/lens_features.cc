@@ -112,6 +112,8 @@ BASE_FEATURE(kLensVideoCitations, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLensUpdatedFeedbackEntrypoint,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<int> kLensUpdatedFeedbackToastTimeoutMs{
+    &kLensUpdatedFeedbackEntrypoint, "feedback-toast-timeout-ms", 3000};
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1204,6 +1206,14 @@ bool IsLensVideoCitationsEnabled() {
 
 bool IsLensUpdatedFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kLensUpdatedFeedbackEntrypoint);
+}
+
+int GetLensUpdatedFeedbackToastTimeoutMs() {
+  if (!IsLensUpdatedFeedbackEnabled()) {
+    return 0;
+  }
+
+  return kLensUpdatedFeedbackToastTimeoutMs.Get();
 }
 
 }  // namespace lens::features
