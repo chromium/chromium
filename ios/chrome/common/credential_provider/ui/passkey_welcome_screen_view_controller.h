@@ -10,14 +10,9 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+enum class PasskeyWelcomeScreenPurpose;
+@class PasskeyWelcomeScreenStrings;
 @class PasskeyWelcomeScreenViewController;
-
-// Possible purposes for showing the passkey welcome screen.
-enum class PasskeyWelcomeScreenPurpose {
-  kEnroll,
-  kFixDegradedRecoverability,
-  kReauthenticate,
-};
 
 // Delegate for the PasskeyWelcomeScreenViewController.
 @protocol PasskeyWelcomeScreenViewControllerDelegate
@@ -35,16 +30,15 @@ enum class PasskeyWelcomeScreenPurpose {
 // Designated initializer. `purpose` indicates the purpose for which the passkey
 // welcome screen needs to be shown, which impacts the screen's content.
 // `navigationItemTitleView` is the view that should be used as the navigation
-// bar title view. `userEmail` is the email address associated with the signed
-// in Google Account. Must not be `nil` if displayed in the UI associated with
-// `purpose`. `primaryButtonAction` is the block to execute when the primary
-// button displayed in the view is tapped.
+// bar title view. `primaryButtonAction` is the block to execute when the
+// primary button displayed in the view is tapped. `strings` contains all the
+// labels that need to be displayed on the screen.
 - (instancetype)initForPurpose:(PasskeyWelcomeScreenPurpose)purpose
        navigationItemTitleView:(UIView*)navigationItemTitleView
-                     userEmail:(NSString*)userEmail
                       delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
                                    delegate
            primaryButtonAction:(ProceduralBlock)primaryButtonAction
+                       strings:(PasskeyWelcomeScreenStrings*)strings
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

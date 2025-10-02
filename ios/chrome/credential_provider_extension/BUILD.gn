@@ -34,6 +34,7 @@ source_set("credential_provider") {
     ":font_provider",
     ":metrics_util",
     ":passkey_request_details",
+    ":passkey_welcome_screen_util",
     ":reauthentication_handler",
     ":system_strings",
     "//base",
@@ -78,6 +79,7 @@ source_set("unit_tests") {
     "metrics_util_unittest.mm",
     "passkey_request_details_unittest.mm",
     "passkey_util_unittest.mm",
+    "passkey_welcome_screen_util_unittest.mm",
   ]
   deps = [
     ":metrics_util",
@@ -85,6 +87,7 @@ source_set("unit_tests") {
     ":passkey_request_details_testing",
     ":passkey_util",
     ":passkey_util_swift",
+    ":passkey_welcome_screen_util",
     "//base",
     "//base/test:test_support",
     "//components/cbor",
@@ -93,6 +96,7 @@ source_set("unit_tests") {
     "//device/fido",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
+    "//ios/chrome/common/credential_provider/ui",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
@@ -189,6 +193,18 @@ source_set("passkey_request_details") {
     "AuthenticationServices.framework",
     "Foundation.framework",
   ]
+}
+
+source_set("passkey_welcome_screen_util") {
+  sources = [
+    "passkey_welcome_screen_util.h",
+    "passkey_welcome_screen_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/credential_provider/ui",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("passkey_request_details_testing") {

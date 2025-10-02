@@ -21,6 +21,7 @@
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/credential_provider/multi_store_credential_store.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/credential_provider_extension/font_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
+#import "ios/chrome/credential_provider_extension/passkey_welcome_screen_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/create_navigation_item_title_view.h"
@@ -1283,9 +1285,10 @@ enum class PasskeyUserVerificationStatus {
       [[PasskeyWelcomeScreenViewController alloc]
                    initForPurpose:purpose
           navigationItemTitleView:self.passkeyNavigationItemTitleView
-                        userEmail:userEmail
                          delegate:self
-              primaryButtonAction:action];
+              primaryButtonAction:action
+                          strings:GetPasskeyWelcomeScreenStrings(purpose,
+                                                                 userEmail)];
   [self.passkeyNavigationController pushViewController:welcomeScreen
                                               animated:NO];
   [self.presentingView presentViewController:self.passkeyNavigationController

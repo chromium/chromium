@@ -5,6 +5,7 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -34,58 +35,6 @@ NSString* GetBannerName(PasskeyWelcomeScreenPurpose purpose) {
   }
 }
 
-// Returns the title to use depending on the provided `purpose`.
-NSString* GetTitleString(PasskeyWelcomeScreenPurpose purpose) {
-  NSString* stringID;
-  switch (purpose) {
-    case PasskeyWelcomeScreenPurpose::kEnroll:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_TITLE";
-      break;
-    case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
-      stringID =
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_TITLE";
-      break;
-    case PasskeyWelcomeScreenPurpose::kReauthenticate:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_TITLE";
-      break;
-  }
-  return NSLocalizedString(stringID, @"The title of the welcome screen.");
-}
-
-// Returns the subtitle to use depending on the provided `purpose`.
-NSString* GetSubtitleString(PasskeyWelcomeScreenPurpose purpose) {
-  NSString* stringID;
-  switch (purpose) {
-    case PasskeyWelcomeScreenPurpose::kEnroll:
-      NOTREACHED();
-    case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
-      stringID =
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_SUBTITLE";
-      break;
-    case PasskeyWelcomeScreenPurpose::kReauthenticate:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_SUBTITLE";
-      break;
-  }
-  return NSLocalizedString(stringID, @"The subtitle of the welcome screen.");
-}
-
-// Returns the title to use for the primary button depending on the provided
-// `purpose`.
-NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
-  NSString* stringID;
-  switch (purpose) {
-    case PasskeyWelcomeScreenPurpose::kEnroll:
-    case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_GET_STARTED_BUTTON";
-      break;
-    case PasskeyWelcomeScreenPurpose::kReauthenticate:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_NEXT_BUTTON";
-      break;
-  }
-  return NSLocalizedString(
-      stringID, @"The title of the welcome screen's primary button.");
-}
-
 }  // namespace
 
 @interface PasskeyWelcomeScreenViewController () <
@@ -101,32 +50,30 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   // The view to be used as the navigation bar title view.
   UIView* _navigationItemTitleView;
 
-  // Email address associated with the signed in account. Depending on the
-  // PasskeyWelcomeScreenPurpose, the user email might or might no have to be
-  // dispalyed in the UI. If part of the UI, the `userEmail` must not be `nil`.
-  NSString* _userEmail;
-
   // Delegate for this view controller.
   __weak id<PasskeyWelcomeScreenViewControllerDelegate>
       _passkeyWelcomeScreenViewControllerDelegate;
 
   // The block that should be executed when the primary button is tapped.
   ProceduralBlock _primaryButtonAction;
+
+  // Contains all the strings that need to be displayed in the view.
+  PasskeyWelcomeScreenStrings* _strings;
 }
 
 - (instancetype)initForPurpose:(PasskeyWelcomeScreenPurpose)purpose
        navigationItemTitleView:(UIView*)navigationItemTitleView
-                     userEmail:(NSString*)userEmail
                       delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
                                    delegate
-           primaryButtonAction:(ProceduralBlock)primaryButtonAction {
+           primaryButtonAction:(ProceduralBlock)primaryButtonAction
+                       strings:(PasskeyWelcomeScreenStrings*)strings {
   self = [super initWithTaskRunner:nullptr];
   if (self) {
     _purpose = purpose;
     _navigationItemTitleView = navigationItemTitleView;
-    _userEmail = userEmail;
     _passkeyWelcomeScreenViewControllerDelegate = delegate;
     _primaryButtonAction = primaryButtonAction;
+    _strings = strings;
   }
   return self;
 }
@@ -137,20 +84,18 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   self.bannerName = GetBannerName(_purpose);
   self.bannerSize = BannerImageSizeType::kExtraShort;
 
-  self.titleText = GetTitleString(_purpose);
+  self.titleText = _strings.title;
   self.titleTopMarginWhenNoHeaderImage = kTitleHorizontalAndTopMargin;
   self.titleHorizontalMargin = kTitleHorizontalAndTopMargin;
 
   if (_purpose == PasskeyWelcomeScreenPurpose::kEnroll) {
     self.specificContentView = [self createSpecificContentView];
   } else {
-    self.subtitleText = GetSubtitleString(_purpose);
+    self.subtitleText = _strings.subtitle;
   }
 
-  self.primaryActionString = GetPrimaryButtonTitle(_purpose);
-  self.secondaryActionString =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NOT_NOW_BUTTON",
-                        @"The title of the welcome screen's secondary button.");
+  self.primaryActionString = _strings.primaryButton;
+  self.secondaryActionString = _strings.secondaryButton;
 
   [super viewDidLoad];
 
@@ -172,7 +117,9 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   UIView* specificContentView = [[UIView alloc] init];
   specificContentView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  InstructionView* instructionView = [self createInstructionView];
+  InstructionView* instructionView =
+      [[InstructionView alloc] initWithList:_strings.instructions];
+  instructionView.translatesAutoresizingMaskIntoConstraints = NO;
   [specificContentView addSubview:instructionView];
   AddSameConstraintsToSides(
       instructionView, specificContentView,
@@ -193,28 +140,6 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   return specificContentView;
 }
 
-// Creates and configures the instruction view for the enrollment welcome
-// screen.
-- (InstructionView*)createInstructionView {
-  NSArray<NSString*>* steps = @[
-    NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_1",
-        @"First step of the passkey enrollment instructions"),
-    NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_2",
-        @"Second step of the passkey enrollment instructions"),
-    NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_3",
-        @"Third step of the passkey enrollment instructions"),
-  ];
-
-  InstructionView* instructionView =
-      [[InstructionView alloc] initWithList:steps];
-  instructionView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  return instructionView;
-}
-
 // Creates and configures the footer message for the enrollment welcome screen.
 - (UILabel*)createFooterMessage {
   UILabel* footerMessage = [[UILabel alloc] init];
@@ -226,14 +151,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
 
   UIFont* font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
   footerMessage.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
-
-  CHECK(_userEmail);
-  NSString* stringWithPlaceholder = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_FOOTER_MESSAGE",
-      @"Footer message shown at the bottom of the screen-specific view.");
-  footerMessage.text =
-      [stringWithPlaceholder stringByReplacingOccurrencesOfString:@"$1"
-                                                       withString:_userEmail];
+  footerMessage.text = _strings.footer;
 
   return footerMessage;
 }

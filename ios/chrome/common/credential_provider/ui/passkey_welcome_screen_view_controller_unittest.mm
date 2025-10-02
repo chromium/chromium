@@ -5,21 +5,30 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 class PasskeyWelcomeScreenViewControllerTest : public PlatformTest {
  public:
+  PasskeyWelcomeScreenStrings* strings = [[PasskeyWelcomeScreenStrings alloc]
+        initWithTitle:@"title"
+             subtitle:@"subtitle"
+               footer:@"footer"
+        primaryButton:@"primaryButton"
+      secondaryButton:@"secondaryButton"
+         instructions:@[ @"step1", @"step2" ]];
+
   // Creates a PasskeyWelcomeScreenViewController for the provided purpose.
   PasskeyWelcomeScreenViewController* CreateController(
       PasskeyWelcomeScreenPurpose purpose) {
     return [[PasskeyWelcomeScreenViewController alloc]
                  initForPurpose:purpose
         navigationItemTitleView:[[UIView alloc] init]
-                      userEmail:@"peter.parker@gmail.com"
                        delegate:nil
-            primaryButtonAction:nil];
+            primaryButtonAction:nil
+                        strings:strings];
   }
 
  private:
@@ -36,14 +45,11 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_TRUE(controller.navigationItem.titleView);
   EXPECT_NSEQ(controller.bannerName, @"passkey_generic_banner");
   EXPECT_EQ(controller.bannerSize, BannerImageSizeType::kExtraShort);
-  EXPECT_NSEQ(controller.titleText,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_TITLE");
+  EXPECT_NSEQ(controller.titleText, @"title");
   EXPECT_FALSE(controller.subtitleText);
   EXPECT_EQ(controller.specificContentView.subviews.count, 2u);
-  EXPECT_NSEQ(controller.primaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_GET_STARTED_BUTTON");
-  EXPECT_NSEQ(controller.secondaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_NOT_NOW_BUTTON");
+  EXPECT_NSEQ(controller.primaryActionString, @"primaryButton");
+  EXPECT_NSEQ(controller.secondaryActionString, @"secondaryButton");
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);
 }
@@ -59,17 +65,11 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_TRUE(controller.navigationItem.titleView);
   EXPECT_NSEQ(controller.bannerName, @"passkey_generic_banner");
   EXPECT_EQ(controller.bannerSize, BannerImageSizeType::kExtraShort);
-  EXPECT_NSEQ(
-      controller.titleText,
-      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_TITLE");
-  EXPECT_NSEQ(
-      controller.subtitleText,
-      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_SUBTITLE");
+  EXPECT_NSEQ(controller.titleText, @"title");
+  EXPECT_NSEQ(controller.subtitleText, @"subtitle");
   EXPECT_EQ(controller.specificContentView.subviews.count, 0u);
-  EXPECT_NSEQ(controller.primaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_GET_STARTED_BUTTON");
-  EXPECT_NSEQ(controller.secondaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_NOT_NOW_BUTTON");
+  EXPECT_NSEQ(controller.primaryActionString, @"primaryButton");
+  EXPECT_NSEQ(controller.secondaryActionString, @"secondaryButton");
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);
 }
@@ -85,15 +85,11 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_TRUE(controller.navigationItem.titleView);
   EXPECT_NSEQ(controller.bannerName, @"passkey_bootstrapping_banner");
   EXPECT_EQ(controller.bannerSize, BannerImageSizeType::kExtraShort);
-  EXPECT_NSEQ(controller.titleText,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_TITLE");
-  EXPECT_NSEQ(controller.subtitleText,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_SUBTITLE");
+  EXPECT_NSEQ(controller.titleText, @"title");
+  EXPECT_NSEQ(controller.subtitleText, @"subtitle");
   EXPECT_EQ(controller.specificContentView.subviews.count, 0u);
-  EXPECT_NSEQ(controller.primaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_NEXT_BUTTON");
-  EXPECT_NSEQ(controller.secondaryActionString,
-              @"IDS_IOS_CREDENTIAL_PROVIDER_NOT_NOW_BUTTON");
+  EXPECT_NSEQ(controller.primaryActionString, @"primaryButton");
+  EXPECT_NSEQ(controller.secondaryActionString, @"secondaryButton");
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);
 }
