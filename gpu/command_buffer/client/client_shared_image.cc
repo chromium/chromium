@@ -56,54 +56,51 @@ namespace gpu {
 
 namespace {
 
-class ScopedMappingForTests : public ClientSharedImage::ScopedMapping {
+class TestMappableBuffer : public MappableBuffer {
  public:
-  ScopedMappingForTests(const gfx::Size& size, viz::SharedImageFormat format)
+  TestMappableBuffer(const gfx::Size& size, viz::SharedImageFormat format)
       : size_(size), format_(format) {
     size_t allocation_size = 0;
     for (int plane_index = 0; plane_index < format_.NumberOfPlanes();
          plane_index++) {
       size_t height_in_pixels =
-          format_.GetPlaneSize(plane_index, Size()).height();
+          format_.GetPlaneSize(plane_index, size_).height();
       CHECK(height_in_pixels);
-      allocation_size += Stride(plane_index) * height_in_pixels;
+      allocation_size += stride(plane_index) * height_in_pixels;
     }
 
     data_ = std::vector<uint8_t>(allocation_size);
   }
 
-  ~ScopedMappingForTests() override = default;
+  ~TestMappableBuffer() override = default;
 
-  // ClientSharedImage::ScopedMapping:
-  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
-    size_t height_in_pixels =
-        format_.GetPlaneSize(plane_index, Size()).height();
-    size_t row_size_in_bytes = viz::SharedMemoryRowSizeForSharedImageFormat(
-                                   format_, plane_index, Size().width())
-                                   .value();
-
-    CHECK(height_in_pixels);
-    CHECK(row_size_in_bytes);
-    size_t span_length =
-        Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
-
-    DCHECK_LT(static_cast<int>(plane_index), format_.NumberOfPlanes());
-    auto* data_ptr = data_.data();
-    data_ptr += viz::SharedMemoryOffsetForSharedImageFormat(
-        format_, plane_index, Size());
-
-    // SAFETY: `data_` has been allocated to have the necessary size.
-    return UNSAFE_BUFFERS(
-        base::span<uint8_t>(reinterpret_cast<uint8_t*>(data_ptr), span_length));
+  // MappableBuffer:
+  bool Map() override { return true; }
+  void MapAsync(base::OnceCallback<void(bool)> result_cb) override {
+    NOTREACHED();
   }
-  size_t Stride(const uint32_t plane_index) override {
-    DCHECK_LT(static_cast<int>(plane_index), format_.NumberOfPlanes());
-    return viz::SharedMemoryRowSizeForSharedImageFormat(format_, plane_index,
-                                                        Size().width())
+  bool AsyncMappingIsNonBlocking() const override { return false; }
+  void* memory(size_t plane) override {
+    auto* data_ptr = data_.data();
+    return data_ptr +
+           viz::SharedMemoryOffsetForSharedImageFormat(format_, plane, size_);
+  }
+  void Unmap() override {}
+  int stride(size_t plane) const override {
+    DCHECK_LT(static_cast<int>(plane), format_.NumberOfPlanes());
+    return viz::SharedMemoryRowSizeForSharedImageFormat(format_, plane,
+                                                        size_.width())
         .value();
   }
-  gfx::Size Size() override { return size_; }
-  bool IsSharedMemory() override { return true; }
+  gfx::GpuMemoryBufferType GetType() const override {
+    return gfx::SHARED_MEMORY_BUFFER;
+  }
+  gfx::GpuMemoryBufferHandle CloneHandle() const override { NOTREACHED(); }
+#if BUILDFLAG(IS_WIN)
+  void SetUsePreMappedMemory(bool use_premapped_memory) override {
+    NOTREACHED();
+  }
+#endif
 
  private:
   gfx::Size size_;
@@ -537,7 +534,7 @@ void ClientSharedImage::FinishMapAsyncForTests(
     bool success) {
   std::unique_ptr<ScopedMapping> mapping;
   if (success) {
-    mapping = std::make_unique<ScopedMappingForTests>(size(), format());
+    mapping = Map();
   }
   std::move(result_cb).Run(std::move(mapping));
 }
@@ -785,6 +782,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, info, sync_token, sii_holder, gfx::SHARED_MEMORY_BUFFER);
   client_si->async_map_invoked_callback_for_testing_ = callback;
+  client_si->mappable_buffer_ =
+      std::make_unique<TestMappableBuffer>(info.meta.size, info.meta.format);
   client_si->premapped_for_testing_ = premapped;
   client_si->buffer_usage_ = buffer_usage;
   return client_si;
