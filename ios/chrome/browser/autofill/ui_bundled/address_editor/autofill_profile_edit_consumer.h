@@ -7,19 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+
 // Sets the Autofill profile edit for consumer.
 @protocol AutofillProfileEditConsumer <NSObject>
 
 // Called when the country is selected from the dropdown.
 - (void)didSelectCountry:(NSString*)country;
 
-// Notifies the class that conforms this delegate to set whether the profile is
-// an account profile or not.
-- (void)setAccountProfile:(BOOL)accountProfile;
-
-// Notifies the class that conforms this delegate to set whether the profile is
-// a Home/Work profile.
-- (void)setIsHomeAndWorkProfile:(BOOL)isHomeAndWorkProfile;
+// Notifies the class that conforms this delegate to set the profile record
+// type.
+- (void)setProfileRecordType:(autofill::AutofillProfile::RecordType)recordType;
 
 // Notifies the consumer to present/remove the error state based on
 // `shouldShowError`.

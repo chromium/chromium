@@ -146,13 +146,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
   [self populateCurrentValuesMap];
   [self fetchAndUpdateFieldRequirements];
   [self initializeRequiredEmptyFieldsForManualAddition];
-
-  [_consumer setAccountProfile:[self isAccountProfile]];
-  [_consumer setIsHomeAndWorkProfile:
-                 ([self accountRecordType] ==
-                      autofill::AutofillProfile::RecordType::kAccountHome ||
-                  [self accountRecordType] ==
-                      autofill::AutofillProfile::RecordType::kAccountWork)];
+  [_consumer setProfileRecordType:[self accountRecordType]];
 }
 
 #pragma mark - Public

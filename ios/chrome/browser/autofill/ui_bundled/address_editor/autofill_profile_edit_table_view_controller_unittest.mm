@@ -75,7 +75,10 @@ class AutofillProfileEditTableViewControllerTest
         autofill_profile_edit_table_view_controller_;
 
     [autofill_profile_edit_table_view_controller_
-        setAccountProfile:GetParam().account_profile];
+        setProfileRecordType:
+            GetParam().account_profile
+                ? autofill::AutofillProfile::RecordType::kAccount
+                : autofill::AutofillProfile::RecordType::kLocalOrSyncable];
     if (GetParam().prompt_mode ==
         AutofillSaveProfilePromptMode::kMigrateProfile) {
       [autofill_profile_edit_table_view_controller_ setMigrationPrompt:YES];

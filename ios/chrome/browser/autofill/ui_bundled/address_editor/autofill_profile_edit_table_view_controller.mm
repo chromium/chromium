@@ -8,7 +8,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
@@ -37,10 +36,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 @interface AutofillProfileEditTableViewController () <
     AutofillEditProfileButtonFooterDelegate>
-
-// YES, if the profile's record type is
-// autofill::AutofillProfile::RecordType::kAccount.
-@property(nonatomic, assign) BOOL accountProfile;
 
 // If YES, denotes that the view is laid out for the migration prompt.
 @property(nonatomic, assign) BOOL migrationPrompt;
@@ -74,12 +69,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   // account from the settings.
   BOOL _moveToAccountFromSettings;
 
-  // YES, if the profile's record type is
-  // autofill::AutofillProfile::RecordType::kAccountHome/kAccountWork.
-  BOOL _isHomeAndWorkProfile;
-
   // The specific context in which this address editor is being presented.
   SaveAddressContext _addressContext;
+
+  // Stores the record type for the profile.
+  autofill::AutofillProfile::RecordType _recordType;
 }
 
 #pragma mark - Initialization
@@ -93,13 +87,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   if (self) {
     _delegate = delegate;
     _userEmail = userEmail;
-    _accountProfile = NO;
     _controller = controller;
     _addressContext = addressContext;
     _moveToAccountFromSettings = NO;
     _hasSaveButton = NO;
     _hasUpdateButton = NO;
-    _isHomeAndWorkProfile = NO;
   }
 
   return self;
@@ -139,7 +131,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)loadModel {
   TableViewModel* model = _controller.tableViewModel;
 
-  if (!_isHomeAndWorkProfile ||
+  if (![self isHomeOrWorkProfile] ||
       _addressContext != SaveAddressContext::kEditingSavedAddress) {
     if (![model hasSectionForSectionIdentifier:
                     AutofillProfileDetailsSectionIdentifierName]) {
@@ -168,7 +160,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [model addItem:[self countryItem]
       toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierAddress];
 
-  if (!_isHomeAndWorkProfile ||
+  if (![self isHomeOrWorkProfile] ||
       _addressContext != SaveAddressContext::kEditingSavedAddress) {
     if (![model hasSectionForSectionIdentifier:
                     AutofillProfileDetailsSectionIdentifierPhoneEmail]) {
@@ -265,7 +257,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger sectionIdentifier =
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  if (_isHomeAndWorkProfile &&
+  if ([self isHomeOrWorkProfile] &&
       _addressContext == SaveAddressContext::kEditingSavedAddress) {
     return sectionIdentifier == AutofillProfileDetailsSectionIdentifierAddress;
   }
@@ -276,7 +268,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   CHECK(_addressContext == SaveAddressContext::kEditingSavedAddress);
   TableViewModel* model = _controller.tableViewModel;
 
-  if (self.accountProfile) {
+  if ([self isAccountProfile]) {
     CHECK(_userEmail);
     [model
         addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFooter];
@@ -291,7 +283,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   _hasUpdateButton = update;
   TableViewModel* model = _controller.tableViewModel;
 
-  if (self.accountProfile || self.migrationPrompt) {
+  if ([self isAccountProfile] || self.migrationPrompt) {
     CHECK([_userEmail length] > 0);
     [model
         addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFooter];
@@ -333,7 +325,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       base::apple::ObjCCastStrict<AutofillProfileEditItem>(tableViewItem);
   [_delegate computeFieldWasEdited:profileItem.autofillFieldType
                              value:tableViewItem.textFieldValue];
-  if ((self.accountProfile || self.migrationPrompt ||
+  if (([self isAccountProfile] || self.migrationPrompt ||
        _moveToAccountFromSettings)) {
     tableViewItem.hasValidText = [_delegate
           fieldContainsValidValue:profileItem.autofillFieldType
@@ -377,10 +369,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [self findRequiredFieldsWithEmptyValues];
 }
 
-// Notifies the class that conforms this delegate to set whether the profile is
-// a Home/Work profile.
-- (void)setIsHomeAndWorkProfile:(BOOL)isHomeAndWorkProfile {
-  _isHomeAndWorkProfile = isHomeAndWorkProfile;
+- (void)setProfileRecordType:(autofill::AutofillProfile::RecordType)recordType {
+  _recordType = recordType;
 }
 
 - (void)updateErrorStatus:(BOOL)shouldShowError {
@@ -600,7 +590,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   // to the account.
   _saveUpdateButtonFooterItem.enabled =
       _addressContext != SaveAddressContext::kAddingManualAddress ||
-      !_accountProfile;
+      ![self isAccountProfile];
   return _saveUpdateButtonFooterItem;
 }
 
@@ -683,7 +673,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the footer message.
 - (NSString*)footerMessage {
   CHECK([_userEmail length] > 0);
-  if (_isHomeAndWorkProfile &&
+  if ([self isHomeOrWorkProfile] &&
       _addressContext == SaveAddressContext::kEditingSavedAddress) {
     return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER,
                                    base::SysNSStringToUTF16(_userEmail));
@@ -756,7 +746,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       multiDetailTextItem.trailingDetailText = [self countryFieldCurrentValue];
     } else if ([self isItemTypeTextEditCell:item.type]) {
       // No requirement checks for local profiles.
-      if (self.accountProfile || self.migrationPrompt ||
+      if ([self isAccountProfile] || self.migrationPrompt ||
           _moveToAccountFromSettings) {
         AutofillProfileEditItem* profileItem =
             base::apple::ObjCCastStrict<AutofillProfileEditItem>(item);
@@ -813,6 +803,15 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     [_delegate updateProfileMetadataWithValue:item.textFieldValue
                          forAutofillFieldType:item.autofillFieldType];
   }
+}
+
+- (BOOL)isAccountProfile {
+  return _recordType == autofill::AutofillProfile::RecordType::kAccount;
+}
+
+- (BOOL)isHomeOrWorkProfile {
+  return _recordType == autofill::AutofillProfile::RecordType::kAccountHome ||
+         _recordType == autofill::AutofillProfile::RecordType::kAccountWork;
 }
 
 @end

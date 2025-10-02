@@ -85,7 +85,9 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
   }
 
   void CreateAccountProfile() {
-    [autofill_profile_edit_table_view_controller_ setAccountProfile:YES];
+    [autofill_profile_edit_table_view_controller_
+        setProfileRecordType:autofill::AutofillProfile::RecordType::
+                                 kAccountHome];
 
     // Reload the model so that the changes are propogated.
     [controller() loadModel];

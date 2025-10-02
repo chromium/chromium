@@ -39,15 +39,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @interface FakeAutofillProfileEditConsumer
     : NSObject <AutofillProfileEditConsumer>
-// Stores the value displayed in the fields.
-
-// YES, if the profile's record type is
-// autofill::AutofillProfile::RecordType::kAccount.
-@property(nonatomic, assign) BOOL accountProfile;
-
-// YES, if the profile's record type is
-// autofill::AutofillProfile::RecordType::kAccountHome/kAccountWork.
-@property(nonatomic, assign) BOOL isHomeAndWorkProfile;
 
 @property(nonatomic, copy) NSString* countrySelected;
 @end
@@ -56,6 +47,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)didSelectCountry:(NSString*)country {
   self.countrySelected = country;
+}
+
+- (void)setProfileRecordType:(autofill::AutofillProfile::RecordType)recordType {
 }
 
 - (void)updateErrorStatus:(BOOL)shouldShowError {
