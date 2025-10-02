@@ -167,16 +167,8 @@ IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
   EXPECT_EQ(50, GetRangeValue(*main_frame(), "#offscreenRange"));
 }
 
-// TODO(crbug.com/447000769): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
-  DISABLED_DragAndReleaseTool_CrossOriginSubframe
-#else
-#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
-  DragAndReleaseTool_CrossOriginSubframe
-#endif
 IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
-                       MAYBE_DragAndReleaseTool_CrossOriginSubframe) {
+                       DragAndReleaseTool_CrossOriginSubframe) {
   const GURL url = embedded_https_test_server().GetURL(
       "/actor/positioned_iframe_no_scroll.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -213,7 +205,13 @@ IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/447000769): Allow 1 pixel of slop - probably due to
+  // different display densities and the ToFlooredPoint above.
+  EXPECT_NEAR(50, GetRangeValue(*subframe, "#range"), 1);
+#else
   EXPECT_EQ(50, GetRangeValue(*subframe, "#range"));
+#endif
 }
 
 }  // namespace
