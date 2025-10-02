@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -515,7 +516,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       UninstallDialogHelper::UninstallExtension(
           profile_, browser_->GetWindow()->GetNativeWindow(), extension);
 #else
-      // TODO(crbug.com/441744719): Make it possible to uninstall extensions
+      // TODO(crbug.com/448879321): Make it possible to uninstall extensions
       // from here on Desktop Android.
       NOTIMPLEMENTED();
 #endif
@@ -1035,8 +1036,10 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
 
 content::WebContents* ExtensionContextMenuModel::GetActiveWebContents() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return browser_->GetActiveTabInterface()->GetContents();
+  return TabListInterface::From(browser_)->GetActiveTab()->GetContents();
 #else
+  // TODO(crbug.com/448879321): Use the web contents from the browser window
+  // interface for Android.
   return web_contents_;
 #endif
 }
