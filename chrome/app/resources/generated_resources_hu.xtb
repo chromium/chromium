@@ -8367,6 +8367,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6818802132960437751">Beépített vírusvédelem</translation>
 <translation id="6818920801736417483">Menti a jelszavakat?</translation>
 <translation id="6820079682647046800">A Kerberos-hitelesítés sikertelen volt</translation>
+<translation id="6820107710950761542">További információért forduljon az adminisztrátorhoz, vagy tekintse meg a következőt: <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6821439254917412979">A(z) <ph name="EXTENSION_NAME" /> kitűzésének megszüntetése</translation>
 <translation id="6823174134746916417">Koppintással kattintás az érintőpadon</translation>
 <translation id="6823561724060793716">A címsávban megnyithatja az oldaladatokat, így további információkat láthat az éppen meglátogatott oldalról.</translation>

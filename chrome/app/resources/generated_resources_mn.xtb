@@ -8363,6 +8363,7 @@
 <translation id="6818802132960437751">Суурилуулсан вирусний хамгаалалт</translation>
 <translation id="6818920801736417483">Нууц үгийг хадгалах уу?</translation>
 <translation id="6820079682647046800">Kerberos-н баталгаажуулалт амжилтгүй боллоо</translation>
+<translation id="6820107710950761542">Нэмэлт мэдээлэл авах бол администратортайгаа холбогдох эсвэл <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" />-г шалгана уу</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" />-г бэхэлснийг болиулах</translation>
 <translation id="6823174134746916417">Мэдрэгч самбарын tap-to-click</translation>
 <translation id="6823561724060793716">Та хаяг оруулах хэсгээс зочилж буй хуудасныхаа тухай нэмэлт мэдээллийг харахын тулд хуудасны мэдээллийг нээх боломжтой</translation>

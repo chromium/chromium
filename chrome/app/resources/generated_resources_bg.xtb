@@ -8366,6 +8366,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6818802132960437751">Вградена защита от вируси</translation>
 <translation id="6818920801736417483">Да се запазят ли паролите?</translation>
 <translation id="6820079682647046800">Удостоверяването с Kerberos не бе успешно</translation>
+<translation id="6820107710950761542">За повече информация се свържете с администратора си или проверете <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6821439254917412979">Освобождаване на <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Кликване с докосване на сензорния панел</translation>
 <translation id="6823561724060793716">От адресната лента можете да отворите информацията за страницата, за да видите допълнителни подробности за страницата, която посещавате</translation>

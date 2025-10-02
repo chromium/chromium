@@ -1587,7 +1587,7 @@
 <translation id="2079053412993822885">Если удалить один из собственных сертификатов, вы больше не сможете идентифицировать себя.</translation>
 <translation id="2079495302726689071">Открыть ссылку в новой вкладке приложения "<ph name="APP" />"</translation>
 <translation id="2079545284768500474">Отмена</translation>
-<translation id="2079553700504470326">Использовать точное местоположение вместо приблизительного на основе IP-адреса, чтобы получать более точные результаты от Gemini</translation>
+<translation id="2079553700504470326">Использовать точное местоположение вместо приблизительного на основе IP-адреса, чтобы получать более точные результаты от Gemini.</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2081816110395725788">Режим ожидания при работе от батареи</translation>
 <translation id="2082187087049518845">Добавить вкладку в группу</translation>
@@ -8218,7 +8218,7 @@
 <translation id="6729192290958770680">Введите имя пользователя.</translation>
 <translation id="6729280095610283088">Яркие полосы северного сияния над лесом.</translation>
 <translation id="6729493062119577923">Действия в общей группе вкладок</translation>
-<translation id="6730744976532805323">Предоставлять Gemini доступ к текущей вкладке, даже если вы перешли на другую</translation>
+<translation id="6730744976532805323">Предоставлять Gemini доступ к текущей вкладке, даже если вы перешли на другую.</translation>
 <translation id="6731320427842222405">Это может занять несколько минут</translation>
 <translation id="6732956960067639542">Запустите новый сеанс браузера Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (идентификатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -8362,6 +8362,7 @@
 <translation id="6818802132960437751">Встроенная защита от вирусов</translation>
 <translation id="6818920801736417483">Сохранить пароли?</translation>
 <translation id="6820079682647046800">Ошибка аутентификации по протоколу Kerberos</translation>
+<translation id="6820107710950761542">За дополнительной информацией обратитесь к администратору или зайдите на сайт <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6821439254917412979">Открепить расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6823174134746916417">Нажатие от прикосновения к сенсорной панели</translation>
 <translation id="6823561724060793716">В адресной строке можно открыть дополнительную информацию о просматриваемой странице.</translation>
@@ -10056,7 +10057,7 @@
 <translation id="7991296728590311172">Настройки функции Switch Access</translation>
 <translation id="7992080146463834191">Получайте краткий пересказ, упрощайте сложный язык или задавайте вопросы.</translation>
 <translation id="7992203134935383159">Синтез речи</translation>
-<translation id="7993332993977106257">Быстрый доступ к Gemini на устройстве, даже если Chrome свернут</translation>
+<translation id="7993332993977106257">Быстрый доступ к Gemini на устройстве, даже если Chrome свернут.</translation>
 <translation id="7997826902155442747">Приоритет процессов</translation>
 <translation id="7997828719430450286">Готово.</translation>
 <translation id="7998701048266085837">URL</translation>
