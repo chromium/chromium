@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
+import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.display.DisplayUtil;
 
 import java.util.Arrays;
@@ -1038,5 +1039,153 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         verify(activity, never().description("Not minimize a task which has been minimized"))
                 .moveTaskToBack(anyBoolean());
+    }
+
+    @Test
+    public void show_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.show();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.SHOW, pendingActions[0]);
+    }
+
+    @Test
+    public void showInactive_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.showInactive();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.SHOW_INACTIVE, pendingActions[1]);
+    }
+
+    @Test
+    public void close_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.close();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.CLOSE, pendingActions[0]);
+    }
+
+    @Test
+    public void activate_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.activate();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.ACTIVATE, pendingActions[0]);
+    }
+
+    @Test
+    public void deactivate_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.deactivate();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.DEACTIVATE, pendingActions[1]);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void maximize_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.maximize();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.MAXIMIZE, pendingActions[0]);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void minimize_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.minimize();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.MINIMIZE, pendingActions[0]);
+    }
+
+    @Test
+    public void restore_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.restore();
+
+        // Assert.
+        int[] pendingActions =
+                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(PendingAction.RESTORE, pendingActions[0]);
+    }
+
+    @Test
+    public void setBounds_whenPending_enqueuesPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var taskBounds = new Rect(0, 0, 800, 600);
+
+        // Act.
+        task.setBoundsInDp(taskBounds);
+
+        // Assert.
+        var pendingActionManager = task.getPendingActionManagerForTesting();
+        assertEquals(
+                PendingAction.SET_BOUNDS, pendingActionManager.getPendingActionsForTesting()[0]);
+        assertEquals(taskBounds, pendingActionManager.getPendingBoundsForTesting());
     }
 }

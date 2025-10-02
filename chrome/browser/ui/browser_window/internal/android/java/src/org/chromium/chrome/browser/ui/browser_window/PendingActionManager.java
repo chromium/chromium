@@ -81,7 +81,7 @@ final class PendingActionManager {
 
     /** Tracks the size a window should have when it's fully initialized. */
     @GuardedBy("mPendingActionsLock")
-    private @Nullable Rect mPendingBounds;
+    private @Nullable Rect mPendingBoundsInDp;
 
     /**
      * Requests an action to be performed on the pending task. Use this for actions that do not
@@ -119,14 +119,14 @@ final class PendingActionManager {
     /**
      * Requests a SET_BOUNDS action to be performed on the pending task.
      *
-     * @param bounds The requested bounds.
+     * @param boundsInDp The requested bounds, in dp.
      */
-    void requestSetBounds(Rect bounds) {
-        if (bounds.isEmpty()) return;
+    void requestSetBounds(Rect boundsInDp) {
+        if (boundsInDp.isEmpty()) return;
 
         requestGlobalOverrideAction(PendingAction.SET_BOUNDS);
         synchronized (mPendingActionsLock) {
-            mPendingBounds = bounds;
+            mPendingBoundsInDp = boundsInDp;
         }
     }
 
@@ -221,7 +221,7 @@ final class PendingActionManager {
             mPendingActions[1] = PendingAction.NONE;
 
             // Clear pending bounds.
-            mPendingBounds = null;
+            mPendingBoundsInDp = null;
         }
     }
 
@@ -239,7 +239,7 @@ final class PendingActionManager {
 
     @Nullable Rect getPendingBoundsForTesting() {
         synchronized (mPendingActionsLock) {
-            return mPendingBounds;
+            return mPendingBoundsInDp;
         }
     }
 
