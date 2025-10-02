@@ -38,7 +38,6 @@
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"

@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
 
 class PrefRegistrySimple;
 

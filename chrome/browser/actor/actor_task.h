@@ -20,7 +20,6 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"

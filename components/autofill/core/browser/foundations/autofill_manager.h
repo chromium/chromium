@@ -38,7 +38,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/translate/core/browser/translate_driver.h"
 
 namespace autofill {

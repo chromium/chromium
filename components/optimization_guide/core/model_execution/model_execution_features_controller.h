@@ -17,7 +17,6 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
