@@ -23,6 +23,7 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
  public:
   virtual ~OverlayProcessorStrategy() = default;
+  using PrimaryPlane = OverlayProcessorInterface::OutputSurfaceOverlayPlane;
 
   // Appends all legitimate overlay candidates to the list |candidates|
   // for this strategy.  It is very important to note that this function
@@ -36,7 +37,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const std::optional<OverlayCandidate>& primary_plane,
+      const PrimaryPlane* primary_plane,
       std::vector<OverlayProposedCandidate>* candidates,
       std::vector<gfx::Rect>* content_bounds) = 0;
 
@@ -53,7 +54,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const std::optional<OverlayCandidate>& primary_plane,
+      const PrimaryPlane* primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds,
       const OverlayProposedCandidate& proposed_candidate) = 0;
@@ -68,7 +69,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
   // strategy needs to enable blending for the primary plane in order to show
   // content underneath.
   virtual void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& output_surface_plane) {}
+      OverlayProcessorInterface::OutputSurfaceOverlayPlane*
+          output_surface_plane) {}
 
   // Currently this is only overridden by the Fullscreen strategy: the
   // fullscreen strategy covers the entire screen and there is no need to use
@@ -79,8 +81,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
 
   // Does a null-check on |primary_plane| and returns it's |display_rect|
   // member if non-null and an empty gfx::RectF otherwise.
-  gfx::RectF GetPrimaryPlaneDisplayRect(
-      const std::optional<OverlayCandidate>& primary_plane);
+  gfx::RectF GetPrimaryPlaneDisplayRect(const PrimaryPlane* primary_plane);
 };
 
 }  // namespace viz

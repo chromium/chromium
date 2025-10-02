@@ -49,7 +49,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const std::optional<OverlayCandidate>& primary_plane,
+      const PrimaryPlane* primary_plane,
       std::vector<OverlayProposedCandidate>* candidates,
       std::vector<gfx::Rect>* content_bounds) override;
 
@@ -61,7 +61,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const std::optional<OverlayCandidate>& primary_plane,
+      const PrimaryPlane* primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds,
       const OverlayProposedCandidate& proposed_candidate) override;
@@ -70,7 +70,8 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
                        AggregatedRenderPass* render_pass) override;
 
   void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& output_surface_plane) override;
+      OverlayProcessorInterface::OutputSurfaceOverlayPlane*
+          output_surface_plane) override;
 
   OverlayStrategy GetUMAEnum() const override;
 

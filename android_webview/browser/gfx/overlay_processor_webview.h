@@ -60,9 +60,11 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   void ScheduleOverlays(
       viz::DisplayResourceProvider* resource_provider) override;
   void AdjustOutputSurfaceOverlay(
-      std::optional<viz::OverlayCandidate>& output_surface_plane) override {}
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override {
+  }
   void CheckOverlaySupportImpl(
-      const std::optional<viz::OverlayCandidate>& primary_plane,
+      const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*
+          primary_plane,
       viz::OverlayCandidateList* candidates) override;
 
   // OverlaysInfoProvider implenentation:

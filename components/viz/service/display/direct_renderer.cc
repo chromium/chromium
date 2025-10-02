@@ -286,12 +286,17 @@ void DirectRenderer::DrawFrame(
 
     // Before ProcessForOverlay calls into the hardware to ask about whether the
     // overlay setup can be handled, we need to set up the primary plane.
+    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane =
+        nullptr;
     if (output_surface_->capabilities().renderer_allocates_images) {
+      // TODO(crbug.com/40224327): `output_surface_plane` can be changed to an
+      // OverlayCandidate now.
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
               device_viewport_size, surface_resource_size, frame_si_format,
               frame_color_space, frame_has_alpha, 1.0f /*opacity*/,
               GetPrimaryPlaneOverlayTestingMailbox());
+      primary_plane = &(current_frame()->output_surface_plane.value());
     }
 
     // Attempt to replace some or all of the quads of the root render pass with
@@ -301,7 +306,7 @@ void DirectRenderer::DrawFrame(
         resource_provider_, render_passes_in_draw_order,
         output_surface_->color_matrix(), render_pass_filters_,
         render_pass_backdrop_filters_, std::move(surface_damage_rect_list),
-        current_frame()->output_surface_plane, &current_frame()->overlay_list,
+        primary_plane, &current_frame()->overlay_list,
         &current_frame()->root_damage_rect,
         &current_frame()->root_content_bounds);
     auto overlay_processing_time = overlay_processing_timer.Elapsed();
@@ -318,12 +323,12 @@ void DirectRenderer::DrawFrame(
     // TODO(ccameron): We should update |frame_color_space|, and
     // |frame_si_format| based on the change in |frame_has_alpha|.
     if (current_frame()->output_surface_plane) {
-      frame_has_alpha |= !current_frame()->output_surface_plane->is_opaque;
+      frame_has_alpha |= current_frame()->output_surface_plane->enable_blending;
       root_render_pass->has_transparent_background = frame_has_alpha;
     }
 
     overlay_processor_->AdjustOutputSurfaceOverlay(
-        current_frame()->output_surface_plane);
+        &(current_frame()->output_surface_plane));
   }
 
   // Only reshape when we know we are going to draw. Otherwise, the reshape

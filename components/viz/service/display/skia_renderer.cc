@@ -1049,12 +1049,26 @@ void SkiaRenderer::FinishDrawingFrame() {
   if (current_frame()->output_surface_plane) {
     CHECK(output_surface_->capabilities().renderer_allocates_images);
 
-    auto& surface_candidate = current_frame()->output_surface_plane.value();
+    auto& surface_plane = current_frame()->output_surface_plane.value();
+
     auto root_pass_backing =
         render_pass_backings_.find(current_frame()->root_render_pass->id);
     // The root pass backing should always exist.
     DCHECK(root_pass_backing != render_pass_backings_.end());
+
+    OverlayCandidate surface_candidate;
     surface_candidate.mailbox = root_pass_backing->second.mailbox;
+    surface_candidate.is_root_render_pass = true;
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+    surface_candidate.transform = gfx::Transform();
+#else
+    surface_candidate.transform = surface_plane.transform;
+#endif
+    surface_candidate.display_rect = surface_plane.display_rect;
+    surface_candidate.uv_rect = surface_plane.uv_rect;
+    surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
+    surface_candidate.format = surface_plane.format;
+    surface_candidate.color_space = surface_plane.color_space;
     if (current_frame()->display_color_spaces.SupportsHDR() &&
         current_frame()->root_render_pass->content_color_usage ==
             gfx::ContentColorUsage::kHDR) {
@@ -1064,10 +1078,13 @@ void SkiaRenderer::FinishDrawingFrame() {
       surface_candidate.hdr_metadata.extended_range->desired_headroom =
           gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
     }
+    surface_candidate.is_opaque = !surface_plane.enable_blending;
+    surface_candidate.opacity = surface_plane.opacity;
+    surface_candidate.priority_hint = surface_plane.priority_hint;
+    surface_candidate.rounded_corners = surface_plane.rounded_corners;
     surface_candidate.damage_rect =
-        use_partial_swap_
-            ? gfx::RectF(swap_buffer_rect_)
-            : gfx::RectF(surface_candidate.resource_size_in_pixels);
+        use_partial_swap_ ? gfx::RectF(swap_buffer_rect_)
+                          : gfx::RectF(surface_plane.resource_size);
 #if BUILDFLAG(IS_WIN)
     surface_candidate.layer_id = gfx::OverlayLayerId::MakeVizInternalRenderPass(
         current_frame()->root_render_pass->id);
@@ -1076,27 +1093,21 @@ void SkiaRenderer::FinishDrawingFrame() {
     // Ozone DRM needs the primary plane as the first overlay when overlay
     // testing.
     const auto insert_positon = current_frame()->overlay_list.begin();
-    current_frame()->overlay_list.insert(
-        insert_positon,
-        std::move(current_frame()->output_surface_plane).value());
+    current_frame()->overlay_list.insert(insert_positon, surface_candidate);
 #elif BUILDFLAG(IS_MAC)
     // Mac doesn't use the plane_z_order field and it needs to have primary
     // plane last in the list of overlays.
-    current_frame()->overlay_list.push_back(
-        std::move(current_frame()->output_surface_plane).value());
+    current_frame()->overlay_list.push_back(surface_candidate);
 #elif BUILDFLAG(IS_ANDROID)
     // Android respects plane_z_order and order in the list shouldn't matter,
     // but it surfaces the bug when the planes are not hidden properly. As we
     // use only underlays, we should keep primary plane first so it would hide
     // planes that are not supposed to be visible.
     const auto insert_positon = current_frame()->overlay_list.begin();
-    current_frame()->overlay_list.insert(
-        insert_positon,
-        std::move(current_frame()->output_surface_plane).value());
+    current_frame()->overlay_list.insert(insert_positon, surface_candidate);
 #else
     // Other platforms respect plane_z_order so the list order doesn't matter.
-    current_frame()->overlay_list.push_back(
-        std::move(current_frame()->output_surface_plane).value());
+    current_frame()->overlay_list.push_back(surface_candidate);
 #endif
 
   } else {

@@ -33,12 +33,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      std::optional<OverlayCandidate>& primary_plane,
+      OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final {}
   void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& output_surface_plane) final {}
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) final {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) final {}
   void SetViewportSize(const gfx::Size& size) final {}
   gfx::CALayerResult GetCALayerErrorCode() const final;

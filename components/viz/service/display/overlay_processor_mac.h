@@ -54,7 +54,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      std::optional<OverlayCandidate>& primary_plane,
+      OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& output_surface_plane) override;
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   gfx::CALayerResult GetCALayerErrorCode() const override;
 

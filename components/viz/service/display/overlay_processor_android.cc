@@ -145,7 +145,7 @@ void OverlayProcessorAndroid::OverlayPresentationComplete() {
 }
 
 void OverlayProcessorAndroid::CheckOverlaySupportImpl(
-    const std::optional<OverlayCandidate>& primary_plane,
+    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidates) {
   // For pre-SurfaceControl Android we should not have output surface as overlay
   // plane.

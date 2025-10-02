@@ -369,15 +369,14 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    std::optional<OverlayCandidate>& primary_plane,
+    OutputSurfaceOverlayPlane* output_surface_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/181974042):  Remove when color space is plumbed.
-  if (primary_plane) {
-    primary_plane_color_space_ = primary_plane->color_space;
-  }
+  if (output_surface_plane)
+    primary_plane_color_space_ = output_surface_plane->color_space;
 #endif
   TRACE_EVENT0("viz", "OverlayProcessorUsingStrategy::ProcessForOverlays");
   DCHECK(candidates->empty());
@@ -404,7 +403,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     success = AttemptWithStrategies(
         output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
         resource_provider, render_passes, &surface_damage_rect_list,
-        primary_plane, candidates, content_bounds, damage_rect);
+        output_surface_plane, candidates, content_bounds, damage_rect);
   }
 
   DCHECK(candidates->empty() || success);
@@ -428,7 +427,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
 }
 
 void OverlayProcessorUsingStrategy::CheckOverlaySupport(
-    const std::optional<OverlayCandidate>& primary_plane,
+    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidate_list) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/181974042):  Remove when color space is plumbed.
@@ -635,17 +634,15 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
 }
 
 void OverlayProcessorUsingStrategy::AdjustOutputSurfaceOverlay(
-    std::optional<OverlayCandidate>& output_surface_plane) {
-  if (!output_surface_plane) {
+    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+  if (!output_surface_plane || !output_surface_plane->has_value())
     return;
-  }
 
   // If the overlay candidates cover the entire screen, the
   // |output_surface_plane| could be removed.
   if (last_successful_strategy_ &&
-      last_successful_strategy_->RemoveOutputSurfaceAsOverlay()) {
-    output_surface_plane.reset();
-  }
+      last_successful_strategy_->RemoveOutputSurfaceAsOverlay())
+    output_surface_plane->reset();
 }
 
 void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
@@ -782,7 +779,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    std::optional<OverlayCandidate>& primary_plane,
+    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidates,
     std::vector<gfx::Rect>* content_bounds,
     gfx::Rect* incoming_damage) {
@@ -947,7 +944,7 @@ bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
 
 bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     const std::vector<OverlayProposedCandidate>& sorted_candidates,
-    std::optional<OverlayCandidate>& primary_plane,
+    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     AggregatedRenderPass* render_pass,
     OverlayCandidateList& candidates) {
   if (sorted_candidates.empty()) {
@@ -1045,10 +1042,10 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   if (!testing_underlay || !primary_plane) {
     CheckOverlaySupport(primary_plane, &candidates);
   } else {
-    OverlayCandidate new_plane_candidate(*primary_plane);
-    new_plane_candidate.is_opaque = false;
+    OverlayProcessorStrategy::PrimaryPlane new_plane_candidate(*primary_plane);
+    new_plane_candidate.enable_blending = true;
     // Check for support.
-    CheckOverlaySupport(new_plane_candidate, &candidates);
+    CheckOverlaySupport(&new_plane_candidate, &candidates);
   }
   const int num_overlays_attempted = candidates.size();
 
@@ -1092,7 +1089,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
 
   if (output.underlay_used && primary_plane) {
     // Using underlays means the primary plane needs blending enabled.
-    primary_plane->is_opaque = false;
+    primary_plane->enable_blending = true;
   }
 
   // Sort test candidates in reverse order so we can commit them from back to

@@ -48,7 +48,7 @@ void OverlayProcessorMac::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    std::optional<OverlayCandidate>& primary_plane,
+    OutputSurfaceOverlayPlane* output_surface_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
@@ -89,13 +89,12 @@ void OverlayProcessorMac::ProcessForOverlays(
 }
 
 void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
-    std::optional<OverlayCandidate>& output_surface_plane) {
-  if (!output_surface_plane.has_value()) {
+    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+  if (!output_surface_plane->has_value())
     return;
-  }
 
   if (output_surface_already_handled_)
-    output_surface_plane.reset();
+    output_surface_plane->reset();
 }
 
 bool OverlayProcessorMac::NeedsSurfaceDamageRectList() const {

@@ -76,6 +76,26 @@ gfx::ColorSpace GetColorSpaceForOzone(SharedImageFormat format,
   return orig_color_space;
 }
 
+// TODO(weiliangc): When difference between primary plane and non-primary plane
+// can be internalized, merge these two helper functions.
+void ConvertToOzoneOverlaySurface(
+    const OverlayProcessorInterface::OutputSurfaceOverlayPlane& primary_plane,
+    ui::OverlaySurfaceCandidate* ozone_candidate) {
+  ozone_candidate->transform = primary_plane.transform;
+  ozone_candidate->format = primary_plane.format;
+  ozone_candidate->color_space = GetColorSpaceForOzone(
+      ozone_candidate->format, /*orig_color_space=*/primary_plane.color_space);
+  ozone_candidate->display_rect = primary_plane.display_rect;
+  ozone_candidate->crop_rect = primary_plane.uv_rect;
+  ozone_candidate->clip_rect.reset();
+  ozone_candidate->is_opaque = !primary_plane.enable_blending;
+  ozone_candidate->opacity = primary_plane.opacity;
+  ozone_candidate->plane_z_order = 0;
+  ozone_candidate->buffer_size = primary_plane.resource_size;
+  ozone_candidate->priority_hint = primary_plane.priority_hint;
+  ozone_candidate->rounded_corners = primary_plane.rounded_corners;
+}
+
 void ConvertToOzoneOverlaySurface(
     const OverlayCandidate& overlay_candidate,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
@@ -272,7 +292,7 @@ void OverlayProcessorOzone::NotifyOverlayPromotion(
 }
 
 void OverlayProcessorOzone::CheckOverlaySupportImpl(
-    const std::optional<OverlayCandidate>& primary_plane,
+    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* surfaces) {
   MaybeObserveHardwareCapabilities();
 
