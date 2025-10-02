@@ -69,29 +69,9 @@ class SidePanelCoordinator final : public SidePanelUIBase,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void OpenInNewTab() override;
 
-  void SetNoDelaysForTesting(bool no_delays_for_testing) override;
-
-  // Returns the web contents in a side panel if one exists.
-  content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
-  void DisableAnimationsForTesting() override;
-
   // Re-runs open new tab URL check and sets button state to enabled/disabled
   // accordingly.
   void UpdateNewTabButtonState();
-
-  SidePanelEntry* GetCurrentSidePanelEntryForTesting();
-
-  actions::ActionItem* GetActionItem(SidePanelEntry::Key entry_key);
-
-  views::ToggleImageButton* GetHeaderPinButtonForTesting() {
-    return header_pin_button_;
-  }
-
-  views::ImageButton* GetHeaderMoreInfoButtonForTesting() {
-    return header_more_info_button_;
-  }
-
-  SidePanelEntry* GetLoadingEntryForTesting() const;
 
   // SidePanelUIBase:
   using SidePanelUIBase::Show;
@@ -106,12 +86,27 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   using ShownCallback = base::RepeatingCallback<void()>;
   base::CallbackListSubscription RegisterSidePanelShown(ShownCallback callback);
 
+  void SetNoDelaysForTesting(bool no_delays_for_testing) override;
+
+  content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
+  void DisableAnimationsForTesting() override;
+
+  SidePanelEntry* GetCurrentSidePanelEntryForTesting();
+
+  views::ToggleImageButton* GetHeaderPinButtonForTesting() {
+    return header_pin_button_;
+  }
+
+  views::ImageButton* GetHeaderMoreInfoButtonForTesting() {
+    return header_more_info_button_;
+  }
+
+  SidePanelEntry* GetLoadingEntryForTesting() const;
+
  private:
   friend class SidePanelCoordinatorTest;
-  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
-                           ShowEmptyUserNoteSidePanel);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
-                           PopulateUserNoteSidePanel);
+
+  actions::ActionItem* GetActionItem(SidePanelEntry::Key entry_key);
 
   void UpdatePinState();
   void UpdateHeaderPinButtonState();

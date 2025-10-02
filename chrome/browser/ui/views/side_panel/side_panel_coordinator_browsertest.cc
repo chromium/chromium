@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -824,7 +825,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   SidePanelEntry* entry = global_registry()->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
-  actions::ActionItem* action_item = coordinator()->GetActionItem(entry->key());
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      kActionSidePanelShowBookmarks,
+      browser()->GetActions()->root_action_item());
 
   // Update the action item text.
   const std::u16string new_title = u"New Bookmarks title";

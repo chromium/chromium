@@ -6,6 +6,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -116,6 +117,12 @@ class CommentsSidePanelCoordinatorInteractiveUiTest
 
   CommentsSidePanelCoordinator* side_panel_coordinator() {
     return browser()->GetFeatures().comments_side_panel_coordinator();
+  }
+
+  actions::ActionItem* GetActionItemForCommentsSidePanel() {
+    return actions::ActionManager::Get().FindAction(
+        kActionSidePanelShowComments,
+        browser()->GetActions()->root_action_item());
   }
 
  private:
@@ -301,10 +308,7 @@ IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
   RunTestSequence(
       // Initially, the title should have no group name.
       Do([&]() {
-        SidePanelCoordinator* side_panel =
-            browser()->GetFeatures().side_panel_coordinator();
-        actions::ActionItem* action_item = side_panel->GetActionItem(
-            SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+        actions::ActionItem* action_item = GetActionItemForCommentsSidePanel();
         EXPECT_EQ(u"Comments", action_item->GetText());
       }),
 
@@ -314,20 +318,14 @@ IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
       WaitForShow(kSharedTabGroupCommentsActionElementId),
       PressButton(kSharedTabGroupCommentsActionElementId),
       WaitForShow(kSidePanelElementId), FinishTabstripAnimations(), Do([&]() {
-        SidePanelCoordinator* side_panel =
-            browser()->GetFeatures().side_panel_coordinator();
-        actions::ActionItem* action_item = side_panel->GetActionItem(
-            SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+        actions::ActionItem* action_item = GetActionItemForCommentsSidePanel();
         EXPECT_EQ(u"Comments - Group 1", action_item->GetText());
       }),
 
       // Activate another shared tab, verify the title is updated.
       SelectTab(kTabStripElementId, group2_tab_index, InputType::kMouse),
       WaitForActiveTabChange(group2_tab_index), Do([&]() {
-        SidePanelCoordinator* side_panel =
-            browser()->GetFeatures().side_panel_coordinator();
-        actions::ActionItem* action_item = side_panel->GetActionItem(
-            SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+        actions::ActionItem* action_item = GetActionItemForCommentsSidePanel();
         EXPECT_EQ(u"Comments - Group 2", action_item->GetText());
       }));
 }

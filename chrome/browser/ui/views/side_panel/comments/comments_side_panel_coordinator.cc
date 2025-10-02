@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -212,10 +213,8 @@ void CommentsSidePanelCoordinator::UpdateSidePanelTitle(
           : l10n_util::GetStringUTF16(
                 IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE);
 
-  SidePanelCoordinator* side_panel =
-      browser_->GetFeatures().side_panel_coordinator();
-  actions::ActionItem* action_item = side_panel->GetActionItem(
-      SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      kActionSidePanelShowComments, browser_->GetActions()->root_action_item());
 
   if (title != action_item->GetText()) {
     action_item->SetText(title);

@@ -183,10 +183,6 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
   }
 }
 
-void SidePanelUtil::RecordComboboxShown() {
-  base::UmaHistogramBoolean("SidePanel.ComboboxMenuShown", true);
-}
-
 void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
                                               bool is_pinned) {
   base::RecordComputedAction(base::StrCat(
