@@ -222,7 +222,8 @@ class GlicWindowController : public GlicInstance::UIDelegate {
 
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {
-    return base::FeatureList::IsEnabled(features::kGlicDetached);
+    return base::FeatureList::IsEnabled(features::kGlicDetached) &&
+           !base::FeatureList::IsEnabled(features::kGlicMultiInstance);
   }
 };
 
