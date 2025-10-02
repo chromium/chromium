@@ -18,7 +18,6 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 
 class OmniboxController;
@@ -73,10 +72,6 @@ class OmniboxPopupView {
   // unit test and it would be better to eliminate it than to increase usage.
   virtual std::u16string_view GetAccessibleButtonTextForResult(
       size_t line) const;
-
-  // Updates the result and header views based on the visibility of their group.
-  virtual void SetSuggestionGroupVisibility(size_t match_index,
-                                            bool suggestion_group_hidden) {}
 
   // Adds a callback that will be called when the popup window becomes visible.
   base::CallbackListSubscription AddOpenListener(

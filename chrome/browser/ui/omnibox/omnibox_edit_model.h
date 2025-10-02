@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -333,9 +332,6 @@ class OmniboxEditModel {
 
   // Called when the user pastes in text.
   void OnPaste();
-
-  // Returns true if pasting is in progress.
-  bool is_pasting() const { return paste_state_ == PASTING; }
 
   // Called when the user presses arrow up, arrow down, page up, or page down.
   void OnUpOrDownPressed(bool down, bool page);
