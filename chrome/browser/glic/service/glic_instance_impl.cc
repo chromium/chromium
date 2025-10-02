@@ -116,7 +116,7 @@ GlicInstanceImpl::GlicInstanceImpl(
   host_.SetDelegate(&empty_embedder_delegate_);
   // TODO(crbug.com/448160018): Figure out how to signal the web contents
   // opening so that this can be set to `true`.
-  host_.CreateContents(/*initially_hidden=*/true);
+  host_.CreateContents(/*initially_hidden=*/false);
 }
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;

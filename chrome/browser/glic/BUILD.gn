@@ -171,6 +171,8 @@ source_set("impl") {
     "service/glic_ui_embedder.h",
     "widget/application_hotkey_delegate.cc",
     "widget/application_hotkey_delegate.h",
+    "widget/blurred_screenshot_view_controller.cc",
+    "widget/blurred_screenshot_view_controller.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
     "widget/glic_floating_ui.cc",
