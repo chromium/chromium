@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/tracking_protections_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "components/strings/grit/privacy_sandbox_strings.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -21,11 +24,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeScriptBlocking = kItemTypeEnumZero,
+  ItemTypeHeader,
 };
 
 NSString* const kTrackingProtectionsTableViewId =
     @"kTrackingProtectionsTableViewId";
+NSString* const kTrackingProtectionsHeaderId = @"kTrackingProtectionsHeaderId";
 NSString* const kScriptBlockingCellId = @"kScriptBlockingCellId";
+
+const char kTrackingProtectionsHelpCenterURL[] =
+    "https://support.google.com/chrome?p=incognito_tracking_protections";
 
 }  // namespace
 
@@ -56,8 +64,11 @@ NSString* const kScriptBlockingCellId = @"kScriptBlockingCellId";
 
   [model addSectionWithIdentifier:SectionIdentifierSettings];
 
-  // TODO(crbug.com/442799337): Add description.
-  // Script blocking.
+  // Header.
+  [model setHeader:[self headerItem]
+      forSectionWithIdentifier:SectionIdentifierSettings];
+
+  // Script blocking entrypoint.
   [model addItem:[self scriptBlockingItem]
       toSectionWithIdentifier:SectionIdentifierSettings];
 }
@@ -78,6 +89,18 @@ NSString* const kScriptBlockingCellId = @"kScriptBlockingCellId";
   }
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForHeaderInSection:section];
+  if (SectionIdentifierSettings ==
+      [self.tableViewModel sectionIdentifierForSectionIndex:section]) {
+    TableViewLinkHeaderFooterView* linkView =
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    linkView.delegate = self;
+  }
+  return view;
+}
+
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
@@ -89,6 +112,18 @@ NSString* const kScriptBlockingCellId = @"kScriptBlockingCellId";
 }
 
 #pragma mark - Private
+
+// Creates and returns the header item with description and link.
+- (TableViewHeaderFooterItem*)headerItem {
+  TableViewLinkHeaderFooterItem* headerItem =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+  headerItem.text = l10n_util::GetNSString(
+      IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_IOS);
+  headerItem.urls =
+      @[ [[CrURL alloc] initWithGURL:GURL(kTrackingProtectionsHelpCenterURL)] ];
+  headerItem.accessibilityIdentifier = kTrackingProtectionsHeaderId;
+  return headerItem;
+}
 
 // Creates and returns the item for the script blocking entrypoint.
 - (TableViewMultiDetailTextItem*)scriptBlockingItem {

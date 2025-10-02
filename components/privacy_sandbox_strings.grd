@@ -1053,6 +1053,9 @@
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="Description for the 'Tracking protections' section. Explains that when the user visits a website, third-party sites might gather information about them through embedded content and services (e.g. images, ads, or text). Also provides a help center link for settings contained in the 'Tracking protections' section." formatter_data="android_java">
         Sites you visit may embed content and services from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK">&lt;link&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_IOS" desc="Description for the 'Tracking protections' section. Explains that when the user visits a website, third-party sites might gather information about them through embedded content and services (e.g. images, ads, or text). Also provides a help center link for settings contained in the 'Tracking protections' section." translateable="false">
+        Sites you visit may embed content and services from other sites (like images, ads, and text) which can be used to learn about you. Incognito provides features that can limit the information available to these embedded sites. Learn more about managing <ph name="BEGIN_LINK">BEGIN_LINK</ph>Incognito tracking protections<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_LABEL" desc="Label for the Block third-party cookies settings toggle." formatter_data="android_java">
         Block third-party cookies
       </message>

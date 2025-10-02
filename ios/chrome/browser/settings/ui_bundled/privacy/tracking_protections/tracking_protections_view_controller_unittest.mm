@@ -42,4 +42,6 @@ TEST_F(TrackingProtectionsViewControllerTest, VerifySections) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL),
       scriptBlockingItem.leadingDetailText);
+  CheckSectionHeaderWithId(IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_IOS,
+                           0);
 }

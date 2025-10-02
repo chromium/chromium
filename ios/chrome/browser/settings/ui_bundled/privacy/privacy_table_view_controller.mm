@@ -669,6 +669,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       [self.handler showPrivacyGuide];
       break;
     case ItemTypeTrackingProtections:
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.TrackingProtections.OpenedFromPrivacyPage"));
       [self.handler showTrackingProtections];
       break;
     default:

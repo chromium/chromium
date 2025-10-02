@@ -7,6 +7,9 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/script_blocking/script_blocking_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/tracking_protections_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @interface TrackingProtectionsCoordinator () <
@@ -40,6 +43,9 @@
   _viewController = [[TrackingProtectionsViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _viewController.presentationDelegate = self;
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  _viewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }

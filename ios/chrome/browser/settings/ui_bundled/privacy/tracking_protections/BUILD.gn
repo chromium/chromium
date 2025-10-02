@@ -12,13 +12,17 @@ source_set("tracking_protections") {
 
   deps = [
     "//components/strings",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/script_blocking",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",
+    "//url",
   ]
 }
 
