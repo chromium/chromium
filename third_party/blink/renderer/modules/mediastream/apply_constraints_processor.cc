@@ -176,6 +176,7 @@ void ApplyConstraintsProcessor::ProcessVideoContentRequest() {
   // TODO(crbug.com/768205): Support restarting the source even if there is more
   // than one track in the source.
   if (video_source_->NumTracks() > 1U) {
+    video_source_->RequestRefreshFrame();
     FinalizeVideoRequest();
     return;
   }
