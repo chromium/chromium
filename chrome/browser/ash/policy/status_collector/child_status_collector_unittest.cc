@@ -36,7 +36,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -66,6 +66,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_type.h"
@@ -175,9 +176,7 @@ bool GetFakeAndroidStatus(const std::string& status,
 
 class ChildStatusCollectorTest : public testing::Test {
  public:
-  ChildStatusCollectorTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
-        user_data_dir_override_(chrome::DIR_USER_DATA) {
+  ChildStatusCollectorTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
 
@@ -191,16 +190,12 @@ class ChildStatusCollectorTest : public testing::Test {
     ash::SeneschalClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     ash::LoginState::Initialize();
-
-    AddChildUser(AccountId::FromUserEmail("user0@gmail.com"));
   }
 
   ~ChildStatusCollectorTest() override {
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::SeneschalClient::Shutdown();
-    // |testing_profile_| must be destructed while ConciergeClient is alive.
-    testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
@@ -213,6 +208,13 @@ class ChildStatusCollectorTest : public testing::Test {
   ChildStatusCollectorTest& operator=(const ChildStatusCollectorTest&) = delete;
 
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    AddChildUser(
+        AccountId::FromUserEmailGaiaId("user0@gmail.com", GaiaId("123456789")));
+
     RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus));
 
     // Disable network reporting since it requires additional setup.
@@ -228,7 +230,12 @@ class ChildStatusCollectorTest : public testing::Test {
     FastForwardTo(start_time);
   }
 
-  void TearDown() override { status_collector_.reset(); }
+  void TearDown() override {
+    status_collector_.reset();
+
+    testing_profile_ = nullptr;
+    profile_manager_.reset();
+  }
 
  protected:
   // States tracked to calculate a child's active time.
@@ -241,11 +248,6 @@ class ChildStatusCollectorTest : public testing::Test {
     kLeaveSessionActive,
     kPeriodicCheckTriggered
   };
-
-  ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
 
   void SimulateStateChanges(DeviceStateTransitions* states, int len) {
     for (int i = 0; i < len; i++) {
@@ -338,27 +340,25 @@ class ChildStatusCollectorTest : public testing::Test {
     run_loop_->Quit();
   }
 
-  void AddUserWithTypeAndAffiliation(const AccountId& account_id,
-                                     user_manager::UserType user_type,
-                                     bool is_affiliated) {
+  bool AddChildUser(const AccountId& account_id) {
+    auto* user =
+        user_manager::TestHelper(user_manager_.Get()).AddChildUser(account_id);
+    if (!user) {
+      return false;
+    }
+
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
+    ash::ScopedAccountIdAnnotator account_id_annotator(
+        profile_manager_->profile_manager(), account_id);
+
     // Build a profile with profile name=account e-mail because our testing
     // version of GetDMTokenForProfile returns the profile name.
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
-    testing_profile_ = profile_builder.Build();
-
-    auto* user_manager = GetFakeUserManager();
-    auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_type, testing_profile_.get());
-    user_manager->UserLoggedIn(
-        user->GetAccountId(),
-        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
-  }
-
-  void AddChildUser(const AccountId& account_id) {
-    AddUserWithTypeAndAffiliation(account_id, user_manager::UserType::kChild,
-                                  false);
-    GetFakeUserManager()->set_current_user_child(true);
+    CHECK(!testing_profile_);
+    testing_profile_ =
+        profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
+    return true;
   }
 
   // Convenience method.
@@ -411,8 +411,12 @@ class ChildStatusCollectorTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::FakeOwnerSettingsService owner_settings_service_{
       scoped_testing_cros_settings_.device_settings(), nullptr};
-  std::unique_ptr<TestingProfile> testing_profile_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
   em::ChildStatusReportRequest child_status_;
   std::unique_ptr<TestingChildStatusCollector> status_collector_;
   base::ScopedPathOverride user_data_dir_override_;

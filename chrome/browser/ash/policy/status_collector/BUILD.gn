@@ -145,6 +145,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/dbus/session_manager",
