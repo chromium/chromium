@@ -210,8 +210,6 @@ unsigned InlineItem::SetBidiLevel(InlineItems& items,
                                   unsigned end_offset,
                                   UBiDiLevel level,
                                   wtf_size_t num_out_of_flow) {
-  DCHECK(!num_out_of_flow ||
-         RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled());
   InlineItem* item;
   for (;; ++index) {
     item = items[index];

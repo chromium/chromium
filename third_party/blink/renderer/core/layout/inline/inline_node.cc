@@ -1311,8 +1311,7 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
   String text_content_with_out_of_flow;
   wtf_size_t text_len = text_content.length();
   InlineItems& items = data->items;
-  if (data->HasFloatingOrOutOfFlowPositioned() &&
-      RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) [[unlikely]] {
+  if (data->HasFloatingOrOutOfFlowPositioned()) [[unlikely]] {
     StringBuilder builder;
     wtf_size_t last_offset = 0;
     for (const auto item_ptr : items) {
@@ -1355,7 +1354,6 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
     if (out_of_flow_items.empty()) {
       item_index = InlineItem::SetBidiLevel(items, item_index, end, level);
     } else {
-      DCHECK(RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled());
       wtf_size_t num_out_of_flow_in_this_run = 0;
       while (end > out_of_flow_items[out_of_flow_item_index].text_offset) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -1374,7 +1372,6 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   if (!out_of_flow_items.empty()) {
     // Check the BiDi level for OOF items are set correctly.
-    DCHECK(RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled());
     DCHECK_EQ(out_of_flow_item_index, out_of_flow_items.size() - 1);
     out_of_flow_item_index = 0;
     for (const auto item_ptr : items) {

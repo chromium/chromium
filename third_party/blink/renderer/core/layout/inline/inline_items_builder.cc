@@ -1285,14 +1285,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendBlockInInline(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
-  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
-    // Out-of-flow elements should be ignored for text processing.
-    // https://drafts.csswg.org/css-text-3/#text-encoding
-    AppendOpaque(InlineItem::kFloating, layout_object);
-  } else {
-    AppendOpaque(InlineItem::kFloating, uchar::kObjectReplacementCharacter,
-                 layout_object);
-  }
+  // Out-of-flow elements should be ignored for text processing.
+  // https://drafts.csswg.org/css-text-3/#text-encoding
+  AppendOpaque(InlineItem::kFloating, layout_object);
   has_floats_ = true;
   // Floats/exclusions require computing line heights, which is currently
   // skipped during the bisect. See `ParagraphLineBreaker`.
@@ -1303,14 +1298,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendFloating(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendOutOfFlowPositioned(
     LayoutObject* layout_object) {
-  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
-    // Out-of-flow elements should be ignored for text processing.
-    // https://drafts.csswg.org/css-text-3/#text-encoding
-    AppendOpaque(InlineItem::kOutOfFlowPositioned, layout_object);
-  } else {
-    AppendOpaque(InlineItem::kOutOfFlowPositioned,
-                 uchar::kObjectReplacementCharacter, layout_object);
-  }
+  // Out-of-flow elements should be ignored for text processing.
+  // https://drafts.csswg.org/css-text-3/#text-encoding
+  AppendOpaque(InlineItem::kOutOfFlowPositioned, layout_object);
   has_out_of_flow_positioned_ = true;
 }
 
