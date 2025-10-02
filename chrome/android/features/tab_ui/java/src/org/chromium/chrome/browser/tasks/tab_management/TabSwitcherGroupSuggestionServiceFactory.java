@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.recordGroupSuggestionHistogram;
+
 import android.app.Activity;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.SuggestionLifecycleObserverHandler;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionUiEvent;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 
@@ -68,22 +70,18 @@ public class TabSwitcherGroupSuggestionServiceFactory {
 
                     @Override
                     public void onSuggestionAccepted() {
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Accepted");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.ACCEPTED);
                     }
 
                     @Override
                     public void onSuggestionDismissed() {
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX
-                                        + ".Dismissed");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.REJECTED);
                     }
 
                     @Override
                     public void onSuggestionIgnored() {
                         messageService.dismissMessage(CallbackUtils.emptyRunnable());
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Ignored");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.IGNORED);
                     }
 
                     @Override
@@ -94,8 +92,7 @@ public class TabSwitcherGroupSuggestionServiceFactory {
 
                         tabListHighlighter.highlightTabs(new HashSet<>(tabIdsSortedByIndex));
                         messageService.addGroupMessageForTabs(tabIdsSortedByIndex, handler);
-                        RecordUserAction.record(
-                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Shown");
+                        recordGroupSuggestionHistogram(SuggestionUiEvent.SHOWN);
 
                         tabListCoordinator.scrollToPosition(lastCardIndex);
                     }
