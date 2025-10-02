@@ -1922,6 +1922,14 @@ bool RenderProcessHostImpl::Init() {
             ? metrics_memory_region_
             : nullptr,
         tracing_config_memory_region_, tracing_output_memory_region_);
+
+    TRACE_EVENT_BEGIN(
+        "ipc", "RenderProcessHostImpl.Channel.ProcessLaunchPauseToUnpause",
+        tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
+    TRACE_EVENT_BEGIN(
+        "ipc", "RenderProcessHostImpl.Channel.ProcessLaunchPauseToFlush",
+        tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
+    pause_channel_on_process_launch_time_ = base::TimeTicks::Now();
     channel_->Pause();
 
     // In single process mode, browser-side tracing and memory will cover the
@@ -2021,6 +2029,10 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
 
   // We start the Channel in a paused state. It will be briefly unpaused again
   // in Init() if applicable, before process launch is initiated.
+  TRACE_EVENT_BEGIN(
+      "ipc", "RenderProcessHostImpl.Channel.InitPauseToUnpauseTime",
+      tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
+  pause_channel_on_init_time_ = base::TimeTicks::Now();
   channel_->Pause();
 
   InitializeSharedMemoryRegionsOnceChannelIsUp();
@@ -5695,6 +5707,18 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     // yet to ensure that any initialization messages sent here (e.g., things
     // done in response to OnRenderProcessHostCreated; see below) preempt
     // already queued messages.
+    base::UmaHistogramMediumTimes(
+        "Mojo.Channel.ChannelInitPauseToUnpauseTime",
+        base::TimeTicks::Now() - pause_channel_on_init_time_);
+    base::UmaHistogramMediumTimes(
+        "Mojo.Channel.ProcessLaunchPauseToUnpauseTime",
+        base::TimeTicks::Now() - pause_channel_on_process_launch_time_);
+    // "RenderProcessHostImpl.Channel.InitPauseToUnpauseTime"
+    TRACE_EVENT_END("ipc", tracing_track_, ChromeTrackEvent::kRenderProcessHost,
+                    *this);
+    // "RenderProcessHostImpl.Channel.ProcessLaunchPauseToUnpauseTime"
+    TRACE_EVENT_END("ipc", tracing_track_, ChromeTrackEvent::kRenderProcessHost,
+                    *this);
     channel_->Unpause(false /* flush */);
 
     gpu_client_->SetClientPid(GetProcess().Pid());
@@ -5753,8 +5777,18 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   for (auto* observer : GetAllCreationObservers())
     observer->OnRenderProcessHostCreated(this);
 
-  if (child_process_launcher_)
+  if (child_process_launcher_) {
+    base::UmaHistogramMediumTimes(
+        "Mojo.Channel.ChannelInitPauseToFlushTime",
+        base::TimeTicks::Now() - pause_channel_on_init_time_);
+    base::UmaHistogramMediumTimes(
+        "Mojo.Channel.ProcessLaunchPauseToFlushTime",
+        base::TimeTicks::Now() - pause_channel_on_process_launch_time_);
+    // "RenderProcessHostImpl.Channel.ProcessLaunchPauseToFlush"
+    TRACE_EVENT_END("ipc", tracing_track_, ChromeTrackEvent::kRenderProcessHost,
+                    *this);
     channel_->Flush();
+  }
 
   if (IsReady()) {
     DCHECK(!sent_render_process_ready_);
