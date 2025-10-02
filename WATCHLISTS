@@ -1467,7 +1467,8 @@
                   '|components/ip_protection/' \
                   '|components/privacy_sandbox/masked_domain_list/' \
                   '|services/network/ip_protection/' \
-                  '|services/network/network_service_proxy_delegate',
+                  '|services/network/network_service_proxy_delegate' \
+                  '|third_party/anonymous_tokens/',
     },
     'ipcz': {
       'filepath': 'third_party/ipcz/',
