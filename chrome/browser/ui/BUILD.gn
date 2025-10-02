@@ -3782,11 +3782,6 @@ static_library("ui") {
       "views/frame/browser_native_widget.h",
       "views/frame/browser_native_widget_factory.cc",
       "views/frame/browser_native_widget_factory.h",
-
-      # TODO(https://crbug.com/443301212): Remove
-      # browser_non_client_frame_view.h a couple weeks after the refactor of
-      # BrowserNonClientFrameView => BrowserFrameView lands.
-      "views/frame/browser_non_client_frame_view.h",
       "views/frame/browser_root_view.cc",
       "views/frame/browser_root_view.h",
       "views/frame/browser_view.cc",
