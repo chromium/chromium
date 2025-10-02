@@ -368,7 +368,7 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
   EXPECT_CALL(client, ScrollToPage(-1)).Times(0);
   EXPECT_EQ(gfx::Size(343, 1664), engine.ApplyDocumentLayout(options));
 
-  EXPECT_CALL(client, ScrollToPage(-1)).Times(1);
+  EXPECT_CALL(client, ScrollToPage(-1));
   FinishWithPluginSizeUpdated(engine);
 }
 
@@ -383,7 +383,7 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
   EXPECT_EQ(gfx::Size(343, 1664), engine->ApplyDocumentLayout(options));
 
   options.RotatePagesClockwise();
-  EXPECT_CALL(client, ScrollToPage(-1)).Times(1);
+  EXPECT_CALL(client, ScrollToPage(-1));
   EXPECT_EQ(gfx::Size(343, 1463), engine->ApplyDocumentLayout(options));
   EXPECT_EQ(gfx::Size(343, 1463), engine->ApplyDocumentLayout(options));
 }

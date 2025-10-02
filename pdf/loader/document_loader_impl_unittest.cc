@@ -992,7 +992,7 @@ TEST_F(DocumentLoaderImplTest, ClientCompleteCallbacks) {
     client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
   Mock::VerifyAndClear(&client);
 
-  EXPECT_CALL(client, OnDocumentComplete()).Times(1);
+  EXPECT_CALL(client, OnDocumentComplete());
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
   Mock::VerifyAndClear(&client);
 }
@@ -1009,7 +1009,7 @@ TEST_F(DocumentLoaderImplTest, ClientCompleteCallbacksNoContentLength) {
   Mock::VerifyAndClear(&client);
 
   EXPECT_CALL(client, OnDocumentCanceled()).Times(0);
-  EXPECT_CALL(client, OnDocumentComplete()).Times(1);
+  EXPECT_CALL(client, OnDocumentComplete());
   client.full_page_loader_data()->CallReadCallback(0);
   Mock::VerifyAndClear(&client);
 }
@@ -1028,7 +1028,7 @@ TEST_F(DocumentLoaderImplTest, ClientCancelCallback) {
   Mock::VerifyAndClear(&client);
 
   EXPECT_CALL(client, OnDocumentComplete()).Times(0);
-  EXPECT_CALL(client, OnDocumentCanceled()).Times(1);
+  EXPECT_CALL(client, OnDocumentCanceled());
   client.full_page_loader_data()->CallReadCallback(-3);
   Mock::VerifyAndClear(&client);
 }
@@ -1040,15 +1040,15 @@ TEST_F(DocumentLoaderImplTest, NewDataAvailable) {
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");
 
-  EXPECT_CALL(client, OnNewDataReceived()).Times(1);
+  EXPECT_CALL(client, OnNewDataReceived());
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
   Mock::VerifyAndClear(&client);
 
-  EXPECT_CALL(client, OnNewDataReceived()).Times(1);
+  EXPECT_CALL(client, OnNewDataReceived());
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize - 100);
   Mock::VerifyAndClear(&client);
 
-  EXPECT_CALL(client, OnNewDataReceived()).Times(1);
+  EXPECT_CALL(client, OnNewDataReceived());
   client.full_page_loader_data()->CallReadCallback(100);
   Mock::VerifyAndClear(&client);
 }
@@ -1061,7 +1061,7 @@ TEST_F(DocumentLoaderImplTest, ClientPendingRequestCompleteFullLoader) {
 
   loader.RequestData(1000, 4000);
 
-  EXPECT_CALL(client, OnPendingRequestComplete()).Times(1);
+  EXPECT_CALL(client, OnPendingRequestComplete());
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
   Mock::VerifyAndClear(&client);
 }
@@ -1072,7 +1072,7 @@ TEST_F(DocumentLoaderImplTest, ClientPendingRequestCompletePartialLoader) {
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");
 
-  EXPECT_CALL(client, OnPendingRequestComplete()).Times(1);
+  EXPECT_CALL(client, OnPendingRequestComplete());
   loader.RequestData(15 * kDefaultRequestSize + 4000, 4000);
 
   // Always send initial data from FullPageLoader.
@@ -1089,7 +1089,7 @@ TEST_F(DocumentLoaderImplTest,
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");
 
-  EXPECT_CALL(client, OnPendingRequestComplete()).Times(1);
+  EXPECT_CALL(client, OnPendingRequestComplete());
   loader.RequestData(16 * kDefaultRequestSize + 4000, 4000);
   loader.RequestData(4 * kDefaultRequestSize + 4000, 4000);
 
@@ -1098,7 +1098,7 @@ TEST_F(DocumentLoaderImplTest,
 
   Mock::VerifyAndClear(&client);
 
-  EXPECT_CALL(client, OnPendingRequestComplete()).Times(1);
+  EXPECT_CALL(client, OnPendingRequestComplete());
   client.SendAllPartialData();
   Mock::VerifyAndClear(&client);
 }
