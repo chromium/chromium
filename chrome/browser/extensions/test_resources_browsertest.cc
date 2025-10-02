@@ -10,6 +10,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -20,6 +21,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_browsertest.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

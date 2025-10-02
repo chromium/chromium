@@ -39,6 +39,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace {
