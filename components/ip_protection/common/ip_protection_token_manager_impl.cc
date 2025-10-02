@@ -371,7 +371,9 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
   // Log the number of tokens successfully fetched.
   Telemetry().RecordTokenCountEvent(
       proxy_layer_, IpProtectionTokenCountEvent::kIssued, tokens->size());
-  Telemetry().TokenDemandDuringBatchGeneration(tokens_demanded_during_fetch_);
+  if (cache_has_been_filled_) {
+    Telemetry().TokenDemandDuringBatchGeneration(tokens_demanded_during_fetch_);
+  }
 
   cache.insert(cache.end(), std::make_move_iterator(tokens->begin()),
                std::make_move_iterator(tokens->end()));

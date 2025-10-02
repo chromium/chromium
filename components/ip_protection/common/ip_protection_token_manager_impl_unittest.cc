@@ -750,6 +750,8 @@ TEST_F(IpProtectionTokenManagerImplTest, Prefill) {
 
   // Histogram should have no samples for a prefill.
   histogram_tester_.ExpectTotalCount(kGeoChangeTokenPresence, 0);
+  histogram_tester_.ExpectTotalCount(kTokenDemandDuringBatchGenerationHistogram,
+                                     0);
 }
 
 // The cache will initiate a refill when it reaches the low-water mark.
@@ -1400,10 +1402,18 @@ TEST_F(IpProtectionTokenManagerImplTest, InitialTokensSkipsPrefill) {
 
 TEST_F(IpProtectionTokenManagerImplTest,
        TokenDemandDuringTryGetAuthTokensSuccess) {
-  // Begin fetching tokens.
+  // Fill the cache once.
+  ipp_proxy_a_token_fetcher_->ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
+
+  // Begin fetching tokens for a new geo.
   ipp_proxy_a_token_fetcher_->SetPauseTryGetAuthTokensForTesting(
       task_environment_.QuitClosure());
-  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kSunnyvaleGeoId);
   task_environment_.RunUntilQuit();
   ASSERT_TRUE(ipp_proxy_a_token_manager_->fetching_auth_tokens_for_testing());
 
@@ -1416,7 +1426,7 @@ TEST_F(IpProtectionTokenManagerImplTest,
   ipp_proxy_a_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
       task_environment_.QuitClosure());
   ipp_proxy_a_token_fetcher_->ResumeTryGetAuthTokensForTesting(
-      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo),
+      TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo),
       std::nullopt);
   task_environment_.RunUntilQuit();
   histogram_tester_.ExpectUniqueSample(
@@ -1425,10 +1435,18 @@ TEST_F(IpProtectionTokenManagerImplTest,
 
 TEST_F(IpProtectionTokenManagerImplTest,
        TokenDemandDuringTryGetAuthTokensError) {
-  // Begin fetching tokens.
+  // Fill the cache once.
+  ipp_proxy_a_token_fetcher_->ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
+
+  // Begin fetching tokens for a new geo.
   ipp_proxy_a_token_fetcher_->SetPauseTryGetAuthTokensForTesting(
       task_environment_.QuitClosure());
-  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kSunnyvaleGeoId);
   task_environment_.RunUntilQuit();
   ASSERT_TRUE(ipp_proxy_a_token_manager_->fetching_auth_tokens_for_testing());
 
