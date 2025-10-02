@@ -520,6 +520,13 @@ void TabContainerImpl::OnSplitContentsChanged(const std::vector<int>& indices) {
     Tab* const tab = GetTabAtModelIndex(index);
     CHECK(tab->split().has_value());
     tab->UpdateInsets();
+
+    // Tab shape may change due to reordering (eg. reversing split tabs). We
+    // should repaint the focus ring to ensure the highlight path matches the
+    // new shape.
+    if (auto* focus_ring = views::FocusRing::Get(tab)) {
+      focus_ring->SchedulePaint();
+    }
   }
 }
 
