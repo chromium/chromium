@@ -1971,7 +1971,40 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "ondevice_model_benchmark_tests",
+    name = "ondevice_model_benchmark_tests_gpu_submodel",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--benchmark_binary_dir=./",
+        "--backends=gpu",
+        "--use_submodel",
+    ],
+    binary = "ondevice_model_benchmark_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "ondevice_model_benchmark_tests_gpu_no_submodel",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--benchmark_binary_dir=./",
+        "--backends=gpu",
+    ],
+    binary = "ondevice_model_benchmark_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "ondevice_model_benchmark_tests_cpu_no_submodel",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--benchmark_binary_dir=./",
+        "--backends=cpu",
+    ],
+    binary = "ondevice_model_benchmark_tests",
 )
 
 targets.tests.isolated_script_test(

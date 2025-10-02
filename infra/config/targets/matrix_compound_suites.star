@@ -574,7 +574,9 @@ targets.legacy_matrix_compound_suite(
         "model_validation_tests_suite": None,
         "model_validation_tests_light_suite": None,
         "ondevice_stability_tests_suite": None,
-        "ondevice_model_benchmark_tests_suite": None,
+        "ondevice_model_benchmark_tests_gpu_submodel_suite": None,
+        "ondevice_model_benchmark_tests_gpu_no_submodel_suite": None,
+        "ondevice_model_benchmark_tests_cpu_no_submodel_suite": None,
     },
 )
 

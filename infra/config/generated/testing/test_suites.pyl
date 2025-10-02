@@ -2036,11 +2036,49 @@
       'views_unittests': {},
     },
 
-    'ondevice_model_benchmark_tests_suite': {
-      'ondevice_model_benchmark_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
+    'ondevice_model_benchmark_tests_cpu_no_submodel_suite': {
+      'ondevice_model_benchmark_tests_cpu_no_submodel': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--benchmark_binary_dir=./',
+            '--backends=cpu',
+          ],
+        },
+        'test': 'ondevice_model_benchmark_tests',
+      },
+    },
+
+    'ondevice_model_benchmark_tests_gpu_no_submodel_suite': {
+      'ondevice_model_benchmark_tests_gpu_no_submodel': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--benchmark_binary_dir=./',
+            '--backends=gpu',
+          ],
+        },
+        'test': 'ondevice_model_benchmark_tests',
+      },
+    },
+
+    'ondevice_model_benchmark_tests_gpu_submodel_suite': {
+      'ondevice_model_benchmark_tests_gpu_submodel': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--benchmark_binary_dir=./',
+            '--backends=gpu',
+            '--use_submodel',
+          ],
+        },
+        'test': 'ondevice_model_benchmark_tests',
       },
     },
 
@@ -2916,7 +2954,9 @@
     'optimization_guide_mac_script_tests': {
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
-      'ondevice_model_benchmark_tests_suite': {},
+      'ondevice_model_benchmark_tests_cpu_no_submodel_suite': {},
+      'ondevice_model_benchmark_tests_gpu_no_submodel_suite': {},
+      'ondevice_model_benchmark_tests_gpu_submodel_suite': {},
       'ondevice_stability_tests_suite': {},
     },
 

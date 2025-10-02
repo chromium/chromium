@@ -1303,13 +1303,23 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "ondevice_model_benchmark_tests_suite",
+    name = "ondevice_model_benchmark_tests_gpu_submodel_suite",
     tests = {
-        "ondevice_model_benchmark_tests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-        ),
+        "ondevice_model_benchmark_tests_gpu_submodel": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "ondevice_model_benchmark_tests_gpu_no_submodel_suite",
+    tests = {
+        "ondevice_model_benchmark_tests_gpu_no_submodel": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "ondevice_model_benchmark_tests_cpu_no_submodel_suite",
+    tests = {
+        "ondevice_model_benchmark_tests_cpu_no_submodel": targets.legacy_test_config(),
     },
 )
 
