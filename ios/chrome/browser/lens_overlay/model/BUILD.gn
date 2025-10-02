@@ -35,6 +35,7 @@ source_set("model") {
     "//ui/base",
   ]
   public_deps = [
+    ":bottom_sheet",
     ":configuration_factory",
     ":detent_state_header",
     ":detents_manager",
@@ -126,11 +127,27 @@ source_set("detents_manager") {
     "//base",
     "//ui/base",
   ]
-  public_deps = [ ":detent_state_header" ]
+  public_deps = [
+    ":bottom_sheet",
+    ":detent_state_header",
+  ]
 }
 
 source_set("detent_state_header") {
   sources = [ "lens_overlay_sheet_detent_state.h" ]
+}
+
+source_set("bottom_sheet") {
+  sources = [
+    "lens_overlay_bottom_sheet.h",
+    "lens_overlay_bottom_sheet_detent.h",
+    "lens_overlay_bottom_sheet_detent.mm",
+    "lens_overlay_bottom_sheet_detent_proxy.h",
+    "lens_overlay_bottom_sheet_detent_proxy.mm",
+    "lens_overlay_bottom_sheet_detents_interactor.h",
+    "lens_overlay_bottom_sheet_detents_interactor.mm",
+  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("metrics_recorder") {
