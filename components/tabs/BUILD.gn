@@ -6,6 +6,7 @@ import("//build/config/ui.gni")
 
 source_set("public") {
   sources = [
+    "public/direct_child_walker.h",
     "public/pinned_tab_collection.h",
     "public/split_tab_collection.h",
     "public/split_tab_data.h",
@@ -94,6 +95,7 @@ source_set("unit_tests") {
   # TODO(crbug.com/415965103): tab_collection_storage_unittest.cc
   # TODO(crbug.com/415965106): tab_iterator_unittest.cc
   sources = [
+    "public/direct_child_walker_unittest.cc",
     "public/supports_handles_unittest.cc",
     "public/tab_collection_observer_unittest.cc",
     "public/tab_handle_factory_unittest.cc",
