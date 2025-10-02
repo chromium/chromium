@@ -262,8 +262,9 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
       GURL url(url_spec);
       if (!url.is_valid())
         return false;
-      if (parts->path == url.path_piece())
+      if (parts->path == url.path()) {
         break;
+      }
       parts->path = url.GetPath();
     }
   }
@@ -438,7 +439,7 @@ ContentSettingsPattern ContentSettingsPattern::FromURL(const GURL& url) {
     } else {
       // Unsupported scheme
     }
-    if (local_url->port_piece().empty()) {
+    if (local_url->port().empty()) {
       if (local_url->SchemeIs(url::kHttpsScheme)) {
         builder.WithPort(std::string(GetDefaultPort(url::kHttpsScheme)));
       } else if (!is_non_wildcard_portless_scheme) {
@@ -463,8 +464,8 @@ ContentSettingsPattern ContentSettingsPattern::FromURLNoWildcard(
     builder.WithScheme(local_url->GetScheme())->WithPath(local_url->GetPath());
   } else {
     builder.WithScheme(local_url->GetScheme())->WithHost(local_url->GetHost());
-    if (local_url->port_piece().empty()) {
-      builder.WithPort(std::string(GetDefaultPort(local_url->scheme_piece())));
+    if (local_url->port().empty()) {
+      builder.WithPort(std::string(GetDefaultPort(local_url->scheme())));
     } else {
       builder.WithPort(local_url->GetPort());
     }
@@ -600,8 +601,7 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   }
 
   // Match the scheme part.
-  if (!parts_.is_scheme_wildcard &&
-      parts_.scheme != local_url->scheme_piece()) {
+  if (!parts_.is_scheme_wildcard && parts_.scheme != local_url->scheme()) {
     return false;
   }
 
@@ -611,13 +611,13 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   // filesystem:file:///temporary/... are equivalent.
   // TODO(msramek): The file scheme should not behave differently when nested
   // inside the filesystem scheme. Investigate and fix.
-  if (!parts_.is_scheme_wildcard &&
-      local_url->scheme_piece() == url::kFileScheme)
-    return parts_.is_path_wildcard || parts_.path == local_url->path_piece();
+  if (!parts_.is_scheme_wildcard && local_url->scheme() == url::kFileScheme) {
+    return parts_.is_path_wildcard || parts_.path == local_url->path();
+  }
 
   // Match the host part. Code is the same as url::TrimEndingDot but that method
   // unnecessarily creates a new std::string.
-  std::string_view trimmed_host = local_url->host_piece();
+  std::string_view trimmed_host = local_url->host();
   size_t len = trimmed_host.length();
   if (len > 1 && trimmed_host[len - 1] == '.') {
     trimmed_host.remove_suffix(1);
@@ -639,9 +639,9 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   // Use the default port if the port string is empty. GURL returns an empty
   // string if no port at all was specified or if the default port was
   // specified.
-  const std::string_view port = local_url->port_piece().empty()
-                                    ? GetDefaultPort(local_url->scheme_piece())
-                                    : local_url->port_piece();
+  const std::string_view port = local_url->port().empty()
+                                    ? GetDefaultPort(local_url->scheme())
+                                    : local_url->port();
   if (!parts_.is_port_wildcard && parts_.port != port) {
     return false;
   }

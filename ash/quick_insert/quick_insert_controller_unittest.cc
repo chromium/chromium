@@ -465,7 +465,7 @@ TEST_F(QuickInsertControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
 
   EXPECT_CALL(
       mock_new_window_delegate(),
-      OpenUrl(Property("host", &GURL::host_piece, "support.google.com"), _, _))
+      OpenUrl(Property("host", &GURL::host, "support.google.com"), _, _))
       .Times(1);
 
   const views::Button* button = feature_tour.learn_more_button_for_testing();

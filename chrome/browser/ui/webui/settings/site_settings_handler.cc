@@ -1521,7 +1521,7 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
       // multiple extensions/IWAs installed with the same name.
       display_name = l10n_util::GetStringFUTF8(
           IDS_SETTINGS_EXTENSION_OR_APP_DISPLAY_NAME, identity.name,
-          base::UTF8ToUTF16(origin_url.host_piece()));
+          base::UTF8ToUTF16(origin_url.host()));
     } else {
       display_name = base::UTF16ToUTF8(identity.name);
     }

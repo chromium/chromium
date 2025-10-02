@@ -271,7 +271,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
 }
 
 void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
-  is_request_url_scheme_http_ = url.scheme_piece() == url::kHttpScheme;
+  is_request_url_scheme_http_ = url.scheme() == url::kHttpScheme;
   request_url_private_ip_ = ParsePrivateIpFromUrl(url);
 
   is_potentially_trustworthy_same_origin_ =

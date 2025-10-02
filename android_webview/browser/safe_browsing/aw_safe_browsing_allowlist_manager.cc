@@ -96,11 +96,10 @@ void InsertRuleToTrie(const std::vector<std::string_view>& components,
 std::vector<std::string_view> SplitHost(const GURL& url) {
   std::vector<std::string_view> components;
   if (url.HostIsIPAddress()) {
-    components.push_back(url.host_piece());
+    components.push_back(url.host());
   } else {
-    components =
-        base::SplitStringPiece(url.host_piece(), ".", base::KEEP_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
+    components = base::SplitStringPiece(url.host(), ".", base::KEEP_WHITESPACE,
+                                        base::SPLIT_WANT_NONEMPTY);
   }
   DCHECK_GT(components.size(), 0u);
   return components;

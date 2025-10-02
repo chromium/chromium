@@ -417,7 +417,7 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
     // Check whether the app allows cleartext traffic to this host, and return
     // ERR_CLEARTEXT_NOT_PERMITTED if not.
     if (request->context()->check_cleartext_permitted() &&
-        !android::IsCleartextPermitted(url.host_piece())) {
+        !android::IsCleartextPermitted(url.host())) {
       RecordSTSHistograms(SSLUpgradeDecision::kNoUpgrade,
                           /*is_secure=*/false, request->load_flags());
       return std::make_unique<URLRequestErrorJob>(request,

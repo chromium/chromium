@@ -224,8 +224,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // block any requests to URLs in their extension origin.
   if (target_extension->is_hosted_app()) {
     std::string_view resource_root_relative_path =
-        url.path_piece().empty() ? std::string_view()
-                                 : url.path_piece().substr(1);
+        url.path().empty() ? std::string_view() : url.path().substr(1);
     if (!IconsInfo::GetIcons(target_extension)
              .ContainsPath(resource_root_relative_path)) {
       return content::NavigationThrottle::BLOCK_REQUEST;

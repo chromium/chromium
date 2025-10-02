@@ -40,7 +40,7 @@ bool FrameNavigationState::IsValidUrl(const GURL& url) {
       url::kFileSystemScheme,
   });
 
-  if (kValidSchemes.contains(url.scheme_piece())) {
+  if (kValidSchemes.contains(url.scheme())) {
     return true;
   }
 

@@ -82,7 +82,7 @@ void TestExtensionConsoleObserver::OnDidAddMessageToConsole(
     int32_t line_no,
     const std::u16string& source_id,
     const std::optional<std::u16string>& untrusted_stack_trace) {
-  if (source_frame->GetLastCommittedURL().host_piece() != extension_id_) {
+  if (source_frame->GetLastCommittedURL().host() != extension_id_) {
     return;
   }
   HandleConsoleMessage(message, log_level);

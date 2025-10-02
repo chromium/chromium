@@ -26,11 +26,11 @@ WebUIControllerFactory::CreateWebUIControllerForURL(content::WebUI* web_ui,
     return nullptr;
   }
 
-  if (url.host_piece() == WebUI::kHost) {
+  if (url.host() == WebUI::kHost) {
     return std::make_unique<WebUI>(web_ui);
   }
 
-  if (url.host_piece() == Browser::kHost) {
+  if (url.host() == Browser::kHost) {
     return std::make_unique<Browser>(web_ui);
   }
 
@@ -40,11 +40,11 @@ WebUIControllerFactory::CreateWebUIControllerForURL(content::WebUI* web_ui,
 content::WebUI::TypeID WebUIControllerFactory::GetWebUIType(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  if (url.SchemeIs(kChromeScheme) && url.host_piece() == WebUI::kHost) {
+  if (url.SchemeIs(kChromeScheme) && url.host() == WebUI::kHost) {
     return reinterpret_cast<content::WebUI::TypeID>(0x1);
   }
 
-  if (url.SchemeIs(kChromeScheme) && url.host_piece() == Browser::kHost) {
+  if (url.SchemeIs(kChromeScheme) && url.host() == Browser::kHost) {
     return reinterpret_cast<content::WebUI::TypeID>(0x2);
   }
 

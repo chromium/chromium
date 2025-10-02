@@ -47,7 +47,7 @@ GURL GetGoogleDoodleURL(const GURL& google_base_url) {
   replacements.SetPathStr("async/ddljson");
   // Make sure we use https rather than http (except for .cn).
   if (google_base_url.SchemeIs(url::kHttpScheme) &&
-      !base::EndsWith(google_base_url.host_piece(), ".cn",
+      !base::EndsWith(google_base_url.host(), ".cn",
                       base::CompareCase::INSENSITIVE_ASCII)) {
     replacements.SetSchemeStr(url::kHttpsScheme);
   }

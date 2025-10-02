@@ -317,7 +317,7 @@ TEST_F(GeolocationNetworkProviderTest, NonEmptyApiKey) {
   const GURL& request_url =
       test_url_loader_factory_.pending_requests()->back().request.url;
   EXPECT_TRUE(request_url.has_query());
-  EXPECT_TRUE(base::StartsWith(request_url.query_piece(), "key="));
+  EXPECT_TRUE(base::StartsWith(request_url.query(), "key="));
 }
 
 // Tests that, after StartProvider(), a TestURLFetcher can be extracted,

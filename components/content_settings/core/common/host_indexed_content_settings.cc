@@ -297,14 +297,14 @@ const RuleEntry* HostIndexedContentSettings::Find(
     const GURL& primary_url,
     const GURL& secondary_url) const {
   const RuleEntry* found = FindInHostToContentSettings(
-      primary_url, secondary_url, primary_host_indexed_,
-      primary_url.host_piece(), clock_, return_expired_settings_);
+      primary_url, secondary_url, primary_host_indexed_, primary_url.host(),
+      clock_, return_expired_settings_);
   if (found) {
     return found;
   }
   found = FindInHostToContentSettings(
-      primary_url, secondary_url, secondary_host_indexed_,
-      secondary_url.host_piece(), clock_, return_expired_settings_);
+      primary_url, secondary_url, secondary_host_indexed_, secondary_url.host(),
+      clock_, return_expired_settings_);
   if (found) {
     return found;
   }

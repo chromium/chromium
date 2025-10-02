@@ -1990,7 +1990,7 @@ bool MockIppRequests(bool cached,
                      std::optional<std::string_view> host_to_intercept,
                      content::URLLoaderInterceptor::RequestParams* params) {
   if (host_to_intercept.has_value() &&
-      host_to_intercept.value() != params->url_request.url.host_piece()) {
+      host_to_intercept.value() != params->url_request.url.host()) {
     return false;
   }
   // Create the mocked URLResponseHead to represent a proxied request.

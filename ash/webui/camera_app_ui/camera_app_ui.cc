@@ -63,7 +63,7 @@ void HandleLocalOverrideRequest(
                        base::FilePath file_path =
                            base::FilePath(kCCALocalOverrideDirectoryPath)
                                .Append(base::TrimString(
-                                   parsed_url.path_piece(), "/",
+                                   parsed_url.path(), "/",
                                    base::TrimPositions::TRIM_LEADING));
                        std::string result;
                        if (base::ReadFileToString(file_path, &result)) {

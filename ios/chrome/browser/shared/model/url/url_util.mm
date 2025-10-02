@@ -42,7 +42,7 @@ bool UrlHasChromeScheme(NSURL* url) {
 bool IsUrlNtp(const GURL& url) {
   // Check for "chrome://newtab".
   if (url.SchemeIs(kChromeUIScheme)) {
-    return url.host_piece() == kChromeUINewTabHost;
+    return url.host() == kChromeUINewTabHost;
   }
   // Check for "about://newtab/". Since "about:" scheme is not standardised,
   // check the full path.

@@ -73,7 +73,7 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
 
   // Android Chrome has its own Instant NTP page implementation.
   if (url.SchemeIs(chrome::kChromeNativeScheme) &&
-      url.host_piece() == chrome::kChromeUINewTabHost) {
+      url.host() == chrome::kChromeUINewTabHost) {
     return true;
   }
 

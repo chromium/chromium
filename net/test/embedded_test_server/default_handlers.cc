@@ -224,10 +224,10 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
   http_response->set_content_type("text/html");
   http_response->set_content(body);
 
-  if (request.GetURL().path_piece().ends_with("/nocache")) {
+  if (request.GetURL().path().ends_with("/nocache")) {
     http_response->AddCustomHeader("Cache-Control",
                                    "no-cache, no-store, must-revalidate");
-  } else if (request.GetURL().path_piece().ends_with("/cache")) {
+  } else if (request.GetURL().path().ends_with("/cache")) {
     http_response->AddCustomHeader("Cache-Control", "max-age=3600");
   }
 
@@ -649,8 +649,7 @@ std::unique_ptr<HttpResponse> HandleServerRedirect(HttpStatusCode redirect_code,
                                                    bool allow_cors,
                                                    const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
   RequestQuery query = ParseQuery(request_url);
 
   if (request.method == METHOD_OPTIONS) {
@@ -681,8 +680,7 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithCookie(
     HttpStatusCode redirect_code,
     const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
   RequestQuery query = ParseQuery(request_url);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
@@ -702,8 +700,7 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithSecureCookie(
     HttpStatusCode redirect_code,
     const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
   RequestQuery query = ParseQuery(request_url);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
@@ -753,8 +750,7 @@ std::unique_ptr<HttpResponse> HandleCrossSiteRedirect(
 // Returns a meta redirect to URL.
 std::unique_ptr<HttpResponse> HandleClientRedirect(const HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_content_type("text/html");

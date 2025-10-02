@@ -166,7 +166,7 @@ void HistoryClustersSidePanelUI::DidFinishNavigation(
     return;
   }
 
-  if (navigation_handle->GetURL().host_piece() !=
+  if (navigation_handle->GetURL().host() !=
       chrome::kChromeUIHistoryClustersSidePanelHost) {
     return;
   }

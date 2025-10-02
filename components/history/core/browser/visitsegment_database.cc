@@ -166,7 +166,7 @@ std::string VisitSegmentDatabase::ComputeSegmentName(const GURL& url) {
   // TODO(brettw) this should probably use the registry controlled
   // domains service.
   GURL::Replacements r;
-  std::string_view host = url.host_piece();
+  std::string_view host = url.host();
 
   // Strip various common prefixes in order to group the resulting hostnames
   // together and avoid duplicates.

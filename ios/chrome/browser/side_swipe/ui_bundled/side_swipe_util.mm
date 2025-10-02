@@ -42,7 +42,7 @@ BOOL UseNativeSwipe(web::NavigationItem* item) {
   }
 
   GURL url(item->GetURL());
-  if (UrlHasChromeScheme(url) && url.host_piece() == kChromeUICrashHost) {
+  if (UrlHasChromeScheme(url) && url.host() == kChromeUICrashHost) {
     return YES;
   }
 

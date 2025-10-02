@@ -412,7 +412,7 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
 
   std::optional<std::string_view> query;
   if (url.has_query()) {
-    query = url.query_piece();
+    query = url.query();
   }
 
   // Using lower_bound() followed by emplace_hint() allows us to avoid

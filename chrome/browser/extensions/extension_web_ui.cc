@@ -183,8 +183,9 @@ void UnregisterAndReplaceOverrideForWebContents(const std::string& page,
     return;
 
   const GURL& url = web_contents->GetLastCommittedURL();
-  if (!url.SchemeIs(content::kChromeUIScheme) || url.host_piece() != page)
+  if (!url.SchemeIs(content::kChromeUIScheme) || url.host() != page) {
     return;
+  }
 
   // Don't use Reload() since |url| isn't the same as the internal URL that
   // NavigationController has.
@@ -365,7 +366,7 @@ std::vector<GURL> GetOverridesForChromeURL(
       profile->GetPrefs()->GetDict(ExtensionWebUI::kExtensionURLOverrides);
 
   const base::Value::List* url_list =
-      overrides.FindListByDottedPath(url.host_piece());
+      overrides.FindListByDottedPath(url.host());
   if (!url_list)
     return {};  // No overrides present for this host.
 

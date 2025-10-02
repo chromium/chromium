@@ -112,7 +112,7 @@ GURL GetEditContactUrl(std::string_view resource_name) {
   GURL edit_contact_url =
       GetGoogleContactsBaseUrl().ReplaceComponents(replacements);
 
-  if (!edit_contact_url.path_piece().starts_with(kPersonContactsWebUiPath)) {
+  if (!edit_contact_url.path().starts_with(kPersonContactsWebUiPath)) {
     // The resulting URL's path should always start with the given Contacts web
     // UI path.
     // This may be indicative of a path traversal attack.

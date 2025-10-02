@@ -201,7 +201,7 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
     return false;
   }
 
-  std::string_view host = url.host_piece();
+  std::string_view host = url.host();
 
   while (base::EndsWith(host, ".")) {
     host.remove_suffix(1u);
@@ -374,7 +374,7 @@ bool WebRequestPermissions::HideRequest(
       extension_urls::IsBlocklistUpdateUrl(url) ||
       extension_urls::IsSafeBrowsingUrl(url) ||
       (url.DomainIs("chrome.google.com") &&
-       base::StartsWith(url.path_piece(), "/webstore",
+       base::StartsWith(url.path(), "/webstore",
                         base::CompareCase::SENSITIVE)) ||
       url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().GetHost())) {
     return true;

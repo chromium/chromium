@@ -870,8 +870,8 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
 
   // End index-0 page visit; start index-1 page visit.
   ASSERT_TRUE(NavigateToURL(web_contents, url1));
-  const GURL iframe_1p_cookie_url = embedded_https_test_server().GetURL(
-      url1.host_piece(), "/set-cookie?foo=bar");
+  const GURL iframe_1p_cookie_url =
+      embedded_https_test_server().GetURL(url1.host(), "/set-cookie?foo=bar");
   ASSERT_TRUE(
       NavigateIframeToURL(web_contents, "test_iframe", iframe_1p_cookie_url));
   // End index-1 page visit; start index-2 page visit.

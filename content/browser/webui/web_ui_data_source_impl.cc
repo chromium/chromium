@@ -407,7 +407,7 @@ void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
 }
 
 std::string WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
-  const std::string_view file_path = url.path_piece();
+  const std::string_view file_path = url.path();
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/css";
@@ -521,7 +521,7 @@ bool WebUIDataSourceImpl::ShouldReplaceI18nInJS() const {
 }
 
 int WebUIDataSourceImpl::URLToIdrOrDefault(const GURL& url) const {
-  const std::string path(url.path_piece().substr(1));
+  const std::string path(url.path().substr(1));
   auto it = path_to_idr_map_.find(path);
   if (it != path_to_idr_map_.end())
     return it->second;

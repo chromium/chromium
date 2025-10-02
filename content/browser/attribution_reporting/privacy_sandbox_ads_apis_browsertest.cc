@@ -87,8 +87,7 @@ class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
         std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
             [&](URLLoaderInterceptor::RequestParams* params) -> bool {
               URLLoaderInterceptor::WriteResponse(
-                  base::StrCat(
-                      {kBaseDataDir, params->url_request.url.path_piece()}),
+                  base::StrCat({kBaseDataDir, params->url_request.url.path()}),
                   params->client.get());
 
               return true;

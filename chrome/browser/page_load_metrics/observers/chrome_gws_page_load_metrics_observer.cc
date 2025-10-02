@@ -26,8 +26,7 @@ bool ChromeGWSPageLoadMetricsObserver::IsFromNewTabPage(
   auto origin = start_instance->GetSiteURL();
 
   GURL ntp_url(chrome::kChromeUINewTabPageURL);
-  return ntp_url.scheme_piece() == origin.scheme_piece() &&
-         ntp_url.host_piece() == origin.host_piece();
+  return ntp_url.scheme() == origin.scheme() && ntp_url.host() == origin.host();
 }
 
 bool ChromeGWSPageLoadMetricsObserver::IsBrowserStartupComplete() {

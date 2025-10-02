@@ -356,7 +356,7 @@ bool GURL::SchemeIs(std::string_view lower_ascii_scheme) const {
 
   if (!has_scheme())
     return lower_ascii_scheme.empty();
-  return scheme_piece() == lower_ascii_scheme;
+  return scheme() == lower_ascii_scheme;
 }
 
 bool GURL::SchemeIsHTTPOrHTTPS() const {
@@ -370,7 +370,7 @@ bool GURL::SchemeIsWSOrWSS() const {
 bool GURL::SchemeIsCryptographic() const {
   if (!has_scheme())
     return false;
-  return SchemeIsCryptographic(scheme_piece());
+  return SchemeIsCryptographic(scheme());
 }
 
 bool GURL::SchemeIsCryptographic(std::string_view lower_ascii_scheme) {
@@ -459,7 +459,7 @@ std::string_view GURL::GetContentPiece() const {
 }
 
 bool GURL::HostIsIPAddress() const {
-  return is_valid_ && url::HostIsIPAddress(host_piece());
+  return is_valid_ && url::HostIsIPAddress(host());
 }
 
 const GURL& GURL::EmptyGURL() {
@@ -474,7 +474,7 @@ bool GURL::DomainIs(std::string_view canonical_domain) const {
   // FileSystem URLs have empty host_piece, so check this first.
   if (inner_url_ && SchemeIsFileSystem())
     return inner_url_->DomainIs(canonical_domain);
-  return url::DomainIs(host_piece(), canonical_domain);
+  return url::DomainIs(host(), canonical_domain);
 }
 
 bool GURL::EqualsIgnoringRef(const GURL& other) const {
@@ -505,7 +505,7 @@ bool GURL::IsAboutUrl(std::string_view allowed_path) const {
   if (has_host() || has_username() || has_password() || has_port())
     return false;
 
-  return IsAboutPath(path_piece(), allowed_path);
+  return IsAboutPath(path(), allowed_path);
 }
 
 // static

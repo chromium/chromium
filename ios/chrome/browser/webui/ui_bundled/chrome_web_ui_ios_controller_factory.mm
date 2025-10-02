@@ -169,7 +169,7 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   if (url_host == kChromeUIPrefsInternalsHost) {
     return &NewWebUIIOS<PrefsInternalsUI>;
   }
-  if (url.host_piece() == kChromeUIProfileInternalsHost) {
+  if (url.host() == kChromeUIProfileInternalsHost) {
     return InternalDebugPagesEnabled()
                ? &NewWebUIIOS<ProfileInternalsUI>
                : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
@@ -177,7 +177,7 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   if (url_host == kChromeUISignInInternalsHost) {
     return &NewWebUIIOS<SignInInternalsUIIOS>;
   }
-  if (url.host_piece() == kChromeUITranslateInternalsHost) {
+  if (url.host() == kChromeUITranslateInternalsHost) {
     return &NewWebUIIOS<TranslateInternalsUI>;
   }
   if (url_host == kChromeUIURLKeyedMetricsHost) {

@@ -114,8 +114,7 @@ class TpcdTrialBrowserTest : public PlatformBrowserTest {
 
     if (path.find("tpcd/") == 0) {
       content::URLLoaderInterceptor::WriteResponse(
-          base::StrCat(
-              {"chrome/test/data/", params->url_request.url.path_piece()}),
+          base::StrCat({"chrome/test/data/", params->url_request.url.path()}),
           params->client.get());
       return true;
     }

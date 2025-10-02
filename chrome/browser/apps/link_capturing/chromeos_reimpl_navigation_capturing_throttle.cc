@@ -214,7 +214,7 @@ bool IsGoogleRedirectorUrl(const GURL& url) {
     return false;
   }
 
-  return url.path_piece() == "/url" && url.has_query();
+  return url.path() == "/url" && url.has_query();
 }
 
 // If the previous url and current url are not the same (AKA a redirection),

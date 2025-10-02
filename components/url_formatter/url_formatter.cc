@@ -800,7 +800,7 @@ bool CanStripTrailingSlash(const GURL& url) {
   // Omit the path only for standard, non-file URLs with nothing but "/" after
   // the hostname.
   return url.IsStandard() && !url.SchemeIsFile() && !url.SchemeIsFileSystem() &&
-         !url.has_query() && !url.has_ref() && url.path_piece() == "/";
+         !url.has_query() && !url.has_ref() && url.path() == "/";
 }
 
 void AppendFormattedHost(const GURL& url, std::u16string* output) {

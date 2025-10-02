@@ -137,7 +137,7 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
   }
 
   if (origin.SchemeIs(content::kChromeDevToolsScheme) &&
-      origin.host_piece() == chrome::kChromeUIDevToolsHost) {
+      origin.host() == chrome::kChromeUIDevToolsHost) {
     return true;
   }
 

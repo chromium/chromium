@@ -94,7 +94,7 @@ bool IsURLExemptFromAnalysis(const GURL& url) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (url.SchemeIs(extensions::kExtensionScheme) &&
-      extension_misc::IsSystemUIApp(url.host_piece())) {
+      extension_misc::IsSystemUIApp(url.host())) {
     return true;
   }
 #endif

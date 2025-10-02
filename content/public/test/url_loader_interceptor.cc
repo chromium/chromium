@@ -406,7 +406,7 @@ URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
 
         // Remove the leading slash from the url path, so that it can be
         // treated as a relative path by base::FilePath::AppendASCII.
-        auto path = base::TrimString(params->url_request.url.path_piece(), "/",
+        auto path = base::TrimString(params->url_request.url.path(), "/",
                                      base::TRIM_LEADING);
 
         // URLLoaderInterceptor insists that all files exist unless

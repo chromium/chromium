@@ -91,8 +91,7 @@ void ImageSource::StartDataRequestAfterPathExists(
 
 std::string ImageSource::GetMimeType(const GURL& url) {
   std::string mime_type;
-  net::GetWellKnownMimeTypeFromFile(base::FilePath(url.path_piece()),
-                                    &mime_type);
+  net::GetWellKnownMimeTypeFromFile(base::FilePath(url.path()), &mime_type);
   return mime_type;
 }
 

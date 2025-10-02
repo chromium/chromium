@@ -1086,12 +1086,11 @@ void AutocompleteMatch::GetMatchComponents(
 
   size_t host_pos = parsed.CountCharactersBefore(url::Parsed::HOST, false);
 
-  bool has_subdomain =
-      domain_length > 0 && domain_length < url.host_piece().length();
+  bool has_subdomain = domain_length > 0 && domain_length < url.host().length();
   // Subtract an extra character from the domain start to exclude the '.'
   // delimiter between subdomain and domain.
   size_t subdomain_end =
-      has_subdomain ? host_pos + url.host_piece().length() - domain_length - 1
+      has_subdomain ? host_pos + url.host().length() - domain_length - 1
                     : std::string::npos;
 
   for (auto& position : match_positions) {
@@ -1146,7 +1145,7 @@ void AutocompleteMatch::LogSearchEngineUsed(
   // no longer necessary to track these additional search engine types.
   if (search_engine_type == SEARCH_ENGINE_OTHER) {
     if (match.destination_url.is_valid() &&
-        url::DomainIs(match.destination_url.host_piece(), "siteadvisor.com")) {
+        url::DomainIs(match.destination_url.host(), "siteadvisor.com")) {
       search_engine_type = SEARCH_ENGINE_MCAFEE;
     }
   }

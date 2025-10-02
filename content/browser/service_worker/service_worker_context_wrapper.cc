@@ -1989,7 +1989,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     // register the URLDataSource directly.
     if (base::FeatureList::IsEnabled(
             features::kEnableServiceWorkersForChromeScheme) &&
-        scope.scheme_piece() == kChromeUIScheme) {
+        scope.scheme() == kChromeUIScheme) {
       config->RegisterURLDataSource(browser_context());
       static_cast<blink::PendingURLLoaderFactoryBundle*>(
           loader_factory_bundle_info.get())
@@ -1999,7 +1999,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
                                         base::flat_set<std::string>()));
     } else if (base::FeatureList::IsEnabled(
                    features::kEnableServiceWorkersForChromeUntrusted) &&
-               scope.scheme_piece() == kChromeUIUntrustedScheme) {
+               scope.scheme() == kChromeUIUntrustedScheme) {
       config->RegisterURLDataSource(browser_context());
       static_cast<blink::PendingURLLoaderFactoryBundle*>(
           loader_factory_bundle_info.get())

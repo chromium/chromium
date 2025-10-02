@@ -959,7 +959,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetVisibleURL()
-                .host_piece();
+                .host();
           },
           chrome::kChromeUINewTabHost));
 }
@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetVisibleURL()
-                .host_piece();
+                .host();
           },
           chrome::kChromeUINewTabHost));
 }

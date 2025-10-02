@@ -386,7 +386,7 @@ bool IsGoogleAiModeUrl(GURL url) {
   // 2. `url` is a Google URL. This check is done 2nd because it's slower (0.5us
   //    v 5us).
 
-  std::string_view query = url.query_piece();
+  std::string_view query = url.query();
   url::Component query_iterator(0, query.length());
   url::Component key, value;
   bool udm_50 = false;
@@ -539,8 +539,7 @@ class TemplateURLService::PreLoadingProviders {
     return GetTemplateURLForSelector(base::BindRepeating(
         [](const std::string& host, const SearchTermsData* search_terms_data,
            const TemplateURL& turl) {
-          return turl.GenerateSearchURL(*search_terms_data).host_piece() ==
-                 host;
+          return turl.GenerateSearchURL(*search_terms_data).host() == host;
         },
         host, &search_terms_data));
   }
@@ -1762,7 +1761,7 @@ void TemplateURLService::OnWebDataServiceRequestDone(
     if (engine_type == SEARCH_ENGINE_OTHER) {
       GURL search_url = GURL(default_search_provider_->url());
       if (search_url.is_valid() &&
-          url::DomainIs(search_url.host_piece(), "siteadvisor.com")) {
+          url::DomainIs(search_url.host(), "siteadvisor.com")) {
         engine_type = SEARCH_ENGINE_MCAFEE;
       }
     }

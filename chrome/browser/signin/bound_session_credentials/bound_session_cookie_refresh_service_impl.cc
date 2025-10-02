@@ -393,7 +393,7 @@ void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
       switches::kEnableBoundSessionCredentialsExclusiveRegistrationPath.Get();
   if (!exclusive_registration_path.empty() &&
       !base::EqualsCaseInsensitiveASCII(
-          registration_params.registration_endpoint().path_piece(),
+          registration_params.registration_endpoint().path(),
           exclusive_registration_path)) {
     return;
   }

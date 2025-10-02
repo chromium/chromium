@@ -180,8 +180,8 @@ SchemeHostPort::SchemeHostPort(const GURL& url) {
   if (!url.is_valid())
     return;
 
-  std::string_view scheme = url.scheme_piece();
-  std::string_view host = url.host_piece();
+  std::string_view scheme = url.scheme();
+  std::string_view host = url.host();
 
   // A valid GURL never returns PORT_INVALID.
   int port = url.EffectiveIntPort();

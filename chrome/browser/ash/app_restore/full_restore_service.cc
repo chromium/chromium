@@ -711,7 +711,7 @@ void FullRestoreService::OnSessionInformationReceived(
         const GURL& virtual_url = entry.virtual_url();
         if (tab_title.empty()) {
           if (url.SchemeIs(content::kChromeUIScheme)) {
-            tab_title = url.host_piece();
+            tab_title = url.host();
           } else {
             tab_title = base::UTF16ToUTF8(url_formatter::FormatUrl(
                 virtual_url.is_empty() ? url : virtual_url,

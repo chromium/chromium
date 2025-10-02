@@ -94,7 +94,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
   if (should_keep_param)
     param_value = base::EscapeQueryParamValue(value.value(), true);
 
-  const std::string_view input = url.query_piece();
+  const std::string_view input = url.query();
   url::Component cursor(0, input.size());
   std::string output;
   url::Component key_range, value_range;
@@ -292,7 +292,7 @@ std::string TrimEndingDot(std::string_view host) {
 }
 
 std::string GetHostOrSpecFromURL(const GURL& url) {
-  return url.has_host() ? TrimEndingDot(url.host_piece()) : url.spec();
+  return url.has_host() ? TrimEndingDot(url.host()) : url.spec();
 }
 
 std::string GetSuperdomain(std::string_view domain) {
@@ -547,7 +547,7 @@ void GetIdentityFromURL(const GURL& url,
 }
 
 bool HasGoogleHost(const GURL& url) {
-  return IsGoogleHost(url.host_piece());
+  return IsGoogleHost(url.host());
 }
 
 bool IsGoogleHost(std::string_view host) {

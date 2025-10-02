@@ -172,7 +172,7 @@ NtpMicrosoftAuthResponseCaptureNavigationThrottle::
 void NtpMicrosoftAuthResponseCaptureNavigationThrottle::
     RedirectNavigationHandleToAboutBlank() {
   GURL::Replacements addRef;
-  addRef.SetRefStr(navigation_handle()->GetURL().ref_piece());
+  addRef.SetRefStr(navigation_handle()->GetURL().ref());
 
   auto* web_contents = navigation_handle()->GetWebContents();
   if (!web_contents->HasOpener() && !navigation_handle()->GetParentFrame()) {

@@ -139,7 +139,7 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 
     url::RawCanonOutputT<char16_t> unescaped;
     url::DecodeURLEscapeSequences(
-        url.path_piece(), url::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
+        url.path(), url::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
 
     const base::FilePath path(base::UTF16ToUTF8(unescaped.view()));
     filenames.emplace_back(path, path.BaseName());

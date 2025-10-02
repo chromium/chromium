@@ -10589,7 +10589,7 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
       case ResponseKind::kRedirect: {
         http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
         std::string dest =
-            base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+            base::UnescapeBinaryURLComponent(request.GetURL().query());
         http_response->AddCustomHeader("Location", dest);
         break;
       }

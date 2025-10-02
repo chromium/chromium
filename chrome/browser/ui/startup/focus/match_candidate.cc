@@ -70,7 +70,7 @@ GURL CanonicalizeUrl(const GURL& url) {
   std::string spec = url.spec();
 
   // For root paths (just domain), ensure consistent trailing slash.
-  if (url.path_piece().length() <= 1) {
+  if (url.path().length() <= 1) {
     // Root path: ensure it ends with /
     if (!base::EndsWith(spec, "/", base::CompareCase::SENSITIVE)) {
       spec += "/";

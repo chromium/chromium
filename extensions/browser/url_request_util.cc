@@ -45,7 +45,7 @@ bool AllowCrossRendererResourceLoad(
     const GURL& upstream_url,
     bool* allowed) {
   const GURL& url = request.url;
-  std::string_view resource_path = url.path_piece();
+  std::string_view resource_path = url.path();
 
   // This logic is performed for main frame requests in
   // ExtensionNavigationThrottle::WillStartRequest.
@@ -88,8 +88,7 @@ bool AllowCrossRendererResourceLoad(
   // some extensions want to be able to do things like create their own
   // launchers.
   std::string_view resource_root_relative_path =
-      url.path_piece().empty() ? std::string_view()
-                               : url.path_piece().substr(1);
+      url.path().empty() ? std::string_view() : url.path().substr(1);
   if (extension->is_hosted_app() &&
       !IconsInfo::GetIcons(extension)
            .ContainsPath(resource_root_relative_path)) {

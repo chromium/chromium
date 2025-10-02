@@ -146,7 +146,7 @@ class SecurityReportingBrowserTest
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     const auto& request_url = request.GetURL();
-    if (request_url.path_piece() != "/devicemanagement/data/api") {
+    if (request_url.path() != "/devicemanagement/data/api") {
       SCOPED_TRACE("Not a DM server request.");
       return nullptr;
     }

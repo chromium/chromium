@@ -1105,7 +1105,7 @@ TEST(KURLTest, InvalidKURLToGURL) {
   // GURL exposes host for invalid hosts. The invalid percent escape
   // becomes an escaped percent sign (%25), and the invalid UTF-8
   // character becomes REPLACEMENT CHARACTER' (U+FFFD) encoded as UTF-8.
-  EXPECT_EQ(gurl.host_piece(), "%25t%EF%BF%BD");
+  EXPECT_EQ(gurl.host(), "%25t%EF%BF%BD");
 }
 
 TEST(KURLTest, IPv4EmbeddedIPv6Address) {

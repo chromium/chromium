@@ -183,7 +183,7 @@ std::optional<QuicServerIdAndPrivacyMode> QuicServerIdFromString(
     return std::nullopt;
   }
   std::optional<PrivacyMode> privacy_mode =
-      PrivacyModeFromPathString(url.path_piece());
+      PrivacyModeFromPathString(url.path());
   if (!privacy_mode.has_value()) {
     return std::nullopt;
   }

@@ -53,7 +53,7 @@ void ValidatePendingAdComponentsMap(
   ASSERT_EQ(blink::MaxAdAuctionAdComponents(), ad_component_urns.size());
   for (size_t i = 0; i < ad_component_urns.size(); ++i) {
     // All entries in `ad_component_urns` should be distinct URNs.
-    EXPECT_EQ(url::kUrnScheme, ad_component_urns[i].scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, ad_component_urns[i].scheme());
     for (size_t j = 0; j < i; ++j) {
       EXPECT_NE(ad_component_urns[j], ad_component_urns[i]);
     }

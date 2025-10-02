@@ -183,7 +183,7 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
                                                                      profile);
   // We already know that the extension is the primary NTP controller.
   DCHECK(!possible_rewrites.empty());
-  DCHECK_EQ(extension->url().host_piece(), possible_rewrites[0].host_piece())
+  DCHECK_EQ(extension->url().host(), possible_rewrites[0].host())
       << "Unexpected NTP URL: " << possible_rewrites[0];
 
   // Find whether the default NTP would take over if the extension were to be

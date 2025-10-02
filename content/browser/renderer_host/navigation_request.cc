@@ -5010,9 +5010,8 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
   // TODO(crbug.com/399783247): Remove
   if (base::FeatureList::IsEnabled(
           features::kHoldbackDebugReasonStringRemoval)) {
-    SCOPED_CRASH_KEY_STRING256(
-        "Bug1454273", "base_host_for_data_url",
-        common_params_->base_url_for_data_url.host_piece());
+    SCOPED_CRASH_KEY_STRING256("Bug1454273", "base_host_for_data_url",
+                               common_params_->base_url_for_data_url.host());
     SCOPED_CRASH_KEY_STRING1024("Bug1454273", "rfh_selected_reason",
                                 rfh_selected_reason);
   }

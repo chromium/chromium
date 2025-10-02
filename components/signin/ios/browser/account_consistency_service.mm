@@ -346,9 +346,8 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
 
   const bool is_gaia = gaia::HasGaiaSchemeHostPort(url);
   if (is_gaia) {
-    base::UmaHistogramEnumeration(
-        "Signin.GaiaPageVisited",
-        DetermineGaiaPageForMetrics(url.path_piece()));
+    base::UmaHistogramEnumeration("Signin.GaiaPageVisited",
+                                  DetermineGaiaPageForMetrics(url.path()));
   }
 
   if (delegate_ && show_consistency_web_signin_ && is_gaia) {

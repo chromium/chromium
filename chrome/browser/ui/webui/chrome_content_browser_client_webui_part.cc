@@ -76,7 +76,7 @@ void ChromeContentBrowserClientWebUiPart::OverrideWebPreferences(
   // Set some non-font prefs for webui tabstrip. The tabstrip renderer is never
   // navigated to or from, so we don't need to replicate this logic in
   // OverrideWebPreferencesAfterNavigation.
-  if (url.host_piece() == chrome::kChromeUITabStripHost) {
+  if (url.host() == chrome::kChromeUITabStripHost) {
     web_prefs->touch_drag_drop_enabled = true;
     web_prefs->touch_dragend_context_menu = true;
   }

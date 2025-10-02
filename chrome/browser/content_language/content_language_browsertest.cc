@@ -198,7 +198,7 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
       return false;
 
     std::string path = "chrome/test/data/content_language";
-    path.append(static_cast<std::string>(params->url_request.url.path_piece()));
+    path.append(static_cast<std::string>(params->url_request.url.path()));
 
     // build response header and body for xml html lang tag value
     if (params->url_request.url.GetPath() == "/xml_html_language.html") {

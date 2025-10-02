@@ -70,7 +70,7 @@ std::optional<GURL> ConvertToDataUrl(std::string_view media_type,
 bool ShouldSkipLinkClipboardInsertion(const GURL& url_of_target) {
   // Google Slides does not correctly handle pasting of links.
   return url_of_target.DomainIs("docs.google.com") &&
-         url_of_target.path_piece().starts_with("/presentation/");
+         url_of_target.path().starts_with("/presentation/");
 }
 
 // Some websites such as https://x.com use a `contenteditable` text field, but

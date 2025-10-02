@@ -4497,7 +4497,7 @@ class SameOriginUaReductionBrowserTest : public UaReductionBrowserTest {
       return false;
 
     std::string path = "chrome/test/data/client_hints";
-    path.append(static_cast<std::string>(params->url_request.url.path_piece()));
+    path.append(static_cast<std::string>(params->url_request.url.path()));
 
     if (params->url_request.url.GetPath() == "/basic.html") {
       URLLoaderInterceptor::WriteResponse(path, params->client.get());
@@ -5008,7 +5008,7 @@ class RedirectUaReductionBrowserTest : public InProcessBrowserTest {
 
     std::string resource_path = "chrome/test/data/client_hints";
     resource_path.append(
-        static_cast<std::string>(params->url_request.url.path_piece()));
+        static_cast<std::string>(params->url_request.url.path()));
     URLLoaderInterceptor::WriteResponse(resource_path, params->client.get());
     return true;
   }

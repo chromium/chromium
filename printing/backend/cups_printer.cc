@@ -51,7 +51,7 @@ class CupsPrinterImpl : public CupsPrinter {
     // point
     if (printer_uri) {
       printer_uri_ = printer_uri;
-      resource_path_ = std::string(GURL(printer_uri_).path_piece());
+      resource_path_ = std::string(GURL(printer_uri_).path());
     }
   }
 

@@ -55,7 +55,7 @@ class HeadersURLRequestJob : public URLRequestJob {
     header_string.push_back('\0');
     header_string += std::string("Cache-Control: max-age=600");
     header_string.push_back('\0');
-    if (request()->url().path_piece() == "/multiplecontenttype") {
+    if (request()->url().path() == "/multiplecontenttype") {
       header_string += std::string(
           "coNteNt-tYPe: text/plain; charset=iso-8859-4, image/png");
       header_string.push_back('\0');
@@ -79,7 +79,7 @@ class HeadersURLRequestJob : public URLRequestJob {
 
  protected:
   std::string GetContentTypeValue() const {
-    if (request()->url().path_piece() == "/badcontenttype") {
+    if (request()->url().path() == "/badcontenttype") {
       return "\xff";
     }
     return kTextHtml;

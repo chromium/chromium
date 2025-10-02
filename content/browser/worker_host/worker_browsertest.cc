@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(SharedWorkerExtendedLifetimeBrowserOriginTrialTest,
         }
 
         const std::string content_type =
-            base::EndsWith(params->url_request.url.path_piece(), ".js")
+            base::EndsWith(params->url_request.url.path(), ".js")
                 ? "text/javascript"
                 : "text/html";
 
@@ -1372,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(SharedWorkerOnAndroidBrowserOriginTrialTest, Basic) {
         }
 
         const std::string content_type =
-            base::EndsWith(params->url_request.url.path_piece(), ".js")
+            base::EndsWith(params->url_request.url.path(), ".js")
                 ? "text/javascript"
                 : "text/html";
 

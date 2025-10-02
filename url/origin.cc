@@ -56,7 +56,7 @@ Origin Origin::Create(const GURL& url) {
     // It's SchemeHostPort's responsibility to filter out unrecognized schemes;
     // sanity check that this is happening.
     DCHECK(!tuple.IsValid() || url.IsStandard() ||
-           base::Contains(GetLocalSchemes(), url.scheme_piece()) ||
+           base::Contains(GetLocalSchemes(), url.scheme()) ||
            AllowNonStandardSchemesForAndroidWebView());
   }
 
