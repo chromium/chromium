@@ -70,15 +70,6 @@ class MultiContentsViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_IsSupported) {
-// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
-
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 
   Browser::CreateParams app_browser_params =
@@ -93,15 +84,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_EndDropTarget) {
-// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
-
   ui::OSExchangeData data;
   const GURL kDropUrl("http://www.chromium.org/");
   data.SetURL(kDropUrl, u"Chromium");
@@ -131,14 +113,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_StartDropTarget) {
-  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
   ui::OSExchangeData data;
   const GURL kDropUrl("http://www.chromium.org/");
   data.SetURL(kDropUrl, u"Chromium");
@@ -168,14 +142,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_BlockJavascriptUrl) {
-  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
   ui::OSExchangeData data;
   const GURL kDropUrl("javascript:alert(1)");
   data.SetURL(kDropUrl, u"javascript");
@@ -205,15 +171,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleTabDrop_EndDropTarget) {
-  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
-
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(1, tab_strip_model->count());
   EXPECT_FALSE(multi_contents_view()->IsInSplitView());
@@ -249,15 +206,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleTabDrop_StartDropTarget) {
-  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
-
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* original_contents =
       tab_strip_model->GetActiveWebContents();
@@ -295,15 +243,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DragAndDropEnabledPref) {
-// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
-
   // Drag and drop should be enabled by default.
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 
@@ -578,15 +517,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, SeparatorLayout) {
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
-// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return;
-  }
-#endif
-
   MultiContentsView* view = multi_contents_view();
   gfx::Rect initial_bounds(10, 20, 100, 80);
 

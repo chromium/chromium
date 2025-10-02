@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/screen.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -34,18 +35,6 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-
-// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-#define SKIP_FOR_WAYLAND()                                                \
-  if (!ui::OzonePlatform::GetInstance()                                   \
-           ->GetPlatformProperties()                                      \
-           .supports_split_view_drag_and_drop) {                          \
-    GTEST_SKIP() << "Skipping DnD test on Wayland (crbug.com/425715421)"; \
-  }
-#else
-#define SKIP_FOR_WAYLAND()
-#endif
 
 MultiContentsDropTargetView* GetDropTargetView(BrowserView& browser_view) {
   return views::AsViewClass<MultiContentsDropTargetView>(
@@ -258,7 +247,13 @@ class MultiContentsViewTabDragEntrypointsUiParamTest
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
                        DragAndDrop) {
-  SKIP_FOR_WAYLAND();
+  // TODO(crbug.com/448651072): Remove when Weston support is added.
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "Weston's implementation of tab dragging is incompatible "
+                    "with creating a split view.";
+  }
+#endif
 
   BrowserView& browser_view = GetBrowserView();
   const auto drop_side = GetParam();
@@ -286,7 +281,13 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
                        ShowAndHideDropTarget) {
-  SKIP_FOR_WAYLAND();
+  // TODO(crbug.com/448651072): Remove when Weston support is added.
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "Weston's implementation of tab dragging is incompatible "
+                    "with creating a split view.";
+  }
+#endif
 
   BrowserView& browser_view = GetBrowserView();
   const auto drop_side = GetParam();
@@ -311,8 +312,6 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
                        DragAndDropDisabled) {
-  SKIP_FOR_WAYLAND();
-
   BrowserView& browser_view = GetBrowserView();
 
   // Disable drag and drop.

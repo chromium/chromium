@@ -365,9 +365,6 @@ class OzonePlatformWayland : public OzonePlatform,
       // API is implemented.
       properties->supports_color_picker_dialog = false;
 
-      // TODO(crbug.com/425715421): Remove this once support is implemented.
-      properties->supports_split_view_drag_and_drop = false;
-
       initialised = true;
     }
 

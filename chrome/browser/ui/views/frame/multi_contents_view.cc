@@ -659,17 +659,6 @@ MultiContentsView::drop_target_controller() const {
 }
 
 bool MultiContentsView::IsDragAndDropEnabled() const {
-  // This is needed because drag and drop is broken on Wayland. Once that is
-  // resolved, this check should be deleted.
-  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    return false;
-  }
-#endif
-
   // Split view drag and drop is only supported on normal browser types.
   return browser_view_->GetIsNormalType() && is_drag_drop_pref_enabled_;
 }

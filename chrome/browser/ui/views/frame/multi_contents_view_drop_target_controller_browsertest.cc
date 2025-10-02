@@ -50,9 +50,6 @@ class MultiContentsViewDropTargetControllerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     SplitViewBrowserTestMixin::SetUpOnMainThread();
-    if (ShouldSkipTests()) {
-      return;
-    }
     delegate_ = std::make_unique<MultiContentsViewDelegateImpl>(*browser());
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
         *drop_target_view(), *delegate_.get(),
@@ -105,18 +102,6 @@ class MultiContentsViewDropTargetControllerBrowserTest
     return controller().IsDropTimerRunningForTesting();
   }
 
-  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
-  bool ShouldSkipTests() {
-#if BUILDFLAG(IS_OZONE)
-    if (!ui::OzonePlatform::GetInstance()
-             ->GetPlatformProperties()
-             .supports_split_view_drag_and_drop) {
-      return true;
-    }
-#endif
-    return false;
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MultiContentsViewDropTargetController> controller_;
@@ -124,28 +109,13 @@ class MultiContentsViewDropTargetControllerBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
-                       OnTabDragUpdatedMaximizedWithStartPoint) {
-  if (ShouldSkipTests()) {
-    return;
-  }
-  SimulateTabDrag(true, gfx::Point(30, 250));
-  EXPECT_FALSE(IsDropTimerRunning());
-}
-
-IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedNotMaximizedWithStartPoint) {
-  if (ShouldSkipTests()) {
-    return;
-  }
   SimulateTabDrag(false, gfx::Point(30, 250));
   EXPECT_TRUE(IsDropTimerRunning());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedMaximizedWithMiddlePoint) {
-  if (ShouldSkipTests()) {
-    return;
-  }
   SimulateTabDrag(true, gfx::Point(GetViewWidth() / 2, 250));
   EXPECT_FALSE(IsDropTimerRunning());
 }
@@ -154,19 +124,19 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
 // width and the maximized browser width, so these test need to be skipped.
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
+                       OnTabDragUpdatedMaximizedWithStartPoint) {
+  SimulateTabDrag(true, gfx::Point(30, 250));
+  EXPECT_FALSE(IsDropTimerRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedMaximizedWithEndPoint) {
-  if (ShouldSkipTests()) {
-    return;
-  }
   SimulateTabDrag(true, gfx::Point(GetViewWidth() - 10, 250));
   EXPECT_FALSE(IsDropTimerRunning());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedNotMaximizedWithEndPoint) {
-  if (ShouldSkipTests()) {
-    return;
-  }
   SimulateTabDrag(false, gfx::Point(GetViewWidth() - 10, 250));
   EXPECT_TRUE(IsDropTimerRunning());
 }
@@ -187,10 +157,6 @@ class MultiContentsViewDropTargetControllerNudgeBrowserTest
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerNudgeBrowserTest,
                        DropTargetHidesWhenTabInserted) {
-  if (ShouldSkipTests()) {
-    return;
-  }
-
   drop_target_view()->DisableAnimationsForTesting();
 
   content::DropData drop_data;
