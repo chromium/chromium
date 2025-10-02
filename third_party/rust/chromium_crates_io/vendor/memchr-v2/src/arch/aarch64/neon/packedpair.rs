@@ -52,7 +52,7 @@ impl Finder {
     #[inline]
     pub fn with_pair(needle: &[u8], pair: Pair) -> Option<Finder> {
         if Finder::is_available() {
-            // SAFETY: we check that sse2 is available above. We are also
+            // SAFETY: we check that NEON is available above. We are also
             // guaranteed to have needle.len() > 1 because we have a valid
             // Pair.
             unsafe { Some(Finder::with_pair_impl(needle, pair)) }

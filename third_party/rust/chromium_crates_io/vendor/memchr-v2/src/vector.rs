@@ -376,18 +376,10 @@ mod aarch64neon {
     impl NeonMoveMask {
         /// Get the mask in a form suitable for computing offsets.
         ///
-        /// Basically, this normalizes to little endian. On big endian, this
-        /// swaps the bytes.
+        /// The mask is always already in host-endianness, so this is a no-op.
         #[inline(always)]
         fn get_for_offset(self) -> u64 {
-            #[cfg(target_endian = "big")]
-            {
-                self.0.swap_bytes()
-            }
-            #[cfg(target_endian = "little")]
-            {
-                self.0
-            }
+            self.0
         }
     }
 
