@@ -154,7 +154,6 @@ TEST_F(HTMLCanvasElementModuleTest, CanvasNoisedAfterTransferToOffscreen) {
           CreateCanvasNoiseTestRasterInterface());
   InitializeSharedGpuContextRaster(test_context_provider.get());
   GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
-  test_context_provider->GetTestRasterInterface()->set_gpu_rasterization(true);
   canvas_element().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
   OffscreenCanvas* offscreen_canvas =
@@ -202,7 +201,6 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   constexpr auto buffer_format = gfx::BufferFormat::RGBA_8888;
 #endif
 
-  context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   context_provider->UnboundTestRasterInterface()
       ->set_supports_gpu_memory_buffer_format(buffer_format, true);
   InitializeSharedGpuContextRaster(context_provider.get());

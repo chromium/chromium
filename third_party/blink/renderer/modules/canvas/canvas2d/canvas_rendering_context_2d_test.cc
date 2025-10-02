@@ -442,11 +442,6 @@ class CanvasRenderingContext2DTestAccelerated
  protected:
   bool AllowsAcceleration() override { return true; }
 
-  void ConfigureContextProvider(
-      viz::TestContextProvider& context_provider) override {
-    context_provider.GetTestRasterInterface()->set_gpu_rasterization(true);
-  }
-
   void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
     for (int i = 0; i < 200; ++i) {
       auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
@@ -3537,7 +3532,6 @@ class CanvasRenderingContext2DTestImageChromium
     test_raster->set_max_texture_size(1024);
     test_raster->set_supports_gpu_memory_buffer_format(
         gfx::BufferFormat::BGRA_8888, true);
-    test_raster->set_gpu_rasterization(true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
@@ -3582,7 +3576,6 @@ class CanvasRenderingContext2DTestSwapChain
       viz::TestContextProvider& context_provider) override {
     auto* test_raster = context_provider.GetTestRasterInterface();
     test_raster->set_max_texture_size(1024);
-    test_raster->set_gpu_rasterization(true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.shared_image_swap_chain = true;

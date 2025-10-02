@@ -53,8 +53,6 @@ class VideoFrameTest : public testing::Test {
  public:
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
-        true);
     InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 

@@ -51,8 +51,6 @@ class ScopedFakeGpuContext {
           DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU);
     }
 
-    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
-        true);
     InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 

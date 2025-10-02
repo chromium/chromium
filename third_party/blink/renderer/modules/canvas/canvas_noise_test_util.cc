@@ -12,7 +12,7 @@ namespace blink {
 // back.
 class CanvasNoiseTestRasterInterface : public viz::TestRasterInterface {
  public:
-  CanvasNoiseTestRasterInterface() { set_gpu_rasterization(true); }
+  CanvasNoiseTestRasterInterface() = default;
 
  private:
   bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,

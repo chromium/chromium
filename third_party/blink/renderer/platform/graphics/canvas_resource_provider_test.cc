@@ -93,7 +93,6 @@ class CanvasResourceProviderTest : public Test {
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     auto* test_raster = test_context_provider_->UnboundTestRasterInterface();
-    test_raster->set_gpu_rasterization(true);
     test_raster->set_max_texture_size(kMaxTextureSize);
     test_raster->set_supports_gpu_memory_buffer_format(
         gfx::BufferFormat::RGBA_8888, true);
@@ -305,8 +304,6 @@ TEST_F(CanvasResourceProviderTest,
   // conditions against the test raster interface.
   SharedGpuContext::Reset();
   auto raster_context_provider = viz::TestContextProvider::CreateRaster();
-  raster_context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(
-      true);
   InitializeSharedGpuContextRaster(raster_context_provider.get(),
                                    &image_decode_cache_,
                                    SetIsContextLost::kSetToFalse);

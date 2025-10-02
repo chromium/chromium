@@ -24,8 +24,6 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     SharedGpuContext::Reset();
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
-        true);
     InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 

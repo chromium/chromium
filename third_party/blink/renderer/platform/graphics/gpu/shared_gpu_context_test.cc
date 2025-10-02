@@ -101,8 +101,6 @@ class SharedGpuContextTest : public Test {
             task_runner_);
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
 
-    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
-        true);
     InitializeSharedGpuContextRaster(test_context_provider_.get(),
                                      /*cache = */ nullptr,
                                      SetIsContextLost::kSetToFalse);
