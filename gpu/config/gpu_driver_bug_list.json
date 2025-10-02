@@ -801,19 +801,6 @@
       "disabled_extensions": ["GL_EXT_sRGB"]
     },
     {
-      "id": 145,
-      "cr_bugs": [585250],
-      "description": "EGLImage ref counting across EGLContext/threads is broken",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Qualcomm.*",
-      "gl_renderer": "Adreno \\(TM\\) [45].*",
-      "features": [
-        "broken_egl_image_ref_counting"
-      ]
-    },
-    {
       "id": 147,
       "description": "Limit max texure size to 4096 on older Android devices.",
       "os": {
