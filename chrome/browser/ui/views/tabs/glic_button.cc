@@ -54,6 +54,7 @@ constexpr int kHighlightCloseButtonLeftMargin = 4;
 constexpr int kHighlightCloseButtonRightMargin = 8;
 constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
 constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
+constexpr ui::ColorId kDefaultTextColorV2 = ui::kColorSysOnSurfacePrimary;
 
 constexpr int kIconSize = 16;
 
@@ -395,7 +396,9 @@ void GlicButton::HighlightGlicButton() {
 }
 
 void GlicButton::SetDefaultColors() {
-  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  SetForegroundFrameActiveColorId(
+      EntrypointVariationsEnabled() ? kDefaultTextColorV2
+                                    : kColorNewTabButtonForegroundFrameActive);
   SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
@@ -405,6 +408,10 @@ void GlicButton::SetDefaultColors() {
 }
 
 void GlicButton::UpdateTextAndBackgroundColors() {
+  if (!EntrypointVariationsEnabled()) {
+    return;
+  }
+
   const bool highlight_visible = IsHighlightVisible();
   if (highlight_visible || ShouldUseAltIcon()) {
     SetBackgroundFrameActiveColorId(ui::kColorSysBase);
@@ -412,7 +419,7 @@ void GlicButton::UpdateTextAndBackgroundColors() {
     if (highlight_visible) {
       SetForegroundFrameActiveColorId(kTextOnHighlight);
     } else {
-      SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+      SetForegroundFrameActiveColorId(kDefaultTextColorV2);
     }
   } else {
     SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
