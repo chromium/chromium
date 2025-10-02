@@ -220,18 +220,7 @@ OmniboxEditModel::State::~State() = default;
 
 OmniboxEditModel::OmniboxEditModel(OmniboxController* controller,
                                    OmniboxView* view)
-    : controller_(controller),
-      view_(view),
-      user_input_in_progress_(false),
-      focus_resulted_in_navigation_(false),
-      just_deleted_text_(false),
-      has_temporary_text_(false),
-      paste_state_(NONE),
-      control_key_state_(UP),
-      is_keyword_hint_(false),
-      keyword_mode_entry_method_(OmniboxEventProto::INVALID),
-      in_revert_(false),
-      allow_exact_keyword_match_(false) {}
+    : controller_(controller), view_(view) {}
 
 OmniboxEditModel::~OmniboxEditModel() = default;
 

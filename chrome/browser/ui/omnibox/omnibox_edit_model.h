@@ -702,7 +702,7 @@ class OmniboxEditModel {
   // This flag *should* be true in a superset of the cases where the popup is
   // open. Except (crbug.com/1340378) for zero suggestions when the popup was
   // opened with ctrl+L or a mouse click (as opposed to the down arrow).
-  bool user_input_in_progress_;
+  bool user_input_in_progress_ = false;
 
   // The text that the user has entered.  This does not include inline
   // autocomplete text that has not yet been accepted.  |user_text_| can
@@ -724,7 +724,7 @@ class OmniboxEditModel {
   // (false).
   // The value is initialized when the Omnibox receives focus and available for
   // use when the focus is about to be cleared.
-  bool focus_resulted_in_navigation_;
+  bool focus_resulted_in_navigation_ = false;
 
   // We keep track of when the user began modifying the omnibox text.
   // This should be valid whenever user_input_in_progress_ is true.
@@ -737,7 +737,7 @@ class OmniboxEditModel {
   // NOTE: When the popup is closed there should never be inline autocomplete
   // text (actions that close the popup should either accept the text, convert
   // it to a normal selection, or change the edit entirely).
-  bool just_deleted_text_;
+  bool just_deleted_text_ = false;
   std::u16string inline_autocompletion_;
 
   // Used by OnPopupDataChanged to keep track of whether there is currently a
@@ -758,18 +758,18 @@ class OmniboxEditModel {
   // selected, we track original_user_text_with_keyword_.
   // original_user_text_with_keyword_ is null if a keyword has not been
   // accepted.
-  bool has_temporary_text_;
+  bool has_temporary_text_ = false;
   std::u16string original_user_text_with_keyword_;
 
   // When the user's last action was to paste, we disallow inline autocomplete
   // (on the theory that the user is trying to paste in a new URL or part of
   // one, and in either case inline autocomplete would get in the way).
-  PasteState paste_state_;
+  PasteState paste_state_ = NONE;
 
   // Whether the control key is depressed.  We track this to avoid calling
   // UpdatePopup() repeatedly if the user holds down the key, and to know
   // whether to trigger "ctrl-enter" behavior.
-  ControlKeyState control_key_state_;
+  ControlKeyState control_key_state_ = UP;
 
   // The keyword associated with the current match.  The user may have an actual
   // selected keyword, or just some input text that looks like a keyword (so we
@@ -784,23 +784,24 @@ class OmniboxEditModel {
   // True if the keyword associated with this match is merely a hint, i.e. the
   // user hasn't actually selected a keyword yet.  When this is true, we can use
   // keyword_ to show a "Press <tab> to search" sort of hint.
-  bool is_keyword_hint_;
+  bool is_keyword_hint_ = false;
 
   // Indicates how the user entered keyword mode if the user is actually in
   // keyword mode.  Otherwise, the value of this variable is INVALID.  This
   // is used to restore the user's search terms upon a call to ClearKeyword().
-  metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method_;
+  metrics::OmniboxEventProto::KeywordModeEntryMethod
+      keyword_mode_entry_method_ = metrics::OmniboxEventProto::INVALID;
 
   // This is needed to properly update the SearchModel state when the user
   // presses escape.
-  bool in_revert_;
+  bool in_revert_ = false;
 
   // Indicates if the upcoming autocomplete search is allowed to be treated as
   // an exact keyword match.  If this is true then keyword mode will be
   // triggered automatically if the input is "<keyword> <search string>".  We
   // allow this when CreatedKeywordSearchByInsertingSpaceInMiddle() is true.
   // This has no effect if we're already in keyword mode.
-  bool allow_exact_keyword_match_;
+  bool allow_exact_keyword_match_ = false;
 
   // The input that was sent to the AutocompleteController. Since no
   // autocomplete query is started after a tab switch, it is possible for this
