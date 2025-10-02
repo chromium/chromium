@@ -13,20 +13,6 @@
 
 namespace blink {
 
-namespace {
-
-bool ShouldApplySnappingScaleAdjustment(const LayoutSVGRoot& layout_svg_root) {
-  // If the RuntimeEnabledFeatures flag isn't set then apply scale adjustment.
-  if (!RuntimeEnabledFeatures::SvgNoPixelSnappingScaleAdjustmentEnabled()) {
-    return true;
-  }
-  // Apply scale adjustment if the SVG root is the document root - i.e it is
-  // not an inline SVG.
-  return layout_svg_root.IsDocumentElement();
-}
-
-}  // namespace
-
 gfx::Rect SVGRootPainter::PixelSnappedSize(
     const PhysicalOffset& paint_offset) const {
   return ToPixelSnappedRect(
@@ -40,7 +26,9 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
       AffineTransform::Translation(snapped_size.x(), snapped_size.y());
   const PhysicalSize size = layout_svg_root_.StitchedSize();
   if (!size.IsEmpty()) {
-    if (ShouldApplySnappingScaleAdjustment(layout_svg_root_)) {
+    // Apply scale adjustment if the SVG root is the document root - i.e it is
+    // not an inline SVG.
+    if (layout_svg_root_.IsDocumentElement()) {
       paint_offset_to_border_box.Scale(
           snapped_size.width() / size.width.ToFloat(),
           snapped_size.height() / size.height.ToFloat());

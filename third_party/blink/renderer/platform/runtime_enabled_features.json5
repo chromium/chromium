@@ -4824,10 +4824,6 @@
       status: "test",
     },
     {
-      name: "SvgNoPixelSnappingScaleAdjustment",
-      status: "stable",
-    },
-    {
       name: "SvgPartitionSVGDocumentResourcesInMemoryCache",
       status: "stable",
     },
