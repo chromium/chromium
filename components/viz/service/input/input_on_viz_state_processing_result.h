@@ -17,11 +17,12 @@ enum class InputOnVizStateProcessingResult {
   kDroppedOutOfOrderDownTime = 4,
   kDroppedTooManyPendingStates = 5,
   kDroppedUnusedOlderStates = 6,
-  kMaxValue = kDroppedUnusedOlderStates,
+  kTransferBackToBrowserSuccessfully = 7,
+  kDroppedTransferBackToBrowserFailed = 8,
+  kMaxValue = kDroppedTransferBackToBrowserFailed,
 };
 
-inline constexpr char kStateProcessingResultHistogram[] =
-    "Android.InputOnViz.Viz.StateProcessingResult2";
+void EmitStateProcessingResultHistogram(InputOnVizStateProcessingResult result);
 
 }  // namespace viz
 
