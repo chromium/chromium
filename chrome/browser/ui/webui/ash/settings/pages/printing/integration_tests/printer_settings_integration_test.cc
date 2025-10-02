@@ -177,7 +177,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    const std::string request_path = request.GetURL().path();
+    const std::string request_path = request.GetURL().GetPath();
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
     http_response->set_code(net::HTTP_OK);

@@ -231,7 +231,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [self populateHistory];
   NSString* omniboxInput = [NSString
       stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
-                       [NSString cr_fromString:_URL3.port()]];
+                       [NSString cr_fromString:_URL3.GetPort()]];
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
@@ -280,7 +280,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   NSString* omniboxInput = [NSString
       stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
-                       [NSString cr_fromString:_URL3.port()]];
+                       [NSString cr_fromString:_URL3.GetPort()]];
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
   // Check that we have the switch button for the first page.
@@ -329,7 +329,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey openNewTab];
   NSString* omniboxInput = [NSString
       stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.GetHost()],
-                       [NSString cr_fromString:_URL1.port()]];
+                       [NSString cr_fromString:_URL1.GetPort()]];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -427,7 +427,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey openNewTab];
   NSString* omniboxInput = [NSString
       stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.GetHost()],
-                       [NSString cr_fromString:_URL1.port()]];
+                       [NSString cr_fromString:_URL1.GetPort()]];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -459,7 +459,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [self populateHistory];
   NSString* omniboxInput = [NSString
       stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
-                       [NSString cr_fromString:_URL3.port()]];
+                       [NSString cr_fromString:_URL3.GetPort()]];
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
