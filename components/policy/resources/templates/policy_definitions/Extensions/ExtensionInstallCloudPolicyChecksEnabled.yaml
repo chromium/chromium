@@ -22,6 +22,7 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
+  internal_only: true
 items:
 - caption: Validate whether an extension can be installed or not with a cloud service.
   value: true
@@ -33,8 +34,8 @@ owners:
 - file://extensions/OWNERS
 schema:
   type: boolean
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:142-
+- chrome_os:142-
 type: main
 tags: []
