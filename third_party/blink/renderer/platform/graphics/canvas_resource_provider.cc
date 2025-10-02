@@ -561,9 +561,6 @@ void CanvasResourceProviderSharedImage::WillDraw() {
   }
   WillDrawInternal();
   EnsureWriteAccess();
-  if (resource()) {
-    resource()->WillDraw();
-  }
 }
 
 bool CanvasResourceProviderSharedImage::WritePixels(
@@ -590,9 +587,6 @@ bool CanvasResourceProviderSharedImage::WritePixels(
   // the latter (if the current behavior is a bug).
   WillDrawInternal();
   EnsureWriteAccess();
-  if (resource()) {
-    resource()->WillDraw();
-  }
 
   // End the internal write access before calling WillDrawInternal(), which
   // has a precondition that there should be no current write access on the
@@ -600,9 +594,6 @@ bool CanvasResourceProviderSharedImage::WritePixels(
   EndWriteAccess();
   WillDrawInternal();
   EndWriteAccess();
-  if (resource()) {
-    resource()->WillDraw();
-  }
 
   auto client_si = resource()->GetClientSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
@@ -638,9 +629,6 @@ bool CanvasResourceProviderSharedImage::OverwriteImage(
   EndWriteAccess();
   WillDrawInternal();
   EndWriteAccess();
-  if (resource()) {
-    resource()->WillDraw();
-  }
 
   auto dst_client_si = resource()->GetClientSharedImage();
   if (!dst_client_si) {
@@ -791,9 +779,6 @@ CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
   const CanvasResource* const original_resource = resource_.get();
   WillDrawInternal();
   EndWriteAccess();
-  if (resource()) {
-    resource()->WillDraw();
-  }
 
   if (was_copy_performed != nullptr) {
     *was_copy_performed = resource_.get() != original_resource;
@@ -827,9 +812,6 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
     if (cached_snapshot_) {
       WillDrawInternal();
       EnsureWriteAccess();
-      if (resource()) {
-        resource()->WillDraw();
-      }
     }
   }
 
@@ -899,9 +881,6 @@ void CanvasResourceProviderSharedImage::RasterRecord(
 
   WillDrawInternal();
   EnsureWriteAccess();
-  if (resource()) {
-    resource()->WillDraw();
-  }
 
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;

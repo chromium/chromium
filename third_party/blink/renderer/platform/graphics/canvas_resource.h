@@ -219,7 +219,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   void NotifyResourceLost() final;
 
-  void WillDraw();
   bool IsLost() const { return owning_thread_data().is_lost; }
 
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()

@@ -391,16 +391,6 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   }
 }
 
-void CanvasResourceSharedImage::WillDraw() {
-  DCHECK(!is_cross_thread())
-      << "Write access is only allowed on the owning thread";
-
-  // Sync token for software mode is generated from SharedImageInterface each
-  // time the GMB is updated.
-  if (!is_accelerated_)
-    return;
-}
-
 void CanvasResourceSharedImage::Transfer() {
   if (is_cross_thread() || !ContextProviderWrapper())
     return;
