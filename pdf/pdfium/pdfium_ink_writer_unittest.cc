@@ -90,7 +90,7 @@ TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& pdfium_page = GetPDFiumPage(*engine, 0);
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
@@ -120,7 +120,7 @@ TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
       InitializeEngineFromData(&saved_client, std::move(saved_pdf_data));
   ASSERT_TRUE(saved_engine);
   ASSERT_EQ(saved_engine->GetNumberOfPages(), 1);
-  PDFiumPage& saved_pdfium_page = GetPDFiumPageForTest(*saved_engine, 0);
+  PDFiumPage& saved_pdfium_page = GetPDFiumPage(*saved_engine, 0);
   FPDF_PAGE saved_page = saved_pdfium_page.GetPage();
   ASSERT_TRUE(saved_page);
 
@@ -168,7 +168,7 @@ TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& pdfium_page = GetPDFiumPage(*engine, 0);
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
@@ -203,7 +203,7 @@ TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
       InitializeEngineFromData(&saved_client, std::move(saved_pdf_data));
   ASSERT_TRUE(saved_engine);
   ASSERT_EQ(saved_engine->GetNumberOfPages(), 1);
-  PDFiumPage& saved_pdfium_page = GetPDFiumPageForTest(*saved_engine, 0);
+  PDFiumPage& saved_pdfium_page = GetPDFiumPage(*saved_engine, 0);
   FPDF_PAGE saved_page = saved_pdfium_page.GetPage();
   ASSERT_TRUE(saved_page);
 
@@ -236,7 +236,7 @@ TEST_P(PDFiumInkWriterTest, EmptyStroke) {
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& pdfium_page = GetPDFiumPage(*engine, 0);
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
@@ -252,7 +252,7 @@ TEST_P(PDFiumInkWriterTest, NoPage) {
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& pdfium_page = GetPDFiumPage(*engine, 0);
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 

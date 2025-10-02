@@ -241,7 +241,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, Blank) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();
@@ -260,7 +260,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();
@@ -278,7 +278,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();
@@ -303,7 +303,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, PageWithImagesNoRecognizableText) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();
@@ -345,7 +345,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
 
   // Trigger page load and verify needing searchify.
   for (int page = 0; page < kPageCount; page++) {
-    GetPDFiumPageForTest(*engine, page).GetPage();
+    GetPDFiumPage(*engine, page).GetPage();
     ASSERT_TRUE(engine->IsPageScheduledForSearchify(page));
   }
 
@@ -361,10 +361,10 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
 
   ASSERT_TRUE(WaitForIdleState(searchifier));
   ASSERT_EQ(performed_ocrs(), 4);
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 0)), "OCR Text 0");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 1)), "OCR Text 1");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 2)), "OCR Text 2");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 3)), "OCR Text 3");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 0)), "OCR Text 0");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 1)), "OCR Text 1");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 2)), "OCR Text 2");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 3)), "OCR Text 3");
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, AddedTextPreservedAfterUnload) {
@@ -375,7 +375,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, AddedTextPreservedAfterUnload) {
 
   // Trigger page load.
   for (int page = 0; page < kPageCount; page++) {
-    GetPDFiumPageForTest(*engine, page).GetPage();
+    GetPDFiumPage(*engine, page).GetPage();
   }
 
   PDFiumOnDemandSearchifier* searchifier = engine->GetSearchifierForTesting();
@@ -386,25 +386,25 @@ TEST_P(PDFiumOnDemandSearchifierTest, AddedTextPreservedAfterUnload) {
   ASSERT_TRUE(WaitForIdleState(searchifier));
   ASSERT_EQ(performed_ocrs(), 4);
 
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 0)), "OCR Text 0");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 1)), "OCR Text 1");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 2)), "OCR Text 2");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 3)), "OCR Text 3");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 0)), "OCR Text 0");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 1)), "OCR Text 1");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 2)), "OCR Text 2");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 3)), "OCR Text 3");
 
   for (int page = 0; page < kPageCount; page++) {
-    GetPDFiumPageForTest(*engine, page).Unload();
+    GetPDFiumPage(*engine, page).Unload();
   }
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 0)), "OCR Text 0");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 1)), "OCR Text 1");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 2)), "OCR Text 2");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine, 3)), "OCR Text 3");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 0)), "OCR Text 0");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 1)), "OCR Text 1");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 2)), "OCR Text 2");
+  EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 3)), "OCR Text 3");
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, MultipleImagesWithUnload) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();
@@ -457,10 +457,10 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
 
   // Trigger page load for all.
   for (int page = 0; page < kPageCount; page++) {
-    ASSERT_TRUE(GetPDFiumPageForTest(*engine, page).GetPage());
+    ASSERT_TRUE(GetPDFiumPage(*engine, page).GetPage());
   }
 
-  PDFiumPage& page0 = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page0 = GetPDFiumPage(*engine, 0);
   page0.Unload();
 
   PDFiumOnDemandSearchifier* searchifier = engine->GetSearchifierForTesting();
@@ -485,7 +485,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   ASSERT_TRUE(page0_info.has_value());
   EXPECT_TRUE(page0_info.value().is_searchified);
 
-  PDFiumPage& page1 = GetPDFiumPageForTest(*engine, 1);
+  PDFiumPage& page1 = GetPDFiumPage(*engine, 1);
   EXPECT_EQ(GetPageText(page1), "OCR Text 1");
   EXPECT_TRUE(page1.IsPageSearchified());
   std::optional<AccessibilityTextRunInfo> page1_info =
@@ -493,7 +493,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   ASSERT_TRUE(page1_info.has_value());
   EXPECT_TRUE(page1_info.value().is_searchified);
 
-  PDFiumPage& page2 = GetPDFiumPageForTest(*engine, 2);
+  PDFiumPage& page2 = GetPDFiumPage(*engine, 2);
   EXPECT_EQ(GetPageText(page2), "OCR Text 2");
   EXPECT_TRUE(page2.IsPageSearchified());
   std::optional<AccessibilityTextRunInfo> page2_info =
@@ -501,7 +501,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   ASSERT_TRUE(page2_info.has_value());
   EXPECT_TRUE(page2_info.value().is_searchified);
 
-  PDFiumPage& page3 = GetPDFiumPageForTest(*engine, 3);
+  PDFiumPage& page3 = GetPDFiumPage(*engine, 3);
   EXPECT_EQ(GetPageText(page3), "OCR Text 3");
   EXPECT_TRUE(page3.IsPageSearchified());
   std::optional<AccessibilityTextRunInfo> page3_info =
@@ -529,7 +529,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImagesInPrintPreview) {
       CreatePreviewEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger Searchify, but it should not do anything for Print
   // Preview.
@@ -547,7 +547,7 @@ TEST_P(PDFiumOnDemandSearchifierTest,
 
   // Trigger page load for all.
   for (int page = 0; page < kPageCount; page++) {
-    ASSERT_TRUE(GetPDFiumPageForTest(*engine, page).GetPage());
+    ASSERT_TRUE(GetPDFiumPage(*engine, page).GetPage());
   }
 
   StartSearchify(/*empty_results=*/false);
@@ -569,7 +569,7 @@ TEST_P(PDFiumOnDemandSearchifierTest,
 
   // Trigger page load for all.
   for (int page = 0; page < kPageCount; page++) {
-    ASSERT_TRUE(GetPDFiumPageForTest(*engine, page).GetPage());
+    ASSERT_TRUE(GetPDFiumPage(*engine, page).GetPage());
   }
 
   StartSearchify(/*empty_results=*/false);
@@ -589,7 +589,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, SearchifyStateChanges) {
   ASSERT_TRUE(engine);
 
   // Trigger one page load.
-  GetPDFiumPageForTest(*engine, 0).GetPage();
+  GetPDFiumPage(*engine, 0).GetPage();
 
   EXPECT_EQ(busy_state_changed_count(), 1);
   EXPECT_EQ(idle_state_changed_count(), 0);
@@ -606,8 +606,8 @@ TEST_P(PDFiumOnDemandSearchifierTest, SearchifyStateChanges) {
   EXPECT_EQ(idle_state_changed_count(), 1);
 
   // Trigger more page loads.
-  GetPDFiumPageForTest(*engine, 1).GetPage();
-  GetPDFiumPageForTest(*engine, 2).GetPage();
+  GetPDFiumPage(*engine, 1).GetPage();
+  GetPDFiumPage(*engine, 2).GetPage();
 
   EXPECT_EQ(busy_state_changed_count(), 2);
   EXPECT_EQ(idle_state_changed_count(), 1);
@@ -618,7 +618,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, SearchifyStateChanges) {
   EXPECT_EQ(idle_state_changed_count(), 2);
 
   // Trigger more page loads.
-  GetPDFiumPageForTest(*engine, 3).GetPage();
+  GetPDFiumPage(*engine, 3).GetPage();
 
   EXPECT_EQ(busy_state_changed_count(), 3);
   EXPECT_EQ(idle_state_changed_count(), 2);
@@ -640,7 +640,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MetricsProcessedPageWithoutText) {
   histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
 
   // Trigger one page load.
-  GetPDFiumPageForTest(*engine, 0).GetPage();
+  GetPDFiumPage(*engine, 0).GetPage();
 
   histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
   histogram_tester.ExpectBucketCount(kPageHasTextHistogram, false, 1);
@@ -666,7 +666,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MetricsCanceledPageWithoutText) {
   histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
 
   // Trigger one page load.
-  GetPDFiumPageForTest(*engine, 0).GetPage();
+  GetPDFiumPage(*engine, 0).GetPage();
 
   histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
   histogram_tester.ExpectBucketCount(kPageHasTextHistogram, false, 1);
@@ -685,7 +685,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, SelectPageBeforeSearchify) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();
@@ -719,8 +719,8 @@ TEST_P(PDFiumOnDemandSearchifierTest, UpdateWithUnloadedPage) {
       CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page0 = GetPDFiumPageForTest(*engine, 0);
-  PDFiumPage& page1 = GetPDFiumPageForTest(*engine, 1);
+  PDFiumPage& page0 = GetPDFiumPage(*engine, 0);
+  PDFiumPage& page1 = GetPDFiumPage(*engine, 1);
 
   // Load page 0 to schedule it for searchify.
   EXPECT_TRUE(page0.GetPage());
@@ -741,7 +741,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, UpdateWithUnloadLockedPage) {
   PDFiumEngine* engine =
       CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
 
-  PDFiumPage& page0 = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page0 = GetPDFiumPage(*engine, 0);
 
   // Load page 0 to schedule it for searchify.
   EXPECT_TRUE(page0.GetPage());
@@ -775,7 +775,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, Bug405433817) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("bug_405433817.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();
@@ -809,7 +809,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, Bug406530484) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("bug_406530484.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // Load the page to trigger searchify checking.
   page.GetPage();

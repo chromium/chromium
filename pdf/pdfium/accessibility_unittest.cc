@@ -219,7 +219,7 @@ TEST_P(AccessibilityTest, GetUnderlyingTextRangeForRect) {
   ASSERT_TRUE(engine);
   ASSERT_EQ(2, engine->GetNumberOfPages());
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
 
   // The test rect spans across [0, 4] char indices.
   int start_index = -1;
@@ -721,8 +721,7 @@ TEST_P(AccessibilityTest, SetSelectionAndScroll) {
     action_data.selection_start_index = sel_action.start;
     action_data.selection_end_index = sel_action.end;
 
-    PDFiumPage& page =
-        GetPDFiumPageForTest(*engine, sel_action.start.page_index);
+    PDFiumPage& page = GetPDFiumPage(*engine, sel_action.start.page_index);
     gfx::Rect char_bounds =
         gfx::ToEnclosingRect(page.GetCharBounds(sel_action.start.char_index));
     action_data.target_rect = {{char_bounds.x(), char_bounds.y() + 400 * index},

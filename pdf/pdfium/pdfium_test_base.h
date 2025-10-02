@@ -74,10 +74,9 @@ class PDFiumTestBase : public testing::TestWithParam<bool> {
 
   // Returns the `PDFiumPage` for the page index. The page index must be valid
   // (less than `engine.GetNumberOfPages()`).
-  static const PDFiumPage& GetPDFiumPageForTest(const PDFiumEngine& engine,
-                                                size_t page_index);
-  static PDFiumPage& GetPDFiumPageForTest(PDFiumEngine& engine,
-                                          size_t page_index);
+  static const PDFiumPage& GetPDFiumPage(const PDFiumEngine& engine,
+                                         size_t page_index);
+  static PDFiumPage& GetPDFiumPage(PDFiumEngine& engine, size_t page_index);
 
  private:
   void InitializePDFiumSDK();

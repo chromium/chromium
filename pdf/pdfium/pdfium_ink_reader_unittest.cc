@@ -29,7 +29,7 @@ TEST_P(PDFiumInkReaderTest, Basic) {
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  PDFiumPage& pdfium_page = GetPDFiumPage(*engine, 0);
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
