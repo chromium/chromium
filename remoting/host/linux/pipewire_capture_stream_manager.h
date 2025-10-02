@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
@@ -22,6 +24,7 @@
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/linux/capture_stream_manager.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
+#include "remoting/host/linux/gnome_display_config.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "remoting/host/linux/gvariant_ref.h"
@@ -60,9 +63,9 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
   // CaptureStreamManager implementation:
   [[nodiscard]] Observer::Subscription AddObserver(Observer* observer) override;
   base::WeakPtr<CaptureStream> GetStream(webrtc::ScreenId screen_id) override;
-  void AddStream(const ScreenResolution& initial_resolution,
-                 AddStreamCallback callback) override;
-  void RemoveStream(webrtc::ScreenId screen_id) override;
+  void AddVirtualStream(const ScreenResolution& initial_resolution,
+                        AddStreamCallback callback) override;
+  void RemoveVirtualStream(webrtc::ScreenId screen_id) override;
   base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
   GetActiveStreams() override;
 
@@ -77,13 +80,33 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
 
  private:
   struct AddStreamRequest {
+    struct VirtualStreamInfo {
+      ScreenResolution initial_resolution;
+    };
+
+    struct MonitorStreamInfo {
+      std::string connector;
+    };
+
     AddStreamRequest();
     AddStreamRequest(AddStreamRequest&&);
-    AddStreamRequest(const ScreenResolution& initial_resolution,
+    AddStreamRequest(VirtualStreamInfo virtual_stream_info,
+                     AddStreamCallback callback);
+    AddStreamRequest(MonitorStreamInfo monitor_stream_info,
                      AddStreamCallback callback);
     ~AddStreamRequest();
 
-    ScreenResolution initial_resolution;
+    // See documentation of CaptureStreamManager about virtual stream vs monitor
+    // stream.
+
+    // If set, the Mutter RecordVirtual() D-Bus API will be called.
+    std::optional<VirtualStreamInfo> virtual_stream_info;
+
+    // If set, the Mutter RecordMonitor() D-Bus API will be called.
+    std::optional<MonitorStreamInfo> monitor_stream_info;
+
+    // Called after the stream is added to the active streams list and is ready
+    // to be used.
     AddStreamCallback callback;
   };
 
@@ -95,6 +118,8 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
 
     std::unique_ptr<PipewireCaptureStream> stream;
     gvariant::ObjectPath stream_path;
+    bool is_virtual_stream = true;
+    bool is_deleting = false;
   };
 
   template <typename SuccessType, typename String>
@@ -102,11 +127,21 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
       void (PipewireCaptureStreamManager::*success_method)(SuccessType),
       String&& error_context);
 
+  void RemoveStream(webrtc::ScreenId screen_id, bool can_remove_monitor_stream);
+
   void RemoveObserver(Observer* observer);
 
   // Adds a new stream if `pending_add_stream_requests_` is non-empty, otherwise
   // do nothing. Must be called when there is no pending stream.
   void MaybeAddStreamForCurrentRequest();
+
+  // Adds monitor streams for monitors in `last_seen_display_config_` that are
+  // not in `streams_` and not in `pending_add_stream_requests_`.
+  void MaybeAddMonitorStreams();
+
+  // Remove virtual and monitor streams that are no longer in
+  // `last_seen_display_config_` and not being deleted.
+  void RemoveInvalidStreams();
 
   // Runs the current AddStreamCallback, removes it from
   // `pending_add_stream_requests_`, then adds another stream if
@@ -146,7 +181,7 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
 
   // Queue to allow streams to be added one at a time, which is crucial to
   // ensure the stream is associated with the correct screen ID.
-  base::queue<AddStreamRequest> pending_add_stream_requests_
+  base::circular_deque<AddStreamRequest> pending_add_stream_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The stream that is being created. It is only non-null during stream

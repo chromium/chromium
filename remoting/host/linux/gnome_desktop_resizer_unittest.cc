@@ -111,15 +111,16 @@ class FakeCaptureStreamManager : public CaptureStreamManager {
               (Observer * observer),
               (override));
 
-  void AddStream(const ScreenResolution& initial_resolution,
-                 AddStreamCallback callback) override {
+  void AddVirtualStream(const ScreenResolution& initial_resolution,
+                        AddStreamCallback callback) override {
     ASSERT_TRUE(next_screen_id.has_value());
-    auto stream = AddStream(*next_screen_id, initial_resolution.dimensions());
+    auto stream =
+        AddVirtualStream(*next_screen_id, initial_resolution.dimensions());
     std::move(callback).Run(base::ok(stream));
     next_screen_id.reset();
   }
 
-  base::WeakPtr<CaptureStream> AddStream(
+  base::WeakPtr<CaptureStream> AddVirtualStream(
       webrtc::ScreenId screen_id,
       const webrtc::DesktopSize& resolution) {
     auto stream = std::make_unique<FakeCaptureStream>();
@@ -130,7 +131,7 @@ class FakeCaptureStreamManager : public CaptureStreamManager {
     return weak_stream;
   }
 
-  void RemoveStream(webrtc::ScreenId screen_id) override {
+  void RemoveVirtualStream(webrtc::ScreenId screen_id) override {
     streams_.erase(screen_id);
   }
 
@@ -202,8 +203,8 @@ GnomeDesktopResizerTest::GnomeDesktopResizerTest() {
   display_config_.monitors = {
       {kMeta0, CreateMonitorInfo(0, 0, 100, 100, 2.0)},
       {kMeta1, CreateMonitorInfo(50, 0, 150, 150, 2.0)}};
-  stream_manager_.AddStream(kMeta0ScreenId, {100, 100});
-  stream_manager_.AddStream(kMeta1ScreenId, {150, 150});
+  stream_manager_.AddVirtualStream(kMeta0ScreenId, {100, 100});
+  stream_manager_.AddVirtualStream(kMeta1ScreenId, {150, 150});
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 }
 

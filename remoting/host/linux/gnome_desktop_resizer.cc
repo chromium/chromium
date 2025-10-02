@@ -225,7 +225,7 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
       // queued up or executed right away.
       streams_being_removed_ = streams_to_be_removed;
       for (webrtc::ScreenId stream_id : streams_being_removed_) {
-        stream_manager_->RemoveStream(stream_id);
+        stream_manager_->RemoveVirtualStream(stream_id);
         preferred_monitors_config_.erase(stream_id);
       }
     }
@@ -274,7 +274,7 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
     webrtc::DesktopVector position{track.position_x(), track.position_y()};
 
     if (!track.has_screen_id()) {
-      stream_manager_->AddStream(
+      stream_manager_->AddVirtualStream(
           screen_resolution,
           base::BindOnce(&GnomeDesktopResizer::OnAddStreamResult,
                          weak_ptr_factory_.GetWeakPtr(),
