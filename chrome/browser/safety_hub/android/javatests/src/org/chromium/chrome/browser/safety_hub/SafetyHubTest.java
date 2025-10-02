@@ -41,6 +41,7 @@ import android.app.Instrumentation;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -125,6 +126,9 @@ import java.util.List;
 @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+@DisableIf.Build(
+        sdk_equals = Build.VERSION_CODES.Q,
+        message = "crbug.com/447426928, crashing emulator with --disable-field-trial-config")
 public final class SafetyHubTest {
     // This test suite currently expects that calls to password check via PasswordManagerHelper
     // cause an exception, so the state of the UI can be controlled by setting prefs in
