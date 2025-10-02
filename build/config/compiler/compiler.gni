@@ -115,8 +115,7 @@ declare_args() {
   exclude_unwind_tables = is_official_build && !is_android
 
   # Where to redirect clang crash diagnoses
-  clang_diagnostic_dir =
-      rebase_path("//tools/clang/crashreports", root_build_dir)
+  clang_diagnostic_dir = rebase_path("//out/clang-crashreports", root_build_dir)
 
   # Mark binaries as compatible with Shadow Stack of Control-flow Enforcement
   # Technology (CET). If Windows version and hardware supports the feature and
