@@ -94,12 +94,12 @@ chromium-metrics-reviews@google.com.
     <variant name="CreateBucket"/>
     <variant name="CreateTable"/>
     <variant name="DeleteBucket"/>
+    <variant name="GetAllBuckets"/>
     <variant name="GetBucket"/>
     <variant name="GetBucketById"/>
     <variant name="GetBucketsForEviction"/>
     <variant name="GetBucketsForHost"/>
     <variant name="GetBucketsForStorageKey"/>
-    <variant name="GetBucketsForType"/>
     <variant name="GetBucketsModifiedBetween"/>
     <variant name="GetExpired"/>
     <variant name="GetExpiredAndOrphanAndStale"/>

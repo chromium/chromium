@@ -373,7 +373,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetAllBuckets() {
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets ";
   // clang-format on
-  last_operation_ = "GetBucketsForType";
+  last_operation_ = "GetAllBuckets";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   return BucketInfosFromSqlStatement(statement);
