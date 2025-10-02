@@ -202,8 +202,6 @@ class ManifestSilentUpdateCommand
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<AppLock> app_lock_;
 
-  base::WeakPtr<content::WebContents> web_contents_;
-  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   // Temporary variables stored here while the update check progresses
   // asynchronously.
@@ -217,6 +215,11 @@ class ManifestSilentUpdateCommand
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
   bool silent_update_required_ = false;
   bool pending_updated_changed_ = false;
+
+  base::WeakPtr<content::WebContents> web_contents_;
+  // Note: This must be destroyed before `new_install_info_` since it holds a
+  // raw_ptr to it.
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   // Debug info.
   ManifestSilentUpdateCommandStage stage_ =
