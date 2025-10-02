@@ -2883,7 +2883,24 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-custom-file-upload-menu",
      flag_descriptions::kIOSCustomFileUploadMenuName,
      flag_descriptions::kIOSCustomFileUploadMenuDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSCustomFileUploadMenu)}};
+     FEATURE_VALUE_TYPE(kIOSCustomFileUploadMenu)},
+    {"ios-tab-group-entry-point-overflow-menu",
+     flag_descriptions::kTabGroupInOverflowMenuName,
+     flag_descriptions::kTabGroupInOverflowMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGroupInOverflowMenu)},
+    {"ios-tab-group-entry-point-tab-icon",
+     flag_descriptions::kTabGroupInTabIconContextMenuName,
+     flag_descriptions::kTabGroupInTabIconContextMenuDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTabGroupInTabIconContextMenu)},
+    {"ios-tab-group-entry-point-tab-recall",
+     flag_descriptions::kTabRecallNewTabGroupButtonName,
+     flag_descriptions::kTabRecallNewTabGroupButtonDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTabRecallNewTabGroupButton)},
+    {"ios-tab-group-entry-point-tab-switcher",
+     flag_descriptions::kTabSwitcherOverflowMenuName,
+     flag_descriptions::kTabSwitcherOverflowMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabSwitcherOverflowMenu)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

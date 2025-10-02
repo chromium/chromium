@@ -975,11 +975,23 @@ extern const char kTabGridNewTransitionsDescription[];
 extern const char kTabGridEmptyThumbnailName[];
 extern const char kTabGridEmptyThumbnailDescription[];
 
+extern const char kTabGroupInOverflowMenuName[];
+extern const char kTabGroupInOverflowMenuDescription[];
+
+extern const char kTabGroupInTabIconContextMenuName[];
+extern const char kTabGroupInTabIconContextMenuDescription[];
+
+extern const char kTabRecallNewTabGroupButtonName[];
+extern const char kTabRecallNewTabGroupButtonDescription[];
+
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
 
 extern const char kTabResumptionImagesName[];
 extern const char kTabResumptionImagesDescription[];
+
+extern const char kTabSwitcherOverflowMenuName[];
+extern const char kTabSwitcherOverflowMenuDescription[];
 
 extern const char kUpdatedFRESequenceName[];
 extern const char kUpdatedFRESequenceDescription[];

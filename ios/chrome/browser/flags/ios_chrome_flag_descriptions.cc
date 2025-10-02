@@ -1657,6 +1657,23 @@ const char kTabGridEmptyThumbnailDescription[] =
     "When enabled, the tab grid will show an empty thumbnail for tabs that "
     "don't have one.";
 
+const char kTabGroupInOverflowMenuName[] =
+    "Enable the Tab Group button in the overflow menu";
+const char kTabGroupInOverflowMenuDescription[] =
+    "When enabled, a Tab Group button will appear in the overflow menu.";
+
+const char kTabGroupInTabIconContextMenuName[] =
+    "Enable the Tab Group button in the tab icon context menu";
+const char kTabGroupInTabIconContextMenuDescription[] =
+    "When enabled, a Tab Group button will appear in the tab icon context "
+    "menu.";
+
+const char kTabRecallNewTabGroupButtonName[] =
+    "Enable the New Tab Group Button on the Tab Group recall surface.";
+const char kTabRecallNewTabGroupButtonDescription[] =
+    "When enabled, a New Tab Group Button will appear on the Tab Group recall "
+    "surface.";
+
 const char kTabResumptionName[] = "Enable Tab Resumption";
 const char kTabResumptionDescription[] =
     "When enabled, offer users with a quick shortcut to resume the last synced "
@@ -1665,6 +1682,12 @@ const char kTabResumptionDescription[] =
 const char kTabResumptionImagesName[] = "Enable Tab Resumption images";
 const char kTabResumptionImagesDescription[] =
     "When enabled, a relevant image is displayed in Tab resumption items.";
+
+const char kTabSwitcherOverflowMenuName[] =
+    "Enable the Tab Switcher overflow menu";
+const char kTabSwitcherOverflowMenuDescription[] =
+    "When enabled, the Tab Switcher edit button and edit menu will be replaced "
+    "by a three dot button and overflow menu.";
 
 const char kUpdatedFRESequenceName[] =
     "Update the sequence of the First Run screens";
