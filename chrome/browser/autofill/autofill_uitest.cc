@@ -157,9 +157,9 @@ void AutofillUiTest::SetUpOnMainThread() {
   // spurious notifications deceive the tests.
   WaitForPersonalDataManagerToBeLoaded(browser()->profile());
 
-  // Effectively disable the caret blinking to not generate any compositor
-  // frames from just a blinking cursor.
-  os_settings_provider_.SetCaretBlinkInterval(base::Minutes(1));
+  // Disable the caret blinking to not generate any compositor frames from just
+  // a blinking cursor.
+  os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
 
   disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
