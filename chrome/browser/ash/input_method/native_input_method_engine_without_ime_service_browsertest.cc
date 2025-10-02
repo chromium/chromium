@@ -219,37 +219,6 @@ constexpr char kEngineIdUs[] = "xkb:us::eng";
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       SuggestEmoji) {
-  base::HistogramTester histogram_tester;
-  engine_->Enable(kEngineIdUs);
-  TextInputTestHelper helper(GetBrowserInputMethod());
-  SetUpTextInput(helper);
-  const std::u16string prefix_text = u"happy ";
-  const std::u16string expected_result_text = u"happy 😀";
-
-  helper.GetTextInputClient()->InsertText(
-      prefix_text,
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(prefix_text);
-  // Selects first emoji.
-  DispatchKeyPress(ui::VKEY_DOWN, false);
-  DispatchKeyPress(ui::VKEY_RETURN, false);
-  helper.WaitForSurroundingTextChanged(expected_result_text);
-
-  EXPECT_EQ(expected_result_text, helper.GetSurroundingText());
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Match",
-                                      AssistiveType::kEmoji, 1);
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
-                                      DisabledReason::kNone, 1);
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Coverage",
-                                      AssistiveType::kEmoji, 1);
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Success",
-                                      AssistiveType::kEmoji, 1);
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        DismissEmojiSuggestionWhenUsersContinueTyping) {
   base::HistogramTester histogram_tester;
   engine_->Enable(kEngineIdUs);
