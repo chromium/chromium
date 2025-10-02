@@ -1802,22 +1802,6 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="InterestGroupRequestType"/>
 </histogram>
 
-<histogram name="Ads.InterestGroup.Net.ResponseParsed.{Type}" enum="Boolean"
-    expires_after="2026-01-31">
-  <owner>xtlsheep@google.com</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    True if the trusted KVv2 bidding or scoring signals successfully parsed the
-    received response without any CBOR parsing error. Recorded whenever there is
-    a response received for Kvv2 signals.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-  <token key="Type" variants="InterestGroupRequestType"/>
-</histogram>
-
 <histogram name="Ads.InterestGroup.Net.ResponseSizeBytes.{Type}" units="bytes"
     expires_after="2026-03-15">
   <owner>caraitto@chromium.org</owner>
@@ -2374,6 +2358,36 @@ chromium-metrics-reviews@google.com.
     https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
     for the latest version of the Protected Audience Bidding &amp; Auction
     Services explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.TrustedKVv2BiddingResponseParsed"
+    enum="Boolean" expires_after="2026-01-31">
+  <owner>xtlsheep@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the trusted KVv2 bidding signals successfully parsed the received
+    response without any CBOR parsing error. Recorded whenever there is a
+    response received for Kvv2 signals.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.TrustedKVv2ScoringResponseParsed"
+    enum="Boolean" expires_after="2026-01-31">
+  <owner>xtlsheep@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the trusted KVv2 scoring signals successfully parsed the received
+    response without any CBOR parsing error. Recorded whenever there is a
+    response received for Kvv2 signals.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
   </summary>
 </histogram>
 
