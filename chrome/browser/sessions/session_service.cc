@@ -539,15 +539,10 @@ void SessionService::DidScheduleCommand() {
   if (is_first_session_service_)
     return;
 
-  // TODO(crbug.com/40196304): for debugging, remove once tracked down
-  // source of problem.
-  // A command has been scheduled for a SessionService other than the first.
-  // Recreating the SessionService happens if shutdown is canceled, which is
-  // valid, but bugs seem to indicate we are getting here in scenarios we don't
-  // expect. This debug code is attempting to identify how that is happening.
-  const bool shutdown_started = browser_shutdown::HasShutdownStarted();
-  base::debug::Alias(&shutdown_started);
-  base::debug::DumpWithoutCrashing();
+  // TODO(crbug.com/40196304): A command has been scheduled for a SessionService
+  // other than the first. Recreating the SessionService happens if shutdown is
+  // canceled, which is valid, but bugs seem to indicate we are getting here in
+  // scenarios we don't expect. Investigate further.
 }
 
 bool SessionService::ShouldRestoreWindowOfType(
