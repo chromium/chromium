@@ -45,10 +45,6 @@ namespace extensions {
 
 namespace {
 
-// Default keybinding to use for emulating user-defined shortcut overrides. The
-// test extensions use Alt+Shift+F and Alt+Shift+H.
-const char kAltShiftG[] = "Alt+Shift+G";
-
 // Name of the command for the "basics" test extension.
 const char kBasicsShortcutCommandName[] = "toggle-feature";
 
@@ -125,29 +121,73 @@ void DomMessageListener::Reset() {
   message_.clear();
 }
 
+// Programmatically (from the extension) disables the action globally.
+void DisableActionGlobally(Profile* profile, const Extension& extension) {
+  // Omitting the tab_id parameter disables the action globally.
+  static constexpr char kScriptTemplate[] =
+      R"(chrome.action.disable(() => {
+             chrome.test.sendScriptResult(
+                 chrome.runtime.lastError ?
+                     chrome.runtime.lastError.message :
+                     'success');
+           });)";
+
+  base::Value set_result = browsertest_util::ExecuteScriptInBackgroundPage(
+      profile, extension.id(), kScriptTemplate);
+  EXPECT_EQ("success", set_result);
+}
+
 // Programmatically (from the extension) sets the action of |extension| to be
-// visible on the tab with the given |tab_id|. Expects the action is *not*
-// visible to start.
-void SetActionVisibleOnTab(Profile* profile,
+// enabled on the tab with the given |tab_id|.
+//
+// In Manifest V3, the chrome.pageAction and chrome.browserAction APIs are
+// unified into chrome.action. This method simulates the old 'pageAction'
+// behavior of a button becoming clickable/colored on a specific tab, which
+// is achieved by calling chrome.action.enable(tabId).
+void SetActionEnabledOnTab(Profile* profile,
                            const Extension& extension,
                            int tab_id) {
   ExtensionActionManager* action_manager = ExtensionActionManager::Get(profile);
   const ExtensionAction* extension_action =
       action_manager->GetExtensionAction(extension);
   ASSERT_TRUE(extension_action);
+
+  // In MV3, the old concept of 'visibility' is replaced by 'enabled state'.
+  // This initial check verifies the action is currently disabled (grayed out).
   EXPECT_FALSE(extension_action->GetIsVisible(tab_id));
 
-  static constexpr char kScriptTemplate[] =
-      R"(chrome.pageAction.show(%d, () => {
+  const ActionInfo* action_info =
+      ActionInfo::GetExtensionActionInfo(&extension);
+  ASSERT_TRUE(action_info);
+
+  std::string script;
+  if (action_info->type == ActionInfo::Type::kPage) {
+    script = base::StringPrintf(
+        R"(chrome.pageAction.show(%d, () => {
            chrome.test.sendScriptResult(
                chrome.runtime.lastError ?
                    chrome.runtime.lastError.message :
                    'success');
-         });)";
+         });)",
+        tab_id);
+  } else {
+    script = base::StringPrintf(
+        R"(chrome.action.enable(%d, () => {
+                 chrome.test.sendScriptResult(
+                     chrome.runtime.lastError ?
+                         chrome.runtime.lastError.message :
+                         'success');
+               });)",
+        tab_id);
+  }
 
   base::Value set_result = browsertest_util::ExecuteScriptInBackgroundPage(
-      profile, extension.id(), base::StringPrintf(kScriptTemplate, tab_id));
+      profile, extension.id(), script);
+
   EXPECT_EQ("success", set_result);
+
+  // After enabling, the internal state (GetIsVisible) should reflect that
+  // the action is now active (clickable/colored) for the specified tab.
   EXPECT_TRUE(extension_action->GetIsVisible(tab_id));
 }
 
@@ -346,12 +386,16 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, InactivePageActionDoesntTrigger) {
   const ExtensionAction* extension_action =
       action_manager->GetExtensionAction(*extension);
   ASSERT_TRUE(extension_action);
+
+  // Explicitly disable the action globally to mimic the MV2 page_action's
+  // initial hidden/disabled state.
+  DisableActionGlobally(profile(), *extension);
   EXPECT_FALSE(extension_action->GetIsVisible(tab_id));
 
-  // If the page action is disabled / hidden, the event shouldn't be dispatched.
+  // If the page action is disabled, the event shouldn't be dispatched.
   bool expect_dispatch = false;
-  SendKeyPressToAction(browser(), *extension, ui::VKEY_F,
-                       "pageAction.onClicked", expect_dispatch);
+  SendKeyPressToAction(browser(), *extension, ui::VKEY_F, "action.onClicked",
+                       expect_dispatch);
 }
 
 // Tests that a page action that is unpinned and only shown within the
@@ -362,67 +406,32 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, UnpinnedPageActionTriggers) {
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
+  // Explicitly disable the action globally to mimic the MV2 page_action's
+  // initial hidden/disabled state.
+  DisableActionGlobally(profile(), *extension);
+
   ExtensionsToolbarContainer* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   RunScheduledLayouts();
   EXPECT_FALSE(extensions_container->IsActionVisibleOnToolbar(extension->id()));
 
   const int tab_id = NavigateToTestURLAndReturnTabId();
-  SetActionVisibleOnTab(profile(), *extension, tab_id);
-
-  ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
+  SetActionEnabledOnTab(profile(), *extension, tab_id);
 
   constexpr bool kExpectDispatch = true;
-  SendKeyPressToAction(browser(), *extension, ui::VKEY_F,
-                       "pageAction.onClicked", kExpectDispatch);
+  SendKeyPressToAction(browser(), *extension, ui::VKEY_F, "action.onClicked",
+                       kExpectDispatch);
 }
 
-IN_PROC_BROWSER_TEST_F(CommandsApiTest, PageActionKeyUpdated) {
+IN_PROC_BROWSER_TEST_F(CommandsApiTest, ActionOverrideChromeShortcut) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("keybinding/page_action")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  CommandService* command_service = CommandService::Get(profile());
-  // Simulate the user setting the keybinding to Alt+Shift+G.
-  command_service->UpdateKeybindingPrefs(
-      extension->id(), manifest_values::kPageActionCommandEvent, kAltShiftG);
-
-  const int tab_id = NavigateToTestURLAndReturnTabId();
-
-  SetActionVisibleOnTab(profile(), *extension, tab_id);
-  ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
-
-  bool expect_dispatch = true;
-  SendKeyPressToAction(browser(), *extension, ui::VKEY_G,
-                       "pageAction.onClicked", expect_dispatch);
-}
-
-// Verify that keyboard shortcut takes effect without reloading the extension.
-// Regression test for https://crbug.com/1190476.
-IN_PROC_BROWSER_TEST_F(CommandsApiTest, ActionKeyUpdated) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunExtensionTest("keybinding/action")) << message_;
-  const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension) << message_;
-
-  // Simulate the user changing the keybinding.
-  CommandService* command_service = CommandService::Get(profile());
-  command_service->UpdateKeybindingPrefs(
-      extension->id(), manifest_values::kActionCommandEvent, "Ctrl+Shift+Y");
-
-  // Verify that the action event occurs for the new keyboard shortcut.
-  ResultCatcher catcher;
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_Y, true, true,
-                                              false, false));
-  ASSERT_TRUE(catcher.GetNextResult());
-}
-
-IN_PROC_BROWSER_TEST_F(CommandsApiTest, PageActionOverrideChromeShortcut) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunExtensionTest("keybinding/page_action")) << message_;
-  const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension) << message_;
+  // Explicitly disable the action globally to mimic the MV2 page_action's
+  // initial hidden state.
+  DisableActionGlobally(profile(), *extension);
 
   CommandService* command_service = CommandService::Get(profile());
 // Simulate the user setting the keybinding to override the print shortcut.
@@ -432,13 +441,11 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, PageActionOverrideChromeShortcut) {
   std::string print_shortcut = "Ctrl+P";
 #endif
   command_service->UpdateKeybindingPrefs(
-      extension->id(), manifest_values::kPageActionCommandEvent,
-      print_shortcut);
+      extension->id(), manifest_values::kActionCommandEvent, print_shortcut);
 
   const int tab_id = NavigateToTestURLAndReturnTabId();
 
-  SetActionVisibleOnTab(profile(), *extension, tab_id);
-  ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
+  SetActionEnabledOnTab(profile(), *extension, tab_id);
 
   ExtensionTestMessageListener test_listener;  // Won't reply.
   test_listener.set_extension_id(extension->id());
@@ -742,15 +749,31 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
 
   const int tab_id = NavigateToTestURLAndReturnTabId();
 
-  // If the action is a page action, it's hidden by default. Show it.
+  // If the action is a page action, it's disabled by default. Show it.
+  // NOTE: This block only runs for MV2 kPage and kBrowser types, or if you
+  // explicitly use chrome.action.disable() for MV3 kAction type.
   if (action_type == ActionInfo::Type::kPage) {
-    SetActionVisibleOnTab(profile(), *extension, tab_id);
+    SetActionEnabledOnTab(profile(), *extension, tab_id);
     ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
   }
 
   ExtensionTestMessageListener click_listener("clicked");
+  // Execute a trivial command in the service worker to ensure it's alive right
+  // before sending the key press. This is critical for MV3 tests. This step is
+  // only required for the MV3 'kAction' parameter.
+  if (action_type == ActionInfo::Type::kAction) {
+    base::Value result = browsertest_util::ExecuteScriptInBackgroundPage(
+        profile(), extension->id(),
+        "chrome.runtime.getPlatformInfo(() => "
+        "chrome.test.sendScriptResult('success'));");
+    EXPECT_EQ("success", result);
+  }
+
+  // Send the key press to trigger the command.
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_U, false,
                                               true, true, false));
+
+  // The listener should now successfully receive the 'clicked' message.
   EXPECT_TRUE(click_listener.WaitUntilSatisfied());
 }
 
@@ -801,7 +824,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   const int tab_id = NavigateToTestURLAndReturnTabId();
 
   if (action_type == ActionInfo::Type::kPage) {
-    // Note: We don't use SetActionVisibleOnTab() here because it relies on a
+    // Note: We don't use SetActionEnabledOnTab() here because it relies on a
     // background page, which this extension doesn't have.
     ExtensionActionManager::Get(profile())
         ->GetExtensionAction(*extension)

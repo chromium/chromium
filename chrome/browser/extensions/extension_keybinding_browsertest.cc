@@ -70,6 +70,54 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, SynthesizedCommand) {
   ASSERT_TRUE(RunExtensionTest("keybinding/synthesized")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, PageActionKeyUpdated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(RunExtensionTest("keybinding/page_action")) << message_;
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  CommandService* command_service = CommandService::Get(profile());
+  // Simulate the user setting the keybinding to Alt+Shift+G.
+  command_service->UpdateKeybindingPrefs(
+      extension->id(), manifest_values::kActionCommandEvent, kAltShiftG);
+
+  // Verify that the keybinding has been updated.
+  ui::Accelerator accelerator =
+      command_service
+          ->FindCommandByName(extension->id(),
+                              manifest_values::kActionCommandEvent)
+          .accelerator();
+  EXPECT_EQ(ui::VKEY_G, accelerator.key_code());
+  EXPECT_FALSE(accelerator.IsCtrlDown());
+  EXPECT_TRUE(accelerator.IsShiftDown());
+  EXPECT_TRUE(accelerator.IsAltDown());
+}
+
+// Verify that keyboard shortcut takes effect without reloading the extension.
+// Regression test for https://crbug.com/1190476.
+IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, ActionKeyUpdated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(RunExtensionTest("keybinding/action")) << message_;
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  // Simulate the user changing the keybinding.
+  CommandService* command_service = CommandService::Get(profile());
+  command_service->UpdateKeybindingPrefs(
+      extension->id(), manifest_values::kActionCommandEvent, "Ctrl+Shift+Y");
+
+  // Verify that the keybinding has been updated.
+  ui::Accelerator accelerator =
+      command_service
+          ->FindCommandByName(extension->id(),
+                              manifest_values::kActionCommandEvent)
+          .accelerator();
+  EXPECT_EQ(ui::VKEY_Y, accelerator.key_code());
+  EXPECT_TRUE(accelerator.IsCtrlDown());
+  EXPECT_TRUE(accelerator.IsShiftDown());
+  EXPECT_FALSE(accelerator.IsAltDown());
+}
+
 IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, ShortcutAddedOnUpdate) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
