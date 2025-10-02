@@ -152,7 +152,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, Readiness) {
   logger.OnDestroyed();
 }
 
-TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpReady) {
+TEST_F(OtpFormEventLoggerIntegrationTest, OtpReady) {
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();
@@ -179,7 +179,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpReady) {
       {.readiness = true, .assistance = false});
 }
 
-TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpNotReady) {
+TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(false);
   FormData otp_form = CreateOtpForm();
@@ -206,7 +206,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpNotReady) {
       {.readiness = false, .assistance = false});
 }
 
-TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpAccepted) {
+TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();
@@ -244,7 +244,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpAccepted) {
                                                .correctness = true});
 }
 
-TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpNotAccepted) {
+TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();
@@ -279,7 +279,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpNotAccepted) {
       {.readiness = true, .acceptance = false, .assistance = false});
 }
 
-TEST_F(OtpFormEventLoggerIntegrationTest, DISABLED_OtpAcceptedAndCorrected) {
+TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();
