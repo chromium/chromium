@@ -38,6 +38,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_paths.h"
@@ -57,6 +59,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
             features::kTabstripDeclutter,
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
+            features::kSideBySide,
         },
         {
             features::kReloadSelectionModel,
@@ -78,11 +81,16 @@ class BrowserCommandsTest : public InProcessBrowserTest {
 
   static constexpr char kUrl[] = "chrome://version/";
 
-  void AddAndReloadTabs(int tab_count) {
-    for (int i = 0; i < tab_count; ++i) {
-      ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), i + 1, GURL(kUrl),
-                                         ui::PAGE_TRANSITION_LINK, false));
+  void AddTabs(Browser* browser, int num_tabs) {
+    for (int i = 0; i < num_tabs; ++i) {
+      chrome::NewTab(browser);
     }
+  }
+
+  void AddTabs(int num_tabs) { AddTabs(browser(), num_tabs); }
+
+  void AddAndReloadTabs(int tab_count) {
+    AddTabs(tab_count);
 
     // Add tabs to the selection (the last one created remains selected) and
     // trigger a reload command on all of them.
@@ -113,6 +121,19 @@ class BrowserCommandsTest : public InProcessBrowserTest {
     EXPECT_EQ(entries.at(index).metrics.at("TPCBlocked"), blocked);
     EXPECT_EQ(entries.at(index).metrics.at("TPCBlockedInSettings"),
               settings_blocked);
+  }
+
+  void CheckBrowserContainsTabGroupWithSize(
+      const BrowserWindowInterface* browser,
+      tab_groups::TabGroupId group_id,
+      int size) {
+    EXPECT_TRUE(
+        browser->GetTabStripModel()->group_model()->ContainsTabGroup(group_id));
+    EXPECT_EQ(size, browser->GetTabStripModel()
+                        ->group_model()
+                        ->GetTabGroup(group_id)
+                        ->ListTabs()
+                        .length());
   }
 
   class ReloadObserver : public content::WebContentsObserver {
@@ -352,15 +373,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, DISABLED_ReloadBreakageUKM) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {
-  auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
-    for (unsigned int i = 0; i < num_tabs; ++i) {
-      chrome::NewTab(browser);
-    }
-  };
-
   // Single Tab Move to New Window.
   // 1 (Current) + 1 (Added) = 2
-  AddTabs(browser(), 1);
+  AddTabs(1);
   std::vector<int> indices = {0};
   // 2 (Current) - 1 (Moved) = 1
   auto browser_created_observer =
@@ -372,14 +387,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {
 
   // Multi-Tab Move to New Window.
   // 1 (Current) + 3 (Added) = 4
-  AddTabs(browser(), 3);
+  AddTabs(3);
   indices = {0, 1};
   // 4 (Current) - 2 (Moved) = 2
   browser_created_observer.emplace();
   chrome::MoveTabsToNewWindow(browser(), indices);
   const BrowserWindowInterface* const third_browser =
       browser_created_observer->Wait();
-  ASSERT_TRUE(browser()->GetTabStripModel()->count() == 2);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   // Check that the two additional windows have been created.
   BrowserList* active_browser_list = BrowserList::GetInstance();
@@ -390,52 +405,122 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {
   EXPECT_EQ(2, third_browser->GetTabStripModel()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {
-  auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
-    for (unsigned int i = 0; i < num_tabs; ++i) {
-      chrome::NewTab(browser);
-    }
-  };
-
-  AddTabs(browser(), 2);
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithGroup) {
+  // Three tabs with first two in a group
+  AddTabs(2);
   std::vector<int> indices = {1, 2};
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup(indices);
   browser()->tab_strip_model()->ChangeTabGroupVisuals(
       group_id, tab_groups::TabGroupVisualData(
                     u"Test Group", tab_groups::TabGroupColorId::kGrey));
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
+  // Move both tabs in the group to a new window.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
+  chrome::MoveTabsToNewWindow(browser(), indices);
+  const BrowserWindowInterface* const second_browser =
+      browser_created_observer->Wait();
+
+  // Original browser has one tab and no group.
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
+  EXPECT_FALSE(
+      browser()->GetTabStripModel()->group_model()->ContainsTabGroup(group_id));
+
+  // New browser has two tabs with the tab group.
+  ASSERT_EQ(2, second_browser->GetTabStripModel()->count());
+  // TODO(crbug.com/424479430): Implement fix.
+  // CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithSplitView) {
+  // Three tabs with last two in a group
+  AddTabs(2);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  const split_tabs::SplitTabId split_id =
+      browser()->tab_strip_model()->AddToNewSplit(
+          {1},
+          split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+                                         1.0f),
+          split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Move both tabs in the split to a new window.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
+  chrome::MoveTabsToNewWindow(browser(), {1, 2});
+  const BrowserWindowInterface* const second_browser =
+      browser_created_observer->Wait();
+
+  // Original browser has one tab and no split view.
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
+  EXPECT_FALSE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+
+  // New browser has two tabs with the split view.
+  ASSERT_EQ(2, second_browser->GetTabStripModel()->count());
+  // TODO(crbug.com/424479430): Implement fix.
+  // EXPECT_TRUE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       MoveTabsToNewWindow_WithTabsAndCollections) {
+  // Seven tabs with the following structure: 0 1gs 2gs 3g 4 5 6
+  AddTabs(6);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  const split_tabs::SplitTabId split_id =
+      browser()->tab_strip_model()->AddToNewSplit(
+          {2},
+          split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+                                         1.0f),
+          split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+
+  // Move tabs 1 through 4 to a new window.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
+  chrome::MoveTabsToNewWindow(browser(), {1, 2, 3, 4});
+  const BrowserWindowInterface* const second_browser =
+      browser_created_observer->Wait();
+
+  // Original browser has three tabs and no split view or group.
+  ASSERT_EQ(3, browser()->GetTabStripModel()->count());
+  EXPECT_FALSE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+  EXPECT_FALSE(
+      browser()->GetTabStripModel()->group_model()->ContainsTabGroup(group_id));
+
+  // New browser has 4 tabs with a split and group.
+  ASSERT_EQ(4, second_browser->GetTabStripModel()->count());
+  // TODO(crbug.com/424479430): Implement fix.
+  // EXPECT_TRUE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+  // CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {
+  AddTabs(2);
+  std::vector<int> indices = {1, 2};
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup(indices);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group_id, tab_groups::TabGroupVisualData(
+                    u"Test Group", tab_groups::TabGroupColorId::kGrey));
+
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   chrome::MoveGroupToNewWindow(browser(), group_id);
-  ASSERT_TRUE(browser()->tab_strip_model()->count() == 1);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
-  Browser* active_browser = browser_created_observer.Wait();
-  ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
+  Browser* active_browser = browser_created_observer->Wait();
 
-  EXPECT_TRUE(
-      active_browser->tab_strip_model()->group_model()->ContainsTabGroup(
-          group_id));
-  EXPECT_EQ(active_browser->tab_strip_model()
-                ->group_model()
-                ->GetTabGroup(group_id)
-                ->ListTabs()
-                .length(),
-            2u);
-  EXPECT_EQ(*active_browser->tab_strip_model()
+  CheckBrowserContainsTabGroupWithSize(active_browser, group_id, 2u);
+  EXPECT_EQ(tab_groups::TabGroupVisualData(u"Test Group",
+                                           tab_groups::TabGroupColorId::kGrey),
+            *active_browser->tab_strip_model()
                  ->group_model()
                  ->GetTabGroup(group_id)
-                 ->visual_data(),
-            tab_groups::TabGroupVisualData(u"Test Group",
-                                           tab_groups::TabGroupColorId::kGrey));
+                 ->visual_data());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToExistingWindow) {
-  auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
-    for (unsigned int i = 0; i < num_tabs; ++i) {
-      chrome::NewTab(browser);
-    }
-  };
-
   // Prepare the source browser with a few tabs and a tab group.
   AddTabs(browser(), 3);
   std::vector<int> indices = {1, 2};
@@ -458,78 +543,56 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToExistingWindow) {
   // Verify the source window no longer contains the tab group.
   EXPECT_FALSE(
       browser()->tab_strip_model()->group_model()->ContainsTabGroup(group_id));
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2u);
+  EXPECT_EQ(2u, browser()->tab_strip_model()->count());
 
   // Verify the target window received the tab group with correct properties.
-  EXPECT_TRUE(
-      target_browser->tab_strip_model()->group_model()->ContainsTabGroup(
-          group_id));
-  EXPECT_EQ(target_browser->tab_strip_model()
-                ->group_model()
-                ->GetTabGroup(group_id)
-                ->ListTabs()
-                .length(),
-            2u);
-  EXPECT_EQ(*target_browser->tab_strip_model()
+  CheckBrowserContainsTabGroupWithSize(target_browser, group_id, 2u);
+  EXPECT_EQ(tab_groups::TabGroupVisualData(u"Test Group ExistingWindow",
+                                           tab_groups::TabGroupColorId::kBlue),
+            *target_browser->tab_strip_model()
                  ->group_model()
                  ->GetTabGroup(group_id)
-                 ->visual_data(),
-            tab_groups::TabGroupVisualData(u"Test Group ExistingWindow",
-                                           tab_groups::TabGroupColorId::kBlue));
+                 ->visual_data());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
-  auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
-    for (unsigned int i = 0; i < num_tabs; ++i) {
-      chrome::NewTab(browser);
-    }
-  };
-
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToExistingWindow) {
   // Create another window, and add tabs.
   Browser* second_window =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
           browser()->profile());
   AddTabs(browser(), 2);
   AddTabs(second_window, 1);
-  ASSERT_TRUE(browser()->tab_strip_model()->count() == 3);
-  ASSERT_TRUE(second_window->tab_strip_model()->count() == 2);
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, second_window->tab_strip_model()->count());
 
   // Single tab move to an existing window.
-  std::vector<int> indices = {0};
-  chrome::MoveTabsToExistingWindow(browser(), second_window, indices);
-  ASSERT_TRUE(browser()->tab_strip_model()->count() == 2);
-  ASSERT_TRUE(second_window->tab_strip_model()->count() == 3);
+  chrome::MoveTabsToExistingWindow(browser(), second_window, {0});
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(3, second_window->tab_strip_model()->count());
 
   // Multiple tab move to an existing window.
-  indices = {0, 2};
-  chrome::MoveTabsToExistingWindow(second_window, browser(), indices);
-  ASSERT_TRUE(browser()->tab_strip_model()->count() == 4);
-  ASSERT_TRUE(second_window->tab_strip_model()->count() == 1);
+  chrome::MoveTabsToExistingWindow(second_window, browser(), {0, 2});
+  ASSERT_EQ(4, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, second_window->tab_strip_model()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                        MoveTabsToExistingWindow_ActiveTabMoved) {
-  auto AddTabs = [](Browser* browser, int count) {
-    for (int i = 0; i < count; ++i) {
-      chrome::NewTab(browser);
-    }
-  };
-
   // Source browser: 0(NTP),1,2(active),3
   AddTabs(browser(), 3);
   browser()->tab_strip_model()->ActivateTabAt(2);
   content::WebContents* src_active_tab =
       browser()->tab_strip_model()->GetWebContentsAt(2);
-  // Target browser: 0
+  ASSERT_EQ(4, browser()->tab_strip_model()->count());
+
+  // Target browser: 0(active)
   Browser* target_browser =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   AddTabs(target_browser, 1);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 4);
-  ASSERT_EQ(target_browser->tab_strip_model()->count(), 1);
+  ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
   // Move tabs: includes active tab.
-  std::vector<int> indices = {1, 2, 3};
-  chrome::MoveTabsToExistingWindow(browser(), target_browser, indices);
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {1, 2, 3});
 
   // Verify tab counts after move.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -544,27 +607,21 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                        MoveTabsToExistingWindow_ActiveTabNotMoved) {
-  auto AddTabs = [](Browser* browser, int count) {
-    for (int i = 0; i < count; ++i) {
-      chrome::NewTab(browser);
-    }
-  };
-
   // Source browser: 0(NTP,active),1,2,3
   AddTabs(browser(), 3);
   browser()->tab_strip_model()->ActivateTabAt(0);
-  // Target browser: 0
+  ASSERT_EQ(4, browser()->tab_strip_model()->count());
+
+  // Target browser: 0(active)
   Browser* target_browser =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   AddTabs(target_browser, 1);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 4);
-  ASSERT_EQ(target_browser->tab_strip_model()->count(), 1);
+  ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
   // Move tabs: does NOT include active tab.
-  std::vector<int> indices = {1, 2, 3};
   content::WebContents* first_moved_tab =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  chrome::MoveTabsToExistingWindow(browser(), target_browser, indices);
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {1, 2, 3});
 
   // Verify tab counts after move.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -575,6 +632,68 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   EXPECT_EQ(1, target_browser->tab_strip_model()->active_index());
   EXPECT_EQ(first_moved_tab,
             target_browser->tab_strip_model()->GetActiveWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       MoveTabsToExistingWindow_WithGroup) {
+  // Source browser: three tabs with first two in a group
+  AddTabs(2);
+  std::vector<int> indices = {1, 2};
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup(indices);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group_id, tab_groups::TabGroupVisualData(
+                    u"Test Group", tab_groups::TabGroupColorId::kGrey));
+
+  // Target browser: 0(active)
+  Browser* target_browser =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  AddTabs(target_browser, 1);
+  ASSERT_EQ(1, target_browser->tab_strip_model()->count());
+
+  // Move both tabs in the group to a new window.
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, indices);
+
+  // Original browser has one tab and no group.
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
+  EXPECT_FALSE(
+      browser()->GetTabStripModel()->group_model()->ContainsTabGroup(group_id));
+
+  // New browser has three tabs with the tab group.
+  ASSERT_EQ(3, target_browser->GetTabStripModel()->count());
+  // TODO(crbug.com/424479430): Implement fix.
+  // CheckBrowserContainsTabGroupWithSize(target_browser, group_id, 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       MoveTabsToExistingWindow_WithSplitView) {
+  // Source browser: three tabs with last two in a group
+  AddTabs(2);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  const split_tabs::SplitTabId split_id =
+      browser()->tab_strip_model()->AddToNewSplit(
+          {1},
+          split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+                                         1.0f),
+          split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Target browser: 0(active)
+  Browser* target_browser =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  AddTabs(target_browser, 1);
+  ASSERT_EQ(1, target_browser->tab_strip_model()->count());
+
+  // Move both tabs in the split to a new window.
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {1, 2});
+
+  // Original browser has one tab and no split view.
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
+  EXPECT_FALSE(target_browser->GetTabStripModel()->ContainsSplit(split_id));
+
+  // New browser has three tabs with the split view.
+  ASSERT_EQ(3, target_browser->GetTabStripModel()->count());
+  // TODO(crbug.com/424479430): Implement fix.
+  // EXPECT_TRUE(target_browser->GetTabStripModel()->ContainsSplit(split_id));
 }
 
 // Tests IDC_MOVE_TAB_TO_NEW_WINDOW. This is a browser test and not a unit test
