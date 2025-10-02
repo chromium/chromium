@@ -8437,6 +8437,7 @@ from previous Chrome versions.
   <int value="-2041208747" label="StorageBuckets:enabled"/>
   <int value="-2041091005" label="OmniboxDomainSuggestions:enabled"/>
   <int value="-2040899483" label="TabGroupParityAndroid:disabled"/>
+  <int value="-2040695258" label="WebUIOmniboxFullPopup:disabled"/>
   <int value="-2040471724" label="CrOSComponent:disabled"/>
   <int value="-2040360427" label="DesktopScreenshots:disabled"/>
   <int value="-2040154722" label="TimeOfDayScreenSaver:enabled"/>
@@ -15312,6 +15313,7 @@ from previous Chrome versions.
   <int value="408190863" label="OmniboxDisableInstantExtendedLimit:disabled"/>
   <int value="408469366"
       label="NtpHistoryClustersModuleSuggestionChipHeader:disabled"/>
+  <int value="408854471" label="WebUIOmniboxFullPopup:enabled"/>
   <int value="409097421" label="EnablePixAccountLinking:enabled"/>
   <int value="409174264" label="camera-super-res-override"/>
   <int value="409566604" label="IntentPickerPWAPersistence:enabled"/>

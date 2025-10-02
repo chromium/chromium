@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list_types.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -25,7 +27,9 @@
 OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                              OmniboxController* controller)
     : views::WebView(location_bar_view->profile()),
-      location_bar_view_(location_bar_view) {
+      location_bar_view_(location_bar_view),
+      include_location_bar_cutout_(
+          !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
   set_owned_by_client(OwnedByClientPassKey());
 
   // Make the OmniboxController available to the OmniboxPopupUI.
@@ -66,8 +70,8 @@ void OmniboxPopupPresenter::Show() {
 
     widget_->ShowInactive();
 
-    widget_->SetContentsView(
-        std::make_unique<RoundedOmniboxResultsFrame>(this, location_bar_view_));
+    widget_->SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
+        this, location_bar_view_, include_location_bar_cutout_));
     widget_->AddObserver(this);
 
     // On Show(), the widget height can not be 0 or else the compositor thinks
@@ -108,7 +112,9 @@ void OmniboxPopupPresenter::AddedToWidget() {
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kOmniboxExpandedRadius);
   gfx::RoundedCornersF rounded_corner_radii =
-      gfx::RoundedCornersF(0, 0, corner_radius, corner_radius);
+      gfx::RoundedCornersF(include_location_bar_cutout_ ? 0 : corner_radius,
+                           include_location_bar_cutout_ ? 0 : corner_radius,
+                           corner_radius, corner_radius);
   holder()->SetCornerRadii(rounded_corner_radii);
 }
 
@@ -123,9 +129,13 @@ void OmniboxPopupPresenter::SetWidgetContentHeight(int content_height) {
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.
     gfx::Rect widget_bounds = location_bar_view_->GetBoundsInScreen();
-    widget_bounds.Inset(
-        -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
-    widget_bounds.set_height(widget_bounds.height() + content_height);
+    if (include_location_bar_cutout_) {
+      widget_bounds.Inset(
+          -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+      widget_bounds.set_height(widget_bounds.height() + content_height);
+    } else {
+      widget_bounds.set_height(content_height);
+    }
     widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
     widget_->SetBounds(widget_bounds);
   }

@@ -171,6 +171,9 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
+// If enabled, removes the cutout for the location bar and fills the entire
+// popup content with the WebUI WebView.
+BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
 // If enabled, shows the omnibox suggestions in the popup in WebUI.
 BASE_FEATURE(kWebUIOmniboxPopup, DISABLED);
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
