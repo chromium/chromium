@@ -221,8 +221,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "components/payments/content/browser_binding/browser_bound_keys_deleter_factory.h"
-#include "components/payments/content/browser_binding/mock_browser_bound_keys_deleter.h"
+#include "components/payments/content/browser_binding/browser_bound_key_deleter_factory.h"
+#include "components/payments/content/browser_binding/mock_browser_bound_key_deleter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "base/task/current_thread.h"
@@ -4548,8 +4548,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearNewTabPageLocalStorage) {
 // Verify that clearing cookies will also trigger removing invalid browser bound
 // keys.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       ClearInvalidBrowserBoundKeysForSecurePaymentConfirmation) {
-  auto* mock_browser_bound_keys_deleter = static_cast<
+       ClearInvalidBrowserBoundKeyForSecurePaymentConfirmation) {
+  auto* mock_browser_bound_key_deleter = static_cast<
       payments::MockBrowserBoundKeyDeleter*>(
       payments::BrowserBoundKeyDeleterFactory::GetInstance()
           ->SetTestingFactoryAndUse(
@@ -4559,7 +4559,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                 return std::make_unique<payments::MockBrowserBoundKeyDeleter>();
               })));
 
-  EXPECT_CALL(*mock_browser_bound_keys_deleter, RemoveInvalidBBKs());
+  EXPECT_CALL(*mock_browser_bound_key_deleter, RemoveInvalidBBKs());
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                                 false);

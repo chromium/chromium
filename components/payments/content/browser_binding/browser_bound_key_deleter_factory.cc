@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/browser_binding/browser_bound_keys_deleter_factory.h"
+#include "components/payments/content/browser_binding/browser_bound_key_deleter_factory.h"
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -11,8 +11,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/payments/content/browser_binding/browser_bound_key_store_android.h"
-#include "components/payments/content/browser_binding/browser_bound_keys_deleter.h"
+#include "components/payments/content/browser_binding/browser_bound_key_deleter.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -55,7 +54,7 @@ BrowserBoundKeyDeleterFactory::BuildServiceInstanceForBrowserContext(
   if (service_for_testing_) {
     service = std::move(service_for_testing_);
   } else {
-    service = std::make_unique<BrowserBoundKeyDeleter>(
+    service = GetBrowserBoundKeyDeleterInstance(
         webdata_services::WebDataServiceWrapperFactory::
             GetWebPaymentsWebDataServiceForBrowserContext(
                 context, ServiceAccessType::EXPLICIT_ACCESS));
