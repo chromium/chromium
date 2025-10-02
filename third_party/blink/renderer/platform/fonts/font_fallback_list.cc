@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -56,6 +57,7 @@ void FontFallbackList::Trace(Visitor* visitor) const {
   visitor->Trace(cached_primary_simple_font_data_for_tab_size_);
   visitor->Trace(font_selector_);
   visitor->Trace(shape_cache_);
+  visitor->Trace(emphasis_mark_shape_);
 }
 
 bool FontFallbackList::ShouldSkipDrawing() const {
@@ -282,6 +284,22 @@ bool FontFallbackList::CanShapeWordByWord(
     can_shape_word_by_word_computed_ = true;
   }
   return can_shape_word_by_word_;
+}
+
+const ShapeResult& FontFallbackList::GetOrCreateEmphasisMarkShape(
+    const Font& font,
+    const AtomicString& mark) {
+  const ShapeResult* cached_result = emphasis_mark_shape_.Get();
+  if (mark == emphasis_mark_text_ && cached_result) {
+    return *cached_result;
+  }
+  String mark16 = mark;
+  // HarfBuzzShaper requires a 16-bit string for a vertical text.
+  mark16.Ensure16Bit();
+  cached_result = HarfBuzzShaper(mark16).Shape(&font, TextDirection::kLtr);
+  emphasis_mark_text_ = mark;
+  emphasis_mark_shape_ = cached_result;
+  return *cached_result;
 }
 
 }  // namespace blink

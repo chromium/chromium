@@ -80,6 +80,8 @@ class PLATFORM_EXPORT FontFallbackList
     }
     return shape_cache_.Get();
   }
+  const ShapeResult& GetOrCreateEmphasisMarkShape(const Font&,
+                                                  const AtomicString& mark);
 
   const SimpleFontData* PrimarySimpleFontDataWithSpace(
       const FontDescription& font_description) {
@@ -178,6 +180,12 @@ class PLATFORM_EXPORT FontFallbackList
   bool has_non_initial_font_features_ : 1 = false;
 
   Member<ShapeCache> shape_cache_;
+  // `emphasis_mark_shape_` and `emphasis_mark_text_` makes a simple cache of a
+  // ShapeResult for an emphasis mark.
+  // It doesn't use NGShapeCache, which stores only ShapeResults for the
+  // primary font.
+  Member<const ShapeResult> emphasis_mark_shape_;
+  AtomicString emphasis_mark_text_;
 };
 
 }  // namespace blink

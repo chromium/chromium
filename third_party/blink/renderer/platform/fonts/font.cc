@@ -263,7 +263,12 @@ void Font::WillUseFontData(const String& text) const {
 GlyphData Font::GetEmphasisMarkGlyphData(const AtomicString& mark) const {
   if (mark.empty())
     return GlyphData();
-  return CachingWordShaper(*this).EmphasisMarkGlyphData(TextRun(mark));
+  if (!RuntimeEnabledFeatures::EmphasisMarkShapeCacheEnabled()) {
+    return CachingWordShaper(*this).EmphasisMarkGlyphData(TextRun(mark));
+  }
+  return EnsureFontFallbackList()
+      ->GetOrCreateEmphasisMarkShape(*this, mark)
+      .EmphasisMarkGlyphData(font_description_);
 }
 
 int Font::EmphasisMarkAscent(const AtomicString& mark) const {

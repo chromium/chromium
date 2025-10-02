@@ -372,6 +372,11 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
                                 GraphemeClusterCallback,
                                 void* context) const;
 
+  // Returns the first GlyphData for an emphasis mark.
+  // Returns an empty GlyphData if this ShapeResult contains no glyphs.
+  GlyphData EmphasisMarkGlyphData(
+      const FontDescription& font_description) const;
+
   // Computes and returns the ink bounds (or visual overflow rect). This is
   // quite expensive and involves measuring each glyph accumulating the bounds.
   gfx::RectF ComputeInkBounds() const;

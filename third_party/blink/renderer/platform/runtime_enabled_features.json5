@@ -2045,6 +2045,10 @@
       status: "experimental",
     },
     {
+      name: "EmphasisMarkShapeCache",
+      status: "stable",
+    },
+    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },
