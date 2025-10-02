@@ -25054,6 +25054,21 @@
             ]
         }
     ],
+    "TokenHandleRefactoring": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseTokenHandleStore"
+                    ]
+                }
+            ]
+        }
+    ],
     "ToolbarPinning": [
         {
             "platforms": [

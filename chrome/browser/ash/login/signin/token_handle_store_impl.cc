@@ -182,7 +182,6 @@ void TokenHandleStoreImpl::FetchTokenHandle(
     const AccountId& account_id,
     const std::string& access_token,
     const std::string& refresh_token_hash) {
-  CHECK_NE(access_token, std::string());
   // Overwriting the `TokenHandleFetcher` for `account_id` while the fetch is
   // pending will effectively cancel the previous check, and issue a newer
   // one. Destroying the previous instance of `TokenHandleFetcher` will also
