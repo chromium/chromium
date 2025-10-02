@@ -4216,6 +4216,23 @@ chromium-metrics-reviews@google.com.
   <token key="ResourceType" variants="ResourceType"/>
 </histogram>
 
+<histogram
+    name="Blink.MemoryCache.TotalTakenTimeForDidLoadResourceFromMemoryCache"
+    enum="RevalidationPolicy" expires_after="2026-02-28">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Total time spent processing
+    `ResourceFetcher::DidLoadResourceFromMemoryCache()` until the document
+    parsing is finished in the renderer process. This is recorded on each
+    navigation for http or https URLs in OutermostMainFrame. The UMA is reported
+    when the document finishes parsing.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.MobileMetrics.BadTapTargetRatioExtractionSucceed"
     enum="Boolean" expires_after="2023-05-07">
   <owner>kumagi@google.com</owner>

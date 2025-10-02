@@ -44,6 +44,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -940,6 +941,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
   if (IsDetached() || !resource_load_observer_) {
     return;
   }
+  base::ElapsedTimer timer;
 
   if (!is_static_data) {
     MarkEarlyHintConsumedIfNeeded(request.InspectorId(), resource,
@@ -1010,6 +1012,11 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
                                                    FROM_HERE);
       }
     }
+  }
+
+  if (base::TimeTicks::IsHighResolution()) {
+    total_taken_time_for_did_load_resource_from_memory_cache_ +=
+        timer.Elapsed();
   }
 }
 

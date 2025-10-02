@@ -417,6 +417,11 @@ class PLATFORM_EXPORT ResourceFetcher
         excluded_resource_type;
   }
 
+  base::TimeDelta total_taken_time_for_did_load_resource_from_memory_cache()
+      const {
+    return total_taken_time_for_did_load_resource_from_memory_cache_;
+  }
+
  private:
   friend class ResourceCacheValidationSuppressor;
   class ResourcePrepareHelper;
@@ -729,6 +734,9 @@ class PLATFORM_EXPORT ResourceFetcher
       defer_unused_preload_preloaded_reason_for_testing_;
   features::LcppDeferUnusedPreloadExcludedResourceType
       defer_unused_preload_excluded_resource_type_for_testing_;
+
+  // The accumulated time taken by `DidLoadResourceFromMemoryCache()`.
+  base::TimeDelta total_taken_time_for_did_load_resource_from_memory_cache_;
 };
 
 class ResourceCacheValidationSuppressor {

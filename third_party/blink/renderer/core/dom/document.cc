@@ -8086,6 +8086,10 @@ void Document::FinishedParsing() {
                                                    /*did_commit_load=*/false);
     // Record the total taken time by subresource load observer update.
     Loader()->ReportTotalTakenTimeToUpdateSubresourceLoadMetrics();
+    // Record the total taken time by resource load from memory cache.
+    base::UmaHistogramMicrosecondsTimes(
+        "Blink.MemoryCache.TotalTakenTimeForDidLoadResourceFromMemoryCache",
+        fetcher_->total_taken_time_for_did_load_resource_from_memory_cache());
   }
 }
 
