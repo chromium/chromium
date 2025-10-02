@@ -89,8 +89,8 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
   void ScheduleSyncTokenRelease(const SyncToken& release);
 
   // The object to which the actual decoding can be delegated.
-  raw_ptr<ImageDecodeAcceleratorWorker> worker_ = nullptr;
-  raw_ptr<Scheduler> scheduler_ = nullptr;
+  raw_ptr<ImageDecodeAcceleratorWorker> worker_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<Scheduler> scheduler_ GUARDED_BY(lock_) = nullptr;
   const CommandBufferId command_buffer_id_;
   const SequenceId sequence_;
 

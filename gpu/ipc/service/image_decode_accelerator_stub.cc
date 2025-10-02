@@ -106,6 +106,9 @@ void CleanUpResource(SkImages::ReleaseContext context) {
 }  // namespace
 #endif
 
+// NOTE: `worker_`, `scheduler_`, and `channel_` must not be dereferenced
+// within the constructor as doing so requires that `lock_` be held, which it's
+// not here.
 ImageDecodeAcceleratorStub::ImageDecodeAcceleratorStub(
     ImageDecodeAcceleratorWorker* worker,
     GpuChannel* channel,
@@ -114,24 +117,25 @@ ImageDecodeAcceleratorStub::ImageDecodeAcceleratorStub(
       scheduler_(channel->scheduler()),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)),
-      sequence_(scheduler_->CreateSequence(SchedulingPriority::kLow,
-                                           channel->task_runner(),
-                                           CommandBufferNamespace::GPU_IO,
-                                           command_buffer_id_)),
+      sequence_(
+          channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                               channel->task_runner(),
+                                               CommandBufferNamespace::GPU_IO,
+                                               command_buffer_id_)),
       channel_(channel),
       main_task_runner_(channel->task_runner()),
       io_task_runner_(channel->io_task_runner()) {
   // We need the sequence to be initially disabled so that when we schedule a
   // task to release the decode sync token, it doesn't run immediately (we want
   // it to run when the decode is done).
-  scheduler_->DisableSequence(sequence_);
+  channel->scheduler()->DisableSequence(sequence_);
 }
 
 void ImageDecodeAcceleratorStub::Shutdown() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  scheduler_->DestroySequence(sequence_);
-
   base::AutoLock lock(lock_);
+
+  scheduler_->DestroySequence(sequence_);
 
   // Clear out raw_ptr references to objects that may be destroyed on the main
   // thread before this object is destroyed on the IO thread.
@@ -152,6 +156,7 @@ void ImageDecodeAcceleratorStub::ScheduleImageDecode(
   const SyncToken decode_sync_token(CommandBufferNamespace::GPU_IO,
                                     command_buffer_id_, release_count);
 
+  base::AutoLock lock(lock_);
   if (!base::FeatureList::IsEnabled(
           features::kVaapiJpegImageDecodeAcceleration) &&
       !base::FeatureList::IsEnabled(
@@ -160,7 +165,6 @@ void ImageDecodeAcceleratorStub::ScheduleImageDecode(
     return;
   }
 
-  base::AutoLock lock(lock_);
   if (!channel_) {
     // The channel is no longer available, so don't do any decoding.
     ScheduleSyncTokenRelease(decode_sync_token);
@@ -441,6 +445,7 @@ void ImageDecodeAcceleratorStub::OnDecodeCompleted(
 
 void ImageDecodeAcceleratorStub::ScheduleSyncTokenRelease(
     const SyncToken& release) {
+  lock_.AssertAcquired();
   scheduler_->ScheduleTask(Scheduler::Task(sequence_,
                                            base::OnceClosure(base::DoNothing()),
                                            /*sync_token_fences=*/{}, release));
