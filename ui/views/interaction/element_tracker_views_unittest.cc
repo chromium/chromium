@@ -1112,10 +1112,48 @@ TEST_F(ElementTrackerViewsTest, GetFirstMatchingViewWithSingleView) {
   contents->SetProperty(kElementIdentifierKey, kTestElementID);
   EXPECT_EQ(contents, ElementTrackerViews::GetInstance()->GetFirstMatchingView(
                           kTestElementID, context));
+  EXPECT_EQ(contents, ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                          kTestElementID, context, /*require_visible=*/true));
 
   contents->ClearProperty(kElementIdentifierKey);
   EXPECT_EQ(nullptr, ElementTrackerViews::GetInstance()->GetFirstMatchingView(
                          kTestElementID, context));
+}
+
+TEST_F(ElementTrackerViewsTest, GetFirstMatchingViewWithSingleViewNotVisible) {
+  auto widget = CreateWidget();
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+  widget->Show();
+  contents->SetProperty(kElementIdentifierKey, kTestElementID);
+  contents->SetVisible(false);
+  const ui::ElementContext context =
+      ElementTrackerViews::GetContextForView(contents);
+  EXPECT_EQ(contents, ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                          kTestElementID, context));
+  EXPECT_EQ(nullptr, ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                         kTestElementID, context, /*require_visible=*/true));
+}
+
+TEST_F(ElementTrackerViewsTest,
+       GetFirstMatchingViewWithMultipleViewsOneVisible) {
+  auto widget = CreateWidget();
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+  View* const child1 = contents->AddChildView(std::make_unique<View>());
+  View* const child2 = contents->AddChildView(std::make_unique<View>());
+  View* const child3 = contents->AddChildView(std::make_unique<View>());
+  widget->Show();
+  child1->SetProperty(kElementIdentifierKey, kTestElementID);
+  child2->SetProperty(kElementIdentifierKey, kTestElementID);
+  child3->SetProperty(kElementIdentifierKey, kTestElementID);
+  child1->SetVisible(false);
+  child3->SetVisible(false);
+  const ui::ElementContext context =
+      ElementTrackerViews::GetContextForView(contents);
+  EXPECT_EQ(child2, ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                        kTestElementID, context, /*require_visible=*/true));
+  contents->SetVisible(false);
+  EXPECT_EQ(nullptr, ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                         kTestElementID, context, /*require_visible=*/true));
 }
 
 TEST_F(ElementTrackerViewsTest, GetFirstMatchingViewAs) {
