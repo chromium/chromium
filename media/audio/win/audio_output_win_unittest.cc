@@ -523,8 +523,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
           base::allow_nonunique_obj, base::span(data_.get(), span_size)));
       ++current_packet_count_;
 
-      DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)),
-                0U);
+      DCHECK_EQ(static_cast<size_t>(size) % sizeof(float), 0U);
       audio_bus_->CopyTo(dest);
       return audio_bus_->frames();
     }

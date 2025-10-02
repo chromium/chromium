@@ -566,7 +566,8 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     }
 
     // Copy the samples into the input buffer.
-    DCHECK_EQ(input_bus_->channel(0), input_buffer_->channel(0));
+    DCHECK_EQ(input_bus_->channel_span(0).data(),
+              input_buffer_->channel_span(0).data());
     audio_bus->CopyPartialFramesTo(source_offset, num_samples,
                                    buffer_fill_offset, input_buffer_.get());
   }
@@ -635,7 +636,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
       auto& buffer = UNSAFE_BUFFERS(io_data->mBuffers[i_buf]);
       buffer.mNumberChannels = 1;
       buffer.mDataByteSize = sizeof(float) * *io_num_packets;
-      buffer.mData = input_bus.channel(i_buf);
+      buffer.mData = input_bus.channel_span(i_buf).data();
     }
 
     // Reset the input bus back to the input buffer. See the comment on
