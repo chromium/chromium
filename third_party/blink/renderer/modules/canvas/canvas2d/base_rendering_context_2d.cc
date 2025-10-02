@@ -1117,12 +1117,12 @@ void BaseRenderingContext2D::DrawTextInternal(
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
   double font_width = 0;
-    if (run_start == 0 && run_end == text.length()) [[likely]] {
-      font_width = text_painter.ComputeInlineSize(text_run, *font, &bounds);
-    } else {
-      font_width = text_painter.ComputeSubInlineSize(text_run, run_start,
-                                                     run_end, *font, &bounds);
-    }
+  if (run_start == 0 && run_end == text.length()) [[likely]] {
+    font_width = text_painter.ComputeInlineSize(text_run, *font, &bounds);
+  } else {
+    font_width = text_painter.ComputeSubInlineSize(text_run, run_start, run_end,
+                                                   *font, &bounds);
+  }
 
   bool use_max_width = (max_width && *max_width < font_width);
   double width = use_max_width ? *max_width : font_width;
