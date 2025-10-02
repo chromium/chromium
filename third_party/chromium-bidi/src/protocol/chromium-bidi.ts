@@ -45,6 +45,7 @@ export enum BiDiModule {
   Network = 'network',
   Script = 'script',
   Session = 'session',
+  Speculation = 'speculation',
   // keep-sorted end
 }
 

@@ -20,3 +20,4 @@ export * from './generated/webdriver-bidi.js';
 export * from './ErrorResponse.js';
 export * from './generated/webdriver-bidi-permissions.js';
 export * from './generated/webdriver-bidi-bluetooth.js';
+export * from './generated/webdriver-bidi-nav-speculation.js';

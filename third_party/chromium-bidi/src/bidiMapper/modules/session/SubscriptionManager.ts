@@ -70,6 +70,9 @@ export function unrollEvents(
       case ChromiumBidi.BiDiModule.Script:
         addEvents(Object.values(ChromiumBidi.Script.EventNames));
         break;
+      case ChromiumBidi.BiDiModule.Speculation:
+        addEvents(Object.values(ChromiumBidi.Speculation.EventNames));
+        break;
       default:
         allEvents.add(event);
     }
