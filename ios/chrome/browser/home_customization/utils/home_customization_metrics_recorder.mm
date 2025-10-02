@@ -30,8 +30,6 @@ const char kTipsToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.Tips.Toggled";
 const char kShopCardPriceTrackingAction[] =
     "IOS.HomeCustomization.MagicStackPage.ShopCardPriceTracking.Toggled";
-const char kShopCardReviewsAction[] =
-    "IOS.HomeCustomization.MagicStackPage.ShopCardReviews.Toggled";
 
 }  // namespace
 
@@ -64,14 +62,7 @@ const char kShopCardReviewsAction[] =
       base::RecordAction(base::UserMetricsAction(kTipsToggledAction));
       return;
     case CustomizationToggleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        base::RecordAction(
-            base::UserMetricsAction(kShopCardPriceTrackingAction));
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        base::RecordAction(base::UserMetricsAction(kShopCardReviewsAction));
-      }
+      base::RecordAction(base::UserMetricsAction(kShopCardPriceTrackingAction));
       return;
   }
 }

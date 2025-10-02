@@ -101,7 +101,8 @@ NSString* HostnameFromGURL(GURL URL) {
                                    kTabResumptionShowItemImmediately);
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
   config.additional_args.push_back("--mock-shopping-service=is-eligible,"
-                                   "has-empty-price-tracked-bookmarks-results");
+                                   "has-empty-price-tracked-bookmarks-results,"
+                                   "has-empty-subscriptions-results");
   // kVisitedURLRankingHistoryVisibilityScoreFilter require the network, keep
   // it disabled for tests.
   config.features_disabled.push_back(

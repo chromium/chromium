@@ -41,11 +41,8 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kMostVisited:
-      return YES;
     case ContentSuggestionsModuleType::kShopCard:
-      return base::Contains(commerce::kShopCardVariation.Get(),
-                            commerce::kShopCardArm1) ||
-             commerce::kShopCardVariation.Get() == commerce::kShopCardArm2;
+      return YES;
     default:
       return NO;
   }
@@ -95,16 +92,8 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_CONTEXT_MENU_DESCRIPTION);
     case ContentSuggestionsModuleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CONTEXT_MENU_TITLE);
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CONTEXT_MENU_TITLE);
-      }
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CONTEXT_MENU_TITLE);
     default:
       NOTREACHED();
   }
@@ -156,16 +145,8 @@ NSString* GetContextMenuHideDescriptionForType(
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_HIDE_CARD);
     case ContentSuggestionsModuleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE);
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_HIDE_ALT);
-      }
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE);
     default:
       NOTREACHED();
   }

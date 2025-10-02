@@ -96,10 +96,7 @@ namespace {
 // of 3 impressions and an impression only counts if the card is at the
 // front of the Magic Stack.
 BOOL PromoteShopCardToFrontOfStack() {
-  return (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1) ||
-          commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) &&
-         commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
+  return commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
 }
 
 BOOL PromoteTabResumptionShopCardToFrontOfStack() {
@@ -800,8 +797,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   inputContext->metadata_args.emplace(
       segmentation_platform::kNumPriceDropsInShoppingList,
       segmentation_platform::processing::ProcessedValue::FromFloat(-1.0f));
-  if (base::Contains(commerce::kShopCardVariation.Get(),
-                     commerce::kShopCardArm1)) {
+  // Only users that are eligible for ShoppingList are eligible for the
+  // ShopCard.
+  if (_shoppingService->IsShoppingListEligible()) {
     __weak MagicStackRankingModel* weakSelf = self;
     GetAllPriceTrackedBookmarks(
         _shoppingService, _bookmarkModel,

@@ -87,13 +87,10 @@
         {CustomizationToggleType::kTips,
          [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]});
   }
-  if (base::Contains(commerce::kShopCardVariation.Get(),
-                     commerce::kShopCardArm1) ||
-      commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
-    toggleMap.insert({CustomizationToggleType::kShopCard,
-                      [self isMagicStackCardEnabledForType:
-                                CustomizationToggleType::kShopCard]});
-  }
+  toggleMap.insert(
+      {CustomizationToggleType::kShopCard,
+       [self
+           isMagicStackCardEnabledForType:CustomizationToggleType::kShopCard]});
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
@@ -134,17 +131,8 @@
           prefs::kHomeCustomizationMagicStackTipsEnabled);
     }
     case CustomizationToggleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        return _prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled);
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        return _prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled);
-      } else {
-        return false;
-      }
+      return _prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled);
     default:
       NOTREACHED();
   }
@@ -189,16 +177,9 @@
       break;
     }
     case CustomizationToggleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        _prefService->SetBoolean(
-            prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
-            enabled);
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        _prefService->SetBoolean(
-            prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, enabled);
-      }
+      _prefService->SetBoolean(
+          prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
+          enabled);
       break;
   }
 }

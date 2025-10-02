@@ -39,16 +39,8 @@
     case CustomizationToggleType::kTips:
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     case CustomizationToggleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS);
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS_ALT_2);
-      }
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS);
   }
 }
 
@@ -79,16 +71,8 @@
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TIPS);
     case CustomizationToggleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS_SUBTITLE);
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS_SUBTITLE);
-      }
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS_SUBTITLE);
   }
 }
 
@@ -121,15 +105,8 @@
       UIImageSymbolConfiguration* fallbackImageConfig =
           [UIImageSymbolConfiguration
               configurationWithWeight:UIImageSymbolWeightLight];
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        return CustomSymbolWithConfiguration(kDownTrendSymbol,
-                                             fallbackImageConfig);
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        return DefaultSymbolWithPointSize(kRectangleGroupBubble,
-                                          kToggleIconPointSize);
-      }
+      return CustomSymbolWithConfiguration(kDownTrendSymbol,
+                                           fallbackImageConfig);
       NOTREACHED();
     }
   }
@@ -156,13 +133,7 @@
     case CustomizationToggleType::kTips:
       return kCustomizationToggleTipsIdentifier;
     case CustomizationToggleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        return kCustomizationToggleShopCardPriceTrackingIdentifier;
-      } else if (commerce::kShopCardVariation.Get() ==
-                 commerce::kShopCardArm2) {
-        return kCustomizationToggleShopCardReviewsIdentifier;
-      }
+      return kCustomizationToggleShopCardPriceTrackingIdentifier;
       NOTREACHED();
   }
 }

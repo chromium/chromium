@@ -460,13 +460,10 @@ const CGFloat kSeparatorHeight = 0.5;
                                              config:(MagicStackModule*)config {
   switch (type) {
     case ContentSuggestionsModuleType::kShopCard: {
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        ShopCardItem* shopCardItem = static_cast<ShopCardItem*>(config);
-        _seeMoreButton.accessibilityLabel = [@[
-          _seeMoreButton.titleLabel.text, shopCardItem.shopCardData.productTitle
-        ] componentsJoinedByString:@", "];
-      }
+      ShopCardItem* shopCardItem = static_cast<ShopCardItem*>(config);
+      _seeMoreButton.accessibilityLabel = [@[
+        _seeMoreButton.titleLabel.text, shopCardItem.shopCardData.productTitle
+      ] componentsJoinedByString:@", "];
       break;
     }
     default:
