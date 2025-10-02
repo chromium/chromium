@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h"
@@ -44,6 +45,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     LensOverlayPanTrackerDelegate,
     LensOverlayDetentsManagerDelegate,
     LensResultPageViewControllerDelegate,
+    LensOverlayBottomSheetPresenterDelegate,
     UINavigationControllerDelegate>
 @end
 
@@ -93,6 +95,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
+    _baseViewController.bottomSheet.sheetDelegate = self;
     _resultViewController = resultViewController;
     _presentationNavigationController = [[UINavigationController alloc]
         initWithRootViewController:resultViewController];
@@ -111,9 +114,13 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     return YES;
   }
 
-  return _baseViewController.presentedViewController != nil &&
-         _baseViewController.presentedViewController ==
-             _presentationNavigationController;
+  if (UseCustomLensOverlayBottomSheet()) {
+    return _baseViewController.bottomSheet.bottomSheetPresented;
+  } else {
+    return _baseViewController.presentedViewController != nil &&
+           _baseViewController.presentedViewController ==
+               _presentationNavigationController;
+  }
 }
 
 - (SheetDimensionState)sheetDimension {
@@ -248,17 +255,24 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     [_baseViewController dismissViewControllerAnimated:NO completion:nil];
   }
 
-  [_baseViewController
-      presentViewController:_presentationNavigationController
-                   animated:animated
-                 completion:^{
-                   [weakSelf resultsPagePresentationDidAppear];
-                   [weakSelf handlePanRecognizersAddedAfter:
-                                 panRecognizersBeforePresenting];
-                   if (completion) {
-                     completion();
-                   }
-                 }];
+  ProceduralBlock afterPresentation = ^{
+    [weakSelf resultsPagePresentationDidAppear];
+    [weakSelf handlePanRecognizersAddedAfter:panRecognizersBeforePresenting];
+    if (completion) {
+      completion();
+    }
+  };
+
+  if (UseCustomLensOverlayBottomSheet()) {
+    [_baseViewController
+        presentViewControllerInBottomSheet:_presentationNavigationController
+                                  animated:animated
+                                completion:afterPresentation];
+  } else {
+    [_baseViewController presentViewController:_presentationNavigationController
+                                      animated:animated
+                                    completion:afterPresentation];
+  }
 }
 
 - (void)readjustPresentationIfNeeded {
@@ -315,8 +329,13 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 - (void)hideBottomSheetWithCompletion:(void (^)(void))completion {
   [self resultsPagePresentationWillDismiss];
-  UIViewController* presentedVC = _baseViewController.presentedViewController;
-  [presentedVC dismissViewControllerAnimated:YES completion:completion];
+
+  if (UseCustomLensOverlayBottomSheet()) {
+    [_baseViewController dismissBottomSheetAnimated:YES completion:completion];
+  } else {
+    UIViewController* presentedVC = _baseViewController.presentedViewController;
+    [presentedVC dismissViewControllerAnimated:YES completion:completion];
+  }
 }
 
 - (void)dismissResultsPageAnimated:(BOOL)animated
@@ -329,15 +348,23 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     return;
   }
 
-  UIViewController* presentedVC = _baseViewController.presentedViewController;
-  if (!presentedVC) {
-    if (completion) {
-      completion();
+  if (UseCustomLensOverlayBottomSheet()) {
+    if (_baseViewController.bottomSheet.bottomSheetPresented) {
+      [_baseViewController dismissBottomSheetAnimated:animated
+                                           completion:completion];
+      return;
     }
-    return;
-  }
+  } else {
+    UIViewController* presentedVC = _baseViewController.presentedViewController;
+    if (!presentedVC) {
+      if (completion) {
+        completion();
+      }
+      return;
+    }
 
-  [presentedVC dismissViewControllerAnimated:animated completion:completion];
+    [presentedVC dismissViewControllerAnimated:animated completion:completion];
+  }
 }
 
 - (void)monitorResultsBottomSheetPosition {
@@ -360,7 +387,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     return;
   }
 
-  UIView* presentedView = _baseViewController.presentedViewController.view;
+  UIView* presentedView = _presentationNavigationController.view;
 
   // Early return if the bottom sheet is not displayed yet.
   CALayer* presentationLayer = presentedView.layer.presentationLayer;
@@ -448,6 +475,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   BOOL presentedInBottomSheet =
       lens::ResultPagePresentationFor(_baseViewController) ==
       lens::ResultPagePresentationType::kEdgeAttachedBottomSheet;
+  [_resultViewController setOmniboxEnabled:YES];
   [_resultViewController setBottomSheetGrabberVisible:presentedInBottomSheet];
 }
 
@@ -483,10 +511,18 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
                                      (SheetDetentPresentationStategy)strategy
                             maximizeSheet:(BOOL)maximizeSheet
                                  animated:(BOOL)animated {
-  _detentsManager = [[LensOverlayDetentsManager alloc]
-       initWithBottomSheet:sheet
-                    window:self.presentationWindow
-      presentationStrategy:strategy];
+  if (UseCustomLensOverlayBottomSheet()) {
+    _detentsManager = [[LensOverlayDetentsManager alloc]
+        initWithLensOverlayBottomSheet:_baseViewController.bottomSheet
+                                window:self.presentationWindow
+                  presentationStrategy:strategy];
+  } else {
+    _detentsManager = [[LensOverlayDetentsManager alloc]
+         initWithBottomSheet:sheet
+                      window:self.presentationWindow
+        presentationStrategy:strategy];
+  }
+
   _detentsManager.delegate = self;
   [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement
                                 animated:animated];
@@ -531,13 +567,8 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 #pragma mark - LensOverlayPanTrackerDelegate
 
-- (void)lensOverlayPanTrackerDidBeginPanGesture:
-    (LensOverlayPanTracker*)panTracker {
-  // NO-OP
-}
-
-- (void)lensOverlayPanTrackerDidEndPanGesture:
-    (LensOverlayPanTracker*)panTracker {
+- (void)lensOverlayPanTracker:(LensOverlayPanTracker*)panTracker
+    didEndPanGestureWithVelocity:(CGPoint)velocity {
   if (panTracker != _windowPanTracker) {
     return;
   }
@@ -572,13 +603,30 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
       // frame), it means the sheet dismissal was incidental and shouldn't be
       // processed. Only when the sheet is directly dragged downwards should the
       // dismissal intent be considered.
-      if (_basePanTracker.isPanning) {
-        // Instead, when a touch collision is detected, go into the peak state.
-        [_detentsManager adjustDetentsForState:SheetDetentStatePeakEnabled];
-        return NO;
+      if (!UseCustomLensOverlayBottomSheet()) {
+        if (_basePanTracker.isPanning) {
+          // Instead, when a touch collision is detected, go into the peak
+          // state.
+          [_detentsManager adjustDetentsForState:SheetDetentStatePeakEnabled];
+          return NO;
+        }
       }
+
       return YES;
   }
+}
+
+#pragma mark - LensOverlayBottomSheetPresenterDelegate
+
+- (void)lensOverlayBottomSheetWillDismiss:
+    (id<LensOverlayBottomSheet>)bottomSheet {
+  [_resultViewController setOmniboxEnabled:NO];
+}
+
+- (void)lensOverlayBottomSheetDidDismiss:
+    (id<LensOverlayBottomSheet>)bottomSheet {
+  [_delegate lensOverlayResultsPagePresenter:self
+                     didUpdateDimensionState:SheetDimensionState::kHidden];
 }
 
 #pragma mark - LensOverlayBottomSheetPresentationCommands
@@ -597,6 +645,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   _detentsManager.presentationStrategy =
       SheetDetentPresentationStategySelection;
   [_presentationNavigationController popToRootViewControllerAnimated:YES];
+  [_baseViewController.view layoutIfNeeded];
   [self adjustSelectionOcclusionInsets];
 }
 
@@ -604,6 +653,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   _detentsManager.presentationStrategy =
       SheetDetentPresentationStategyTranslate;
   [_presentationNavigationController popToRootViewControllerAnimated:YES];
+  [_baseViewController.view layoutIfNeeded];
   [self adjustSelectionOcclusionInsets];
 }
 

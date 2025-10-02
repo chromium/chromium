@@ -6,7 +6,9 @@
 
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_panel.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -30,10 +32,19 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 
 }  // namespace
 
-@interface LensOverlayContainerViewController ()
+@interface LensOverlayContainerViewController () <LensOverlayPanTrackerDelegate>
 
 // Whether the side panel is open.
 @property(nonatomic, getter=isSidePanelOpen) BOOL sidePanelOpen;
+
+// Tracks the pan inside the bottom sheet.
+@property(nonatomic, readonly) LensOverlayPanTracker* panTracker;
+
+// The current height of the bottom sheet, in points.
+@property(nonatomic) CGFloat bottomSheetHeight;
+
+@property(nonatomic, strong) NSLayoutConstraint* bottomSheetHeightConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* bottomSheetBottomConstraint;
 
 @end
 
@@ -48,6 +59,8 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   UIView* _selectionInteractionBlockingView;
   // The side panel container for the results page.
   LensOverlayPanel* _sidePanel;
+  // The bottom sheet container for the results page.
+  LensOverlayBottomSheetViewController* _bottomSheet;
   // Layout guide separating the selection UI and results in the side panel.
   UILayoutGuide* _splitViewLayoutGuide;
   // The constraint controlling the display of the side panel.
@@ -60,6 +73,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 
   if (self) {
     _overlayCommandsHandler = handler;
+    _bottomSheet = [[LensOverlayBottomSheetViewController alloc] init];
   }
   return self;
 }
@@ -172,6 +186,19 @@ const CGFloat kSelectionUICornerRadius = 13.0;
       }];
 }
 
+- (void)presentViewControllerInBottomSheet:(UIViewController*)viewController
+                                  animated:(BOOL)animated
+                                completion:(ProceduralBlock)completion {
+  _bottomSheet.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addChildViewController:_bottomSheet];
+  [self.view addSubview:_bottomSheet.view];
+
+  AddSameConstraints(_bottomSheet.view, self.view);
+  [_bottomSheet setContent:viewController];
+  [self.view layoutIfNeeded];
+  [_bottomSheet presentAnimated:animated completion:completion];
+}
+
 - (void)presentViewControllerInSidePanel:(UIViewController*)viewController
                                 animated:(BOOL)animated
                               completion:(ProceduralBlock)completion {
@@ -260,6 +287,18 @@ const CGFloat kSelectionUICornerRadius = 13.0;
       }];
 }
 
+- (void)dismissBottomSheetAnimated:(BOOL)animated
+                        completion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [_bottomSheet dismissAnimated:animated
+                     completion:^{
+                       [weakSelf bottomSheetDidDismissAnimated:animated];
+                       if (completion) {
+                         completion();
+                       }
+                     }];
+}
+
 // Called after the side panel gets dismissed.
 - (void)sidePanelDidDismissAnimated:(BOOL)animated {
   [self.selectionViewController setOcclusionInsets:UIEdgeInsetsZero
@@ -268,6 +307,15 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   [_sidePanel removeFromParentViewController];
   [_sidePanel.view removeFromSuperview];
   _sidePanel = nil;
+}
+
+// Called after the side panel gets dismissed.
+- (void)bottomSheetDidDismissAnimated:(BOOL)animated {
+  [self.selectionViewController setOcclusionInsets:UIEdgeInsetsZero
+                                        reposition:YES
+                                          animated:animated];
+  [_bottomSheet removeFromParentViewController];
+  [_bottomSheet.view removeFromSuperview];
 }
 
 - (void)sizeClassDidChange {

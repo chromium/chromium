@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_bottom_sheet.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
 @protocol LensOverlayCommands;
@@ -37,6 +38,9 @@
 /// Disables the interaction with the presented overlay.
 @property(nonatomic, assign) BOOL selectionInteractionDisabled;
 
+/// The presented bottom sheet, otherwise nil.
+@property(nonatomic, readonly) id<LensOverlayBottomSheet> bottomSheet;
+
 /// Whether the side panel is being presented.
 @property(nonatomic, readonly, getter=isSidePanelPresented)
     BOOL sidePanelPresented;
@@ -53,6 +57,15 @@
 /// Dismisses the side panel presentation, optionally animated.
 - (void)dismissSidePanelAnimated:(BOOL)animated
                       completion:(ProceduralBlock)completion;
+
+// Present the given view controller inside the bottom sheet.
+- (void)presentViewControllerInBottomSheet:(UIViewController*)viewController
+                                  animated:(BOOL)animated
+                                completion:(ProceduralBlock)completion;
+
+// Dismiss the bottom sheet presentation.
+- (void)dismissBottomSheetAnimated:(BOOL)animated
+                        completion:(ProceduralBlock)completion;
 
 @end
 
