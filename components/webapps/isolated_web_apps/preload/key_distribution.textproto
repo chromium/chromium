@@ -19,6 +19,24 @@ key_rotation_data {
 }
 
 special_app_permissions_data {
+  # crbug.com/447157667:
+  special_app_permissions {
+    key: "ajbye5keylrcyakugr3zttu6f524eoamjc7mc6ubw3x3547xu3hxqaacai"
+    value: {
+      multi_screen_capture: {
+        skip_capture_started_notification: true
+      }
+    }
+  }
+  # crbug.com/447158840:
+  special_app_permissions {
+    key: "aolx6xos3h4fx7beotfbqbh36e4yp5lhqkvcyawhlidphewmmq7hsaacai"
+    value: {
+      multi_screen_capture: {
+        skip_capture_started_notification: true
+      }
+    }
+  }
   # Test entry: provides notification override for a test app.
   special_app_permissions {
     key: "2ehqwjhen5u2cwyyymd3viv67gx2hsf7gwqusdltdprjuh3nppuaaaic"
