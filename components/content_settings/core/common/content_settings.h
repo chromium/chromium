@@ -5,20 +5,19 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_H_
 
-#include <stddef.h>
-
-#include <map>
-#include <string>
+#include <iosfwd>
+#include <optional>
 #include <variant>
 #include <vector>
 
-#include "base/time/time.h"
 #include "base/values.h"
-#include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+
+class GURL;
 
 // Different settings that can be assigned for a particular content type.  We
 // give the user the ability to set these on a global and per-origin basis.
