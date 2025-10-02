@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
@@ -626,6 +628,67 @@ IN_PROC_BROWSER_TEST_F(TabStripModelGlicMultiTabBrowserTest,
                                          TabStripModel::CommandGlicStartShare);
 
   EXPECT_TRUE(service()->IsWindowOrFreShowing());
+}
+
+class TabStripModelTestTabGroupEntryPointsEnabled
+    : public TabStripModelBrowserTest {
+ public:
+  TabStripModelTestTabGroupEntryPointsEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTabGroupMenuMoreEntryPoints);
+  }
+
+  TabStrip* tabstrip() {
+    return views::AsViewClass<TabStripRegionView>(
+               browser()->GetBrowserView().tab_strip_view())
+        ->tab_strip();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripModelTestTabGroupEntryPointsEnabled,
+                       TestMostRecentlyUsedGroup) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_TRUE(tab_group_model);
+
+  TabStripController* tab_strip_controller = tabstrip()->controller();
+  tab_strip_controller->CreateNewTab();
+  tab_strip_controller->CreateNewTab();
+  tab_strip_controller->CreateNewTab();
+
+  ASSERT_TRUE(tab_strip_model->count() == 4);
+
+  const tab_groups::TabGroupId group_1 = tab_strip_model->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_2 = tab_strip_model->AddToNewGroup({2});
+  const tab_groups::TabGroupId group_3 = tab_strip_model->AddToNewGroup({3});
+
+  tab_strip_model->ActivateTabAt(2);
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->ActivateTabAt(3);
+  tab_strip_model->ActivateTabAt(0);
+
+  std::optional<tab_groups::TabGroupId> most_recently_used =
+      tab_group_model->GetMostRecentTabGroupId();
+
+  EXPECT_TRUE(most_recently_used);
+  EXPECT_EQ(*most_recently_used, group_3);
+
+  tab_strip_controller->RemoveTabFromGroup(3);
+  most_recently_used = tab_group_model->GetMostRecentTabGroupId();
+  EXPECT_TRUE(most_recently_used);
+  EXPECT_EQ(*most_recently_used, group_1);
+
+  tab_strip_controller->RemoveTabFromGroup(1);
+  most_recently_used = tab_group_model->GetMostRecentTabGroupId();
+  EXPECT_TRUE(most_recently_used);
+  EXPECT_EQ(*most_recently_used, group_2);
+
+  tab_strip_controller->RemoveTabFromGroup(2);
+  EXPECT_FALSE(tab_group_model->GetMostRecentTabGroupId());
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

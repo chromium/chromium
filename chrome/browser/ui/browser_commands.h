@@ -192,6 +192,8 @@ void FocusPreviousTabGroup(Browser* browser);
 // Takes all ungrouped tabs and places them in a new group.
 // Returns true if a group was made, and false otherwise.
 bool GroupAllUngroupedTabs(Browser* browser);
+// Creates a new tab at the end of the group which last had the active tab.
+void AddNewTabToRecentGroup(Browser* browser);
 
 void MuteSiteForKeyboardFocusedTab(Browser* browser);
 bool HasKeyboardFocusedTab(const Browser* browser);

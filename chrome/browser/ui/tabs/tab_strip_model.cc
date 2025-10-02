@@ -4935,6 +4935,10 @@ void TabStripModel::OnActiveTabChanged(
   const tabs::TabInterface* old_opener = nullptr;
   int reason = selection.reason;
 
+  if (new_tab->GetGroup()) {
+    group_model_->OnTabGroupActivated(*(new_tab->GetGroup()));
+  }
+
   if (old_tab) {
     const int index = GetIndexOfTab(old_tab);
     if (index != TabStripModel::kNoTab) {

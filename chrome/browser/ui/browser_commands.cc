@@ -1543,6 +1543,31 @@ bool GroupAllUngroupedTabs(Browser* browser) {
   return true;
 }
 
+void AddNewTabToRecentGroup(Browser* browser) {
+  if (!features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+    return;
+  }
+
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+
+  if (!tab_strip_model->SupportsTabGroups()) {
+    return;
+  }
+
+  std::optional<tab_groups::TabGroupId> group_id = std::nullopt;
+
+  // Add the new tab to the most recently active group.
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  CHECK(tab_group_model);
+  group_id = tab_group_model->GetMostRecentTabGroupId();
+
+  if (!group_id) {
+    return;
+  }
+
+  AddTabAt(browser, GURL(), -1, true, group_id);
+}
+
 void MuteSite(Browser* browser) {
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),
