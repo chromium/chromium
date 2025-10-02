@@ -84,6 +84,9 @@ class GlicButton : public TabStripNudgeButton,
   // Sets the button to its highlighted state.
   void HighlightGlicButton();
 
+  // Called when the slide animation finishes.
+  void OnAnimationEnded();
+
  private:
   // views::LabelButton:
   void SetText(std::u16string_view text) override;
@@ -105,6 +108,7 @@ class GlicButton : public TabStripNudgeButton,
   void UpdateTextAndBackgroundColors();
   void UpdateIcon();
   bool IsHighlightVisible() const;
+  void SetHighlightOpacity(float fraction);
 
 #if BUILDFLAG(ENABLE_GLIC)
   void PanelStateChanged(bool active);
