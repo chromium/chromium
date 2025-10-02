@@ -203,6 +203,86 @@ LensOverlayController* GetLensOverlayControllerFromTabInterface(
 
 }  // namespace
 
+class LensOverlayController::UnderlyingWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  UnderlyingWebContentsObserver(content::WebContents* web_contents,
+                                LensOverlayController* lens_overlay_controller)
+      : content::WebContentsObserver(web_contents),
+        lens_overlay_controller_(lens_overlay_controller) {}
+
+  ~UnderlyingWebContentsObserver() override = default;
+
+  UnderlyingWebContentsObserver(const UnderlyingWebContentsObserver&) = delete;
+  UnderlyingWebContentsObserver& operator=(
+      const UnderlyingWebContentsObserver&) = delete;
+
+  // content::WebContentsObserver
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    // If the overlay is off, check if we should display IPH.
+    if (lens_overlay_controller_->state() == State::kOff) {
+      // Only check IPH eligibility if the navigation changed the primary page.
+      if (base::FeatureList::IsEnabled(
+              feature_engagement::kIPHLensOverlayFeature) &&
+          navigation_handle->IsInPrimaryMainFrame() &&
+          !navigation_handle->IsSameDocument() &&
+          navigation_handle->HasCommitted()) {
+        lens_overlay_controller_->MaybeShowDelayedTutorialIPH(
+            navigation_handle->GetURL());
+      }
+      return;
+    }
+
+    // If the overlay is open, check if we should close it.
+    bool is_user_reload =
+        navigation_handle->GetReloadType() != content::ReloadType::NONE &&
+        !navigation_handle->IsRendererInitiated();
+    // We don't need to close if:
+    //   1) The navigation is not for the main page.
+    //   2) The navigation hasn't been committed yet.
+    //   3) The URL did not change and the navigation wasn't the user reloading
+    //      the page.
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        !navigation_handle->HasCommitted() ||
+        (navigation_handle->GetPreviousPrimaryMainFrameURL() ==
+             navigation_handle->GetURL() &&
+         !is_user_reload)) {
+      return;
+    }
+    if (lens_overlay_controller_->state() == State::kHidden) {
+      lens_overlay_controller_->UpdateNavigationMetrics();
+      lens_overlay_controller_->NotifyPageContentUpdated();
+      return;
+    }
+
+    // If the page changes, only the overlay needs to be hidden, possibly
+    // leaving the side panel open. The search controller will handle whether
+    // the side panel should stay open or the entire session should terminate.
+    lens_overlay_controller_->lens_search_controller_->HideOverlay(
+        lens::LensOverlayDismissalSource::kPageChanged);
+    return;
+  }
+
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
+    // Exit early if the overlay is off or already closing.
+    if (lens_overlay_controller_->state() == State::kOff ||
+        lens_overlay_controller_->IsOverlayClosing()) {
+      return;
+    }
+
+    lens_overlay_controller_->lens_search_controller_->CloseLensSync(
+        status == base::TERMINATION_STATUS_NORMAL_TERMINATION
+            ? lens::LensOverlayDismissalSource::kPageRendererClosedNormally
+            : lens::LensOverlayDismissalSource::
+                  kPageRendererClosedUnexpectedly);
+  }
+
+ private:
+  raw_ptr<LensOverlayController> lens_overlay_controller_;
+};
+
 LensOverlayController::LensOverlayController(
     tabs::TabInterface* tab,
     LensSearchController* lens_search_controller,
@@ -1268,86 +1348,6 @@ LensOverlayController::OverlayInitializationData::OverlayInitializationData(
       page_title_(page_title) {}
 LensOverlayController::OverlayInitializationData::~OverlayInitializationData() =
     default;
-
-class LensOverlayController::UnderlyingWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  UnderlyingWebContentsObserver(content::WebContents* web_contents,
-                                LensOverlayController* lens_overlay_controller)
-      : content::WebContentsObserver(web_contents),
-        lens_overlay_controller_(lens_overlay_controller) {}
-
-  ~UnderlyingWebContentsObserver() override = default;
-
-  UnderlyingWebContentsObserver(const UnderlyingWebContentsObserver&) = delete;
-  UnderlyingWebContentsObserver& operator=(
-      const UnderlyingWebContentsObserver&) = delete;
-
-  // content::WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    // If the overlay is off, check if we should display IPH.
-    if (lens_overlay_controller_->state() == State::kOff) {
-      // Only check IPH eligibility if the navigation changed the primary page.
-      if (base::FeatureList::IsEnabled(
-              feature_engagement::kIPHLensOverlayFeature) &&
-          navigation_handle->IsInPrimaryMainFrame() &&
-          !navigation_handle->IsSameDocument() &&
-          navigation_handle->HasCommitted()) {
-        lens_overlay_controller_->MaybeShowDelayedTutorialIPH(
-            navigation_handle->GetURL());
-      }
-      return;
-    }
-
-    // If the overlay is open, check if we should close it.
-    bool is_user_reload =
-        navigation_handle->GetReloadType() != content::ReloadType::NONE &&
-        !navigation_handle->IsRendererInitiated();
-    // We don't need to close if:
-    //   1) The navigation is not for the main page.
-    //   2) The navigation hasn't been committed yet.
-    //   3) The URL did not change and the navigation wasn't the user reloading
-    //      the page.
-    if (!navigation_handle->IsInPrimaryMainFrame() ||
-        !navigation_handle->HasCommitted() ||
-        (navigation_handle->GetPreviousPrimaryMainFrameURL() ==
-             navigation_handle->GetURL() &&
-         !is_user_reload)) {
-      return;
-    }
-    if (lens_overlay_controller_->state() == State::kHidden) {
-      lens_overlay_controller_->UpdateNavigationMetrics();
-      lens_overlay_controller_->NotifyPageContentUpdated();
-      return;
-    }
-
-    // If the page changes, only the overlay needs to be hidden, possibly
-    // leaving the side panel open. The search controller will handle whether
-    // the side panel should stay open or the entire session should terminate.
-    lens_overlay_controller_->lens_search_controller_->HideOverlay(
-        lens::LensOverlayDismissalSource::kPageChanged);
-    return;
-  }
-
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override {
-    // Exit early if the overlay is off or already closing.
-    if (lens_overlay_controller_->state() == State::kOff ||
-        lens_overlay_controller_->IsOverlayClosing()) {
-      return;
-    }
-
-    lens_overlay_controller_->lens_search_controller_->CloseLensSync(
-        status == base::TERMINATION_STATUS_NORMAL_TERMINATION
-            ? lens::LensOverlayDismissalSource::kPageRendererClosedNormally
-            : lens::LensOverlayDismissalSource::
-                  kPageRendererClosedUnexpectedly);
-  }
-
- private:
-  raw_ptr<LensOverlayController> lens_overlay_controller_;
-};
 
 void LensOverlayController::CreateInitializationData(
     const SkBitmap& screenshot,

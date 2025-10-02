@@ -61,9 +61,8 @@ class ContentsWebView : public views::WebView,
 
  private:
   void UpdateBackgroundColor();
-  std::unique_ptr<StatusBubbleViews> status_bubble_ = nullptr;
-  std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_ =
-      nullptr;
+  std::unique_ptr<StatusBubbleViews> status_bubble_;
+  std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_;
 
   bool background_visible_ = true;
 

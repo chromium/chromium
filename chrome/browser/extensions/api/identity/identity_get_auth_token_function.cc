@@ -115,6 +115,22 @@ CoreAccountInfo GetSigninPrimaryAccount(Profile* profile) {
 
 }  // namespace
 
+class IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter
+    : public signin::IdentityManager::Observer {
+ public:
+  RefreshTokensLoadedWaiter(signin::IdentityManager& identity_manager,
+                            base::OnceClosure callback);
+
+  // signin::IdentityManager::Observer:
+  void OnRefreshTokensLoaded() override;
+
+ private:
+  base::OnceClosure callback_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+};
+
 IdentityGetAuthTokenFunction::IdentityGetAuthTokenFunction() = default;
 
 IdentityGetAuthTokenFunction::~IdentityGetAuthTokenFunction() {
@@ -974,22 +990,6 @@ IdentityGetAuthTokenFunction::GetErrorFromInteractivityStatus(
   DCHECK_NE(state, IdentityGetAuthTokenError::State::kNone);
   return IdentityGetAuthTokenError(state);
 }
-
-class IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter
-    : public signin::IdentityManager::Observer {
- public:
-  RefreshTokensLoadedWaiter(signin::IdentityManager& identity_manager,
-                            base::OnceClosure callback);
-
-  // signin::IdentityManager::Observer:
-  void OnRefreshTokensLoaded() override;
-
- private:
-  base::OnceClosure callback_;
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
-};
 
 IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter::
     RefreshTokensLoadedWaiter(signin::IdentityManager& identity_manager,

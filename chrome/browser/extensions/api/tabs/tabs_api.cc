@@ -1339,6 +1339,26 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+class TabsRemoveFunction::WebContentsDestroyedObserver
+    : public content::WebContentsObserver {
+ public:
+  WebContentsDestroyedObserver(extensions::TabsRemoveFunction* owner,
+                               content::WebContents* watched_contents)
+      : content::WebContentsObserver(watched_contents), owner_(owner) {}
+
+  ~WebContentsDestroyedObserver() override = default;
+  WebContentsDestroyedObserver(const WebContentsDestroyedObserver&) = delete;
+  WebContentsDestroyedObserver& operator=(const WebContentsDestroyedObserver&) =
+      delete;
+
+  // WebContentsObserver
+  void WebContentsDestroyed() override { owner_->TabDestroyed(); }
+
+ private:
+  // Guaranteed to outlive this object.
+  raw_ptr<TabsRemoveFunction> owner_;
+};
+
 TabsRemoveFunction::TabsRemoveFunction() = default;
 TabsRemoveFunction::~TabsRemoveFunction() = default;
 
@@ -1432,26 +1452,6 @@ void TabsRemoveFunction::TabDestroyed() {
   }
   Release();
 }
-
-class TabsRemoveFunction::WebContentsDestroyedObserver
-    : public content::WebContentsObserver {
- public:
-  WebContentsDestroyedObserver(extensions::TabsRemoveFunction* owner,
-                               content::WebContents* watched_contents)
-      : content::WebContentsObserver(watched_contents), owner_(owner) {}
-
-  ~WebContentsDestroyedObserver() override = default;
-  WebContentsDestroyedObserver(const WebContentsDestroyedObserver&) = delete;
-  WebContentsDestroyedObserver& operator=(const WebContentsDestroyedObserver&) =
-      delete;
-
-  // WebContentsObserver
-  void WebContentsDestroyed() override { owner_->TabDestroyed(); }
-
- private:
-  // Guaranteed to outlive this object.
-  raw_ptr<TabsRemoveFunction> owner_;
-};
 
 ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   std::optional<tabs::DetectLanguage::Params> params =

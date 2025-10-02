@@ -270,6 +270,39 @@ ProfileMenuViewBase::IdentitySectionParams::operator=(IdentitySectionParams&&) =
 
 // ProfileMenuViewBase ---------------------------------------------------------
 
+// Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave
+// like a menu from the accessibility POV because it fits better with a menu UX.
+// The dialog exposes the kMenuBar role, and the top-level container is kMenu.
+// This class is responsible for emitting menu accessible events when the dialog
+// is activated or deactivated.
+class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
+ public:
+  AXMenuWidgetObserver(ProfileMenuViewBase* owner, views::Widget* widget)
+      : owner_(owner) {
+    observation_.Observe(widget);
+  }
+  ~AXMenuWidgetObserver() override = default;
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart,
+                                                 true);
+      owner_->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kMenuPopupStart, true);
+    } else {
+      owner_->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kMenuPopupEnd, true);
+      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd,
+                                                 true);
+    }
+  }
+
+ private:
+  raw_ptr<ProfileMenuViewBase> owner_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+
 ProfileMenuViewBase::ProfileMenuViewBase(ui::TrackedElement* anchor_element,
                                          Browser* browser)
     : BubbleDialogDelegateView(anchor_element, views::BubbleBorder::TOP_RIGHT),
@@ -717,39 +750,6 @@ std::unique_ptr<HoverButton> ProfileMenuViewBase::CreateMenuRowButton(
   button->SetIconHorizontalMargins(kMenuItemLeftInternalPadding, /*right=*/0);
   return button;
 }
-
-// Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave
-// like a menu from the accessibility POV because it fits better with a menu UX.
-// The dialog exposes the kMenuBar role, and the top-level container is kMenu.
-// This class is responsible for emitting menu accessible events when the dialog
-// is activated or deactivated.
-class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
- public:
-  AXMenuWidgetObserver(ProfileMenuViewBase* owner, views::Widget* widget)
-      : owner_(owner) {
-    observation_.Observe(widget);
-  }
-  ~AXMenuWidgetObserver() override = default;
-
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
-    if (active) {
-      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart,
-                                                 true);
-      owner_->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kMenuPopupStart, true);
-    } else {
-      owner_->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kMenuPopupEnd, true);
-      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd,
-                                                 true);
-    }
-  }
-
- private:
-  raw_ptr<ProfileMenuViewBase> owner_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
-      this};
-};
 
 BEGIN_METADATA(ProfileMenuViewBase)
 END_METADATA
