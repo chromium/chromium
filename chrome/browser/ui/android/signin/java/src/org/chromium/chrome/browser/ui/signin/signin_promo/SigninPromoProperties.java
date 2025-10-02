@@ -21,6 +21,9 @@ final class SigninPromoProperties {
             ON_PRIMARY_BUTTON_CLICKED =
                     new PropertyModel.WritableObjectPropertyKey<>("on_primary_button_clicked");
 
+    // TODO(crbug.com/448227402)
+    // Rename this property after the end of the seamless sign-in experiment if the chosen layout
+    // is `compact`.
     static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_SECONDARY_BUTTON_CLICKED =
                     new PropertyModel.WritableObjectPropertyKey<>("on_secondary_button_clicked");

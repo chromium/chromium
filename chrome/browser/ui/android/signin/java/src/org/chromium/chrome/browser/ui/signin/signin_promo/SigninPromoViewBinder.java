@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
 
@@ -15,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,6 +25,8 @@ final class SigninPromoViewBinder {
     public static void bind(
             PropertyModel model, PersonalizedSigninPromoView view, PropertyKey key) {
         Context context = view.getContext();
+        @SigninFeatureMap.SeamlessSigninPromoType
+        int seamlessSigninPromoType = SigninFeatureMap.getInstance().getSeamlessSigninPromoType();
         if (key == SigninPromoProperties.PROFILE_DATA) {
             DisplayableProfileData profileData = model.get(SigninPromoProperties.PROFILE_DATA);
             if (profileData == null) {
@@ -32,14 +36,26 @@ final class SigninPromoViewBinder {
                 Drawable accountImage = profileData.getImage();
                 view.getImage().setImageDrawable(accountImage);
                 setImageSize(context, view, R.dimen.sync_promo_account_image_size);
+                if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                    TextView accountTextPrimary = view.findViewById(R.id.account_text_primary);
+                    TextView accountTextSecondary = view.findViewById(R.id.account_text_secondary);
+                    accountTextPrimary.setText(profileData.getFullName());
+                    accountTextSecondary.setText(profileData.getAccountEmail());
+                }
             }
         } else if (key == SigninPromoProperties.ON_PRIMARY_BUTTON_CLICKED) {
             view.getPrimaryButton()
                     .setOnClickListener(model.get(SigninPromoProperties.ON_PRIMARY_BUTTON_CLICKED));
         } else if (key == SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED) {
-            view.getSecondaryButton()
-                    .setOnClickListener(
-                            model.get(SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED));
+            if (seamlessSigninPromoType != SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                view.getSecondaryButton()
+                        .setOnClickListener(
+                                model.get(SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED));
+            } else {
+                view.getSelectedAccountView()
+                        .setOnClickListener(
+                                model.get(SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED));
+            }
         } else if (key == SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED) {
             view.getDismissButton()
                     .setOnClickListener(model.get(SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED));
@@ -51,14 +67,22 @@ final class SigninPromoViewBinder {
         } else if (key == SigninPromoProperties.PRIMARY_BUTTON_TEXT) {
             view.getPrimaryButton().setText(model.get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
         } else if (key == SigninPromoProperties.SECONDARY_BUTTON_TEXT) {
-            view.getSecondaryButton()
-                    .setText(model.get(SigninPromoProperties.SECONDARY_BUTTON_TEXT));
+            if (seamlessSigninPromoType != SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                view.getSecondaryButton()
+                        .setText(model.get(SigninPromoProperties.SECONDARY_BUTTON_TEXT));
+            }
         } else if (key == SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON) {
-            int visibility =
-                    model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON)
-                            ? View.GONE
-                            : View.VISIBLE;
-            view.getSecondaryButton().setVisibility(visibility);
+            if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                view.getSelectedAccountView()
+                        .setClickable(
+                                !model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
+            } else {
+                int visibility =
+                        model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON)
+                                ? View.GONE
+                                : View.VISIBLE;
+                view.getSecondaryButton().setVisibility(visibility);
+            }
         } else if (key == SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON) {
             view.getDismissButton()
                     .setVisibility(

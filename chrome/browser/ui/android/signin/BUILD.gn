@@ -156,6 +156,7 @@ android_resources("java_resources") {
     "java/res/layout/batch_upload_dialog_view.xml",
     "java/res/layout/bottom_sheet_signin_history_sync_container.xml",
     "java/res/layout/central_account_card_view.xml",
+    "java/res/layout/compact_signin_promo_view.xml",
     "java/res/layout/fullscreen_signin_and_history_sync_landscape_view.xml",
     "java/res/layout/fullscreen_signin_and_history_sync_portrait_view.xml",
     "java/res/layout/fullscreen_signin_bottom_group_view.xml",
