@@ -17,6 +17,14 @@ struct Config;
 // Model to predict if a user uses FedCM features.
 class FedCmUserModel : public DefaultModelProvider {
  public:
+  enum Feature {
+    kFeatureAccountsDialogShown,
+    kFeatureRequestIdToken,
+    kFeatureCancelReason,
+    kFeatureIsSignInUser,
+    kFeatureCount
+  };
+
   FedCmUserModel();
   ~FedCmUserModel() override = default;
 

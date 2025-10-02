@@ -214,6 +214,11 @@ constexpr Feature UMAEnum(const char* name,
       UMAFeature::FromEnumHistogram(name, bucket_count, enum_ids));
 }
 
+constexpr Feature UMACount(const char* name, uint64_t bucket_count) {
+  return Feature::FromUMAFeature(UMAFeature::FromValueHistogram(
+      name, bucket_count, proto::Aggregation::COUNT));
+}
+
 constexpr Feature InputContext(const char* name) {
   return Feature::FromCustomInput(
       CustomInput{.tensor_length = 1,
