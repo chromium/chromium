@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/swift_interop/pointer/pointer_returner.h"
+#include "ios/chrome/test/swift_interop/include/pointer_returner.h"
 
 PointerReturner::PointerReturner() : integer_(17), child_(nullptr) {}
 

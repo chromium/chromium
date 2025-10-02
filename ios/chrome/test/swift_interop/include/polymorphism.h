@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_POLYMORPHISM_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_POLYMORPHISM_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POLYMORPHISM_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POLYMORPHISM_H_
 
 class Shape {
  public:
@@ -58,4 +58,4 @@ Shape* MakeShape(int width, int height) {
   return new Triangle(width, height);
 }
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_POLYMORPHISM_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POLYMORPHISM_H_

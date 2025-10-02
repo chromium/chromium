@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_NAMESPACE_NAMESPACE_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_NAMESPACE_NAMESPACE_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_NAMESPACE_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_NAMESPACE_H_
 
 class Goat {
  public:
@@ -52,4 +52,4 @@ enum class SameNameEnum { watermelon, apple, orange };
 
 }  // namespace sameName
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_NAMESPACE_NAMESPACE_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_NAMESPACE_H_

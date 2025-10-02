@@ -6,6 +6,14 @@ import("//build/config/apple/swift_source_set.gni")
 import("//build/config/ios/ios_test_runner_xcuitest.gni")
 import("//build/config/ios/rules.gni")
 
+config("swift_interop_tests_modulemap") {
+  swiftflags = [
+    "-I" + rebase_path("include/", root_build_dir),
+    "-Xcc=-fmodule-map-file=" +
+        rebase_path("include/module.modulemap", root_build_dir),
+  ]
+}
+
 source_set("objc_interop_tests") {
   testonly = true
   configs += [ "//build/config/ios:xctest_config" ]
@@ -17,24 +25,27 @@ source_set("objc_interop_tests") {
 source_set("swift_interop_tests_support_files") {
   testonly = true
   sources = [
-    "classes/inlined_class.h",
-    "classes/outlined_class.h",
     "classes/outlined_impl.cc",
-    "classes/polymorphism.h",
-    "enum/enum.h",
-    "namespace/namespace.h",
-    "pointer/object_passing.h",
+    "include/enum.h",
+    "include/inlined_class.h",
+    "include/namespace.h",
+    "include/object_passing.h",
+    "include/outlined_class.h",
+    "include/pointer_returner.h",
+    "include/polymorphism.h",
+    "include/struct.h",
+    "include/unique_ptr.h",
     "pointer/pointer_returner.cc",
-    "pointer/pointer_returner.h",
     "pointer/unique_ptr.cc",
-    "pointer/unique_ptr.h",
-    "struct/struct.h",
   ]
 }
 
 swift_source_set("swift_interop_tests") {
   testonly = true
-  configs += [ "//build/config/ios:enable_swift_cxx_interop" ]
+  configs += [
+    ":swift_interop_tests_modulemap",
+    "//build/config/ios:enable_swift_cxx_interop",
+  ]
   bridge_header = "swift_bridge.h"
   sources = [
     "classes/inlined_xctest.swift",
@@ -58,7 +69,10 @@ ios_app_bundle("ios_swift_interop_xcuitests") {
   testonly = true
   info_plist = "host-Info.plist"
   sources = [ "test_host.mm" ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "Foundation.framework",
+  ]
 }
 
 ios_test_runner_xcuitest("ios_swift_interop_xcuitests_module") {

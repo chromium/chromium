@@ -1,0 +1,40 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/445665305): Investigate why we can't have separated modules
+// with our custom libc++. Without this outer module, you'll see errors like
+// "'std::domain_error::domain_error' from module 'B' is not present in
+// definition of 'std::domain_error' in module 'A'".
+module Interop {
+
+module Classes {
+  header "inlined_class.h"
+  header "outlined_class.h"
+  header "polymorphism.h"
+  export *
+}
+
+module Enums {
+  header "enum.h"
+  export *
+}
+
+module Namespace {
+  header "namespace.h"
+  export *
+}
+
+module Pointer {
+  header "object_passing.h"
+  header "pointer_returner.h"
+  header "unique_ptr.h"
+  export *
+}
+
+module Struct {
+  header "struct.h"
+  export *
+}
+
+}

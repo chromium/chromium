@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_INLINED_CLASS_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_INLINED_CLASS_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_INLINED_CLASS_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_INLINED_CLASS_H_
 
 class InlinedClass {
  private:
@@ -28,4 +28,4 @@ class ComposedClass {
   }
 };
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_INLINED_CLASS_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_INLINED_CLASS_H_

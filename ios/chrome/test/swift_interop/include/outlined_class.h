@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_OUTLINED_CLASS_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_OUTLINED_CLASS_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OUTLINED_CLASS_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OUTLINED_CLASS_H_
 
 class Outlined {
  private:
@@ -16,4 +16,4 @@ class Outlined {
   int OutlinedAddition(int delta);
 };
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_OUTLINED_CLASS_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OUTLINED_CLASS_H_

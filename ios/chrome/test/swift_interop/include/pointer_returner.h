@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_POINTER_RETURNER_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_POINTER_RETURNER_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POINTER_RETURNER_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POINTER_RETURNER_H_
 
 class PointerReturner {
  public:
@@ -22,7 +22,7 @@ class PointerReturner {
 
  private:
   int integer_;
-  PointerReturner* child_;
+  __attribute__((annotate("raw_ptr_exclusion"))) PointerReturner* child_;
 };
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_POINTER_RETURNER_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_POINTER_RETURNER_H_

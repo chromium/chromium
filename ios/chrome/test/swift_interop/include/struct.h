@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_STRUCT_STRUCT_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_STRUCT_STRUCT_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_STRUCT_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_STRUCT_H_
 
 #include <string>
 
@@ -23,4 +23,4 @@ inline bool IsFooleanValid(Foolean foo) {
   return foo.description == Foolean::GetDescriptionForValue(foo.value);
 }
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_STRUCT_STRUCT_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_STRUCT_H_
