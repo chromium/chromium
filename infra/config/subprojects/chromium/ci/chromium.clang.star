@@ -2022,6 +2022,21 @@ tot_mac_builder(
 
 tot_mac_builder(
     name = "ToTMacPGO",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_mac",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
     gn_args = gn_args.config(
         configs = [
             "clang_tot_gn",
@@ -2051,6 +2066,22 @@ tot_mac_builder(
 
 tot_mac_builder(
     name = "ToTMacArm64PGO",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_mac",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
     gn_args = gn_args.config(
         configs = [
             "clang_tot_gn",
@@ -2077,6 +2108,22 @@ tot_mac_builder(
 
 tot_mac_builder(
     name = "ToTMacArm64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_mac",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
     gn_args = gn_args.config(
         configs = [
             "clang_tot_gn",
