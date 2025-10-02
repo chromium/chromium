@@ -8,7 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ImageButton;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.chromium.build.annotations.NullMarked;
@@ -20,7 +20,7 @@ import org.chromium.ui.util.MotionEventUtils;
 @NullMarked
 class BookmarkBar extends LinearLayout {
 
-    private ImageButton mOverflowButton;
+    private FrameLayout mOverflowButton;
 
     /**
      * Constructor that is called when inflating a bookmark bar from XML.
@@ -80,7 +80,7 @@ class BookmarkBar extends LinearLayout {
     /**
      * @return The overflow button view.
      */
-    public ImageButton getOverflowButton() {
+    public FrameLayout getOverflowButton() {
         return mOverflowButton;
     }
 }

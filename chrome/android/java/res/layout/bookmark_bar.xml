@@ -37,22 +37,18 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <ImageButton
+        <include
             android:id="@+id/bookmark_bar_overflow_button"
-            android:layout_width="@dimen/bookmark_bar_overflow_button_size"
-            android:layout_height="@dimen/bookmark_bar_overflow_button_size"
-            android:layout_marginStart="@dimen/bookmark_bar_spacing"
-            android:background="@drawable/default_chip_ripple"
-            android:contentDescription="@string/bookmark_bar_overflow_button_content_description"
-            android:scaleType="fitCenter"
-            android:src="@drawable/outline_chevron_right_24dp"
-            app:tint="@color/default_icon_color_tint_list" />
+            layout="@layout/bookmark_bar_overflow_button_wrapper"
+            android:layout_width="@dimen/bookmark_bar_overflow_button_height_total"
+            android:layout_height="@dimen/bookmark_bar_overflow_button_height_total"
+            android:layout_marginStart="@dimen/bookmark_bar_overflow_button_margin_start" />
 
         <View
             android:id="@+id/bookmark_bar_divider"
             android:layout_width="@dimen/bookmark_bar_divider_width"
             android:layout_height="@dimen/bookmark_bar_divider_height"
-            android:layout_marginStart="@dimen/bookmark_bar_spacing"
+            android:layout_marginStart="@dimen/bookmark_bar_overflow_button_margin_start"
             android:background="@drawable/divider_line_bg" />
 
         <include

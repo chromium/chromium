@@ -18,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -1093,8 +1092,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID, mCurrentBackgroundId);
 
         // Update the background resource of the overflow button.
-        ImageButton overflowButton =
-                mBookmarkBarView.findViewById(R.id.bookmark_bar_overflow_button);
+        View overflowButton = mBookmarkBarView.findViewById(R.id.bookmark_bar_overflow_button);
         if (overflowButton != null) {
             overflowButton.setBackgroundResource(mCurrentBackgroundId);
         }

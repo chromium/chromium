@@ -210,10 +210,10 @@ found in the LICENSE file.
     <dimen name="bookmark_bar_divider_width">2dp</dimen>
     <dimen name="bookmark_bar_item_max_width">124dp</dimen>
     <dimen name="bookmark_bar_item_spacing">4dp</dimen>
-    <dimen name="bookmark_bar_overflow_button_size">24dp</dimen>
     <dimen name="bookmark_bar_padding">8dp</dimen>
-    <dimen name="bookmark_bar_spacing">8dp</dimen>
     <dimen name="bookmark_bar_all_bookmarks_padding">-4dp</dimen>
+    <dimen name="bookmark_bar_overflow_button_margin_start">4dp</dimen>
+    <dimen name="bookmark_bar_overflow_button_height_total">32dp</dimen>
 
     <!-- Custom Tabs dimensions -->
     <dimen name="custom_tabs_drag_handle_padding_top">12dp</dimen>

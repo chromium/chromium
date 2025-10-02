@@ -24,7 +24,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -119,7 +118,7 @@ public class BookmarkBarCoordinatorTest {
     private BookmarkId mDesktopFolderId;
     private RecyclerView mItemsContainer;
     private FakeBookmarkModel mModel;
-    private ImageButton mOverflowButton;
+    private FrameLayout mOverflowButton;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private BookmarkBar mView;
     private FrameLayout mContentContainer;
