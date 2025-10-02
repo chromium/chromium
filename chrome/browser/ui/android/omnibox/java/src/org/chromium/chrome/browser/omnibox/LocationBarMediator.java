@@ -449,13 +449,15 @@ class LocationBarMediator
                 onUrlFocusedFromNtpScrollChanged();
             }
 
-            if (fraction > 0f) {
-                mLocationBarLayout.setUrlActionContainerVisibility(View.VISIBLE);
-            } else if (fraction == 0f && !mIsUrlFocusChangeInProgress) {
-                // If a URL focus change is in progress, then it will handle setting the visibility
-                // correctly after it completes.  If done here, it would cause the URL to jump due
-                // to a badly timed layout call.
-                mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
+            if (!ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                if (fraction > 0f) {
+                    mLocationBarLayout.setUrlActionContainerVisibility(View.VISIBLE);
+                } else if (fraction == 0f && !mIsUrlFocusChangeInProgress) {
+                    // If a URL focus change is in progress, then it will handle setting the
+                    // visibility correctly after it completes.  If done here, it would cause the
+                    // URL to jump due to a badly timed layout call.
+                    mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
+                }
             }
 
             // Add expansion animation for the space besides status view in location bar.

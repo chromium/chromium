@@ -23,8 +23,17 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionListenerAdapter;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
+import android.transition.TransitionValues;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewDebug;
@@ -317,6 +326,7 @@ public class ToolbarPhone extends ToolbarLayout
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
                         LocationBarBackgroundColorAlphaForNtp);
+        mDisableLocationBarRelayout = ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
     }
 
     @Override
@@ -862,6 +872,11 @@ public class ToolbarPhone extends ToolbarLayout
             updateLocationBarForNtp(mVisualState, urlHasFocus());
         }
         updateUrlExpansionFraction();
+        // TODO(crbug.com/430347234): Cleaning up #updateUrlExpansionAnimation() would imply a
+        // slight compromise in fakebox to expanded location bar transition. Here we'll need to snap
+        // to expanded location bar state when fakebox touches location bar (first
+        // scrollFraction > 0 event) or when scrollFraction == 1. Refactor end state updates in
+        // triggerUrlFocus to also invoke to perform the snap.
         invokeTransition();
     }
 
@@ -973,7 +988,32 @@ public class ToolbarPhone extends ToolbarLayout
     private void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
         updateUrlExpansionFraction();
-        invokeTransition();
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            updateToolbarWithFocusChangeFraction();
+        } else {
+            invokeTransition();
+        }
+    }
+
+    private void updateToolbarWithFocusChangeFraction() {
+        // Update toolbar Y-translation and NTP page for fakebox focus using fraction.
+        // TODO(crbug.com/430347234): Refactor these to Transitions.
+        if (isLocationBarShownInNtp()) {
+            updateNtpTransitionAnimation();
+            // Update NTP page for URL focus.
+            Tab currentTab = getToolbarDataProvider().getTab();
+            if (currentTab != null) {
+                getToolbarDataProvider()
+                        .getNewTabPageDelegate()
+                        .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
+            }
+        }
+        // Update LB child views - updates visibility of buttons, margins, etc using fraction.
+        // TODO(crbug.com/430347234): Refactor these to Transitions.
+        mLocationBar.setUrlFocusChangeFraction(
+                mNtpSearchBoxScrollFraction, mUrlFocusChangeFraction);
+        // Update the toolbar / LB background color and corner radius using fraction.
+        updateToolbarAndLocationBarColorForFocusChange();
     }
 
     private void updateUrlExpansionFraction() {
@@ -1095,11 +1135,24 @@ public class ToolbarPhone extends ToolbarLayout
             mLocationBar.setUrlFocusChangeFraction(
                     ntpUrlExpansionFraction, mUrlFocusChangeFraction);
 
-            // Only transition theme colors if in static tab mode that is not the NTP or while
-            // focusing on the NTP. In NTP, toolbar and locationbar need to transite color only when
-            // the omnibox is focused. When the fake omnibox is scrolled, the color should not
-            // change.
-            if ((urlHasFocus() || !isLocationBarShownInNtp) && mTabSwitcherState == STATIC_TAB) {
+            // Update the location bar background color and corner radius using fraction.
+            updateToolbarAndLocationBarColorForFocusChange();
+        }
+
+        // Force an invalidation of the location bar to properly handle the clipping of the URL
+        // bar text as a result of the URL action container translations.
+        mLocationBar.getPhoneCoordinator().invalidate();
+        invalidate();
+        TraceEvent.end("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
+    }
+
+    private void updateToolbarAndLocationBarColorForFocusChange() {
+        if (mOptionalButtonAnimationRunning) return;
+        // Only transition theme colors if in static tab mode that is not the NTP or while
+        // focusing on the NTP. In NTP, toolbar and locationbar need to transite color only when
+        // the omnibox is focused. When the fake omnibox is scrolled, the color should not
+        // change.
+        if ((urlHasFocus() || !isLocationBarShownInNtp()) && mTabSwitcherState == STATIC_TAB) {
                 boolean isInGeneralNtp =
                         isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage;
                 // Add a special case for general NTP to the defaultColor to ensure that the color
@@ -1130,13 +1183,6 @@ public class ToolbarPhone extends ToolbarLayout
 
                 updateModernLocationBarCorners();
             }
-        }
-
-        // Force an invalidation of the location bar to properly handle the clipping of the URL
-        // bar text as a result of the URL action container translations.
-        mLocationBar.getPhoneCoordinator().invalidate();
-        invalidate();
-        TraceEvent.end("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
     }
 
     /**
@@ -1409,6 +1455,12 @@ public class ToolbarPhone extends ToolbarLayout
         if (mLocationBar != null
                 && child == mLocationBar.getPhoneCoordinator().getViewForDrawing()) {
             return drawLocationBar(canvas, drawingTime);
+        }
+        // For other views, fall back to the default implementation when the location bar relayout
+        // is disabled.
+        if (mDisableLocationBarRelayout
+                && ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            return super.drawChild(canvas, child, drawingTime);
         }
         boolean clipped = false;
 
@@ -1818,10 +1870,7 @@ public class ToolbarPhone extends ToolbarLayout
         finishAnimations();
 
         if (inTabSwitcherMode) {
-            if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
-                mUrlFocusLayoutAnimator.end();
-                mUrlFocusLayoutAnimator = null;
-            }
+            endUrlFocusAnimation();
             updateViewsForTabSwitcherMode();
         }
 
@@ -1830,6 +1879,13 @@ public class ToolbarPhone extends ToolbarLayout
         updateVisualsForLocationBarState();
 
         postInvalidateOnAnimation();
+    }
+
+    private void endUrlFocusAnimation() {
+        if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
+            mUrlFocusLayoutAnimator.end();
+            mUrlFocusLayoutAnimator = null;
+        }
     }
 
     @Override
@@ -2031,15 +2087,6 @@ public class ToolbarPhone extends ToolbarLayout
             mBrandColorTransitionAnimation.cancel();
         }
 
-        List<Animator> animators = new ArrayList<>();
-        if (hasFocus) {
-            populateUrlExpansionAnimatorSet(animators);
-        } else {
-            populateUrlClearExpansionAnimatorSet(animators);
-        }
-        mUrlFocusLayoutAnimator = new AnimatorSet();
-        mUrlFocusLayoutAnimator.playTogether(animators);
-
         mUrlFocusChangeInProgress = true;
         // Hide the optional button immediately when animating in the suggestions list (since other
         // toolbar buttons are also hidden immediately) or restore it when omnibox focus is lost.
@@ -2048,6 +2095,28 @@ public class ToolbarPhone extends ToolbarLayout
             updateOptionalButton(hasFocus ? null : mButtonData);
             mButtonData = copy;
         }
+
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            createAndRunFocusAnimatorRefactored(hasFocus);
+        } else {
+            createAndRunFocusAnimatorLegacy(hasFocus, shouldShowKeyboard);
+        }
+        if (!hasFocus || mLocationBar.shouldShortCircuitFocusAnimation(true)) {
+            TraceEvent.instant("ToolbarPhone.ShortCircuitUnfocusAnimation");
+            endUrlFocusAnimation();
+        }
+        TraceEvent.end("ToolbarPhone.triggerUrlFocusAnimation");
+    }
+
+    private void createAndRunFocusAnimatorLegacy(boolean hasFocus, boolean shouldShowKeyboard) {
+        List<Animator> animators = new ArrayList<>();
+        if (hasFocus) {
+            populateUrlExpansionAnimatorSet(animators);
+        } else {
+            populateUrlClearExpansionAnimatorSet(animators);
+        }
+        mUrlFocusLayoutAnimator = new AnimatorSet();
+        mUrlFocusLayoutAnimator.playTogether(animators);
 
         mUrlFocusLayoutAnimator.addListener(
                 new CancelAwareAnimatorListener() {
@@ -2084,11 +2153,155 @@ public class ToolbarPhone extends ToolbarLayout
                     }
                 });
         mUrlFocusLayoutAnimator.start();
-        if (!hasFocus || mLocationBar.shouldShortCircuitFocusAnimation(true)) {
-            TraceEvent.instant("ToolbarPhone.ShortCircuitUnfocusAnimation");
-            mUrlFocusLayoutAnimator.end();
-        }
-        TraceEvent.end("ToolbarPhone.triggerUrlFocusAnimation");
+    }
+
+    // TODO(crbug.com/430347234): Refine animations to match the spec.
+    private void createAndRunFocusAnimatorRefactored(boolean hasFocus) {
+        TransitionSet transition = new TransitionSet();
+        transition.setOrdering(TransitionSet.ORDERING_TOGETHER);
+
+        int toolbarBtnTransitionDuration =
+                hasFocus && animatingSuggestionsListOnNtp()
+                        ? 0
+                        : URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS;
+
+        Transition startButtonSlide =
+                new Slide(Gravity.START)
+                        .setDuration(toolbarBtnTransitionDuration)
+                        .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
+                        .addTarget(mHomeButtonDisplay.getView());
+        transition.addTransition(startButtonSlide);
+
+        Transition endButtonSlide =
+                new Slide(Gravity.END)
+                        .setDuration(toolbarBtnTransitionDuration)
+                        .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
+                        .addTarget(mToolbarButtonsContainer);
+        transition.addTransition(endButtonSlide);
+
+        Transition btnsFade =
+                new Fade()
+                        .setDuration(toolbarBtnTransitionDuration)
+                        .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
+                        .addTarget(mToolbarButtonsContainer);
+        transition.addTransition(btnsFade);
+
+        ChangeBounds changeBounds = new ChangeBounds();
+        changeBounds.addTarget(mLocationBar.getContainerView());
+        changeBounds.setResizeClip(true);
+        transition.addTransition(changeBounds);
+
+        Transition focusFractionTransition = buildUrlFocusFractionTransition();
+        transition.addTransition(focusFractionTransition);
+
+        transition.addListener(
+                new TransitionListenerAdapter() {
+                    @Override
+                    public void onTransitionCancel(Transition transition) {
+                        super.onTransitionCancel(transition);
+                        mUrlFocusChangeInProgress = false;
+                    }
+
+                    @Override
+                    public void onTransitionEnd(Transition transition) {
+                        super.onTransitionEnd(transition);
+                        mUrlFocusChangeInProgress = false;
+                        mLocationBar.finishUrlFocusChange(hasFocus, hasFocus);
+                    }
+                });
+
+        TransitionManager.beginDelayedTransition(this, transition);
+
+        int toolbarBtnsVis = hasFocus ? INVISIBLE : VISIBLE;
+        int homeBtnVis =
+                mHomeButtonDisplay.getVisibility() != GONE
+                        ? toolbarBtnsVis
+                        : mHomeButtonDisplay.getVisibility();
+        int locationBarLeftMargin =
+                hasFocus
+                        ? getFocusedLocationBarLeftMargin(0, true)
+                        : mUnfocusedLocationBarLayoutLeft;
+        int locationBarWidth =
+                hasFocus
+                        ? getFocusedLocationBarWidth(getWidth(), 0, true)
+                        : mUnfocusedLocationBarLayoutWidth;
+
+        // TODO (crbug.com/430347234): Should be handled by LocationBarCoordinator. Not setting it
+        // here causes this container to be visible in first frame during unfocus.
+        int urlActionContainerVis = hasFocus ? VISIBLE : INVISIBLE;
+
+        mToolbarButtonsContainer.setVisibility(toolbarBtnsVis);
+        mHomeButtonDisplay.getView().setVisibility(homeBtnVis);
+        getToolbarShadow().setVisibility(toolbarBtnsVis);
+        MarginLayoutParams layoutParams =
+                mLocationBar.getPhoneCoordinator().getMarginLayoutParams();
+        layoutParams.leftMargin = locationBarLeftMargin;
+        layoutParams.width = locationBarWidth;
+        mLocationBar.getContainerView().setLayoutParams(layoutParams);
+        mUrlActionContainer.setVisibility(urlActionContainerVis);
+        setUrlFocusChangeFraction(hasFocus ? 1f : 0f);
+    }
+
+    private Transition buildUrlFocusFractionTransition() {
+        return new Transition() {
+            private static final String URL_FOCUS_FRACTION_KEY =
+                    "ToolbarPhone.mUrlFocusChangeFraction";
+
+            @Override
+            public void captureEndValues(TransitionValues transitionValues) {
+                captureValues(transitionValues);
+            }
+
+            @Override
+            public void captureStartValues(TransitionValues transitionValues) {
+                captureValues(transitionValues);
+            }
+
+            private void captureValues(TransitionValues transitionValues) {
+                if (transitionValues.view instanceof ToolbarPhone) {
+                    ToolbarPhone toolbar = (ToolbarPhone) transitionValues.view;
+                    transitionValues.values.put(
+                            URL_FOCUS_FRACTION_KEY, toolbar.mUrlFocusChangeFraction);
+                }
+            }
+
+            @Override
+            public @Nullable Animator createAnimator(
+                    ViewGroup sceneRoot,
+                    @Nullable TransitionValues startValues,
+                    @Nullable TransitionValues endValues) {
+                if (startValues == null
+                        || startValues.values == null
+                        || !startValues.values.containsKey(URL_FOCUS_FRACTION_KEY)
+                        || endValues == null
+                        || endValues.values == null
+                        || !endValues.values.containsKey(URL_FOCUS_FRACTION_KEY)) {
+                    return null;
+                }
+
+                float startFraction = (float) startValues.values.get(URL_FOCUS_FRACTION_KEY);
+                float endFraction = (float) endValues.values.get(URL_FOCUS_FRACTION_KEY);
+
+                if (startFraction == endFraction) {
+                    return null;
+                }
+
+                // Get the target view and set its initial state
+                ToolbarPhone toolbar = (ToolbarPhone) endValues.view;
+                toolbar.setUrlFocusChangeFraction(startFraction);
+
+                // Create and return the ObjectAnimator
+                Animator fractionAnimator =
+                        ObjectAnimator.ofFloat(
+                                toolbar,
+                                mUrlFocusChangeFractionProperty,
+                                startFraction,
+                                endFraction);
+                fractionAnimator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
+                fractionAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+                return fractionAnimator;
+            }
+        };
     }
 
     // ToolbarDataProvider.Observer implementation.
@@ -2603,7 +2816,8 @@ public class ToolbarPhone extends ToolbarLayout
                         }
 
                         mLayoutLocationBarWithoutExtraButton = false;
-                        mDisableLocationBarRelayout = false;
+                        mDisableLocationBarRelayout =
+                                ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
                         mOptionalButtonAnimationRunning = false;
                         allowBrowserControlsHide();
                         if (mLayoutUpdater != null) mLayoutUpdater.run();
@@ -2707,6 +2921,8 @@ public class ToolbarPhone extends ToolbarLayout
     private void cancelAnimations() {
         if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.cancel();
+        } else {
+            TransitionManager.endTransitions(this);
         }
 
         if (mBrandColorTransitionAnimation != null && mBrandColorTransitionAnimation.isRunning()) {
