@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 

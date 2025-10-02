@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/tab/protocol/tab_state.pb.h"
 
 namespace sql {
 class Database;

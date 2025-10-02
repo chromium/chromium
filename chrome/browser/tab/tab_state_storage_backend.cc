@@ -17,35 +17,6 @@ constexpr base::TaskTraits kDBTaskTraits = {
     base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
 }  // namespace
 
-void TabStateStorageBackend::PopulateTabState(
-    tabs_pb::TabState* tab_state,
-    const TabStoragePackage& package) {
-  const std::unique_ptr<AndroidTabPackage>& android_package =
-      package.android_tab_package_;
-  if (android_package) {
-    tab_state->set_parent_id(android_package->parent_id_);
-    tab_state->set_timestamp_millis(android_package->timestamp_millis_);
-    if (android_package->web_contents_state_bytes_) {
-      tab_state->set_web_contents_state_bytes(
-          *android_package->web_contents_state_bytes_);
-    }
-    tab_state->set_web_contents_state_version(android_package->version_);
-    if (android_package->opener_app_id_) {
-      tab_state->set_opener_app_id(*android_package->opener_app_id_);
-    }
-    tab_state->set_theme_color(android_package->theme_color_);
-    tab_state->set_launch_type_at_creation(
-        android_package->launch_type_at_creation_);
-    tab_state->set_last_navigation_committed_timestamp_millis(
-        android_package->last_navigation_committed_timestamp_millis_);
-    tab_state->set_tab_has_sensitive_content(
-        android_package->tab_has_sensitive_content_);
-  }
-  tab_state->set_user_agent(package.user_agent_);
-  tab_state->set_tab_group_id_high(package.tab_group_id_.high());
-  tab_state->set_tab_group_id_low(package.tab_group_id_.low());
-  tab_state->set_is_pinned(package.is_pinned_);
-}
 
 TabStateStorageBackend::TabStateStorageBackend(
     const base::FilePath& profile_path)
@@ -72,10 +43,7 @@ void TabStateStorageBackend::Initialize() {
 void TabStateStorageBackend::Save(int id,
                                   int type,
                                   std::unique_ptr<TabStoragePackage> package) {
-  tabs_pb::TabState tab_state;
-  PopulateTabState(&tab_state, *package);
-  std::string payload;
-  tab_state.SerializeToString(&payload);
+  std::string payload = package->SerializePayload();
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::SaveNode,

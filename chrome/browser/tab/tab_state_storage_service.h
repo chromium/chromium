@@ -19,6 +19,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 
+namespace tabs_pb {
+class TabState;
+}  // namespace tabs_pb
+
 namespace tabs {
 
 class TabStateStorageService : public KeyedService,

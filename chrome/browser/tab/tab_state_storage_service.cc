@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/token.h"
+#include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/tabs/public/tab_interface.h"
 

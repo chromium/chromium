@@ -26,6 +26,10 @@ struct TabStoragePackage {
   TabStoragePackage(const TabStoragePackage&) = delete;
   TabStoragePackage& operator=(const TabStoragePackage&) = delete;
 
+  // Serializes the data contained within this package into a string payload for
+  // storage.
+  std::string SerializePayload() const;
+
   const int user_agent_;
   const base::Token tab_group_id_;
   const bool is_pinned_;
