@@ -6,7 +6,7 @@
 
 namespace enterprise_watermark {
 
-BASE_FEATURE(kEnableWatermarkCustomization, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableWatermarkCustomization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableWatermarkTestPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
