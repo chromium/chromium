@@ -382,9 +382,17 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
+// TODO(crbug.com/448737648): Flaky on MacOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch \
+  DISABLED_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch
+#else
+#define MAYBE_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch \
+  PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch
+#endif
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
-    PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
+    MAYBE_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/small_script.js");
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -738,9 +738,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // Tests the case when fetching started in a nested dedicated worker and the
 // header was received before the page is frozen, but parts of the response body
 // is received when the page is frozen.
+//
+// TODO(crbug.com/448724259): Flaky on MacOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested \
+  DISABLED_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested
+#else
+#define MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested \
+  PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested
+#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested) {
+    MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested) {
   CreateHttpsServer();
 
   net::test_server::ControllableHttpResponse fetch_response(https_server(),
@@ -2962,9 +2971,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     FROM_HERE);
 }
 
+// TODO(crbug.com/448785237): Flaky on MacOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DoNotCacheIfIndexedDBTransactionHoldingLocksAndBlockingOthers \
+  DISABLED_DoNotCacheIfIndexedDBTransactionHoldingLocksAndBlockingOthers
+#else
+#define MAYBE_DoNotCacheIfIndexedDBTransactionHoldingLocksAndBlockingOthers \
+  DoNotCacheIfIndexedDBTransactionHoldingLocksAndBlockingOthers
+#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    DoNotCacheIfIndexedDBTransactionHoldingLocksAndBlockingOthers) {
+    MAYBE_DoNotCacheIfIndexedDBTransactionHoldingLocksAndBlockingOthers) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Shell* tab_holding_locks = shell();
