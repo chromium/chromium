@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.view.ViewGroup.LayoutParams;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceHeaderFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
@@ -33,11 +35,66 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
     private InnerOnBackPressedCallback mOnBackPressedCallback;
 
+    private @Nullable Intent mPendingFragmentIntent;
+
     @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
         // Main menu, which is the first page in one column mode (i.e. window is
         // small enough), or shown at left side pane in two column mode.
         return new MainSettings();
+    }
+
+    @Override
+    public @Nullable Fragment onCreateInitialDetailFragment() {
+        // Look at if there is a pending Intent and use it if it is.
+        // Otherwise fallback to the original logic, i.e. use the first item in the main menu.
+        Fragment fragment = processPendingFragmentIntent();
+        if (fragment != null) {
+            return fragment;
+        }
+        return super.onCreateInitialDetailFragment();
+    }
+
+    void setPendingFragmentIntent(Intent intent) {
+        mPendingFragmentIntent = intent;
+    }
+
+    @Override
+    public void onResume() {
+        // Update the detail pane, if the intent is specified.
+        Fragment fragment = processPendingFragmentIntent();
+        if (fragment != null) {
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.preferences_detail, fragment)
+                    .addToBackStack(null)
+                    .commit();
+            getSlidingPaneLayout().open();
+        }
+
+        super.onResume();
+    }
+
+    /**
+     * Processes the pending Intent if there is, and returns the Fragment to be used in the detailed
+     * pane.
+     */
+    private @Nullable Fragment processPendingFragmentIntent() {
+        if (mPendingFragmentIntent == null) {
+            return null;
+        }
+        Intent intent = mPendingFragmentIntent;
+        mPendingFragmentIntent = null;
+
+        // The logic here should be conceptually consistent with
+        // SettingsActivity.instantiateMainFragment.
+        String fragmentName = intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT);
+        if (fragmentName == null) {
+            return null;
+        }
+        Bundle arguments = intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
+        return Fragment.instantiate(requireActivity(), fragmentName, arguments);
     }
 
     @Override

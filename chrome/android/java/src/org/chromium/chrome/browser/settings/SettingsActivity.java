@@ -261,11 +261,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 // TODO(crbug.com/404074032): Implement them back.
                 var transaction = fragmentManager.beginTransaction();
                 mMultiColumnSettings = new MultiColumnSettings();
+                mMultiColumnSettings.setPendingFragmentIntent(getIntent());
                 transaction.replace(R.id.content, mMultiColumnSettings, MULTI_COLUMN_FRAGMENT_TAG);
                 transaction.commit();
             } else {
                 Fragment fragment = instantiateMainFragment(getIntent());
-
                 var transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.content, fragment, MAIN_FRAGMENT_TAG);
                 setFragmentAnimation(transaction, fragment);
@@ -463,7 +463,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // soon. We defer making a fragment transaction to onResume because doing it here breaks
         // fragment animations as all pending animations are cleared when an activity is resumed.
         assert mPendingNewIntent == null;
-        mPendingNewIntent = intent;
+        if (mMultiColumnSettings != null) {
+            mMultiColumnSettings.setPendingFragmentIntent(intent);
+        } else {
+            mPendingNewIntent = intent;
+        }
     }
 
     private Fragment instantiateMainFragment(Intent intent) {
@@ -550,6 +554,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         // If there is a pending intent to process from onNewIntent, process it now.
         if (mPendingNewIntent != null) {
+            // If multi-column is enabled, fragment instantiation is handled in MultiColumnSettings.
+            assert mMultiColumnSettings == null;
+
             Fragment fragment = instantiateMainFragment(mPendingNewIntent);
             mPendingNewIntent = null;
 
