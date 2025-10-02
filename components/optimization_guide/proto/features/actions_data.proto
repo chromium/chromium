@@ -361,13 +361,21 @@ message Action {
 }
 
 // A single set of actions to be taken by Chrome. The response is ActionsResult.
-// Next ID: 3
+// Next ID: 4
 message Actions {
   // The actions to be taken by Chrome.
   repeated Action actions = 1;
 
   // The task id of the action.
   int32 task_id = 2 [features = { field_presence: EXPLICIT }];
+
+  // Whether to skip APC and screenshot (i.e., async) observation collections
+  // when building the ActionsResult. Tab Observation will still be collected,
+  // but will be missing APC and screenshot. Tab ID will be populated in the
+  // TabObservation.
+  // We may want more sophisticated control over which observations are
+  // collected in the future.
+  bool skip_async_observation_collection = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Information about a chrome window.
@@ -395,12 +403,18 @@ message TabObservation {
   int32 id = 1 [features = { field_presence: EXPLICIT }];
 
   // The page content at the observation time.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
   AnnotatedPageContent annotated_page_content = 2 [features = { field_presence: EXPLICIT }];
 
   // The screenshot of the page at the time after the action.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
   bytes screenshot = 3 [features = { field_presence: EXPLICIT }];
 
   // The mime type of the |screenshot|.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
   string screenshot_mime_type = 4 [features = { field_presence: EXPLICIT }];
 
   // The result of the tab observation.
@@ -408,6 +422,8 @@ message TabObservation {
 
   // Metadata about the page content.
   // The number of meta tags returned is limited to 32.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
   PageMetadata metadata = 6 [features = { field_presence: EXPLICIT }];
 
   // Result codes of a tab observation. It may be possible
