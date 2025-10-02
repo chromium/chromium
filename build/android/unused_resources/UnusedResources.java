@@ -59,10 +59,12 @@ import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -400,48 +402,70 @@ public class UnusedResources {
 
     private void recordClassUsages(File file, String name, byte[] bytes) {
         assert name.endsWith(DOT_DEX);
-        ReferenceChecker callback = new ReferenceChecker() {
-            @Override
-            public boolean shouldProcess(String internalName) {
-                // We do not need to ignore R subclasses since R8 now removes
-                // unused resource id fields in R subclasses thus their
-                // remaining presence means real usage.
-                return true;
-            }
-
-            @Override
-            public void referencedInt(int value) {
-                UnusedResources.this.referencedInt("dex", value, file, name);
-            }
-
-            @Override
-            public void referencedString(String value) {
-                // do nothing.
-            }
-
-            @Override
-            public void referencedStaticField(String internalName, String fieldName) {
-                Resource resource = getResourceFromCode(internalName, fieldName);
-                if (resource != null) {
-                    ResourceUsageModel.markReachable(resource);
-                    if (mDebugPrinter != null) {
-                        mDebugPrinter.println("Marking " + stringifyResource(resource)
-                                + " reachable: referenced from dex"
-                                + " in " + file + ":" + name + " (static field access "
-                                + internalName + "." + fieldName + ")");
+        ReferenceChecker callback =
+                new ReferenceChecker() {
+                    @Override
+                    public boolean shouldProcess(String internalName) {
+                        // We do not need to ignore R subclasses since R8 now removes
+                        // unused resource id fields in R subclasses thus their
+                        // remaining presence means real usage.
+                        return true;
                     }
-                }
-            }
 
-            @Override
-            public void referencedMethod(
-                    String internalName, String methodName, String methodDescriptor) {
-                // Do nothing.
-            }
-        };
-        ProgramResource resource = ProgramResource.fromBytes(
-                new PathOrigin(file.toPath()), ProgramResource.Kind.DEX, bytes, null);
-        ProgramResourceProvider provider = () -> Arrays.asList(resource);
+                    @Override
+                    public void referencedInt(int value) {
+                        UnusedResources.this.referencedInt("dex", value, file, name);
+                    }
+
+                    @Override
+                    public void referencedString(String value) {
+                        // do nothing.
+                    }
+
+                    @Override
+                    public void referencedStaticField(String internalName, String fieldName) {
+                        Resource resource = getResourceFromCode(internalName, fieldName);
+                        if (resource != null) {
+                            ResourceUsageModel.markReachable(resource);
+                            if (mDebugPrinter != null) {
+                                mDebugPrinter.println(
+                                        "Marking "
+                                                + stringifyResource(resource)
+                                                + " reachable: referenced from dex"
+                                                + " in "
+                                                + file
+                                                + ":"
+                                                + name
+                                                + " (static field access "
+                                                + internalName
+                                                + "."
+                                                + fieldName
+                                                + ")");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void referencedMethod(
+                            String internalName, String methodName, String methodDescriptor) {
+                        // Do nothing.
+                    }
+                };
+        ProgramResource resource =
+                ProgramResource.fromBytes(
+                        new PathOrigin(file.toPath()), ProgramResource.Kind.DEX, bytes, null);
+        ProgramResourceProvider provider =
+                new ProgramResourceProvider() {
+                    @Override
+                    public Collection<ProgramResource> getProgramResources() {
+                        return Arrays.asList(resource);
+                    }
+
+                    @Override
+                    public void getProgramResources(Consumer<ProgramResource> consumer) {
+                        consumer.accept(resource);
+                    }
+                };
         try {
             Command command =
                     (new ResourceShrinker.Builder()).addProgramResourceProvider(provider).build();
