@@ -4426,6 +4426,88 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testOnTabPinnedStateChanged_MovesTab() {
+        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        doReturn(false).when(mTab1).getIsPinned();
+        doReturn(false).when(mTab2).getIsPinned();
+        doReturn(false).when(tab3).getIsPinned();
+
+        when(mTabModel.getCount()).thenReturn(3);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
+        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mTabModel.getTabAt(2)).thenReturn(tab3);
+        when(mTabModel.iterator()).thenAnswer(invocation -> List.of(mTab1, mTab2, tab3).iterator());
+
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(tab3)).thenReturn(2);
+
+        when(mTabGroupModelFilter.getIndividualTabAndGroupCount()).thenReturn(3);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(0)).thenReturn(mTab1);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(1)).thenReturn(mTab2);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(2)).thenReturn(tab3);
+
+        List<Tab> tabsInModel = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
+        mMediator.resetWithListOfTabs(tabsInModel, null, false);
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+        assertFalse(mModelList.get(1).model.get(TabProperties.IS_PINNED));
+
+        // Pin mTab2. It should move to the front.
+        doReturn(true).when(mTab2).getIsPinned();
+        when(mTabModel.indexOf(mTab2)).thenReturn(0);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(tab3)).thenReturn(2);
+
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab2, true);
+
+        // Verify mTab2 is now at the front and pinned.
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertTrue(mModelList.get(0).model.get(TabProperties.IS_PINNED));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+        assertEquals(
+                TabActionButtonType.PIN,
+                mModelList.get(0).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+
+        // Pin mTab1. It should not move.
+        doReturn(true).when(mTab1).getIsPinned();
+        when(mTabModel.indexOf(mTab2)).thenReturn(0);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(tab3)).thenReturn(2);
+
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab1, true);
+
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertTrue(mModelList.get(1).model.get(TabProperties.IS_PINNED));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+        assertEquals(
+                TabActionButtonType.PIN,
+                mModelList.get(1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+
+        // Unpin mTab2. It should return to its original position.
+        doReturn(false).when(mTab2).getIsPinned();
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(tab3)).thenReturn(2);
+
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab2, false);
+
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertFalse(mModelList.get(1).model.get(TabProperties.IS_PINNED));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+        assertNotEquals(
+                TabActionButtonType.PIN,
+                mModelList.get(1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+    }
+
+    @Test
     public void testOnMenuItemClickedCallback_CloseGroupInTabSwitcher_NullListViewTouchTracker() {
         testOnMenuItemClickedCallback_CloseOrDeleteGroupInTabSwitcher(
                 R.id.close_tab_group,
