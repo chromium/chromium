@@ -11,6 +11,8 @@
 #include "base/android/device_info.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
@@ -129,6 +131,14 @@ bool ChromeFacilitatedPaymentsClient::IsInLandscapeMode() {
 
 bool ChromeFacilitatedPaymentsClient::IsFoldable() {
   return base::android::device_info::is_foldable();
+}
+
+bool ChromeFacilitatedPaymentsClient::IsInChromeCustomTabMode() {
+  auto* delegate = TabAndroid::FromWebContents(&GetWebContents())
+                       ? static_cast<android::TabWebContentsDelegateAndroid*>(
+                             GetWebContents().GetDelegate())
+                       : nullptr;
+  return delegate && delegate->IsCustomTab();
 }
 
 optimization_guide::OptimizationGuideDecider*

@@ -53,6 +53,9 @@ class DeviceDelegate {
   virtual bool InvokePaymentApp(std::string_view package_name,
                                 std::string_view activity_name,
                                 const GURL& payment_link_url) = 0;
+
+  // Returns true if Pix is supported via Gboard.
+  virtual bool IsPixSupportAvailableViaGboard() const = 0;
 };
 
 }  // namespace payments::facilitated

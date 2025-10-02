@@ -51,6 +51,8 @@ class DeviceDelegateAndroid : public DeviceDelegate {
                         std::string_view activity_name,
                         const GURL& payment_link_url) override;
 
+  bool IsPixSupportAvailableViaGboard() const override;
+
  private:
   friend class DeviceDelegateAndroidTestApi;
 

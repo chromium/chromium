@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -22,6 +23,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
+import android.view.inputmethod.InputMethodInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.test.filters.SmallTest;
 
@@ -33,6 +38,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -60,6 +66,9 @@ public class DeviceDelegateTest {
     private static final String A2A_INTENT_ACTION_NAME =
             "org.chromium.intent.action.FACILITATED_PAYMENT";
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
+    private static final String GBOARD_PACKAGE_NAME = "com.google.android.inputmethod.latin";
+    private static final String NON_GBOARD_PACKAGE_NAME = "com.other.ime";
+    private static final long PIX_MIN_SUPPORTED_WALLET_VERSION = 932848136L;
     private static final String EMAIL = "user@example.com";
     private static final GURL PAYMENT_LINK =
             new GURL("https://www.itmx.co.th/facilitated-payment/prompt-pay");
@@ -72,11 +81,77 @@ public class DeviceDelegateTest {
     @Mock private PackageManagerDelegate mMockPackageManagerDelegate;
     @Mock private Drawable mMockDrawable;
     @Mock private PackageManager mMockPackageManager;
+    @Mock private InputMethodManager mMockInputMethodManager;
+    @Mock private InputMethodInfo mMockInputMethodInfo;
+    @Mock private ContentResolver mMockContentResolver;
 
     @Before
     public void setUp() {
         when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mMockContext));
         when(mMockContext.getPackageManager()).thenReturn(mMockPackageManager);
+        when(mMockContext.getSystemService(InputMethodManager.class))
+                .thenReturn(mMockInputMethodManager);
+        when(mMockContext.getContentResolver()).thenReturn(mMockContentResolver);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testIsPixSupportAvailableViaGboard_UnsupportedAndroidVersion() {
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_NullWindowAndroid_AndroidT() {
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(null));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_NullContext_AndroidT() {
+        when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_GboardIsCurrentIme_AndroidT() {
+        Settings.Secure.putString(
+                mMockContentResolver,
+                Settings.Secure.DEFAULT_INPUT_METHOD,
+                GBOARD_PACKAGE_NAME + "/.ImeService");
+
+        assertTrue(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_GboardIsNotCurrentIme_AndroidT() {
+        Settings.Secure.putString(
+                mMockContentResolver,
+                Settings.Secure.DEFAULT_INPUT_METHOD,
+                NON_GBOARD_PACKAGE_NAME + "/.ImeService");
+
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testIsPixSupportAvailableViaGboard_GboardIsCurrentIme() {
+        when(mMockInputMethodManager.getCurrentInputMethodInfo()).thenReturn(mMockInputMethodInfo);
+        when(mMockInputMethodInfo.getPackageName()).thenReturn(GBOARD_PACKAGE_NAME);
+
+        assertTrue(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testIsPixSupportAvailableViaGboard_GboardIsNotCurrentIme() {
+        when(mMockInputMethodManager.getCurrentInputMethodInfo()).thenReturn(mMockInputMethodInfo);
+        when(mMockInputMethodInfo.getPackageName()).thenReturn(NON_GBOARD_PACKAGE_NAME);
+
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
     }
 
     @Test

@@ -121,4 +121,14 @@ bool DeviceDelegateAndroid::InvokePaymentApp(std::string_view package_name,
       web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
 }
 
+bool DeviceDelegateAndroid::IsPixSupportAvailableViaGboard() const {
+  if (!web_contents_ || !web_contents_->GetNativeView() ||
+      !web_contents_->GetNativeView()->GetWindowAndroid()) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_DeviceDelegate_isPixSupportAvailableViaGboard(
+      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
+}
+
 }  // namespace payments::facilitated

@@ -167,10 +167,14 @@ void PixManager::OnPixCodeValidated(
     return;
   }
 
+  if (client_->IsInChromeCustomTabMode() &&
+      client_->GetDeviceDelegate()->IsPixSupportAvailableViaGboard()) {
+    LogPixFlowExitedReason(PixFlowExitedReason::kCctWithGboardAsDefaultIme);
+    return;
+  }
   if (!GetApiClient()) {
     return;
   }
-
   initiate_payment_request_details_->pix_code_ = std::move(pix_code);
   GetApiClient()->IsAvailable(
       base::BindOnce(&PixManager::OnApiAvailabilityReceived,

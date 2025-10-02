@@ -98,6 +98,12 @@ class PixManager {
                            DismissPrompt);
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTestWithAccountLinkingEnabled,
+      ChromeCustomTabWithGboardAsDefaultIme_PixFlowNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
+      ChromeCustomTabWithGboardNotAsDefaultIme_PixFlowTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
       ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            HandlesFailureToLazilyInitializeApiClient);
