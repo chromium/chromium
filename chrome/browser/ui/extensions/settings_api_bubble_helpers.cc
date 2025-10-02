@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -152,7 +153,7 @@ void MaybeShowExtensionControlledSearchNotification(
 }
 
 void MaybeShowExtensionControlledNewTabPage(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* web_contents) {
   if (!g_ntp_post_install_ui_enabled) {
     return;
@@ -160,7 +161,7 @@ void MaybeShowExtensionControlledNewTabPage(
 
   // Acknowledge existing extensions if necessary.
   if (g_acknowledge_existing_ntp_extensions) {
-    AcknowledgePreExistingNtpExtensions(browser->profile());
+    AcknowledgePreExistingNtpExtensions(browser->GetProfile());
   }
 
   // Jump through a series of hoops to see if the web contents is pointing to
@@ -186,7 +187,7 @@ void MaybeShowExtensionControlledNewTabPage(
     return;  // Not being overridden by an extension.
   }
 
-  Profile* const profile = browser->profile();
+  Profile* const profile = browser->GetProfile();
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile);
@@ -201,7 +202,7 @@ void MaybeShowExtensionControlledNewTabPage(
   }
 
   ShowSettingsOverriddenDialog(std::move(dialog),
-                               browser->window()->GetNativeWindow());
+                               browser->GetWindow()->GetNativeWindow());
 }
 
 }  // namespace extensions

@@ -9,6 +9,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 class Browser;
+class BrowserWindowInterface;
 class PrefRegistrySimple;
 class Profile;
 
@@ -54,7 +55,7 @@ void MaybeShowExtensionControlledSearchNotification(
 // Shows a bubble notifying the user that the new tab page is controlled by an
 // extension. This bubble is shown only the first time the new tab page is shown
 // after the controlling extension takes effect.
-void MaybeShowExtensionControlledNewTabPage(Browser* browser,
+void MaybeShowExtensionControlledNewTabPage(BrowserWindowInterface* browser,
                                             content::WebContents* web_contents);
 
 }  // namespace extensions
