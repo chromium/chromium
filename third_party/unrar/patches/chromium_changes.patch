@@ -46,7 +46,7 @@ index db1cb533823bf..d2cd23173c37c 100644
      static uint64 GetWinSize(uint64 Size,uint &Flags);
  
 diff --git a/third_party/unrar/src/crc.cpp b/third_party/unrar/src/crc.cpp
-index 61c616289ae47..6ec67f2b8a78f 100644
+index 61c616289ae47..f9a9d74f021c8 100644
 --- a/third_party/unrar/src/crc.cpp
 +++ b/third_party/unrar/src/crc.cpp
 @@ -21,6 +21,7 @@
@@ -57,7 +57,7 @@ index 61c616289ae47..6ec67f2b8a78f 100644
  
  #ifdef USE_NEON_CRC32
  static bool CRC_Neon;
-@@ -74,10 +75,13 @@ static void InitTables()
+@@ -74,10 +75,16 @@ static void InitTables()
  }
  
  
@@ -65,6 +65,9 @@ index 61c616289ae47..6ec67f2b8a78f 100644
 -
  uint CRC32(uint StartCRC,const void *Addr,size_t Size)
  {
++#if defined(CHROMIUM_UNRAR_FUZZER)
++  return -1;
++#else
 +  if (!is_initialized) {
 +    is_initialized = true;
 +    InitTables();
@@ -73,6 +76,14 @@ index 61c616289ae47..6ec67f2b8a78f 100644
    byte *Data=(byte *)Addr;
  
  #ifdef USE_NEON_CRC32
+@@ -147,6 +154,7 @@ uint CRC32(uint StartCRC,const void *Addr,size_t Size)
+     StartCRC=crc_tables[0][(byte)(StartCRC^Data[0])]^(StartCRC>>8);
+ 
+   return StartCRC;
++#endif  // defined(CHROMIUM_UNRAR_FUZZER)
+ }
+ 
+ 
 diff --git a/third_party/unrar/src/errhnd.cpp b/third_party/unrar/src/errhnd.cpp
 index b07e2f6646de9..a202e90944cf1 100644
 --- a/third_party/unrar/src/errhnd.cpp
@@ -504,7 +515,7 @@ index bb9eb0b0d0f11..aa7c52f4b5520 100644
  
  #endif // _RAR_OS_
 diff --git a/third_party/unrar/src/rardefs.hpp b/third_party/unrar/src/rardefs.hpp
-index 378ccc7fbad2c..ccce7f7b1e20e 100644
+index 378ccc7fbad2c..aed099caa7265 100644
 --- a/third_party/unrar/src/rardefs.hpp
 +++ b/third_party/unrar/src/rardefs.hpp
 @@ -37,7 +37,12 @@
