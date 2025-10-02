@@ -723,8 +723,13 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FullScreenVideoCrash DISABLED_FullScreenVideoCrash
+#else
+#define MAYBE_FullScreenVideoCrash FullScreenVideoCrash
+#endif
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
-                       FullScreenVideoCrash) {
+                       MAYBE_FullScreenVideoCrash) {
   // Play fullscreen video in a tab and make the tab crash, ensure that things
   // are tracked properly.
   auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
