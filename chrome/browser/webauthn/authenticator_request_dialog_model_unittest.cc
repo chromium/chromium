@@ -500,7 +500,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   const auto winapi = AuthenticatorRequestDialogModel::Mechanism::WindowsAPI();
-  const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone();
+  const auto hybrid = AuthenticatorRequestDialogModel::Mechanism::Hybrid();
   const auto sign_in_again =
       AuthenticatorRequestDialogModel::Mechanism::SignInAgain();
   [[maybe_unused]] const auto ickc =
@@ -550,8 +550,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       // If there's only a single mechanism, it should activate.
       {L, mc, {usb}, {}, {t(usb)}, usb_ui},
       {L, ga, {usb}, {}, {t(usb)}, usb_ui},
-      {L, ga, {usb, cable}, {}, {add}, qr},
-      {L, ga, {usb, cable}, {}, {add}, qr},
+      {L, ga, {usb, cable}, {}, {hybrid}, qr},
+      {L, ga, {usb, cable}, {}, {hybrid}, qr},
       // If the platform authenticator has a credential it should activate.
       {L,
        ga,
@@ -644,14 +644,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {usb, internal, cable},
        {c_ui},
-       {add},
+       {hybrid},
        qr},
 
       // On Windows, mc with rk=required jumps to the platform UI when caBLE
       // isn't an option. The case where caBLE is possible is tested below.
       {L, mc, {}, {has_winapi, rk}, {winapi}, plat_ui},
       // For rk=discouraged, always jump to Windows UI.
-      {L, mc, {cable}, {has_winapi}, {winapi, add}, plat_ui},
+      {L, mc, {cable}, {has_winapi}, {winapi, hybrid}, plat_ui},
       {L, mc, {}, {has_winapi}, {winapi}, plat_ui},
 
       // On Windows, ga with an empty allow list goes to the platform UI unless
@@ -660,12 +660,12 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       // With a non-empty allow list containing non phone credentials, always
       // jump to Windows UI.
       // TODO(NEWUI): we should maintain this behaviour on Windows.
-      {L, ga, {cable}, {has_winapi}, {add, winapi}, mss},
+      {L, ga, {cable}, {has_winapi}, {hybrid, winapi}, mss},
       {L, ga, {}, {has_winapi}, {winapi}, plat_ui},
 
        // With attachment=undefined, the UI should still default to a platform
        // authenticator.
-       {L, mc, {usb, internal, cable}, {att_any}, {add, t(internal)},
+       {L, mc, {usb, internal, cable}, {att_any}, {hybrid, t(internal)},
         create_pk_or_mss},
        {L, mc, {usb, internal}, {att_any, rk}, {t(internal), t(usb)},
         create_pk_or_mss},
@@ -676,14 +676,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        mc,
        {usb, internal, cable},
        {rk, att_xplat},
-       {add, t(internal)},
+       {hybrid, t(internal)},
        qr},
       // Or if attachment=any
       {L,
        mc,
        {usb, internal, cable},
        {rk, att_any},
-       {add, t(internal)},
+       {hybrid, t(internal)},
        create_pk_or_qr},
       // If RK=false, go to the default for the platform instead.
       {
@@ -691,13 +691,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
           mc,
           {usb, internal, cable},
           {},
-          {add, t(internal)},
+          {hybrid, t(internal)},
           create_pk_or_mss,
       },
       // Windows should also jump to the QR code first.
-      {L, mc, {cable}, {att_xplat, rk, has_winapi}, {add, winapi}, qr},
+      {L, mc, {cable}, {att_xplat, rk, has_winapi}, {hybrid, winapi}, qr},
       // ... but not for attachment=undefined.
-      {L, mc, {cable}, {rk, has_winapi}, {winapi, add}, plat_ui},
+      {L, mc, {cable}, {rk, has_winapi}, {winapi, hybrid}, plat_ui},
 
       // QR code first: Get assertion should jump to the QR code with empty
       // allow-list.
@@ -705,34 +705,34 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {usb, internal, cable},
        {empty_al},
-       {add},
+       {hybrid},
        qr},
       // And if the allow list only contains phones.
       {L,
        ga,
        {internal, cable},
        {only_hybrid_or_internal},
-       {add},
+       {hybrid},
        qr},
       // Or a recognized platform credential.
       {L,
        ga,
        {usb, internal, cable},
        {empty_al, has_plat, one_cred},
-       {c(cred1), add},
+       {c(cred1), hybrid},
        hero},
       // Ignore the platform credential for conditional ui requests
       {L,
        ga,
        {usb, internal, cable},
        {c_ui, empty_al, has_plat, one_cred},
-       {add},
+       {hybrid},
        qr},
       // If there is an allow-list containing USB, go to QR code as well.
-      {L, ga, {usb, internal, cable}, {}, {add}, qr},
+      {L, ga, {usb, internal, cable}, {}, {hybrid}, qr},
       // Windows should also jump to the QR code first.
       // TODO: the expectation here (mss) doesn't match the comment.
-      {L, ga, {cable}, {empty_al, has_winapi}, {add, winapi}, mss},
+      {L, ga, {cable}, {empty_al, has_winapi}, {hybrid, winapi}, mss},
       // Unless there is a recognized platform credential, in which case we
       // should jump directly to Windows.
       // Regression test for https://crbug.com/326508293.
@@ -740,7 +740,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {cable},
        {empty_al, has_winapi, has_plat, one_cred},
-       {c(wincred1), add, winapi},
+       {c(wincred1), hybrid, winapi},
        plat_ui},
       // For <=Win 10, we can't tell if there is a credential or not. Show the
       // mechanism selection screen instead.
@@ -748,7 +748,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {cable},
        {empty_al, has_winapi, maybe_plat},
-       {winapi, add},
+       {winapi, hybrid},
        mss},
     #if BUILDFLAG(IS_MAC)
       // If there's a single enclave passkey, we should jump directly to
@@ -757,21 +757,21 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {cable, internal},
        {only_hybrid_or_internal, empty_al, enclave_cred, uv_pref},
-       {c(enclave_cred1), add},
+       {c(enclave_cred1), hybrid},
        enclave_touchid},
       // But not if Touch ID isn't available.
       {L,
        ga,
        {cable, internal},
        {only_hybrid_or_internal, empty_al, enclave_cred, no_touchid, uv_pref},
-       {c(enclave_cred1), add},
+       {c(enclave_cred1), hybrid},
        hero},
       // And not if uv=discouraged
       {L,
        ga,
        {cable, internal},
        {only_hybrid_or_internal, empty_al, enclave_cred},
-       {c(enclave_cred1), add},
+       {c(enclave_cred1), hybrid},
        hero},
     #endif
     #if !BUILDFLAG(IS_CHROMEOS)
@@ -781,7 +781,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {cable, internal},
        {only_hybrid_or_internal, enclave_cred, uv_pref},
-       {c(enclave_cred1), add},
+       {c(enclave_cred1), hybrid},
        kIsMac ? enclave_touchid : hero},
      #endif
       // But, again, not for uv=discouraged.
@@ -789,7 +789,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {cable, internal},
        {only_hybrid_or_internal, enclave_cred},
-       {c(enclave_cred1), add},
+       {c(enclave_cred1), hybrid},
        hero},
       // When the enclave needs to sign-in again, that should appear as a
       // mechanism and the MSS should be shown.
@@ -797,14 +797,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {cable, usb},
        {enclave_cred, enclave_needs_sign_in},
-       {sign_in_again, add},
+       {sign_in_again, hybrid},
        mss},
       // Hinting "client-device" should not jump to the sign-in-again option.
       {L,
        mc,
        {cable, usb},
        {enclave_needs_sign_in, hint_plat},
-       {sign_in_again, add},
+       {sign_in_again, hybrid},
        mss},
       // Hinting "client-device" should not just to any other options, like
       // the profile authenticator, if GPM needs to sign in again.
@@ -812,7 +812,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        mc,
        {cable, usb, internal},
        {enclave_needs_sign_in, hint_plat},
-       {sign_in_again, add, t(internal)},
+       {sign_in_again, hybrid, t(internal)},
        mss},
 
       // Tests for the mechanism selection screen mixing credential types.
@@ -822,12 +822,12 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {usb, cable, internal},
        {two_cred, has_plat, empty_al},
-       {c(cred1), c(cred2), add},
+       {c(cred1), c(cred2), hybrid},
        mss},
       // qr code with ble disabled shows usb option.
-      {L, ga, {usb, cable}, {ble_off}, {add, t(usb)}, mss},
+      {L, ga, {usb, cable}, {ble_off}, {hybrid, t(usb)}, mss},
       // qr code with ble access denied shows usb option.
-      {L, ga, {usb, cable}, {ble_denied}, {add, t(usb)}, mss},
+      {L, ga, {usb, cable}, {ble_denied}, {hybrid, t(usb)}, mss},
       // Internal credentials, no qr code.
       {L,
        ga,
@@ -840,7 +840,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {usb, cable, internal},
        {one_cred, has_plat, empty_al},
-       {c(cred1), add},
+       {c(cred1), hybrid},
        hero,
      },
       // Single internal credential with non-empty allow list.
@@ -848,7 +848,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {usb, cable, internal},
        {one_cred, has_plat},
-       {c(cred1), add},
+       {c(cred1), hybrid},
 #if BUILDFLAG(IS_MAC)
        plat_ui,
 #else
@@ -862,7 +862,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {usb, cable, internal},
        {has_plat},
-       {add, t(internal)},
+       {hybrid, t(internal)},
        plat_ui},
 
 #if BUILDFLAG(IS_MAC)
@@ -890,9 +890,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        //
        // create(): Security key hint should show security key UI.
        {L, mc, {usb, internal, cable}, {rk, hint_sk},
-        {add, t(internal), t(usb)}, usb_ui},
+        {hybrid, t(internal), t(usb)}, usb_ui},
        // But not if USB isn't a valid transport.
-       {L, mc, {internal, cable}, {rk, hint_sk}, {add, t(internal)},
+       {L, mc, {internal, cable}, {rk, hint_sk}, {hybrid, t(internal)},
 #if BUILDFLAG(IS_MAC)
          create_pk,
 #else
@@ -900,11 +900,11 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 #endif
        },
        // If webauthn.dll is present, jump to it.
-       {L, mc, {cable}, {has_winapi, rk, hint_sk}, {winapi, add}, plat_ui},
+       {L, mc, {cable}, {has_winapi, rk, hint_sk}, {winapi, hybrid}, plat_ui},
 
        // create(): Hybrid hint should show QR.
        {L, mc, {usb, internal, cable}, {rk, hint_hybrid},
-        {add, t(internal), t(usb)}, qr},
+        {hybrid, t(internal), t(usb)}, qr},
        // But not if Hybrid isn't a valid transport.
        {L, mc, {usb, internal}, {rk, hint_hybrid}, {t(internal), t(usb)},
 #if BUILDFLAG(IS_MAC)
@@ -915,7 +915,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        },
        // If older webauthn.dll is present, don't jump to it since it doesn't do
        // hybrid.
-       {L, mc, {cable}, {has_winapi, rk, hint_hybrid}, {winapi, add}, qr},
+       {L, mc, {cable}, {has_winapi, rk, hint_hybrid}, {winapi, hybrid}, qr},
 #if BUILDFLAG(IS_WIN)
        // ... but do if it supports hybrid.
        {L, mc, {cable}, {has_winapi, win_hybrid, rk, hint_hybrid}, {winapi},
@@ -924,39 +924,39 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
        // create(): Client device hint should jump to the platform
        // authenticator.
-       {L, mc, {usb, internal, cable}, {rk, hint_plat}, {add, t(internal)},
+       {L, mc, {usb, internal, cable}, {rk, hint_plat}, {hybrid, t(internal)},
         kIsMac ? create_pk : plat_ui,
        },
        // But not if there isn't a platform authenticator.
-       {L, mc, {usb, cable}, {rk, hint_plat}, {add}, qr},
+       {L, mc, {usb, cable}, {rk, hint_plat}, {hybrid}, qr},
        // If webauthn.dll is present, jump to it.
-       {L, mc, {cable}, {has_winapi, rk, hint_plat}, {winapi, add},
+       {L, mc, {cable}, {has_winapi, rk, hint_plat}, {winapi, hybrid},
         plat_ui},
        // Or if there's iCloud Keychain.
 #if BUILDFLAG(IS_MAC)
-       {L, mc, {cable}, {has_ickc, create_ickc, rk, hint_plat}, {ickc, add},
+       {L, mc, {cable}, {has_ickc, create_ickc, rk, hint_plat}, {ickc, hybrid},
         plat_ui},
 #endif // BUILDFLAG(IS_MAC)
 
        // get(): Security key hint should show security key UI.
-       {L, ga, {usb, internal, cable}, {rk, hint_sk}, {add, t(usb)},
+       {L, ga, {usb, internal, cable}, {rk, hint_sk}, {hybrid, t(usb)},
         usb_ui},
        // But not if USB isn't a valid transport.
-       {L, ga, {internal, cable}, {rk, hint_sk}, {add}, qr},
+       {L, ga, {internal, cable}, {rk, hint_sk}, {hybrid}, qr},
        // If credentials are found on a platform authenticator, they are still
        // shown.
        {L, ga, {usb, internal, cable}, {one_cred, rk, hint_sk},
-        {c(cred1), add, t(usb)}, mss},
+        {c(cred1), hybrid, t(usb)}, mss},
        // If webauthn.dll is present, jump to it.
-       {L, ga, {cable}, {has_winapi, rk, hint_sk}, {add, winapi}, plat_ui},
+       {L, ga, {cable}, {has_winapi, rk, hint_sk}, {hybrid, winapi}, plat_ui},
 
        // get(): Hybrid hint should show QR.
-       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {add, t(usb)}, qr},
+       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {hybrid, t(usb)}, qr},
        // But not if hybrid isn't available.
        {L, ga, {usb, internal}, {rk, hint_hybrid}, {t(usb)}, usb_ui},
        // If older webauthn.dll is present, don't jump to it since it doesn't do
        // hybrid.
-       {L, ga, {cable}, {has_winapi, rk, hint_hybrid}, {add, winapi}, qr},
+       {L, ga, {cable}, {has_winapi, rk, hint_hybrid}, {hybrid, winapi}, qr},
 #if BUILDFLAG(IS_WIN)
        // ... but do if it supports hybrid.
        {L, ga, {cable}, {has_winapi, win_hybrid, rk, hint_hybrid}, {winapi},
@@ -965,14 +965,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        // If credentials are found on a platform authenticator, they are still
        // shown.
        {L, ga, {usb, internal, cable}, {one_cred, rk, hint_hybrid},
-        {c(cred1), add, t(usb)}, mss},
+        {c(cred1), hybrid, t(usb)}, mss},
 
        // get(): Client device hint should trigger webauthn.dll, if it exists.
-       {L, ga, {cable}, {rk, has_winapi, hint_plat}, {add, winapi},
+       {L, ga, {cable}, {rk, has_winapi, hint_plat}, {hybrid, winapi},
         plat_ui},
        // And otherwise it doesn't do anything because we generally assume that
        // we can enumerate platform authenticators and do a good job.
-       {L, ga, {usb, cable, internal}, {rk, hint_plat}, {add}, qr},
+       {L, ga, {usb, cable, internal}, {rk, hint_plat}, {hybrid}, qr},
 
 #if BUILDFLAG(IS_WIN)
       // Windows tests.
@@ -984,7 +984,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {cable},
        {two_cred, has_winapi, only_hybrid_or_internal,
         has_plat},
-       {c(wincred1), c(wincred2), add},
+       {c(wincred1), c(wincred2), hybrid},
        plat_ui},
       // Mix of internal credentials, and USB/NFC (empty allow list).
       // This should default to Windows, and on cancel offer dispatching to the
@@ -993,7 +993,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        ga,
        {cable},
        {two_cred, has_winapi, empty_al, has_plat},
-       {c(wincred1), c(wincred2), add, winapi},
+       {c(wincred1), c(wincred2), hybrid, winapi},
        plat_ui},
 
       // Tests where Windows handles hybrid with internal credentials only.
@@ -1558,7 +1558,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
         case Step::kMechanismSelection:
           std::ranges::find_if(model->mechanisms, [](const auto& m) -> bool {
             return std::holds_alternative<
-                AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
+                AuthenticatorRequestDialogModel::Mechanism::Hybrid>(m.type);
           })->callback.Run();
           break;
 
@@ -1735,7 +1735,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     EXPECT_TRUE(
         std::ranges::any_of(model->mechanisms, [](const auto& m) -> bool {
           return std::holds_alternative<
-              AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
+              AuthenticatorRequestDialogModel::Mechanism::Hybrid>(m.type);
         }));
     EXPECT_EQ(std::ranges::any_of(
                   model->mechanisms,
@@ -2152,7 +2152,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
 
       std::ranges::find_if(model->mechanisms, [](const auto& m) -> bool {
         return std::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
+            AuthenticatorRequestDialogModel::Mechanism::Hybrid>(m.type);
       })->callback.Run();
 
       if (ble_status == BleStatus::kPermissionDenied) {
@@ -2349,7 +2349,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, HybridButtonLabel) {
     auto hybrid_button_it =
         std::ranges::find_if(model->mechanisms, [](const auto& m) {
           return std::holds_alternative<
-              AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
+              AuthenticatorRequestDialogModel::Mechanism::Hybrid>(m.type);
         });
     ASSERT_NE(hybrid_button_it, model->mechanisms.end());
     EXPECT_EQ(hybrid_button_it->name,

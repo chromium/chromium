@@ -403,8 +403,9 @@ class AuthenticatorRequestDialogController
   // kCableActivate.
   void StartGuidedFlowForTransport(AuthenticatorTransport transport);
 
-  // Starts the flow for adding an unlisted phone by showing a QR code.
-  void StartGuidedFlowForAddPhone();
+  // Starts the hybrid flow. This flow starts with showing a QR code. In some
+  // cases it can also display the user a message to insert a security key.
+  void StartHybridFlow();
 
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
