@@ -130,7 +130,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
     base::TimeDelta frame_interval,
     mojom::blink::GestureDevice gesture_device,
     int modifiers) {
-  if (!HasPrediction()) {
+  if (!HasPrediction(frame_time)) {
     return nullptr;
   }
   WebGestureEvent gesture_event(WebInputEvent::Type::kGestureScrollUpdate,
@@ -183,7 +183,16 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
       std::move(metrics));
 }
 
-bool ScrollPredictor::HasPrediction() const {
+bool ScrollPredictor::HasPrediction(base::TimeTicks frame_time) const {
+  // If the last real user event is too old, stop generating synthetic events
+  // to avoid creating "phantom" scroll motion. We use MaxResampleTime() as
+  // the timeout, which is 20ms.
+  if (!last_prediction_update_timestamp_.is_null() &&
+      frame_time - last_prediction_update_timestamp_ >
+          predictor_->MaxResampleTime()) {
+    return false;
+  }
+
   return predictor_->HasPrediction();
 }
 
@@ -194,6 +203,7 @@ void ScrollPredictor::Reset() {
   }
   current_event_accumulated_delta_ = gfx::PointF();
   last_predicted_accumulated_delta_ = gfx::PointF();
+  last_prediction_update_timestamp_ = base::TimeTicks();  // Reset the timestamp
   metrics_handler_.Reset();
 }
 
@@ -216,6 +226,7 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
                                         gesture_event.TimeStamp()};
 
   predictor_->Update(data);
+  last_prediction_update_timestamp_ = gesture_event.TimeStamp();
 
   metrics_handler_.AddRealEvent(current_event_accumulated_delta_,
                                 gesture_event.TimeStamp(), frame_time,

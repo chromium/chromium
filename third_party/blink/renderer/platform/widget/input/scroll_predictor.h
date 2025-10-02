@@ -50,7 +50,7 @@ class PLATFORM_EXPORT ScrollPredictor {
       mojom::blink::GestureDevice gesture_device,
       int modifiers);
 
-  bool HasPrediction() const;
+  bool HasPrediction(base::TimeTicks frame_time) const;
 
  private:
   friend class test::InputHandlerProxyEventQueueTest;
@@ -84,6 +84,11 @@ class PLATFORM_EXPORT ScrollPredictor {
   // Total scroll delta from original scroll update events, used for calculating
   // predictions. Reset on GestureScrollBegin.
   gfx::PointF current_event_accumulated_delta_;
+
+  // The timestamp of the last GestureScrollUpdate event that was used to update
+  // the prediction model.
+  base::TimeTicks last_prediction_update_timestamp_;
+
   // Predicted accumulated delta from last vsync, use for calculating delta_x
   // and delta_y for the resampled/predicted event.
   gfx::PointF last_predicted_accumulated_delta_;
