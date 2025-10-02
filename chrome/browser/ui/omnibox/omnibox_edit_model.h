@@ -509,17 +509,6 @@ class OmniboxEditModel {
       size_t line,
       omnibox::mojom::NavigationPredictor navigation_predictor);
 
-  // This calls `OpenMatch` directly for the few remaining `OmniboxEditModel`
-  // test cases that require explicit control over match content. For new
-  // tests, and for non-test code, use `OpenSelection`.
-  void OpenMatchForTesting(
-      AutocompleteMatch match,
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t index,
-      base::TimeTicks match_selection_timestamp = base::TimeTicks());
-
  protected:
   // Utility method to get current PrefService; protected instead of private
   // because it may be overridden by derived test classes.

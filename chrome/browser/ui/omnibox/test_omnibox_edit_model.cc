@@ -32,6 +32,17 @@ AutocompleteMatch TestOmniboxEditModel::CurrentMatch(
   return OmniboxEditModel::CurrentMatch(alternate_nav_url);
 }
 
+void TestOmniboxEditModel::OpenMatchForTesting(
+    AutocompleteMatch match,
+    WindowOpenDisposition disposition,
+    const GURL& alternate_nav_url,
+    const std::u16string& pasted_text,
+    size_t index,
+    base::TimeTicks match_selection_timestamp) {
+  OpenMatch(OmniboxPopupSelection(index), match, disposition, alternate_nav_url,
+            pasted_text, match_selection_timestamp);
+}
+
 const SkBitmap* TestOmniboxEditModel::GetPopupRichSuggestionBitmapForKeyword(
     const std::u16string& keyword) const {
   const auto& result = autocomplete_controller()->result();

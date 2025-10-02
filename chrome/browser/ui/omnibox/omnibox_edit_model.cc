@@ -1239,17 +1239,6 @@ void OmniboxEditModel::OnNavigationLikely(
       navigation_predictor);
 }
 
-void OmniboxEditModel::OpenMatchForTesting(
-    AutocompleteMatch match,
-    WindowOpenDisposition disposition,
-    const GURL& alternate_nav_url,
-    const std::u16string& pasted_text,
-    size_t index,
-    base::TimeTicks match_selection_timestamp) {
-  OpenMatch(OmniboxPopupSelection(index), match, disposition, alternate_nav_url,
-            pasted_text, match_selection_timestamp);
-}
-
 void OmniboxEditModel::OnPopupDataChanged(
     const std::u16string& temporary_text,
     bool is_temporary_text,

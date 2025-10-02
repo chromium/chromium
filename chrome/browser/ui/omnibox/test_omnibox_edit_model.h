@@ -32,6 +32,17 @@ class TestOmniboxEditModel : public OmniboxEditModel {
                           const std::u16string& additional_text,
                           const AutocompleteMatch& match) override;
 
+  // This calls `OpenMatch` directly for the few remaining `OmniboxEditModel`
+  // test cases that require explicit control over match content. For new
+  // tests, and for non-test code, use `OpenSelection`.
+  void OpenMatchForTesting(
+      AutocompleteMatch match,
+      WindowOpenDisposition disposition,
+      const GURL& alternate_nav_url,
+      const std::u16string& pasted_text,
+      size_t index,
+      base::TimeTicks match_selection_timestamp = base::TimeTicks());
+
   // Lookup the bitmap for the first `match` in
   // `autocomplete_controller()->result()` that has `keyword` as its
   // `associated_keyword`. Used to fetch bitmap where the `result_index` is
