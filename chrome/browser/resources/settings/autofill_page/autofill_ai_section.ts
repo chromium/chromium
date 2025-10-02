@@ -99,6 +99,15 @@ export class SettingsAutofillAiSectionElement extends
           value: false,
         }),
       },
+       /**
+         If reflects whether Wallet server data is available for storage.
+       */
+       isWalletServerStorageEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isWalletServerStorageEnabled');
+        },
+      },
 
       /**
          The corresponding `EntityInstance` model for any entity instance
@@ -153,6 +162,7 @@ export class SettingsAutofillAiSectionElement extends
 
   declare ineligibleUser: boolean;
   declare private optedIn_: chrome.settingsPrivate.PrefObject;
+  declare private isWalletServerStorageEnabled_: boolean;
   declare private activeEntityInstance_: EntityInstance|null;
   declare private completeEntityTypesList_: EntityType[];
   declare private showAddOrEditEntityInstanceDialog_: boolean;

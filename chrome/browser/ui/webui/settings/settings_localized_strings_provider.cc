@@ -1222,6 +1222,11 @@ bool EnableNewFopDisplayDesktop() {
       autofill::features::kAutofillEnableNewFopDisplayDesktop);
 }
 
+bool IsWalletServerStorageEnabled() {
+  return base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations) ||
+         base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
+}
+
 void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
@@ -1573,6 +1578,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       autofill_client &&
           autofill::MayPerformAutofillAiAction(
               *autofill_client, autofill::AutofillAiAction::kOptIn));
+  html_source->AddBoolean("isWalletServerStorageEnabled",
+                          IsWalletServerStorageEnabled());
 
   html_source->AddString(
       "autofillPayOverTimeSettingsSublabel",
