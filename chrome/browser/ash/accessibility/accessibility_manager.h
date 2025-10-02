@@ -21,7 +21,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/chromevox_panel.h"
-#include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -72,7 +71,6 @@ enum class SelectToSpeakState;
 enum class SelectToSpeakPanelAction;
 enum class Sound;
 struct AccessibilityFocusRingInfo;
-class AccessibilityServiceClient;
 
 enum class AccessibilityNotificationType {
   kManagerShutdown,
@@ -707,8 +705,6 @@ class AccessibilityManager
 
   AccessibilityStatusCallbackList callback_list_;
 
-  std::unique_ptr<AccessibilityServiceClient> accessibility_service_client_;
-
   bool braille_display_connected_ = false;
   base::Time braille_display_connect_time_;
   base::ScopedObservation<
@@ -800,7 +796,6 @@ class AccessibilityManager
   friend class AccessibilityManagerDlcTest;
   friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
   friend class AccessibilityManagerTest;
-  friend class AccessibilityServiceClientTest;
   friend class DictationTest;
   friend class SwitchAccessTest;
 };

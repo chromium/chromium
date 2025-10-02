@@ -1546,11 +1546,6 @@ const char kAccessibilityFlashScreenFeatureDescription[] =
     "Allows the user to use a feature which flashes the screen for each "
     "notification.";
 
-const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
-const char kAccessibilityServiceDescription[] =
-    "This option enables the experimental Accessibility Service and runs some "
-    "accessibility features in the service.";
-
 const char kAccessibilityShakeToLocateName[] =
     "Adds shake cursor to locate feature";
 const char kAccessibilityShakeToLocateDescription[] =

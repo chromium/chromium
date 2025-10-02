@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
-#include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
@@ -147,7 +146,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AppSyncUIStateFactory::GetInstance();
   arc::ArcServiceLauncher::EnsureFactoriesBuilt();
   AuthErrorObserverFactory::GetInstance();
-  ax::AccessibilityServiceRouterFactory::EnsureFactoryBuilt();
+
   BirchKeyedServiceFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
   boca::LockedQuizSessionManagerFactory::GetInstance();

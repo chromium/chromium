@@ -304,11 +304,6 @@ AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsInputFocusEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXTreeFixing);
 AX_BASE_EXPORT bool IsAXTreeFixingEnabled();
 
-// Use the experimental Accessibility Service.
-// TODO(katydek): Provide a more descriptive name here.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityService);
-AX_BASE_EXPORT bool IsAccessibilityServiceEnabled();
-
 // Open Read Anything side panel when the browser is opened, and
 // call distill after the navigation's load-complete event. (Note: The browser
 // is only being opened to render one webpage, for the sake of generating

@@ -108,11 +108,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 #endif
 
 #if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
-#if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
-#include "services/accessibility/os_accessibility_service.h"  // nogncheck
-#else  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 #include "services/accessibility/browser_accessibility_service.h"  // nogncheck
-#endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"  // nogncheck
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
@@ -287,11 +283,7 @@ auto RunDataDecoder(
 #if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 auto RunAccessibilityService(
     mojo::PendingReceiver<ax::mojom::AccessibilityService> receiver) {
-#if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
-  return std::make_unique<ax::OSAccessibilityService>(std::move(receiver));
-#else   // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   return std::make_unique<ax::BrowserAccessibilityService>(std::move(receiver));
-#endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 }
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 

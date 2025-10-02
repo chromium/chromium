@@ -40,7 +40,6 @@ static_library("accessibility") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser:resources_grit",
-    "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions/api/braille_display_private:controller",
@@ -85,9 +84,6 @@ static_library("accessibility") {
     "//skia",
     "//ui/events/devices",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/accessibility/service" ]
 }
 
 static_library("test_support") {
@@ -200,7 +196,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/accessibility/service:test_support",
+    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/base",
@@ -220,10 +216,6 @@ source_set("browser_tests") {
     "//components/live_caption:constants",
     "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
-
-    # Tests from subdirectories:
-    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
-    "//chrome/browser/ash/accessibility/service:browser_tests",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

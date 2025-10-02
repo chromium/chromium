@@ -907,9 +907,6 @@ extern const char kAccessibilityDisableTouchpadDescription[];
 extern const char kAccessibilityFlashScreenFeatureName[];
 extern const char kAccessibilityFlashScreenFeatureDescription[];
 
-extern const char kAccessibilityServiceName[];
-extern const char kAccessibilityServiceDescription[];
-
 extern const char kAccessibilityShakeToLocateName[];
 extern const char kAccessibilityShakeToLocateDescription[];
 

@@ -90,7 +90,7 @@ test("services_unittests") {
     deps += [ "//base:base_profiler_test_support_library" ]
   }
 
-  if (is_chromeos || is_linux || is_fuchsia) {
+  if (is_linux) {
     deps += [ "//services/accessibility:tests" ]
   }
 

@@ -55,7 +55,6 @@
 #include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate_impl.h"
-#include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -513,19 +512,6 @@ AccessibilityManager::AccessibilityManager(PrefService* local_state)
                         bundle.GetRawDataResource(IDR_SOUND_VOLUME_ADJUST_WAV),
                         media::AudioCodec::kPCM);
   }
-  if (::features::IsAccessibilityServiceEnabled()) {
-    // We create an AccessibilityServiceClient even if the build flag is not
-    // set, because this allows tests with the AccessibilityServiceClient to
-    // run.
-    accessibility_service_client_ =
-        std::make_unique<AccessibilityServiceClient>();
-#if !BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
-    LOG(WARNING) << "Constructing an AccessibilityServiceClient for "
-                    "AccessibilityManager, but Chrome was not built with the "
-                    "Accessibility Service. Did you mean to add "
-                    "`enable_accessibility_service=true` to your gn args?";
-#endif  // !BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
-  }
 
   base::FilePath resources_path;
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
@@ -831,9 +817,6 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
     screen_reader_mode_.reset();
   }
 
-  if (accessibility_service_client_)
-    accessibility_service_client_->SetChromeVoxEnabled(enabled);
-
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleSpokenFeedback, enabled);
   NotifyAccessibilityStatusChanged(details);
@@ -1092,15 +1075,6 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
   if ((pref_count != 0 && enabled) || (pref_count == 0 && !enabled))
     return;
 
-  if (accessibility_service_client_) {
-    if (pref_name == prefs::kDockedMagnifierEnabled ||
-        pref_name == prefs::kAccessibilityScreenMagnifierEnabled) {
-      accessibility_service_client_->SetMagnifierEnabled(enabled);
-    } else if (pref_name == prefs::kAccessibilityAutoclickEnabled) {
-      accessibility_service_client_->SetAutoclickEnabled(enabled);
-    }
-  }
-
   if (enabled) {
     accessibility_common_enabled_features_.insert(pref_name);
     if (!accessibility_common_extension_loader_->loaded()) {
@@ -1119,12 +1093,6 @@ void AccessibilityManager::RequestAutoclickScrollableBoundsForPoint(
     const gfx::Point& point_in_screen) {
   if (!profile_)
     return;
-
-  if (::features::IsAccessibilityServiceEnabled()) {
-    accessibility_service_client_->RequestScrollableBoundsForPoint(
-        point_in_screen);
-    return;
-  }
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
@@ -1291,10 +1259,6 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   PrefService* pref_service = profile_->GetPrefs();
   const bool enabled =
       pref_service->GetBoolean(prefs::kAccessibilityDictationEnabled);
-
-  if (accessibility_service_client_) {
-    accessibility_service_client_->SetDictationEnabled(enabled);
-  }
 
   if (enabled &&
       pref_service->GetString(prefs::kAccessibilityDictationLocale).empty()) {
@@ -1492,9 +1456,6 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
   if (select_to_speak_enabled_ == enabled)
     return;
 
-  if (accessibility_service_client_)
-    accessibility_service_client_->SetSelectToSpeakEnabled(enabled);
-
   select_to_speak_enabled_ = enabled;
 
   AccessibilityStatusEventDetails details(
@@ -1573,9 +1534,6 @@ void AccessibilityManager::OnSwitchAccessChanged() {
 
   if (switch_access_enabled_ == enabled)
     return;
-
-  if (accessibility_service_client_)
-    accessibility_service_client_->SetSwitchAccessEnabled(enabled);
 
   switch_access_enabled_ = enabled;
 
@@ -1842,10 +1800,6 @@ void AccessibilityManager::SetProfile(Profile* profile) {
       extension_registry_observations_.AddObservation(registry);
 
     profile_observation_.Observe(profile);
-  }
-
-  if (accessibility_service_client_) {
-    accessibility_service_client_->SetProfile(profile);
   }
 
   bool had_profile = (profile_ != nullptr);

@@ -2835,11 +2835,7 @@
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142
   },
-  {
-    "name": "enable-accessibility-service",
-    "owners": [ "katie@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 140
-  },
+
   {
     "name": "enable-accessibility-shake-to-locate",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],

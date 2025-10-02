@@ -8637,11 +8637,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityShakeToLocateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityShakeToLocate)},
 
-    {"enable-accessibility-service",
-     flag_descriptions::kAccessibilityServiceName,
-     flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityService)},
-
     {"enable-accessibility-reduced-animations",
      flag_descriptions::kAccessibilityReducedAnimationsName,
      flag_descriptions::kAccessibilityReducedAnimationsDescription, kOsCrOS,
