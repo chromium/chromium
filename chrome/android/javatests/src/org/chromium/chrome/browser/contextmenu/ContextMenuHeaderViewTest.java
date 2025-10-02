@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND;
 
@@ -14,13 +13,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import static org.chromium.ui.base.DeviceFormFactor.PHONE;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,6 +37,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -51,13 +51,13 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 public class ContextMenuHeaderViewTest {
     private static final String SHORT_TITLE_STRING = "Some Very Cool Title";
     private static final String LONG_TITLE_STRING =
-            "Some Very Cool Title Which Will Definitely Need To Be Ellipsized";
+            "Some Very Cool Title Which Will Definitely Need To Be Ellipsized"
+                + " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
     private static final String SHORT_URL_STRING = "www.website.com";
     private static final String LONG_URL_STRING =
             "www.website.com/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
     private static final String SECONDARY_URL_STRING = "cct.website.com";
     private static final String TERTIARY_URL_STRING = "cct.website.com/test";
-    private static final int MAXIMUM_WIDTH = 500;
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -86,15 +86,7 @@ public class ContextMenuHeaderViewTest {
     public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    int deviceWidth = sActivity.getResources().getConfiguration().screenWidthDp;
-                    if (deviceWidth > MAXIMUM_WIDTH) {
-                        sActivity.setContentView(
-                                LayoutInflater.from(sActivity)
-                                        .inflate(R.layout.context_menu_header, null, false),
-                                new ViewGroup.LayoutParams(MAXIMUM_WIDTH, WRAP_CONTENT));
-                    } else {
-                        sActivity.setContentView(R.layout.context_menu_header);
-                    }
+                    sActivity.setContentView(R.layout.context_menu_header);
                     mHeaderView = sActivity.findViewById(android.R.id.content);
                     mTitle = mHeaderView.findViewById(R.id.menu_header_title);
                     mUrl = mHeaderView.findViewById(R.id.menu_header_url);
@@ -288,6 +280,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testTitleAndUrlClick() {
         // Clicking on the title or the URL expands/shrinks both of them.
         assertFalse(
@@ -335,6 +328,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testEllipsizedText_longTitle_isExpandable() {
         setupForCollapsedState(/* longTitle= */ true, /* longUrl= */ false);
 
@@ -345,6 +339,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testNonEllipsizedText_isNotExpandable() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -360,6 +355,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testAccessibility() {
         setupForCollapsedState(/* longTitle= */ true, /* longUrl= */ false);
         ThreadUtils.runOnUiThreadBlocking(mHeaderTextView::callOnClick);
@@ -390,6 +386,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testPerformAccessibilityAction() {
         setupForCollapsedState(/* longTitle= */ true, /* longUrl= */ false);
 
