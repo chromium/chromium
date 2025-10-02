@@ -276,18 +276,14 @@ StyleImage* ElementStyleResources::GetStyleImage(CSSPropertyID property,
 }
 
 static bool AllowExternalResources(CSSPropertyID property) {
-  if (RuntimeEnabledFeatures::SvgExternalResourcesEnabled()) {
-    if (property == CSSPropertyID::kClipPath ||
-        property == CSSPropertyID::kFill ||
-        property == CSSPropertyID::kMarkerEnd ||
-        property == CSSPropertyID::kMarkerMid ||
-        property == CSSPropertyID::kMarkerStart ||
-        property == CSSPropertyID::kStroke) {
-      return true;
-    }
-  }
   return property == CSSPropertyID::kBackdropFilter ||
-         property == CSSPropertyID::kFilter;
+         property == CSSPropertyID::kClipPath ||
+         property == CSSPropertyID::kFill ||
+         property == CSSPropertyID::kFilter ||
+         property == CSSPropertyID::kMarkerEnd ||
+         property == CSSPropertyID::kMarkerMid ||
+         property == CSSPropertyID::kMarkerStart ||
+         property == CSSPropertyID::kStroke;
 }
 
 SVGResource* ElementStyleResources::GetSVGResourceFromValue(
@@ -327,7 +323,6 @@ static SVGResource* GetSVGResourceOrNull(StyleSVGResource* style_resource) {
 
 static SVGResource* GetSingleSVGResource(CSSPropertyID property,
                                          ComputedStyleBuilder& builder) {
-  CHECK(RuntimeEnabledFeatures::SvgExternalResourcesEnabled());
   switch (property) {
     case CSSPropertyID::kClipPath: {
       auto* reference_clip =
