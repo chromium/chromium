@@ -187,3 +187,61 @@ robolectric_library("junit") {
     "//url:gurl_junit_test_support",
   ]
 }
+
+source_set("tab") {
+  sources = [
+    "android_tab_package.h",
+    "tab_state_storage_backend.h",
+    "tab_state_storage_database.h",
+    "tab_state_storage_service.h",
+    "tab_storage_package.h",
+    "tab_storage_packager.h",
+    "web_contents_state.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab/protocol",
+    "//components/keyed_service/core",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "android_tab_package.cc",
+    "tab_state_storage_backend.cc",
+    "tab_state_storage_database.cc",
+    "tab_state_storage_service.cc",
+    "tab_storage_package.cc",
+    "web_contents_state.cc",
+  ]
+  deps = [
+    ":jni_headers",
+    ":tab",
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/profiles",
+    "//components/sessions",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//sql",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "web_contents_state_unittest.cc" ]
+  deps = [
+    ":tab",
+    "//base",
+    "//components/sessions",
+    "//components/tabs:public",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

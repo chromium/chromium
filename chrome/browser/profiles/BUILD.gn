@@ -332,6 +332,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/auxiliary_search",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/fast_checkout",
+      "//chrome/browser/tab",
       "//components/commerce/core:merchant_signal_db_proto",
       "//components/payments/content/browser_binding:browser_bound_keys_deleter_factory",
     ]
