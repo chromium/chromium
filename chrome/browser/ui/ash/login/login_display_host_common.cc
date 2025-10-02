@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
@@ -230,7 +231,17 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
       login_ui_pref_controller_(std::make_unique<LoginUIPrefController>(
           update_geolocation_usage_allowed)),
       wizard_context_(std::make_unique<WizardContext>()),
-      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>()) {
+      // TODO(crbug.com/446058312): OobeMetricsHelper ctor should take a
+      // `PrefService` pointer as parameter (g_browser_process->local_state()).
+      // However, given the lifecycle of LoginDisplayHostCommon (that schedules
+      // its deletion or self-deletes it), it is not trivial to ensure that
+      // this PrefService reference won't become dangling.
+      // Pass a getter callback for safity until the ownership described is
+      // reworked.
+      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>(
+          base::PassKey<LoginDisplayHostCommon>(),
+          base::BindRepeating(
+              []() { return g_browser_process->local_state(); }))) {
   if (features::IsOobeCrosEventsEnabled()) {
     oobe_cros_events_metrics_ =
         std::make_unique<OobeCrosEventsMetrics>(oobe_metrics_helper_.get());

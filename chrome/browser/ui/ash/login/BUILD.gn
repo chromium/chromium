@@ -143,7 +143,6 @@ static_library("login") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/settings",
     "//chromeos/ash/components/timezone",
     "//components/captive_portal/core",
     "//components/constrained_window",
@@ -219,6 +218,7 @@ static_library("test_support") {
   deps = [
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/test:test_support",
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",
   ]

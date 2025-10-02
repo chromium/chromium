@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -28,9 +29,11 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
   void HideImpl() override {}
 };
 
-FakeLoginDisplayHost::FakeLoginDisplayHost()
+FakeLoginDisplayHost::FakeLoginDisplayHost(PrefService* local_state)
     : wizard_context_(std::make_unique<WizardContext>()),
-      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>()) {
+      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>(
+          local_state ? local_state
+                      : TestingBrowserProcess::GetGlobal()->local_state())) {
   // Only one SessionManager can be instantiated at a time. Check to see if one
   // has already been instantiated before creating one.
   if (!session_manager::SessionManager::Get()) {
