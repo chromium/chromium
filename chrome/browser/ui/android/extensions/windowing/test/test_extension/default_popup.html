@@ -40,16 +40,39 @@
         <button id="update_window_button">update()</button>
         <input type="number" id="update_window_id_input" placeholder="Enter Window ID" style="width: 120px;">
         <div id="update_window_options_radio_group">
-          <div><label><input type="radio" name="update_window_option" value="focused_true" checked> focused: true</label></div>
-          <div><label><input type="radio" name="update_window_option" value="focused_false"> focused: false</label></div>
-          <div><label><input type="radio" name="update_window_option" value="resize_100_600_400_800"> resize: (100, 600, 400, 800)</label></div>
-          <div><label><input type="radio" name="update_window_option" value="state_normal"> state: normal</label></div>
-          <div><label><input type="radio" name="update_window_option" value="state_minimized"> state: minimized</label></div>
-          <div><label><input type="radio" name="update_window_option" value="state_maximized"> state: maximized</label></div>
-          <div><label><input type="radio" name="update_window_option" value="state_fullscreen"> state: fullscreen</label></div>
-          <div><label><input type="radio" name="update_window_option" value="state_locked_fullscreen"> state: locked-fullscreen</label></div>
-          <div><label><input type="radio" name="update_window_option" value="drawAttention_true"> drawAttention: true</label></div>
-          <div><label><input type="radio" name="update_window_option" value="drawAttention_false"> drawAttention: false</label></div>
+          <div>
+            <label><input type="radio" name="update_window_option" value="focus" checked>focus:</label>
+            <div id="focus_options" style="display: none; padding-left: 20px;">
+              <label><input type="radio" name="focus_value" value="true" checked>true</label>
+              <label><input type="radio" name="focus_value" value="false">false</label>
+            </div>
+          </div>
+          <div>
+            <label><input type="radio" name="update_window_option" value="resize">resize:</label>
+            <div id="resize_options" style="display: none; padding-left: 20px;">
+              <label>left:<input type="number" id="resize_left" value="50" style="width: 6ch;"></label><br>
+              <label>top:<input type="number" id="resize_top" value="100" style="width: 6ch;"></label><br>
+              <label>width:<input type="number" id="resize_width" value="800" style="width: 6ch;"></label><br>
+              <label>height:<input type="number" id="resize_height" value="600" style="width: 6ch;"></label>
+            </div>
+          </div>
+          <div>
+            <label><input type="radio" name="update_window_option" value="state">state:</label>
+            <div id="state_options" style="display: none; padding-left: 20px;">
+              <label><input type="radio" name="state_value" value="normal" checked>normal</label><br>
+              <label><input type="radio" name="state_value" value="minimized">minimized</label><br>
+              <label><input type="radio" name="state_value" value="maximized">maximized</label><br>
+              <label><input type="radio" name="state_value" value="fullscreen">fullscreen</label><br>
+              <label><input type="radio" name="state_value" value="locked-fullscreen">locked-fullscreen</label>
+            </div>
+          </div>
+          <div>
+            <label><input type="radio" name="update_window_option" value="drawAttention">drawAttention:</label>
+            <div id="drawAttention_options" style="display: none; padding-left: 20px;">
+              <label><input type="radio" name="drawAttention_value" value="true" checked>true</label><br>
+              <label><input type="radio" name="drawAttention_value" value="false">false</label>
+            </div>
+          </div>
         </div>
       </li>
     </details>

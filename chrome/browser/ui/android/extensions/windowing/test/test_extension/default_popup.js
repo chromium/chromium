@@ -38,26 +38,21 @@ function getWindowUpdateInfo() {
         'input[name="update_window_option"]:checked').value;
 
     switch (option) {
-        case "focused_true":
-            return { focused: true };
-        case "focused_false":
-            return { focused: false };
-        case "resize_100_600_400_800":
-            return { left: 100, top: 600, width: 400, height: 800 };
-        case "state_normal":
-            return { state: "normal" };
-        case "state_minimized":
-            return { state: "minimized" };
-        case "state_maximized":
-            return { state: "maximized" };
-        case "state_fullscreen":
-            return { state: "fullscreen" };
-        case "state_locked_fullscreen":
-            return { state: "locked-fullscreen" };
-        case "drawAttention_true":
-            return { drawAttention: true };
-        case "drawAttention_false":
-            return { drawAttention: false };
+        case "focus":
+            const focusValue = document.querySelector('input[name="focus_value"]:checked').value === "true";
+            return { focused: focusValue };
+        case "resize":
+            const left = parseInt(document.getElementById("resize_left").value);
+            const top = parseInt(document.getElementById("resize_top").value);
+            const width = parseInt(document.getElementById("resize_width").value);
+            const height = parseInt(document.getElementById("resize_height").value);
+            return { left, top, width, height };
+        case "state":
+            const stateValue = document.querySelector('input[name="state_value"]:checked').value;
+            return { state: stateValue };
+        case "drawAttention":
+            const drawAttentionValue = document.querySelector('input[name="drawAttention_value"]:checked').value === "true";
+            return { drawAttention: drawAttentionValue };
         default:
             throw `Unsupported option: ${option}`;
     }
@@ -76,7 +71,30 @@ async function initWindowIdTextInput() {
     }
 }
 
+// For a window update option, only show the UI elements for its parameter
+// values when that update option is selected.
+//
+// For example, the "focus" option has parameter value "true" or "false".
+// We only show the radio buttons to select "true" or "false" when "focus"
+// is selected.
+function updateVisibilityForWindowUpdateOptions() {
+    const options = {
+        'focus': 'focus_options',
+        'resize': 'resize_options',
+        'state': 'state_options',
+        'drawAttention': 'drawAttention_options',
+    };
+
+    const checkedValue = document.querySelector('input[name="update_window_option"]:checked').value;
+
+    for (const option in options) {
+        document.getElementById(options[option]).style.display =
+            (option === checkedValue) ? 'block' : 'none';
+    }
+}
+
 await initWindowIdTextInput();
+updateVisibilityForWindowUpdateOptions();
 
 document.getElementById("get_all_windows_button").onclick = async () => {
     const windows = await chrome.windows.getAll(windowQueryOptions);
@@ -132,3 +150,5 @@ document.getElementById("update_window_button").onclick = async () => {
         setApiReturnValue(`${error}`);
     }
 };
+
+document.getElementById('update_window_options_radio_group').addEventListener('change', updateVisibilityForWindowUpdateOptions);
