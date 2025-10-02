@@ -194,7 +194,7 @@ class PLATFORM_EXPORT DateComponents {
   base::TimeDelta MillisecondsSinceEpochForTime() const;
   // Helpers for SetMillisecondsSinceEpochFor*().
   bool SetMillisecondsSinceEpochForDateInternal(double ms);
-  void SetMillisecondsSinceMidnightInternal(double ms);
+  void SetMillisecondsSinceMidnightInternal(int ms_in_day);
   // Helper for ToString().
   String ToStringForTime(SecondFormat) const;
 
