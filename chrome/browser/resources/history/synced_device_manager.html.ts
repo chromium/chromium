@@ -52,7 +52,8 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
           <img class="sync-history-illustration" alt="">
         </div>
         <div class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</div>
-        <div class="sync-history-promo-desc">
+        <div id="signed-out-sync-history-promo-desc"
+            class="sync-history-promo-desc">
           $i18n{syncHistoryPromoBodySignedOut}
         </div>
       ` : ''}
@@ -71,25 +72,59 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         </div>
       ` : ''}
 
+      ${this.isSignInStatePending_() && this.accountInfo_ ? html`
+        <div class="image-container">
+          <img class="sync-history-promo-avatar-illustration" alt="">
+          <img id="sign-in-pending-avatar" class="avatar"
+              src="${this.accountInfo_.accountImageSrc.url}" alt="">
+        </div>
+        <div class="sync-history-promo">
+          $i18n{turnOnSyncHistoryPromo}
+        </div>
+
+        ${this.isSignInState_(
+          HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS) ? html`
+          <div id="sign-in-pending-sync-history-promo-desc"
+              class="sync-history-promo-desc">
+            $i18n{syncHistoryPromoBodyPendingSignIn}
+          </div>
+        ` : ''}
+
+        ${this.isSignInState_(
+          HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS) ? html`
+          <div id="sign-in-pending-sync-history-promo-desc-sync-history-on"
+            class="sync-history-promo-desc">
+          $i18n{syncHistoryPromoBodyPendingSignInSyncHistoryOn}
+          </div>
+        ` : ''}
+      ` : ''}
+
       ${this.isSignInState_(HistorySignInState.SIGNED_IN_NOT_SYNCING_TABS)
         && this.accountInfo_ ? html`
           <div class="image-container">
             <img class="sync-history-promo-avatar-illustration" alt="">
-            <img id="avatar" src="${this.accountInfo_.accountImageSrc.url}"
-                alt="">
+            <img id="signed-in-avatar" class="avatar"
+                src="${this.accountInfo_.accountImageSrc.url}" alt="">
           </div>
           <div class="sync-history-promo">
             $i18n{turnOnSyncHistoryPromo}
           </div>
-          <div class="sync-history-promo-desc">
+          <div id="signed-in-sync-history-promo-desc"
+              class="sync-history-promo-desc">
             $i18n{turnOnSignedInSyncHistoryPromoBodySignInSyncOff}
           </div>
         ` : ''}
 
-      <cr-button id="sync-history-button" class="action-button"
-          @click="${this.onTurnOnHistorySyncClick_}">
-        $i18n{turnOnSyncHistoryButton}
-      </cr-button>
+      <!-- Button -->
+      ${this.isSignInState_(HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS)
+        ? html`
+          <cr-button id="verify-its-you-button" class="action-button"
+              @click="${this.onTurnOnHistorySyncClick_}">$i18n{verifyItsYou}
+          </cr-button>` : html`
+          <cr-button id="sync-history-button" class="action-button"
+              @click="${this.onTurnOnHistorySyncClick_}">
+            $i18n{turnOnSyncHistoryButton}
+          </cr-button>`}
     </div>
   ` : ''}
 </if>
