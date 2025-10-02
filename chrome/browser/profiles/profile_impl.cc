@@ -1074,9 +1074,7 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
 
   // Migrate obsolete prefs.
   MigrateObsoleteProfilePrefs(GetPrefs(), GetPath());
-  // TODO(crbug.com/448456006): Switch this to ENABLE_EXTENSIONS_CORE so the
-  // migration code runs on desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Note: Extension preferences can be keyed off the extension ID, so need to
   // be handled specially (rather than directly as part of
   // MigrateObsoleteProfilePrefs()).
