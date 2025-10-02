@@ -9,6 +9,7 @@
 #import "base/strings/strcat.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/uuid.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 FakeUserUploadedImageManager::FakeUserUploadedImageManager(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
@@ -44,11 +45,17 @@ UIImage* FakeUserUploadedImageManager::LoadUserUploadedImage(
 
 void FakeUserUploadedImageManager::LoadUserUploadedImage(
     base::FilePath relative_image_file_path,
-    base::OnceCallback<void(UIImage*)> callback) {
+    UserUploadImageCallback callback) {
   task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     LoadUserUploadedImage(relative_image_file_path)));
+      FROM_HERE, base::BindOnce(
+                     [](UIImage* image, UserUploadImageCallback cb) {
+                       UserUploadedImageError error =
+                           image ? UserUploadedImageError::kNone
+                                 : UserUploadedImageError::kFailedToReadFile;
+                       std::move(cb).Run(image, error);
+                     },
+                     LoadUserUploadedImage(relative_image_file_path),
+                     std::move(callback)));
 }
 
 void FakeUserUploadedImageManager::DeleteUserUploadedImageSynchronously(

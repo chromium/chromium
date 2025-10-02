@@ -2598,6 +2598,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.HomeCustomization.Background.Ntp.ImageUserUploadedFetchError"
+    enum="IOSUserUploadedImageError" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the result of loading a user-uploaded image on the NTP. This is
+    logged each time the NTP is loaded or the background is updated with a
+    user-uploaded image.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.Background.Ntp.Loaded"
     enum="IOSHomeCustomizationBackgroundStyle" expires_after="2026-03-01">
   <owner>cheickcisse@google.com</owner>
@@ -2616,6 +2628,18 @@ chromium-metrics-reviews@google.com.
     Records the total number of times recently used backgrounds are selected
     while the Home Customization panel is open. This value is recorded once when
     the user dismisses the panel.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.HomeCustomization.Background.RecentlyUsed.ImageUserUploadedFetchError"
+    enum="IOSUserUploadedImageError" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the result of loading a user-uploaded image in the recently used
+    list. This is logged each time the customization menu is opened and a
+    user-uploaded image is present in the recently used list.
   </summary>
 </histogram>
 

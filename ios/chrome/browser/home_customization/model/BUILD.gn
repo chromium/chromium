@@ -92,5 +92,6 @@ source_set("test_support") {
   deps = [
     ":model",
     "//base",
+    "//ios/chrome/browser/home_customization/utils",
   ]
 }

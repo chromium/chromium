@@ -29,9 +29,8 @@ class FakeUserUploadedImageManager : public UserUploadedImageManager {
   void StoreUserUploadedImage(
       UIImage* image,
       base::OnceCallback<void(base::FilePath)> callback) override;
-  void LoadUserUploadedImage(
-      base::FilePath relative_image_file_path,
-      base::OnceCallback<void(UIImage*)> callback) override;
+  void LoadUserUploadedImage(base::FilePath relative_image_file_path,
+                             UserUploadImageCallback callback) override;
   void DeleteUserUploadedImage(
       base::FilePath relative_image_file_path,
       base::OnceClosure completion = base::DoNothing()) override;

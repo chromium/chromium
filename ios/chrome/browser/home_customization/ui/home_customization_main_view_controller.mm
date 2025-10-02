@@ -410,10 +410,17 @@
     HomeCustomizationFramingCoordinates* framingCoordinates =
         backgroundConfiguration.userUploadedFramingCoordinates;
     __weak __typeof(self) weakSelf = self;
-    void (^imageHandler)(UIImage*) = ^(UIImage* image) {
+    void (^imageHandler)(UIImage*, UserUploadedImageError) = ^(
+        UIImage* image, UserUploadedImageError error) {
       [weakSelf handleLoadedUserUploadedImage:image
                            framingCoordinates:framingCoordinates
                                backgroundCell:backgroundCell];
+      if (!image) {
+        base::UmaHistogramEnumeration(
+            "IOS.HomeCustomization.Background.RecentlyUsed."
+            "ImageUserUploadedFetchError",
+            error);
+      }
     };
     [self.customizationMutator
         fetchBackgroundCustomizationUserUploadedImage:backgroundConfiguration

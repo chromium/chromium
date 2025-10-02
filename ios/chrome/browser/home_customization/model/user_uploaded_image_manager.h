@@ -14,6 +14,7 @@
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 @class UIImage;
 
@@ -35,10 +36,11 @@ class UserUploadedImageManager : public KeyedService {
       UIImage* image,
       base::OnceCallback<void(base::FilePath)> callback);
 
+  using UserUploadImageCallback =
+      base::OnceCallback<void(UIImage*, UserUploadedImageError)>;
   // Loads an image previously stored at the provided relative file path.
-  virtual void LoadUserUploadedImage(
-      base::FilePath relative_image_file_path,
-      base::OnceCallback<void(UIImage*)> callback);
+  virtual void LoadUserUploadedImage(base::FilePath relative_image_file_path,
+                                     UserUploadImageCallback callback);
 
   // Deletes an image previously stored at the provided relative file path.
   virtual void DeleteUserUploadedImage(

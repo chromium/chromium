@@ -1341,6 +1341,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Failed to create directory"/>
   <int value="2" label="Failed to write file"/>
   <int value="3" label="Failed to convert to JPEG"/>
+  <int value="4" label="Failed to read file"/>
+  <int value="5" label="Failed to create a UIImage from the loaded data"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/home_customization/utils/home_customization_constants.h:UserUploadedImageError) -->

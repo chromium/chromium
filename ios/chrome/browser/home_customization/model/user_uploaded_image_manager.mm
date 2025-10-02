@@ -17,12 +17,17 @@
 #import "base/strings/strcat.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/uuid.h"
-#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 namespace {
 
 const char image_directory[] = "BackgroundImages";
 const char image_filename_prefix[] = "background_image_";
+
+// A struct that holds the result of a user-uploaded image load operation.
+struct LoadImageResult {
+  UIImage* image;
+  UserUploadedImageError error;
+};
 
 // Compresses and saves `image` to the provided `directory_path`. Also generates
 // a UUID-based filename for `image` and returns the full save path (or an empty
@@ -70,22 +75,22 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
 }
 
 // Loads the image at the given path.
-UIImage* LoadImageAtPath(const base::FilePath& path) {
+LoadImageResult LoadImageAtPath(const base::FilePath& path) {
   NSURL* image_url =
       [NSURL fileURLWithPath:base::apple::FilePathToNSString(path)];
 
   // Load the image from disk.
   NSData* image_data = [NSData dataWithContentsOfURL:image_url];
   if (!image_data) {
-    return nil;
+    return {nil, UserUploadedImageError::kFailedToReadFile};
   }
 
   UIImage* image = [UIImage imageWithData:image_data];
   if (!image) {
-    return nil;
+    return {nil, UserUploadedImageError::kFailedToCreateImageFromData};
   }
 
-  return image;
+  return {image, UserUploadedImageError::kNone};
 }
 
 // Deletes any unused image files that exist in `directory_path` but not in
@@ -127,14 +132,19 @@ void UserUploadedImageManager::StoreUserUploadedImage(
 
 void UserUploadedImageManager::LoadUserUploadedImage(
     base::FilePath relative_image_file_path,
-    base::OnceCallback<void(UIImage*)> callback) {
+    UserUploadImageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath full_file_path =
       storage_directory_path_.Append(relative_image_file_path);
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&LoadImageAtPath, full_file_path),
-      std::move(callback));
+      base::BindOnce(
+          [](UserUploadImageCallback original_callback,
+             LoadImageResult result) {
+            std::move(original_callback).Run(result.image, result.error);
+          },
+          std::move(callback)));
 }
 
 void UserUploadedImageManager::DeleteUserUploadedImage(

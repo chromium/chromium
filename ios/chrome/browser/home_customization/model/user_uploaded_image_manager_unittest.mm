@@ -32,11 +32,13 @@ UIImage* GenerateTestImage(CGSize size) {
   }];
 }
 
-// Returns a callback that capture its argument and store it to `output`.
-template <typename T>
-base::OnceCallback<void(T)> CaptureArg(T& output) {
-  return base::BindOnce([](T& output, T arg) { output = arg; },
-                        std::ref(output));
+// Returns a callback that captures its arguments and stores them into
+// `outputs`.
+template <typename... Types>
+base::OnceCallback<void(Types...)> CaptureArgs(Types&... outputs) {
+  return base::BindOnce(
+      [](Types&... outputs, Types... args) { ((outputs = args), ...); },
+      std::ref(outputs)...);
 }
 
 }  // namespace
@@ -65,7 +67,7 @@ TEST_F(UserUploadedImageManagerTest, StoreImage) {
   base::FilePath relative_image_file_path;
   image_manager_->StoreUserUploadedImage(
       test_image,
-      CaptureArg(relative_image_file_path).Then(run_loop.QuitClosure()));
+      CaptureArgs(relative_image_file_path).Then(run_loop.QuitClosure()));
 
   run_loop.Run();
 
@@ -83,19 +85,21 @@ TEST_F(UserUploadedImageManagerTest, LoadImage) {
   base::FilePath relative_image_file_path;
   image_manager_->StoreUserUploadedImage(
       test_image,
-      CaptureArg(relative_image_file_path).Then(store_run_loop.QuitClosure()));
+      CaptureArgs(relative_image_file_path).Then(store_run_loop.QuitClosure()));
 
   store_run_loop.Run();
 
   base::RunLoop load_run_loop;
   UIImage* loaded_image;
+  UserUploadedImageError error;
   image_manager_->LoadUserUploadedImage(
       relative_image_file_path,
-      CaptureArg(loaded_image).Then(load_run_loop.QuitClosure()));
+      CaptureArgs(loaded_image, error).Then(load_run_loop.QuitClosure()));
 
   load_run_loop.Run();
 
   ASSERT_NSNE(nil, loaded_image);
+  EXPECT_EQ(UserUploadedImageError::kNone, error);
 
   // The image is compressed and converted before being stored, so the bytes may
   // not be identical. Compare sizes to check similarity.
@@ -106,13 +110,15 @@ TEST_F(UserUploadedImageManagerTest, LoadImage) {
 TEST_F(UserUploadedImageManagerTest, LoadNonexistentImage) {
   base::RunLoop run_loop;
   UIImage* loaded_image = GenerateTestImage(CGSizeMake(3, 3));
+  UserUploadedImageError error = UserUploadedImageError::kNone;
   image_manager_->LoadUserUploadedImage(
       base::FilePath("nonexistent_image.png"),
-      CaptureArg(loaded_image).Then(run_loop.QuitClosure()));
+      CaptureArgs(loaded_image, error).Then(run_loop.QuitClosure()));
 
   run_loop.Run();
 
   ASSERT_NSEQ(nil, loaded_image);
+  EXPECT_EQ(UserUploadedImageError::kFailedToReadFile, error);
 }
 
 // Tests that images can be deleted.
@@ -123,7 +129,7 @@ TEST_F(UserUploadedImageManagerTest, DeleteImage) {
   base::FilePath relative_image_file_path;
   image_manager_->StoreUserUploadedImage(
       test_image,
-      CaptureArg(relative_image_file_path).Then(store_run_loop.QuitClosure()));
+      CaptureArgs(relative_image_file_path).Then(store_run_loop.QuitClosure()));
 
   store_run_loop.Run();
 
@@ -150,11 +156,11 @@ TEST_F(UserUploadedImageManagerTest, DeleteUnusedImages) {
   base::RunLoop store_run_loop;
   base::FilePath relative_image_file_path1;
   base::FilePath relative_image_file_path2;
-  image_manager_->StoreUserUploadedImage(test_image1,
-                                         CaptureArg(relative_image_file_path1));
   image_manager_->StoreUserUploadedImage(
-      test_image2,
-      CaptureArg(relative_image_file_path2).Then(store_run_loop.QuitClosure()));
+      test_image1, CaptureArgs(relative_image_file_path1));
+  image_manager_->StoreUserUploadedImage(
+      test_image2, CaptureArgs(relative_image_file_path2)
+                       .Then(store_run_loop.QuitClosure()));
 
   store_run_loop.Run();
 
