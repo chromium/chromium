@@ -11191,6 +11191,22 @@
             ]
         }
     ],
+    "FullscreenSignInPromoUseDate": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenSignInPromoUseDate"
+                    ]
+                }
+            ]
+        }
+    ],
     "FullscreenSigninPromoManagerMigration": [
         {
             "platforms": [
