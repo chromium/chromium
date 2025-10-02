@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/data_controls_dialog_coordinator.h"
+#import "ios/chrome/browser/enterprise/data_controls/coordinator/data_controls_dialog_coordinator.h"
 
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/enterprise/data_controls/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 
 @implementation DataControlsDialogCoordinator {
   // The underlying alert controller used to show the dialog.

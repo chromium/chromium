@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_COORDINATOR_DATA_CONTROLS_DIALOG_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_COORDINATOR_DATA_CONTROLS_DIALOG_COORDINATOR_H_
 
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/enterprise/data_controls/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Coordinator for the Data Controls dialog.
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_COORDINATOR_DATA_CONTROLS_DIALOG_COORDINATOR_H_

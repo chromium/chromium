@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 
 #import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"

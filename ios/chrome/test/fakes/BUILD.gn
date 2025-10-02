@@ -39,7 +39,7 @@ source_set("fakes") {
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/ui",
-    "//ios/chrome/browser/enterprise/data_controls:data_controls_utils",
+    "//ios/chrome/browser/enterprise/data_controls/utils",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/settings/ui_bundled/utils",

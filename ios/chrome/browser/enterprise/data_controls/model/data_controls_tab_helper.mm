@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/data_controls_tab_helper.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
-#import "ios/chrome/browser/enterprise/data_controls/clipboard_utils.h"
-#import "ios/chrome/browser/enterprise/data_controls/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/utils/clipboard_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/web_state.h"

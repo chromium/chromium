@@ -8,12 +8,6 @@ assert(enterprise_data_controls)
 
 source_set("data_controls") {
   sources = [
-    "clipboard_utils.h",
-    "clipboard_utils.mm",
-    "data_controls_dialog_coordinator.h",
-    "data_controls_dialog_coordinator.mm",
-    "data_controls_tab_helper.h",
-    "data_controls_tab_helper.mm",
     "ios_rules_service.h",
     "ios_rules_service.mm",
     "ios_rules_service_factory.h",
@@ -23,59 +17,25 @@ source_set("data_controls") {
   public_deps = [ "//components/enterprise/data_controls/core/browser" ]
 
   deps = [
-    ":data_controls_utils",
     "//base",
     "//components/prefs",
-    "//components/strings",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/components/enterprise/data_controls:features",
-    "//ios/web/public",
-    "//ios/web/public:web_state_observer",
-    "//ui/base/clipboard",
-  ]
-}
-
-source_set("data_controls_utils") {
-  sources = [
-    "data_controls_utils.h",
-    "data_controls_utils.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/enterprise/data_controls/core/browser",
-    "//components/strings",
-    "//ui/base",
+    "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "data_controls_dialog_coordinator_unittest.mm",
-    "data_controls_tab_helper_unittest.mm",
-    "data_controls_utils_unittest.mm",
-    "ios_rules_service_unittest.mm",
-  ]
+  sources = [ "ios_rules_service_unittest.mm" ]
   deps = [
     ":data_controls",
-    ":data_controls_utils",
-    "//base",
-    "//base/test:test_support",
+    "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_controls/core/browser:test_support",
-    "//components/strings",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/test:test_support",
-    "//ios/chrome/test/fakes",
-    "//ios/components/enterprise/data_controls:features",
     "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
 }

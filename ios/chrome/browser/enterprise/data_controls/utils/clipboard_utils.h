@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CLIPBOARD_UTILS_H_
-#define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CLIPBOARD_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_UTILS_CLIPBOARD_UTILS_H_
+#define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_UTILS_CLIPBOARD_UTILS_H_
 
 #import "base/functional/callback.h"
 #import "base/functional/callback_forward.h"
@@ -56,4 +56,4 @@ CopyPolicyVerdicts IsCopyAllowedByPolicy(
 
 }  // namespace data_controls
 
-#endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CLIPBOARD_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_UTILS_CLIPBOARD_UTILS_H_
