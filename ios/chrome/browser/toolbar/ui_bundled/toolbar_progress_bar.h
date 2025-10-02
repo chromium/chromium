@@ -11,11 +11,6 @@
 // page load when read via voice over.
 @interface ToolbarProgressBar : UIProgressView
 
-// Sets the progress, with an optional animation and completion block.
-- (void)setProgress:(float)progress
-           animated:(BOOL)animated
-         completion:(void (^)(BOOL finished))completion;
-
 // Sets the hidden state, with an optional animation and completion block.
 - (void)setHidden:(BOOL)hidden
          animated:(BOOL)animated

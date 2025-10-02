@@ -43,6 +43,9 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 const base::TimeDelta kToobarSlideInAnimationDuration = base::Milliseconds(500);
 // Progress of fullscreen when the toolbars are fully visible.
 const CGFloat kFullscreenProgressFullyExpanded = 1.0;
+// Timing to finish the animation of the progress bar before hiding it.
+const base::TimeDelta kProgressBarEndAnimationDuration =
+    base::Milliseconds(250);
 
 }  // namespace
 
@@ -117,7 +120,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
 - (void)showPrerenderingAnimation {
   __weak __typeof__(self) weakSelf = self;
-  [self.view.progressBar setProgress:0];
+  [self.view.progressBar setProgress:0 animated:NO];
   if (self.hasOmnibox) {
     [self.view.progressBar setHidden:NO
                             animated:YES
@@ -273,16 +276,14 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
     [self stopProgressBar];
   } else if (self.view.progressBar.hidden && !CanShowTabStrip(self) &&
              !self.isNTP) {
-    [self.view.progressBar setProgress:0];
+    [self.view.progressBar setProgress:0 animated:NO];
     [self updateProgressBarVisibility];
-    // Layout if needed the progress bar to avoid having the progress bar
-    // going backward when opening a page from the NTP.
-    [self.view.progressBar layoutIfNeeded];
   }
 }
 
 - (void)setLoadingProgressFraction:(double)progress {
-  [self.view.progressBar setProgress:progress animated:YES completion:nil];
+  [self.view.progressBar setProgress:progress
+                            animated:!self.view.progressBar.hidden];
 }
 
 - (void)setTabCount:(int)tabCount addedInBackground:(BOOL)inBackground {
@@ -404,12 +405,13 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 #pragma mark - Protected
 
 - (void)stopProgressBar {
-  __weak AdaptiveToolbarViewController* weakSelf = self;
-  [self.view.progressBar setProgress:kFullscreenProgressFullyExpanded
-                            animated:YES
-                          completion:^(BOOL finished) {
-                            [weakSelf updateProgressBarVisibility];
-                          }];
+  [self.view.progressBar setProgress:1 animated:YES];
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW,
+                    kProgressBarEndAnimationDuration.InNanoseconds()),
+      dispatch_get_main_queue(), ^{
+        [self updateProgressBarVisibility];
+      });
 }
 
 - (void)collapsedToolbarButtonTapped {

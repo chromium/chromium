@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_view_controller.h"
 
+#import "base/time/time.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
@@ -15,6 +16,9 @@ const CGFloat kURLBarMarginVertical = 13.0;
 const CGFloat kURLBarMarginHorizontal = 16.0;
 const CGFloat kSeparatorHeight = 0.1f;
 const CGFloat kProgressBarHeight = 2.0f;
+// Timing to finish the animation of the progress bar before hiding it.
+const base::TimeDelta kProgressBarEndAnimationDuration =
+    base::Milliseconds(250);
 }  // namespace
 
 @interface LinkPreviewViewController ()
@@ -138,13 +142,13 @@ const CGFloat kProgressBarHeight = 2.0f;
   if (!loading) {
     [self finishProgressBar];
   } else if (self.progressBar.hidden) {
-    [self.progressBar setProgress:0 animated:NO completion:nil];
+    [self.progressBar setProgress:0 animated:NO];
     [self updateProgressBarVisibility];
   }
 }
 
 - (void)setLoadingProgressFraction:(double)progress {
-  [self.progressBar setProgress:progress animated:YES completion:nil];
+  [self.progressBar setProgress:progress animated:YES];
 }
 
 - (void)setPreviewOrigin:(NSString*)origin {
@@ -163,11 +167,13 @@ const CGFloat kProgressBarHeight = 2.0f;
 // Finish the progress bar when the page stops loading.
 - (void)finishProgressBar {
   __weak __typeof(self) weakSelf = self;
-  [self.progressBar setProgress:1
-                       animated:YES
-                     completion:^(BOOL finished) {
-                       [weakSelf updateProgressBarVisibility];
-                     }];
+  [self.progressBar setProgress:1 animated:YES];
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW,
+                    kProgressBarEndAnimationDuration.InNanoseconds()),
+      dispatch_get_main_queue(), ^{
+        [weakSelf updateProgressBarVisibility];
+      });
 }
 
 // Makes sure that the visibility of the progress bar is matching the one which
