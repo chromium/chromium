@@ -1999,6 +1999,11 @@ QuicSessionPool::CreateSessionHelper(
   ConfigureInitialRttEstimate(
       server_id, key.session_key().network_anonymization_key(), &config);
 
+  if (base::FeatureList::IsEnabled(features::kTryQuicByDefault)) {
+    config.AddConnectionOptionsToSend(
+        quic::ParseQuicTagVector(features::kQuicOptions.Get()));
+  }
+
   auto keep_alive_timeout = ping_timeout_;
   bool enabled_connection_keep_alive = false;
   if (connection_management_config.has_value() &&
