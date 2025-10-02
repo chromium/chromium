@@ -236,7 +236,7 @@ TEST_F(ActorUiTabControllerTest, BorderGlowChangesOnUiTabStateChange) {
 
   HandoffButtonState handoff_button_state(
       true, HandoffButtonState::ControlOwnership::kActor);
-  ActorOverlayState actor_overlay_state(true, false, std::nullopt);
+  ActorOverlayState actor_overlay_state{.is_active = true};
   UiTabState ui_tab_state_glow_on(actor_overlay_state, handoff_button_state,
                                   /*tab_indicator_visible=*/false,
                                   /*border_glow_visible=*/true);
@@ -276,8 +276,7 @@ TEST_F(ActorUiTabControllerTest, HandoffButtonHidesWhenInImmersiveMode) {
 
 TEST_F(ActorUiTabControllerTest,
        OnUiTabStateChange_SameStateRunsCallbackOnceAndDoesNotUpdateState) {
-  ActorOverlayState actor_overlay_state(
-      /*is_active=*/true, /*mouse_down=*/false, /*mouse_target=*/std::nullopt);
+  ActorOverlayState actor_overlay_state{.is_active = true};
   HandoffButtonState handoff_button_state(
       /*is_active=*/true,
       /*control_ownership=*/HandoffButtonState::ControlOwnership::kActor);

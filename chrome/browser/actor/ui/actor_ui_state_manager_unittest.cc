@@ -223,41 +223,41 @@ const auto kActorTaskTestValues =
     std::vector<std::tuple<ActorTask::State, UiTabState>>{
         {ActorTask::State::kActing,
          UiTabState{
-             .actor_overlay = ActorOverlayState(/*is_active=*/true),
+             .actor_overlay = {.is_active = true},
              .handoff_button = {.is_active = true, .controller = kActor},
              .tab_indicator_visible = true,
              .border_glow_visible = true,
          }},
         {ActorTask::State::kReflecting,
          UiTabState{
-             .actor_overlay = ActorOverlayState(/*is_active=*/true),
+             .actor_overlay = {.is_active = true},
              .handoff_button = {.is_active = true, .controller = kActor},
              .tab_indicator_visible = true,
              .border_glow_visible = true,
          }},
         {ActorTask::State::kPausedByActor,
          UiTabState{
-             .actor_overlay = ActorOverlayState(/*is_active=*/false),
+             .actor_overlay = {.is_active = false},
              .handoff_button = {.is_active = true, .controller = kClient},
              .tab_indicator_visible = false,
              .border_glow_visible = false,
          }},
         {ActorTask::State::kPausedByUser,
          UiTabState{
-             .actor_overlay = ActorOverlayState(/*is_active=*/false),
+             .actor_overlay = {.is_active = false},
              .handoff_button = {.is_active = true, .controller = kClient},
              .tab_indicator_visible = false,
              .border_glow_visible = false,
          }},
         {ActorTask::State::kCancelled,
          UiTabState{
-             .actor_overlay = ActorOverlayState(/*is_active=*/false),
+             .actor_overlay = {.is_active = false},
              .handoff_button = {.is_active = false},
              .tab_indicator_visible = false,
          }},
         {ActorTask::State::kFinished,
          UiTabState{
-             .actor_overlay = ActorOverlayState(/*is_active=*/false),
+             .actor_overlay = {.is_active = false},
              .handoff_button = {.is_active = false},
              .tab_indicator_visible = false,
              .border_glow_visible = false,
@@ -286,7 +286,7 @@ class ActorUiStateManagerUiEventUiTabScopedTest
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnStartingToActOnTab_UpdatesUiCorrectly) {
   UiTabState expected_ui_tab_state{
-      .actor_overlay = ActorOverlayState(/*is_active=*/true),
+      .actor_overlay = {.is_active = true},
       .handoff_button = {.is_active = true, .controller = kActor},
       .tab_indicator_visible = true,
       .border_glow_visible = true,
@@ -298,7 +298,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnStoppedActingOnTab_UpdatesUiCorrectly) {
   UiTabState expected_ui_tab_state{
-      .actor_overlay = ActorOverlayState(/*is_active=*/false),
+      .actor_overlay = {.is_active = false},
       .handoff_button = {.is_active = false},
       .tab_indicator_visible = false,
       .border_glow_visible = false,

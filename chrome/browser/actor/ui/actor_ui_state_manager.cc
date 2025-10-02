@@ -37,7 +37,7 @@ using enum HandoffButtonState::ControlOwnership;
 // to be shared with tab controller.
 const UiTabState& GetActorControlledUiTabState() {
   static const UiTabState kActorState = {
-      .actor_overlay = ActorOverlayState(/*is_active=*/true),
+      .actor_overlay = {.is_active = true},
       .handoff_button = {.is_active = true, .controller = kActor},
       .tab_indicator_visible = true,
       .border_glow_visible = true,
@@ -47,7 +47,7 @@ const UiTabState& GetActorControlledUiTabState() {
 
 const UiTabState& GetPausedUiTabState() {
   static const UiTabState kPausedState = {
-      .actor_overlay = ActorOverlayState(/*is_active=*/false),
+      .actor_overlay = {.is_active = false},
       .handoff_button = {.is_active = true, .controller = kClient},
       .tab_indicator_visible = false,
       .border_glow_visible = false,
@@ -57,7 +57,7 @@ const UiTabState& GetPausedUiTabState() {
 
 const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
-      .actor_overlay = ActorOverlayState(/*is_active=*/false),
+      .actor_overlay = {.is_active = false},
       .handoff_button = {.is_active = false, .controller = kClient},
       .tab_indicator_visible = false,
       .border_glow_visible = false,
