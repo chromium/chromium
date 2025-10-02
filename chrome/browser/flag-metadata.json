@@ -3033,12 +3033,12 @@
   {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 146
   },
   {
     "name": "enable-bound-session-credentials-software-keys-for-manual-testing",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 146
   },
   {
     "name": "enable-brightness-control-in-settings",
@@ -3095,7 +3095,7 @@
   {
     "name": "enable-chrome-refresh-token-binding",
     "owners": ["alexilin@chromium.org", "chrome-signin-team@google.com"],
-    "expiry_milestone": 143
+    "expiry_milestone": 146
   },
   {"name": "enable-chromeos-live-translate",
    "owners": ["robsc@chromium.org", "amoylan@chromium.org", "zufeng@google.com"],

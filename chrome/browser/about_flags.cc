@@ -3830,19 +3830,6 @@ const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-const FeatureEntry::FeatureParam
-    kEnableBoundSessionCredentialsWithMultiSessionSupport[] = {
-        {"exclusive-registration-path", ""}};
-
-const FeatureEntry::FeatureVariation
-    kEnableBoundSessionCredentialsVariations[] = {
-        {"with multi-session",
-         kEnableBoundSessionCredentialsWithMultiSessionSupport,
-         std::size(kEnableBoundSessionCredentialsWithMultiSessionSupport),
-         nullptr}};
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kEdgeToEdgeTabletFeatureParams[] = {
     {"e2e_tablet_invisible_bottom_chin_min_width", "768"}};
@@ -10725,10 +10712,8 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-bound-session-credentials",
      flag_descriptions::kEnableBoundSessionCredentialsName,
      flag_descriptions::kEnableBoundSessionCredentialsDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kEnableBoundSessionCredentials,
-                                    kEnableBoundSessionCredentialsVariations,
-                                    "EnableBoundSessionCredentials")},
+     kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnableBoundSessionCredentials)},
     {"enable-bound-session-credentials-software-keys-for-manual-testing",
      flag_descriptions::
          kEnableBoundSessionCredentialsSoftwareKeysForManualTestingName,
@@ -11960,7 +11945,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-chrome-refresh-token-binding",
      flag_descriptions::kEnableChromeRefreshTokenBindingName,
      flag_descriptions::kEnableChromeRefreshTokenBindingDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableChromeRefreshTokenBinding)},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
