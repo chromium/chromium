@@ -170,9 +170,14 @@ float SVGGeometryElement::getTotalLength(ExceptionState& exception_state) {
                                             DocumentUpdateReason::kJavaScript);
 
   if (!GetLayoutObject()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "This element is non-rendered element.");
-    return 0;
+    // Even if no layout object is available, we may still be able to compute
+    // length using styles.
+    if (!EnsureComputedStyle()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "This element is non-rendered element.");
+      return 0;
+    }
   }
 
   return AsPath().length();

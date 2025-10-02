@@ -75,6 +75,7 @@ PathBuilder SVGPathElement::AsMutablePath() const {
 float SVGPathElement::getTotalLength(ExceptionState& exception_state) {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
+  EnsureComputedStyle();
   return SVGPathQuery(PathByteStream()).GetTotalLength();
 }
 
