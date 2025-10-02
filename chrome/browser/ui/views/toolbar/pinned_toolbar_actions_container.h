@@ -21,6 +21,7 @@
 #include "ui/views/drag_controller.h"
 
 class BrowserView;
+class ToolbarButtonProvider;
 
 namespace views {
 class ActionViewController;
@@ -39,7 +40,9 @@ class PinnedToolbarActionsContainer
   METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
-  explicit PinnedToolbarActionsContainer(BrowserView* browser_view);
+  explicit PinnedToolbarActionsContainer(
+      BrowserView* browser_view,
+      ToolbarButtonProvider* button_provider);
   PinnedToolbarActionsContainer(const PinnedToolbarActionsContainer&) = delete;
   PinnedToolbarActionsContainer& operator=(
       const PinnedToolbarActionsContainer&) = delete;
@@ -109,6 +112,8 @@ class PinnedToolbarActionsContainer
   // persistent reference to the button.
   PinnedActionToolbarButton* CreatePermanentButtonFor(actions::ActionId id);
 
+  gfx::Size GetDefaultButtonSize() const;
+
   const std::vector<actions::ActionId>& PinnedActionIds() const override;
 
  private:
@@ -117,6 +122,7 @@ class PinnedToolbarActionsContainer
 
   // A struct representing the position and action being dragged.
   struct DropInfo;
+  class BrowserObserver;
 
   PinnedActionToolbarButton* AddPoppedOutButtonFor(actions::ActionId id);
   void AddPinnedActionButtonFor(actions::ActionId id);
@@ -157,7 +163,9 @@ class PinnedToolbarActionsContainer
   // Utility function for going from width to icon counts.
   size_t WidthToIconCount(int x_offset);
 
-  const raw_ptr<BrowserView> browser_view_;
+  const std::unique_ptr<BrowserObserver> browser_observer_;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<ToolbarButtonProvider> button_provider_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
   std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>

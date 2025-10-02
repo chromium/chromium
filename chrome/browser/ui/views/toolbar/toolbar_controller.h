@@ -124,7 +124,7 @@ class ToolbarController : public views::MenuDelegate,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       OverflowButton* overflow_button,
-      PinnedActionsDelegate* PinnedActionsDelegate,
+      PinnedActionsDelegate* pinned_actions_delegate,
       PinnedToolbarActionsModel* pinned_toolbar_actions_model);
   ToolbarController(const ToolbarController&) = delete;
   ToolbarController& operator=(const ToolbarController&) = delete;

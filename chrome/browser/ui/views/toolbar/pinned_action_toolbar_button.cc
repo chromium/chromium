@@ -181,12 +181,7 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
   // This makes sure the buttons are at least the toolbar button sized width.
   // The preferred size might be smaller when the button's icon is removed
   // during drag/drop.
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_);
-  const gfx::Size toolbar_button_size =
-      browser_view
-          ? browser_view->toolbar_button_provider()->GetToolbarButtonSize()
-          : gfx::Size();
+  const gfx::Size toolbar_button_size = container_->GetDefaultButtonSize();
   const gfx::Size preferred_size =
       ToolbarButton::CalculatePreferredSize(available_size);
   return std::max(preferred_size, toolbar_button_size,
