@@ -15428,22 +15428,6 @@
             ]
         }
     ],
-    "MediaCodecLinearBlock": [
-        {
-            "platforms": [
-                "android_webview",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaCodecBlockModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaDeviceIdStoragePartitioning": [
         {
             "platforms": [
