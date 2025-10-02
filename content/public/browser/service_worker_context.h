@@ -340,6 +340,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual bool IsLiveRunningServiceWorker(
       int64_t service_worker_version_id) = 0;
 
+  // Updates the canvas noise token for all Service Workers that have the same
+  // `top_level_site` as their owning blink::StorageKey's top level site.
+  virtual void UpdateAllCanvasNoiseTokensFromTopLevelSite(
+      const GURL& top_level_site) = 0;
+
   // Returns the InterfaceProvider for the worker specified by
   // `service_worker_version_id`. The caller can use InterfaceProvider to bind
   // interfaces exposed by the Service Worker. CHECKs if

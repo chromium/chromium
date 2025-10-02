@@ -641,7 +641,8 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       /*coep_reporting_observer=*/mojo::NullReceiver(),
-      /*dip_reporting_observer=*/mojo::NullReceiver());
+      /*dip_reporting_observer=*/mojo::NullReceiver(),
+      /*canvas_noise_token_observer=*/mojo::NullReceiver());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   // Terminate the worker immediately after start.
@@ -663,7 +664,8 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateWhileWaitingForDebugger) {
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       /*coep_reporting_observer=*/mojo::NullReceiver(),
-      /*dip_reporting_observer=*/mojo::NullReceiver());
+      /*dip_reporting_observer=*/mojo::NullReceiver(),
+      /*canvas_noise_token_observer=*/mojo::NullReceiver());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   // Terminate the worker while waiting for the debugger.
@@ -688,7 +690,8 @@ TEST_F(WebEmbeddedWorkerImplTest, ScriptNotFound) {
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       /*coep_reporting_observer=*/mojo::NullReceiver(),
-      /*dip_reporting_observer=*/mojo::NullReceiver());
+      /*dip_reporting_observer=*/mojo::NullReceiver(),
+      /*canvas_noise_token_observer=*/mojo::NullReceiver());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   mock_client_->WaitUntilFailedToLoadClassicScript();
@@ -712,7 +715,8 @@ TEST_F(WebEmbeddedWorkerImplTest, GCOnWorkerThreadShouldNotCauseUploadFail) {
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       /*coep_reporting_observer=*/mojo::NullReceiver(),
-      /*dip_reporting_observer=*/mojo::NullReceiver());
+      /*dip_reporting_observer=*/mojo::NullReceiver(),
+      /*canvas_noise_token_observer=*/mojo::NullReceiver());
   mock_client_->WaitUntilScriptEvaluated();
 
   // We need to fulfill mojo pipe to let BytesUploader await it and

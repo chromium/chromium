@@ -149,7 +149,8 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
       std::move(params->content_settings_proxy), std::move(cache_storage),
       std::move(browser_interface_broker),
       std::move(params->coep_reporting_observer),
-      std::move(params->dip_reporting_observer));
+      std::move(params->dip_reporting_observer),
+      std::move(params->canvas_noise_token_observer));
 }
 
 void EmbeddedWorkerInstanceClientImpl::StopWorker() {

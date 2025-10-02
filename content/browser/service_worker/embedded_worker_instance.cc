@@ -478,6 +478,8 @@ void EmbeddedWorkerInstance::Start(
   // Set initial canvas noise token, which ensures tokens are available as soon
   // as worker execution context is ready.
   params->canvas_noise_token = GetOrCreateCanvasNoiseToken();
+  params->canvas_noise_token_observer =
+      canvas_noise_token_updater_.BindNewPipeAndPassReceiver();
 
   SendStartWorker(std::move(params));
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);
@@ -1064,6 +1066,7 @@ void EmbeddedWorkerInstance::ReleaseProcess() {
   process_handle_.reset();
   subresource_loader_updater_.reset();
   coep_reporter_.reset();
+  canvas_noise_token_updater_.reset();
   status_ = blink::EmbeddedWorkerStatus::kStopped;
   starting_phase_ = NOT_STARTING;
   thread_id_ = ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId;
@@ -1324,6 +1327,12 @@ EmbeddedWorkerInstance::GetDipReporterInternal(
 
   dip_reporter_->Clone(new_dip_reporter.InitWithNewPipeAndPassReceiver());
   return new_dip_reporter;
+}
+
+void EmbeddedWorkerInstance::UpdateCanvasNoiseToken() {
+  if (canvas_noise_token_updater_.is_bound()) {
+    canvas_noise_token_updater_->OnTokenReceived(GetOrCreateCanvasNoiseToken());
+  }
 }
 
 std::optional<blink::NoiseToken>

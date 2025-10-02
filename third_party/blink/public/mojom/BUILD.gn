@@ -103,6 +103,7 @@ mojom("mojom_platform") {
     "file_system_access/file_system_access_permission_mode.mojom",
     "file_system_access/file_system_access_transfer_token.mojom",
     "filesystem/file_system.mojom",
+    "fingerprinting_protection/canvas_interventions.mojom",
     "font_access/font_access.mojom",
     "forms/form_control_type.mojom",
     "geolocation/geolocation_service.mojom",

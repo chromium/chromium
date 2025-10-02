@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
@@ -95,7 +96,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
           coep_reporting_observer = mojo::NullReceiver(),
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
           dip_reporting_observer = mojo::NullReceiver(),
-      std::optional<NoiseToken> canvas_noise_token = std::nullopt);
+      std::optional<NoiseToken> canvas_noise_token = std::nullopt,
+      mojo::PendingReceiver<mojom::blink::CanvasNoiseTokenUpdater>
+          canvas_noise_token_observer = mojo::NullReceiver());
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
       delete;
@@ -269,6 +272,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // seed for NoiseHash calculations. This should not be piped to Worklet scopes
   // as canvas readbacks cannot be performed in Worklet threads.
   std::optional<NoiseToken> canvas_noise_token;
+
+  mojo::PendingReceiver<mojom::blink::CanvasNoiseTokenUpdater>
+      canvas_noise_token_observer;
 };
 
 }  // namespace blink

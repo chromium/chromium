@@ -1,5 +1,14 @@
 include_rules = [
+  "+components/content_settings/core/browser",
+  "+components/content_settings/core/common",
+  "+components/privacy_sandbox",
   "+content/public/browser",
   "+content/public/test",
   "+third_party/blink/public/common",
 ]
+
+specific_include_rules = {
+  "canvas_interventions_web_contents_helper_unittest\.cc": [
+    "+components/sync_preferences/testing_pref_service_syncable.h",
+  ],
+}

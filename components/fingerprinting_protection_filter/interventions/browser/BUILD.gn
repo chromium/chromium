@@ -8,10 +8,14 @@ import("//build/config/features.gni")
 if (use_blink) {
   source_set("browser") {
     sources = [
-      "interventions_web_contents_helper.cc",
-      "interventions_web_contents_helper.h",
+      "canvas_interventions_web_contents_helper.cc",
+      "canvas_interventions_web_contents_helper.h",
     ]
-    public_deps = [ "//content/public/browser" ]
+    public_deps = [
+      "//components/content_settings/core/browser",
+      "//components/privacy_sandbox:tracking_protection_settings",
+      "//content/public/browser",
+    ]
     deps = [
       "../common:features",
       "//base",
@@ -20,12 +24,13 @@ if (use_blink) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "interventions_web_contents_helper_unittest.cc" ]
+    sources = [ "canvas_interventions_web_contents_helper_unittest.cc" ]
     public_deps = [ "//content/public/browser" ]
     deps = [
       ":browser",
       "../common:features",
       "//base",
+      "//components/sync_preferences:test_support",
       "//content/test:test_support",
       "//testing/gtest",
     ]

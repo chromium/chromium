@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-forward.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-forward.h"
@@ -143,7 +144,9 @@ class ServiceWorkerContextClient
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer);
+          dip_reporting_observer,
+      mojo::PendingReceiver<blink::mojom::CanvasNoiseTokenUpdater>
+          canvas_noise_token_observer);
 
   // Called on the initiator thread.
   blink::WebEmbeddedWorker& worker();

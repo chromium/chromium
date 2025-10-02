@@ -37,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_embedded_worker.h"
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
@@ -83,7 +84,10 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
-          dip_reporting_observer) override;
+          dip_reporting_observer,
+      CrossVariantMojoReceiver<
+          mojom::blink::CanvasNoiseTokenUpdaterInterfaceBase>
+          canvas_noise_token_observer) override;
   void TerminateWorkerContext() override;
 
   void WaitForShutdownForTesting();
@@ -100,7 +104,9 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
-          dip_reporting_observer);
+          dip_reporting_observer,
+      mojo::PendingReceiver<mojom::blink::CanvasNoiseTokenUpdater>
+          canvas_noise_token_observer);
 
   // Creates a cross-thread copyable outside settings object for top-level
   // worker script fetch.

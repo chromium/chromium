@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CANVAS_INTERVENTIONS_CANVAS_INTERVENTIONS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CANVAS_INTERVENTIONS_CANVAS_INTERVENTIONS_HELPER_H_
 
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -56,7 +59,8 @@ inline constexpr CanvasNoiseReason& operator|=(CanvasNoiseReason& a,
 class CORE_EXPORT CanvasInterventionsHelper
     : public GarbageCollected<CanvasInterventionsHelper>,
       public Supplement<ExecutionContext>,
-      public ExecutionContextLifecycleObserver {
+      public ExecutionContextLifecycleObserver,
+      public mojom::blink::CanvasNoiseTokenUpdater {
  public:
   enum class CanvasInterventionType {
     kNone,
@@ -76,6 +80,7 @@ class CORE_EXPORT CanvasInterventionsHelper
                                  scoped_refptr<StaticBitmapImage>& snapshot);
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(receiver_);
     Supplement<ExecutionContext>::Trace(visitor);
     ExecutionContextLifecycleObserver::Trace(visitor);
   }
@@ -84,8 +89,17 @@ class CORE_EXPORT CanvasInterventionsHelper
 
   void ContextDestroyed() override;
 
+  void Bind(mojo::PendingReceiver<CanvasNoiseTokenUpdater> pending_receiver);
+
  private:
-  int num_noised_canvas_readbacks_ = 0;
+  // mojom::blink::CanvasNoiseTokenUpdater overrides:
+  void OnTokenReceived(std::optional<NoiseToken> token) override;
+
+  uint32_t num_noised_canvas_readbacks_ = 0;
+
+  HeapMojoReceiver<mojom::blink::CanvasNoiseTokenUpdater,
+                   CanvasInterventionsHelper>
+      receiver_;
 };
 
 }  // namespace blink

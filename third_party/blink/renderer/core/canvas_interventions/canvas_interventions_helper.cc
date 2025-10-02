@@ -197,16 +197,35 @@ CanvasInterventionsHelper* CanvasInterventionsHelper::From(
 CanvasInterventionsHelper::CanvasInterventionsHelper(
     ExecutionContext& execution_context)
     : Supplement<ExecutionContext>(execution_context),
-      ExecutionContextLifecycleObserver(&execution_context) {}
+      ExecutionContextLifecycleObserver(&execution_context),
+      receiver_(this, &execution_context) {}
 
 void CanvasInterventionsHelper::ContextDestroyed() {
-  CHECK_GT(num_noised_canvas_readbacks_, 0);
+  // CanvasInterventionsHelper will be created for every ExecutionContext,
+  // which, only perhaps a subset will have a noised canvas. We should not
+  // record any ExecutionContexts that did not have a noised canvas as that
+  // would significantly bloat the 0 increments for this UMA.
+  if (num_noised_canvas_readbacks_ == 0) {
+    return;
+  }
   UMA_HISTOGRAM_COUNTS_100(kCanvasNoiseReadbacksPerContextMetricName,
                            num_noised_canvas_readbacks_);
   base::UmaHistogramCounts100(
       base::StrCat({kCanvasNoiseReadbacksPerContextMetricPrefix,
                     GetContextTypeForMetrics(GetExecutionContext())}),
       num_noised_canvas_readbacks_);
+}
+
+void CanvasInterventionsHelper::Bind(
+    mojo::PendingReceiver<CanvasNoiseTokenUpdater> pending_receiver) {
+  receiver_.Bind(
+      std::move(pending_receiver),
+      GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault));
+}
+
+void CanvasInterventionsHelper::OnTokenReceived(
+    std::optional<NoiseToken> token) {
+  GetExecutionContext()->SetCanvasNoiseToken(token);
 }
 
 }  // namespace blink

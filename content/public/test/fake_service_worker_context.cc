@@ -112,6 +112,11 @@ bool FakeServiceWorkerContext::IsLiveRunningServiceWorker(
   NOTREACHED();
 }
 
+void FakeServiceWorkerContext::UpdateAllCanvasNoiseTokensFromTopLevelSite(
+    const GURL& top_level_site) {
+  NOTREACHED();
+}
+
 service_manager::InterfaceProvider&
 FakeServiceWorkerContext::GetRemoteInterfaces(
     int64_t service_worker_version_id) {

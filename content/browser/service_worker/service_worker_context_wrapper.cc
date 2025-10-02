@@ -1087,6 +1087,21 @@ bool ServiceWorkerContextWrapper::IsLiveRunningServiceWorker(
                    : false;
 }
 
+void ServiceWorkerContextWrapper::UpdateAllCanvasNoiseTokensFromTopLevelSite(
+    const GURL& top_level_site) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!context_core_.get()) {
+    return;
+  }
+  for (const ServiceWorkerVersionInfo& info : GetAllLiveVersionInfo()) {
+    ServiceWorkerVersion* version = GetLiveVersion(info.version_id);
+    if (version &&
+        version->key().top_level_site().IsSameSiteWith(top_level_site)) {
+      version->embedded_worker()->UpdateCanvasNoiseToken();
+    }
+  }
+}
+
 service_manager::InterfaceProvider&
 ServiceWorkerContextWrapper::GetRemoteInterfaces(
     int64_t service_worker_version_id) {

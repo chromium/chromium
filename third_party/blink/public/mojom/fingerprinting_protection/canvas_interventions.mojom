@@ -1,0 +1,18 @@
+module blink.mojom;
+
+import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
+
+// Interface to update the canvas noise token value for clients (e.g., service
+// workers). This is passed from the browser (remote) to the renderer
+// (receiver). CanvasNoiseTokenUpdater is connected to CanvasInterventionsHelper
+// which is a 1:1 mapping for each worker thread on the renderer. This handles
+// any updates to the canvas noise token, which is the seed used for noising
+// canvas readbacks. Additionally, this update can be used to disable canvas
+// noising for the service worker.
+interface CanvasNoiseTokenUpdater {
+  // Listener function used by the renderer for when the browser process sends
+  // updates to the canvas noise token. This will update the canvas noise token
+  // on each intended ExecutionContext(s). This also means, that canvas noising
+  // can be disabled by also passing in a nullopt.
+  OnTokenReceived(NoiseToken? token);
+};

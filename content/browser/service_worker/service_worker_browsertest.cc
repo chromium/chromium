@@ -42,11 +42,9 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -7998,135 +7996,4 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                      "Math.ceil(performance.getEntriesByType('navigation')[0]."
                      "responseStart) < 2000"));
 }
-
-class CanvasNoiseTestContentBrowserClient
-    : public ContentBrowserTestContentBrowserClient {
- public:
-  explicit CanvasNoiseTestContentBrowserClient() = default;
-  ~CanvasNoiseTestContentBrowserClient() override = default;
-
- private:
-  bool ShouldEnableCanvasNoise(content::BrowserContext* browser_context,
-                               const GURL& origin) override {
-    return enabled_;
-  }
-
-  bool enabled_ = true;
-};
-
-class ServiceWorkerCanvasNoiseTokenBrowserTest
-    : public ServiceWorkerBrowserTest {
- public:
-  ServiceWorkerCanvasNoiseTokenBrowserTest() = default;
-
-  void SetUpOnMainThread() override {
-    ServiceWorkerBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->StartAcceptingConnections();
-
-    content_browser_client_ =
-        std::make_unique<CanvasNoiseTestContentBrowserClient>();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ServiceWorkerBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kExposeInternalsForTesting);
-  }
-
-  WebContents* web_contents() const { return shell()->web_contents(); }
-
-  // This can change depending on the origin of the currently navigated site.
-  // See https://crbug.com/442616874 on why we don't use the CanvasNoiseToken
-  // from the Page.
-  std::optional<blink::NoiseToken> GetCurrentPageToken() {
-    return GetCanvasNoiseTokenForPage(
-        web_contents()->GetPrimaryMainFrame()->GetPage());
-  }
-
-  // Gets the canvas noise token from the Service Worker in the renderer.
-  std::optional<blink::NoiseToken> GetNoiseHashesFromServiceWorker(
-      RenderFrameHost* rfh) {
-    EvalJsResult js_result = EvalJs(rfh, R"(
-	new Promise(resolve => {
-	    navigator.serviceWorker.ready.then((reg) => reg.active.postMessage({}));
-	    navigator.serviceWorker.addEventListener('message', (event) => {
-	      resolve(event.data);
-	})});
-      )");
-
-    CHECK(js_result.is_ok());
-    if (js_result == base::Value()) {
-      return std::nullopt;
-    }
-    uint64_t token;
-    CHECK(base::StringToUint64(js_result.ExtractString(), &token));
-    return blink::NoiseToken(token);
-  }
-
-  scoped_refptr<ServiceWorkerVersion> RegisterCanvasServiceWorkerVersion(
-      GURL page_url) {
-    WorkerRunningStatusObserver observer(public_context());
-    EXPECT_TRUE(NavigateToURL(shell(), page_url));
-    EXPECT_EQ("DONE", EvalJs(shell(), "register('canvas_noise_worker.js');"));
-    observer.WaitUntilRunning();
-    return wrapper()->GetLiveVersion(observer.version_id());
-  }
-
- protected:
-  std::unique_ptr<CanvasNoiseTestContentBrowserClient> content_browser_client_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      fingerprinting_protection_interventions::features::kCanvasNoise};
-};
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerCanvasNoiseTokenBrowserTest,
-                       SameOriginServiceWorkerHasSameCanvasNoiseToken) {
-  const GURL page_url = embedded_test_server()->GetURL(
-      "/service_worker/create_service_worker.html");
-  scoped_refptr<ServiceWorkerVersion> version =
-      RegisterCanvasServiceWorkerVersion(page_url);
-
-  // TODO(https://crbug.com/442616874): change to EXPECT_EQ once we key canvas
-  // noise tokens with StorageKey.
-  EXPECT_NE(GetCurrentPageToken(),
-            version->embedded_worker()->GetOrCreateCanvasNoiseToken());
-
-  std::optional<blink::NoiseToken> worker_token =
-      GetNoiseHashesFromServiceWorker(web_contents()->GetPrimaryMainFrame());
-  EXPECT_EQ(worker_token,
-            version->embedded_worker()->GetOrCreateCanvasNoiseToken());
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerCanvasNoiseTokenBrowserTest,
-                       CrossOriginServiceWorkerHasSameCanvasNoiseToken) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-  const GURL iframe_url = embedded_https_test_server().GetURL(
-      "b.com", "/service_worker/create_service_worker.html");
-
-  // Now create a cross origin subframe that spawns a service worker.
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_https_test_server().GetURL(
-                   "a.com", "/service_worker/one_subframe.html?subframe_url=" +
-                                iframe_url.spec())));
-  auto* subframe_rfh =
-      static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
-  ASSERT_EQ(subframe_rfh->GetLastCommittedURL(), iframe_url);
-  EXPECT_EQ("DONE",
-            EvalJs(subframe_rfh, "register('canvas_noise_worker.js');"));
-  std::optional<blink::NoiseToken> subframe_worker_token =
-      GetNoiseHashesFromServiceWorker(subframe_rfh);
-
-  std::vector<ServiceWorkerVersionInfo> versions =
-      wrapper()->GetAllLiveVersionInfo();
-  EXPECT_EQ(versions.size(), 1);
-  scoped_refptr<ServiceWorkerVersion> version =
-      wrapper()->GetLiveVersion(versions[0].version_id);
-
-  EXPECT_EQ(subframe_worker_token,
-            version->embedded_worker()->GetOrCreateCanvasNoiseToken());
-
-  // TODO(https://crbug.com/442616874): change to EXPECT_EQ once we key canvas
-  // noise tokens with StorageKey.
-  EXPECT_NE(GetCurrentPageToken(), subframe_worker_token);
-}
-
 }  // namespace content

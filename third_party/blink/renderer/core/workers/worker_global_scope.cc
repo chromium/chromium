@@ -735,6 +735,11 @@ WorkerGlobalScope::WorkerGlobalScope(
         std::move(creation_params->dip_reporting_observer));
   }
 
+  if (creation_params->canvas_noise_token_observer) {
+    CanvasInterventionsHelper::From(this)->Bind(
+        std::move(creation_params->canvas_noise_token_observer));
+  }
+
   // A PermissionsPolicy is created by
   // PermissionsPolicy::CreateFromParentPolicy, even if the parent policy is
   // null.

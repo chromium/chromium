@@ -45,6 +45,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
@@ -210,7 +211,9 @@ void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
-        dip_reporting_observer) {
+        dip_reporting_observer,
+    mojo::PendingReceiver<blink::mojom::CanvasNoiseTokenUpdater>
+        canvas_noise_token_observer) {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   worker_ = std::move(worker);
   worker_->StartWorkerContext(
@@ -218,7 +221,8 @@ void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
       std::move(content_settings), std::move(cache_storage),
       std::move(browser_interface_broker), blink_interface_registry_.get(),
       initiator_thread_task_runner_, std::move(coep_reporting_observer),
-      std::move(dip_reporting_observer));
+      std::move(dip_reporting_observer),
+      std::move(canvas_noise_token_observer));
 }
 
 blink::WebEmbeddedWorker& ServiceWorkerContextClient::worker() {
