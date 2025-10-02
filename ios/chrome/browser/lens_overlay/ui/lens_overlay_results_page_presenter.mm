@@ -219,7 +219,8 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
                        : SheetDetentPresentationStategySelection;
   [self setupDetentsManagerForBottomSheet:sheet
                                  strategy:strategy
-                            maximizeSheet:maximizeSheet];
+                            maximizeSheet:maximizeSheet
+                                 animated:animated];
   // Adjust the occlusion insets so that selections in the bottom half of the
   // screen are repositioned, to avoid being hidden by the bottom sheet.
   //
@@ -480,13 +481,15 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 - (void)setupDetentsManagerForBottomSheet:(UISheetPresentationController*)sheet
                                  strategy:
                                      (SheetDetentPresentationStategy)strategy
-                            maximizeSheet:(BOOL)maximizeSheet {
+                            maximizeSheet:(BOOL)maximizeSheet
+                                 animated:(BOOL)animated {
   _detentsManager = [[LensOverlayDetentsManager alloc]
        initWithBottomSheet:sheet
                     window:self.presentationWindow
       presentationStrategy:strategy];
   _detentsManager.delegate = self;
-  [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
+  [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement
+                                animated:animated];
 
   if (maximizeSheet) {
     [_detentsManager requestMaximizeBottomSheet];
