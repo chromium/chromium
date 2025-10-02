@@ -86,8 +86,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kGoogleServicesSettingsButton = 26,
     kHistorySyncButton = 27,
     kBatchUploadWithBookmarksAsPrimaryButton = 28,
+    kBatchUploadAsPrimaryButton = 29,
+    kBatchUploadWindows10DepreciationAsPrimaryButton = 30,
 
-    kMaxValue = kBatchUploadWithBookmarksAsPrimaryButton,
+    kMaxValue = kBatchUploadWindows10DepreciationAsPrimaryButton,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileMenuActionableItem)
 

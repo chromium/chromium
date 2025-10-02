@@ -261,6 +261,8 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .pixel_test_param = {.test_suffix = "BatchUploadPromoSingleLocalData"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_local_data = WithLocalData::kSingleLocalData,
+        .extra_features_and_params =
+            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
     },
     {
         .pixel_test_param = {.test_suffix =
@@ -268,11 +270,30 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_local_data = WithLocalData::kMultipleLocalData,
+        .extra_features_and_params =
+            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
     },
     {
-        .pixel_test_param = {.test_suffix = "BatchUploadBookmarksPromo"},
+        .pixel_test_param = {.test_suffix = "BatchUploadPrimaryPromo"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
+        .with_local_data = WithLocalData::kMultipleLocalData,
+        .extra_features_and_params =
+            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
+    },
+    {
+        .pixel_test_param = {.test_suffix = "BatchUploadBookmarksPrimaryPromo"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_local_data = WithLocalData::kWithBookmarksLocalData,
+        .extra_features_and_params =
+            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
+    },
+    {
+        .pixel_test_param =
+            {.test_suffix = "BatchUploadWindows10DepreciationPrimaryPromo"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_local_data = WithLocalData::kMultipleLocalData,
+        .extra_features_and_params =
+            {{switches::kSigninWindows10DepreciationStateForTesting, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "AvatarSyncPromo"},

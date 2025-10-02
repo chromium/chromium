@@ -46,6 +46,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -1877,7 +1878,10 @@ constexpr std::array kActionableItems_WithBatchUploadPromoButton = {
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithBatchUploadPromoButton,
     ProfileMenuClickTest_WithBatchUploadPromoButton,
-    /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+    /*enabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {syncer::kReplaceSyncPromosWithSignInPromos,
+         switches::kSigninWindows10DepreciationStateBypassForTesting}),
     /*disabled_features=*/{}) {
   secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(), &test_url_loader_factory_, "user@example.com");
@@ -1897,9 +1901,8 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
 // List of actionable items in the correct order as they appear in the menu. If
 // a new button is added to the menu, it should also be added to this list.
-constexpr std::array kActionableItems_WithBatchUploadBookmarksPromoButton = {
-    ProfileMenuViewBase::ActionableItem::
-        kBatchUploadWithBookmarksAsPrimaryButton,
+constexpr std::array kActionableItems_WithBatchUploadPrimaryPromoButton = {
+    ProfileMenuViewBase::ActionableItem::kBatchUploadAsPrimaryButton,
     ProfileMenuViewBase::ActionableItem::kBatchUploadButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
@@ -1911,13 +1914,107 @@ constexpr std::array kActionableItems_WithBatchUploadBookmarksPromoButton = {
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
     // The first button is added again to finish the cycle and test that
     // there are no other buttons at the end.
-    ProfileMenuViewBase::ActionableItem::
-        kBatchUploadWithBookmarksAsPrimaryButton};
+    ProfileMenuViewBase::ActionableItem::kBatchUploadAsPrimaryButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
-    kActionableItems_WithBatchUploadBookmarksPromoButton,
-    ProfileMenuClickTest_WithBatchUploadBookmarksPromoButton,
-    /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+    kActionableItems_WithBatchUploadPrimaryPromoButton,
+    ProfileMenuClickTest_WithBatchUploadPrimaryPromoButton,
+    /*enabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {syncer::kReplaceSyncPromosWithSignInPromos,
+         switches::kSigninWindows10DepreciationStateBypassForTesting}),
+    /*disabled_features=*/{}) {
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(), &test_url_loader_factory_, "user@example.com");
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+  // Check that the setup was successful.
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  signin_util::EnableHistorySync(sync_service());
+
+  // Any (local/account storage) valid data type that is not
+  // `syncer::BOOKMARKS`, otherwise the bookmarks promo would have a higher
+  // priority.
+  batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
+                                                   /*item_count=*/5);
+
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr std::array
+    kActionableItems_WithBatchUploadWindows10DepreciationPrimaryPromoButton = {
+        ProfileMenuViewBase::ActionableItem::
+            kBatchUploadWindows10DepreciationAsPrimaryButton,
+        ProfileMenuViewBase::ActionableItem::kBatchUploadButton,
+        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kSignoutButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::
+            kBatchUploadWindows10DepreciationAsPrimaryButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_WithBatchUploadWindows10DepreciationPrimaryPromoButton,
+    ProfileMenuClickTest_WithBatchUploadWindows10DepreciationPrimaryPromoButton,
+    /*enabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {syncer::kReplaceSyncPromosWithSignInPromos,
+         switches::kSigninWindows10DepreciationStateForTesting}),
+    /*disabled_features=*/{}) {
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(), &test_url_loader_factory_, "user@example.com");
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+  // Check that the setup was successful.
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Any (local/account storage) valid data type.
+  batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
+                                                   /*item_count=*/5);
+
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr std::array
+    kActionableItems_WithBatchUploadBookmarksPrimaryPromoButton = {
+        ProfileMenuViewBase::ActionableItem::
+            kBatchUploadWithBookmarksAsPrimaryButton,
+        ProfileMenuViewBase::ActionableItem::kBatchUploadButton,
+        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kSignoutButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::
+            kBatchUploadWithBookmarksAsPrimaryButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_WithBatchUploadBookmarksPrimaryPromoButton,
+    ProfileMenuClickTest_WithBatchUploadBookmarksPrimaryPromoButton,
+    /*enabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {syncer::kReplaceSyncPromosWithSignInPromos,
+         switches::kSigninWindows10DepreciationStateBypassForTesting}),
     /*disabled_features=*/{}) {
   secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(), &test_url_loader_factory_, "user@example.com");

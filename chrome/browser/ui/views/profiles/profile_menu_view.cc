@@ -525,7 +525,10 @@ void ProfileMenuView::OnAutofillSettingsButtonClicked() {
 void ProfileMenuView::OnBatchUploadButtonClicked(ActionableItem button_type) {
   CHECK(button_type == ActionableItem::kBatchUploadButton ||
         button_type ==
-            ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton);
+            ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton ||
+        button_type == ActionableItem::kBatchUploadAsPrimaryButton ||
+        button_type ==
+            ActionableItem::kBatchUploadWindows10DepreciationAsPrimaryButton);
   OnActionableItemClicked(button_type);
   if (!perform_menu_actions()) {
     return;
@@ -755,6 +758,17 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             button_type = ActionableItem::kHistorySyncButton;
             break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::
+              kBatchUploadPromo:
+            params.subtitle = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD);
+            params.button_text = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD);
+            params.button_action = base::BindRepeating(
+                &ProfileMenuView::OnBatchUploadButtonClicked,
+                base::Unretained(this),
+                ActionableItem::kBatchUploadAsPrimaryButton);
+            break;
+          case signin::ProfileMenuAvatarButtonPromoInfo::Type::
               kBatchUploadBookmarksPromo:
             params.subtitle = l10n_util::GetStringUTF16(
                 IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD_BOOKMARK_CLEANUP);
@@ -764,6 +778,20 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
                 &ProfileMenuView::OnBatchUploadButtonClicked,
                 base::Unretained(this),
                 ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton);
+            break;
+          case signin::ProfileMenuAvatarButtonPromoInfo::Type::
+              kBatchUploadWindows10DepreciationPromo:
+            // Note: Sync promo does not explicitly mention "sync" but invites
+            // the user to back-up their data. It is fine to be used here.
+            params.subtitle = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO);
+            params.button_text = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO);
+            params.button_action = base::BindRepeating(
+                &ProfileMenuView::OnBatchUploadButtonClicked,
+                base::Unretained(this),
+                ActionableItem::
+                    kBatchUploadWindows10DepreciationAsPrimaryButton);
             break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
             CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
