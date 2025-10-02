@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @interface AppBundlePromoMediator () <AppBundlePromoAudience,
@@ -53,7 +52,7 @@
       _profilePrefChangeRegistrar.Init(profilePrefService);
 
       _prefObserverBridge->ObserveChangesForPreference(
-          (prefs::kHomeCustomizationMagicStackTipsEnabled),
+          prefs::kHomeCustomizationMagicStackTipsEnabled,
           &_profilePrefChangeRegistrar);
     }
   }
@@ -63,11 +62,8 @@
 - (void)disconnect {
   self.config = nil;
   _appStoreBundleService = nil;
-
-  if (_prefObserverBridge) {
-    _profilePrefChangeRegistrar.RemoveAll();
-    _prefObserverBridge.reset();
-  }
+  _profilePrefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
   _profilePrefService = nil;
 }
 
@@ -92,7 +88,8 @@
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   CHECK(_profilePrefService);
   CHECK_EQ(preferenceName, prefs::kHomeCustomizationMagicStackTipsEnabled);
-  if (tips_prefs::IsTipsInMagicStackDisabled(_profilePrefService)) {
+  if (!_profilePrefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackTipsEnabled)) {
     [self.delegate removeAppBundlePromoModuleWithCompletion:nil];
   }
 }

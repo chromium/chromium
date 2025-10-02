@@ -16,7 +16,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/tips/model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 

@@ -14,7 +14,6 @@
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -81,7 +80,7 @@ TEST_F(TipsMagicStackMediatorTest, ReconfiguresStateForNewTip) {
 }
 
 // Tests that the mediator calls `-removeTipsModule` on its delegate when
-// disabled.
+// the card is disabled.
 TEST_F(TipsMagicStackMediatorTest, CallsRemoveModuleOnDelegate) {
   id delegate =
       OCMStrictProtocolMock(@protocol(TipsMagicStackMediatorDelegate));
@@ -91,7 +90,8 @@ TEST_F(TipsMagicStackMediatorTest, CallsRemoveModuleOnDelegate) {
   // completionBlock.
   OCMExpect([delegate removeTipsModuleWithCompletion:[OCMArg any]]);
 
-  [mediator_ disableModule];
+  profile_pref_service_.SetBoolean(
+      prefs::kHomeCustomizationMagicStackTipsEnabled, false);
 
   // Verify that the delegate method was called.
   EXPECT_OCMOCK_VERIFY(delegate);

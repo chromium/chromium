@@ -21,7 +21,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_magic_stack_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_consumer_source.h"
@@ -91,7 +90,7 @@ using segmentation_platform::TipIdentifier;
       _profilePrefChangeRegistrar.Init(profilePrefService);
 
       _prefObserverBridge->ObserveChangesForPreference(
-          (prefs::kHomeCustomizationMagicStackTipsEnabled),
+          prefs::kHomeCustomizationMagicStackTipsEnabled,
           &_profilePrefChangeRegistrar);
     }
   }
@@ -105,10 +104,8 @@ using segmentation_platform::TipIdentifier;
   _bookmarkModel = nullptr;
   _consumer = nil;
 
-  if (_prefObserverBridge) {
-    _profilePrefChangeRegistrar.RemoveAll();
-    _prefObserverBridge.reset();
-  }
+  _profilePrefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
   _profilePrefService = nil;
 }
 
@@ -124,10 +121,6 @@ using segmentation_platform::TipIdentifier;
   }
 }
 
-- (void)disableModule {
-  tips_prefs::DisableTipsInMagicStack(_profilePrefService);
-}
-
 - (void)removeModuleWithCompletion:(ProceduralBlock)completion {
   [self.delegate removeTipsModuleWithCompletion:completion];
 }
@@ -135,7 +128,10 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (tips_prefs::IsTipsInMagicStackDisabled(_profilePrefService)) {
+  CHECK(_profilePrefService);
+  CHECK_EQ(preferenceName, prefs::kHomeCustomizationMagicStackTipsEnabled);
+  if (!_profilePrefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackTipsEnabled)) {
     [self.delegate removeTipsModuleWithCompletion:nil];
   }
 }

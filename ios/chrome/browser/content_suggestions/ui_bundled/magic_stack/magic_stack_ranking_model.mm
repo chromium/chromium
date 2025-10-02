@@ -72,7 +72,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_magic_stack_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -611,6 +610,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   MagicStackModule* card;
 
+  BOOL areTipsCardsEnabled =
+      _prefService->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
+
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kPriceTrackingNotificationPromo) {
       if (IsPriceTrackingPromoCardEnabled(_shoppingService, _authService,
@@ -622,8 +624,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       }
     } else if (segmentation_platform::home_modules::HomeModulesCardRegistry::
                    IsEphemeralTipsModuleLabel(label) &&
-               IsTipsMagicStackEnabled() &&
-               !tips_prefs::IsTipsInMagicStackDisabled(_prefService)) {
+               IsTipsMagicStackEnabled() && areTipsCardsEnabled) {
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
 
       if (tipIdentifier != TipIdentifier::kUnknown) {
@@ -654,7 +655,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule) {
       if (segmentation_platform::features::
               IsAppBundlePromoEphemeralCardEnabled() &&
-          !tips_prefs::IsTipsInMagicStackDisabled(_prefService)) {
+          areTipsCardsEnabled) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kAppBundlePromo;
         card = _appBundlePromoMediator.config;
         break;
@@ -663,7 +664,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                segmentation_platform::kDefaultBrowserPromoEphemeralModule) {
       if (segmentation_platform::features::
               IsDefaultBrowserMagicStackEnabled() &&
-          !tips_prefs::IsTipsInMagicStackDisabled(_prefService)) {
+          areTipsCardsEnabled) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
         card = _defaultBrowserMediator.config;
         break;

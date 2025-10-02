@@ -85,7 +85,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_metrics.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -460,8 +459,10 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_sendTabPromoMediator];
   }
 
-  if (IsTipsMagicStackEnabled() &&
-      !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
+  BOOL areTipsCardsEnabled =
+      prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
+
+  if (IsTipsMagicStackEnabled() && areTipsCardsEnabled) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
         initWithIdentifier:TipIdentifier::kUnknown
         profilePrefService:prefs
@@ -475,7 +476,7 @@ using segmentation_platform::TipIdentifier;
   }
 
   if (segmentation_platform::features::IsAppBundlePromoEphemeralCardEnabled() &&
-      !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
+      areTipsCardsEnabled) {
     _appBundlePromoMediator = [[AppBundlePromoMediator alloc]
         initWithAppStoreBundleService:AppStoreBundleServiceFactory::
                                           GetForProfile(self.profile)
@@ -484,7 +485,7 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_appBundlePromoMediator];
   }
   if (segmentation_platform::features::IsDefaultBrowserMagicStackEnabled() &&
-      !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
+      areTipsCardsEnabled) {
     _defaultBrowserMediator =
         [[DefaultBrowserMediator alloc] initWithProfilePrefService:prefs];
     _defaultBrowserMediator.presentationAudience = self;
@@ -931,7 +932,12 @@ using segmentation_platform::TipIdentifier;
     }
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips: {
-      [_tipsMediator disableModule];
+      // Disable all cards with "Chrome Tips" header.
+      // TODO(crbug.com/448641563): Link the Set Up List to the
+      // `kHomeCustomizationMagicStackTipsEnabled` pref for toggling "Chrome
+      // Tips" card visibility. Then this context menu should also disable the
+      // Set Up List.
+      [self disableTipsModules];
       break;
     }
     case ContentSuggestionsModuleType::kShopCard: {
@@ -1437,6 +1443,12 @@ using segmentation_platform::TipIdentifier;
     default:
       NOTREACHED();
   }
+}
+
+// Disables Magic Stack cards with the "Chrome Tips" header.
+- (void)disableTipsModules {
+  PrefService* prefs = self.profile->GetPrefs();
+  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled, false);
 }
 
 @end

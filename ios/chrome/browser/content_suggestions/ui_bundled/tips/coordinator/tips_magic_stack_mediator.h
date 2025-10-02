@@ -68,9 +68,6 @@ enum class TipIdentifier;
 - (void)reconfigureWithTipIdentifier:
     (segmentation_platform::TipIdentifier)identifier;
 
-// Disables and hides the Tips module in the Magic Stack.
-- (void)disableModule;
-
 // Removes the module from the Magic Stack on the current homepage without
 // disabling the underlying feature. This prevents the module from being shown
 // on the current homepage but does not affect its functionality elsewhere.
