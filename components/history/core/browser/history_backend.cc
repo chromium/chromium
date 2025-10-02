@@ -1680,14 +1680,12 @@ bool HistoryBackend::GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) {
 
 QueryURLAndVisitsResult HistoryBackend::GetMostRecentVisitsForGurl(
     GURL url,
-    int max_visits) {
+    int max_visits,
+    VisitQuery404sPolicy policy_for_404_visits) {
   QueryURLAndVisitsResult result;
   if (db_ && GetURL(url, &result.row) &&
       db_->GetMostRecentVisitsForURL(result.row.id(), max_visits,
-                                     // TODO: crbug.com/441271806 - Take a 404s
-                                     //   policy param and pass it here.
-                                     VisitQuery404sPolicy::kExclude404s,
-                                     &result.visits)) {
+                                     policy_for_404_visits, &result.visits)) {
     result.success = true;
   }
   return result;

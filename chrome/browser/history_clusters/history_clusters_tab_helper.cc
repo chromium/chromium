@@ -147,7 +147,7 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
     // `OnUpdatedHistoryForNavigation()`, will have posted a task to add the
     // visit associated to `incomplete_visit_context_annotations`.
     history_service->GetMostRecentVisitsForGurl(
-        url, 2,
+        url, 2, history::VisitQuery404sPolicy::kExclude404s,
         base::BindOnce(
             [](HistoryClustersTabHelper* history_clusters_tab_helper,
                history_clusters::HistoryClustersService*

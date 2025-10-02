@@ -1442,6 +1442,10 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
 }
 
 TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {
+  // Allow 404s to be saved to history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
   HistoryService* history = history_service_.get();
   ASSERT_TRUE(history);
 
@@ -1455,12 +1459,33 @@ TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {
   AddPageInThePast(history, "http://www.google.com/", 2);
   // Should not return older visits.
   AddPageInThePast(history, "http://www.google.com/", 6);
+  // Should include or ignore 404s based on `policy_for_404_visits`.
+  AddPageInThePast(history, "http://www.google.com/", 2, /*is_404=*/true);
 
   base::test::TestFuture<QueryURLAndVisitsResult> future;
   history->GetMostRecentVisitsForGurl(GURL("http://www.google.com/"), 3,
+                                      VisitQuery404sPolicy::kInclude404s,
                                       future.GetCallback(), &tracker_);
-  const auto result = future.Take();
+  auto result = future.Take();
   EXPECT_EQ(result.row.id(), 1);
+  // We specified that 404s should be included, so the 404 visit should be
+  // returned.
+  EXPECT_THAT(result.visits,
+              testing::ElementsAre(
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 3)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 7)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 5))));
+
+  history->GetMostRecentVisitsForGurl(GURL("http://www.google.com/"), 3,
+                                      VisitQuery404sPolicy::kExclude404s,
+                                      future.GetCallback(), &tracker_);
+  result = future.Take();
+  EXPECT_EQ(result.row.id(), 1);
+  // We specified that 404s should be excluded, so the non-404 visit from 3 days
+  // ago should get returned instead instead of the 404 from 2 days ago.
   EXPECT_THAT(result.visits,
               testing::ElementsAre(
                   testing::AllOf(testing::Field(&VisitRow::url_id, 1),

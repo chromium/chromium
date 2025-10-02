@@ -496,6 +496,7 @@ class HistoryService : public KeyedService,
   base::CancelableTaskTracker::TaskId GetMostRecentVisitsForGurl(
       GURL url,
       int max_visits,
+      VisitQuery404sPolicy policy_for_404_visits,
       QueryURLAndVisitsCallback callback,
       base::CancelableTaskTracker* tracker);
 

@@ -1263,6 +1263,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToOrigin(
 base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentVisitsForGurl(
     GURL url,
     int max_visits,
+    VisitQuery404sPolicy policy_for_404_visits,
     QueryURLAndVisitsCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
@@ -1270,7 +1271,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentVisitsForGurl(
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetMostRecentVisitsForGurl,
-                     history_backend_, url, max_visits),
+                     history_backend_, url, max_visits, policy_for_404_visits),
       std::move(callback));
 }
 
