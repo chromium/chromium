@@ -269,7 +269,7 @@ class MagicStackRankingModelTest : public PlatformTest {
 
     // Necessary set up for kIOSSetUpList.
     GetProfile()->GetPrefs()->SetBoolean(
-        prefs::kHomeCustomizationMagicStackSetUpListEnabled, true);
+        prefs::kHomeCustomizationMagicStackTipsEnabled, true);
     ClearDefaultBrowserPromoData();
     WriteFirstRunSentinel();
 

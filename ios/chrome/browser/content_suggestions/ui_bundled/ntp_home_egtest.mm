@@ -229,7 +229,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kArticlesForYouEnabled];
 
   self.defaultSearchEngine = [SearchEnginesAppInterface defaultSearchEngine];
-  [NewTabPageAppInterface disableSetUpList];
+  [NewTabPageAppInterface disableTipsCards];
 }
 
 - (void)tearDownHelper {

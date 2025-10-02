@@ -59,7 +59,7 @@ const char kSecondURLText[] = "You've arrived";
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
   // Put MVT as the top magic stack module for easier tapping.
-  [NewTabPageAppInterface disableSetUpList];
+  [NewTabPageAppInterface disableTipsCards];
 
   // Ensures that the first favicon in Most Visited row is the test URL.
   if (![ChromeTestCase forceRestartAndWipe]) {

@@ -912,12 +912,6 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kSafetyCheck:
       [_safetyCheckMediator disableModule];
       break;
-    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-    case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListNotifications:
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-      [_setUpListMediator disableModule];
-      break;
     case ContentSuggestionsModuleType::kPriceTrackingPromo: {
       base::RecordAction(base::UserMetricsAction(
           "Commerce.PriceTracking.MagicStackPromo.Hidden"));
@@ -930,13 +924,13 @@ using segmentation_platform::TipIdentifier;
       [_sendTabPromoMediator dismissModule];
       break;
     }
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips: {
       // Disable all cards with "Chrome Tips" header.
-      // TODO(crbug.com/448641563): Link the Set Up List to the
-      // `kHomeCustomizationMagicStackTipsEnabled` pref for toggling "Chrome
-      // Tips" card visibility. Then this context menu should also disable the
-      // Set Up List.
       [self disableTipsModules];
       break;
     }
@@ -956,6 +950,8 @@ using segmentation_platform::TipIdentifier;
     (ContentSuggestionsModuleType)type {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
   // modules.
+  // TODO(crbug.com/448954135): Investigate combining `IsSetUpListModuleType()`
+  // and `IsTipsModuleType()`.
   CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);

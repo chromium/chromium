@@ -93,9 +93,6 @@ class PrefService;
 // YES if all Set Up List tasks have been completed.
 - (BOOL)allItemsComplete;
 
-// Indicates to the mediator to disable SetUpList entirely.
-- (void)disableModule;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_MEDIATOR_H_

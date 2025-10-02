@@ -90,12 +90,7 @@ bool AllItemsComplete(PrefService* prefs) {
 }
 
 bool IsSetUpListDisabled(PrefService* prefs) {
-  return !prefs->GetBoolean(
-      prefs::kHomeCustomizationMagicStackSetUpListEnabled);
-}
-
-void DisableSetUpList(PrefService* prefs) {
-  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled, false);
+  return !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
 }
 
 void RecordInteraction(PrefService* prefs) {

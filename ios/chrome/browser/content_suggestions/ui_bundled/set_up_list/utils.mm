@@ -17,8 +17,7 @@ namespace set_up_list_utils {
 bool IsSetUpListActive(PrefService* local_prefs,
                        PrefService* user_prefs,
                        bool include_disable_pref) {
-  if (!user_prefs->GetBoolean(
-          prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
+  if (!user_prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled)) {
     return false;
   }
   // Check if we are within the duration of the Set Up List, relevant to the

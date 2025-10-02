@@ -55,16 +55,15 @@ using set_up_list_prefs::SetUpListItemState;
   return ntp_home::DiscoverHeaderLabel();
 }
 
-+ (void)disableSetUpList {
-  set_up_list_prefs::DisableSetUpList(
-      chrome_test_util::GetOriginalProfile()->GetPrefs());
++ (void)disableTipsCards {
+  chrome_test_util::GetOriginalProfile()->GetPrefs()->SetBoolean(
+      prefs::kHomeCustomizationMagicStackTipsEnabled, false);
 }
 
 + (void)resetSetUpListPrefs {
   PrefService* localState = GetApplicationContext()->GetLocalState();
   PrefService* prefService = chrome_test_util::GetOriginalProfile()->GetPrefs();
-  prefService->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled,
-                          true);
+  prefService->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled, true);
   SetUpListItemState unknown = SetUpListItemState::kUnknown;
   set_up_list_prefs::SetItemState(localState,
                                   SetUpListItemType::kDefaultBrowser, unknown);

@@ -140,7 +140,7 @@ NSString* HostnameFromGURL(GURL URL) {
   }
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndEnableHistorySync();
-  [NewTabPageAppInterface disableSetUpList];
+  [NewTabPageAppInterface disableTipsCards];
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 }

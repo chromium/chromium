@@ -155,7 +155,7 @@ void TapMagicStackEditButton() {
 
 - (void)setUp {
   [super setUp];
-  [NewTabPageAppInterface disableSetUpList];
+  [NewTabPageAppInterface disableTipsCards];
 }
 
 - (void)tearDownHelper {
@@ -378,11 +378,12 @@ void TapMagicStackEditButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Turn off the Set Up list toggle.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_kindOfClassName(@"UISwitch"),
-                            grey_ancestor(grey_accessibilityID(
-                                kCustomizationToggleSetUpListIdentifier)),
-                            nil)] performAction:grey_turnSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_kindOfClassName(@"UISwitch"),
+                                   grey_ancestor(grey_accessibilityID(
+                                       kCustomizationToggleTipsIdentifier)),
+                                   nil)] performAction:grey_turnSwitchOn(NO)];
 
   // Dismiss the menu.
   [[EarlGrey

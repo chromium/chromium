@@ -132,7 +132,7 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                identityManager:(signin::IdentityManager*)identityManager
                     localState:(PrefService*)localState {
-  if (!prefs->GetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
+  if (!prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled)) {
     return nil;
   }
 

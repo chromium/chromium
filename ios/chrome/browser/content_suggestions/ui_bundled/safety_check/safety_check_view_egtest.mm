@@ -78,7 +78,7 @@ void ScrollToSafetyCheckModule() {
 - (void)setUp {
   [super setUp];
 
-  [NewTabPageAppInterface disableSetUpList];
+  [NewTabPageAppInterface disableTipsCards];
 }
 
 - (void)tearDownHelper {

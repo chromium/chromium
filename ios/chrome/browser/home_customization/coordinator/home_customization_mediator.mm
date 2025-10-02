@@ -72,25 +72,18 @@
 
 - (void)configureMagicStackPageData {
   std::map<CustomizationToggleType, BOOL> toggleMap = {
-      {CustomizationToggleType::kSetUpList,
-       [self
-           isMagicStackCardEnabledForType:CustomizationToggleType::kSetUpList]},
       {CustomizationToggleType::kSafetyCheck,
        [self isMagicStackCardEnabledForType:CustomizationToggleType::
                                                 kSafetyCheck]},
       {CustomizationToggleType::kTapResumption,
        [self isMagicStackCardEnabledForType:CustomizationToggleType::
                                                 kTapResumption]},
-  };
-  if (IsTipsMagicStackEnabled()) {
-    toggleMap.insert(
-        {CustomizationToggleType::kTips,
-         [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]});
-  }
-  toggleMap.insert(
+      {CustomizationToggleType::kTips,
+       [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]},
       {CustomizationToggleType::kShopCard,
        [self
-           isMagicStackCardEnabledForType:CustomizationToggleType::kShopCard]});
+           isMagicStackCardEnabledForType:CustomizationToggleType::kShopCard]},
+  };
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
@@ -126,7 +119,6 @@
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
     case CustomizationToggleType::kTips: {
-      CHECK(IsTipsMagicStackEnabled());
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTipsEnabled);
     }
@@ -171,7 +163,6 @@
           prefs::kHomeCustomizationMagicStackTabResumptionEnabled, enabled);
       break;
     case CustomizationToggleType::kTips: {
-      CHECK(IsTipsMagicStackEnabled());
       _prefService->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled,
                                enabled);
       break;

@@ -342,7 +342,7 @@ TEST_F(SetUpListTest, RecordsAllItemsCompleteOnce) {
 // Tests that the Set Up List can be disabled.
 TEST_F(SetUpListTest, Disable) {
   EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(prefs_));
-  set_up_list_prefs::DisableSetUpList(prefs_);
+  prefs_->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled, false);
   EXPECT_TRUE(set_up_list_prefs::IsSetUpListDisabled(prefs_));
 
   BuildSetUpList();

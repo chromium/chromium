@@ -32,8 +32,8 @@
 // Returns the Discover header label.
 + (UILabel*)discoverHeaderLabel;
 
-// Disables the SetUpList via a pref.
-+ (void)disableSetUpList;
+// Disables Chrome Tips cards via a pref.
++ (void)disableTipsCards;
 
 // Resets SetUpList prefs to clear any completed items.
 + (void)resetSetUpListPrefs;
