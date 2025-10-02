@@ -523,21 +523,34 @@ void ProfileMenuView::OnAutofillSettingsButtonClicked() {
 }
 
 void ProfileMenuView::OnBatchUploadButtonClicked(ActionableItem button_type) {
-  CHECK(button_type == ActionableItem::kBatchUploadButton ||
-        button_type ==
-            ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton ||
-        button_type == ActionableItem::kBatchUploadAsPrimaryButton ||
-        button_type ==
-            ActionableItem::kBatchUploadWindows10DepreciationAsPrimaryButton);
+  BatchUploadService::EntryPoint batch_upload_entry_point;
+  switch (button_type) {
+    case ActionableItem::kBatchUploadButton:
+      batch_upload_entry_point =
+          BatchUploadService::EntryPoint::kProfileMenuRowButtonAction;
+      break;
+    case ActionableItem::kBatchUploadAsPrimaryButton:
+      batch_upload_entry_point =
+          BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction;
+      break;
+    case ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton:
+      batch_upload_entry_point = BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithBookmarksAction;
+      break;
+    case ActionableItem::kBatchUploadWindows10DepreciationAsPrimaryButton:
+      batch_upload_entry_point = BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithWindows10DepreciationAction;
+      break;
+    default:
+      NOTREACHED() << "This actionable item should not trigger Batch Upload.";
+  }
+
   OnActionableItemClicked(button_type);
   if (!perform_menu_actions()) {
     return;
   }
-  // TODO(crbug.com/447048341): Make the `BatchUploadService::EntryPoint` depend
-  // on which button was clicked.
   BatchUploadServiceFactory::GetForProfile(&profile())
-      ->OpenBatchUpload(&browser(),
-                        BatchUploadService::EntryPoint::kProfileMenu);
+      ->OpenBatchUpload(&browser(), batch_upload_entry_point);
 }
 
 void ProfileMenuView::SetMenuTitleForAccessibility() {
