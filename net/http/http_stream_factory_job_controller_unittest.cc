@@ -49,6 +49,7 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_test_util.h"
+#include "net/http/test_upload_data_stream_not_allow_http1.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
@@ -384,9 +385,9 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     delay_main_job_with_available_spdy_session_ = false;
   }
 
-  void DisableAlternativeServices() {
+  void SetEnableAlternativeServices(bool enable_alternative_services) {
     ASSERT_FALSE(session_deps_.proxy_delegate);
-    enable_alternative_services_ = false;
+    enable_alternative_services_ = enable_alternative_services;
   }
 
   void SkipCreatingJobController() {
@@ -427,6 +428,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     session_ = std::make_unique<HttpNetworkSession>(params, session_context);
     factory_ = session_->http_stream_factory();
     if (create_job_controller_) {
+      request_delegate_ = std::make_unique<MockHttpStreamRequestDelegate>();
       CHECK(!request_delegate_->IsDone());
       auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
           factory_, request_delegate_.get(), session_.get(), &job_factory_,
@@ -614,7 +616,11 @@ class HttpStreamFactoryJobControllerDualPathTest
  public:
   HttpStreamFactoryJobControllerDualPathTest()
       : HttpStreamFactoryJobControllerTestBase(
-            /*happy_eyeballs_v3_enabled=*/GetParam()) {}
+            /*happy_eyeballs_v3_enabled=*/GetParam()) {
+    // Use real jobs to avoid mocking out the Resume() calls that block H1/H2
+    // jobs on H3 jobs under certain circumstances, but only for the HEv1 path.
+    job_factory_.set_use_real_jobs();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -806,6 +812,161 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
       /*disable_cert_verification_network_fetches=*/false);
   QuicSessionPool* quic_session_pool = session_->quic_session_pool();
   EXPECT_TRUE(quic_session_pool->FindExistingSession(session_key, server));
+}
+
+// Test the cases where there are no valid ALPNs to use.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest, NoValidAlpns) {
+  // Reasons to not be able to use H2/H3. The only reason for HTTP/1.1 is an
+  // UploadDataStream that doesn't allow HTTP/1, due to not knowing its length.
+  enum class NoH2Reason {
+    kDisabledGlobally,
+    kRequiresHttp11,
+  };
+  enum class NoH3Reason {
+    kDisabledGlobally,
+    kNoAltService,
+  };
+  for (const auto no_h2_reason :
+       {NoH2Reason::kDisabledGlobally, NoH2Reason::kRequiresHttp11}) {
+    for (const auto no_h3_reason :
+         {NoH3Reason::kDisabledGlobally, NoH3Reason::kNoAltService}) {
+      CreateSessionDeps();
+      SetEnableAlternativeServices(true);
+
+      tcp_data_ = std::make_unique<SequencedSocketData>();
+      tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
+      SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
+      // Despite H1 and H2 both being banned, only H1 being disallowed is
+      // reflected in the next proto vector sent to the server. The main reason
+      // for this is that H2 may only be disallowed on a per-request basis, due
+      // to a chunked upload, while both reasons for disallowing H2 apply
+      // globally.
+      ssl_data.next_protos_expected_in_ssl_config =
+          NextProtoVector{NextProto::kProtoHTTP11};
+      session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+
+      // Can't use switch for H2, because `enable_http2` must be set before
+      // creating an HttpNetworkSession, but SetHTTP11Required() ust be called
+      // after.
+      if (no_h2_reason == NoH2Reason::kDisabledGlobally) {
+        session_deps_.enable_http2 = false;
+      }
+
+      switch (no_h3_reason) {
+        case NoH3Reason::kDisabledGlobally:
+          session_deps_.enable_quic = false;
+          break;
+        case NoH3Reason::kNoAltService:
+          SetEnableAlternativeServices(false);
+          break;
+      }
+
+      UploadDataStreamNotAllowHTTP1 upload("Upload data that does not matter.");
+      HttpRequestInfo request_info;
+      request_info.method = "GET";
+      request_info.url = GURL("https://www.google.com");
+      request_info.upload_data_stream = &upload;
+
+      Initialize(request_info);
+      AlternativeService alternative_service(
+          NextProto::kProtoQUIC, request_info.url.host_piece(), 443);
+      SetAlternativeService(request_info, alternative_service);
+
+      if (no_h2_reason == NoH2Reason::kRequiresHttp11) {
+        session_->http_server_properties()->SetHTTP11Required(
+            url::SchemeHostPort(request_info.url), NetworkAnonymizationKey());
+      }
+
+      auto request = job_controller_->Start(
+          request_delegate_.get(), nullptr, net_log_with_source_,
+          HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+      EXPECT_EQ(request_delegate_->WaitForError(), ERR_ALPN_NEGOTIATION_FAILED);
+      EXPECT_TRUE(ssl_data.ConnectDataConsumed());
+    }
+  }
+}
+
+// Check the case where a QUIC alt service request has the same destination as a
+// `enable_alternative_services=false` request. The latter request should not
+// get a QUIC session.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest,
+       AltServiceHasSameDestinationAsNoQuicRequest) {
+  if (happy_eyeballs_v3_enabled()) {
+    GTEST_SKIP()
+        << "This test currently CHECKs in HEv3 mode, due to merging QUIC-only "
+           "and anything-but-quic ALPN lists, to get an empty list.";
+  }
+
+  // The alt-service URL for the initial request, and the destination URL for
+  // the second request.
+  const GURL alt_service_url("https://alt.a.test");
+
+  // Use COLD_START to stall alt job's QUIC connection attempt, which never
+  // connects.
+  quic_data_ = std::make_unique<MockQuicData>(version_);
+  quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  // The TCP connection attempt of the initial request. It fails to connect. Use
+  // a connect completer so can wait until the connection has been attempted
+  // before starting the second request, to get a consistent TCP connection
+  // order.
+  MockConnectCompleter connect_completer1;
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(&connect_completer1));
+
+  // The TCP connection to `alt_service_url`, for the second request.
+  tcp_data2_ = std::make_unique<SequencedSocketData>();
+  tcp_data2_->set_connect_data(MockConnect(ASYNC, OK));
+  SSLSocketDataProvider ssl_data2(SYNCHRONOUS, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
+
+  // First request.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://a.test");
+
+  Initialize(request_info);
+  // Set up the alt service. Must be done after the Initialize() call.
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         alt_service_url.host(), 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  // Start and run the first request. Its TCP connection attempt fails. It hangs
+  // waiting on its alt service connection attempt.
+  auto request = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  connect_completer1.WaitForConnectAndComplete(ERR_FAILED);
+
+  // Start the second request to `alt_service_url` directly. The important part
+  // is the `enable_alternative_services=false`.
+  HttpRequestInfo request_info2;
+  request_info2.method = "GET";
+  request_info2.url = alt_service_url;
+  MockHttpStreamRequestDelegate request_delegate2;
+  auto owned_job_controller2 =
+      std::make_unique<HttpStreamFactory::JobController>(
+          factory_, &request_delegate2, session_.get(), &job_factory_,
+          request_info2, is_preconnect_, /*is_websocket=*/false,
+          enable_ip_based_pooling_for_h2_,
+          /*enable_alternative_services=*/false,
+          delay_main_job_with_available_spdy_session_,
+          /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto job_controller2 = owned_job_controller2.get();
+  HttpStreamFactoryPeer::AddJobController(factory_,
+                                          std::move(owned_job_controller2));
+  auto request2 =
+      job_controller2->Start(&request_delegate2, nullptr, net_log_with_source_,
+                             HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  // The second request succeeds, and gets a TCP/IP connection.
+  auto stream2 = request_delegate2.WaitForHttpStream();
+  EXPECT_TRUE(stream2);
+  EXPECT_FALSE(stream2->GetQuicConnectionDetails());
+
+  // The other request is still waiting on the QUIC connection attempt.
+  EXPECT_FALSE(request_delegate_->IsDone());
 }
 
 TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
@@ -5204,9 +5365,7 @@ TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
   if (!enable_ip_based_pooling_for_h2) {
     DisableIPBasedPoolingForH2();
   }
-  if (!enable_alternative_services) {
-    DisableAlternativeServices();
-  }
+  SetEnableAlternativeServices(enable_alternative_services);
 
   Initialize(request_info);
 

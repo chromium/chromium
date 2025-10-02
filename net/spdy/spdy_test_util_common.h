@@ -199,6 +199,7 @@ struct SpdySessionDependencies {
   bool enable_ping = false;
   bool enable_user_alternate_protocol_ports = false;
   bool enable_quic = false;
+  bool enable_http2 = true;
   bool enable_server_push_cancellation = false;
   size_t session_max_recv_window_size = kDefaultInitialWindowSize;
   int session_max_queued_capped_frames = kSpdySessionMaxQueuedCappedFrames;

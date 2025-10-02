@@ -358,6 +358,7 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.enable_spdy_ping_based_connection_checking = session_deps->enable_ping;
   params.enable_user_alternate_protocol_ports =
       session_deps->enable_user_alternate_protocol_ports;
+  params.enable_http2 = session_deps->enable_http2;
   params.enable_quic = session_deps->enable_quic;
   params.spdy_session_max_recv_window_size =
       session_deps->session_max_recv_window_size;

@@ -158,6 +158,8 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
   MockHttpStreamFactoryJob* alternative_job() const { return alternative_job_; }
   MockHttpStreamFactoryJob* dns_alpn_h3_job() const { return dns_alpn_h3_job_; }
 
+  void set_use_real_jobs() { use_real_jobs_ = true; }
+
  private:
   raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged> main_job_ =
       nullptr;
@@ -165,6 +167,9 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
       alternative_job_ = nullptr;
   raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged>
       dns_alpn_h3_job_ = nullptr;
+
+  // When set to true, creates real jobs, and accessors don't work.
+  bool use_real_jobs_ = false;
 };
 
 }  // namespace net

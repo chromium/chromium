@@ -26,6 +26,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -116,8 +117,14 @@ class MockConnectCompleter {
 
   ~MockConnectCompleter();
 
+  // Wait for a connection attempt.
+  void WaitForConnect();
+
   // Completes Connect() with `result`.
   void Complete(int result);
+
+  // Convenience function that combines WaitForConnect() and Complete().
+  void WaitForConnectAndComplete(int result);
 
  private:
   friend class MockTCPClientSocket;
@@ -129,6 +136,7 @@ class MockConnectCompleter {
   void SetCallback(CompletionOnceCallback callback);
 
   CompletionOnceCallback callback_;
+  base::RunLoop run_loop_;
 };
 
 struct MockConnect {

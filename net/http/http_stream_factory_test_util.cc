@@ -164,6 +164,14 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
         quic::ParsedQuicVersion::Unsupported(),
     std::optional<ConnectionManagementConfig> management_config =
         std::nullopt) {
+  if (use_real_jobs_) {
+    return std::make_unique<HttpStreamFactory::Job>(
+        delegate, job_type, session, request_info, priority, proxy_info,
+        allowed_bad_certs, std::move(destination), alternative_protocol,
+        quic_version, is_websocket, enable_ip_based_pooling_for_h2,
+        std::move(management_config), net_log);
+  }
+
   auto job = std::make_unique<MockHttpStreamFactoryJob>(
       delegate, job_type, session, request_info, priority, proxy_info,
       allowed_bad_certs, std::move(destination), alternative_protocol,
