@@ -95,9 +95,9 @@ class DebugHeaderBuilder {
 }  // namespace
 
 DeferredURLRequest::DeferredURLRequest(
-    const URLRequest* request,
+    base::WeakPtr<const URLRequest> request,
     SessionService::RefreshCompleteCallback callback)
-    : request(request), callback(std::move(callback)) {}
+    : request(std::move(request)), callback(std::move(callback)) {}
 
 DeferredURLRequest::DeferredURLRequest(DeferredURLRequest&& other) noexcept =
     default;
@@ -368,7 +368,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
   // For the first deferring request, create a new vector and add the request.
   auto [it, inserted] = deferred_requests_.try_emplace(session_key.id);
   // Add the request to the deferred list.
-  it->second.emplace_back(request, std::move(callback));
+  it->second.emplace_back(request->GetWeakPtr(), std::move(callback));
 
   auto* session = GetSession(session_key);
   CHECK(session, base::NotFatalUntil::M147);
@@ -405,7 +405,8 @@ void SessionServiceImpl::DeferRequestForRefresh(
       session_store_->RestoreSessionBindingKey(
           session_key,
           base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
-                         weak_factory_.GetWeakPtr(), request, session_key,
+                         weak_factory_.GetWeakPtr(), request->GetWeakPtr(),
+                         session_key,
                          request->device_bound_session_access_callback()));
     } else {
       UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
@@ -710,10 +711,14 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
 }
 
 void SessionServiceImpl::OnSessionKeyRestored(
-    URLRequest* request,
+    base::WeakPtr<URLRequest> request,
     const SessionKey& session_key,
     OnAccessCallback on_access_callback,
     Session::KeyIdOrError key_id_or_error) {
+  if (!request) {
+    return;
+  }
+
   if (!key_id_or_error.has_value()) {
     UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
     DeleteSessionAndNotify(DeletionReason::kFailedToUnwrapKey, session_key,
@@ -729,7 +734,7 @@ void SessionServiceImpl::OnSessionKeyRestored(
 
   session->set_unexportable_key_id(key_id_or_error);
 
-  RefreshSessionInternal(request, session_key, session, *key_id_or_error);
+  RefreshSessionInternal(request.get(), session_key, session, *key_id_or_error);
 }
 
 void SessionServiceImpl::RefreshSessionInternal(
