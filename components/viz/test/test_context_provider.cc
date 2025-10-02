@@ -193,17 +193,6 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
                                  /*sii=*/nullptr, support_locking);
 }
 
-// static
-scoped_refptr<TestContextProvider> TestContextProvider::Create(
-    scoped_refptr<gpu::TestSharedImageInterface> sii) {
-  DCHECK(sii);
-  constexpr bool support_locking = false;
-  return new TestContextProvider(
-      std::make_unique<TestContextSupport>(),
-      std::make_unique<TestGLES2InterfaceForContextProvider>(),
-      /*raster=*/nullptr, std::move(sii), support_locking);
-}
-
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
     std::unique_ptr<TestRasterInterface> raster,
