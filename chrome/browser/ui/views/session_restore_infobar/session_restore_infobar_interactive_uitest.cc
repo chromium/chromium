@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -21,6 +22,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/browsing_data/core/pref_names.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -114,6 +119,19 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
   browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
 
   CreateInfobar(browser(), false, false);
+  RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
+}
+
+// Test that the session restore infobar is not shown when clear on exit is
+// enabled.
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
+                       InfoBarNotShownWhenClearOnExit) {
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  host_content_settings_map->SetDefaultContentSetting(
+      ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
+
+  CreateInfobar(browser(), true, false);
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 
