@@ -91,6 +91,10 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
     kDataNotLoaded = 1,
     // Signed-out.
     kUserSignedOut = 2,
+    // The user is signed-in, but sync-the-feature is disabled.
+    // TODO(crbug.com/40066949): Do not block profile creation when
+    // sync-the-feature gets removed.
+    kSyncDisabled = 3,
   };
 
   // Updates the kAccountNameEmail autofill profile with the account `info`. If

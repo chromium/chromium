@@ -86,6 +86,7 @@ void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
   }
   switch (reason.value()) {
     case ProfileUpdateBlockReason::kAutofillSyncToggleDisabled:
+    case ProfileUpdateBlockReason::kSyncDisabled:
       SoftRemoveAccountNameEmail();
       return;
     case ProfileUpdateBlockReason::kUserSignedOut:
@@ -226,6 +227,10 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
   if (sync_service_->GetTransportState() ==
       syncer::SyncService::TransportState::DISABLED) {
     return ProfileUpdateBlockReason::kUserSignedOut;
+  }
+
+  if (!sync_service_->IsSyncFeatureActive()) {
+    return ProfileUpdateBlockReason::kSyncDisabled;
   }
 
   if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(

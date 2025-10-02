@@ -457,7 +457,7 @@ TEST_F(AccountNameEmailStoreTest, SignInAfterHardRemove) {
   sync_service().FireStateChanged();
 
   CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
-  sync_service().SetSignedIn(signin::ConsentLevel::kSync);
+  sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service().SetDownloadStatusFor(
       {syncer::DataType::PRIORITY_PREFERENCES},
       syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
@@ -591,6 +591,24 @@ TEST_F(AccountNameEmailStoreTest,
       address_data_manager().GetProfiles(),
       ElementsAre(IsCorrectAccountNameEmail(base::UTF8ToUTF16(info.full_name),
                                             base::UTF8ToUTF16(info.email))));
+}
+
+// Tests that kAccountNameEmail profile exists only if sync-the-feature is
+// enabled.
+// TODO(crbug.com/40066949): Remove once kSync gets removed.
+TEST_F(AccountNameEmailStoreTest, SyncTheFeatureState) {
+  sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service().FireStateChanged();
+
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+
+  sync_service().SetSignedIn(signin::ConsentLevel::kSync);
+  sync_service().FireStateChanged();
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
 }
 
 }  // namespace
