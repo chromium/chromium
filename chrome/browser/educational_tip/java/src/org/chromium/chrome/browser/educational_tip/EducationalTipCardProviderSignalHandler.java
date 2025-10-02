@@ -111,8 +111,18 @@ public class EducationalTipCardProviderSignalHandler {
      * Otherwise, it returns 0.0f.
      */
     private static float tabGroupExists(EducationTipModuleActionDelegate actionDelegate) {
-        TabGroupModelFilterProvider provider =
-                actionDelegate.getTabModelSelector().getTabGroupModelFilterProvider();
+        TabModelSelector tabModelSelector = actionDelegate.getTabModelSelector();
+        if (!tabModelSelector.isTabStateInitialized()
+                || tabModelSelector.isReparentingInProgress()) {
+            return 0.0f;
+        }
+
+        if (tabModelSelector.getCurrentModel().getTabById(tabModelSelector.getCurrentTabId())
+                == null) {
+            return 0.0f;
+        }
+
+        TabGroupModelFilterProvider provider = tabModelSelector.getTabGroupModelFilterProvider();
         TabGroupModelFilter normalFilter =
                 provider.getTabGroupModelFilter(/* isIncognito= */ false);
         assumeNonNull(normalFilter);

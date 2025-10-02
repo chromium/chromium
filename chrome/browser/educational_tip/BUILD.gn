@@ -36,6 +36,7 @@ android_library("java") {
     "//chrome/browser/segmentation_platform:factory_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tab_group_sync:features_java",
     "//chrome/browser/tab_ui/android:java",
@@ -49,7 +50,6 @@ android_library("java") {
     "//components/segmentation_platform/public:public_java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
