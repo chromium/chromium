@@ -3152,12 +3152,9 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
   std::unique_ptr<net::CookieCryptoDelegate> crypto_delegate = nullptr;
 
   if (params_->enable_encrypted_cookies) {
-    if (params_->cookie_encryption_provider) {
-      crypto_delegate = std::make_unique<CookieOSCryptAsyncDelegate>(
-          std::move(params_->cookie_encryption_provider));
-    } else {
-      crypto_delegate = cookie_config::GetCookieCryptoDelegate();
-    }
+    CHECK(params_->cookie_encryption_provider);
+    crypto_delegate = std::make_unique<CookieOSCryptAsyncDelegate>(
+        std::move(params_->cookie_encryption_provider));
   }
 
 #if BUILDFLAG(IS_WIN)

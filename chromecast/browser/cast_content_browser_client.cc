@@ -68,6 +68,7 @@
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "components/url_rewrite/common/url_loader_throttle.h"
@@ -150,8 +151,13 @@ CastContentBrowserClient::CastContentBrowserClient(
               base::OnTaskRunnerDeleter(nullptr))),
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
       cast_browser_main_parts_(nullptr),
+      os_crypt_async_(std::make_unique<os_crypt_async::OSCryptAsync>(
+          std::vector<
+              std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                        std::unique_ptr<os_crypt_async::KeyProvider>>>{})),
       cast_network_contexts_(
-          std::make_unique<CastNetworkContexts>(GetCorsExemptHeadersList())),
+          std::make_unique<CastNetworkContexts>(GetCorsExemptHeadersList(),
+                                                os_crypt_async_.get())),
       cast_feature_list_creator_(cast_feature_list_creator) {
   std::vector<const base::Feature*> extra_enable_features = {
       &::media::kInternalMediaSession,

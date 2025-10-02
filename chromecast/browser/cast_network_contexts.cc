@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_context.h"
+#include "services/network/public/cpp/cookie_encryption_provider_impl.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -108,8 +109,11 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
 };
 
 CastNetworkContexts::CastNetworkContexts(
-    std::vector<std::string> cors_exempt_headers_list)
+    std::vector<std::string> cors_exempt_headers_list,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : cors_exempt_headers_list_(std::move(cors_exempt_headers_list)),
+      cookie_encryption_provider_(
+          std::make_unique<CookieEncryptionProviderImpl>(os_crypt_async)),
       system_shared_url_loader_factory_(
           base::MakeRefCounted<URLLoaderFactoryForSystem>(this)) {}
 
@@ -235,6 +239,8 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
   network_context_params->restore_old_session_cookies = false;
   network_context_params->persist_session_cookies = true;
   network_context_params->cookie_manager_params = CreateCookieManagerParams();
+  network_context_params->cookie_encryption_provider =
+      cookie_encryption_provider_->BindNewRemote();
 
   // Disable idle sockets close on memory pressure, if instructed by DCS. On
   // memory constrained devices:

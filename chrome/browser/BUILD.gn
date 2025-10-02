@@ -768,8 +768,6 @@ static_library("browser") {
     "net/chrome_report_sender.h",
     "net/convert_explicitly_allowed_network_ports_pref.cc",
     "net/convert_explicitly_allowed_network_ports_pref.h",
-    "net/cookie_encryption_provider_impl.cc",
-    "net/cookie_encryption_provider_impl.h",
     "net/default_dns_over_https_config_source.cc",
     "net/default_dns_over_https_config_source.h",
     "net/dns_over_https_config_source.h",

@@ -264,6 +264,7 @@ cast_source_set("browser") {
     "//components/metrics:ui",
     "//components/network_hints/browser",
     "//components/network_session_configurator/common",
+    "//components/os_crypt/async/browser",
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/proxy_config",
