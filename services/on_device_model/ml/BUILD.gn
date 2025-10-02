@@ -94,7 +94,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "//services/on_device_model/public/mojom",
     ]
     if (use_blink) {
-      public_deps += [ "//gpu/config:webgpu_blocklist_impl" ]
+      public_deps += [ "//gpu/config" ]
     }
   }
 

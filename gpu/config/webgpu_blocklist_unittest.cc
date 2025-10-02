@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/config/webgpu_blocklist.h"
-
 #include "build/build_config.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"

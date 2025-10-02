@@ -668,7 +668,7 @@ test("gpu_unittests") {
 
   if (use_dawn) {
     deps += [
-      "//gpu/config:webgpu_blocklist_impl",
+      "//gpu/config",
       "//net:test_support",
       "//third_party/dawn/src/dawn:cpp",
       "//third_party/dawn/src/dawn:proc",
