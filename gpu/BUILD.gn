@@ -89,7 +89,6 @@ static_library("test_support") {
     "command_buffer/service/gles2_cmd_decoder_mock.h",
     "command_buffer/service/mocks.cc",
     "command_buffer/service/mocks.h",
-    "command_buffer/service/shared_image/gpu_memory_buffer_factory_test_template.h",
     "command_buffer/service/shared_image/test_image_backing.cc",
     "command_buffer/service/shared_image/test_image_backing.h",
     "command_buffer/service/test_helper.cc",
