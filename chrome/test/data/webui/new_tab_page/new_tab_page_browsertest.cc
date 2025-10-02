@@ -239,7 +239,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ComposeEntryPoint) {
           "runMochaSuite('NewTabPageAppTest ComposeEntryPoint')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, WallpaperSearch) {
+// TODO(crbug.com/448987783): Re-enable test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WallpaperSearch DISABLED_WallpaperSearch
+#else
+#define MAYBE_WallpaperSearch WallpaperSearch
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_WallpaperSearch) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest WallpaperSearch')");
 }
