@@ -13,7 +13,8 @@
 namespace {
 
 ProfileSelections BuildDiceMigrationServiceProfileSelections() {
-  return base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)
+  return base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers) ||
+                 base::FeatureList::IsEnabled(switches::kForcedDiceMigration)
              ? ProfileSelections::BuildForRegularProfile()
              : ProfileSelections::BuildNoProfilesSelected();
 }
