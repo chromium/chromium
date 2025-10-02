@@ -40,17 +40,27 @@ PastePolicyVerdict IsPasteAllowedByPolicy(
 CopyPolicyVerdicts IsCopyAllowedByPolicy(const GURL& source_url,
                                          const ui::ClipboardMetadata& metadata,
                                          ProfileIOS* source_profile) {
-  // TODO(crbug.com/438200537): This is the place holder for copy policy
-  // evaluation API.
   CHECK(source_profile);
 
   IOSRulesService* rules_service =
       IOSRulesServiceFactory::GetForProfile(source_profile);
-  CHECK(rules_service);
+  auto verdict = rules_service->GetCopyRestrictedBySourceVerdict(source_url);
 
-  Verdict verdict = rules_service->GetCopyRestrictedBySourceVerdict(source_url);
+  if (verdict.level() == Rule::Level::kBlock) {
+    return {std::move(verdict), false};
+  }
 
-  return CopyPolicyVerdicts{std::move(verdict), true};
+  auto os_clipboard_verdict =
+      rules_service->GetCopyToOSClipboardVerdict(source_url);
+  bool allow_copy_to_os = os_clipboard_verdict.level() != Rule::Level::kBlock;
+
+  if (verdict.level() == Rule::Level::kWarn ||
+      os_clipboard_verdict.level() == Rule::Level::kWarn) {
+    verdict = Verdict::MergeCopyWarningVerdicts(
+        std::move(verdict), std::move(os_clipboard_verdict));
+  }
+
+  return {std::move(verdict), allow_copy_to_os};
 }
 
 }  // namespace data_controls

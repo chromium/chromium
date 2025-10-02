@@ -24,11 +24,23 @@ source_set("utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "data_controls_utils_unittest.mm" ]
+  sources = [
+    "clipboard_utils_unittest.mm",
+    "data_controls_utils_unittest.mm",
+  ]
   deps = [
     ":utils",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/keyed_service/core",
     "//components/strings",
+    "//ios/chrome/browser/enterprise/data_controls",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
+    "//url",
   ]
 }
