@@ -105,7 +105,8 @@ lld_emit_indexes_and_imports =
 # targets. We work around the bug in Reclient by
 # specifying the files here.
 rbe_bug_326584510_missing_input_list = []
-if (clang_use_chrome_plugins && defined(clang_unsafe_buffers_paths) &&
+if ((clang_use_chrome_plugins || clang_use_unsafe_buffers_plugin) &&
+    defined(clang_unsafe_buffers_paths) &&
     "$clang_unsafe_buffers_paths" != "") {
   rbe_bug_326584510_missing_input_list +=
       [ rebase_path(clang_unsafe_buffers_paths, rbe_exec_root) ]
