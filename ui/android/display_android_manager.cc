@@ -17,6 +17,7 @@
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_utils.h"
 #include "skia/ext/skcolorspace_trfn.h"
 #include "ui/android/screen_android.h"
@@ -154,8 +155,8 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
       hdr_max_luminance_ratio = 1.f;
     }
     // Propagate this into the DisplayColorSpaces.
-    gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB(),
-                                                 gfx::BufferFormat::RGBA_8888);
+    gfx::DisplayColorSpaces display_color_spaces(
+        gfx::ColorSpace::CreateSRGB(), viz::SinglePlaneFormat::kRGBA_8888);
     display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_luminance_ratio);
     for (auto needs_alpha : {true, false}) {
       // TODO: Low-end devices should specify RGB_565 as the buffer format for
