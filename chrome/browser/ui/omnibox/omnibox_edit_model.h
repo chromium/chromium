@@ -50,8 +50,8 @@ class OmniboxEditModel {
           OmniboxFocusState focus_state,
           const AutocompleteInput& autocomplete_input);
     State(const State& other);
-    ~State();
     State& operator=(const State&) = delete;
+    ~State();
 
     bool user_input_in_progress;
     const std::u16string user_text;
@@ -76,12 +76,14 @@ class OmniboxEditModel {
     // Called whenever `popup_view_->OnSelectionChanged()` is called.
     virtual void OnSelectionChanged(OmniboxPopupSelection old_selection,
                                     OmniboxPopupSelection new_selection) {}
+
+    ~Observer() override = default;
   };
 
   OmniboxEditModel(OmniboxController* controller, OmniboxView* view);
-  virtual ~OmniboxEditModel();
   OmniboxEditModel(const OmniboxEditModel&) = delete;
   OmniboxEditModel& operator=(const OmniboxEditModel&) = delete;
+  virtual ~OmniboxEditModel();
 
   void set_popup_view(OmniboxPopupView* popup_view);
   void AddObserver(Observer* observer);
@@ -227,7 +229,7 @@ class OmniboxEditModel {
   // `via_keyboard` is set to `true` if the selection was opened due to a
   // keyboard event and is set to `false` if the selection was opened due
   // to a mouse / gesture event.
-  virtual void OpenSelection(
+  void OpenSelection(
       OmniboxPopupSelection selection,
       base::TimeTicks timestamp = base::TimeTicks(),
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
@@ -673,10 +675,10 @@ class OmniboxEditModel {
                            bool via_keyboard);
 
   // Owns this.
-  raw_ptr<OmniboxController> controller_;
+  const raw_ptr<OmniboxController> controller_;
 
   // Owns `OmniboxController` which owns this.
-  raw_ptr<OmniboxView> view_;
+  const raw_ptr<OmniboxView> view_;
 
   OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
 
@@ -727,23 +729,6 @@ class OmniboxEditModel {
   // We keep track of when the user began modifying the omnibox text.
   // This should be valid whenever user_input_in_progress_ is true.
   base::TimeTicks time_user_first_modified_omnibox_;
-
-  // When the user closes the popup, we need to remember the URL for their
-  // desired choice, so that if they hit enter without reopening the popup we
-  // know where to go.  We could simply rerun autocomplete in this case, but
-  // we'd need to either wait for all results to come in (unacceptably slow) or
-  // do the wrong thing when the user had chosen some provider whose results
-  // were not returned instantaneously.
-  //
-  // This variable is only valid when user_input_in_progress_ is true, since
-  // when it is false the user has either never input anything (so there won't
-  // be a value here anyway) or has canceled their input, which should be
-  // treated the same way.  Also, since this is for preserving a desired URL
-  // after the popup has been closed, we ignore this if the popup is open, and
-  // simply ask the popup for the desired URL directly.  As a result, the
-  // contents of this variable only need to be updated when the popup is closed
-  // but user_input_in_progress_ is not being cleared.
-  std::u16string url_for_remembered_user_selection_;
 
   // Inline autocomplete is allowed if the user has not just deleted text, and
   // no temporary text is showing.  In this case, inline_autocompletion_ is
