@@ -5,6 +5,8 @@
 #ifndef CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 #define CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 
+#include <string_view>
+
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -104,6 +106,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
 
     kDone
   } state_ = State::kInitial;
+  static std::string_view StateToString(State state);
+
   friend std::ostream& operator<<(std::ostream& o,
                                   const PageStabilityMonitor::State& state);
 
@@ -160,16 +164,16 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // and don't move to `kStartMonitoring` when the delay expires in this case.
   base::DelayedTaskHandle start_monitoring_delayed_handle_;
 
+  TaskId task_id_;
+
+  base::raw_ref<Journal> journal_;
+
   // This will be null if paint stability monitoring is disabled, or if we're
   // monitoring an unsupported interaction. This must be destroyed before
   // `journal_entry_` to avoid a dangling pointer.
   std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
 
   bool render_frame_did_go_away_ = false;
-
-  TaskId task_id_;
-
-  base::raw_ref<Journal> journal_;
 
   mojo::Receiver<mojom::PageStabilityMonitor> receiver_{this};
 

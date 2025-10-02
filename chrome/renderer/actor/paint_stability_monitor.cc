@@ -44,16 +44,22 @@ base::TimeDelta GetSubsequentPaintTimeout() {
 
 // static
 std::unique_ptr<PaintStabilityMonitor> PaintStabilityMonitor::MaybeCreate(
-    content::RenderFrame& frame) {
+    content::RenderFrame& frame,
+    TaskId task_id,
+    Journal& journal) {
   if (features::kActorPaintStabilityMode.Get() ==
       ActorPaintStabilityMode::kDisabled) {
     return nullptr;
   }
-  return base::WrapUnique(new PaintStabilityMonitor(frame));
+  return base::WrapUnique(new PaintStabilityMonitor(frame, task_id, journal));
 }
 
-PaintStabilityMonitor::PaintStabilityMonitor(content::RenderFrame& frame)
+PaintStabilityMonitor::PaintStabilityMonitor(content::RenderFrame& frame,
+                                             TaskId task_id,
+                                             Journal& journal)
     : mode_(features::kActorPaintStabilityMode.Get()),
+      task_id_(task_id),
+      journal_(journal),
       interaction_effects_monitor_(
           std::make_unique<blink::WebInteractionEffectsMonitor>(
               *frame.GetWebFrame(),
@@ -63,16 +69,16 @@ PaintStabilityMonitor::PaintStabilityMonitor(content::RenderFrame& frame)
 
 PaintStabilityMonitor::~PaintStabilityMonitor() = default;
 
-void PaintStabilityMonitor::Start(Journal::PendingAsyncEntry* journal_entry) {
-  CHECK(!journal_entry_);
+void PaintStabilityMonitor::Start() {
   CHECK(!is_stable_callback_);
-  journal_entry_ = journal_entry;
 
-  journal_entry_->Log("InteractionContentfulPaint",
-                      JournalDetailsBuilder()
-                          .Add("initial_painted_area",
-                               interaction_effects_monitor_->TotalPaintedArea())
-                          .Build());
+  is_started_ = true;
+
+  journal_->Log(task_id_, "PaintStabilityMonitor: InteractionContentfulPaint",
+                JournalDetailsBuilder()
+                    .Add("initial_painted_area",
+                         interaction_effects_monitor_->TotalPaintedArea())
+                    .Build());
 
   // There won't be any interactions if the underlying frame does not support
   // monitoring, which is the case for iframes. Avoid invoking the
@@ -87,7 +93,6 @@ void PaintStabilityMonitor::Start(Journal::PendingAsyncEntry* journal_entry) {
 }
 
 void PaintStabilityMonitor::WaitForStable(base::OnceClosure callback) {
-  CHECK(journal_entry_);
   CHECK(!is_stable_callback_);
   is_stable_callback_ = std::move(callback);
   // Paint stability might have been reached between `Start()` and now.
@@ -98,29 +103,27 @@ void PaintStabilityMonitor::WaitForStable(base::OnceClosure callback) {
 
 void PaintStabilityMonitor::OnContentfulPaint(uint64_t new_painted_area) {
   // Don't do anything if `Start()` hasn't been called yet.
-  if (!journal_entry_) {
+  if (!is_started_) {
     return;
   }
-  CHECK(journal_entry_);
-  journal_entry_->Log("InteractionContentfulPaint",
-                      JournalDetailsBuilder()
-                          .Add("total_painted_area",
-                               interaction_effects_monitor_->TotalPaintedArea())
-                          .Add("new_painted_area", new_painted_area)
-                          .Add("was_stability_reached", is_stability_reached_)
-                          .Build());
+  journal_->Log(task_id_, "PaintStabilityMonitor: InteractionContentfulPaint",
+                JournalDetailsBuilder()
+                    .Add("total_painted_area",
+                         interaction_effects_monitor_->TotalPaintedArea())
+                    .Add("new_painted_area", new_painted_area)
+                    .Add("was_stability_reached", is_stability_reached_)
+                    .Build());
   is_stability_reached_ = false;
   ScheduleContentfulPaintTimeoutTask(FROM_HERE, GetSubsequentPaintTimeout());
 }
 
 void PaintStabilityMonitor::OnPaintStabilityDetected() {
-  CHECK(journal_entry_);
-  journal_entry_->Log("PaintStabilityDetected",
-                      JournalDetailsBuilder()
-                          .Add("total_painted_area",
-                               interaction_effects_monitor_->TotalPaintedArea())
-                          .Add("is_waiting_for_stable", !!is_stable_callback_)
-                          .Build());
+  journal_->Log(task_id_, "PaintStabilityMonitor: Stability Detected",
+                JournalDetailsBuilder()
+                    .Add("total_painted_area",
+                         interaction_effects_monitor_->TotalPaintedArea())
+                    .Add("is_waiting_for_stable", !!is_stable_callback_)
+                    .Build());
   is_stability_reached_ = true;
 
   // If we're only logging, continue monitoring to log post-stable contentful

@@ -36,7 +36,7 @@ using ::content::RenderFrameObserver;
 
 std::ostream& operator<<(std::ostream& o,
                          const PageStabilityMonitor::State& state) {
-  return o << base::to_underlying(state);
+  return o << PageStabilityMonitor::StateToString(state);
 }
 
 namespace {
@@ -61,21 +61,21 @@ PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
                                            TaskId task_id,
                                            Journal& journal)
     : RenderFrameObserver(&frame),
-      paint_stability_monitor_(supports_paint_stability
-                                   ? PaintStabilityMonitor::MaybeCreate(frame)
-                                   : nullptr),
       task_id_(task_id),
-      journal_(journal) {
+      journal_(journal),
+      paint_stability_monitor_(
+          supports_paint_stability
+              ? PaintStabilityMonitor::MaybeCreate(frame, task_id, journal)
+              : nullptr) {
   CHECK(render_frame());
   CHECK(render_frame()->GetWebFrame());
   starting_request_count_ =
       render_frame()->GetWebFrame()->GetDocument().ActiveResourceRequestCount();
 
-  journal_entry_ = journal_->CreatePendingAsyncEntry(
-      task_id_, "PageStabilityInitial",
-      JournalDetailsBuilder()
-          .Add("requests_before", starting_request_count_)
-          .Build());
+  journal_->Log(task_id_, "PageStability: Created",
+                JournalDetailsBuilder()
+                    .Add("requests_before", starting_request_count_)
+                    .Build());
 }
 
 PageStabilityMonitor::~PageStabilityMonitor() {
@@ -84,7 +84,6 @@ PageStabilityMonitor::~PageStabilityMonitor() {
   }
 
   // If we have a callback, ensure it replies now.
-  journal_entry_->Log("PageStabilityMonitorDestructor", {});
   OnRenderFrameGoingAway();
   Cleanup();
 }
@@ -100,16 +99,10 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
     return;
   }
 
-  // This will end the PageStabilityInitial entry and start a new one.
-  journal_entry_.reset();
-  journal_entry_ = journal_->CreatePendingAsyncEntry(
-      task_id_, "PageStability",
-      JournalDetailsBuilder().Add("state", state_).Build());
-
   monitoring_start_delay_ = observation_delay;
 
   if (paint_stability_monitor_) {
-    paint_stability_monitor_->Start(journal_entry_.get());
+    paint_stability_monitor_->Start();
   }
 
   SetTimeout(State::kTimeoutGlobal, GetGlobalTimeoutDelay());
@@ -131,8 +124,8 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
     return;
   }
 
-  journal_entry_->Log(
-      "DidCommitProvisionalLoad",
+  journal_->Log(
+      task_id_, "PageStability: DidCommitProvisionalLoad",
       JournalDetailsBuilder()
           .Add("transition", PageTransitionGetCoreTransitionString(transition))
           .Build());
@@ -141,7 +134,7 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
 
 void PageStabilityMonitor::DidFailProvisionalLoad() {
   if (state_ == State::kWaitForNavigation) {
-    journal_entry_->Log("DidFailProvisionalLoad", {});
+    journal_->Log(task_id_, "DidFailProvisionalLoad", {});
     MoveToState(State::kStartMonitoring);
   }
 }
@@ -157,7 +150,7 @@ void PageStabilityMonitor::DidSetPageLifecycleState(
     return;
   }
 
-  journal_entry_->Log("PageStabilityMonitor Page Frozen", {});
+  journal_->Log(task_id_, "PageStabilityMonitor Page Frozen", {});
   OnRenderFrameGoingAway();
 }
 
@@ -171,6 +164,11 @@ void PageStabilityMonitor::MoveToState(State new_state) {
   if (state_ == State::kDone) {
     return;
   }
+
+  journal_entry_.reset();
+  journal_entry_ = journal_->CreatePendingAsyncEntry(
+      task_id_,
+      absl::StrFormat("PageStabilityState: %s", StateToString(new_state)), {});
 
   DCheckStateTransition(state_, new_state);
 
@@ -198,12 +196,14 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       }
       // Do nothing - will advance to the next state from
       // DidCommit|FailProvisionalLoad.
-      journal_entry_->Log("WaitingForNavigation");
       break;
     }
     case State::kStartMonitoring: {
       WebDocument document = render_frame()->GetWebFrame()->GetDocument();
       int after_request_count = document.ActiveResourceRequestCount();
+      journal_entry_->Log(
+          "Network Requests",
+          JournalDetailsBuilder().Add("count", after_request_count).Build());
 
       State next_state;
 
@@ -215,13 +215,8 @@ void PageStabilityMonitor::MoveToState(State new_state) {
                            weak_ptr_factory_.GetWeakPtr()));
       }
       if (after_request_count > starting_request_count_) {
-        journal_entry_->Log("WaitForNetworkIdle",
-                            JournalDetailsBuilder()
-                                .Add("requests", after_request_count)
-                                .Build());
         next_state = State::kWaitForNetworkIdle;
       } else {
-        journal_entry_->Log("WaitForMainThreadIdle");
         next_state = State::kWaitForMainThreadIdle;
       }
 
@@ -247,19 +242,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kTimeoutGlobal: {
-      journal_entry_->EndEntry(
-          JournalDetailsBuilder()
-              .AddError("Timed out waiting for page stability.")
-              .Build());
       MoveToState(State::kInvokeCallback);
       break;
     }
     case State::kTimeoutMainThread: {
-      journal_entry_->EndEntry(
-          JournalDetailsBuilder()
-              .AddError("Timed out waiting for page stability - main thread to "
-                        "produce a thread.")
-              .Build());
       MoveToState(State::kInvokeCallback);
       break;
     }
@@ -460,13 +446,41 @@ void PageStabilityMonitor::Bind(
 }
 
 void PageStabilityMonitor::OnMojoDisconnected() {
-  if (!receiver_.is_bound()) {
-    return;
-  }
+  journal_->Log(task_id_, "OnMojoDisconnected",
+                JournalDetailsBuilder().Add("state", state_).Build());
+}
 
-  CHECK(journal_entry_);
-  journal_entry_->Log("OnMojoDisconnected",
-                      JournalDetailsBuilder().Add("state", state_).Build());
+// static
+std::string_view PageStabilityMonitor::StateToString(State state) {
+  switch (state) {
+    case State::kInitial:
+      return "Initial";
+    case State::kMonitorStartDelay:
+      return "MonitorStartDelay";
+    case State::kWaitForNavigation:
+      return "WaitForNavigation";
+    case State::kStartMonitoring:
+      return "StartMonitoring";
+    case State::kWaitForNetworkIdle:
+      return "WaitForNetworkIdle";
+    case State::kWaitForMainThreadIdle:
+      return "WaitForMainThreadIdle";
+    case State::kTimeoutGlobal:
+      return "TimeoutGlobal";
+    case State::kTimeoutMainThread:
+      return "TimeoutMainThread";
+    case State::kMaybeDelayCallback:
+      return "MaybeDelayCallback";
+    case State::kInvokeCallback:
+      return "InvokeCallback";
+    case State::kRenderFrameGoingAway:
+      return "RenderFrameGoingAway";
+    case State::kPaintStabilityReached:
+      return "PaintStabilityReached";
+    case State::kDone:
+      return "Done";
+  }
+  NOTREACHED();
 }
 
 }  // namespace actor

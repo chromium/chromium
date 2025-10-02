@@ -75,9 +75,11 @@ class Journal {
                    const std::string& event_name,
                    std::vector<mojom::JournalDetailsPtr> details);
 
+  // Sends any buffered log entries to the browser process immediately.
+  void SendLogBuffer();
+
  private:
   void AddJournalEntry(mojom::JournalEntryPtr journal_entry);
-  void SendLogBuffer();
 
   mojo::AssociatedRemote<mojom::JournalClient> client_;
   std::vector<mojom::JournalEntryPtr> log_buffer_;

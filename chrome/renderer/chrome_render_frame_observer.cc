@@ -255,6 +255,18 @@ void ChromeRenderFrameObserver::DidSetPageLifecycleState(
       translate_agent_) {
     translate_agent_->RenewPageRegistration();
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (bfcache_change == blink::BFCacheStateChange::kStoredToBFCache) {
+    // Reset actor state if entering the BFCache
+    page_stability_monitor_.reset();
+    tool_executor_.reset();
+
+    // Flush any remaining log entries which may have been added in the
+    // destructors above. Don't reset the actor journal since it is only created
+    // from the constructor.
+    actor_journal_->SendLogBuffer();
+  }
+#endif
 }
 
 void ChromeRenderFrameObserver::DidFinishLoad() {

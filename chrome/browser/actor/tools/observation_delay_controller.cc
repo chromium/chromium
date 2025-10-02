@@ -64,6 +64,8 @@ ObservationDelayController::ObservationDelayController(
   if (may_use_page_stability) {
     CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
              features::ActorGeneralPageStabilityMode::kDisabled);
+    journal.EnsureJournalBound(target_frame);
+
     // Note: It's important that the PageStabilityMonitor be created on the same
     // interface as tool invocation since it relies on being created before a
     // tool is invoked.

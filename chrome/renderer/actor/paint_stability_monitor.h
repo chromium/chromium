@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/journal.h"
 #include "third_party/blink/public/web/web_interaction_effects_monitor_observer.h"
@@ -37,8 +38,8 @@ class PaintStabilityMonitor
   // Returns a `PaintStabilityMonitor` for the given `frame` if `tool` supports
   // paint stability monitoring and the paint stability monitoring feature is
   // not disabled, otherwise nullptr.
-  static std::unique_ptr<PaintStabilityMonitor> MaybeCreate(
-      content::RenderFrame& frame);
+  static std::unique_ptr<PaintStabilityMonitor>
+  MaybeCreate(content::RenderFrame& frame, TaskId task_id, Journal& journal);
 
   ~PaintStabilityMonitor() override;
 
@@ -51,10 +52,7 @@ class PaintStabilityMonitor
   // allows clients to enforce a minimum stability timeout threshold and tie
   // paint stability to other signals, while allowing this monitor to observe
   // all relevant paints.
-  //
-  // `journal_entry` is used for logging, and it must outlive this
-  // `PaintStabilityMonitor` instance.
-  void Start(Journal::PendingAsyncEntry* journal_entry);
+  void Start();
 
   // Wait for paint stability and invoke `callback` once reached. `callback`
   // will only be invoked if `mode_` is enabled and not log-only. `callback`
@@ -63,13 +61,17 @@ class PaintStabilityMonitor
   void WaitForStable(base::OnceClosure callback);
 
  private:
-  explicit PaintStabilityMonitor(content::RenderFrame& frame);
+  PaintStabilityMonitor(content::RenderFrame& frame,
+                        TaskId task_id,
+                        Journal& journal);
 
   void OnPaintStabilityDetected();
   void ScheduleContentfulPaintTimeoutTask(const base::Location& location,
                                           base::TimeDelta delay);
 
   const features::ActorPaintStabilityMode mode_;
+
+  bool is_started_ = false;
 
   // Whether or not paint stability has been reached. This will be reset if new
   // contentful paints are detected after reaching stability, which can happen
@@ -80,9 +82,11 @@ class PaintStabilityMonitor
   // enabled and not log-only.
   base::OnceClosure is_stable_callback_;
 
-  // The journal entry for logging. This class shares a journal entry with
-  // PageStabilityMonitor, which owns the journal entry.
-  raw_ptr<Journal::PendingAsyncEntry> journal_entry_;
+  TaskId task_id_;
+
+  // The journal for logging. The journal is owned by the render frame observer
+  // which owns PageStabilityMonitor so it never outlives this class.
+  raw_ref<Journal> journal_;
 
   std::unique_ptr<blink::WebInteractionEffectsMonitor>
       interaction_effects_monitor_;
