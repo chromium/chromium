@@ -1235,7 +1235,7 @@ TEST_F(HistoryBackendTest, AddPage404) {
   URLRow url_row;
   ASSERT_TRUE(backend_->GetURL(url, &url_row));
   VisitVector visits;
-  ASSERT_TRUE(backend_->GetMostRecentVisitsForURL(
+  ASSERT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
       backend_->db()->GetRowForURL(url, nullptr), kMaxVisitsToQuery, &visits));
   ASSERT_EQ(1u, visits.size());
 
@@ -3301,7 +3301,7 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
 
   // Visits to http://example.com are untouched.
   VisitVector visit_vector;
-  EXPECT_TRUE(backend_->GetMostRecentVisitsForURL(
+  EXPECT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(GURL("http://example.com"), nullptr),
       kMaxVisitsToQuery, &visit_vector));
   ASSERT_EQ(5u, visit_vector.size());
@@ -3314,7 +3314,7 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   // Visits to http://example.net between [2,8] are removed, including the 404
   // visit at index 5.
   visit_vector.clear();
-  EXPECT_TRUE(backend_->GetMostRecentVisitsForURL(
+  EXPECT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(GURL("http://example.net"), nullptr),
       kMaxVisitsToQuery, &visit_vector));
   ASSERT_EQ(2u, visit_vector.size());
@@ -3654,13 +3654,16 @@ TEST_F(HistoryBackendTest, RedirectWithQualifiers) {
 
   // Grab the resulting visits.
   VisitVector visits1;
-  backend_->GetMostRecentVisitsForURL(url1.id(), kMaxVisitsToQuery, &visits1);
+  backend_->db_->GetMostRecentVisitsForURL(url1.id(), kMaxVisitsToQuery,
+                                           &visits1);
   ASSERT_EQ(visits1.size(), 1u);
   VisitVector visits2;
-  backend_->GetMostRecentVisitsForURL(url2.id(), kMaxVisitsToQuery, &visits2);
+  backend_->db_->GetMostRecentVisitsForURL(url2.id(), kMaxVisitsToQuery,
+                                           &visits2);
   ASSERT_EQ(visits2.size(), 1u);
   VisitVector visits3;
-  backend_->GetMostRecentVisitsForURL(url3.id(), kMaxVisitsToQuery, &visits3);
+  backend_->db_->GetMostRecentVisitsForURL(url3.id(), kMaxVisitsToQuery,
+                                           &visits3);
   ASSERT_EQ(visits3.size(), 1u);
 
   // The page transition, including the qualifier, should have been preserved
@@ -4199,7 +4202,7 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
   ASSERT_TRUE(backend_->GetURL(url, &url_row));
 
   VisitVector visits;
-  ASSERT_TRUE(backend_->GetMostRecentVisitsForURL(
+  ASSERT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(url, nullptr), kMaxVisitsToQuery, &visits));
   ASSERT_EQ(1u, visits.size());
 

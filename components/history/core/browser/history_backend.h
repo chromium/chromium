@@ -667,10 +667,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // TODO(manukh): DEPRECATED (see above comment)
   bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;
 
-  // Fetches up to `max_visits` most recent visits for the passed URL.
-  // TODO(manukh): Rename to `GetMostRecentVisitsForUrlId`.
-  bool GetMostRecentVisitsForURL(URLID id, int max_visits, VisitVector* visits);
-
   QueryURLAndVisitsResult GetMostRecentVisitsForGurl(GURL url, int max_visits);
 
   // Gets whether the URL is known to sync.
