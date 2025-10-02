@@ -5,14 +5,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/ToTMacRust (dbg)/gn-args.json"
+        "infra/config/generated/builders/ci/ToTRustLinux(dbg)/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ToTMacRust (dbg)",
+              "builder": "ToTRustLinux(dbg)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -23,9 +23,10 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "rust_tot_mac",
+                "config": "rust_tot_linux",
+                "target_arch": "intel",
                 "target_bits": 64,
-                "target_platform": "mac"
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -40,11 +41,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ToTMacRust (dbg)",
+          "builder": "ToTRustLinux(dbg)",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTMacRust (dbg)/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTRustLinux(dbg)/targets"
     }
   },
   "$build/siso": {
@@ -73,6 +74,5 @@
   "recipe": "chromium",
   "sheriff_rotations": [
     "chromium.clang"
-  ],
-  "xcode_build_version": "14c18"
+  ]
 }

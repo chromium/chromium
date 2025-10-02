@@ -2172,7 +2172,7 @@ tot_mac_builder(
 ### the same gardening rotation
 
 ci.builder(
-    name = "ToTRustLinux (dbg)",
+    name = "ToTRustLinux(dbg)",
     description_html = "Builder that builds and tests chromium using ToT Rust," +
                        "built against ToT LLVM, on linux in debug mode.",
     builder_spec = builder_config.builder_spec(
@@ -2217,7 +2217,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "ToTWinRust(dbg)",
+    name = "ToTRustWin(dbg)",
     description_html = "Builder that builds and tests chromium using ToT Rust," +
                        "built against ToT LLVM, on windows in debug mode.",
     builder_spec = builder_config.builder_spec(
@@ -2267,7 +2267,7 @@ ci.builder(
 )
 
 tot_mac_builder(
-    name = "ToTMacRust (dbg)",
+    name = "ToTRustMac(dbg)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

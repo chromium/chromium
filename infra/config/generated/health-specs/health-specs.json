@@ -5032,7 +5032,7 @@
           }
         ]
       },
-      "ToTMacRust (dbg)": {
+      "ToTRustLinux(dbg)": {
         "contact_team_email": "lexan@google.com",
         "problem_specs": [
           {
@@ -5056,7 +5056,31 @@
           }
         ]
       },
-      "ToTRustLinux (dbg)": {
+      "ToTRustMac(dbg)": {
+        "contact_team_email": "lexan@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "build_time": {},
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {}
+            }
+          }
+        ]
+      },
+      "ToTRustWin(dbg)": {
         "contact_team_email": "lexan@google.com",
         "problem_specs": [
           {
@@ -5273,30 +5297,6 @@
         ]
       },
       "ToTWinArm64PGO": {
-        "contact_team_email": "lexan@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "build_time": {},
-              "fail_rate": {},
-              "infra_fail_rate": {},
-              "pending_time": {}
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "fail_rate": {}
-            }
-          }
-        ]
-      },
-      "ToTWinRust(dbg)": {
         "contact_team_email": "lexan@google.com",
         "problem_specs": [
           {

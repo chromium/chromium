@@ -29,8 +29,9 @@ ci/ToTMacArm64
 ci/ToTMacArm64PGO
 ci/ToTMacCoverage
 ci/ToTMacPGO
-ci/ToTMacRust (dbg)
-ci/ToTRustLinux (dbg)
+ci/ToTRustLinux(dbg)
+ci/ToTRustMac(dbg)
+ci/ToTRustWin(dbg)
 ci/ToTWin
 ci/ToTWin(dbg)
 ci/ToTWin(dll)
@@ -40,7 +41,6 @@ ci/ToTWin64(dll)
 ci/ToTWin64PGO
 ci/ToTWinASanLibfuzzer
 ci/ToTWinArm64PGO
-ci/ToTWinRust(dbg)
 ci/ToTWindowsCoverage
 ci/ToTiOS
 ci/ToTiOSDevice

@@ -5,14 +5,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/ToTWinRust(dbg)/gn-args.json"
+        "infra/config/generated/builders/ci/ToTRustWin(dbg)/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ToTWinRust(dbg)",
+              "builder": "ToTRustWin(dbg)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -40,11 +40,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ToTWinRust(dbg)",
+          "builder": "ToTRustWin(dbg)",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTWinRust(dbg)/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTRustWin(dbg)/targets"
     }
   },
   "$build/siso": {
