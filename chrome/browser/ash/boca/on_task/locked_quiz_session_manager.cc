@@ -97,6 +97,12 @@ void LockedQuizSessionManager::OnBocaSWALaunched(
     return;
   }
 
+  // Prepare SWA window. We do not close bundle content to ensure we do not
+  // inadvertently close the locked quiz tab if there are other tabs opened by
+  // extensions on launch.
+  system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(
+      window_id, /*close_bundle_content=*/false);
+
   // Lock Boca SWA window and apply navigation restrictions for the quiz.
   system_web_app_manager_->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
                                                             window_id);

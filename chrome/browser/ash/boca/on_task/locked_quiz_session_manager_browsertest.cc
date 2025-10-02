@@ -85,6 +85,8 @@ class LockedQuizSessionManagerBrowserTest
   LockedQuizSessionManagerBrowserTest() {
     // Enable Boca and consumer experience for testing purposes. This is used
     // to set up the Boca SWA for Locked Quiz.
+    // TODO(crbug.com/438844429): Remove `kBoca` and `kBocaConsumer` feature
+    // flags once Boca SWA is installed even when Class Tools policy is not set.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kBoca, features::kBocaConsumer},
         /*disabled_features=*/{});
