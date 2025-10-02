@@ -58,8 +58,8 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButtonLabel, Label)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, EnabledColor)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, DisabledColor)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, EnabledColor)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, DisabledColor)
 END_VIEW_BUILDER
 
 }  // namespace views::internal
