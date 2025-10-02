@@ -61,3 +61,12 @@
 -LayerTreeHostTestImageAnimationSynchronousScheduling.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestVideoLayerInvalidate.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestPushPropertiesRemovingChildStopsRecursionWithPersistence.RunMultiThread_DelegatingRenderer
+
+# TODO(crbug.com/448683984) These tests fails with TreesInViz because the
+# tiling removal optimization during pinch zoom is disabled which might impact
+# the test expectations. Note that the test
+# LegacySWPictureLayerImplTest.SnappedTilingDuringZoom fails both with and
+# without TreesInViz enabled which indicates that test expectation depends on
+# tiling removal optimizations
+-LayerTreeHostTestCrispUpAfterPinchEnds.RunMultiThread_DelegatingRenderer
+-LegacySWPictureLayerImplTest.SnappedTilingDuringZoom
