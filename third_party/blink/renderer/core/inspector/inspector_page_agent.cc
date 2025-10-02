@@ -603,7 +603,11 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     // Runtime.enable that forces main context creation. In this case, we would
     // not normally evaluate the script, but we should.
     for (LocalFrame* frame : *inspected_frames_) {
-      EvaluateScriptOnNewDocument(*frame, *identifier);
+      // Don't evaluate scripts on provisional frames:
+      // https://crbug.com/390710982
+      if (!frame->IsProvisional()) {
+        EvaluateScriptOnNewDocument(*frame, *identifier);
+      }
     }
   }
 
