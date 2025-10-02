@@ -335,7 +335,7 @@ TEST_F(DevToolsUIDataSourceTest,
       switches::kCustomDevtoolsFrontend, "invalid-server-url");
   const GURL path =
       DevToolsUrl().Resolve(DevToolsCustomPath(kDevToolsUITestFrontEndUrl));
-  StartRequest(path.GetPath());
+  StartRequest(path.path());
   EXPECT_TRUE(data_received());
   ASSERT_TRUE(base::StartsWith(data(), kDevToolsUITest404Response,
                                base::CompareCase::SENSITIVE));
