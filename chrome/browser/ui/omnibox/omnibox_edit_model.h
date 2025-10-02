@@ -530,26 +530,26 @@ class OmniboxEditModel {
       OmniboxEditModelPopupTest,
       GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword);
 
-  enum PasteState {
-    NONE,     // Most recent edit was not a paste.
-    PASTING,  // In the middle of doing a paste. We need this intermediate state
-              // because `OnPaste()` does the actual detection of paste, but
-              // `OnAfterPossibleChange()` has to update the paste state for
-              // every edit. If `OnPaste()` set the state directly to PASTED,
-              // `OnAfterPossibleChange()` wouldn't know whether that
-              // represented the current edit or a past one.
-    PASTED,   // Most recent edit was a paste.
+  enum class PasteState {
+    kNone,     // Most recent edit was not a paste.
+    kPasting,  // In the middle of doing a paste. We need this intermediate
+               // state because `OnPaste()` does the actual detection of paste,
+               // but `OnAfterPossibleChange()` has to update the paste state
+               // for every edit. If `OnPaste()` set the state directly to
+               // kPasted, `OnAfterPossibleChange()` wouldn't know whether that
+               // represented the current edit or a past one.
+    kPasted,   // Most recent edit was a paste.
   };
 
-  enum ControlKeyState {
-    UP,                // The control key is not depressed.
-    DOWN,              // The control key is depressed and should trigger the
-                       // "ctrl-enter" behavior when the user hits enter.
-    DOWN_AND_CONSUMED  // The control key is depressed, but has been consumed
-                       // and should not trigger the "ctrl-enter" behavior.
-                       // The control key becomes consumed if it has been used
-                       // for another action such as focusing the location bar
-                       // with ctrl-l or copying the selected text with ctrl-c.
+  enum class ControlKeyState {
+    kUp,              // The control key is not depressed.
+    kDown,            // The control key is depressed and should trigger the
+                      // "ctrl-enter" behavior when the user hits enter.
+    kDownAndConsumed  // The control key is depressed, but has been consumed
+                      // and should not trigger the "ctrl-enter" behavior.
+                      // The control key becomes consumed if it has been used
+                      // for another action such as focusing the location bar
+                      // with ctrl-l or copying the selected text with ctrl-c.
   };
 
   AutocompleteController* autocomplete_controller() const;
@@ -764,12 +764,12 @@ class OmniboxEditModel {
   // When the user's last action was to paste, we disallow inline autocomplete
   // (on the theory that the user is trying to paste in a new URL or part of
   // one, and in either case inline autocomplete would get in the way).
-  PasteState paste_state_ = NONE;
+  PasteState paste_state_ = PasteState::kNone;
 
   // Whether the control key is depressed.  We track this to avoid calling
   // UpdatePopup() repeatedly if the user holds down the key, and to know
   // whether to trigger "ctrl-enter" behavior.
-  ControlKeyState control_key_state_ = UP;
+  ControlKeyState control_key_state_ = ControlKeyState::kUp;
 
   // The keyword associated with the current match.  The user may have an actual
   // selected keyword, or just some input text that looks like a keyword (so we

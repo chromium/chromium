@@ -381,36 +381,38 @@ TEST_F(OmniboxEditModelTest, RestoreInvisibleFocusOnlyForInvisibleState) {
 // Tests ConsumeCtrlKey() consumes ctrl key when down, but does not affect ctrl
 // state otherwise.
 TEST_F(OmniboxEditModelTest, ConsumeCtrlKey) {
-  model()->control_key_state_ = TestOmniboxEditModel::UP;
-  model()->ConsumeCtrlKey();
-  EXPECT_EQ(model()->control_key_state_, TestOmniboxEditModel::UP);
-  model()->control_key_state_ = TestOmniboxEditModel::DOWN;
+  model()->control_key_state_ = TestOmniboxEditModel::ControlKeyState::kUp;
   model()->ConsumeCtrlKey();
   EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModel::DOWN_AND_CONSUMED);
+            TestOmniboxEditModel::ControlKeyState::kUp);
+  model()->control_key_state_ = TestOmniboxEditModel::ControlKeyState::kDown;
   model()->ConsumeCtrlKey();
   EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModel::DOWN_AND_CONSUMED);
+            TestOmniboxEditModel::ControlKeyState::kDownAndConsumed);
+  model()->ConsumeCtrlKey();
+  EXPECT_EQ(model()->control_key_state_,
+            TestOmniboxEditModel::ControlKeyState::kDownAndConsumed);
 }
 
 // Tests ctrl_key_state_ is set consumed if the ctrl key is down on focus.
 TEST_F(OmniboxEditModelTest, ConsumeCtrlKeyOnRequestFocus) {
-  model()->control_key_state_ = TestOmniboxEditModel::DOWN;
+  model()->control_key_state_ = TestOmniboxEditModel::ControlKeyState::kDown;
   model()->OnSetFocus(false);
-  EXPECT_EQ(model()->control_key_state_, TestOmniboxEditModel::UP);
+  EXPECT_EQ(model()->control_key_state_,
+            TestOmniboxEditModel::ControlKeyState::kUp);
   model()->OnSetFocus(true);
   EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModel::DOWN_AND_CONSUMED);
+            TestOmniboxEditModel::ControlKeyState::kDownAndConsumed);
 }
 
 // Tests the ctrl key is consumed on a ctrl-action (e.g. ctrl-c to copy)
 TEST_F(OmniboxEditModelTest, ConsumeCtrlKeyOnCtrlAction) {
-  model()->control_key_state_ = TestOmniboxEditModel::DOWN;
+  model()->control_key_state_ = TestOmniboxEditModel::ControlKeyState::kDown;
   OmniboxView::StateChanges state_changes{nullptr, nullptr, {},   false,
                                           false,   false,   false};
   model()->OnAfterPossibleChange(state_changes, false);
   EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModel::DOWN_AND_CONSUMED);
+            TestOmniboxEditModel::ControlKeyState::kDownAndConsumed);
 }
 
 TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
