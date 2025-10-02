@@ -766,8 +766,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = GetUrl("/simple.html");
 
-  auto* ntp_preload_manager =
-      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
+      std::make_unique<NewTabPagePreloadPipelineManager>(
           GetActiveWebContents());
   ntp_preload_manager->StartPrerender(
       prerender_url,
@@ -803,8 +803,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html?prerender");
 
-  auto* ntp_preload_manager =
-      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
+      std::make_unique<NewTabPagePreloadPipelineManager>(
           GetActiveWebContents());
   ntp_preload_manager->StartPrerender(
       prerender_url,
@@ -841,8 +841,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = GetUrl("/simple.html");
 
-  auto* ntp_preload_manager =
-      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
+      std::make_unique<NewTabPagePreloadPipelineManager>(
           GetActiveWebContents());
 
   ntp_preload_manager->StartPrerender(
@@ -887,8 +887,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = GetUrl("/simple.html?prerender");
 
-  auto* ntp_preload_manager =
-      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
+      std::make_unique<NewTabPagePreloadPipelineManager>(
           GetActiveWebContents());
 
   ntp_preload_manager->StartPrerender(

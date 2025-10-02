@@ -25,6 +25,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -431,6 +432,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   bookmarkbar_preload_pipeline_manager_ =
       std::make_unique<BookmarkBarPreloadPipelineManager>(tab.GetContents());
 
+  new_tab_page_preload_pipeline_manager_ =
+      std::make_unique<NewTabPagePreloadPipelineManager>(tab.GetContents());
+
   tab_alert_controller_ =
       GetUserDataFactory().CreateInstance<TabAlertController>(tab, tab);
 
@@ -527,6 +531,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     bookmarkbar_preload_pipeline_manager_.reset();
     bookmarkbar_preload_pipeline_manager_ =
         std::make_unique<BookmarkBarPreloadPipelineManager>(new_contents);
+  }
+
+  if (new_tab_page_preload_pipeline_manager_) {
+    new_tab_page_preload_pipeline_manager_.reset();
+    new_tab_page_preload_pipeline_manager_ =
+        std::make_unique<NewTabPagePreloadPipelineManager>(new_contents);
   }
 }
 

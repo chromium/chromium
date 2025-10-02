@@ -9,6 +9,7 @@
 
 class Profile;
 class QwacWebContentsObserver;
+class NewTabPagePreloadPipelineManager;
 
 namespace content {
 class WebContents;
@@ -31,12 +32,18 @@ class TabFeatures {
   TabFeatures(content::WebContents* web_contents, Profile* profile);
   ~TabFeatures();
 
+  NewTabPagePreloadPipelineManager* new_tab_page_preload_pipeline_manager() {
+    return new_tab_page_preload_pipeline_manager_.get();
+  }
+
  private:
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxIncognitoTabObserver>
       privacy_sandbox_incognito_tab_observer_;
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
+  std::unique_ptr<NewTabPagePreloadPipelineManager>
+      new_tab_page_preload_pipeline_manager_;
 };
 
 }  // namespace tabs

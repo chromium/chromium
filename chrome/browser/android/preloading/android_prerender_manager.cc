@@ -8,10 +8,11 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
-#include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
@@ -31,22 +32,27 @@ jlong JNI_AndroidPrerenderManager_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new AndroidPrerenderManager(env));
 }
 
-void AndroidPrerenderManager::StartPrerendering(
-    JNIEnv* env,
-    const GURL& prerender_url,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* const web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents)
-      ->StartPrerender(prerender_url,
-                       chrome_preloading_predictor::kTouchOnNewTabPage);
+void AndroidPrerenderManager::StartPrerendering(JNIEnv* env,
+                                                const GURL& prerender_url,
+                                                TabAndroid* tab) {
+  auto* const preload_manager = GetNewTabPagePreloadPipelineManager(tab);
+  if (!preload_manager) {
+    return;
+  }
+  preload_manager->StartPrerender(
+      prerender_url, chrome_preloading_predictor::kTouchOnNewTabPage);
 }
 
-void AndroidPrerenderManager::StopPrerendering(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* const web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents)
-      ->ResetPrerender();
+void AndroidPrerenderManager::StopPrerendering(JNIEnv* env, TabAndroid* tab) {
+  auto* const preload_manager = GetNewTabPagePreloadPipelineManager(tab);
+  if (!preload_manager) {
+    return;
+  }
+  preload_manager->ResetPrerender();
+}
+
+NewTabPagePreloadPipelineManager*
+AndroidPrerenderManager::GetNewTabPagePreloadPipelineManager(TabAndroid* tab) {
+  return tab ? tab->GetTabFeatures()->new_tab_page_preload_pipeline_manager()
+             : nullptr;
 }

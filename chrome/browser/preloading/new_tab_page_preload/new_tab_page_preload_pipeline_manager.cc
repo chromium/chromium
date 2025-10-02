@@ -10,30 +10,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NewTabPagePreloadPipelineManager);
-
 NewTabPagePreloadPipelineManager::NewTabPagePreloadPipelineManager(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<NewTabPagePreloadPipelineManager>(
-          *web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 NewTabPagePreloadPipelineManager::~NewTabPagePreloadPipelineManager() = default;
-
-// static
-NewTabPagePreloadPipelineManager*
-NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  auto* new_tab_page_preload_manager =
-      NewTabPagePreloadPipelineManager::FromWebContents(web_contents);
-  if (!new_tab_page_preload_manager) {
-    NewTabPagePreloadPipelineManager::CreateForWebContents(web_contents);
-    new_tab_page_preload_manager =
-        NewTabPagePreloadPipelineManager::FromWebContents(web_contents);
-  }
-
-  return new_tab_page_preload_manager;
-}
 
 void NewTabPagePreloadPipelineManager::StartPrefetch(const GURL& url) {
   EnsurePipelineForUrl(url);

@@ -54,8 +54,9 @@ class NewTabPagePreloadPipelineManagerTest
         factory_util.model()->Add(
             std::make_unique<TemplateURL>(template_url_data)));
 
-    NewTabPagePreloadPipelineManager::CreateForWebContents(
-        GetActiveWebContents());
+    new_tab_page_preload_manager_ =
+        std::make_unique<NewTabPagePreloadPipelineManager>(
+            GetActiveWebContents());
   }
 
   content::WebContents* GetActiveWebContents() { return web_contents(); }
@@ -72,7 +73,7 @@ class NewTabPagePreloadPipelineManagerTest
   GURL GetUrl(const std::string& path) { return test_server_.GetURL(path); }
 
   NewTabPagePreloadPipelineManager* new_tab_page_preload_manager() {
-    return NewTabPagePreloadPipelineManager::FromWebContents(web_contents());
+    return new_tab_page_preload_manager_.get();
   }
 
  private:
@@ -81,6 +82,9 @@ class NewTabPagePreloadPipelineManagerTest
   content::test::PrerenderTestHelper prerender_helper_;
 
   net::EmbeddedTestServer test_server_;
+
+  std::unique_ptr<NewTabPagePreloadPipelineManager>
+      new_tab_page_preload_manager_;
 };
 
 // Test that a search related url is ignored by the prerender NewTabPage

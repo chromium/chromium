@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /**
@@ -26,7 +25,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class AndroidPrerenderManager {
     private final long mNativeAndroidPrerenderManager;
-    private @Nullable WebContents mWebContents;
+    private @Nullable Tab mTab;
     private static @Nullable AndroidPrerenderManager sAndroidPrerenderManager;
 
     private final TabObserver mTabObserver =
@@ -42,14 +41,14 @@ public class AndroidPrerenderManager {
                             || tab.getUrl().getSpec().equals("")) {
                         return;
                     }
-                    sAndroidPrerenderManager = null;
-                    mWebContents = null;
+                    sAndroidPrerenderManager = new AndroidPrerenderManager();
+                    mTab = tab;
                 }
 
                 @Override
                 public void onDestroyed(Tab tab) {
                     sAndroidPrerenderManager = null;
-                    mWebContents = null;
+                    mTab = null;
                 }
             };
 
@@ -76,12 +75,12 @@ public class AndroidPrerenderManager {
     }
 
     /**
-     * Link the webContents from the tab with the AndroidPrerenderManager, and observe the tab.
+     * Link the tab with the AndroidPrerenderManager, and observe the tab.
      *
      * @param tab The tab to be linked with the AndroidPrerenderManager.
      */
     public void initializeWithTab(Tab tab) {
-        mWebContents = tab.getWebContents();
+        mTab = tab;
         tab.addObserver(mTabObserver);
     }
 
@@ -92,9 +91,9 @@ public class AndroidPrerenderManager {
      * @param prerenderUrl The url to be prerendered.
      */
     public void startPrerendering(GURL prerenderUrl) {
-        if (mNativeAndroidPrerenderManager == 0 || mWebContents == null) return;
+        if (mNativeAndroidPrerenderManager == 0 || mTab == null) return;
         AndroidPrerenderManagerJni.get()
-                .startPrerendering(mNativeAndroidPrerenderManager, prerenderUrl, mWebContents);
+                .startPrerendering(mNativeAndroidPrerenderManager, prerenderUrl, mTab);
     }
 
     /**
@@ -102,9 +101,8 @@ public class AndroidPrerenderManager {
      * the on-going but stale prerendering.
      */
     public void stopPrerendering() {
-        if (mNativeAndroidPrerenderManager == 0 || mWebContents == null) return;
-        AndroidPrerenderManagerJni.get()
-                .stopPrerendering(mNativeAndroidPrerenderManager, mWebContents);
+        if (mNativeAndroidPrerenderManager == 0 || mTab == null) return;
+        AndroidPrerenderManagerJni.get().stopPrerendering(mNativeAndroidPrerenderManager, mTab);
     }
 
     @NativeMethods
@@ -114,8 +112,8 @@ public class AndroidPrerenderManager {
         void startPrerendering(
                 long nativeAndroidPrerenderManager,
                 @JniType("GURL") GURL prerenderUrl,
-                WebContents webContents);
+                @JniType("TabAndroid*") Tab tab);
 
-        void stopPrerendering(long nativeAndroidPrerenderManager, WebContents webContents);
+        void stopPrerendering(long nativeAndroidPrerenderManager, @JniType("TabAndroid*") Tab tab);
     }
 }

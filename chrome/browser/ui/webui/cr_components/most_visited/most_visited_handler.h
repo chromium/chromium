@@ -22,6 +22,7 @@
 
 class GURL;
 class Profile;
+class NewTabPagePreloadPipelineManager;
 
 namespace content {
 class WebContents;
@@ -88,6 +89,8 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
       const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
           sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
+
+  NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager();
 
   raw_ptr<Profile> profile_;
   // web_app::PreinstalledWebAppManager::Observer

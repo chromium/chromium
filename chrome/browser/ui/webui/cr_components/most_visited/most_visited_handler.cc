@@ -19,6 +19,8 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/history/core/browser/features.h"
@@ -28,6 +30,7 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition_utils.h"
 
@@ -228,10 +231,14 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
     return;
   }
 
-  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
-      ->StartPrerender(
-          tile->url,
-          chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
+  auto* const preload_manager = GetNewTabPagePreloadPipelineManager();
+  if (!preload_manager) {
+    return;
+  }
+
+  preload_manager->StartPrerender(
+      tile->url,
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
 }
 
 void MostVisitedHandler::PrefetchMostVisitedTile(
@@ -243,8 +250,12 @@ void MostVisitedHandler::PrefetchMostVisitedTile(
     return;
   }
 
-  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
-      ->StartPrefetch(tile->url);
+  auto* const preload_manager = GetNewTabPagePreloadPipelineManager();
+  if (!preload_manager) {
+    return;
+  }
+
+  preload_manager->StartPrefetch(tile->url);
 }
 
 void MostVisitedHandler::PreconnectMostVisitedTile(
@@ -276,8 +287,11 @@ void MostVisitedHandler::CancelPrerender() {
     return;
   }
 
-  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
-      ->ResetPrerender();
+  auto* const preload_manager = GetNewTabPagePreloadPipelineManager();
+  if (!preload_manager) {
+    return;
+  }
+  preload_manager->ResetPrerender();
 }
 
 void MostVisitedHandler::OnURLsAvailable(
@@ -319,6 +333,13 @@ void MostVisitedHandler::OnURLsAvailable(
 }
 
 void MostVisitedHandler::OnIconMadeAvailable(const GURL& site_url) {}
+
+NewTabPagePreloadPipelineManager*
+MostVisitedHandler::GetNewTabPagePreloadPipelineManager() {
+  tabs::TabInterface* tab = webui::GetTabInterface(web_contents_);
+  return tab ? tab->GetTabFeatures()->new_tab_page_preload_pipeline_manager()
+             : nullptr;
+}
 
 void MostVisitedHandler::OnMigrationRun() {
   most_visited_sites_->RefreshTiles();

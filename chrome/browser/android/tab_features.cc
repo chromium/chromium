@@ -5,6 +5,7 @@
 #include "chrome/browser/android/tab_features.h"
 
 #include "chrome/browser/net/qwac_web_contents_observer.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_tab_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -31,6 +32,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     qwac_web_contents_observer_ =
         std::make_unique<QwacWebContentsObserver>(web_contents);
   }
+
+  new_tab_page_preload_pipeline_manager_ =
+      std::make_unique<NewTabPagePreloadPipelineManager>(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;
