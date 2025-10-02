@@ -363,9 +363,6 @@ void DownloadBubbleUIController::RetryDownload(
   if (!download_manager) {
     return;
   }
-  RecordDownloadRetry(
-      OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(
-          model->GetLastFailState()));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("download_bubble_retry_download", R"(

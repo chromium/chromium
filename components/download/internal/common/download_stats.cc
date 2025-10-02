@@ -213,13 +213,6 @@ void RecordDownloadInterrupted(DownloadInterruptReason reason,
   }
 }
 
-void RecordDownloadRetry(DownloadInterruptReason reason) {
-  std::vector<base::HistogramBase::Sample32> samples =
-      base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
-  UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.Retry.InterruptReason", reason,
-                                   samples);
-}
-
 void RecordDangerousDownloadAccept(DownloadDangerType danger_type,
                                    const base::FilePath& file_path) {
   UMA_HISTOGRAM_ENUMERATION("Download.UserValidatedDangerousDownload",

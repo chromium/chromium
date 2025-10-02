@@ -189,10 +189,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDangerousDownloadAccept(
     DownloadDangerType danger_type,
     const base::FilePath& file_path);
 
-// Records the interrupt reason when a download is retried.
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadRetry(
-    DownloadInterruptReason reason);
-
 // Returns the type of download.
 COMPONENTS_DOWNLOAD_EXPORT DownloadContent
 DownloadContentFromMimeType(const std::string& mime_type_string,

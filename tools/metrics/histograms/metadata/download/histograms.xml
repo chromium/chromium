@@ -848,17 +848,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Retry.InterruptReason" enum="InterruptReason"
-    expires_after="2025-10-06">
-  <owner>drubery@chromium.org</owner>
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the last interrupt reason for a download that has just been retried
-    through the download bubble.
-  </summary>
-</histogram>
-
 <histogram name="Download.Service.Complete.FileSize.{DownloadClient}"
     units="KB" expires_after="never">
 <!-- expires-never: Download service stability metric. -->
