@@ -566,10 +566,7 @@ test("gpu_unittests") {
   }
 
   if (is_linux || is_chromeos || use_ozone) {
-    sources += [
-      "command_buffer/client/internal/mappable_buffer_native_pixmap_unittest.cc",
-      "command_buffer/service/shared_image/gpu_memory_buffer_factory_native_pixmap_unittest.cc",
-    ]
+    sources += [ "command_buffer/client/internal/mappable_buffer_native_pixmap_unittest.cc" ]
   }
 
   if (is_win) {

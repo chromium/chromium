@@ -32,7 +32,7 @@ class GPU_GLES2_EXPORT GpuMemoryBufferFactory {
 
   virtual ~GpuMemoryBufferFactory() = default;
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_OZONE)
   // Creates a new factory instance for native GPU memory buffers. Returns null
   // if native buffers are not supported.
   static std::unique_ptr<GpuMemoryBufferFactory> CreateNativeType(

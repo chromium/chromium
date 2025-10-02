@@ -428,8 +428,6 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "shared_image/gl_ozone_image_representation.cc",
       "shared_image/gl_ozone_image_representation.h",
-      "shared_image/gpu_memory_buffer_factory_native_pixmap.cc",
-      "shared_image/gpu_memory_buffer_factory_native_pixmap.h",
       "shared_image/ozone_image_backing.cc",
       "shared_image/ozone_image_backing.h",
       "shared_image/ozone_image_backing_factory.cc",
