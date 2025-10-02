@@ -6,8 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_DISCARDABLE_MANAGER_H_
 
 #include "base/containers/lru_cache.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -18,8 +16,7 @@ class TexturePassthrough;
 class ContextGroup;
 }  // namespace gles2
 
-class GPU_GLES2_EXPORT PassthroughDiscardableManager
-    : public base::trace_event::MemoryDumpProvider {
+class GPU_GLES2_EXPORT PassthroughDiscardableManager {
  public:
   explicit PassthroughDiscardableManager(const GpuPreferences& preferences);
 
@@ -27,11 +24,7 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
   PassthroughDiscardableManager& operator=(
       const PassthroughDiscardableManager&) = delete;
 
-  ~PassthroughDiscardableManager() override;
-
-  // base::trace_event::MemoryDumpProvider implementation.
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
+  ~PassthroughDiscardableManager();
 
   // Test only functions
   size_t TotalSizeForTesting() const { return 0; }
