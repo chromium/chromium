@@ -1676,6 +1676,7 @@
 <translation id="7437712592381799950">上にスワイプすると、あなたに合ったコンテンツが表示されます。</translation>
 <translation id="7438473148803748807">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、招待リンクはすべて無効になります</translation>
 <translation id="7438481509621345350">新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
+<translation id="7445682342344043969">ポップアップがブロックされました</translation>
 <translation id="7451023311965289370">{count,plural, =1{ブックマークが「{title}」に保存されました}other{ブックマークが「{title}」に保存されました}}</translation>
 <translation id="7451404862887877229">[プライバシーとセキュリティ]、[セーフ ブラウジング] の順にタップ</translation>
 <translation id="7454057999980797137">州/都道府県</translation>

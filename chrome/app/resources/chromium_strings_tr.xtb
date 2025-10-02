@@ -231,6 +231,9 @@
 <translation id="379589255253486813">Chromium, incelemeniz gereken bir konu varsa sizi bilgilendirir</translation>
 <translation id="3802055581630249637">Chromium, ziyaret etme olasılığınızın yüksek olduğu sayfaları önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
 <translation id="3810973564298564668">Yönet</translation>
+<translation id="3846683726093018685">**Özetle:** Ekran görüntüsündeki içeriğin temel konusunu ve amacını 30 kelimeden kısa olacak şekilde tek bir cümleyle açıkla.
+
+          **Soru Öner:** Kullanıcının ekran görüntüsünü daha iyi anlamak için sorabileceği 3-5 düşündürücü sorudan oluşan bir madde işaretli liste oluştur. Bu sorulardan en az biri görsel bir nesne, tasarımı veya yerleşimiyle ilgili olmalı.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="3885770153807205175">Dil seçici</translation>
 <translation id="388648406173476553">Chromium'u özelleştirin ve kontrol edin. İlgilenmeniz gereken bir konu var. Ayrıntılar için tıklayın.</translation>
@@ -238,7 +241,7 @@
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chromium profilinde açık. Göz atma işlemlerinizi ayrı tutmak isterseniz Chromium, sizin için kendi profilinizi oluşturabilir.</translation>
 <translation id="3909353120217047026">Bu uzantı Chrome Web Mağazası politikasını ihlal ettiği için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
-<translation id="3937491663738985329">C&amp;hromium'unuzu Özelleştirin</translation>
+<translation id="3937491663738985329">Chromi&amp;um'unuzu Özelleştirin</translation>
 <translation id="3941890832296813527">Yükleme hatası: Yükleyici dosya adı geçersiz veya desteklenmiyor.</translation>
 <translation id="3945058413678539331">Chromium şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="3954172517175569325">Google Hesabınızda kaydettiğiniz şifreler, ödeme yöntemleri ve adresler bu cihazdan kaldırılır. Bu bilgileri Chromium'da tekrar kullanmak için yeniden oturum açın.</translation>
@@ -260,7 +263,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Kuruluşunuz, # dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="4118474109249235144">Chromium Gizli Modu</translation>
 <translation id="4122186850977583290">Chromium hakkında sayfasına gidin</translation>
-<translation id="4147856324248078748">C&amp;hromium'unuzu özelleştirin</translation>
+<translation id="4147856324248078748">Chromi&amp;um'unuzu özelleştirin</translation>
 <translation id="4148957013307229264">Yükleniyor...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın - Chromium</translation>
 <translation id="421369550622382712">Chromium'a özgü harika uygulamaları, oyunları, uzantıları ve temaları keşfedin.</translation>
@@ -497,6 +500,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Yükleme İşlemi Durduruldu.</translation>
 <translation id="7045244423563602563">Chromium'u Kendinize Uyarlayın</translation>
+<translation id="7047386856539490735">Bu sonuçları yararlı buldunuz mu?</translation>
 <translation id="705851970750939768">Chromium'u güncelle</translation>
 <translation id="7067091210845072982">Bir resmin işe yarar bir açıklaması yoksa, Chromium sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir.</translation>
 <translation id="7141270731789036260">Chrome for Testing'i özelleştir</translation>

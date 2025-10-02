@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Dölj kortet Sänkta priser på flikar</translation>
 <translation id="1508931164824684991">Webbplatser får använda JavaScript</translation>
 <translation id="1510341833810331442">Webbplatser får inte spara data på enheten</translation>
+<translation id="1532175480576580256">Arket på nedre delen av skärmen för mina genvägar har öppnats över hela skärmen</translation>
 <translation id="1538031354170655462">Webbplatser använder vanligtvis närfältskommunikation (NFC) för att fungera med taggar eller enheter i närheten, till exempel för att skanna märken eller för kontaktlös betalning</translation>
 <translation id="1547123415014299762">Tredjepartscookies tillåts</translation>
 <translation id="1569054338208717605">Gör webbplatser snabbare med Chromes V8-motor men gör Chrome något mindre motståndskraftigt mot attacker</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">De flesta webbplatser du besöker sparar troligen data på enheten, oftast för att förbättra upplevelsen genom att spara dina inställningar eller information som du delar med webbplatsen. Vi rekommenderar att du låter den här inställningen vara aktiverad.</translation>
 <translation id="2289270750774289114">Fråga när en webbplats försöker söka efter Bluetooth-enheter i närheten (rekommenderas)</translation>
 <translation id="2315043854645842844">Val av certifikat på klienten stöds inte av operativsystemet.</translation>
+<translation id="2347601491101454548">Arket på nedre delen av skärmen för mina genvägar har öppnats över halva skärmen</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2379925928934107488">Använd mörkt tema på webbplatser om Chrome använder mörkt tema, när det är möjligt</translation>
 <translation id="2390272837142897736">Öka zoom</translation>

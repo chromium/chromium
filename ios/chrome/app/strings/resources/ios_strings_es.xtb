@@ -172,7 +172,7 @@
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
-<translation id="1651260071709244114">apps</translation>
+<translation id="1651260071709244114">Aplicaciones</translation>
 <translation id="1652051421944182562">Activar notificaciones de Comprobación de seguridad…</translation>
 <translation id="1652333207707886577">Personalizar el menú</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Tiempo restante: {TIME} segundos}=1{Tiempo restante: {TIME} segundo}other{Tiempo restante: {TIME} segundos}}</translation>
@@ -422,7 +422,7 @@
 <translation id="2577522251608256362">Barrio</translation>
 <translation id="2579713773888829241">Unidades compartidas</translation>
 <translation id="2583688836549072561">Grupo de pestañas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestañas, actividad nueva.</translation>
-<translation id="2593272815202181319">Monoespaciado</translation>
+<translation id="2593272815202181319">Monoespaciada</translation>
 <translation id="2601778637777010194">Sigue las bajadas de precio de productos</translation>
 <translation id="260378315836159338">En la parte superior de la pantalla, toca +</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
@@ -1676,6 +1676,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7437712592381799950">Puedes deslizar hacia arriba para ver más contenido personalizado.</translation>
 <translation id="7438473148803748807">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se desactivarán todos los enlaces de invitación</translation>
 <translation id="7438481509621345350">Ahora verás contenido de <ph name="CHANNEL_NAME" /> cuando abras una pestaña nueva.</translation>
+<translation id="7445682342344043969">Ventanas emergentes bloqueadas</translation>
 <translation id="7451023311965289370">{count,plural, =1{Marcador guardado en "{title}"}other{Marcadores guardados en "{title}"}}</translation>
 <translation id="7451404862887877229">Toca Privacidad y seguridad y, después, Navegación segura</translation>
 <translation id="7454057999980797137">Provincia/Autonomía</translation>

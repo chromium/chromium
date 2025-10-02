@@ -619,6 +619,7 @@ Chính sách này chỉ áp dụng cho các kiểu máy cũ không tự động 
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Kể từ M121, giá trị này sẽ không được dùng nữa. Kể từ M121 trở đi, các giá trị sẽ được coi là EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Tắt tùy chọn kiểm tra lỗi chính tả</translation>
+<translation id="1434936032334586168">Bật tính năng In thầm lặng</translation>
 <translation id="1435031247649241006">Trên màn hình khoá, người dùng có thể mở và dùng cửa sổ xác thực lại trực tuyến cho quy trình xác thực để vào lại phiên của mình. Bạn có thể dùng chính sách này để hệ thống tự động mở cửa sổ đó trong trường hợp người dùng phải xác thực lại trực tuyến.
 
 Nếu bạn đặt chính sách này thành Enabled (Bật) và người dùng phải xác thực lại trực tuyến thì hệ thống sẽ tự động mở cửa sổ xác thực lại trực tuyến.
@@ -1926,6 +1927,7 @@ Nếu bạn không đặt chính sách này, thì người dùng có thể thay 
 <translation id="2306505001667207184">Nhắc người dùng chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ.</translation>
 <translation id="230713790688681130">Bật bố cục Hindi Inscript</translation>
 <translation id="2307496301287881990">Báo cáo trạng thái đồ họa và hiển thị</translation>
+<translation id="2308899582897965249">Tắt tính năng In thầm lặng</translation>
 <translation id="2309284543927494965">Chặn bản cập nhật</translation>
 <translation id="2309341709647905294">Không báo cáo thông tin về những thiết bị ngoại vi được cắm vào thiết bị này</translation>
 <translation id="2309390639296060546">Cài đặt vị trí địa lý mặc định</translation>
@@ -2107,6 +2109,9 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2439733504887695659">Bật chế độ đóng cảnh báo mật khẩu bị lộ cho thông tin xác thực đã nhập</translation>
 <translation id="2446029789419870019">Cho phép sử dụng tính năng và tham gia cải tiến các mô hình AI</translation>
 <translation id="2446244536806499267">Không coi người dùng là không hoạt động khi âm thanh đang phát</translation>
+<translation id="2450392422484526374">Nếu bạn đặt chính sách này thành true, tính năng In thầm lặng sẽ bật. Khi đó, cửa sổ xem trước bản in sẽ đóng ngay sau khi mở và máy in mặc định với các lựa chọn mặc định sẽ được dùng để in. Nếu lựa chọn in mặc định là "Lưu dưới dạng PDF", tệp sẽ được lưu vào thư mục Tệp đã tải xuống.
+
+Nếu bạn không đặt chính sách này hoặc đặt chính sách này thành false, tính năng In thầm lặng sẽ bị tắt. Khi đó, cửa sổ xem trước bản in sẽ không tự động đóng và người dùng phải lựa chọn như bình thường.</translation>
 <translation id="2452225615952836461">Luôn viết hoa phương thức yêu cầu</translation>
 <translation id="2454228136871844693">Tối ưu hóa cho độ ổn định.</translation>
 <translation id="2455033019778127130">Áp dụng hoạt động mặc định của trình duyệt, hiển thị Điều khoản dịch vụ (ToS) và chờ người dùng chấp nhận.</translation>
@@ -2714,6 +2719,7 @@ Bạn chỉ có thể đặt chính sách này thành chính sách người 
 
           Nhiều ghi đè có thể được gửi, mục nhập hợp lệ mới nhất là mục sẽ được áp dụng.</translation>
 <translation id="2901725272378498025">Bật cảnh báo bảo mật cho cờ dòng lệnh</translation>
+<translation id="2901969573658712576">Ưu tiên các thuật toán mật mã đáp ứng yêu cầu của CNSA 1.0 và 2.0</translation>
 <translation id="2905984450136807296">Thời gian tồn tại của bộ nhớ đệm lưu trữ dữ liệu xác thực</translation>
 <translation id="2906874737073861391">Danh sách tiện ích trong AppPack</translation>
 <translation id="2908277604670530363">Số lượng tối đa kết nối đồng thời tới máy chủ proxy</translation>
@@ -5208,21 +5214,6 @@ Nếu bạn tắt hoặc không đặt chế độ cài đặt này, dịch vụ
 Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="4607416370554533118">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định trang web mà Chrome có thể tự động chọn chứng chỉ máy khách. Giá trị là một mảng từ điển JSON phân thành chuỗi, mỗi mảng có dạng <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, trong đó <ph name="URL_PATTERN_PLACEHOLDER" /> là mẫu thông tin cài đặt nội dung. <ph name="FILTER_PLACEHOLDER" /> giới hạn các chứng chỉ máy khách mà trình duyệt sẽ tự động chọn. Bất kể bộ lọc là gì, chỉ các chứng chỉ khớp với yêu cầu chứng chỉ của máy chủ mới được chọn.
-
-      Ví dụ về cách sử dụng phần <ph name="FILTER_PLACEHOLDER" />:
-
-      * Khi bạn đặt <ph name="FILTER_PLACEHOLDER" /> thành <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, chỉ các chứng chỉ máy khách do chứng chỉ có CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> cấp mới được chọn.
-
-      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="ISSUER_STRING_VALUE" /> và <ph name="SUBJECT_STRING_VALUE" />, chỉ các chứng chỉ máy khách thỏa mãn cả hai điều kiện mới được chọn.
-
-      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATION" />, chứng chỉ phải có ít nhất một tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
-
-      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, chứng chỉ phải có ít nhất một đơn vị tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
-
-      * Khi bạn đặt <ph name="FILTER_PLACEHOLDER" /> thành <ph name="EMPTY_DICTIONARY" />, việc chọn chứng chỉ máy khách sẽ không có các hạn chế bổ sung. Xin lưu ý rằng các bộ lọc mà máy chủ web cung cấp sẽ vẫn áp dụng.
-
-      Nếu bạn không đặt chính sách này, thì sẽ không có trang web nào được thực hiện thao tác tự động chọn.</translation>
 <translation id="4607499333275488034">Tắt tính năng Chống tạo vân tay số của <ph name="PRIVACY_SANDBOX_NAME" /> ở chế độ ẩn danh.</translation>
 <translation id="4611983465824842867">Không hiện cảnh báo hay tắt tính năng tự động điền trên các biểu mẫu không an toàn</translation>
 <translation id="4615003180013429835">Chế độ phân tích cú pháp danh sách trang web</translation>
@@ -5585,6 +5576,7 @@ Chính sách này chỉ mang tính tạm thời và sẽ bị loại bỏ vào n
 <translation id="4860900625632464759">Cho phép người dùng đồng bộ hoá tin nhắn SMS giữa Chromebook và điện thoại</translation>
 <translation id="486146220825734683">Không cho phép người dùng ghi nhớ mật khẩu Kerberos</translation>
 <translation id="4861767323695239729">Định cấu hình các phương thức nhập được phép trong phiên người dùng</translation>
+<translation id="4872597029876646534">Ưu tiên các thuật toán mật mã mã hoá cụ thể cho TLS</translation>
 <translation id="4872803921706580974">Cho phép hiển thị màn hình cảm biến sự có mặt của con người trong quá trình đăng nhập</translation>
 <translation id="4873380469296842901">Nếu bạn bật chế độ cài đặt này, người dùng đã chọn sử dụng Trung tâm điều khiển điện thoại sẽ thể gửi/nhận được thông báo của điện thoại trên ChromeOS.
 
@@ -6394,6 +6386,7 @@ Các tài khoản được quản lý không đủ điều kiện tham gia hoặ
 <translation id="5337869685871558036">Cho phép tìm nạp trước SpeculationRules tới các URL do ServiceWorker kiểm soát</translation>
 <translation id="5339096331970464266">Bật bàn phím ảo hỗ trợ tiếp cận</translation>
 <translation id="5340008866815063393">Bật chính sách báo cáo dữ liệu về chính sách</translation>
+<translation id="5342379224047377786">Sử dụng thứ tự thuật toán mật mã mặc định của <ph name="PRODUCT_NAME" /></translation>
 <translation id="5345892164332459671">Tắt dịch vụ SSO di động và không chuyển trạng thái xác thực dịch vụ web của người dùng sang thiết bị mới</translation>
 <translation id="5345910753471481870">Không hiện nút Google Ống kính trong hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="5346587320074666194">Chặn quyền sử dụng cảm biến trên các trang web này</translation>
@@ -7710,6 +7703,21 @@ Nếu bạn không đặt chính sách này, một giá trị mặc định chun
 <translation id="6207607210601267301">Tắt chế độ xác thực không cần mã PIN đối với máy chủ truy cập từ xa</translation>
 <translation id="6208896993204286313">Báo cáo thông tin chính sách của <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Báo cáo thông tin hệ điều hành và phiên bản của <ph name="PRODUCT_NAME" /></translation>
+<translation id="6214712395769944855">Chính sách này định cấu hình <ph name="PRODUCT_NAME" /> để sắp xếp thứ tự các thuật toán mật mã mã hoá được ưu tiên trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt.
+
+Việc đặt chính sách này không đảm bảo rằng thuật toán cụ thể sẽ được thương lượng.
+
+Chính sách này được thiết lập để cho phép các nhà điều hành máy chủ muốn hỗ trợ cả những máy khách có và không có yêu cầu tuân thủ phân biệt các máy khách đó, đồng thời chỉ sử dụng một số thuật toán không mặc định có độ mạnh mật mã cao hơn đối với những máy khách được định cấu hình rõ ràng để ưu tiên chúng.
+
+Việc đặt chính sách thành "<ph name="CNSA_NAME" />" sẽ định cấu hình <ph name="PRODUCT_NAME" /> để ưu tiên các thuật toán mật mã cần thiết cho việc tuân thủ phiên bản 1.0 và 2.0 của Bộ thuật toán bảo mật quốc gia thương mại (CNSA 1.0 và 2.0).
+
+Nếu bạn không đặt chính sách này hoặc đặt chính sách này thành "<ph name="DEFAULT_NAME" />", thì <ph name="PRODUCT_NAME" /> sẽ được định cấu hình để sử dụng các thuật toán mật mã mặc định.
+
+Bạn không cần đặt chính sách này để đảm bảo bảo mật. Mật mã mặc định mà <ph name="PRODUCT_NAME" /> sử dụng đủ mạnh để chống chịu một cuộc tấn công brute force dùng toàn bộ năng lượng của Mặt trời.
+
+Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ chậm hơn khi truy cập vào các trang web.
+
+Chính sách này chỉ ảnh hưởng đến TLS 1.3 và QUIC, chứ không ảnh hưởng đến các phiên bản TLS trước đó.</translation>
 <translation id="6215023506958127056">Kiểm soát việc cài đặt tiện ích bên ngoài.
 
 Nếu bạn đặt chính sách này thành Bật, thì hệ thống sẽ không cho phép cài đặt tiện ích bên ngoài.
@@ -8139,6 +8147,23 @@ Ngoài ra, hãy xem chính sách <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</tra
           Nếu bạn tắt chính sách này thì thiết bị <ph name="PRODUCT_OS_NAME" /> không thể truy xuất các sự kiện <ph name="GOOGLE_CALENDAR_NAME" /> để điền sẵn vào tiện ích lịch <ph name="PRODUCT_OS_NAME" /> trong thanh trạng thái hệ thống cho người dùng đã đăng nhập.
 
           Nếu bạn không đặt chính sách này thì theo mặc định, tính năng <ph name="GOOGLE_CALENDAR_NAME" /> sẽ bật đối với người dùng doanh nghiệp.</translation>
+<translation id="6450557649904429321">Chính sách này định cấu hình <ph name="PRODUCT_NAME" /> để sắp xếp thứ tự thuật toán thoả thuận về khoá được ưu tiên (nhóm được hỗ trợ) trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt.
+
+Việc đặt chính sách này không đảm bảo rằng thuật toán cụ thể sẽ được thương lượng.
+
+Chính sách này được thiết lập để cho phép các nhà điều hành máy chủ muốn hỗ trợ cả những máy khách có và không có yêu cầu tuân thủ phân biệt các máy khách đó, đồng thời chỉ sử dụng một số thuật toán không mặc định có độ mạnh mật mã cao hơn đối với những máy khách được định cấu hình rõ ràng để ưu tiên chúng.
+
+Việc đặt chính sách thành "<ph name="CNSA2_NAME" />" sẽ định cấu hình <ph name="PRODUCT_NAME" /> để ưu tiên các phương thức trao đổi khoá cần thiết cho việc tuân thủ Bộ thuật toán bảo mật quốc gia thương mại 2.0 (CNSA 2.0).
+
+Nếu bạn không đặt chính sách này hoặc đặt thành "<ph name="DEFAULT_NAME" />", thì <ph name="PRODUCT_NAME" /> sẽ được định cấu hình để sử dụng các phương thức trao đổi khoá mặc định.
+
+Nếu bạn đặt chính sách này thành một giá trị định cấu hình <ph name="PRODUCT_NAME" /> để ưu tiên thuật toán thoả thuận về khoá hậu lượng tử nhưng Tắt <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" />, thì chế độ cài đặt của <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> sẽ được ưu tiên.
+
+Bạn không cần đặt chính sách này để đảm bảo bảo mật. Mật mã mặc định mà <ph name="PRODUCT_NAME" /> sử dụng đủ mạnh để chống chịu một cuộc tấn công brute force dùng toàn bộ năng lượng của Mặt trời.
+
+Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ chậm hơn khi truy cập vào các trang web.
+
+Chính sách này chỉ ảnh hưởng đến TLS 1.3 và QUIC, chứ không ảnh hưởng đến các phiên bản TLS trước đó.</translation>
 <translation id="6452882999388592166">Nếu bạn bật chính sách này, thì tiện ích thành phần CryptoToken tích hợp sẵn sẽ được tải khi khởi động. Nếu bạn tắt hoặc không đặt chính sách này, thì CryptoToken sẽ không được tải khi khởi động trình duyệt. Chính sách này là giải pháp tạm thời cho những trang web không hoạt động do việc không xác định `chrome.runtime`, là tác dụng phụ của việc xoá CryptoToken trong M106. Các trang web không được phụ thuộc vô điều kiện vào việc xác định `chrome.runtime`.</translation>
 <translation id="6453641799812499182">Bật tùy chọn giảm thiểu kiểm tra <ph name="CORS" /> trong quy trình triển khai <ph name="CORS" /> mới</translation>
 <translation id="645425387487868471">Bật bắt buộc đăng nhập cho <ph name="PRODUCT_NAME" /></translation>
@@ -9804,6 +9829,7 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
 <translation id="7587345076013230465">Nhắc người dùng chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ trên màn hình đăng nhập</translation>
 <translation id="7587921466180902617">Bật thử nghiệm nội bộ Screencast cho người dùng Family Link</translation>
 <translation id="7588140323025689972">Bật nhật ký ứng dụng Kiosk</translation>
+<translation id="7593286371155131669">Sử dụng các nhóm được hỗ trợ mặc định của <ph name="PRODUCT_NAME" /></translation>
 <translation id="7595074040612182185">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép hiển thị hình ảnh.
 
       Khi bạn không đặt giá trị cho chính sách này, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt do người dùng chọn sẽ được áp dụng.

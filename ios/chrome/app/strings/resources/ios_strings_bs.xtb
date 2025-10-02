@@ -1676,6 +1676,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7437712592381799950">Možete prevući da vidite više sadržaja prilagođenog vama.</translation>
 <translation id="7438473148803748807">Svako će odmah izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a svi linkovi pozivnice će se isključiti</translation>
 <translation id="7438481509621345350">Sada ćete vidjeti priče s web lokacije <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
+<translation id="7445682342344043969">Skočni su prozori blokirani</translation>
 <translation id="7451023311965289370">{count,plural, =1{Oznaka je sačuvana u pregledniku "{title}"}one{Oznake su sačuvane u pregledniku "{title}"}few{Oznake su sačuvane u pregledniku "{title}"}other{Oznake su sačuvane u pregledniku "{title}"}}</translation>
 <translation id="7451404862887877229">Dodirnite "Privatnost i sigurnost", a zatim "Sigurno pregledanje"</translation>
 <translation id="7454057999980797137">Zemlja / Okrug</translation>

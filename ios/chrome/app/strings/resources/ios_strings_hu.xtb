@@ -1676,6 +1676,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7437712592381799950">Felfelé csúsztatva további személyre szabott tartalmakat tekinthet meg.</translation>
 <translation id="7438473148803748807">Mindenki azonnal el fogja veszíteni a hozzáférését a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz, és a rendszer az összes meghívólinket ki fogja kapcsolni.</translation>
 <translation id="7438481509621345350">Új lap megnyitásakor látni fogja a(z) <ph name="CHANNEL_NAME" /> webhely történeteit.</translation>
+<translation id="7445682342344043969">Előugró ablakok letiltva</translation>
 <translation id="7451023311965289370">{count,plural, =1{Könyvjelző mentve ide: „{title}”}other{Könyvjelzők mentve ide: „{title}”}}</translation>
 <translation id="7451404862887877229">Koppintson az „Adatvédelem és biztonság”, majd a „Biztonságos Böngészés” lehetőségre.</translation>
 <translation id="7454057999980797137">Állam/megye</translation>

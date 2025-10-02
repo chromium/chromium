@@ -253,6 +253,9 @@
 <translation id="3810973564298564668">ຈັດການ</translation>
 <translation id="383928141529488001">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສຳຫຼວດ 
  ອຸປະກອນ Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**ສະຫຼຸບ:** ໃນປະໂຫຍກດຽວທີ່ມີບໍ່ເກີນ 30 ຄຳ, ໃຫ້ອະທິບາຍເລື່ອງຫຼັກ ແລະ ຈຸດປະສົງຂອງເນື້ອຫາໃນຮູບໜ້າຈໍ.
+
+          **ແນະນຳຄຳຖາມ:** ສ້າງລາຍຊື່ສັນຍາລັກຂອງຄຳຖາມກະຕຸ້ນຄວາມຄິດ 3-5 ຂໍ້ທີ່ຜູ້ໃຊ້ອາດຖາມເພື່ອສ້າງຄວາມເຂົ້າໃຈຮູບໜ້າຈໍໄດ້ດີຍິ່ງຂຶ້ນ. ຄຳຖາມເຫຼົ່ານີ້ຄວນມີຢ່າງໜ້ອຍ 1 ຂໍ້ທີ່ກ່ຽວກັບວັດຖຸພາບ, ການອອກແບບ ຫຼື ຕຳແໜ່ງຂອງວັດຖຸນັ້ນໂດຍສະເພາະ.</translation>
 <translation id="386202838227397562">ກະລຸນາປິດທຸກວິນໂດ Google Chrome ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="3873044882194371212">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="3885770153807205175">ຕົວເລືອກພາສາ</translation>
@@ -529,6 +532,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7024536598735240744">ແຕກໄຟລ໌ຜິດພາດ: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ຢຸດການຕິດຕັ້ງແລ້ວ.</translation>
 <translation id="7025800014283535195">ທ່ານສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້ຢູ່ບ່ອນນີ້</translation>
+<translation id="7047386856539490735">ຜົນການຊອກຫາເຫຼົ່ານີ້ມີປະໂຫຍດຫຼືບໍ່?</translation>
 <translation id="7051685429025310665">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chrome ໄດ້ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ອອກແລ້ວ.</translation>
 <translation id="7059914902409643750">ຕັ້ງຄ່າ Chrome ແບບກຳນົດເອງ</translation>
 <translation id="7060643578009939353">ຊອກຫາວິດີໂອນີ້ດ້ວຍ Google Lens</translation>
@@ -696,6 +700,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8883862939660515976">ຖາມ Google Lens ກ່ຽວກັບຮູບນີ້</translation>
 <translation id="8914504000324227558">ເປີດໃຊ້ Chrome ຄືນໃໝ່</translation>
 <translation id="8922193594870374009">ເພື່ອສົ່ງເບີຈາກ <ph name="ORIGIN" /> ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
+<translation id="8922998289262614701">ລຶບຂໍ້ມູນຂອງແອັບນີ້ອອກຈາກ Chrome</translation>
 <translation id="8948460679427074738">ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ເຜີຍແຜ່ຂໍ້ປະຕິບັດຄວາມເປັນສ່ວນຕົວ, ເຊັ່ນ: ວິທີທີ່ມັນຮວບຮວມ ແລະ ໃຊ້ຂໍ້ມູນ. Chrome ແນະນຳໃຫ້ທ່ານລຶບມັນອອກ.</translation>
 <translation id="8958307504142971576">ຕອນນີ້ທ່ານມີຄຸນສົມບັດເພີ່ມເຕີມໃນ Chrome</translation>
 <translation id="8991530961471831170">ເປີດ Gemini ໃນ Chrome</translation>

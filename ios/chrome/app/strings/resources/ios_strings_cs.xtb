@@ -1676,6 +1676,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7437712592381799950">Přejetím prstem nahoru zobrazíte další obsah přizpůsobený pro vás.</translation>
 <translation id="7438473148803748807">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
 <translation id="7438481509621345350">Když otevřete novou kartu, budou se teď zobrazovat články z webu <ph name="CHANNEL_NAME" />.</translation>
+<translation id="7445682342344043969">Byla zablokována vyskakovací okna</translation>
 <translation id="7451023311965289370">{count,plural, =1{Záložka byla uložena do složky {title}}few{Záložky byly uloženy do složky {title}}many{Záložky byly uloženy do složky {title}}other{Záložky byly uloženy do složky {title}}}</translation>
 <translation id="7451404862887877229">Klepněte na Ochrana soukromí a zabezpečení a poté na Bezpečné prohlížení</translation>
 <translation id="7454057999980797137">Stát / země</translation>

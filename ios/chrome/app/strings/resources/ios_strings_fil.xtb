@@ -1676,6 +1676,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7437712592381799950">Puwede kang mag-swipe pataas para makakita pa ng content na iniangkop sa iyo.</translation>
 <translation id="7438473148803748807">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />," at mao-off ang lahat ng link ng imbitasyon</translation>
 <translation id="7438481509621345350">Makakakita ka na ngayon ng mga kuwento mula sa <ph name="CHANNEL_NAME" /> kapag nagbukas ka ng bagong tab.</translation>
+<translation id="7445682342344043969">Naka-block ang mga pop-up</translation>
 <translation id="7451023311965289370">{count,plural, =1{Na-save ang bookmark sa "{title}"}one{Na-save ang mga bookmark sa "{title}"}other{Na-save ang mga bookmark sa "{title}"}}</translation>
 <translation id="7451404862887877229">I-tap ang "Privacy at Seguridad" at pagkatapos ay "Ligtas na Pag-browse"</translation>
 <translation id="7454057999980797137">Estado / County</translation>

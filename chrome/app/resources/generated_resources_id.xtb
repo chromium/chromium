@@ -1317,6 +1317,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1880618477732738742">Mengubah dan memberikan akses ke fitur seperti geolokasi, mikrofon, kamera, cookie, dll., untuk semua situs dan ekstensi Anda, termasuk ekstensi ini.</translation>
 <translation id="1881445033931614352">Tata letak keyboard</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# item}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Visibilitas saat ini disetel ke beberapa kontak</translation>
 <translation id="1884705339276589024">Ubah ukuran disk Linux</translation>
 <translation id="1885066963699478692">File XML yang sedang digunakan untuk menyetel kebijakan.</translation>
@@ -3835,6 +3836,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3629664892718440872">Ingat pilihan ini</translation>
 <translation id="3630132874740063857">Ponsel Anda</translation>
 <translation id="3630995161997703415">Tambahkan situs ini ke rak Anda agar dapat digunakan setiap saat</translation>
+<translation id="3633492436029262388">Untuk mendapatkan sandi, bookmark, dan info Anda yang lain di semua perangkat Anda, simpan info tersebut di Akun Google Anda</translation>
 <translation id="3633759325857031264">Perangkat HDMI</translation>
 <translation id="3634652306074934350">Masa berlaku permintaan izin habis</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) terdeteksi</translation>
@@ -7765,6 +7767,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6391131092053186625">IMEI perangkat Anda adalah <ph name="IMEI_NUMBER" />. Nomor ini dapat digunakan untuk membantu mengaktifkan layanan.</translation>
 <translation id="6393156038355142111">Sarankan sandi yang kuat</translation>
 <translation id="6393550101331051049">Diizinkan menampilkan konten yang tidak aman</translation>
+<translation id="6394634179843537518">Tambahkan file</translation>
 <translation id="6395423953133416962">Kirim <ph name="BEGIN_LINK1" />informasi sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ya, pisahkan data saya dari profil sekolah (direkomendasikan)</translation>
 <translation id="6398715114293939307">Hapus Google Play Store</translation>
@@ -8006,6 +8009,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6569931898053264308">Penghematan Sedang</translation>
 <translation id="6570622975915850879">Gunakan perangkat lain</translation>
 <translation id="65711204837946324">Memerlukan izin untuk mendownload</translation>
+<translation id="6571178651832779742">Untuk menghapus bookmark duplikat, simpan bookmark di Akun Google Anda</translation>
 <translation id="6571533309669248172">Pemformatan teks</translation>
 <translation id="6571772921213691236">Edit data login</translation>
 <translation id="657229725818377235">Dapatkan perlindungan lebih terhadap situs dan download berbahaya</translation>
@@ -8642,6 +8646,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7001066449188684145">Perlu autentikasi identitas untuk mencetak ke <ph name="PRINTER_NAME" />. Harap hubungi administrator Anda.</translation>
 <translation id="7001397294201412227">Gunakan ponsel, tablet, atau kunci keamanan</translation>
 <translation id="7001556399332161712">Penelusuran dan saran</translation>
+<translation id="7001809623433867903">Bersihkan bookmark?</translation>
 <translation id="7003339318920871147">Basis data web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} file}}</translation>
 <translation id="7003644704445046755">File suara <ph name="LANGUAGE" /> berkualitas tinggi telah didownload</translation>
@@ -9122,6 +9127,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7356908624372060336">Log Jaringan</translation>
 <translation id="7357271391997763660">Jalankan pemeriksaan sandi?</translation>
 <translation id="735745346212279324">VPN terputus</translation>
+<translation id="7359326150089800742">Tambahkan tab atau file ke penelusuran Anda, dan juga gunakan alat</translation>
 <translation id="7359680654975233185">Tidak dapat mentransmisikan tab</translation>
 <translation id="7360257054721917104">Melihat desktop dan template tersimpan. Tekan tab untuk memilih.</translation>
 <translation id="7360333718677093875">pemilih emoji</translation>
@@ -9297,7 +9303,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="747114903913869239">Kesalahan: Tidak dapat mendekodekan ekstensi</translation>
 <translation id="7471520329163184433">Lebih lambat</translation>
 <translation id="747312361841682912">Hapus data yang ditampilkan</translation>
-<translation id="7473555040328423550">Tambahkan tab</translation>
 <translation id="7473891865547856676">Lain Kali</translation>
 <translation id="7474043404939621342">Menyesuaikan toolbar</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
@@ -9927,6 +9932,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Sediakan port Linux untuk perangkat lain di jaringan Anda.</translation>
 <translation id="7906440585529721295">Data lokal akan dihapus</translation>
+<translation id="7907312522152480478">Untuk mengakses tab Anda dari perangkat lain, verifikasi diri Anda dan sinkronkan histori serta tab Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="7907502219904644296">Ubah akses</translation>
 <translation id="7907837847548254634">Tampilkan sorotan cepat pada objek yang difokuskan</translation>
 <translation id="7908378463497120834">Maaf, setidaknya satu partisi pada perangkat penyimpanan eksternal Anda tidak dapat dipasang.</translation>
@@ -10563,6 +10569,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8323167517179506834">Ketik URL</translation>
 <translation id="8323317289166663449">Membaca dan mengubah semua data Anda di komputer dan semua situs</translation>
 <translation id="8323518750352551353">Pisahkan Penjelajahan?</translation>
+<translation id="8323744572398547859">Untuk mengakses tab Anda dari perangkat lain, login dan sinkronkan histori. Anda juga akan mendapatkan sandi dan info Anda yang lain di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="8324158725704657629">Jangan tanya lagi</translation>
 <translation id="8325413836429495820">Tidak diizinkan melihat papan klip Anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantai sertifikat</translation>
@@ -11869,7 +11876,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ditambahkan</translation>
 <translation id="9215742531438648683">Uninstal Google Play Store</translation>
 <translation id="9218430445555521422">Jadikan default</translation>
-<translation id="9218536722110863203">Upload file</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplikasi tidak didukung)</translation>
 <translation id="9219572436491982747">Data yang dikirim ke Google mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas teknologi AI Chrome</translation>
 <translation id="9219741625496141320">Data penjelajahan otomatis dihapus</translation>

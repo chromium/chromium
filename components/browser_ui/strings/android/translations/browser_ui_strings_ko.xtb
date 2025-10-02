@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">탭에 가격 인하 정보 숨기기 카드</translation>
 <translation id="1508931164824684991">사이트에서 JavaScript를 사용할 수 있음</translation>
 <translation id="1510341833810331442">사이트에서 기기에 데이터를 저장할 수 없습니다.</translation>
+<translation id="1532175480576580256">내 바로가기 하단 시트가 전체 높이로 열림</translation>
 <translation id="1538031354170655462">사이트에서는 일반적으로 근거리 무선통신(NFC)을 사용하여 배지를 스캔하거나 비접촉 결제하는 등 근처의 태그 또는 기기와 상호작용합니다.</translation>
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
 <translation id="1569054338208717605">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다.</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">내가 방문하는 대부분의 사이트에서는 기기에 데이터를 저장하며, 사이트에 공유한 환경설정이나 정보를 저장하여 사용자 환경을 개선하는 경우가 많습니다. 이 설정을 유지하는 것이 좋습니다.</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
+<translation id="2347601491101454548">내 바로가기 하단 시트가 절반 높이로 열림</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2379925928934107488">가능하면 Chrome에서 어두운 테마를 사용할 때 사이트에도 어두운 테마를 적용합니다.</translation>
 <translation id="2390272837142897736">확대</translation>

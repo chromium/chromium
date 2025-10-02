@@ -613,6 +613,7 @@ De verschillende niveaus zijn:
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Deze waarde is beëindigd vanaf M121. Vanaf M121 worden waarden behandeld als EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Spellingcontrole uitzetten</translation>
+<translation id="1434936032334586168">Stil afdrukken aanzetten</translation>
 <translation id="1435031247649241006">Op het vergrendelscherm kunnen gebruikers een online venster voor opnieuw verifiëren openen en dit gebruiken voor het verificatieproces om hun sessie opnieuw binnen te gaan. Dit beleid kan worden gebruikt om het venster automatisch te openen als online opnieuw verifiëren vereist is.
 
 Als je het beleid toepast en online opnieuw verifiëren vereist is, wordt het venster voor online opnieuw verifiëren automatisch geopend.
@@ -1902,6 +1903,7 @@ Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps 
 <translation id="2306505001667207184">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten.</translation>
 <translation id="230713790688681130">Hindi InScript-indeling aanzetten</translation>
 <translation id="2307496301287881990">Statussen van scherm en grafische kaart rapporteren</translation>
+<translation id="2308899582897965249">Stil afdrukken uitzetten</translation>
 <translation id="2309284543927494965">Updates blokkeren</translation>
 <translation id="2309341709647905294">Geen informatie rapporteren over randapparaten die zijn aangesloten op het apparaat</translation>
 <translation id="2309390639296060546">Standaardinstelling voor geolocatie</translation>
@@ -2083,6 +2085,9 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2439733504887695659">Afwijzen van meldingen over gehackte wachtwoorden aanzetten voor de opgegeven inloggegevens</translation>
 <translation id="2446029789419870019">Gebruik van functie toestaan en AI-modellen verbeteren</translation>
 <translation id="2446244536806499267">Gebruiker niet als inactief beschouwen tijdens afspelen van audio</translation>
+<translation id="2450392422484526374">Als je dit beleid instelt op Waar, wordt stil afdrukken aangezet. Het venster voor afdrukvoorbeeld wordt dan meteen gesloten als het wordt geopend en er wordt afgedrukt naar de standaardprinter met de standaardopties. Als de standaardprinter Opslaan als pdf is, wordt het bestand opgeslagen in de map Downloads.
+
+Als je dit beleid niet instelt of instelt op Onwaar, wordt stil afdrukken uitgezet. Het venster voor afdrukvoorbeeld wordt dan niet automatisch gesloten en de gebruiker moet zoals gewoonlijk een selectie maken.</translation>
 <translation id="2452225615952836461">Verzoekmethoden altijd in hoofdletters schrijven</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
 <translation id="2455033019778127130">Gebruik het standaard browsergedrag. De servicevoorwaarden worden getoond en er wordt gewacht tot de gebruiker ze accepteert.</translation>
@@ -5115,21 +5120,6 @@ Als je deze instelling uitzet of niet instelt, legt de service voor wachtwoordbe
 In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd, via MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="4607416370554533118">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven van sites waarvoor Chrome automatisch een clientcertificaat kan selecteren. De waarde is een matrix van JSON-woordenboeken met tekenreeksen, elk met de indeling <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, waarbij <ph name="URL_PATTERN_PLACEHOLDER" /> een patroon voor het instellen van content is. <ph name="FILTER_PLACEHOLDER" /> beperkt de clientcertificaten waaruit de browser automatisch kan kiezen. Onafhankelijk van het filter worden alleen certificaten geselecteerd die overeenkomen met het certificaatverzoek van de server.
-
-      Voorbeelden voor het gebruik van het gedeelte <ph name="FILTER_PLACEHOLDER" />:
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> is ingesteld op <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, worden er alleen clientcertificaten geselecteerd die zijn uitgegeven door een certificaat met de CommonName <ph name="ISSUER_CN_PLACEHOLDER" />.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> zowel het gedeelte <ph name="ISSUER_STRING_VALUE" /> als het gedeelte <ph name="SUBJECT_STRING_VALUE" /> bevat, worden alleen clientcertificaten geselecteerd die aan beide voorwaarden voldoen.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> een gedeelte <ph name="SUBJECT_STRING_VALUE" /> met de waarde <ph name="FILTER_STRING_ORGANIZATION" /> bevat, moet een certificaat ten minste één organisatie hebben die overeenkomt met de opgegeven waarde om te worden geselecteerd.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> een gedeelte <ph name="SUBJECT_STRING_VALUE" /> met een waarde <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> bevat, moet een certificaat ten minste één organisatie-eenheid hebben die overeenkomt met de opgegeven waarde om te worden geselecteerd.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> is ingesteld op <ph name="EMPTY_DICTIONARY" />, wordt de selectie van clientcertificaten niet verder beperkt. Houd er rekening mee dat filters die door de webserver worden geleverd, nog steeds van toepassing zijn.
-
-      Als je het beleid niet instelt, worden clientcertificaten voor geen enkele site automatisch geselecteerd.</translation>
 <translation id="4607499333275488034">Zet de functie voor vingerafdrukbeveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> uit in de incognitomodus.</translation>
 <translation id="4611983465824842867">Geen waarschuwingen tonen en automatisch invullen niet uitzetten voor onveilige formulieren</translation>
 <translation id="4615003180013429835">Modus voor sitelijstparsering</translation>

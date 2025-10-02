@@ -1307,6 +1307,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1880618477732738742">Cambiar y conceder acceso a funciones, como la geolocalización, el micrófono, la cámara, las cookies, etc., en todos tus sitios web y extensiones, incluida esta extensión.</translation>
 <translation id="1881445033931614352">Diseño de teclado</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementos}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">El ajuste de visibilidad actual es algunos contactos</translation>
 <translation id="1884705339276589024">Cambiar el tamaño de disco de Linux</translation>
 <translation id="1885066963699478692">Los archivos XML que se usan para configurar las políticas.</translation>
@@ -2540,7 +2541,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Cuando la precisión de la ubicación está activada, la información sobre las señales inalámbricas, como los puntos de acceso Wi-Fi y las torres de redes móviles, junto con los datos de los sensores del dispositivo, como el acelerómetro y el giroscopio, se usan para estimar con mayor precisión la ubicación del dispositivo, que las aplicaciones y los servicios de Android utilizan para proporcionar funciones basadas en la ubicación. Para ello, Google recopila periódicamente la información de los sensores de dispositivos y señales inalámbricas que hay cerca de este dispositivo para recoger las ubicaciones de las señales inalámbricas.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google usa la información recogida de este dispositivo para mejorar la precisión de la ubicación y los servicios basados en la ubicación, así como para optimizar, proporcionar y mantener en general los servicios de Google. Tratamos esta información según los intereses legítimos de Google y de terceros para satisfacer las necesidades de los usuarios. Esta información no se usa para identificar a nadie.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puedes desactivar la precisión de la ubicación en cualquier momento en los ajustes de ubicación de este dispositivo en Ajustes &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación &gt; Ajustes de ubicación avanzados. Si este ajuste está desactivado, no se recogerá ningún dato de precisión de la ubicación. En el caso de las aplicaciones y los servicios de Android, solo se usa la dirección IP (si está disponible) para determinar la ubicación de este dispositivo, lo que puede afectar a la disponibilidad y la precisión de las ubicaciones de las aplicaciones y los servicios de Android como Google Maps.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="2729940704980595903">Consulta y gestiona tu actividad en las apps de Gemini</translation>
+<translation id="2729940704980595903">Consulta y gestiona tu actividad en las aplicaciones de Gemini</translation>
 <translation id="2730029791981212295">Creando copia de seguridad de las aplicaciones y archivos de Linux</translation>
 <translation id="2730550884708194161">Información sobre los perfiles de trabajo</translation>
 <translation id="2730596696987224099">Elegir una personalizada</translation>
@@ -3823,6 +3824,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3629664892718440872">Recordar esta opción</translation>
 <translation id="3630132874740063857">Tu teléfono</translation>
 <translation id="3630995161997703415">Añade este sitio web a tu estantería para usarlo en cualquier momento</translation>
+<translation id="3633492436029262388">Para acceder a tus contraseñas y marcadores, entre otros, en todos tus dispositivos, guárdalos en tu cuenta de Google</translation>
 <translation id="3633759325857031264">Dispositivo HDMI</translation>
 <translation id="3634652306074934350">Solicitud de permiso caducada</translation>
 <translation id="3635199270495525546">Módulo de plataforma de confianza (TPM) detectado</translation>
@@ -5805,7 +5807,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5003070249435823986">Usa el gesto para entrar en el modo de desplazamiento y, a continuación, mueve la cabeza en la dirección en la que quieras desplazarte. Vuelve a usar el gesto para salir del modo de desplazamiento.</translation>
 <translation id="5003993274120026347">Siguiente frase</translation>
-<translation id="5005113238422129109">Usa el micrófono para chatear con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las apps de Gemini (si la opción está activada).</translation>
+<translation id="5005113238422129109">Usa el micrófono para chatear con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las aplicaciones de Gemini (si la opción está activada).</translation>
 <translation id="5005311809885666699">Guardado desde Chrome</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006218871145547804">ADB de aplicaciones Android en Crostini</translation>
@@ -7750,6 +7752,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6391131092053186625">El IMEI de tu dispositivo es <ph name="IMEI_NUMBER" />. Este número se puede usar para activar el servicio.</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
+<translation id="6394634179843537518">Añadir archivo</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /> e <ph name="BEGIN_LINK1" />información del sistema<ph name="END_LINK1" /></translation>
 <translation id="6397586889873084061">Sí, mantener mis datos separados de los del centro educativo (recomendado)</translation>
 <translation id="6398715114293939307">Quitar Google Play Store</translation>
@@ -7991,6 +7994,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6569931898053264308">Ahorro medio</translation>
 <translation id="6570622975915850879">Usar otro dispositivo</translation>
 <translation id="65711204837946324">Necesita permiso para descargarse</translation>
+<translation id="6571178651832779742">Para eliminar los marcadores duplicados, guárdalos en tu cuenta de Google</translation>
 <translation id="6571533309669248172">Formato del texto</translation>
 <translation id="6571772921213691236">Cambiar datos de inicio de sesión</translation>
 <translation id="657229725818377235">Aumenta la protección contra las descargas y los sitios web peligrosos</translation>
@@ -8627,6 +8631,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7001066449188684145">Debes identificarte para poder imprimir en <ph name="PRINTER_NAME" />. Ponte en contacto con tu administrador.</translation>
 <translation id="7001397294201412227">Utilizar un teléfono, una tablet o una llave de seguridad</translation>
 <translation id="7001556399332161712">Búsquedas y sugerencias</translation>
+<translation id="7001809623433867903">¿Borrar marcadores?</translation>
 <translation id="7003339318920871147">Bases de datos web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} archivo}other{{COUNT} archivos}}</translation>
 <translation id="7003644704445046755">Archivos de voz de alta calidad en <ph name="LANGUAGE" /> descargados</translation>
@@ -9107,6 +9112,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7356908624372060336">Registros de la red</translation>
 <translation id="7357271391997763660">¿Revisar contraseñas?</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
+<translation id="7359326150089800742">Añade una pestaña o un archivo a tu búsqueda y usa una herramienta</translation>
 <translation id="7359680654975233185">No se puede enviar la pestaña</translation>
 <translation id="7360257054721917104">Visualizando escritorios y plantillas guardados. Pulsa el tabulador para desplazarte.</translation>
 <translation id="7360333718677093875">selector de emojis</translation>
@@ -9283,7 +9289,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="747114903913869239">Error: no es posible decodificar la extensión.</translation>
 <translation id="7471520329163184433">Más lenta</translation>
 <translation id="747312361841682912">Eliminar datos mostrados</translation>
-<translation id="7473555040328423550">Añadir pestaña</translation>
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7474043404939621342">Personalizar la barra de herramientas</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
@@ -9913,6 +9918,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Permite que los puertos de Linux estén disponibles para otros dispositivos de tu red.</translation>
 <translation id="7906440585529721295">Los datos locales se eliminarán</translation>
+<translation id="7907312522152480478">Para ver las pestañas de tus otros dispositivos, verifica que eres tú y sincroniza tu historial y tus pestañas. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="7907502219904644296">Cambiar acceso</translation>
 <translation id="7907837847548254634">Destacar brevemente el objeto enfocado</translation>
 <translation id="7908378463497120834">Lo sentimos, pero al menos una partición del dispositivo de almacenamiento externo no se ha podido montar.</translation>
@@ -10549,6 +10555,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8323167517179506834">Escribe una URL</translation>
 <translation id="8323317289166663449">Leer y cambiar todos tus datos en tu ordenador y en todos los sitios web</translation>
 <translation id="8323518750352551353">¿Navegar de forma independiente?</translation>
+<translation id="8323744572398547859">Para ver las pestañas de tus otros dispositivos, inicia sesión y sincroniza tu historial. También tendrás tus contraseñas y otra información en todos tus dispositivos. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
 <translation id="8325413836429495820">No puede ver tu portapapeles</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificados</translation>
@@ -11855,7 +11862,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" añadida</translation>
 <translation id="9215742531438648683">Desinstalar Google Play Store</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
-<translation id="9218536722110863203">Subir archivo</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplicación no compatible)</translation>
 <translation id="9219572436491982747">Puede que los datos enviados a Google los vean revisores humanos para mejorar la tecnología de IA de Chrome</translation>
 <translation id="9219741625496141320">Los datos de navegación se han eliminado automáticamente</translation>

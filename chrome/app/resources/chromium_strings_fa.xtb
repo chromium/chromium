@@ -13,7 +13,7 @@
 <translation id="112640046208448578">چیزها یا مکان‌ها را شناسایی کنید و نوشتار را کپی یا ترجمه کنید. وقتی از «جستجوی تصویر» استفاده می‌کنید، نماگرفتی از صفحه به سرور ارسال می‌شود. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">‏Chromium مرورگر پیش‌فرضتان است</translation>
 <translation id="1131805035311359397">‏برای بررسی اینکه از گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chromium وارد شوید<ph name="END_LINK" />.</translation>
-<translation id="1153368717515616349">‏روی منوی Chromium کلیک کنید</translation>
+<translation id="1153368717515616349">‏روی منو Chromium کلیک کنید</translation>
 <translation id="1157985233335035034">زبان‌های اخیر</translation>
 <translation id="1171831736360285680">‏‫<ph name="PARTNER_NAME" /> افزونه‌ای اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
 
@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">سنجاق شد! دفعه بعد می‌توانید «جستجوی تصویر» را ازطریق این دکمه جدید در نوارابزار باز کنید</translation>
 <translation id="1356661055722410047">جدید! می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="1383876407941801731">جستجو</translation>
+<translation id="1397530502368084401">‏مدیریت نمایه‌های Chromium</translation>
 <translation id="1414495520565016063">‏شما وارد سیستم Chromium شدید!</translation>
 <translation id="141901961143729572">افکارتان را هم‌رسانی</translation>
 <translation id="1465192221147974788">‏برای هم‌رسانی پنجره، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chromium مجاز کنید.</translation>
@@ -471,6 +472,7 @@
 <translation id="6669284030132180248">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chromium پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="668175097507315160">‏به‌دلیل بروز خطا هنگام ورود به سیستم، ChromiumOS نتوانست داده‌های شما را همگام‌سازی کند.</translation>
+<translation id="6691132793308828750">‏برداشتن داده‌های این برنامه از Chromium</translation>
 <translation id="6692797197837897398">‏‫Chromium به شما کمک می‌کند بر آگهی‌هایی که می‌بینید تسلط بیشتری داشته باشید و همچنین میزان اطلاعاتی را که سایت‌ها هنگام نمایش آگهی‌های شخصی‌سازی‌شده به شما درباره‌تان جمع‌آوری می‌کنند محدود می‌کند</translation>
 <translation id="6709350901466051922">‏Chromium برای این سایت به اجازه میکروفون نیاز دارد</translation>
 <translation id="6712881677154121168">خطای بارگیری: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -491,6 +493,7 @@
 <translation id="6877155553248388166">‏گوشه پایین سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="BOTTOM" /> پایین</translation>
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6901631050894301805">‏‫Chromium را به‌عنوان مرورگر پیش‌فرض خود تنظیم کنید و آن را به نوار وظیفه‌تان سنجاق کنید</translation>
+<translation id="6909503629704372277">‏مدیریت نمایه‌های Chromium</translation>
 <translation id="6934579572334859869">پرسیدن از «جستجوی تصویر» درباره این تصویر</translation>
 <translation id="6964305034639999644">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="6965382102122355670">تأیید</translation>

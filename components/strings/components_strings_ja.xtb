@@ -990,6 +990,7 @@
 <translation id="2610561535971892504">クリックしてコピー</translation>
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="2612993535136743634">デバイスと Google アカウントに保存されているセキュリティ コードがすべて削除されます</translation>
+<translation id="2614835674900828050">この購入では利用できません</translation>
 <translation id="2616412942031748191">SEO、SEM</translation>
 <translation id="2618206371527040026">学術会議、学術出版</translation>
 <translation id="2619052155095999743">挿入</translation>
@@ -1253,6 +1254,7 @@
 <translation id="3087734570205094154">下部</translation>
 <translation id="3090667236485488075">ガラス</translation>
 <translation id="3093122472063815077">後払い購入の進行状況画面が画面の下半分に表示されています。</translation>
+<translation id="309381737510736393">組織が Google アカウントへの保存を制限している場合、タブを共有したり、他のユーザーと共同で作業したりすることはできません</translation>
 <translation id="3094051226187213523">この候補を使用して AI モードを開きます。</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">無効リストにポリシーを無効にするのと同じ「*」と同等のパターンが含まれているため、無視されました。</translation>
@@ -1698,6 +1700,7 @@
 <translation id="3784372983762739446">Bluetoothデバイス</translation>
 <translation id="3785246317262748285">通常はサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">「<ph name="SEARCH_QUERY" />」と一致する結果</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />、<ph name="ISSUER_2_NAME" />、または <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3791118028061680614">アプリを切り替えずにお支払い</translation>
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> インチ）</translation>
@@ -2679,6 +2682,7 @@
 <translation id="5412040515238827314">無効な形式です。パターンのリストを指定する必要があります。</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">スタッカー 4</translation>
+<translation id="5414306071315087019">Google Pay で後払い決済を利用できます</translation>
 <translation id="5414446060143308245">移行する前に確認が必要です</translation>
 <translation id="5414511064953050917">このまま移動</translation>
 <translation id="5418700249417444482">アクセスしたページの URL は分析のため Google Cloud または第三者に送信されます。これらの URL は管理者に公開される可能性があります。管理者はこれらの URL をスキャンして、安全でないウェブサイトを検出したり、設定したルールに基づきウェブサイトをフィルタリングしたりする可能性があります。</translation>
@@ -2799,6 +2803,7 @@
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="5596939519753369075">2x3.5 インチ</translation>
 <translation id="5597254438174353289">青 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> または <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">管理はサポートされていません</translation>
 <translation id="5605249000617390290">価格トラッキングの詳細</translation>
 <translation id="5605670050355397069">Ledger</translation>

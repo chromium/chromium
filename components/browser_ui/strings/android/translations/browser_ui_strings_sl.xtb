@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Skrij kartico z znižanji cen na zavihkih</translation>
 <translation id="1508931164824684991">Spletna mesta lahko uporabljajo JavaScript</translation>
 <translation id="1510341833810331442">Spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
+<translation id="1532175480576580256">Razdelek na dnu zaslona »Moje bližnjice« je odprt pri polni višini</translation>
 <translation id="1538031354170655462">Spletna mesta običajno uporabljajo tehnologijo NFC za delovanje z oznakami ali napravami v bližini, na primer pri optičnem branju značk ali brezstičnem plačevanju</translation>
 <translation id="1547123415014299762">Piškotki tretjih oseb so dovoljeni.</translation>
 <translation id="1569054338208717605">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">Večina spletnih mest, ki jih obiščete, v napravo verjetno shrani podatke, pogosto zaradi izboljšanja izkušnje, in sicer tako, da shrani nastavitve ali podatke, ki jih razkrijete spletnemu mestu. Priporočamo, da pustite to nastavitev vklopljeno.</translation>
 <translation id="2289270750774289114">Vprašaj, ko želi spletno mesto odkrivati naprave Bluetooth v bližini (priporočljivo)</translation>
 <translation id="2315043854645842844">Operacijski sistem ne podpira izbire potrdila pri odjemalcu.</translation>
+<translation id="2347601491101454548">Razdelek na dnu zaslona »Moje bližnjice« je odprt pri polovični višini</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2379925928934107488">Uporaba temne teme (ko je to mogoče) na spletnih mestih, če Chrome uporablja temno temo.</translation>
 <translation id="2390272837142897736">Povečanje povečave/pomanjšave</translation>
@@ -338,6 +340,7 @@
 <translation id="4816495437032298535">Shranjena povečava za spletna mesta</translation>
 <translation id="4836046166855586901">Vprašaj, ko želi spletno mesto vedeti, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="483914009762354899">Vključi vsa spletna mesta v tej domeni</translation>
+<translation id="4852997963351138624">Šestnajstiška koda barve ozadja</translation>
 <translation id="4882919381756638075">Spletna mesta običajno uporabljajo mikrofon za komunikacijske funkcije, kot je videoklepet.</translation>
 <translation id="4883854917563148705">Upravljanih nastavitev ni mogoče ponastaviti</translation>
 <translation id="4887024562049524730">Vprašaj, preden se spletnim mestom dovoli uporaba naprav in podatkov za navidezno resničnost (priporočeno)</translation>
@@ -501,6 +504,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="662080504995468778">Ostani</translation>
+<translation id="6630443592285535486">Tukaj vnesite šestnajstiško kodo</translation>
 <translation id="6635327442719709864">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo serijskih vrat. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati serijskih vrat.</translation>
 <translation id="6678072580827808850">Pregled varnostnega preverjanja</translation>
 <translation id="6682057173375416470">Prejemanje predlaganih člankov na strani »Nov zavihek«</translation>
@@ -558,6 +562,7 @@
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
 <translation id="7406113532070524618">Ta nastavitev deluje, ne da bi prišlo do vaše osebne prepoznave ali da bi bil spletnim mestom omogočen ogled vaše zgodovine brskanja. vendar lahko spletna mesta v okviru preverjanja delijo majhno količino podatkov.</translation>
 <translation id="7409735910987429903">Spletna mesta lahko prikazujejo oglase v pojavnih oknih ali uporabljajo preusmeritve na spletna mesta, ki jih morda ne želite obiskati.</translation>
+<translation id="7412160840120117304">Šestnajstiška koda glavne barve</translation>
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
 <translation id="7425915948813553151">Temna tema za spletna mesta</translation>

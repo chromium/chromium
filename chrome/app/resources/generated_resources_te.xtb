@@ -3834,6 +3834,7 @@
 <translation id="3629664892718440872">ఈ ఎంపికను గుర్తుపెట్టుకోండి</translation>
 <translation id="3630132874740063857">మీ ఫోన్</translation>
 <translation id="3630995161997703415">ఈ సైట్‌ను ఏ సమయంలో అయినా ఉపయోగించడం కోసం దీనిని మీ 'అర'కు జోడించండి</translation>
+<translation id="3633492436029262388">మీ పాస్‌వర్డ్‌లు, బుక్‌మార్క్‌లు, ఇంకా మరిన్నింటిని మీ అన్ని డివైజ్‌లలో పొందడానికి, వాటిని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="3633759325857031264">HDMI డివైజ్</translation>
 <translation id="3634652306074934350">అనుమతి రిక్వెస్ట్ గడువు ముగిసింది</translation>
 <translation id="3635199270495525546">ట్రస్టెడ్ ప్లాట్‌ఫారమ్ మాడ్యూల్ (TPM) గుర్తించబడింది</translation>
@@ -4004,7 +4005,6 @@
 <translation id="3735039640698208086">ఆడియో ప్లే చేస్తున్నప్పుడు...</translation>
 <translation id="3735740477244556633">క్రమపద్ధతి</translation>
 <translation id="3735827758948958091">డేటా నియంత్రణ గల కనెక్షన్‌లో ఉన్నప్పుడు <ph name="FILE_NAMES" />ను తెరవడం సాధ్యం కాదు</translation>
-<translation id="3736575924150462398">ట్యాబ్‌లను లేదా మరిన్నింటిని జోడించండి</translation>
 <translation id="3737058101969549870">ఇప్పటికే ఉన్న బ్రౌజింగ్ డేటాను ఈ కొత్త ప్రొఫైల్ నుండి వేరుగా ఉంచాలా?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> డేటా 24 గంటలలో తొలగించబడుతుంది</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7764,6 +7764,7 @@
 <translation id="6391131092053186625">మీ పరికర IMEI <ph name="IMEI_NUMBER" />. సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయపడటానికి ఈ నంబర్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="6393156038355142111">శక్తివంతమైన పాస్‌వర్డ్‌ని సూచించు</translation>
 <translation id="6393550101331051049">సురక్షితం కాని కంటెంట్‌ను చూపడానికి అనుమతించబడింది</translation>
+<translation id="6394634179843537518">ఫైల్‌ను జోడించండి</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />సిస్టమ్ సమాచారం<ph name="END_LINK1" /> మరియు <ph name="BEGIN_LINK2" />గణాంకాలు<ph name="END_LINK2" /> పంపు</translation>
 <translation id="6397586889873084061">అవును, నా డేటాను స్కూల్ నుండి వేరుగా ఉంచండి (సిఫార్సు చేయబడింది)</translation>
 <translation id="6398715114293939307">Google Play Storeను తీసివేయండి</translation>
@@ -8005,6 +8006,7 @@
 <translation id="6569931898053264308">మధ్యస్థ మెమరీ సేవింగ్స్</translation>
 <translation id="6570622975915850879">వేరే పరికరాన్ని ఉపయోగించండి</translation>
 <translation id="65711204837946324">దీనిని డౌన్‌లోడ్ చేయడానికి అనుమతి కావాలి</translation>
+<translation id="6571178651832779742">ఏవైనా డూప్లికేట్ బుక్‌మార్క్‌లను క్లీనప్ చేయడానికి, వాటిని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="6571533309669248172">టెక్స్ట్ ఫార్మాట్ చేయడం</translation>
 <translation id="6571772921213691236">సైన్-ఇన్ డేటాను ఎడిట్ చేయండి</translation>
 <translation id="657229725818377235">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌ల నుండి మరింత రక్షణ పొందండి</translation>
@@ -8641,6 +8643,7 @@
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" />కు ప్రింట్ చేయడానికి ఐడెంటిఫికేషన్ అవసరం. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="7001397294201412227">ఫోన్, టాబ్లెట్ లేదా సెక్యూరిటీ కీని ఉపయోగించండి</translation>
 <translation id="7001556399332161712">సెర్చ్, సూచనలు</translation>
+<translation id="7001809623433867903">బుక్‌మార్క్‌లను క్లీనప్ చేయాలా?</translation>
 <translation id="7003339318920871147">వెబ్ డేటాబేస్‌లు</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ఫైల్}other{{COUNT} ఫైళ్ళు}}</translation>
 <translation id="7003644704445046755">హై-క్వాలిటీ <ph name="LANGUAGE" /> వాయిస్ ఫైళ్లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
@@ -9298,7 +9301,6 @@
 <translation id="747114903913869239">ఎర్రర్: ఎక్స్‌టెన్షన్‌లను డీకోడ్ చేయడం సాధ్యం కాలేదు</translation>
 <translation id="7471520329163184433">నెమ్మదిగా</translation>
 <translation id="747312361841682912">డిస్‌ప్లే అయ్యే డేటాను తొలగించండి</translation>
-<translation id="7473555040328423550">ట్యాబ్‌ను జోడించండి</translation>
 <translation id="7473891865547856676">వద్దు, ధన్యవాదాలు</translation>
 <translation id="7474043404939621342">మీ టూల్‌బార్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="747459581954555080">అన్నీ పునరుద్ధరించు</translation>
@@ -11869,7 +11871,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" జోడించబడింది</translation>
 <translation id="9215742531438648683">Google Play Storeను అన్ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="9218430445555521422">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయండి</translation>
-<translation id="9218536722110863203">ఫైల్‌ను అప్‌లోడ్ చేయండి</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (సపోర్ట్ లేని యాప్)</translation>
 <translation id="9219572436491982747">Chromeకు సంబంధించిన AI టెక్నాలజీని మెరుగుపరచడానికి Googleకు పంపిన డేటాను రివ్యూవర్‌లు రివ్యూ చేయవచ్చు</translation>
 <translation id="9219741625496141320">బ్రౌజింగ్ డేటా ఆటోమేటిక్‌గా తీసివేయబడింది</translation>

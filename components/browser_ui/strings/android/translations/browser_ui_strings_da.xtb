@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Skjul kortet Vis prisfald på faner</translation>
 <translation id="1508931164824684991">Websites kan anvende JavaScript</translation>
 <translation id="1510341833810331442">Websites har ikke tilladelse til at gemme data på din enhed</translation>
+<translation id="1532175480576580256">Felt i bunden med Mine genveje åbnet i fuld højde</translation>
 <translation id="1538031354170655462">Websites bruger normalt NFC (Near Field Communication) til at fungere med tags eller enheder i nærheden, f.eks. til scanning af badges eller kontaktløs betaling</translation>
 <translation id="1547123415014299762">Tredjepartscookies er tilladt</translation>
 <translation id="1569054338208717605">Gør websites hurtigere med Chromes V8-maskine, som dog gør Chrome en smule mindre modstandsdygtig over for angreb</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">De fleste af de websites, du besøger, gemmer sandsynligvis data på din enhed, ofte for at forbedre din brugeroplevelse ved at gemme de præferencer eller oplysninger, du deler med websitet. Vi anbefaler, at denne indstilling forbliver aktiveret.</translation>
 <translation id="2289270750774289114">Spørg, når et website vil søge efter Bluetooth-enheder i nærheden (anbefalet)</translation>
 <translation id="2315043854645842844">Klientens certifikatvalg understøttes ikke af operativsystemet.</translation>
+<translation id="2347601491101454548">Felt i bunden med Mine genveje åbnet i halv højde</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2379925928934107488">Anvend Mørkt tema på websites, når Chrome anvender Mørkt tema (når det er muligt)</translation>
 <translation id="2390272837142897736">Zoom in</translation>
@@ -338,6 +340,7 @@
 <translation id="4816495437032298535">Gemt zoomniveau for websites</translation>
 <translation id="4836046166855586901">Spørg, når et website vil vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
+<translation id="4852997963351138624">Hex-kode for baggrundsfarve</translation>
 <translation id="4882919381756638075">Websites bruger normalt din mikrofon til kommunikationsformål såsom videochat</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
@@ -501,6 +504,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
+<translation id="6630443592285535486">Angiv hex-kode her</translation>
 <translation id="6635327442719709864">Når denne indstilling er aktiveret, kan websites anmode om at anvende serieporte. Når denne indstilling er deaktiveret, kan websites ikke anvende serieporte.</translation>
 <translation id="6678072580827808850">Gennemgå sikkerhedstjek</translation>
 <translation id="6682057173375416470">Få forslag til artikler på siden Ny fane</translation>
@@ -558,6 +562,7 @@
 <translation id="7399802613464275309">Sikkerhedstjek</translation>
 <translation id="7406113532070524618">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik, men websites kan dele en lille mængde oplysninger som en del af verificeringen</translation>
 <translation id="7409735910987429903">Websites kan sende pop op-vinduer for at vise annoncer eller bruge omdirigeringer til af føre dig til websites, du måske ikke ønsker at besøge</translation>
+<translation id="7412160840120117304">Hex-kode for primær farve</translation>
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7425915948813553151">Mørkt tema på websites</translation>

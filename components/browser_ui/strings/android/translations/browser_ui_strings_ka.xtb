@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">ორგანიზება ჩანართების ჯგუფებით</translation>
 <translation id="2597457036804169544">არ მსურს საიტებზე მუქი თემის გამოყენება</translation>
 <translation id="2606760465469169465">ავტომატური დადასტურება</translation>
+<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android პარამეტრებში<ph name="END_LINK1" /> მართვა
+
+დამატებითი დაცვა მართავს Chrome-ის ამ პარამეტრებს:
+• „ყოველთვის დაცული კავშირის გამოყენება“ ჩართულია.
+• „JavaScript ოპტიმიზატორი“ გამორთულია. <ph name="BEGIN_LINK2" />გამონაკლისი საიტების მართვა<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">კონკრეტულ საიტზე JavaScript-ის დაშვება.</translation>
 <translation id="2626708220538466178">ნაგულისხმევი ბრაუზერის ქვედა ფურცელი დაიხურა</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>

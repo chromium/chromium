@@ -116,7 +116,7 @@
 <translation id="1429187656584513419">Ouvrez le réglage Mots de passe</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1433478348197382180">Mode de lecture</translation>
-<translation id="1435271730600332883">Ouvrez les paramètres de remplissage automatique et de mots de passe</translation>
+<translation id="1435271730600332883">Ouvrez les réglages de remplissage automatique et de mots de passe</translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
 <translation id="1445276840641906250">Tous vos onglets dans un seul navigateur</translation>
@@ -1676,6 +1676,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7437712592381799950">Vous pouvez balayer l'écran vers le haut pour voir plus de contenu adapté à vos besoins.</translation>
 <translation id="7438473148803748807">Tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et tous les liens d'invitation seront désactivés</translation>
 <translation id="7438481509621345350">Vous verrez maintenant des articles de <ph name="CHANNEL_NAME" /> lorsque vous ouvrez un nouvel onglet.</translation>
+<translation id="7445682342344043969">Fenêtres contextuelles bloquées</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans « {title} »}one{Favoris enregistré dans « {title} »}other{Favoris enregistrés dans « {title} »}}</translation>
 <translation id="7451404862887877229">Touchez « Confidentialité et sécurité », puis « Navigation sécurisée »</translation>
 <translation id="7454057999980797137">État / Comté</translation>

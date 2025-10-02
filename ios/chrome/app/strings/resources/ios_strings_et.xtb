@@ -1676,6 +1676,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7437712592381799950">Selleks et näha rohkem teile kohandatud sisu, saate pühkida üles.</translation>
 <translation id="7438473148803748807">Kõik kasutajad kaotavad kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja kõik kutselingid lülitatakse välja</translation>
 <translation id="7438481509621345350">Uue vahelehe avamisel näete nüüd lugusid kanalist <ph name="CHANNEL_NAME" />.</translation>
+<translation id="7445682342344043969">Hüpikud on blokeeritud</translation>
 <translation id="7451023311965289370">{count,plural, =1{Järjehoidja salvestati kohta „{title}“}other{Järjehoidjad salvestati kohta „{title}“}}</translation>
 <translation id="7451404862887877229">Puudutage valikut „Privaatsus ja turvalisus“ ning seejärel valikut „Google'i ohutu sirvimine“</translation>
 <translation id="7454057999980797137">Osariik/maakond</translation>

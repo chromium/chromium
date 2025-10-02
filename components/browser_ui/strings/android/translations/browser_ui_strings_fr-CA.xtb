@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Masquer la carte Baisse de prix sur les onglets</translation>
 <translation id="1508931164824684991">Les sites peuvent utiliser JavaScript</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
+<translation id="1532175480576580256">Zone de contenu dans le bas de l'écran concernant Mes raccourcis ouverte à pleine hauteur</translation>
 <translation id="1538031354170655462">Les sites utilisent généralement la communication en champ proche (CCP) pour fonctionner avec des balises ou des appareils à proximité, comme le balayage de badges ou le paiement sans contact</translation>
 <translation id="1547123415014299762">Les témoins tiers sont autorisés</translation>
 <translation id="1569054338208717605">Accélérer les sites avec le moteur V8 de Chrome, mais rendre Chrome légèrement moins résistant aux attaques</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">La plupart des sites que vous visitez peuvent enregistrer des données sur votre appareil, souvent pour améliorer votre expérience en enregistrant vos préférences ou en fonction de vos interactions avec le site. Nous vous recommandons de conserver ce paramètre activé.</translation>
 <translation id="2289270750774289114">Demander quand un site souhaite rechercher les appareils Bluetooth à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
+<translation id="2347601491101454548">Zone de contenu dans le bas de l'écran concernant Mes raccourcis ouverte à mi-hauteur</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2379925928934107488">Si possible, appliquer le thème sombre aux sites lorsque Chrome l'utilise</translation>
 <translation id="2390272837142897736">Augmenter le zoom</translation>
@@ -145,6 +147,11 @@
 <translation id="2588271083332682494">Rester organisé avec des groupes d'onglets</translation>
 <translation id="2597457036804169544">Ne pas appliquer le thème sombre aux sites</translation>
 <translation id="2606760465469169465">Vérification automatique</translation>
+<translation id="2610903128639500624">Gérer dans les <ph name="BEGIN_LINK1" />paramètres Android<ph name="END_LINK1" />
+
+La protection avancée contrôle ces paramètres Chrome :
+• « Toujours utiliser des connexions sécurisées » est activé.
+• « L'optimiseur JavaScript » est désactivé. <ph name="BEGIN_LINK2" />Gérer les exceptions du site<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Autoriser JavaScript pour un site en particulier.</translation>
 <translation id="2626708220538466178">Zone de contenu dans le bas de l'écran du navigateur par défaut fermée</translation>
 <translation id="2653659639078652383">Envoyer</translation>

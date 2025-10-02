@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Skryť kartu Poklesy cien na kartách</translation>
 <translation id="1508931164824684991">Weby môžu používať JavaScript</translation>
 <translation id="1510341833810331442">Weby nemôžu ukladať údaje vo vašom zariadení</translation>
+<translation id="1532175480576580256">Dolný hárok Moje skratky je otvorený na celú výšku</translation>
 <translation id="1538031354170655462">Weby zvyčajne používajú technológiu NFC (Near Field Communication), aby mohli fungovať so značkami alebo zariadeniami v okolí. Umožňuje im to napríklad skenovať odznaky alebo realizovať bezkontaktné platby</translation>
 <translation id="1547123415014299762">Súbory cookie tretích strán sú povolené</translation>
 <translation id="1569054338208717605">Zrýchľovať weby pomocou nástroja V8 Chromu (Chrome bude o niečo menej odolný voči útokom)</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">Väčšina webov, ktoré navštevujete, pravdepodobne ukladá dáta vo vašom zariadení. Často ukladajú vaše predvoľby alebo informácie, ktoré s nimi zdieľate, čím zlepšujú vaše prostredie. Toto nastavenie odporúčame nechať zapnuté.</translation>
 <translation id="2289270750774289114">Opýtať sa, keď chce web objavovať zariadenia Bluetooth v okolí (odporúčané)</translation>
 <translation id="2315043854645842844">Operačný systém nepodporuje výber certifikátu na strane klienta.</translation>
+<translation id="2347601491101454548">Dolný hárok Moje skratky je otvorený na polovičnú výšku</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2379925928934107488">Ak je to možné, používajte tmavý režim na weboch, keď ho používa Chrome</translation>
 <translation id="2390272837142897736">Zvýšiť úroveň lupy</translation>
@@ -145,6 +147,11 @@
 <translation id="2588271083332682494">Usporiadajte si karty pomocou skupín</translation>
 <translation id="2597457036804169544">Nepoužívať tmavý motív na weboch</translation>
 <translation id="2606760465469169465">Automatické overenie</translation>
+<translation id="2610903128639500624">Spravujte v <ph name="BEGIN_LINK1" />nastaveniach Androidu<ph name="END_LINK1" />.
+
+Rozšírená ochrana ovláda tieto nastavenia Chromu:
+• Nastavenie Vždy používať zabezpečené pripojenia je zapnuté.
+• Optimalizátor JavaScriptu je vypnutý. <ph name="BEGIN_LINK2" />Spravovať výnimky webov<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Povoliť JavaScript na konkrétnom webe.</translation>
 <translation id="2626708220538466178">Dolný hárok predvoleného prehliadača je zavretý</translation>
 <translation id="2653659639078652383">Odoslať</translation>

@@ -510,6 +510,7 @@
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
 <translation id="6893363893008038481">Chrome からアカウントを削除</translation>
 <translation id="6896758677409633944">コピー</translation>
+<translation id="6927941417289800361">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。これは [設定] でいつでも変更できます。</translation>
 <translation id="6930294499209825">Google ソフトウェアを最新の状態に保ちます。このサービスを無効にしたり停止したりすると、Google ソフトウェアが最新の状態に保たれなくなります。その結果、セキュリティ上の脆弱性が見つかっても修正できず、機能が動作しなくなる可能性があります。このサービスを使用する Google ソフトウェアがなくなると、このサービスは自動的にアンインストールされます。</translation>
 <translation id="6933858244219479645">ChromeOS システム</translation>
 <translation id="6938166777909186039">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8.1 が実行されています。</translation>
@@ -690,6 +691,7 @@
 <translation id="8883862939660515976">Google レンズでこの画像について質問する</translation>
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
+<translation id="8922998289262614701">Chrome からこのアプリのデータを削除する</translation>
 <translation id="8948460679427074738">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
 <translation id="8958307504142971576">Chrome で新機能をご利用いただけるようになりました</translation>
 <translation id="8991530961471831170">Gemini in Chrome を開く</translation>

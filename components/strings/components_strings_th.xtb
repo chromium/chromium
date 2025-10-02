@@ -990,6 +990,7 @@
 <translation id="2610561535971892504">คลิกเพื่อคัดลอก</translation>
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="2612993535136743634">จะมีการลบรหัสความปลอดภัยทั้งหมดที่บันทึกไว้ในอุปกรณ์และในบัญชี Google</translation>
+<translation id="2614835674900828050">ไม่พร้อมให้บริการสำหรับการซื้อครั้งนี้</translation>
 <translation id="2616412942031748191">การปรับแต่งเว็บไซต์ให้ติดอันดับบนเครื่องมือค้นหาและการตลาด</translation>
 <translation id="2618206371527040026">การประชุมเชิงวิชาการและการเผยแพร่</translation>
 <translation id="2619052155095999743">แทรก</translation>
@@ -1253,6 +1254,7 @@
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3090667236485488075">กระจก</translation>
 <translation id="3093122472063815077">เปิดหน้าจอความคืบหน้าของ "ซื้อก่อน จ่ายทีหลัง" ที่ระดับความสูงครึ่งหนึ่ง</translation>
+<translation id="309381737510736393">เมื่อองค์กรจำกัดการบันทึกลงในบัญชี Google ของคุณ คุณจะแชร์แท็บหรือทำงานร่วมกับผู้อื่นไม่ได้</translation>
 <translation id="3094051226187213523">เปิดโหมด AI ด้วยคำแนะนำนี้</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">ไม่สนใจเนื่องจากรายการ "ปิดใช้" มีรูปแบบเท่ากับ "*" ซึ่งเทียบเท่ากับการปิดใช้นโยบาย</translation>
@@ -1697,6 +1699,7 @@
 <translation id="3784372983762739446">อุปกรณ์บลูทูธ</translation>
 <translation id="3785246317262748285">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์ต่างๆ อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">ผลลัพธ์ที่ตรงที่สุดสำหรับ "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> หรือ <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3791118028061680614">ชำระเงินโดยไม่ต้องเปลี่ยนแอป</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> นิ้ว)</translation>
@@ -2678,6 +2681,7 @@
 <translation id="5412040515238827314">รูปแบบไม่ถูกต้อง: ควรมีรายการรูปแบบ</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">สแต็กเกอร์ 4</translation>
+<translation id="5414306071315087019">ซื้อก่อน จ่ายทีหลังได้ด้วย Google Pay</translation>
 <translation id="5414446060143308245">ต้องตรวจสอบก่อนโอน</translation>
 <translation id="5414511064953050917">ย้ายเลย</translation>
 <translation id="5418700249417444482">URL ของหน้าเว็บที่คุณเข้าชมจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ และผู้ดูแลระบบอาจมองเห็นได้ เช่น อาจสแกนเพื่อตรวจหาเว็บไซต์ที่ไม่ปลอดภัยหรือกรองเว็บไซต์ตามกฎที่ผู้ดูแลระบบตั้งไว้</translation>
@@ -2798,6 +2802,7 @@
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="5596939519753369075">2 x 3.5 นิ้ว</translation>
 <translation id="5597254438174353289">น้ำเงิน 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> หรือ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ไม่สนับสนุนการจัดการ</translation>
 <translation id="5605249000617390290">ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตามราคา</translation>
 <translation id="5605670050355397069">Ledger</translation>

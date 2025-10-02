@@ -345,6 +345,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4816495437032298535">Zoom guardado para sites</translation>
 <translation id="4836046166855586901">Perguntar quando um site pretender saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="483914009762354899">Incluir todos os sites neste domínio</translation>
+<translation id="4852997963351138624">Cor de fundo (hexadecimal)</translation>
 <translation id="4882919381756638075">Normalmente, os sites utilizam o seu microfone para funcionalidades de comunicação como chat de vídeo.</translation>
 <translation id="4883854917563148705">As definições geridas não podem ser repostas</translation>
 <translation id="4887024562049524730">Perguntar antes de permitir que os sites utilizem os seus dados e dispositivo de realidade virtual (recomendado)</translation>
@@ -508,6 +509,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
+<translation id="6630443592285535486">Introduza o código hexadecimal aqui</translation>
 <translation id="6635327442719709864">Quando esta opção está ativada, os sites podem pedir para usar portas de série. Quando esta opção está desativada, os sites não podem usar portas de série.</translation>
 <translation id="6678072580827808850">Rever verificação de segurança</translation>
 <translation id="6682057173375416470">Receba artigos sugeridos na página Novo separador</translation>
@@ -565,6 +567,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7399802613464275309">Verificação de segurança</translation>
 <translation id="7406113532070524618">Esta definição funciona sem saber a sua identidade nem permitir que os sites vejam o seu histórico de navegação, embora os sites possam partilhar uma pequena quantidade de informações como parte da validação</translation>
 <translation id="7409735910987429903">Os sites podem enviar pop-ups para mostrar anúncios ou utilizar redirecionamentos para levar o utilizador a Websites que pode não querer visitar.</translation>
+<translation id="7412160840120117304">Cor principal (hexadecimal)</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>

@@ -32,6 +32,7 @@
 <translation id="1345251407431278948">ปักหมุดแล้ว คุณเข้าถึงการค้นหารูปภาพได้อีกครั้งจากปุ่มใหม่ในแถบเครื่องมือ</translation>
 <translation id="1356661055722410047">ใหม่! คุณแปลได้ทั้งข้อความและรูปภาพบนหน้าจอ</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
+<translation id="1397530502368084401">&amp;จัดการโปรไฟล์ Chromium</translation>
 <translation id="1414495520565016063">คุณลงชื่อเข้าใช้ Chromium แล้ว!</translation>
 <translation id="141901961143729572">แชร์ความคิดเห็นของคุณ</translation>
 <translation id="1465192221147974788">หากต้องการแชร์หน้าต่าง ให้อนุญาตการบันทึกหน้าจอสำหรับ Chromium ใน "การตั้งค่าระบบ"</translation>
@@ -70,6 +71,7 @@
 <translation id="1896836275755235458">Chromium จะช่วยสงวนพลังงานแบตเตอรี่โดยการจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพ เช่น การเลื่อนอย่างราบรื่นและอัตราเฟรมวิดีโอ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดประหยัดพลังงาน<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">สอบถามเกี่ยวกับหน้านี้</translation>
 <translation id="1900969832270057921">บริการ Chromium Updater</translation>
+<translation id="1911666947158375684">เมื่อลงชื่อเข้าใช้อยู่ คุณจะใช้รหัสผ่านและข้อมูลอื่นๆ จากบัญชี Google ใน Chromium ได้ คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="1911763535808217981">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1929939181775079593">Chromium ไม่ตอบสนอง เปิดใหม่เลยหรือไม่</translation>
 <translation id="1933341829955786215">องค์กร <ph name="MANAGER" /> กำหนดให้คุณต้องลงชื่อเข้าใช้ Chromium</translation>
@@ -471,6 +473,7 @@
 <translation id="6669284030132180248">หากบันทึกบุ๊กมาร์กไว้ในบัญชี Google ด้วย คุณก็จะติดตามราคาผลิตภัณฑ์ใน Chromium และรับการแจ้งเตือนเมื่อราคาต่ำลงได้</translation>
 <translation id="6676384891291319759">เข้าถึงอินเทอร์เน็ต</translation>
 <translation id="668175097507315160">Chromium OS ซิงค์ข้อมูลไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
+<translation id="6691132793308828750">นำข้อมูลแอปนี้ออกจาก Chromium</translation>
 <translation id="6692797197837897398">Chromium ให้คุณควบคุมโฆษณาที่เห็นได้มากขึ้น และจำกัดว่าเว็บไซต์จะรู้อะไรเกี่ยวกับคุณได้บ้างเมื่อแสดงโฆษณาที่ปรับตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="6709350901466051922">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนสำหรับเว็บไซต์นี้</translation>
 <translation id="6712881677154121168">ข้อผิดพลาดในการดาวน์โหลด: <ph name="DOWNLOAD_ERROR" /></translation>
@@ -491,6 +494,7 @@
 <translation id="6877155553248388166">มุมขวาล่างของพื้นที่การค้นหา: ขวา <ph name="RIGHT" />% ล่าง <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6901631050894301805">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นและปักหมุดไว้ที่แถบงาน</translation>
+<translation id="6909503629704372277">&amp;จัดการโปรไฟล์ Chromium</translation>
 <translation id="6934579572334859869">ถามการค้นหารูปภาพเกี่ยวกับรูปภาพนี้</translation>
 <translation id="6964305034639999644">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="6965382102122355670">ตกลง</translation>

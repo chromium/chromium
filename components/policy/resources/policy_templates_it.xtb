@@ -635,6 +635,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): questo valore è obsoleto a partire dalla versione M121. A partire dalla versione M121, i valori verranno trattati come EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Disattiva controllo ortografico</translation>
+<translation id="1434936032334586168">Attiva stampa silenziosa</translation>
 <translation id="1435031247649241006">Nella schermata di blocco gli utenti hanno la possibilità di aprire una finestra di
 riautenticazione online e utilizzarla per il processo di autenticazione per rientrare nella sessione. Questa
 policy può essere utilizzata per aprire automaticamente la finestra se
@@ -1965,6 +1966,7 @@ Se la policy non viene configurata, gli utenti possono modificare l'elenco di ap
 <translation id="2306505001667207184">Richiedi all'utente di selezionare il certificato client quando la policy di selezione automatica corrisponde a più certificati.</translation>
 <translation id="230713790688681130">Attiva il layout Hindi Inscript</translation>
 <translation id="2307496301287881990">Segnala stati del display e della grafica</translation>
+<translation id="2308899582897965249">Disattiva stampa silenziosa</translation>
 <translation id="2309284543927494965">Blocca aggiornamenti</translation>
 <translation id="2309341709647905294">Non segnalare informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
@@ -2147,6 +2149,14 @@ Se questa policy non viene impostata, la Schermata sulla privacy verrà inizialm
 <translation id="2439733504887695659">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse per le credenziali inserite</translation>
 <translation id="2446029789419870019">Consenti l'utilizzo della funzionalità e il miglioramento dei modelli di AI</translation>
 <translation id="2446244536806499267">Non considerare l'utente inattivo durante la riproduzione di audio</translation>
+<translation id="2450392422484526374">L'impostazione di questa policy su true attiva la stampa silenziosa, che chiude immediatamente
+la finestra di anteprima di stampa, se aperta, e invia la stampa alla stampante predefinita con
+le opzioni predefinite. Se l'impostazione predefinita della stampante è "Salva come PDF", il file verrà
+salvato nella cartella Download.
+
+La mancata configurazione della policy o l'impostazione della policy su false disattiva la stampa silenziosa;
+la finestra di anteprima di stampa non si chiude automaticamente e
+l'utente deve effettuare una selezione come di consueto.</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
@@ -5214,21 +5224,6 @@ Se l'impostazione viene disattivata o se non viene configurata, il servizio di p
 Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="4607416370554533118">La configurazione della policy consente di creare un elenco di pattern URL che specifica i siti per cui Chrome può selezionare automaticamente un certificato client. Il valore è un array di dizionari JSON sotto forma di stringa, ognuno nel formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, dove <ph name="URL_PATTERN_PLACEHOLDER" /> rappresenta un pattern di impostazioni contenuti. <ph name="FILTER_PLACEHOLDER" /> consente di limitare i certificati client che il browser può selezionare automaticamente. Indipendentemente dal filtro, vengono selezionati solo certificati che soddisfano la richiesta di certificato del server.
-
-      Esempi di utilizzo della sezione <ph name="FILTER_PLACEHOLDER" />:
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> è impostato su <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, vengono selezionati solo i certificati client emessi da un certificato con valore CommonName uguale a <ph name="ISSUER_CN_PLACEHOLDER" />.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiene entrambe le sezioni <ph name="ISSUER_STRING_VALUE" /> e <ph name="SUBJECT_STRING_VALUE" />, vengono selezionati solo i certificati client che soddisfano entrambe le condizioni.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiene una sezione <ph name="SUBJECT_STRING_VALUE" /> con valore <ph name="FILTER_STRING_ORGANIZATION" />, un certificato richiede almeno un'organizzazione corrispondente al valore specificato per essere selezionato.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiene una sezione <ph name="SUBJECT_STRING_VALUE" /> con un valore <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, un certificato richiede almeno un'unità organizzativa corrispondente al valore specificato per essere selezionato.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> è impostato su <ph name="EMPTY_DICTIONARY" />, la selezione dei certificati client non viene limitata ulteriormente. Nota: si applicano ancora i filtri forniti dal server web.
-
-      Se la policy non viene configurata, non viene eseguita la selezione automatica per nessun sito.</translation>
 <translation id="4607499333275488034">Disattiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
 <translation id="4611983465824842867">Non mostrare avvisi o non disattivare la compilazione automatica sui moduli non sicuri</translation>
 <translation id="4615003180013429835">Modalità di analisi degli elenchi dei siti</translation>

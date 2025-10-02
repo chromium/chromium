@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Skrýt kartu Poklesy cen na kartách</translation>
 <translation id="1508931164824684991">Weby mohou používat JavaScript</translation>
 <translation id="1510341833810331442">Weby nemohou ukládat data do vašeho zařízení</translation>
+<translation id="1532175480576580256">Spodní panel Moje zkratky otevřený na celou výšku</translation>
 <translation id="1538031354170655462">Weby obvykle technologii NFC (Near Field Communication) používají ke komunikaci s lokátory nebo zařízeními v okolí, například ke skenování čipů nebo k bezkontaktnímu placení</translation>
 <translation id="1547123415014299762">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="1569054338208717605">Zrychlit weby v Chromu pomocí modulu V8, čímž se ale o trochu sníží odolnost Chromu vůči útokům</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">Většina navštěvovaných webů pravděpodobně ukládá data do vašeho zařízení, často za účelem zlepšení uživatelského prostředí (uloží se vaše předvolby a informace sdílené s weby). Doporučujeme toto nastavení ponechat zapnuté.</translation>
 <translation id="2289270750774289114">Zeptat se, když chce web objevit zařízení Bluetooth v okolí (doporučeno)</translation>
 <translation id="2315043854645842844">Volbu certifikátu na straně klienta operační systém nepodporuje.</translation>
+<translation id="2347601491101454548">Spodní panel Moje zkratky otevřený na polovinu výšky</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2379925928934107488">Když Chrome používá tmavý motiv, použít ho i pro Chrome (pokud je to možné)</translation>
 <translation id="2390272837142897736">Zvýšit přiblížení</translation>

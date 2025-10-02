@@ -1676,6 +1676,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7437712592381799950">You can swipe up to see more content tailored to you.</translation>
 <translation id="7438473148803748807">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
 <translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
+<translation id="7445682342344043969">Pop-ups blocked</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark saved to ‘{title}’}other{Bookmarks saved to ‘{title}’}}</translation>
 <translation id="7451404862887877229">Tap 'Privacy and security' and then 'Safe Browsing'</translation>
 <translation id="7454057999980797137">State/County</translation>
@@ -1866,7 +1867,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8096559642098770318">You can set a tab reminder to have a look at this site again in the future</translation>
 <translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="8102130909719902723">N</translation>
-<translation id="8105368624971345109">Turn Off</translation>
+<translation id="8105368624971345109">Turn off</translation>
 <translation id="8106442513853561174">Share precise location</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="8123502380991596210">Hide What's new</translation>
@@ -1999,7 +2000,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8611922158252451755">Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.</translation>
 <translation id="8614671330774943747">Go to Tab Switcher</translation>
 <translation id="8620640915598389714">Edit</translation>
-<translation id="8625706492572042370">Edit Home screen</translation>
+<translation id="8625706492572042370">Edit home screen</translation>
 <translation id="8631370184731241854">Locked Incognito tabs</translation>
 <translation id="8633025649649592204">Recent activity</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>

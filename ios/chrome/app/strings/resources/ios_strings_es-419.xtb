@@ -1676,6 +1676,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7437712592381799950">Puedes deslizar el dedo hacia arriba para ver más contenido personalizado para ti.</translation>
 <translation id="7438473148803748807">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y se desactivarán todos los vínculos de invitación</translation>
 <translation id="7438481509621345350">Ahora, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
+<translation id="7445682342344043969">Se bloquearon ventanas emergentes</translation>
 <translation id="7451023311965289370">{count,plural, =1{Se guardó el favorito en "{title}"}other{Se guardaron los favoritos en "{title}"}}</translation>
 <translation id="7451404862887877229">Presiona "Privacidad y seguridad" y, luego, "Navegación segura"</translation>
 <translation id="7454057999980797137">Estado/condado</translation>

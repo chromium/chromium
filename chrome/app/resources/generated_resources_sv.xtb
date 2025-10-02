@@ -1317,6 +1317,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1880618477732738742">Ändra och bevilja åtkomst till funktioner som geolokalisering, mikrofon, kamera, cookies osv. för alla dina webbplatser och tillägg, inklusive det här tillägget.</translation>
 <translation id="1881445033931614352">Tangentbordslayout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Objekt}other{# objekt}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Den aktuella synlighetsinställningen är Vissa kontakter</translation>
 <translation id="1884705339276589024">Ändra storlek på Linux-disken</translation>
 <translation id="1885066963699478692">XML-filer som används för att ställa in principerna.</translation>
@@ -3835,6 +3836,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3629664892718440872">Kom ihåg det här valet</translation>
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Lägg till den här webbplatsen på hyllan och använd den när som helst</translation>
+<translation id="3633492436029262388">Om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter kan du spara dem i Google-kontot</translation>
 <translation id="3633759325857031264">HDMI-enhet</translation>
 <translation id="3634652306074934350">Begäran om behörighet har löpt ut</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) upptäcktes</translation>
@@ -7765,6 +7767,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6391131092053186625">Enhetens IMEI-nummer är <ph name="IMEI_NUMBER" />. Detta nummer kan användas för att aktivera tjänsten.</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
 <translation id="6393550101331051049">Får visa osäkert innehåll</translation>
+<translation id="6394634179843537518">Lägg till en fil</translation>
 <translation id="6395423953133416962">Skicka <ph name="BEGIN_LINK1" />systeminformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ja, håll min data åtskild från skolan (rekommenderas)</translation>
 <translation id="6398715114293939307">Ta bort Google Play Butik</translation>
@@ -8006,6 +8009,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6569931898053264308">Medelstora besparingar</translation>
 <translation id="6570622975915850879">Använd en annan enhet</translation>
 <translation id="65711204837946324">Behörighet krävs för nedladdning</translation>
+<translation id="6571178651832779742">Spara bokmärkena i Google-kontot om du vill ta bort dubbletter</translation>
 <translation id="6571533309669248172">Textformatering</translation>
 <translation id="6571772921213691236">Redigera inloggningsdata</translation>
 <translation id="657229725818377235">Få ett bättre skydd mot farliga webbplatser och nedladdningar</translation>
@@ -8642,6 +8646,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7001066449188684145">Identifiering krävs för att skriva ut på <ph name="PRINTER_NAME" />. Kontakta administratören.</translation>
 <translation id="7001397294201412227">Använd en telefon, surfplatta eller säkerhetsnyckel</translation>
 <translation id="7001556399332161712">Sök och förslag</translation>
+<translation id="7001809623433867903">Vill du ta bort bokmärken?</translation>
 <translation id="7003339318920871147">Webbdatabaser</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="7003644704445046755">Röstfiler av hög kvalitet på <ph name="LANGUAGE" /> har laddats ned</translation>
@@ -9122,6 +9127,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7356908624372060336">Nätverksloggar</translation>
 <translation id="7357271391997763660">Vill du köra lösenordskontrollen?</translation>
 <translation id="735745346212279324">VPN frånkopplat</translation>
+<translation id="7359326150089800742">Lägg till en flik eller fil i sökningen och använd även ett verktyg</translation>
 <translation id="7359680654975233185">Det gick inte att casta fliken</translation>
 <translation id="7360257054721917104">Visar sparade skrivbord och mallar. Tryck på tabb för att navigera.</translation>
 <translation id="7360333718677093875">emoji -väljaren</translation>
@@ -9298,7 +9304,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="747114903913869239">Fel: det går inte att avkoda tillägget</translation>
 <translation id="7471520329163184433">Långsammare</translation>
 <translation id="747312361841682912">Radera data som visas</translation>
-<translation id="7473555040328423550">Lägg till flik</translation>
 <translation id="7473891865547856676">Nej tack</translation>
 <translation id="7474043404939621342">Anpassa ditt verktygsfält</translation>
 <translation id="747459581954555080">Återställ alla</translation>
@@ -9928,6 +9933,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Gör Linux-portar tillgängliga för andra enheter på nätverket.</translation>
 <translation id="7906440585529721295">Lokal data raderas</translation>
+<translation id="7907312522152480478">Om du vill få tillgång till flikar från dina andra enheter måste du verifiera din identitet och synkronisera din historik och dina flikar. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7907502219904644296">Ändra åtkomst</translation>
 <translation id="7907837847548254634">Visa en snabb markering av objektet i fokus</translation>
 <translation id="7908378463497120834">Minst en partition på den externa lagringsenheten kunde inte monteras.</translation>
@@ -10564,6 +10570,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8323167517179506834">Skriv en webbadress</translation>
 <translation id="8323317289166663449">Läsa och ändra all din data på datorn och alla webbplatser</translation>
 <translation id="8323518750352551353">Vill du surfa separat?</translation>
+<translation id="8323744572398547859">Logga in och synkronisera historiken om du vill ha samma flikar tillgängliga på alla enheter. Du får även dina lösenord med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="8324158725704657629">Fråga inte igen</translation>
 <translation id="8325413836429495820">Får inte se urklippet</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkedja</translation>
@@ -11870,7 +11877,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9215293857209265904"><ph name="EXTENSION_NAME" /> har lagts till</translation>
 <translation id="9215742531438648683">Avinstallera Google Play Butik</translation>
 <translation id="9218430445555521422">Ange som standard</translation>
-<translation id="9218536722110863203">Ladda upp fil</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (appen stöds inte)</translation>
 <translation id="9219572436491982747">Data som skickas till Google kan ses av mänskliga granskare för att förbättra Chromes AI-teknik</translation>
 <translation id="9219741625496141320">Webbinformation har raderats automatiskt</translation>

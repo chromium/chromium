@@ -249,6 +249,9 @@
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="383928141529488001">Google Chrome skal have adgang til Bluetooth for at finde 
  Bluetooth-enheder. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Opsummer:** Beskriv det primære emne og formålet med indholdet på screenshottet i én sætning på under 30 ord.
+
+          **Foreslå spørgsmål:** Generér en opstilling med punkttegn med 3-5 tankevækkende spørgsmål, som en bruger kan stille for bedre at forstå screenshottet. Disse spørgsmål skal omfatte mindst ét spørgsmål, der specifikt handler om et visuelt objekt, dets design eller dets placering.</translation>
 <translation id="386202838227397562">Luk alle Google Chrome-vinduer, og prøv igen.</translation>
 <translation id="3873044882194371212">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
 <translation id="3885770153807205175">Sprogvælger</translation>
@@ -520,6 +523,7 @@
 <translation id="7024536598735240744">Fejl under udpakning: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installationen blev afbrudt.</translation>
 <translation id="7025800014283535195">Her kan du skifte mellem Chrome-profiler</translation>
+<translation id="7047386856539490735">Er disse resultater nyttige?</translation>
 <translation id="7051685429025310665">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Tilpas Chrome</translation>
 <translation id="7060643578009939353">Søg med denne video via Google Lens</translation>
@@ -687,6 +691,7 @@
 <translation id="8883862939660515976">Stil Google Lens spørgsmål om dette billede</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
+<translation id="8922998289262614701">Fjern denne apps data fra Chrome</translation>
 <translation id="8948460679427074738">Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data. Chrome anbefaler, at du fjerner den.</translation>
 <translation id="8958307504142971576">Du har nu flere tilgængelige funktioner i Chrome</translation>
 <translation id="8991530961471831170">Åbn Gemini i Chrome</translation>

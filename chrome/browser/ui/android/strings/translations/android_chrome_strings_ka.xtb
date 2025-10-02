@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">იგზავნება <ph name="DEVICE_NAME" />-ზე…</translation>
 <translation id="103269572468856066">ამ საიტებისა და აპების მონაცემთა გასუფთავებაც გსურთ?</translation>
 <translation id="1034259925032978114">ფანჯარა გახსნილია</translation>
+<translation id="1035113036584565771">რჩევების შეტყობინების პრომო დაიხურა</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1045899828449635435">ამ საიტების მონაცემთა გასუფთავებაც გსურთ?</translation>
 <translation id="1049743911850919806">ინკოგნიტო</translation>
 <translation id="1052842760770519282">თქვენი ზოგიერთი პაროლი მიუწვდომელია</translation>
 <translation id="1058669287135776095">თქვენ ხაზგარეშე რეჟიმში ხართ. შეამოწმეთ კავშირი ინტერნეტთან და ხელახლა ცადეთ.</translation>
+<translation id="1066338698580889414">რჩევების შეტყობინების პრომო გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="1070689840697074178">PDF-ების ჩამოტვირთვა აქ შეგიძლიათ</translation>
 <translation id="107147699690128016">ფაილის გაფართოების შეცვლის შემთხვევაში, ფაილი შეიძლება გაიხსნას სხვა აპლიკაციაში და პოტენციურად შეუქმნას საფრთხე თქვენს მოწყობილობას.</translation>
 <translation id="1086486568852410168">ძიება Google Lens-ით</translation>
@@ -152,6 +154,7 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="1702543251015153180">გსურთ, შეცვალოთ მუქი თემის პარამეტრები?</translation>
 <translation id="1702907158640575240">მართული ბრაუზერი</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, ინკოგნიტო ჩანართი ჩამაგრებულია</translation>
 <translation id="1718835860248848330">ბოლო საათი</translation>
 <translation id="1726477445370128854">თუ Chrome წინასწარ ჩატვირთავს გვერდებს, რომლებიც, მისი გათვლებით, შეიძლება მოინახულოთ, ვების დათვალიერებისა და ძიების პროცესი დაჩქარდება</translation>
 <translation id="1728803206919861584">გსურთ, შეინახოთ წვდომის გასაღები ინკოგნიტო რეჟიმის მიღმა?</translation>
@@ -440,6 +443,7 @@
 <translation id="3027950907978057636"><ph name="APP_LABEL" />-დან</translation>
 <translation id="3029276696788198026">წინასწარ ჩატვირთვის გარეშე</translation>
 <translation id="3029704984691124060">კოდური ფრაზები ერთმანეთს არ ემთხვევა</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, არჩეული ჩანართი ჩამაგრებულია</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />მიიღეთ დახმარება<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">ფასისთვის თვალის მიდევნება</translation>
 <translation id="3037517125981011456">გამოაჩენს Chrome-ში შესვლის მოთხოვნებს</translation>
@@ -627,6 +631,7 @@
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="397583555483684758">სინქრონიზაციის პროცესი შეწყდა</translation>
 <translation id="3976396876660209797">ამოშალეთ და ხელახლა შექმენით ეს მალსახმობი</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, ჩანართი ჩამაგრებული</translation>
 <translation id="3985022125189960801">კვლავ დაამატეთ საიტი, თუ გსურთ, რომ ის იმ საიტების რიგებში მოხვდეს, რომლებსაც შეუძლია თქვენთვის საინტერესო კონტენტის პროგნოზირება</translation>
 <translation id="3985215325736559418">გსურთ, ხელახლა ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">ბმულის კოპირება</translation>
@@ -1417,6 +1422,7 @@
 <translation id="7375125077091615385">ტიპი:</translation>
 <translation id="7376560087009844242">გვერდზე არსებული მეტი ტექსტის დართვის შემთხვევაში, შესაძლოა, უკეთესი შედეგები იხილოთ „ძიებისთვის შეხებით“ სარგებლობისას. ამ ფუნქციის შეცვლა ნებისმიერ დროს შეგიძლიათ <ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">ხელმისაწვდომია მუქი თემა საიტებისთვის</translation>
+<translation id="7384486627147155832">რჩევების შეტყობინების პრომო გაიხსნა ნახევარ სიმაღლეზე</translation>
 <translation id="7388615499319468910">საიტებსა და რეკლამის განმთავსებლებს შეუძლიათ რეკლამის ეფექტურობის გარკვევა. ეს პარამეტრი გამორთულია.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{სიაშია 1 სხვა ფაილი}other{სიაშია # სხვა ფაილი}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8090732854597034573">საჭიროებისამებრ, დაიხმარეთ მშობელი</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> ჩანართები არ ფიქსირდება</translation>
 <translation id="8103578431304235997">ინკოგნიტო ჩანართი</translation>
+<translation id="810433609302852">რჩევების შეტყობინების ჩვენების პრომოსა და გამოყენების ინსტრუქციის ქვედა ფურცელი</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">დალაგების ვარიანტების დახურვა</translation>
 <translation id="8110024788458304985">Chrome-ის ფუნქციებისა და წარმადობის გაუმჯობესების ხელშეწყობა</translation>
@@ -1830,6 +1837,7 @@
 <translation id="9169507124922466868">ნავიგაციის ისტორია ნახევრადგახსნილია</translation>
 <translation id="9189607089796819144">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">ისტორია თქვენს ყველა სინქრონიზებულ მოწყობილობაზე გაქვთ ჩართული, ამიტომ შეგიძლიათ არ მოცდეთ</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, არჩეული ინკოგნიტო ჩანართი ჩამაგრებულია</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{შემოწმდა 1 წუთის წინ}other{შემოწმდა # წუთის წინ}}</translation>
 <translation id="9204836675896933765">დარჩენილია 1 ფაილი</translation>
 <translation id="9205933215779845960">ამ გვერდის პოვნა ვერ ხერხდება. შეამოწმეთ მართლწერა ან ცადეთ მოძიება აქ: <ph name="SEARCH_ENGINE" />.</translation>

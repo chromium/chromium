@@ -2182,7 +2182,7 @@
 <translation id="4582595824823167856">SMS алуу</translation>
 <translation id="4584094413232466841">Бул маалымат Chrome автотолтуруудан өчүрүлсүнбү?</translation>
 <translation id="4586607503179159908">Төлөм ыкмасы ырасталды</translation>
-<translation id="4587425331216688090">Дарек Chrome'дон алынып салынсынбы?</translation>
+<translation id="4587425331216688090">Даректи Chrome'дон өчүрөсүзбү?</translation>
 <translation id="459089498662672729">Администратор <ph name="ORIGIN_NAME" /> сайтынан бул жерге чаптоону сунуштабайт</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" /> менен туташууңуз заманбап шифр топтому менен шифрленген.</translation>
 <translation id="4594403342090139922">Жок кылууну &amp;жасабоо</translation>
@@ -3149,7 +3149,7 @@
 <translation id="6215936431492593050">Металл (сатин)</translation>
 <translation id="6217950634729714357">Ашкана жана тамактануу жайларындагы эмеректер</translation>
 <translation id="6218305986815100395">Виртуалдык карта күйгүзүлгөн жок</translation>
-<translation id="6218753634732582820">Дарек Chromium'дан алынып салынсынбы?</translation>
+<translation id="6218753634732582820">Даректи Chromium'дан өчүрөсүзбү?</translation>
 <translation id="622039917539443112">Параллелдүү бүктөө</translation>
 <translation id="6221286101741304627">Толук экрандан чыгуу үчүн |<ph name="ACCELERATOR" />| баскычын басыңыз</translation>
 <translation id="6221311046884916259">Бул картаны Google аккаунтуңузга сактап коёсузбу?</translation>
@@ -3430,7 +3430,7 @@
 <translation id="6665553082534466207">Оң жагын үч жолу тешүү</translation>
 <translation id="6668389483194953109">Кагаздын өлчөмүнүн аталышы "custom", бирок "custom_size" касиети бош же жараксыз.</translation>
 <translation id="6671169470640320959">Авто каржылоо</translation>
-<translation id="6671697161687535275">Форма сунушу Chromium'дан алынып салынсынбы?</translation>
+<translation id="6671697161687535275">Сунушту Chromium'дан өчүрөсүзбү?</translation>
 <translation id="6675846980676550611">AR'га (кошумчаланган чындык) тыюу салынат</translation>
 <translation id="6677351035258626477">Тез татым</translation>
 <translation id="6677738644213083042">Бул өтмөккө которулуу</translation>
@@ -3989,7 +3989,7 @@
 <translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> колдонмосунда сырсөзүңүздү толтурууга аракет кылып жатат.</translation>
 <translation id="7569072768465750771">{COUNT,plural, =0{Жок}=1{Ушул түзмөктөгү 1 өтмөк}other{Ушул түзмөктөгү # өтмөк}}</translation>
 <translation id="7569490014721427265">Гольф</translation>
-<translation id="7569952961197462199">Насыя картасы Chrome'дон алынып салынсынбы?</translation>
+<translation id="7569952961197462199">Насыя картасын Chrome'дон өчүрөсүзбү?</translation>
 <translation id="7569983096843329377">Кара</translation>
 <translation id="7571813784389228510">Google ЖИ режими</translation>
 <translation id="7574998639136359461">Кышкы спорттук жабдуулар</translation>
@@ -4034,7 +4034,7 @@
 <translation id="7633909222644580952">Майнаптуулук дайындары жана ката жөнүндө кабарлоолор</translation>
 <translation id="7634963626477752453"><ph name="FOLDER_NAME" /> папкаңызга сакталды</translation>
 <translation id="7636346903338549690">Үчүнчү тараптын cookie файлдарын колдонууга уруксат берилген сайттар</translation>
-<translation id="7637571805876720304">Насыя картасы Chromium'дан алынып салынсынбы?</translation>
+<translation id="7637571805876720304">Насыя картасын Chromium'дан өчүрөсүзбү?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Жок}=1{1 сырсөз аккаунтуңузда сакталган (<ph name="DOMAIN_LIST" /> үчүн)}other{# сырсөз аккаунтуңузда сакталган (<ph name="DOMAIN_LIST" /> үчүн)}}</translation>
 <translation id="7638605456503525968">Сериялык порттор</translation>
 <translation id="7646681339175747202">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Сырсөздөрдү башкаргыч бул сырсөздү азыр өзгөртүүнү сунуштайт.</translation>
@@ -4146,7 +4146,7 @@
 <translation id="7805906048382884326">Кеңешти жабуу</translation>
 <translation id="7810410097247356677">Кийинки жолу тезирээк төлөө үчүн картаңызды жана шифрленген коопсуздук кодун түзмөккө сактаңыз</translation>
 <translation id="7812922009395017822">Mir</translation>
-<translation id="7813600968533626083">Форма сунушу Chrome'дон алынып салынсынбы?</translation>
+<translation id="7813600968533626083">Сунушту Chrome'дон өчүрөсүзбү?</translation>
 <translation id="781440967107097262">Буфер бөлүшүлсүнбү?</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Кагаз (жөнөкөй)</translation>

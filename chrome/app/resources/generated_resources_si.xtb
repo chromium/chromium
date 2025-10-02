@@ -1306,6 +1306,7 @@
 <translation id="1880618477732738742">මෙම දිගුව ඇතුළුව, ඔබේ සියලු ම වෙබ් අඩවි සහ දිගු සඳහා භු ස්ථානය, මයික්‍රෆෝනය, කැමරාව, කුකීස් වැනි විශේෂාංග වෙනස් කර ප්‍රවේශය ලබා දෙන්න.</translation>
 <translation id="1881445033931614352">යතුරු පුවරු සැලැස්ම</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{අයිතමය}one{අයිතම #}other{අයිතම #}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">වත්මන් දෘශ්‍යතා සැකසීම සමහර සම්බන්ධතාය</translation>
 <translation id="1884705339276589024">ලිනක්ස් තැටිය ප්‍රතිප්‍රමාණ කරන්න</translation>
 <translation id="1885066963699478692">ප්‍රතිපත්ති සැකසීමට භාවිත කරන XML ගොනු.</translation>
@@ -3822,6 +3823,7 @@
 <translation id="3629664892718440872">මෙම තේරීම මතක තබා ගන්න</translation>
 <translation id="3630132874740063857">ඔබේ දුරකථනය</translation>
 <translation id="3630995161997703415">මෙම අඩවිය ඕනෑම වේලාවක භාවිත කිරීමට එය ඔබේ රාක්කයට එක් කරන්න</translation>
+<translation id="3633492436029262388">ඔබේ සියලු උපාංගවල මුරපද, පිටුසන්, සහ තවත් දේ ලබා ගැනීමට, ඒවා ඔබේ Google ගිණුමේ සුරකින්න</translation>
 <translation id="3633759325857031264">HDMI උපාංගය</translation>
 <translation id="3634652306074934350">අවසර ඉල්ලීම කල් ඉකුත් විය</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) අනාවරණය කර ගන්නා ලදි</translation>
@@ -7753,6 +7755,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6391131092053186625">ඔබේ උපාංගයේ IMEI <ph name="IMEI_NUMBER" /> වේ. සේවාව සක්‍රිය කිරීමට උදවු කිරීමට මෙම අංකය භාවිතා කළ හැක.</translation>
 <translation id="6393156038355142111">ප්‍රබල මුරපදයක් යෝජනා කරන්න</translation>
 <translation id="6393550101331051049">අනාරක්ෂිත අන්තර්ගතය පෙන්වීමට ඉඩ දේ</translation>
+<translation id="6394634179843537518">ගොනුව එක් කරන්න</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />පද්ධති තොරතුරු<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />මෙට්‍රික්<ph name="END_LINK2" /> යවන්න</translation>
 <translation id="6397586889873084061">ඔව්, මගේ දත්ත පාසලෙන් වෙන්ව තබා ගන්න (නිර්දේශිතයි)</translation>
 <translation id="6398715114293939307">Google Play Store ඉවත් කරන්න</translation>
@@ -7992,6 +7995,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6569931898053264308">මධ්‍යම ඉතුරුම්</translation>
 <translation id="6570622975915850879">වෙනස් උපාංගයක් භාවිත කරන්න</translation>
 <translation id="65711204837946324">බාගැනීමට අවසරය අවශ්‍යයි</translation>
+<translation id="6571178651832779742">ඕනෑම අනුපිටපත් පිටු සලකුණු පිරිසිදු කිරීමට, ඒවා ඔබගේ Google ගිණුමේ සුරකින්න</translation>
 <translation id="6571533309669248172">පෙළ හැඩ ගැන්වීම</translation>
 <translation id="6571772921213691236">පුරනය-වීමේ දත්ත සංස්කරණය කරන්න</translation>
 <translation id="657229725818377235">භයානක වෙබ් අඩවි සහ බාගැනීම්වලට එරෙහිව වැඩිපුර ආරක්ෂණයක් ලබා ගන්න</translation>
@@ -8630,6 +8634,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> හි මුද්‍රණය කිරීමට හඳුනා ගැනීම අවශ්‍යයි. කරුණාකර ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="7001397294201412227">දුරකථනයක්, ටැබ්ලටයක් හෝ ආරක්ෂිත යතුරක් භාවිත කරන්න</translation>
 <translation id="7001556399332161712">සෙවීම සහ යෝජනා</translation>
+<translation id="7001809623433867903">පිටු සලකුණු පිරිසිදු කරන්න ද?</translation>
 <translation id="7003339318920871147">ජාල දත්තමූල</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{ගොනු {COUNT}}one{ගොනු {COUNT}}other{ගොනු {COUNT}}}</translation>
 <translation id="7003644704445046755">ඉහළ ගුණත්වයේ <ph name="LANGUAGE" /> හඬ ගොනු බාගන්නා ලදි</translation>
@@ -9109,6 +9114,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7356908624372060336">ජාල ලොග</translation>
 <translation id="7357271391997763660">මුරපද පරීක්ෂාව ධාවනය කරන්න ද?</translation>
 <translation id="735745346212279324">VPN විසන්ධි විය</translation>
+<translation id="7359326150089800742">ඔබේ සෙවූමට පටිත්තක් හෝ ගොනුවක් එක් කරන්න, තව ද මෙවලමක් භාවිතා කරන්න</translation>
 <translation id="7359680654975233185">පටිත්ත විකාශය කිරීමට නොහැකි වේ</translation>
 <translation id="7360257054721917104">සුරකින ලද මේස සහ අච්චු බැලීම. සංචාලනය කිරීමට පටිත්ත ඔබන්න.</translation>
 <translation id="7360333718677093875">ඉමොජි තෝරකය</translation>
@@ -9285,7 +9291,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="747114903913869239">දෝෂය: දිගුව විසංකේතනය කිරීමට නොහැකියිය</translation>
 <translation id="7471520329163184433">වඩා මන්දගාමී</translation>
 <translation id="747312361841682912">සංදර්ශන කෙරෙන දත්ත මකන්න</translation>
-<translation id="7473555040328423550">පටිත්ත එක් කරන්න</translation>
 <translation id="7473891865547856676">එපා ස්තූතියි</translation>
 <translation id="7474043404939621342">ඔබේ මෙවලම් තීරුව අභිරුචිකරණය කරන්න</translation>
 <translation id="747459581954555080">සියල්ල ප්‍රතිස්ථාපනය කරන්න</translation>
@@ -9915,6 +9920,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7903984238293908205">කටගනා</translation>
 <translation id="7904526211178107182">ලිනක්ස් තොට ඔබේ ජාලයෙන් වෙනත් උපාංගවලට ලද හැකි කරන්න.</translation>
 <translation id="7906440585529721295">දේශීය දත්ත මැකී යයි</translation>
+<translation id="7907312522152480478">ඔබේ අනෙකුත් උපාංගවලින් ඔබේ පටිති ලබා ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කර ඔබේ ඉතිහාසය සහ පටිති සමමුහුර්ත කරන්න. ඔබට සැකසීම් තුළ ඕනෑම වේලාවකට සමමුහූර්ත කිරීම නැවැත්විය හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
 <translation id="7907502219904644296">ප්‍රවේශය වෙනස් කරන්න</translation>
 <translation id="7907837847548254634">නාභිගත වස්තුවට ඉක්මන් උද්දීපනයක් පෙන්වන්න</translation>
 <translation id="7908378463497120834">සමාවන්න, අඩුවශයෙන් ඔබේ බාහිර ගබඩා උපාංගය මත එක් කොටසක්වත් නැංවිය නොහැක.</translation>
@@ -10550,6 +10556,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8323167517179506834">ලිපිනය යොදන්න</translation>
 <translation id="8323317289166663449">ඔබගේ පරිගණකයේ සහ සියලු වෙබ් අඩවිවල ඔබගේ සියලු දත්ත කියවන්න සහ වෙනස් කරන්න</translation>
 <translation id="8323518750352551353">වෙනම බ්‍රවුස් කරන්න ද?</translation>
+<translation id="8323744572398547859">ඔබේ අනෙකුත් උපාංගවලින් ඔබේ පටිගත කිරීම ලබා ගැනීමට, පුරනය වී ඉතිහාසය සමමුහුර්ත කරන්න. ඔබේ සියලු උපාංගවල ඔබේ මුරපද සහ තවත් දේ ඔබට ලැබෙනු ඇත. ඔබට සැකසීම් තුළ ඕනෑම වේලාවකට සමමුහූර්ත කිරීම නැවැත්විය හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
 <translation id="8324158725704657629">නැවත නොඅසන්න</translation>
 <translation id="8325413836429495820">ඔබගේ පසුරු පුවරුව බැලීමට ඉඩ නොදේ</translation>
 <translation id="8326478304147373412">PKCS #7, සහතික දාමය</translation>
@@ -11857,7 +11864,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" එක්කරන ලදී</translation>
 <translation id="9215742531438648683">Google Play Store අස්ථාපන කරන්න</translation>
 <translation id="9218430445555521422">පෙරනිමි ලෙස සකසන්න</translation>
-<translation id="9218536722110863203">ගොනුව උඩුගත කරන්න</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (සහාය නොදක්වන යෙදුම)</translation>
 <translation id="9219572436491982747">Chrome AI හි තාක්ෂණය වැඩි දියුණු කිරීම සඳහා Google වෙත යවන ලද දත්ත මානව සමාලෝචකයින් විසින් දැකිය හැක</translation>
 <translation id="9219741625496141320">බ්‍රවුස් කිරීමේ දත්ත ස්වයංක්‍රීයව මකා දමන ලදි</translation>

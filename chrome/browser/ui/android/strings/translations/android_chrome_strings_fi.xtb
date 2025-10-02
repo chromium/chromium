@@ -1378,7 +1378,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7191430249889272776">Välilehti avattiin taustalla.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Vaihda se nyt}other{Vaihda ne nyt}}</translation>
 <translation id="7196215469483532480">Yksityisyysoppaan selitys kokonaan avattuna</translation>
-<translation id="7196455519852483601">Voit poistaa osan tai kaiken historian, evästeet, sivustodatan ja muuta</translation>
+<translation id="7196455519852483601">Voit poistaa mm. historian, evästeet ja sivustodatan osittain tai kokonaan</translation>
 <translation id="7197682514647286393">Poista selausdata nopeasti</translation>
 <translation id="7207760545532569765">Palauta <ph name="TAB_COUNT" /> välilehteä uusina taustavälilehtinä.</translation>
 <translation id="7217781228893594884">Incognito-välilehdet lukitaan, kun poistut Chromesta</translation>

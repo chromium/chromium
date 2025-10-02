@@ -1317,6 +1317,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1880618477732738742">Verander en verleen toegang tot kenmerke soos geoligging, mikrofoon, kamera, webkoekies, ens., vir al jou webwerwe en uitbreidings, insluitend hierdie uitbreiding.</translation>
 <translation id="1881445033931614352">Sleutelborduitleg</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# items}}</translation>
+<translation id="188177382966899059">Diep Delf</translation>
 <translation id="1884340228047885921">Huidige sigbaarheidinstelling is sommige kontakte</translation>
 <translation id="1884705339276589024">Verander grootte van Linux-skyf</translation>
 <translation id="1885066963699478692">XML-lêers wat gebruik word om die beleide te stel.</translation>
@@ -3835,6 +3836,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3629664892718440872">Onthou hierdie keuse</translation>
 <translation id="3630132874740063857">Jou foon</translation>
 <translation id="3630995161997703415">Voeg hierdie werf by jou rak om dit enige tyd te gebruik</translation>
+<translation id="3633492436029262388">Om jou wagwoorde, boekmerke en meer op al jou toestelle te kry, moet jy hulle in jou Google-rekening stoor</translation>
 <translation id="3633759325857031264">HDMI-toestel</translation>
 <translation id="3634652306074934350">Toestemmingversoek het verval</translation>
 <translation id="3635199270495525546">Vertroude platformmodule (TPM) bespeur</translation>
@@ -7766,6 +7768,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6391131092053186625">Jou toestel se IMEI is <ph name="IMEI_NUMBER" />. Hierdie nommer kan gebruik word om diens te help aktiveer.</translation>
 <translation id="6393156038355142111">Stel sterk wagwoord voor</translation>
 <translation id="6393550101331051049">Mag onveilige inhoud wys</translation>
+<translation id="6394634179843537518">Voeg lêer by</translation>
 <translation id="6395423953133416962">Stuur <ph name="BEGIN_LINK1" />stelselinligting<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />metrieke<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ja, hou my data afsonderlik van skool (aanbeveel)</translation>
 <translation id="6398715114293939307">Verwyder Google Play Winkel</translation>
@@ -8007,6 +8010,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6569931898053264308">Middelmatige besparing</translation>
 <translation id="6570622975915850879">Gebruik ’n ander toestel</translation>
 <translation id="65711204837946324">Benodig toestemming om af te laai</translation>
+<translation id="6571178651832779742">Om enige duplikaatboekmerke skoon te maak, moet jy hulle in jou Google-rekening stoor</translation>
 <translation id="6571533309669248172">Teksformatering</translation>
 <translation id="6571772921213691236">Wysig aanmelddata</translation>
 <translation id="657229725818377235">Kry meer beskerming teen gevaarlike webwerwe en aflaaie</translation>
@@ -8643,6 +8647,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7001066449188684145">Identifikasie word benodig om drukwerk na <ph name="PRINTER_NAME" /> toe te stuur. Kontak jou administrateur.</translation>
 <translation id="7001397294201412227">Gebruik ’n foon, tablet of sekuriteitsleutel</translation>
 <translation id="7001556399332161712">Soek en voorstelle</translation>
+<translation id="7001809623433867903">Maak boekmerke skoon?</translation>
 <translation id="7003339318920871147">Webdatabasisse</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} lêer}other{{COUNT} lêers}}</translation>
 <translation id="7003644704445046755"><ph name="LANGUAGE" /> Voice-lêers van hoë gehalte is afgelaai</translation>
@@ -9122,6 +9127,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7356908624372060336">Netwerkloglêers</translation>
 <translation id="7357271391997763660">Voer wagwoordkontrole uit?</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>
+<translation id="7359326150089800742">Voeg ’n oortjie of lêer by jou soektog, en gebruik ook ’n nutsding</translation>
 <translation id="7359680654975233185">Kan nie oortjie uitsaai nie</translation>
 <translation id="7360257054721917104">Bekyk tans gestoorde lessenaars en template. Druk oortjie om te navigeer.</translation>
 <translation id="7360333718677093875">emosiekoonkieser</translation>
@@ -9298,7 +9304,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="747114903913869239">Fout: Kon nie uitbreiding ontsyfer nie</translation>
 <translation id="7471520329163184433">Stadiger</translation>
 <translation id="747312361841682912">Vee vertoonde data uit</translation>
-<translation id="7473555040328423550">Voeg oortjie by</translation>
 <translation id="7473891865547856676">Nee, Dankie</translation>
 <translation id="7474043404939621342">Pasmaak jou nutsbalk</translation>
 <translation id="747459581954555080">Stel alles terug</translation>
@@ -9928,6 +9933,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Maak Linux-poorte aan ander toestelle op jou netwerk beskikbaar.</translation>
 <translation id="7906440585529721295">Plaaslike data sal uitgevee word</translation>
+<translation id="7907312522152480478">Om jou oortjies van jou ander toestelle te kry, verifieer dat dit jy is en sinkroniseer jou geskiedenis en oortjies. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="7907502219904644296">Verander toegang</translation>
 <translation id="7907837847548254634">Merk vinnig die voorwerp waarop gefokus word</translation>
 <translation id="7908378463497120834">Jammer, minstens een deel van jou eksterne bergingtoestel kon nie gekoppel word nie.</translation>
@@ -10563,6 +10569,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8323167517179506834">Tik URL</translation>
 <translation id="8323317289166663449">Lees en verander al jou data op jou rekenaar en alle webwerwe</translation>
 <translation id="8323518750352551353">Skei blaai?</translation>
+<translation id="8323744572398547859">Om jou oortjies van jou ander toestelle te kry, meld aan en sinkroniseer geskiedenis. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="8324158725704657629">Moenie weer vra nie</translation>
 <translation id="8325413836429495820">Mag nie jou knipbord sien nie</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikaatketting</translation>
@@ -11869,7 +11876,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" is bygevoeg</translation>
 <translation id="9215742531438648683">Deïnstalleer Google Play Winkel</translation>
 <translation id="9218430445555521422">Stel as verstek</translation>
-<translation id="9218536722110863203">Laai lêer op</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ongesteunde app)</translation>
 <translation id="9219572436491982747">Data wat na Google toe gestuur word, kan gesien word deur mense wat kontrolering uitvoer om Chrome AI se tegnologie te verbeter</translation>
 <translation id="9219741625496141320">Blaaierdata is outomaties uitgevee</translation>

@@ -1676,6 +1676,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7437712592381799950">Du kan svepa uppåt för att se mer innehåll som är anpassat för dig.</translation>
 <translation id="7438473148803748807">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
 <translation id="7438481509621345350">Nu visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
+<translation id="7445682342344043969">Popupfönster har blockerats</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bokmärke har sparats i {title}}other{Bokmärken har sparats i {title}}}</translation>
 <translation id="7451404862887877229">Tryck på Integritet och säkerhet och sedan på Säker webbsökning</translation>
 <translation id="7454057999980797137">Delstat/county</translation>

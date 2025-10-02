@@ -1385,6 +1385,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1931152874660185993">Não existem componentes instalados.</translation>
 <translation id="1931410639376954712">A instalar o <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Não anterior a</translation>
+<translation id="1932125073382155239">Fazer uma cópia de segurança dos seus itens?</translation>
 <translation id="1933070475689690969">Atividade das Apps Gemini</translation>
 <translation id="1933489278505808700">Com autorização para ler e alterar</translation>
 <translation id="1935303383381416800">Com autorização para ver a sua localização</translation>
@@ -1848,6 +1849,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="225614027745146050">Bem-vindo</translation>
 <translation id="2257053455312861282">Adicionar uma conta escolar permite iniciar sessão facilmente em Websites, extensões e apps como aluno e continuar a trabalhar sob controlo parental.</translation>
 <translation id="225716114209817872">Máximo</translation>
+<translation id="2259337945538989999">Para ver os separadores dos seus outros dispositivos, valide a sua identidade. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="2261323523305321874">O administrador efetuou uma alteração ao nível do sistema que desativa alguns perfis antigos.</translation>
 <translation id="22614517036276112">Este documento ou o seu dispositivo não cumpre algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.</translation>
 <translation id="2262477216570151239">Atraso antes da repetição</translation>
@@ -2055,6 +2057,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2393313392064891208">Conteúdo dos Termos do Google ChromeOS Flex</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> oculto</translation>
 <translation id="2395616325548404795">O seu <ph name="DEVICE_TYPE" /> foi inscrito com êxito para gestão empresarial, mas não enviou as respetivas informações de recurso e de localização. Introduza essas informações para este dispositivo manualmente a partir da Consola do gestor.</translation>
+<translation id="2396593617786425274">Sincronizar o histórico?</translation>
 <translation id="2396783860772170191">Introduza o PIN de 4 dígitos (0000-9999)</translation>
 <translation id="2398546389094871088">A função Powerwash do dispositivo não remove os seus perfis de eSIM. Aceda a <ph name="LINK_BEGIN" />Definições para dispositivos móveis<ph name="LINK_END" /> para remover manualmente estes perfis.</translation>
 <translation id="2399699884460174994">Notificações ativadas</translation>
@@ -3997,7 +4000,6 @@ Quer pará-lo?</translation>
 <translation id="3735039640698208086">Ao reproduzir áudio…</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3735827758948958091">Não é possível abrir o ficheiro <ph name="FILE_NAMES" /> enquanto estiver numa ligação com acesso limitado</translation>
-<translation id="3736575924150462398">Adicionar separadores ou mais</translation>
 <translation id="3737058101969549870">Manter os dados de navegação existentes separados deste novo perfil?</translation>
 <translation id="3738632186060045350">Os dados do dispositivo <ph name="DEVICE_TYPE" /> serão eliminados dentro de 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -6734,6 +6736,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5648166631817621825">Últimos 7 dias</translation>
 <translation id="5651308944918885595">Deteção da funcionalidade Partilhar na proximidade</translation>
 <translation id="5653154844073528838">Tem <ph name="PRINTER_COUNT" /> impressoras guardadas.</translation>
+<translation id="565461030474814383">Guardar na conta?</translation>
 <translation id="5654669866168491665">Saiba mais sobre sites que podem não funcionar com o bloqueio de cookies de terceiros</translation>
 <translation id="5654751240928365405">Esta extensão foi desativada porque já não é suportada</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger a sua privacidade, foram removidas as autorizações de um site}other{Para proteger a sua privacidade, foram removidas as autorizações de alguns sites}}</translation>
@@ -7038,6 +7041,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5870086504539785141">Fechar menu de acessibilidade</translation>
 <translation id="5870155679953074650">Falhas principais</translation>
+<translation id="587234395549708302">Limpar os marcadores?</translation>
 <translation id="5875534259258494936">A partilha de ecrã terminou</translation>
 <translation id="5876851302954717356">Novo separador à direita</translation>
 <translation id="5877064549588274448">Canal alterado. Reinicie o dispositivo para aplicar as alterações.</translation>
@@ -7764,6 +7768,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6391131092053186625">O IMEI do dispositivo é <ph name="IMEI_NUMBER" />. Este número pode ser usado para ajudar a ativar o serviço.</translation>
 <translation id="6393156038355142111">Sugerir palavra-passe forte</translation>
 <translation id="6393550101331051049">Com autorização para mostrar conteúdo inseguro</translation>
+<translation id="6394634179843537518">Adicionar ficheiro</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK1" />informações do sistema<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Sim, manter os meus dados separados dos da escola (recomendado)</translation>
 <translation id="6398715114293939307">Remover a Google Play Store</translation>
@@ -9301,7 +9306,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="747114903913869239">Erro: não foi possível descodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>
 <translation id="747312361841682912">Eliminar dados apresentados</translation>
-<translation id="7473555040328423550">Adicionar separador</translation>
 <translation id="7473891865547856676">Não</translation>
 <translation id="7474043404939621342">Personalizar barra de ferramentas</translation>
 <translation id="747459581954555080">Restaurar tudo</translation>
@@ -11879,7 +11883,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" adicionada</translation>
 <translation id="9215742531438648683">Desinstalar Google Play Store</translation>
 <translation id="9218430445555521422">Predefinir</translation>
-<translation id="9218536722110863203">Carregar ficheiro</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (app não suportada)</translation>
 <translation id="9219572436491982747">Os dados enviados para a Google podem ser vistos por revisores humanos para melhorar a tecnologia de IA do Chrome</translation>
 <translation id="9219741625496141320">Os dados de navegação foram eliminados automaticamente</translation>

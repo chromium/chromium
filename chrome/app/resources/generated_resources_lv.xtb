@@ -1309,6 +1309,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1880618477732738742">Mainīt un piešķirt piekļuvi tādām funkcijām kā ģeolokācija, mikrofons, kamera, sīkfaili u. c. visām jūsu vietnēm un paplašinājumiem, tostarp šim paplašinājumam.</translation>
 <translation id="1881445033931614352">Tastatūras izkārtojums</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Vienums}zero{# vienumu}one{# vienums}other{# vienumi}}</translation>
+<translation id="188177382966899059">Dziļā meklēšana</translation>
 <translation id="1884340228047885921">Pašreizējais redzamības iestatījums ir “Dažas kontaktpersonas”.</translation>
 <translation id="1884705339276589024">Linux diska lieluma mainīšana</translation>
 <translation id="1885066963699478692">XML faili, kas tiek izmantoti politiku iestatīšanai.</translation>
@@ -3822,6 +3823,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3629664892718440872">Atcerēties šo izvēli</translation>
 <translation id="3630132874740063857">Jūsu tālrunis</translation>
 <translation id="3630995161997703415">Lai varētu izmantot šo vietni jebkurā laikā, pievienojiet to savam plauktam.</translation>
+<translation id="3633492436029262388">Lai varētu piekļūt parolēm, grāmatzīmēm un citiem datiem visās savās ierīcēs, saglabājiet tos savā Google kontā.</translation>
 <translation id="3633759325857031264">HDMI ierīce</translation>
 <translation id="3634652306074934350">Atļaujas pieprasījuma termiņš beidzies</translation>
 <translation id="3635199270495525546">Noteikts uzticamas platformas modulis (TPM)</translation>
@@ -7748,6 +7750,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6391131092053186625">Jūsu ierīces IMEI ir <ph name="IMEI_NUMBER" />. Šo numuru var izmantot, lai aktivizētu pakalpojumu.</translation>
 <translation id="6393156038355142111">Ieteikt drošu paroli</translation>
 <translation id="6393550101331051049">Drīkst rādīt nedrošu saturu</translation>
+<translation id="6394634179843537518">Pievienot failu</translation>
 <translation id="6395423953133416962">Sūtīt <ph name="BEGIN_LINK1" />sistēmas informāciju<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />datus<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Jā, glabāt manus datus atsevišķi no mācību iestādes profila datiem (ieteicams)</translation>
 <translation id="6398715114293939307">Noņemt Google Play veikalu</translation>
@@ -7989,6 +7992,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6569931898053264308">Vidējs ietaupījums</translation>
 <translation id="6570622975915850879">Izmantot citu ierīci</translation>
 <translation id="65711204837946324">Lejupielādei vajadzīga atļauja</translation>
+<translation id="6571178651832779742">Lai notīrītu grāmatzīmju dublikātus, saglabājiet grāmatzīmes savā Google kontā.</translation>
 <translation id="6571533309669248172">Teksta formatējums</translation>
 <translation id="6571772921213691236">Pierakstīšanās datu rediģēšana</translation>
 <translation id="657229725818377235">Uzlabojiet aizsardzību pret bīstamām tīmekļa vietnēm un lejupielādēm.</translation>
@@ -8629,6 +8633,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7001066449188684145">Nepieciešama identifikācija, lai drukātu, izmantojot šo printeri: <ph name="PRINTER_NAME" />. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="7001397294201412227">Izmantot tālruni, planšetdatoru vai drošības atslēgu</translation>
 <translation id="7001556399332161712">Meklēšana un ieteikumi</translation>
+<translation id="7001809623433867903">Vai kārtot grāmatzīmes?</translation>
 <translation id="7003339318920871147">Tīmekļa datu bāzes</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fails}zero{{COUNT} failu}one{{COUNT} fails}other{{COUNT} faili}}</translation>
 <translation id="7003644704445046755">Ir lejupielādēti augstas kvalitātes balsu faili (<ph name="LANGUAGE" />)</translation>
@@ -9109,6 +9114,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7356908624372060336">Tīkla žurnāli</translation>
 <translation id="7357271391997763660">Vai veikt paroles pārbaudi?</translation>
 <translation id="735745346212279324">VPN ir atvienots</translation>
+<translation id="7359326150089800742">Pievienojiet meklēšanai cilni vai failu un izmantojiet arī rīku.</translation>
 <translation id="7359680654975233185">Nevar apraidīt cilni</translation>
 <translation id="7360257054721917104">Tiek skatītas saglabātās darbvietas un veidnes. Lai pārietu citur, nospiediet tabulēšanas taustiņu.</translation>
 <translation id="7360333718677093875">emocijzīmju atlasītājs</translation>
@@ -9285,7 +9291,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="747114903913869239">Kļūda: nespēj dekodēt paplašinājumu</translation>
 <translation id="7471520329163184433">Lēnāk</translation>
 <translation id="747312361841682912">Dzēst parādītos datus</translation>
-<translation id="7473555040328423550">Pievienot cilni</translation>
 <translation id="7473891865547856676">Nē, paldies!</translation>
 <translation id="7474043404939621342">Pielāgot rīkjoslu</translation>
 <translation id="747459581954555080">Atjaunot visu</translation>
@@ -9915,6 +9920,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Padariet Linux portus pieejamus citām ierīcēm jūsu tīklā.</translation>
 <translation id="7906440585529721295">Lokālie dati tiks dzēsti</translation>
+<translation id="7907312522152480478">Lai iegūtu cilnes no citām savām ierīcēm, verificējiet savu identitāti un sinhronizējiet vēsturi un cilnes. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="7907502219904644296">Mainīt piekļuvi</translation>
 <translation id="7907837847548254634">Ātri izcelt fokusēto objektu</translation>
 <translation id="7908378463497120834">Diemžēl vismaz vienu ārējās atmiņas ierīces nodalījumu nevarēja uzstādīt.</translation>
@@ -10551,6 +10557,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8323167517179506834">Ierakstiet URL</translation>
 <translation id="8323317289166663449">Lasīt un mainīt visus jūsu datus jūsu datorā un visās vietnēs</translation>
 <translation id="8323518750352551353">Vai atdalīt pārlūkošanu?</translation>
+<translation id="8323744572398547859">Lai iegūtu cilnes no citām savām ierīcēm, pierakstieties un sinhronizējiet vēsturi. Jūs varēsiet arī piekļūt parolēm un citiem datiem visās savās ierīcēs. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="8324158725704657629">Nejautāt atkārtoti</translation>
 <translation id="8325413836429495820">Nedrīkst skatīt starpliktuvi</translation>
 <translation id="8326478304147373412">PKCS #7, sertificēšanas ķēde</translation>
@@ -11859,7 +11866,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9215293857209265904">Ir pievienots paplašinājums <ph name="EXTENSION_NAME" /></translation>
 <translation id="9215742531438648683">Google Play veikala atinstalēšana</translation>
 <translation id="9218430445555521422">Iestatīt kā noklusējumu</translation>
-<translation id="9218536722110863203">Augšupielādēt failu</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (neatbalstīta lietotne)</translation>
 <translation id="9219572436491982747">Google serveriem nosūtītos datus var skatīt pārskatītāji, lai uzlabotu Chrome MI tehnoloģijas.</translation>
 <translation id="9219741625496141320">Pārlūkošanas dati tika automātiski izdzēsti</translation>

@@ -1304,6 +1304,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1880618477732738742">Du kannst den Zugriff auf Funktionen wie Standortbestimmung, Mikrofon, Kamera oder Cookies für alle deine Websites und Erweiterungen, einschließlich dieser Erweiterung, ändern und gewähren.</translation>
 <translation id="1881445033931614352">Tastaturlayout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# Elemente}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Die aktuelle Sichtbarkeitseinstellung ist "Einige Kontakte"</translation>
 <translation id="1884705339276589024">Größe des Linux-Laufwerks anpassen</translation>
 <translation id="1885066963699478692">XML-Dateien, die zum Festlegen der Richtlinien verwendet werden.</translation>
@@ -3817,6 +3818,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3629664892718440872">Auswahl speichern</translation>
 <translation id="3630132874740063857">Mein Smartphone</translation>
 <translation id="3630995161997703415">Füge diese Website deiner Ablage hinzu, um sie jederzeit zu verwenden</translation>
+<translation id="3633492436029262388">Wenn du auf allen deinen Geräten auf deine Passwörter, Lesezeichen und andere Daten zugreifen möchtest, speichere sie in deinem Google-Konto</translation>
 <translation id="3633759325857031264">HDMI-Gerät</translation>
 <translation id="3634652306074934350">Berechtigungsanfrage abgelaufen</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) erkannt</translation>
@@ -7742,6 +7744,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6391131092053186625">Die Geräte-IMEI lautet <ph name="IMEI_NUMBER" />. Diese Nummer kann zur Aktivierung des Diensts verwendet werden.</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
 <translation id="6393550101331051049">Unsichere Inhalte dürfen angezeigt werden</translation>
+<translation id="6394634179843537518">Datei hinzufügen</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Systeminformationen<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />Messwerte<ph name="END_LINK2" /> senden</translation>
 <translation id="6397586889873084061">Ja, meine Daten vom Profil einer Bildungseinrichtung getrennt halten (empfohlen)</translation>
 <translation id="6398715114293939307">Google Play Store entfernen</translation>
@@ -7983,6 +7986,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>
 <translation id="6570622975915850879">Anderes Gerät verwenden</translation>
 <translation id="65711204837946324">Du musst die Berechtigung haben, die Datei herunterzuladen</translation>
+<translation id="6571178651832779742">Wenn du deine Lesezeichen bereinigen und Duplikate entfernen möchtest, speichere sie in deinem Google-Konto</translation>
 <translation id="6571533309669248172">Textformatierung</translation>
 <translation id="6571772921213691236">Anmeldedaten bearbeiten</translation>
 <translation id="657229725818377235">Mehr Schutz vor gefährlichen Websites und Downloads</translation>
@@ -8619,6 +8623,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7001066449188684145">Zum Drucken über den Drucker „<ph name="PRINTER_NAME" />“ ist eine Bestätigung der Identität erforderlich. Bitte wende dich an deinen Administrator.</translation>
 <translation id="7001397294201412227">Smartphone, Tablet oder Sicherheitsschlüssel verwenden</translation>
 <translation id="7001556399332161712">Suche und Vorschläge</translation>
+<translation id="7001809623433867903">Lesezeichen bereinigen?</translation>
 <translation id="7003339318920871147">Web-Datenbanken</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} Datei}other{{COUNT} Dateien}}</translation>
 <translation id="7003644704445046755">Dateien mit hochwertigen Sprachaufnahmen auf <ph name="LANGUAGE" /> wurden heruntergeladen</translation>
@@ -9099,6 +9104,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7356908624372060336">Netzwerkprotokolle</translation>
 <translation id="7357271391997763660">Passwörter überprüfen?</translation>
 <translation id="735745346212279324">VPN-Verbindung getrennt</translation>
+<translation id="7359326150089800742">Der Suche einen Tab oder eine Datei hinzufügen und auch ein Tool verwenden</translation>
 <translation id="7359680654975233185">Tab kann nicht gestreamt werden</translation>
 <translation id="7360257054721917104">Gespeicherte Desktops und Vorlagen werden angezeigt. Drücke zum Navigieren die Tabulatortaste.</translation>
 <translation id="7360333718677093875">Emoji-Auswahl</translation>
@@ -9275,7 +9281,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="747114903913869239">Fehler: Erweiterung kann nicht entschlüsselt werden.</translation>
 <translation id="7471520329163184433">Langsamer</translation>
 <translation id="747312361841682912">Angezeigte Daten löschen</translation>
-<translation id="7473555040328423550">Tab hinzufügen</translation>
 <translation id="7473891865547856676">Nein, danke</translation>
 <translation id="7474043404939621342">Symbolleiste personalisieren</translation>
 <translation id="747459581954555080">Alle wiederherstellen</translation>
@@ -9905,6 +9910,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Hier kannst du Linux-Ports für andere Geräte in deinem Netzwerk verfügbar machen.</translation>
 <translation id="7906440585529721295">Lokale Daten werden gelöscht</translation>
+<translation id="7907312522152480478">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, bestätige deine Identität und synchronisiere deinen Verlauf und deine Tabs. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste anhand deines Verlaufs personalisieren.</translation>
 <translation id="7907502219904644296">Zugriff ändern</translation>
 <translation id="7907837847548254634">Fokussiertes Element kurz hervorheben</translation>
 <translation id="7908378463497120834">Mindestens eine Partition auf deinem externen Speichergerät konnte nicht bereitgestellt werden.</translation>
@@ -10541,6 +10547,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8323167517179506834">URL eingeben</translation>
 <translation id="8323317289166663449">Alle deine Daten auf deinem Computer und allen Websites lesen und ändern</translation>
 <translation id="8323518750352551353">Getrenntes Surfen?</translation>
+<translation id="8323744572398547859">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste anhand deines Verlaufs personalisieren.</translation>
 <translation id="8324158725704657629">Nicht mehr fragen</translation>
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
@@ -11847,7 +11854,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" hinzugefügt</translation>
 <translation id="9215742531438648683">Google Play Store deinstallieren</translation>
 <translation id="9218430445555521422">Als Standard festlegen</translation>
-<translation id="9218536722110863203">Datei hochladen</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nicht unterstützte App)</translation>
 <translation id="9219572436491982747">An Google gesendete Daten können von Prüfern eingesehen werden, um die Technologie der Chrome-KI zu verbessern</translation>
 <translation id="9219741625496141320">Browserdaten wurden automatisch gelöscht</translation>

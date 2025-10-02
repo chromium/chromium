@@ -1676,6 +1676,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7437712592381799950">Deslize para cima para mais conteúdos personalizados.</translation>
 <translation id="7438473148803748807">Todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />", e todos os links de convite serão desativados</translation>
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
+<translation id="7445682342344043969">Pop-ups bloqueados</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
 <translation id="7451404862887877229">Toque em "Privacidade e segurança" e depois em "Navegação segura"</translation>
 <translation id="7454057999980797137">Estado/Província</translation>

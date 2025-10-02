@@ -253,6 +253,9 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="383928141529488001">Google Chromeu je potreban pristup Bluetoothu da istraži 
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Sažmi:** u jednoj rečenici od najviše 30 riječi opiši primarnu temu i svrhu sadržaja na snimku ekrana.
+
+          **Predloži pitanja:** generiraj listu s 3–5 pitanja koja potiču na razmišljanje i koja korisnik može postaviti da bolje razumije snimak ekrana. Ova pitanja trebaju uključivati najmanje jedno pitanje koje se konkretno odnosi na vizuelni objekat, njegov dizajn ili položaj.</translation>
 <translation id="386202838227397562">Zatvorite sve prozore Google Chromea i pokušajte ponovo.</translation>
 <translation id="3873044882194371212">Otvori link u ano&amp;nimnom prozoru Chromea</translation>
 <translation id="3885770153807205175">Birač jezika</translation>
@@ -516,6 +519,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6893363893008038481">Ukloni račun iz Chromea</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6927941417289800361">Dok ste prijavljeni, lozinke i drugo s Google računa možete koristiti u Chromeu. Ovo možete promijeniti bilo kada u postavkama.</translation>
 <translation id="6930294499209825">Održava softver Googlea ažurnim. Ako se ova usluga onemogući ili zaustavi, softver Googlea se neće moći održavati ažurnim, što će značiti da se sigurnosne ranjivosti koje mogu nastati neće moći riješiti i da funkcije možda neće funkcionirati. Ova usluga se sama deinstalira kada ne postoji softver Googlea koji je koristi.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.1.</translation>
@@ -528,6 +532,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7024536598735240744">Greška prilikom otpakivanja: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacija je zaustavljena.</translation>
 <translation id="7025800014283535195">Ovdje možete prebacivati između Chrome profila</translation>
+<translation id="7047386856539490735">Jesu li ovi rezultati korisni?</translation>
 <translation id="7051685429025310665">Niste je posjetili već neko vrijeme. Chrome je uklonio odobrenja "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" i "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7060643578009939353">Pretražite ovaj videozapis putem Google Objektiva</translation>

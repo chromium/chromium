@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Sakrij karticu Padovi cijena na karticama</translation>
 <translation id="1508931164824684991">Web lokacije mogu koristiti JavaScript</translation>
 <translation id="1510341833810331442">Web lokacijama nije dozvoljeno da pohranjuju podatke na uređaj</translation>
+<translation id="1532175480576580256">Donja tabela Moje prečice je otvorena u punoj visini</translation>
 <translation id="1538031354170655462">Web lokacije obično koriste komunikaciju bliskog polja (NFC) da rade s lokatorima ili uređajima u blizini, poput skeniranja znački ili beskontaktnog plaćanja</translation>
 <translation id="1547123415014299762">Kolačići treće strane su dozvoljeni</translation>
 <translation id="1569054338208717605">Ubrzavaj web lokacije pomoću Chromeovog pretraživača V8, ali učini Chrome malo otpornijim na napade</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">Većina web lokacija koje posjetite vjerovatno pohranjuje podatke na vaš uređaj, često radi poboljšavanja vašeg iskustva pohranjivanjem vaših postavki ili informacija koje dijelite s web lokacijom. Preporučujemo vam da ovu postavku ostavite uključenom.</translation>
 <translation id="2289270750774289114">Pitaj kada web lokacija želi otkriti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sistem ne podržava odabir potvrde na strani klijenta.</translation>
+<translation id="2347601491101454548">Donja tabela Moje prečice je otvorena na pola visine</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2379925928934107488">Tamna tema će se primjenjivati na web lokacije kada Chrome koristi tamnu temu, kada je to moguće</translation>
 <translation id="2390272837142897736">Povećavanje zumiranja</translation>
@@ -145,6 +147,11 @@
 <translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
 <translation id="2597457036804169544">Tamna tema se neće primjenjivati na web lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
+<translation id="2610903128639500624">Upravljajte u <ph name="BEGIN_LINK1" />postavkama Androida<ph name="END_LINK1" />
+
+Napredna zaštita upravlja ovim postavkama Chromea:
+• Uključen je prekidač "Uvijek koristi sigurne veze".
+• Isključen je "Optimizator JavaScripta". <ph name="BEGIN_LINK2" />Upravljajte izuzecima web lokacija<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za posebnu web lokaciju.</translation>
 <translation id="2626708220538466178">Donja tabela zadanog preglednika je zatvorena</translation>
 <translation id="2653659639078652383">Pošalji</translation>

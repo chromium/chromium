@@ -252,6 +252,9 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3809772425479558446">I-Google Chrome idinga i-Windows 7 noma ngaphezulu.</translation>
 <translation id="3810973564298564668">Phatha</translation>
 <translation id="383928141529488001">I-Google Chrome idinga ukufinyelela kwe-Bluetooth ukuze ihlole amadivayisi we-Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Fingqa:** Ngomusho owodwa onamagama angaphansi kwa-30, chaza abantu ebhekiswe kubo nenjongo eyinhloko yekhontenti yakho eku-screenshot.
+
+          **Phakamisa Imibuzo:** Sungula uhlu lwamachashazi olunemibuzo emi-3 ukuya kwemi-5 eshukumisa ingqondo engase ibuzwe umsebenzisi ukuze asiqonde kahle i-screenshot. Le mibuzo kufanele ihlanganise okungenani owodwa okhuluma ngokuqondile ngento ebukwayo, indlela eklanywe ngayo, noma indawo ekuyo.</translation>
 <translation id="386202838227397562">Sicela uvale wonke amawindi we-Google Chrome bese uzama futhi.</translation>
 <translation id="3873044882194371212">Vula isixhumanisi kuwindi le-Chrome inco&amp;gnito</translation>
 <translation id="3885770153807205175">Okokukhetha ulimi</translation>
@@ -527,6 +530,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7024536598735240744">Iphutha lokuvula: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Ukufaka Kumisiwe.</translation>
 <translation id="7025800014283535195">Ungashintsha phakathi kwamaphrofayela we-Chrome lapha</translation>
+<translation id="7047386856539490735">Ingabe ibe wusizo le miphumela?</translation>
 <translation id="7051685429025310665">Awukavakashi kamuva nje. IChrome isuse i-<ph name="PERMISSION_1" />, i-<ph name="PERMISSION_2" />, i-<ph name="PERMISSION_3" /></translation>
 <translation id="7059914902409643750">Yenza i-Chrome Ibe Ngeyakho</translation>
 <translation id="7060643578009939353">Sesha le vidiyo ngeGoogle Lens</translation>

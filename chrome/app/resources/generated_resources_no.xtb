@@ -1311,6 +1311,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1880618477732738742">Endre og gi tilgang til funksjoner som geolokalisering, mikrofon, kamera, informasjonskapsler osv. for alle nettstedene og utvidelsene dine, inkludert denne utvidelsen.</translation>
 <translation id="1881445033931614352">Tastaturoppsett</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# elementer}}</translation>
+<translation id="188177382966899059">Dypsøk</translation>
 <translation id="1884340228047885921">Den gjeldende synlighetsinnstillingen er noen kontakter</translation>
 <translation id="1884705339276589024">Endre størrelsen på Linux-disken</translation>
 <translation id="1885066963699478692">XML-filene som brukes til å angi reglene.</translation>
@@ -3829,6 +3830,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3629664892718440872">Husk dette valget</translation>
 <translation id="3630132874740063857">Telefonen din</translation>
 <translation id="3630995161997703415">Legg til dette nettstedet på hyllen din, slik at det kan brukes når som helst</translation>
+<translation id="3633492436029262388">For å få passordene dine og bokmerkene med mer på alle enhetene dine, lagre dem i Google-kontoen din</translation>
 <translation id="3633759325857031264">HDMI-enhet</translation>
 <translation id="3634652306074934350">Tillatelsesforespørselen er utløpt</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) ble funnet</translation>
@@ -7754,6 +7756,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6391131092053186625">Enhetens IMEI er <ph name="IMEI_NUMBER" />. Dette nummeret kan brukes til å aktivere tjenesten.</translation>
 <translation id="6393156038355142111">Foreslå et sterkt passord</translation>
 <translation id="6393550101331051049">Nettsteder som har lov til å vise usikkert innhold</translation>
+<translation id="6394634179843537518">Legg til fil</translation>
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />systeminformasjon<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />-målinger<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ja, hold dataene mine adskilt fra skoledata (anbefales)</translation>
 <translation id="6398715114293939307">Fjern Google Play-butikken</translation>
@@ -7995,6 +7998,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6569931898053264308">Middels store besparelser</translation>
 <translation id="6570622975915850879">Bruk en annen enhet</translation>
 <translation id="65711204837946324">Trenger tillatelse for å laste ned</translation>
+<translation id="6571178651832779742">For å fjerne eventuelle dupliserte bokmerker, lagre dem i Google-kontoen din</translation>
 <translation id="6571533309669248172">Tekstformatering</translation>
 <translation id="6571772921213691236">Rediger påloggingsinformasjon</translation>
 <translation id="657229725818377235">Få mer beskyttelse mot farlige nettsteder og nedlastinger</translation>
@@ -8631,6 +8635,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7001066449188684145">Du trenger identifikasjon for å skrive ut på <ph name="PRINTER_NAME" />. Kontakt administratoren din.</translation>
 <translation id="7001397294201412227">Bruk telefon, nettbrett eller sikkerhetsnøkkel</translation>
 <translation id="7001556399332161712">Søk og forslag</translation>
+<translation id="7001809623433867903">Vil du rydde opp i bokmerkene?</translation>
 <translation id="7003339318920871147">Nettdatabaser</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="7003644704445046755">Høykvalitets talefiler på <ph name="LANGUAGE" /> er lastet ned</translation>
@@ -9111,6 +9116,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7356908624372060336">Nettverkslogger</translation>
 <translation id="7357271391997763660">Vil du kjøre passordsjekk?</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
+<translation id="7359326150089800742">Legg til en fane eller fil i søket, og bruk også et verktøy</translation>
 <translation id="7359680654975233185">Kan ikke caste fanen</translation>
 <translation id="7360257054721917104">Ser på lagrede skrivebord og maler. Trykk på fanen for å navigere.</translation>
 <translation id="7360333718677093875">emojivelger</translation>
@@ -9287,7 +9293,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="747114903913869239">Feil: Kan ikke avkode etternavnet</translation>
 <translation id="7471520329163184433">Saktere</translation>
 <translation id="747312361841682912">Slett dataene som vises</translation>
-<translation id="7473555040328423550">Legg til fane</translation>
 <translation id="7473891865547856676">Nei takk</translation>
 <translation id="7474043404939621342">Tilpass verktøylinjen</translation>
 <translation id="747459581954555080">Gjenopprett alt</translation>
@@ -9917,6 +9922,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Gjør Linux-porter tilgjengelige for andre enheter på nettverket.</translation>
 <translation id="7906440585529721295">Lokale data blir slettet</translation>
+<translation id="7907312522152480478">For å få fanene dine fra de andre enhetene dine, bekreft at det er deg, og synkroniser loggen og fanene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="7907502219904644296">Endre tilgangen</translation>
 <translation id="7907837847548254634">Vis en rask fremheving av objektet i fokus</translation>
 <translation id="7908378463497120834">Beklager, men minst én partisjon på den eksterne lagringsenheten din kunne ikke tilkobles.</translation>
@@ -10553,6 +10559,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8323167517179506834">Skriv inn nettadresse</translation>
 <translation id="8323317289166663449">lese og endre alle dataene på datamaskinen din og alle nettsteder</translation>
 <translation id="8323518750352551353">Separat surfing?</translation>
+<translation id="8323744572398547859">For å få fanene dine fra de andre enhetene dine, logg på og synkroniser loggen. Du får også passordene dine med mer på alle enhetene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="8324158725704657629">Ikke spør igjen</translation>
 <translation id="8325413836429495820">Nettsteder som ikke har lov til å se utklippstavlen din</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat-kjede</translation>
@@ -11859,7 +11866,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ble lagt til</translation>
 <translation id="9215742531438648683">Avinstaller Google Play-butikken</translation>
 <translation id="9218430445555521422">Angi som standard</translation>
-<translation id="9218536722110863203">Last opp fil</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (appen støttes ikke)</translation>
 <translation id="9219572436491982747">Data som sendes til Google, kan bli sett av menneskelige evaluerere som jobber med å gjøre AI-teknologien i Chrome bedre</translation>
 <translation id="9219741625496141320">Nettleserdataene ble slettet automatisk</translation>

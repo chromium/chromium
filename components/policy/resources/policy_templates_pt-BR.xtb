@@ -638,6 +638,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): esse valor foi descontinuado na versão M121. Na versão M121 e mais recentes, os valores serão tratados como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Desativar verificação ortográfica</translation>
+<translation id="1434936032334586168">Ativar impressão silenciosa</translation>
 <translation id="1435031247649241006">Na tela de bloqueio, os usuários têm a opção de abrir uma janela de reautenticação
 on-line, que será usada para entrar de novo na sessão. Esta
 política pode ser usada para abrir a janela automaticamente se a
@@ -1988,6 +1989,7 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 <translation id="2306505001667207184">Solicitar ao usuário que selecione o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados.</translation>
 <translation id="230713790688681130">Ativar layout de teclado Inscript hindi</translation>
 <translation id="2307496301287881990">Informar status de tela e gráficos</translation>
+<translation id="2308899582897965249">Desativar a impressão silenciosa</translation>
 <translation id="2309284543927494965">Bloquear atualizações</translation>
 <translation id="2309341709647905294">Não relatar informações sobre periféricos que estão conectados ao dispositivo</translation>
 <translation id="2309390639296060546">Configuração padrão de geolocalização</translation>
@@ -2180,6 +2182,14 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2439733504887695659">Ativar a opção de dispensar alertas de senha comprometida para as credenciais inseridas</translation>
 <translation id="2446029789419870019">Permitir o uso do recurso e o aprimoramento dos modelos de IA</translation>
 <translation id="2446244536806499267">Não considerar o usuário como inativo enquanto o áudio é reproduzido</translation>
+<translation id="2450392422484526374">Se a política for definida como true, a impressão silenciosa será ativada. Isso fecha imediatamente
+a janela de visualização de impressão quando ela é aberta e usa a impressora padrão com
+as opções padrão. Se a opção de impressão padrão for "Salvar como PDF", o arquivo será
+salvo na pasta "Downloads".
+
+Se esta política não for definida ou for definida como false, a impressão silenciosa será desativada.
+Assim, a janela de visualização de impressão não será fechada automaticamente e vai exigir
+que uma seleção seja feita como de costume.</translation>
 <translation id="2452225615952836461">Sempre usar letra maiúscula para os métodos de solicitação</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
 <translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
@@ -5335,21 +5345,6 @@ Se você desativar ou não definir essa configuração, o serviço de proteção
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="4607416370554533118">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites para que o Chrome possa selecionar um certificado do cliente automaticamente. O valor é uma matriz de dicionários JSON convertidos em strings, cada um com o formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, em que <ph name="URL_PATTERN_PLACEHOLDER" /> é um padrão de configuração de conteúdo. <ph name="FILTER_PLACEHOLDER" /> restringe quais certificados do cliente podem ser selecionados automaticamente pelo navegador. Seja qual for o filtro utilizado, apenas os certificados correspondentes à solicitação do servidor serão selecionados.
-
-      Exemplos de uso da seção <ph name="FILTER_PLACEHOLDER" />:
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, apenas certificados do cliente emitidos por um certificado com o CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> serão selecionados.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiver as seções <ph name="ISSUER_STRING_VALUE" /> e <ph name="SUBJECT_STRING_VALUE" /> ao mesmo tempo, apenas certificados do cliente que satisfaçam ambas as condições serão selecionados.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com o valor <ph name="FILTER_STRING_ORGANIZATION" />, um certificado precisará de pelo menos uma organização correspondente ao valor especificado para ser selecionado.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com um valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, um certificado precisará de pelo menos uma unidade organizacional correspondente ao valor especificado para ser selecionado.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="EMPTY_DICTIONARY" />, a seleção de certificados do cliente não será restringida de nenhuma outra forma. Os filtros fornecidos pelo servidor da Web ainda se aplicam.
-
-      Se a política não for definida, não haverá seleção automática para nenhum site.</translation>
 <translation id="4607499333275488034">Desativar o recurso de proteção contra técnicas de impressão digital do <ph name="PRIVACY_SANDBOX_NAME" /> no modo de navegação anônima.</translation>
 <translation id="4611983465824842867">Não mostrar avisos nem desativar o preenchimento automático em formulários não seguros</translation>
 <translation id="4615003180013429835">Modo de análise da lista de sites</translation>

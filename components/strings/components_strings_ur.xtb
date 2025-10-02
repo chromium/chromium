@@ -1253,6 +1253,7 @@
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="3090667236485488075">شیشہ</translation>
 <translation id="3093122472063815077">ابھی خریدیں، ادائیگی بعد میں کریں کی پیشرفت اسکرین آدھی کھلی ہے۔</translation>
+<translation id="309381737510736393">‏جب آپ کی تنظیم Google Account پر محفوظ کرنے کو محدود کرتی ہے تو آپ ٹیبز کا اشتراک یا دوسروں کے ساتھ معاونت نہیں کر سکتے۔</translation>
 <translation id="3094051226187213523">‏اس تجویز کے ساتھ AI وضع کھولیں۔</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">نظر انداز کیا گیا کیونکہ غیر فعال کرنے کی فہرست میں '*' کے برابر ایک پیٹرن ہے جو پالیسی کو غیر فعال کرنے کے مساوی ہے۔</translation>
@@ -1699,6 +1700,7 @@
 <translation id="3784372983762739446">بلوٹوتھ آلات</translation>
 <translation id="3785246317262748285">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن Chrome اس بار محفوظ کنکشن استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" کے لیے بہترین مماثلتیں</translation>
+<translation id="3787887386289385215">‫<ph name="ISSUER_1_NAME" />، <ph name="ISSUER_2_NAME" /> یا <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="3791118028061680614">ایپس کو تبدیل کیے بغیر ادائیگی کریں</translation>
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> انچ)</translation>
@@ -2680,6 +2682,7 @@
 <translation id="5412040515238827314">غلط فارمیٹ: پیٹرنز کی فہرست متوقع ہے۔</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">اسٹیکر 4</translation>
+<translation id="5414306071315087019">‏ابھی خریدیں، ادائیگی بعد میں کریں Google Pay کے ساتھ دستیاب ہے</translation>
 <translation id="5414446060143308245">منتقلی سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="5414511064953050917">بہرحال منتقل کریں</translation>
 <translation id="5418700249417444482">‏آپ کے ملاحظہ کردہ صفحات کے URLs کو تجزیہ کے لئے Google کلاؤڈ یا فریق ثالث کو بھیجا جاتا ہے اور آپ کے منتظم کو دکھائی دے سکتے ہیں۔ مثال کے طور پر، انہیں غیر محفوظ ویب سائٹس کا پتہ لگانے کے لیے اسکین کیا جا سکتا ہے یا منتظم کے مقرر کردہ اصولوں کی بنیاد پر ویب سائٹس کو فلٹر کیا جا سکتا ہے۔</translation>
@@ -2800,6 +2803,7 @@
 <translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
 <translation id="5596939519753369075">‏‎2 x 3.5 انچ</translation>
 <translation id="5597254438174353289">نیلا 3</translation>
+<translation id="5603469469737324249">‫<ph name="ISSUER_1_NAME" /> یا <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">مینیجمنٹ تعاون یافتہ نہیں ہے</translation>
 <translation id="5605249000617390290">قیمت کی ٹریکنگ کے بارے میں مزید جانیں</translation>
 <translation id="5605670050355397069">Ledger</translation>

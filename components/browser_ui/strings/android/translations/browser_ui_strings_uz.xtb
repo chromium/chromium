@@ -345,6 +345,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="4816495437032298535">Saytlar uchun saqlangan zum</translation>
 <translation id="4836046166855586901">Sayt bu qurilmadan faol foydalanishingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
 <translation id="483914009762354899">Bu domen ichidagi barcha saytlar</translation>
+<translation id="4852997963351138624">Fon rangi (Hex)</translation>
 <translation id="4882919381756638075">Saytlar odatda video chat kabi aloqa xizmatlarida mikrofondan foydalanadi</translation>
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishi oldidan ruxsat olsin (tavsiya etiladi)</translation>
@@ -508,6 +509,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Himoyalangan kontent</translation>
 <translation id="662080504995468778">Qolaman</translation>
+<translation id="6630443592285535486">Hex kodini kiriting</translation>
 <translation id="6635327442719709864">Yoqilsa, saytlar seriyali portlardan foydalanishni soʻrashi mumkin. Yoqilmasa, saytlar seriyali port ishlata olmaydi.</translation>
 <translation id="6678072580827808850">Xavfsizlik tekshiruvini tekshirish</translation>
 <translation id="6682057173375416470">Tavsiya etilgan maqolalarni Yangi varaq sahifasida oling</translation>
@@ -565,6 +567,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7399802613464275309">Xavfsizlik tekshiruvi</translation>
 <translation id="7406113532070524618">Bu sozlama ishlashida shaxsingiz aniqlanmaydi va brauzeringiz tarixi saytlarga koʻrinmaydi hamda saytlar tekshiruv jarayonida cheklangan axborotni ulashishi mumkin</translation>
 <translation id="7409735910987429903">Saytlar ochmoqchi boʻlgan yoki boʻlmagan saytlaringizga qalqib chiquvchi reklama chiqarishi yoki yoʻnaltirishi mumkin</translation>
+<translation id="7412160840120117304">Asosiy rang (Hex)</translation>
 <translation id="7423098979219808738">Avval so‘ralsin</translation>
 <translation id="7423538860840206698">Klipborddan o‘qish taqiqlangan</translation>
 <translation id="7425915948813553151">Saytlar uchun tungi mavzu</translation>

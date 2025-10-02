@@ -1232,7 +1232,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3037605927509011580">Harmin paikka!</translation>
 <translation id="3039406992698062762">Perhematkat</translation>
 <translation id="3041176923638368519">Katso kortin etujen ehdot</translation>
-<translation id="3041584414879052436">Osta nyt, maksa myöhemmin ‐myöntäjien lista on suljettu.</translation>
+<translation id="3041584414879052436">"Osta nyt, maksa myöhemmin" ‐myöntäjien lista on suljettu.</translation>
 <translation id="3041612393474885105">Varmenteen tiedot</translation>
 <translation id="3045769629416806687">Extreme-urheilulajit</translation>
 <translation id="305162504811187366">Chrome-etäkäytön historia, mukaan lukien aikaleimat, isännät ja käyttökertojen tunnukset</translation>
@@ -4234,7 +4234,7 @@ Lisätietoja:
 <translation id="79682505114836835">Arvo "<ph name="VALUE" />" on virheellinen heksadesimaaliväri.</translation>
 <translation id="7968982339740310781">Näytä tiedot</translation>
 <translation id="7975858430722947486">Lisätty vertailuun</translation>
-<translation id="7976053965094442846">Osta nyt, maksa myöhemmin ‐myöntäjät, joiden kautta voi maksaa ajan mittaan. Näppäimistö piilotettu.</translation>
+<translation id="7976053965094442846">"Osta nyt, maksa myöhemmin" ‐myöntäjät, joiden kautta maksun voi suorittaa pitemmän ajan kuluessa. Näppäimistö piilotettu.</translation>
 <translation id="7976214039405368314">Liikaa pyyntöjä</translation>
 <translation id="7977538094055660992">Tulostuslaite</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min sitten}=1{<ph name="TIME_COUNT" /> h sitten}other{<ph name="TIME_COUNT" /> pv sitten}}</translation>
@@ -4243,7 +4243,7 @@ Lisätietoja:
 <translation id="7983008347525536475">Katumaasturit</translation>
 <translation id="7984945080620862648">Et voi siirtyä sivustoon <ph name="SITE" /> juuri nyt, koska sivusto lähetti sekoitetut tiedot, joita Chrome ei voi käsitellä. Verkkovirheet ja hyökkäykset ovat yleensä väliaikaisia, joten sivu luultavasti toimii myöhemmin.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
-<translation id="7987087088851949178">Osta nyt, maksa myöhemmin ‐maksutavat kokonaan avattuna.</translation>
+<translation id="7987087088851949178">"Osta nyt, maksa myöhemmin" ‐maksutavat kokonaan avattuna.</translation>
 <translation id="799149739215780103">Sidonta</translation>
 <translation id="7992044431894087211">Näytön jakamista (<ph name="APPLICATION_TITLE" />) jatkettu</translation>
 <translation id="7995512525968007366">Ei määritetty</translation>
@@ -4705,7 +4705,7 @@ Lisätietoja:
 <translation id="8772387130037509473">Jooga ja pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Siirretäänkö luottamuksellinen tiedosto?}other{Siirretäänkö luottamukselliset tiedostot?}}</translation>
 <translation id="8775347646940100151">Paperi (kirjelomake)</translation>
-<translation id="8775863327608679820">Osta nyt, maksa myöhemmin ‑maksutavan tarjoajat puoliksi avattuna.</translation>
+<translation id="8775863327608679820">"Osta nyt, maksa myöhemmin" ‑maksutavan tarjoajat puoliksi avattuna.</translation>
 <translation id="8776941011841875705">Tallennetaanko "known traveler number" -numero?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Käännä sivu ‑painike, aktivoi kääntääksesi tämä sivu Google Kääntäjällä</translation>

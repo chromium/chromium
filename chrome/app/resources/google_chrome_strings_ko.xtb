@@ -252,6 +252,9 @@
 <translation id="3809772425479558446">Chrome은 Windows 10 이상 버전에서 사용할 수 있습니다.</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="383928141529488001">블루투스 기기를 탐색하려면 Chrome에 블루투스 액세스 권한이 필요합니다. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**요약:** 30단어 미만의 한 문장으로 스크린샷 속 콘텐츠의 주요 주제와 목적을 설명해 줘.
+
+          **질문 추천:** 사용자가 스크린샷을 더 잘 파악하기 위해 물어볼 법하면서 생각할 거리를 주는 질문 3~5개를 글머리기호 목록 형식으로 생성해 줘. 질문에는 시각적 객체, 디자인 또는 배치에 관한 질문이 하나 이상 포함되어야 해.</translation>
 <translation id="386202838227397562">Chrome 창을 모두 닫고 다시 시도해 보세요.</translation>
 <translation id="3873044882194371212">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
@@ -527,6 +530,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7024536598735240744">압축해제 오류(<ph name="UNPACK_ERROR" />)가 발생했습니다.</translation>
 <translation id="7025789849649390912">설치가 중단되었습니다.</translation>
 <translation id="7025800014283535195">여기에서 Chrome 프로필 간에 전환할 수 있습니다.</translation>
+<translation id="7047386856539490735">결과가 유용한가요?</translation>
 <translation id="7051685429025310665">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
 <translation id="7059914902409643750">나만의 Chrome 만들기</translation>
 <translation id="7060643578009939353">Google 렌즈로 이 동영상 검색하기</translation>

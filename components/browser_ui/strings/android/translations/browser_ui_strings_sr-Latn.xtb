@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Uredite kartice pomoću grupa kartica</translation>
 <translation id="2597457036804169544">Tamna tema se ne primenjuje za sajtove</translation>
 <translation id="2606760465469169465">Automatska verifikacija</translation>
+<translation id="2610903128639500624">Upravljajte u <ph name="BEGIN_LINK1" />podešavanjima Android-a<ph name="END_LINK1" />
+
+Napredna zaštita kontroliše ova Chrome podešavanja:
+• Uključeno je „Uvek koristi bezbedne veze“.
+• „JavaScript optimizator“ je isključen. <ph name="BEGIN_LINK2" />Upravljajte izuzecima za sajtove<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za određeni sajt.</translation>
 <translation id="2626708220538466178">Donja tabela podrazumevanog pregledača je zatvorena</translation>
 <translation id="2653659639078652383">Pošalji</translation>

@@ -1676,6 +1676,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7437712592381799950">Pyyhkäisemällä ylös näet lisää sinulle räätälöityä sisältöä.</translation>
 <translation id="7438473148803748807">Kaikki menettävät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja kaikki kutsulinkit poistetaan käytöstä</translation>
 <translation id="7438481509621345350">Näet nyt tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
+<translation id="7445682342344043969">Ponnahdusikkunat estetty</translation>
 <translation id="7451023311965289370">{count,plural, =1{Kirjanmerkin tallennuspaikka on "{title}"}other{Kirjanmerkkien tallennuspaikka on "{title}"}}</translation>
 <translation id="7451404862887877229">Valitse "Yksityisyys ja turvallisuus" ja sitten "Selaussuoja"</translation>
 <translation id="7454057999980797137">Alue/maa</translation>

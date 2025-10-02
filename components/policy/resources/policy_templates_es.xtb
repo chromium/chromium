@@ -614,6 +614,7 @@ Para obtener más información, consulta esta página: https://support.google.co
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): este valor no está disponible desde la versión M121. A partir de la versión M121, los valores se tratarán como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Inhabilitar corrector ortográfico</translation>
+<translation id="1434936032334586168">Habilitar la impresión silenciosa</translation>
 <translation id="1435031247649241006">En la pantalla de bloqueo, los usuarios ven una opción que abre una ventana de reautenticación online que pueden usar en el proceso de autenticación para volver a entrar en su sesión. Esta
 política se puede usar para abrir automáticamente la ventana si es necesaria la reautenticación online.
 
@@ -1904,6 +1905,7 @@ Si no se define la política, los usuarios podrán cambiar la lista de aplicacio
 <translation id="2306505001667207184">Pedirle al usuario que seleccione el certificado de cliente cuando la política de selección automática coincida con varios certificados.</translation>
 <translation id="230713790688681130">Habilitar diseño InScript para hindi</translation>
 <translation id="2307496301287881990">Informar del estado de la pantalla y los gráficos</translation>
+<translation id="2308899582897965249">Inhabilitar la impresión silenciosa</translation>
 <translation id="2309284543927494965">Bloquear las actualizaciones</translation>
 <translation id="2309341709647905294">No proporcionar información sobre los periféricos conectados al dispositivo</translation>
 <translation id="2309390639296060546">Configuración de ubicación geográfica predeterminada</translation>
@@ -2086,6 +2088,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2439733504887695659">Habilitar la opción de cerrar alertas de contraseñas vulneradas para credenciales introducidas</translation>
 <translation id="2446029789419870019">Permitir el uso de la función y mejorar los modelos de IA</translation>
 <translation id="2446244536806499267">No considerar que el usuario está inactivo mientras se reproduce audio</translation>
+<translation id="2450392422484526374">Si se asigna el valor true a esta política, se habilitará la impresión silenciosa, que cerrará inmediatamente la ventana de vista previa de impresión cuando se abra e imprimirá en la impresora predeterminada con las opciones prefijadas. Si la opción predeterminada de impresión es "Guardar como PDF", el archivo se guardará en la carpeta Descargas.
+
+Si no se define esta política o se le asigna el valor false, se inhabilitará la impresión silenciosa, por lo que no se cerrará automáticamente la ventana de vista previa de impresión y se pedirá al usuario que seleccione una opción.</translation>
 <translation id="2452225615952836461">Utilizar métodos de solicitud siempre en mayúsculas</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
 <translation id="2455033019778127130">Sigue el comportamiento predeterminado del navegador, muestra los Términos del Servicio y espera a que el usuario los acepte.</translation>
@@ -5133,21 +5138,6 @@ Si se desactiva esta opción o no se define, el servicio de protección de contr
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="4607416370554533118">Si configuras esta política, podrás crear una lista de patrones de URL donde se especifique en qué sitios web podrá usar Chrome un certificado de cliente de forma automática. El valor debe ser un conjunto de diccionarios JSON de tipo string, cada uno con el formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, donde <ph name="URL_PATTERN_PLACEHOLDER" /> es un patrón de configuración de contenido. <ph name="FILTER_PLACEHOLDER" /> restringe los certificados de cliente entre los que puede elegir automáticamente el navegador. Independientemente del filtro, solo se seleccionarán los certificados que coincidan con la solicitud de certificado del servidor.
-
-      Ejemplos del uso de la sección <ph name="FILTER_PLACEHOLDER" />:
-
-      * Si se asigna el valor <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" /> a <ph name="FILTER_PLACEHOLDER" />, solo se seleccionarán los certificados de cliente emitidos por un certificado en el que CommonName tenga el valor <ph name="ISSUER_CN_PLACEHOLDER" />.
-
-      * Si <ph name="FILTER_PLACEHOLDER" /> contiene las secciones <ph name="ISSUER_STRING_VALUE" /> y <ph name="SUBJECT_STRING_VALUE" />, solo se seleccionarán los certificados de cliente que cumplan ambas condiciones.
-
-      * Si <ph name="FILTER_PLACEHOLDER" /> contiene una sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATION" />, el certificado debe contener al menos una organización que coincida con el valor especificado para que se pueda seleccionar.
-
-      * Si <ph name="FILTER_PLACEHOLDER" /> contiene una sección <ph name="SUBJECT_STRING_VALUE" /> con un valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, el certificado debe contener al menos una unidad organizativa que coincida con el valor especificado para que se pueda seleccionar.
-
-      * Si se asigna el valor <ph name="EMPTY_DICTIONARY" /> a <ph name="FILTER_PLACEHOLDER" />, no se aplicarán más restricciones a la selección de certificados de cliente. Ten en cuenta que seguirán aplicándose los filtros proporcionados por el servidor web.
-
-      Si no se asigna ningún valor a esta política, no se aplicará la selección automática en ningún sitio web.</translation>
 <translation id="4607499333275488034">Inhabilitar la función de protección contra la recogida de huellas digitales de <ph name="PRIVACY_SANDBOX_NAME" /> en el modo Incógnito.</translation>
 <translation id="4611983465824842867">No mostrar advertencias o inhabilitar Autocompletar en formularios no seguros</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
