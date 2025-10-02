@@ -137,7 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)addURLRewriter {
   GURL url = self.testServer->GetURL(kPageURL);
-  NSString* port = base::SysUTF8ToNSString(url.GetPort());
+  NSString* port = base::SysUTF8ToNSString(url.port());
 
   const std::string googleSearchEngineKeyword(
       base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));

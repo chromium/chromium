@@ -49,7 +49,7 @@ GURL HttpsUpgradeService::GetUpgradedHttpsUrl(const GURL& http_url) const {
   if (https_port_for_testing_) {
     // We'll only get here in tests. Tests should always have a non-default
     // port on the input text.
-    DCHECK(!http_url.GetPort().empty());
+    DCHECK(!http_url.port().empty());
     replacements.SetPortStr(port_str);
 
     // Change the URL to help with debugging.
@@ -78,7 +78,7 @@ GURL HttpsUpgradeService::GetHttpUrl(const GURL& url) const {
   if (http_port_for_testing_) {
     // We'll only get here in tests. Tests should always have a non-default
     // port on the input text.
-    DCHECK(!url.GetPort().empty());
+    DCHECK(!url.port().empty());
     replacements.SetPortStr(port_str);
   }
   return url.ReplaceComponents(replacements);
