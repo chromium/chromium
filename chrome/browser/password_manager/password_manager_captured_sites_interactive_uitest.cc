@@ -28,6 +28,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 using captured_sites_test_utils::CapturedSiteParams;
 using captured_sites_test_utils::GetCapturedSites;
@@ -220,6 +221,10 @@ class CapturedSitesPasswordManagerBrowserTest
 
     browser()->profile()->GetPrefs()->SetBoolean(::prefs::kSafeBrowsingEnabled,
                                                  false);
+
+    // Disable the caret blinking to not generate any compositor frames from
+    // just a blinking cursor.
+    os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -266,6 +271,7 @@ class CapturedSitesPasswordManagerBrowserTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ServerUrlLoader> server_url_loader_;
 
+  ui::MockOsSettingsProvider os_settings_provider_;
   base::CallbackListSubscription create_services_subscription_;
 };
 
