@@ -37,7 +37,6 @@ include_rules = [
   "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/segmentation_platform/model",
-  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/ssl/model",

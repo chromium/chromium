@@ -10,7 +10,6 @@ include_rules = [
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/search_engines/model",
-  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/context_menu/ui_bundled",
   "+ios/chrome/browser/web/model",

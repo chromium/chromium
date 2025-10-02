@@ -24,7 +24,6 @@ include_rules = [
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/saved_tab_groups/model",
   "+ios/chrome/browser/search_engines/model",
-  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/settings/model/sync",
   "+ios/chrome/browser/sharing_message/model",
   "+ios/chrome/browser/signin/model",
