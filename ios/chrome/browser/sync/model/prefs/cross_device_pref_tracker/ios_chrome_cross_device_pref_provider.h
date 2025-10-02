@@ -24,10 +24,6 @@ class IOSChromeCrossDevicePrefProvider
   // This defines the list of prefs that are tracked across all platforms.
   sync_preferences::CommonCrossDevicePrefProvider
       common_cross_device_pref_provider_;
-  // A list of all Profile prefs to be tracked on Chrome iOS.
-  const base::flat_set<std::string_view> profile_prefs_;
-  // A list of all local-state prefs to be tracked on Chrome iOS.
-  const base::flat_set<std::string_view> local_state_prefs_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_PREFS_CROSS_DEVICE_PREF_TRACKER_IOS_CHROME_CROSS_DEVICE_PREF_PROVIDER_H_

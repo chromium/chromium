@@ -7,14 +7,9 @@
 #import <string_view>
 
 #import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 namespace {
-
-// Helper to return a common, static empty set.
-const base::flat_set<std::string_view>& GetEmptySet() {
-  static const base::NoDestructor<base::flat_set<std::string_view>> kEmptySet;
-  return *kEmptySet;
-}
 
 // Helper function to combine common prefs with platform-specific prefs.
 base::flat_set<std::string_view> CombinePrefs(
@@ -27,22 +22,22 @@ base::flat_set<std::string_view> CombinePrefs(
 
 }  // namespace
 
-IOSChromeCrossDevicePrefProvider::IOSChromeCrossDevicePrefProvider()
-    : profile_prefs_(
-          CombinePrefs(common_cross_device_pref_provider_.GetProfilePrefs(),
-                       GetEmptySet())),
-      local_state_prefs_(
-          CombinePrefs(common_cross_device_pref_provider_.GetLocalStatePrefs(),
-                       GetEmptySet())) {}
+IOSChromeCrossDevicePrefProvider::IOSChromeCrossDevicePrefProvider() = default;
 
 IOSChromeCrossDevicePrefProvider::~IOSChromeCrossDevicePrefProvider() = default;
 
 const base::flat_set<std::string_view>&
 IOSChromeCrossDevicePrefProvider::GetProfilePrefs() const {
-  return profile_prefs_;
+  static const base::NoDestructor<base::flat_set<std::string_view>>
+      kCombinedPrefs(
+          CombinePrefs(common_cross_device_pref_provider_.GetProfilePrefs(),
+                       base::flat_set<std::string_view>{
+                           prefs::kCrossPlatformPromosIOS16thActiveDay,
+                       }));
+  return *kCombinedPrefs;
 }
 
 const base::flat_set<std::string_view>&
 IOSChromeCrossDevicePrefProvider::GetLocalStatePrefs() const {
-  return local_state_prefs_;
+  return common_cross_device_pref_provider_.GetLocalStatePrefs();
 }

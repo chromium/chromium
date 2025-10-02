@@ -15,6 +15,11 @@ namespace prefs {
 inline constexpr char kCrossDeviceOmniboxIsInBottomPosition[] =
     "cross_device.omnibox.is_in_bottom_position";
 
+// Dictionary that stores the value of the 16th active day for cross-platform
+// promos on iOS across a user's syncing devices.
+inline constexpr char kCrossDeviceCrossPlatformPromosIOS16thActiveDay[] =
+    "cross_device.cross_platform_promos.ios_16th_active_day";
+
 }  // namespace prefs
 
 #endif  // COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_PREFS_CROSS_DEVICE_PREF_NAMES_H_
