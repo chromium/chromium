@@ -129,8 +129,8 @@ final class AndroidBaseWindow {
     }
 
     @CalledByNative
-    private void setBounds(int left, int top, int width, int height) {
-        mChromeAndroidTask.setBoundsInDp(new Rect(left, top, width, height));
+    private void setBounds(int left, int top, int right, int bottom) {
+        mChromeAndroidTask.setBoundsInDp(new Rect(left, top, right, bottom));
     }
 
     @CalledByNative

@@ -56,6 +56,12 @@ class AndroidBaseWindowUnitTest : public testing::Test {
         AttachCurrentThread(), java_test_support_, left, top, right, bottom);
   }
 
+  void InvokeJavaVerifyBoundsToSet(const gfx::Rect& bounds_to_set) const {
+    Java_AndroidBaseWindowNativeUnitTestSupport_verifyBoundsToSet(
+        AttachCurrentThread(), java_test_support_, bounds_to_set.x(),
+        bounds_to_set.y(), bounds_to_set.right(), bounds_to_set.bottom());
+  }
+
  protected:
   void SetUpJavaSupport(bool use_real_window_android) {
     java_test_support_ =
@@ -102,6 +108,19 @@ TEST_F(AndroidBaseWindowUnitTest, GetBoundsMethodReturnsCorrectBounds) {
 
   // Assert.
   EXPECT_EQ(expected_bounds, actual_bounds);
+}
+
+TEST_F(AndroidBaseWindowUnitTest,
+       SetBoundsMethodPassesCorrectBoundsToChromeAndroidTask) {
+  // Arrange.
+  AndroidBaseWindow* android_base_window = InvokeJavaGetOrCreateNativePtr();
+  gfx::Rect bounds_to_set(/*x=*/50, /*y=*/100, /*width=*/800, /*height=*/600);
+
+  // Act.
+  android_base_window->SetBounds(bounds_to_set);
+
+  // Assert.
+  InvokeJavaVerifyBoundsToSet(bounds_to_set);
 }
 
 // Derived fixture for tests that REQUIRE a real Java WindowAndroid.
