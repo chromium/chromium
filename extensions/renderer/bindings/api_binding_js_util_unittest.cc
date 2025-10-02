@@ -13,9 +13,10 @@
 #include "extensions/renderer/bindings/api_invocation_errors.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
+#include "gin/public/gin_embedders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-cppgc.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
 
@@ -286,7 +287,8 @@ TEST_F(APIBindingJSUtilUnittest, TestSetExceptionHandler) {
 
     ASSERT_TRUE(info.Data()->IsExternal());
     ErrorInfo* error_out =
-        static_cast<ErrorInfo*>(info.Data().As<v8::External>()->Value());
+        static_cast<ErrorInfo*>(info.Data().As<v8::External>()->Value(
+            gin::kAPIBindingJSUtilUnittestErrorInfoTag));
     error_out->full_message = full_message;
     error_out->exception_message = GetStringPropertyFromObject(
         error_object, arguments.GetHolderCreationContext(), "message");
@@ -294,8 +296,10 @@ TEST_F(APIBindingJSUtilUnittest, TestSetExceptionHandler) {
 
   ErrorInfo error_info;
   v8::Local<v8::Function> v8_handler =
-      v8::Function::New(context, custom_handler,
-                        v8::External::New(isolate(), &error_info))
+      v8::Function::New(
+          context, custom_handler,
+          v8::External::New(isolate(), &error_info,
+                            gin::kAPIBindingJSUtilUnittestErrorInfoTag))
           .ToLocalChecked();
   v8::Local<v8::Function> add_handler = FunctionFromString(
       context,
