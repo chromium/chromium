@@ -483,9 +483,10 @@ using segmentation_platform::TipIdentifier;
     _appBundlePromoMediator.presentationAudience = self;
     [moduleMediators addObject:_appBundlePromoMediator];
   }
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::kDefaultBrowserMagicStackIos)) {
-    _defaultBrowserMediator = [[DefaultBrowserMediator alloc] init];
+  if (segmentation_platform::features::IsDefaultBrowserMagicStackEnabled() &&
+      !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
+    _defaultBrowserMediator =
+        [[DefaultBrowserMediator alloc] initWithProfilePrefService:prefs];
     _defaultBrowserMediator.presentationAudience = self;
     [moduleMediators addObject:_defaultBrowserMediator];
   }

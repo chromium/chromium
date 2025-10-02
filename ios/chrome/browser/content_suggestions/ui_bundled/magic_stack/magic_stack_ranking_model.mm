@@ -575,8 +575,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
               static_cast<float>(
                   _appStoreBundleService->GetInstalledAppCount())));
     }
-    if (base::FeatureList::IsEnabled(
-            segmentation_platform::features::kDefaultBrowserMagicStackIos)) {
+    if (segmentation_platform::features::IsDefaultBrowserMagicStackEnabled()) {
       inputContext->metadata_args.emplace(
           segmentation_platform::kIsDefaultBrowserChromeIos,
           segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -662,8 +661,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       }
     } else if (label ==
                segmentation_platform::kDefaultBrowserPromoEphemeralModule) {
-      if (base::FeatureList::IsEnabled(
-              segmentation_platform::features::kDefaultBrowserMagicStackIos)) {
+      if (segmentation_platform::features::
+              IsDefaultBrowserMagicStackEnabled() &&
+          !tips_prefs::IsTipsInMagicStackDisabled(_prefService)) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
         card = _defaultBrowserMediator.config;
         break;
@@ -946,8 +946,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         }
         break;
       case ContentSuggestionsModuleType::kDefaultBrowser:
-        if (base::FeatureList::IsEnabled(segmentation_platform::features::
-                                             kDefaultBrowserMagicStackIos) &&
+        if (segmentation_platform::features::
+                IsDefaultBrowserMagicStackEnabled() &&
             _defaultBrowserMediator) {
           [magicStackOrder addObject:_defaultBrowserMediator.config];
         }

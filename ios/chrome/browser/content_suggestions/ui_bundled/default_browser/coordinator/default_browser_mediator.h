@@ -13,6 +13,7 @@
 @class DefaultBrowserConfig;
 @protocol SettingsCommands;
 enum class ContentSuggestionsModuleType;
+class PrefService;
 
 // Delegate used to communicate events back to the owner of the
 // DefaultBrowserMediator.
@@ -38,6 +39,11 @@ enum class ContentSuggestionsModuleType;
 // Audience for presentation actions.
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
     presentationAudience;
+
+- (instancetype)initWithProfilePrefService:(PrefService*)profilePrefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Disconnect the mediator.
 - (void)disconnect;

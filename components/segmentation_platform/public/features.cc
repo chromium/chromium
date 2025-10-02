@@ -272,6 +272,11 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions{
     "max_default_browser_magic_stack_ios_impressions",
     /*default_value=*/6};
 
+bool IsDefaultBrowserMagicStackEnabled() {
+  return base::FeatureList::IsEnabled(
+      segmentation_platform::features::kDefaultBrowserMagicStackIos);
+}
+
 BASE_FEATURE(kAndroidTipsNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kTrustAndSafety{&kAndroidTipsNotifications,

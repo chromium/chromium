@@ -215,6 +215,9 @@ BASE_DECLARE_FEATURE(kDefaultBrowserMagicStackIos);
 // card should be hidden.
 extern const base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions;
 
+// Whether the Default Browser promo module should be shown in the Magic Stack.
+bool IsDefaultBrowserMagicStackEnabled();
+
 // Feature flag for enabling the tips notifications ranker.
 BASE_DECLARE_FEATURE(kAndroidTipsNotifications);
 
