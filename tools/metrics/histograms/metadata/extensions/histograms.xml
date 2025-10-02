@@ -2510,6 +2510,19 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.Functions.DeveloperPrivate.NoSuchExtensionErrorThrown"
+    enum="ExtensionFunctions" expires_after="2026-04-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when an error is thrown from a developerPrivate API function when
+    there is no extension with the specified ID found. Used to pinpoint which
+    functions may be causing most crashes as seen in crbug.com/431205004 when
+    this error is thrown.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Functions.DidSandboxedComponentExtensionAPICall"
     enum="Boolean" expires_after="2025-09-30">
   <owner>wjmaclean@chromium.org</owner>

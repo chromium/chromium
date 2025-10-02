@@ -33,7 +33,8 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   // These constants here are only temporarily during Android desktop
   // development and we can move these constants to an anonymous namespace once
   // we finish it.
-  static constexpr char kNoSuchExtensionError[] = "No such extension.";
+  static constexpr char kNoSuchExtensionError[] =
+      "No such extension found for call to *.";
   static constexpr char kRequiresUserGestureError[] =
       "This action requires a user gesture.";
   static constexpr char kCouldNotShowSelectFileDialogError[] =
@@ -116,6 +117,10 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   // Returns the extension with the given `id` from the registry, only checking
   // enabled extensions.
   const Extension* GetEnabledExtensionById(const ExtensionId& id);
+
+  // Called when there is no extension that exists for a specified ID in a
+  // function. Logs the function name and returns an error.
+  ResponseValue LogNoSuchExtensionFoundAndReturn();
 };
 
 class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
