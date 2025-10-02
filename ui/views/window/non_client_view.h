@@ -15,23 +15,10 @@
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/window/frame_view.h"
 
-// TODO(https://crbug.com/444010176): Follow up by removing this alias once we
-// are sure any downstream projects have migrated to accommodate the rename of
-// FrameView => FrameView.
-//
-// Putting this in the global namespace is required so that classes which do
-// LayoutSuperclass<NonClientFrameView> don't break.
-using NonClientFrameView = views::FrameView;
-
 namespace views {
 
 class ClientView;
 enum class CloseRequestResult;
-
-// TODO(https://crbug.com/444010176): Follow up by removing this alias once we
-// are sure any downstream projects have migrated to accommodate the rename of
-// FrameView => FrameView.
-using NonClientFrameView = FrameView;
 
 ////////////////////////////////////////////////////////////////////////////////
 // NonClientView
