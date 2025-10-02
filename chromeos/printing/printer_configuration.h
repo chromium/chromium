@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_PRINTING_PRINTER_CONFIGURATION_H_
 #define CHROMEOS_PRINTING_PRINTER_CONFIGURATION_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>
@@ -207,6 +208,16 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
     kProtocolMax
   };
 
+  struct UsbDeviceId {
+    UsbDeviceId(uint16_t vendor_id, uint16_t product_id)
+        : vendor_id(vendor_id), product_id(product_id) {}
+
+    friend bool operator==(const UsbDeviceId&, const UsbDeviceId&) = default;
+
+    uint16_t vendor_id;
+    uint16_t product_id;
+  };
+
   // Constructs a printer object that is completely empty.
   Printer();
 
@@ -257,6 +268,13 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // the error message is written there when the methods return false.
   bool SetUri(const Uri& uri, std::string* error_message = nullptr);
   bool SetUri(std::string_view uri, std::string* error_message = nullptr);
+
+  const std::optional<UsbDeviceId>& usb_device_id() const {
+    return usb_device_id_;
+  }
+  void set_usb_device_id(UsbDeviceId usb_device_id) {
+    usb_device_id_ = usb_device_id;
+  }
 
   const PpdReference& ppd_reference() const { return ppd_reference_; }
   PpdReference* mutable_ppd_reference() { return &ppd_reference_; }
@@ -359,6 +377,9 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // The full path for the printer. Suitable for configuration in CUPS.
   // Contains protocol, hostname, port, and queue.
   Uri uri_;
+
+  // USB device identifier for a USB connected printer.
+  std::optional<UsbDeviceId> usb_device_id_;
 
   // Holds allowed/default values of print job options set by policy.
   ManagedPrintOptions print_job_options_;
