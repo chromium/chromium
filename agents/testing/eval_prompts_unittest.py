@@ -751,6 +751,8 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertFalse(args.no_build)
         self.assertFalse(args.verbose)
         self.assertFalse(args.print_output_on_success)
+        self.assertIsNone(args.isolated_script_test_output)
+        self.assertIsNone(args.isolated_script_test_perf_output)
         self.assertIsNone(args.filter)
         self.assertIsNone(args.shard_index)
         self.assertIsNone(args.total_shards)
@@ -809,10 +811,7 @@ class ParseArgsUnittest(unittest.TestCase):
         ]
         # stderr mocked to silence the automatic help output by the parser when
         # parsing fails.
-        with (
-                self.assertRaises(SystemExit),
-                mock.patch('sys.stderr', new_callable=io.StringIO),
-        ):
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
             eval_prompts._parse_args()
 
     def test_parse_args_all_gemini_cli_args(self):
@@ -874,11 +873,56 @@ class ParseArgsUnittest(unittest.TestCase):
                                      arg_group2)
                 # stderr mocked to silence the automatic help output by the
                 # parser when parsing fails.
-                with (
-                        self.assertRaises(SystemExit),
-                        mock.patch('sys.stderr', new_callable=io.StringIO),
-                ):
+                with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
                     eval_prompts._parse_args()
+
+    def test_parse_args_negative_shard_index(self):
+        """Tests that a negative shard_index raises an error."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--shard-index', '-1', '--total-shards', '2'
+        ]
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
+    def test_parse_args_zero_total_shards(self):
+        """Tests that a total_shards of zero raises an error."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--shard-index', '0', '--total-shards', '0'
+        ]
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
+    def test_parse_args_shard_index_only(self):
+        """Tests that providing only shard_index raises an error."""
+        self.mock_argv[:] = ['eval_prompts.py', '--shard-index', '1']
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
+    def test_parse_args_total_shards_only(self):
+        """Tests that providing only total_shards raises an error."""
+        self.mock_argv[:] = ['eval_prompts.py', '--total-shards', '2']
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
+    def test_parse_args_zero_parallel_workers(self):
+        """Tests that zero parallel_workers raises an error."""
+        self.mock_argv[:] = ['eval_prompts.py', '--parallel-workers', '0']
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
+    def test_parse_args_negative_retries(self):
+        """Tests that negative retries raises an error."""
+        self.mock_argv[:] = ['eval_prompts.py', '--retries', '-1']
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
+    def test_parse_args_negative_repeat(self):
+        """Tests that negative repeat raises an error."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--isolated-script-test-repeat', '-1'
+        ]
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
 
 
 

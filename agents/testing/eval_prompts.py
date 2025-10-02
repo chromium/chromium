@@ -298,6 +298,33 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     return returncode
 
 
+def _validate_args(args: argparse.Namespace,
+                   parser: argparse.ArgumentParser) -> None:
+    """Validates that all parsed args have valid values.
+
+    Args:
+        args: The parsed arguments.
+        parser: The parser that parsed |args|.
+    """
+    # Test Selection Arguments group.
+    if args.shard_index is not None and args.shard_index < 0:
+        parser.error('--shard-index must be non-negative')
+    if args.total_shards is not None and args.total_shards < 1:
+        parser.error('--total-shards must be positive')
+    if (args.shard_index is None) != (args.total_shards is None):
+        parser.error(
+            '--shard-index and --total-shards must be set together if set at '
+            'all')
+
+    # Test Runner Arguments group.
+    if args.parallel_workers < 1:
+        parser.error('--parallel-workers must be positive')
+    if args.retries < 0:
+        parser.error('--retries must be non-negative')
+    if args.isolated_script_test_repeat < 0:
+        parser.error('--isolated-script-test-repeat must be non-negative')
+
+
 def _parse_args() -> argparse.Namespace:
     """Parses command line args.
 
@@ -328,6 +355,12 @@ def _parse_args() -> argparse.Namespace:
         action='store_true',
         help=('Print test output even when a test succeeds. By default, '
               'output is only surfaced when a test fails.'))
+    group.add_argument(
+        '--isolated-script-test-output',
+        help='Currently unused, parsed to handle all isolated script args.')
+    group.add_argument(
+        '--isolated-script-test-perf-output',
+        help='Currently unused, parsed to handle all isolated script args.')
 
     group = parser.add_argument_group('Test Selection Arguments')
     filter_group = group.add_mutually_exclusive_group()
@@ -401,7 +434,9 @@ def _parse_args() -> argparse.Namespace:
                        default=0,
                        help='The number of times to repeat each test.')
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    _validate_args(args, parser)
+    return args
 
 
 def main() -> int:
