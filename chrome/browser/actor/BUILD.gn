@@ -147,6 +147,7 @@ source_set("impl") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/tracing:tracing_metrics",
     "//components/variations/service",
     "//content/public/browser",
     "//net",

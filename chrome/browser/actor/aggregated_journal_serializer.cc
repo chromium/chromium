@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/aggregated_journal_serializer.h"
 
 #include "base/containers/span.h"
+#include "components/tracing/common/system_profile_metadata_recorder.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
@@ -12,6 +13,7 @@
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/clock_snapshot.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/perfetto/tracing_service_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
@@ -86,6 +88,13 @@ void AggregatedJournalSerializer::WriteTracePreamble() {
         perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
     auto* service_event = msg->set_service_event();
     service_event->set_all_data_sources_started(true);
+    WriteTracePacket(msg.SerializeAsArray());
+  }
+
+  // Record the system info in the actor journal.
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    tracing::RecordSystemProfileMetadata(msg->set_chrome_events());
     WriteTracePacket(msg.SerializeAsArray());
   }
 }
