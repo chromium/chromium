@@ -233,6 +233,26 @@ constexpr Feature LatestOrDefaultValue(const char* name,
       UMAFeature::FromLatestOrDefaultValue(name, bucket_count, default_value));
 }
 
+constexpr Feature UMASum(const char* name, uint64_t bucket_count) {
+  return Feature::FromUMAFeature(
+      UMAFeature{.signal_type = proto::SignalType::HISTOGRAM_VALUE,
+                 .name = name,
+                 .bucket_count = bucket_count,
+                 .tensor_length = 1,
+                 .aggregation = proto::Aggregation::SUM});
+}
+
+constexpr Feature UMAAggregate(const char* name,
+                               uint64_t bucket_count,
+                               proto::Aggregation aggregation) {
+  return Feature::FromUMAFeature(
+      UMAFeature{.signal_type = proto::SignalType::HISTOGRAM_VALUE,
+                 .name = name,
+                 .bucket_count = bucket_count,
+                 .tensor_length = 1,
+                 .aggregation = aggregation});
+}
+
 }  // namespace features
 
 template <typename EnumType>

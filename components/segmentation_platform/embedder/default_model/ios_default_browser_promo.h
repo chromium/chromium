@@ -18,6 +18,49 @@ namespace segmentation_platform {
 // during first run.
 class IosDefaultBrowserPromo : public DefaultModelProvider {
  public:
+  enum Label { kLabelShow, kLabelCount };
+  enum Feature {
+    kFeatureFirstRunStageCount,
+    kFeatureSessionTotalDurationSum,
+    kFeatureSessionTotalDurationBooleanTrueCount,
+    kFeatureFirstRunStageSignInCount,
+    kFeatureFirstRunStageOpenSettingsCount,
+    kFeaturePageLoadCountsPageLoadNavigationCount,
+    kFeatureLaunchSourceSum,
+    kFeatureLaunchSourceAppIconCount,
+    kFeatureLaunchSourceDefaultIntentCount,
+    kFeatureLaunchSourceLinkOpenCount,
+    kFeatureMobileSessionStartFromAppsSum,
+    kFeatureMobileNewTabOpenedCount,
+    kFeatureMobileTabGridEnteredCount,
+    kFeatureStartImpressionSum,
+    kFeatureNTPImpressionSum,
+    kFeatureNTPImpressionFeedVisibleCount,
+    kFeatureIncognitoTimeSpentSum,
+    kFeatureIncognitoInterstitialEnabledCount,
+    kFeatureOmniboxSearchVsUrlCount,
+    kFeatureNewTabPageTimeSpentSum,
+    kFeatureProfileStorePasswordCount,
+    kFeatureAccountStorePasswordCount,
+    kFeatureIOSCredentialExtensionEnabled,
+    kFeaturePasswordManagerBulkCheckSum,
+    kFeatureSessionTotalDurationWithAccountBooleanSum,
+    kFeatureSigninIOSNumberOfDeviceAccountsBooleanSum,
+    kFeatureBookmarksFolderAddedCount,
+    kFeatureIOSMagicStackSafetyCheckFreshSignalCount,
+    kFeatureForwardCount,
+    kFeatureBackCount,
+    kFeatureMobileStackSwipeCancelledCount,
+    kFeatureMobileToolbarForwardCount,
+    kFeatureClientAgeWeeks,
+    kFeatureIsPhone,
+    kFeatureIsCountryBRIIM,
+    kFeatureIsSegmentationAndroidPhone,
+    kFeatureIsSegmentationIOSPhoneChrome,
+    kFeatureIsSegmentationSyncedFirstDevice,
+    kFeatureCount
+  };
+
   IosDefaultBrowserPromo();
   ~IosDefaultBrowserPromo() override = default;
 
