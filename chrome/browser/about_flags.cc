@@ -6823,6 +6823,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAuxiliarySearchDonationVariations,
                                     "AuxiliarySearchDonation")},
 
+    {"auxiliary-search-history-donation",
+     flag_descriptions::kAuxiliarySearchHistoryDonationName,
+     flag_descriptions::kAuxiliarySearchHistoryDonationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAuxiliarySearchHistoryDonation)},
+
     {"disable-instance-limit", flag_descriptions::kDisableInstanceLimitName,
      flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},

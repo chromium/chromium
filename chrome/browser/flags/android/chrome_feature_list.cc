@@ -252,6 +252,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAsyncNotificationManagerForDownload,
     &kAutomotiveBackButtonBarStreamline,
     &kAuxiliarySearchDonation,
+    &kAuxiliarySearchHistoryDonation,
     &kBatchTabRestore,
     &kBlockIntentsWhileLocked,
     &kBookmarkPaneAndroid,
@@ -663,6 +664,9 @@ BASE_FEATURE(kAutomotiveBackButtonBarStreamline,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuxiliarySearchDonation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAuxiliarySearchHistoryDonation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTinkerTankBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 

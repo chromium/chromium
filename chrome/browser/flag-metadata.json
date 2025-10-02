@@ -1119,6 +1119,11 @@
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 160
   },
+  {
+    "name": "auxiliary-search-history-donation",
+    "owners": [ "shend@chromium.org", "ssid@chromium.org" ],
+    "expiry_milestone": 160
+  },
     {
     "name": "avatar-button-sync-promo",
     "owners": [ "rsult@google.com", "chrome-signin-desktop-team@google.com" ],
