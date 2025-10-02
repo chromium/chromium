@@ -79,10 +79,16 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
       ExtensionDownloaderDelegate::CacheStatus cache_status) override;
 
  private:
-
   // Reports disable reasons for the extensions which are installed but not
   // loaded.
   void ReportDisableReason(const ExtensionId& extension_id);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Reports whether the greylisted force-installed extensions are enabled in
+  // high/low trust environments.
+  void ReportGreylistedStateByTrustLevel(const ExtensionId& extension_id,
+                                         bool is_low_trust_environment);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // If `kInstallationTimeout` report time elapsed for extensions load,
   // otherwise amount of not yet loaded extensions and reasons
