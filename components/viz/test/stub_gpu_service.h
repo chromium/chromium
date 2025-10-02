@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_TEST_STUB_GPU_SERVICE_H_
 #define COMPONENTS_VIZ_TEST_STUB_GPU_SERVICE_H_
 
+#include <string>
+
 #include "base/clang_profiling_buildflags.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
@@ -12,7 +14,7 @@
 
 namespace viz {
 
-// Test implementation of viz::mojom::GpuService that provides empty
+// Test implementation of mojom::GpuService that provides empty
 // implementations for all methods. Tests can inherit from this and override
 // methods that they care about.
 class StubGpuService : public mojom::GpuService {
