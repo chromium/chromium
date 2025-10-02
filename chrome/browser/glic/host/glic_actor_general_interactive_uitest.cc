@@ -74,7 +74,13 @@ MultiStep GlicActorGeneralUiTest::WaitAction(
   return WaitAction(task_id_, std::move(expected_result));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateTaskAndNavigate) {
+// TODO(crbug.com/448882109): Disable failing test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTaskAndNavigate DISABLED_CreateTaskAndNavigate
+#else
+#define MAYBE_CreateTaskAndNavigate CreateTaskAndNavigate
+#endif
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, MAYBE_CreateTaskAndNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   base::HistogramTester histogram_tester;
