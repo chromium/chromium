@@ -1477,7 +1477,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.32.1"
+        "version": "4.33.0-RC1"
     },
     {
         "name": "protobuf-lite",
@@ -1652,12 +1652,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.51.0"
+        "version": "3.51.1"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.51.0"
+        "version": "3.51.1"
     },
     {
         "name": "animal-sniffer-annotations",
