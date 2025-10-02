@@ -150,18 +150,30 @@ void BrowserMemoryConsumerRegistry::RegisterChildMemoryConsumer(
   ChildProcessId child_process_id =
       receivers_.current_context().child_process_id;
 
-  auto [it, inserted] = child_memory_consumers_.emplace(
-      std::piecewise_construct,
+  // In some edge cases related to RPH reuse, there might already be a
+  // registered consumer group for this ChildProcessId. Simply overwrite it.
+  // Note that the value type (ChildMemoryConsumer) is not copyable or movable,
+  // so it's not possible to simply overwrite the previous value. We must remove
+  // and emplace afterwards.
+  auto consumer_group_key = std::tie(consumer_id, child_process_id);
+  auto it = child_memory_consumers_.lower_bound(consumer_group_key);
+  if (it != child_memory_consumers_.end() && it->first == consumer_group_key) {
+    ChildMemoryConsumer& child_memory_consumer = it->second;
+    RemoveMemoryConsumerImpl(
+        consumer_id, child_process_id,
+        CreateRegisteredMemoryConsumer(&child_memory_consumer));
+
+    it = child_memory_consumers_.erase(it);
+  }
+
+  it = child_memory_consumers_.emplace_hint(
+      it, std::piecewise_construct,
       std::forward_as_tuple(consumer_id, child_process_id),
       std::forward_as_tuple(
           std::move(remote_consumer),
           base::BindOnce(
               &BrowserMemoryConsumerRegistry::OnChildMemoryConsumerDisconnected,
               base::Unretained(this), consumer_id, child_process_id)));
-  if (!inserted) {
-    receivers_.ReportBadMessage("Duplicate MemoryConsumer ID.");
-    return;
-  }
 
   ProcessType process_type = receivers_.current_context().process_type;
 
