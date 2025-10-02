@@ -18,6 +18,7 @@ import {PageHandlerFactory, PageHandlerRemote} from './watermark.mojom-webui.js'
 export interface WatermarkAppElement {
   $: {
     fontSizeInput: CrInputElement,
+    fontSizeInputError: HTMLDivElement,
     fillOpacitySlider: CrSliderElement,
     outlineOpacitySlider: CrSliderElement,
   };
@@ -107,9 +108,32 @@ export class WatermarkAppElement extends CrLitElement {
 
   protected onFontSizeChanged_() {
     const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
-    if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue < 1000) {
-      this.fontSize_ = parsedValue;
-      this.sendStyleToBackend_();
+    if (isNaN(parsedValue) || parsedValue < 1 || parsedValue > 500) {
+      this.$.fontSizeInputError.style.visibility = 'visible';
+      return;
+    }
+    this.$.fontSizeInputError.style.visibility = 'hidden';
+    this.fontSize_ = parsedValue;
+    this.sendStyleToBackend_();
+  }
+
+  // To prevent special floating point chars such as e or '.'
+  protected onFontSizeInputKeyDown_(event: KeyboardEvent) {
+    const allowedNumericKeys =
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const allowedControlKeys = [
+      'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab',
+      'v',  // Allows for paste operations.
+    ];
+
+    // Don't interrupt on control keys.
+    if (allowedControlKeys.includes(event.key) || event.ctrlKey ||
+        event.metaKey) {
+      return;
+    }
+    if (!allowedNumericKeys.includes(event.key) ||
+      this.$.fontSizeInput.value.length === 3) {
+      event.preventDefault();
     }
   }
 

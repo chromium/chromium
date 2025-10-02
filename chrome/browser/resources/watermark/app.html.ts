@@ -23,11 +23,18 @@ export function getHtml(this: WatermarkAppElement) {
 
       <div class="control-row">
         <span>Font size</span>
-        <cr-input id="fontSizeInput" class="font-size-input
-            stroked" type="number" aria-label="Font size"
-            min="1" .value="${this.fontSize_.toString()}"
+        <cr-input id="fontSizeInput" class="font-size-input stroked"
+            aria-label="Font size" type="number"
+            min="1"
+            max="500
+            .value="${this.fontSize_.toString()}"
+            @keydown="${this.onFontSizeInputKeyDown_}"
             @value-changed="${this.onFontSizeChanged_}">
         </cr-input>
+      </div>
+
+      <div id="fontSizeInputError">
+        <span>Font size should be between 1 and 500</span>
       </div>
 
       <div class="control-row">

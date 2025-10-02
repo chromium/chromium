@@ -89,6 +89,18 @@ cr-input.font-size-input.stroked > #input {
   text-align: center;
 }
 
+#fontSizeInputError {
+  align-items: right;
+  display: flex;
+  justify-content: right;
+  visibility: hidden;
+}
+
+#fontSizeInputError > span {
+  color: #dc6322;
+  font-size: 11px;
+}
+
 #values {
   border-top: 1px solid #e8eaed;
   color: #5f6368;
