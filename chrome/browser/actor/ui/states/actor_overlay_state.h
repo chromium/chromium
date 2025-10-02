@@ -17,6 +17,8 @@ struct ActorOverlayState {
   // This member is intended to be used alongside the relevant tab's visibility
   // status to determine whether or not the actor overlay should be shown.
   bool is_active = false;
+  // Whether or not the border glow should be visible.
+  bool border_glow_visible = false;
   // A magic mouse click was triggered.
   bool mouse_down = false;
   // The target at which the magic mouse should be over.

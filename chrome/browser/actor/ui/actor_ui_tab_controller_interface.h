@@ -21,6 +21,8 @@ struct UiTabState {
   ActorOverlayState actor_overlay;
   HandoffButtonState handoff_button;
   bool tab_indicator_visible = false;
+  // TODO(crbug.com/447114657) Deprecate the Tab Level border_glow_visible as it
+  // is now part of the Overlay.
   bool border_glow_visible = false;
 };
 
