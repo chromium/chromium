@@ -195,6 +195,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/lens:enterprise_policy",
     "//components/prefs",
+    "//components/test/ios",
     "//components/variations",
     "//components/variations:test_support",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",

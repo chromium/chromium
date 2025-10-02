@@ -68,6 +68,7 @@ source_set("unit_tests") {
     ":downloads",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/test/ios",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",

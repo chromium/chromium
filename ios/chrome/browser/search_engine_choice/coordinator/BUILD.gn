@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//components/regional_capabilities",
     "//components/search_engines",
     "//components/search_engines:search_engines_switches",
+    "//components/test/ios",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/regional_capabilities/model",

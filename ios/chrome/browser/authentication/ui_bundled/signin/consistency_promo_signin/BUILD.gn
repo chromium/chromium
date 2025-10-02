@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/sync_preferences:test_support",
+    "//components/test/ios",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:continuation_test",

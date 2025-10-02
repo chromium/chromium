@@ -468,6 +468,7 @@ source_set("ios_web_web_state_ui_unittests") {
     ":core",
     "//base",
     "//base/test:test_support",
+    "//components/test/ios",
     "//components/url_formatter",
     "//ios/net",
     "//ios/testing:ocmock_support",

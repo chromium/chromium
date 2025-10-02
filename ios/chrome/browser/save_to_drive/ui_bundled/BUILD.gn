@@ -96,6 +96,7 @@ source_set("unit_tests") {
     ":util",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/test/ios",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/account_picker/ui_bundled",
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_configuration",

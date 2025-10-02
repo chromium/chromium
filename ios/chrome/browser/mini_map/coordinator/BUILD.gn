@@ -43,6 +43,7 @@ source_set("unit_tests") {
     ":coordinator",
     "//base/test:test_support",
     "//components/sync_preferences:test_support",
+    "//components/test/ios",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",

@@ -59,6 +59,7 @@ source_set("unit_tests") {
     ":background_refresh",
     ":headers",
     "//base/test:test_support",
+    "//components/test/ios",
     "//ios/chrome/app:constants",
     "//ios/chrome/app/application_delegate:app_init_stage",
     "//ios/chrome/app/application_delegate:app_state",

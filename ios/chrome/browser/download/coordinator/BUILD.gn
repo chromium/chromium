@@ -83,6 +83,7 @@ source_set("unit_tests") {
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//components/test/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_view/ui_bundled",
     "//ios/chrome/browser/download/model",

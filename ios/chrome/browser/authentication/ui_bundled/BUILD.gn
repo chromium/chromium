@@ -142,6 +142,7 @@ source_set("unit_tests") {
     "//components/sync/base:features",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/test/ios",
     "//components/variations",
     "//components/variations:test_support",
     "//components/version_info",
