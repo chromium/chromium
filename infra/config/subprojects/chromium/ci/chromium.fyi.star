@@ -1777,7 +1777,7 @@ fyi_ios_builder(
             "mac_default_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_26_beta",
+            "xcode_26_main",
             "xctest",
         ],
     ),
@@ -1789,7 +1789,7 @@ fyi_ios_builder(
     ),
     contact_team_email = "cobalt-appletv@google.com",
     execution_timeout = 3 * time.hour,
-    xcode = xcode.x26betabots,
+    xcode = xcode.xcode_default,
 )
 
 fyi_ios_builder(
