@@ -206,18 +206,18 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
 
-  std::optional<gfx::BufferFormat> buffer_format =
-      VideoPixelFormatToGfxBufferFormat(format);
-  if (!format) {
-    DLOG(ERROR) << "Unexpected format: " << format;
+  std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToSharedImageFormat(format);
+  if (!si_format) {
+    DLOG(ERROR) << "Unexpected si_format";
     client_->NotifyError(Error::kInvalidArgumentError);
     return;
   }
   scoped_refptr<media::VideoFrame> frame;
   if (base::FeatureList::IsEnabled(kVideoEncodeUseMappableSI)) {
     auto shared_image = sii_->CreateSharedImage(
-        {viz::GetSharedImageFormat(*buffer_format), visible_size_,
-         gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
+        {*si_format, visible_size_, gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
          "GpuArcVideoEncodeAccelerator"},
         gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
@@ -234,7 +234,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
     frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
         gfx::Rect(visible_size_), visible_size_,
         client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
-        coded_size_, *buffer_format,
+        coded_size_, *si_format,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
         base::Microseconds(timestamp));
   }

@@ -450,7 +450,7 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
     base::TimeDelta timestamp) {
   CHECK(gpu_memory_buffer);
 
-  auto si_format = viz::GetSharedImageFormat(gpu_memory_buffer->GetFormat());
+  auto si_format = gpu_memory_buffer->GetFormat();
   auto format = SharedImageFormatToVideoPixelFormat(si_format);
   if (!format) {
     return nullptr;
@@ -839,9 +839,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBufferHandle(
     gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& coded_size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     base::TimeDelta timestamp) {
+  CHECK(viz::HasEquivalentBufferFormat(format));
   CHECK_EQ(handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
   auto gpu_memory_buffer =
       gpu::LegacyGpuMemoryBufferForVideo::CreateFromHandleForVideoFrame(

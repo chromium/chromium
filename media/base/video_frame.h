@@ -365,7 +365,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& coded_size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       base::TimeDelta timestamp);
 #endif

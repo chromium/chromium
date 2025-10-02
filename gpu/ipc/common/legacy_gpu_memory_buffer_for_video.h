@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/synchronization/lock.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -46,7 +47,7 @@ class GPU_IPC_COMMON_EXPORT LegacyGpuMemoryBufferForVideo {
   gfx::GpuMemoryBufferType GetType() const;
   gfx::GpuMemoryBufferHandle CloneHandle() const;
   gfx::Size GetSize() const { return size_; }
-  gfx::BufferFormat GetFormat() const { return format_; }
+  viz::SharedImageFormat GetFormat() const { return format_; }
 
   // Creates a GpuMemoryBufferImpl from the given |handle| for VideoFrames.
   // |size| and |format| should match what was used to allocate the |handle|.
@@ -56,17 +57,17 @@ class GPU_IPC_COMMON_EXPORT LegacyGpuMemoryBufferForVideo {
       gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage);
 
  private:
   LegacyGpuMemoryBufferForVideo(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
 
   const gfx::Size size_;
-  const gfx::BufferFormat format_;
+  const viz::SharedImageFormat format_;
 
   // Note: This lock must be held throughout the entirety of the Map() and
   // Unmap() operations to avoid corrupt mutation across multiple threads.

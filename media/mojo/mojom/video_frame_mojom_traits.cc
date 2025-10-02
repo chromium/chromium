@@ -12,6 +12,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
@@ -371,9 +372,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    std::optional<gfx::BufferFormat> buffer_format =
-        VideoPixelFormatToGfxBufferFormat(format);
-    if (!buffer_format) {
+    std::optional<viz::SharedImageFormat> si_format =
+        VideoPixelFormatToSharedImageFormat(format);
+    if (!si_format || !viz::HasEquivalentBufferFormat(*si_format)) {
       return false;
     }
 
@@ -393,7 +394,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         ui::CreateClientNativePixmapFactoryOzone();
     frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
         visible_rect, natural_size, client_native_pixmap_factory.get(),
-        std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
+        std::move(gpu_memory_buffer_handle), coded_size, *si_format,
         buffer_usage, timestamp);
 #else
     return false;

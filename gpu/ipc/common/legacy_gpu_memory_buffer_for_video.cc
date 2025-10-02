@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
@@ -19,7 +20,7 @@ namespace gpu {
 
 LegacyGpuMemoryBufferForVideo::LegacyGpuMemoryBufferForVideo(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
     : size_(size), format_(format), pixmap_(std::move(pixmap)) {}
 
@@ -38,11 +39,15 @@ LegacyGpuMemoryBufferForVideo::CreateFromHandleForVideoFrame(
     gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
+  CHECK(viz::HasEquivalentBufferFormat(format));
+  gfx::BufferFormat buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          format);
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
-          std::move(handle).native_pixmap_handle(), size, format, usage);
+          std::move(handle).native_pixmap_handle(), size, buffer_format, usage);
   if (!native_pixmap) {
     return nullptr;
   }
@@ -57,13 +62,12 @@ bool LegacyGpuMemoryBufferForVideo::Map() {
     return true;
   }
 
-  if (gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()) !=
-      pixmap_->GetNumberOfPlanes()) {
+  if (GetFormat().NumberOfPlanes() !=
+      static_cast<int>(pixmap_->GetNumberOfPlanes())) {
     // RGBX8888 and BGR_565 allocates 2 planes while the gfx function returns 1
-    LOG(WARNING) << "Mismatched plane count "
-                 << gfx::BufferFormatToString(GetFormat()) << " expected "
-                 << gfx::NumberOfPlanesForLinearBufferFormat(GetFormat())
-                 << " value " << pixmap_->GetNumberOfPlanes();
+    LOG(WARNING) << "Mismatched plane count " << GetFormat().ToString()
+                 << " expected " << GetFormat().NumberOfPlanes() << " value "
+                 << pixmap_->GetNumberOfPlanes();
   }
 
   if (!pixmap_->Map()) {
@@ -87,12 +91,13 @@ base::span<uint8_t> LegacyGpuMemoryBufferForVideo::memory_span(size_t plane) {
   if (!data) {
     return {};
   }
-  size_t size = 0;
-  if (!PlaneSizeForBufferFormatChecked(GetSize(), GetFormat(), plane, &size)) {
+  std::optional<size_t> size = viz::SharedMemoryPlaneSizeForSharedImageFormat(
+      GetFormat(), plane, GetSize());
+  if (!size) {
     return {};
   }
 
-  return UNSAFE_BUFFERS(base::span<uint8_t>(data, size));
+  return UNSAFE_BUFFERS(base::span<uint8_t>(data, size.value()));
 }
 
 void LegacyGpuMemoryBufferForVideo::Unmap() {
