@@ -4281,6 +4281,11 @@ inline constexpr char kClearWindowNameForNewBrowsingContextGroup[] =
 inline constexpr char kManagedLocalNetworkAccessRestrictionsEnabled[] =
     "managed_local_network_access_restrictions_enabled";
 
+// Boolean indicating whether Local Network Access restrictions should be
+// temporarily opted out of.
+inline constexpr char kManagedLocalNetworkAccessRestrictionsTemporaryOptOut[] =
+    "managed_local_network_access_restrictions_temporary_opt_out";
+
 // Boolean that specifies whether SpeculationRules prefetch can be sent to
 // ServiceWorker-controlled URLs.
 inline constexpr char kPrefetchWithServiceWorkerEnabled[] =

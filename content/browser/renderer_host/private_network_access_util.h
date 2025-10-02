@@ -71,7 +71,10 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
     network::mojom::URLResponseHead* response_head,
     ContentBrowserClient* client);
 
-network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
+network::mojom::PrivateNetworkRequestPolicy OverrideToBlockInsteadOfWarn(
+    network::mojom::PrivateNetworkRequestPolicy);
+
+network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
     network::mojom::PrivateNetworkRequestPolicy);
 
 }  // namespace content

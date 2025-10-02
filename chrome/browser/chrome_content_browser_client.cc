@@ -7772,6 +7772,12 @@ ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
         kBlockInsteadOfWarn;
   }
 
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut)) {
+    return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+        kWarnInsteadOfBlock;
+  }
+
   return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
       kDefault;
 }

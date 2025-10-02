@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "managed_local_network_access_restrictions_temporary_opt_out",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

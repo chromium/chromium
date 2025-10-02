@@ -2295,6 +2295,7 @@ chromium-metrics-reviews@google.com.
   <int value="1398" label="PreferSlowCiphers"/>
   <int value="1399" label="DeveloperToolsAvailabilityAllowlist"/>
   <int value="1400" label="DeveloperToolsAvailabilityBlocklist"/>
+  <int value="1401" label="LocalNetworkAccessRestrictionsTemporaryOptOut"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
