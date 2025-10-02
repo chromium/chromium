@@ -54,15 +54,7 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   // Test only functions
-  size_t NumCacheEntriesForTesting() const { return 0; }
-  bool IsEntryLockedForTesting(uint32_t client_id,
-                               const gles2::ContextGroup* context_group) const;
   size_t TotalSizeForTesting() const { return total_size_; }
-  bool IsEntryTrackedForTesting(uint32_t client_id,
-                                const gles2::ContextGroup* context_group) const;
-  scoped_refptr<gles2::TexturePassthrough> UnlockedTextureForTesting(
-      uint32_t client_id,
-      const gles2::ContextGroup* context_group) const;
   void SetCacheSizeLimitForTesting(size_t cache_size_limit) {
     cache_size_limit_ = cache_size_limit;
   }

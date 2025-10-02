@@ -105,25 +105,6 @@ void PassthroughDiscardableManager::HandleMemoryPressure(
   EnforceCacheSizeLimit(limit);
 }
 
-bool PassthroughDiscardableManager::IsEntryLockedForTesting(
-    uint32_t client_id,
-    const gles2::ContextGroup* context_group) const {
-  NOTREACHED();
-}
-
-bool PassthroughDiscardableManager::IsEntryTrackedForTesting(
-    uint32_t client_id,
-    const gles2::ContextGroup* context_group) const {
-  return false;
-}
-
-scoped_refptr<gles2::TexturePassthrough>
-PassthroughDiscardableManager::UnlockedTextureForTesting(
-    uint32_t client_id,
-    const gles2::ContextGroup* context_group) const {
-  NOTREACHED();
-}
-
 void PassthroughDiscardableManager::EnforceCacheSizeLimit(size_t limit) {
 }
 
