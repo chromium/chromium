@@ -50,6 +50,13 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/models/dialog_model.h"
+#endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
+
 namespace signin_util {
 
 namespace {
@@ -147,10 +154,11 @@ void CookiesMover::OnCookiesMoved() {
 bool IsForceSigninEnabled() {
   if (g_is_force_signin_enabled_cache == NOT_CACHED) {
     PrefService* prefs = g_browser_process->local_state();
-    if (prefs)
+    if (prefs) {
       SetForceSigninPolicy(prefs->GetBoolean(prefs::kForceBrowserSignin));
-    else
+    } else {
       return false;
+    }
   }
   return (g_is_force_signin_enabled_cache == ENABLE);
 }
@@ -369,7 +377,9 @@ std::string SignedInStateToString(SignedInState state) {
   }
 }
 
-bool IsHistorySyncOptinAllowedByPolicy(Profile& profile) {
+bool IsSyncingUserSelectableTypesAllowedByPolicy(
+    Profile& profile,
+    const syncer::UserSelectableTypeSet& types) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(&profile);
   if (!sync_service) {
@@ -381,10 +391,7 @@ bool IsHistorySyncOptinAllowedByPolicy(Profile& profile) {
     return false;
   }
 
-  syncer::UserSelectableTypeSet synced_data_types(
-      {syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
-       syncer::UserSelectableType::kSavedTabGroups});
-  for (auto type : synced_data_types) {
+  for (auto type : types) {
     if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(type) ||
         sync_service->GetUserSettings()->IsTypeManagedByCustodian(type)) {
       return false;
@@ -401,7 +408,10 @@ bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
     return false;
   }
 
-  if (!IsHistorySyncOptinAllowedByPolicy(profile)) {
+  syncer::UserSelectableTypeSet required_types(
+      {syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
+       syncer::UserSelectableType::kSavedTabGroups});
+  if (!IsSyncingUserSelectableTypesAllowedByPolicy(profile, required_types)) {
     return false;
   }
 
@@ -411,17 +421,13 @@ bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
     return false;
   }
 
-  const syncer::UserSelectableTypeSet selected_types =
-      sync_service->GetUserSettings()->GetSelectedTypes();
-
   // Note: Post migration these preferences will be set by a single
   // settings toggle and are expected to have the same value.
-  if (selected_types.Has(syncer::UserSelectableType::kHistory) &&
-      selected_types.Has(syncer::UserSelectableType::kTabs) &&
-      selected_types.Has(syncer::UserSelectableType::kSavedTabGroups)) {
-    return false;
-  }
-  return true;
+  bool all_types_enabled =
+      sync_service->GetUserSettings()->GetSelectedTypes().HasAll(
+          required_types);
+
+  return !all_types_enabled;
 }
 
 void EnableHistorySync(syncer::SyncService* sync_service) {
@@ -489,6 +495,22 @@ bool ShouldShowAvatarSyncPromo(Profile* profile) {
   }
 
   return true;
+}
+
+void ShowErrorDialogWithMessage(Browser* browser, int error_message_id) {
+  if (!browser) {
+    return;
+  }
+
+  auto dialog_model =
+      ui::DialogModel::Builder()
+          .AddParagraph(ui::DialogModelLabel(error_message_id))
+          .AddOkButton(base::DoNothing(),
+                       ui::DialogModel::Button::Params().SetLabel(
+                           l10n_util::GetStringUTF16(IDS_OK)))
+          .Build();
+
+  chrome::ShowBrowserModal(browser, std::move(dialog_model));
 }
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 

@@ -49,6 +49,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -428,10 +429,11 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
 }
 
 void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
-  // This option should not be built if history sync is disabled by policy.
+  // This option should not be built if syncing tabs is disabled by policy.
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos) &&
-      !signin_util::IsHistorySyncOptinAllowedByPolicy(*browser_->profile())) {
+      !signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+          *browser_->profile(), {syncer::UserSelectableType::kTabs})) {
     return;
   }
 

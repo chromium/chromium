@@ -17,10 +17,12 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "net/cookies/canonical_cookie.h"
 
 class GaiaId;
 class Profile;
+class Browser;
 
 namespace signin {
 class IdentityManager;
@@ -175,12 +177,13 @@ SignedInState GetSignedInState(const signin::IdentityManager* identity_manager);
 // Returns a string representation of `SignedInState`.
 std::string SignedInStateToString(SignedInState state);
 
-// Checks whether history sync is allowed by policy. May need to called again
-// after a sign in to see if policies are set for the account rather than the
-// device.
-// This method does not take into account the feature flag
-// `ReplaceSyncPromosWithSignInPromos`.
-bool IsHistorySyncOptinAllowedByPolicy(Profile& profile);
+// Checks whether syncing the specified `types` is allowed by policy. May need
+// to called again after a sign in to see if policies are set for the account
+// rather than the device. This method does not take into account the feature
+// flag `ReplaceSyncPromosWithSignInPromos`.
+bool IsSyncingUserSelectableTypesAllowedByPolicy(
+    Profile& profile,
+    const syncer::UserSelectableTypeSet& types);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Returns if the necessary conditions to show the History Sync Optin screen
@@ -200,6 +203,10 @@ void EnableHistorySync(syncer::SyncService* sync_service);
 // Requires the feature enabling through
 // `switches::IsAvatarSyncPromoFeatureEnabled()`.
 bool ShouldShowAvatarSyncPromo(Profile* profile);
+
+// Show a simple error message with an "OK" button to the user, displaying
+// `error_message_id`.
+void ShowErrorDialogWithMessage(Browser* browser, int error_message_id);
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 
 }  // namespace signin_util

@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
 struct AccountInfo;
@@ -33,7 +34,8 @@ class HistorySyncOptinServiceDefaultDelegate
 
 // Service responsible for managing the History Sync Opt-in flow.
 class HistorySyncOptinService : public KeyedService,
-                                public HistorySyncOptinHelper::Observer {
+                                public HistorySyncOptinHelper::Observer,
+                                public signin::IdentityManager::Observer {
  public:
   explicit HistorySyncOptinService(Profile* profile);
   ~HistorySyncOptinService() override;
@@ -54,6 +56,10 @@ class HistorySyncOptinService : public KeyedService,
   // HistorySyncOptinHelper::Observer implementation:
   void OnHistorySyncOptinHelperFlowFinished() override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
   std::unique_ptr<HistorySyncOptinHelper::Delegate>
       history_sync_optin_delegate_ = nullptr;
   std::unique_ptr<HistorySyncOptinHelper> history_sync_optin_helper_ = nullptr;
@@ -62,6 +68,9 @@ class HistorySyncOptinService : public KeyedService,
   base::ScopedObservation<HistorySyncOptinHelper,
                           HistorySyncOptinHelper::Observer>
       history_sync_optin_observation_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_scoped_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_HISTORY_SYNC_OPTIN_SERVICE_H_

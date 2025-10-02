@@ -5,14 +5,24 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 
 #include "base/notreached.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "google_apis/gaia/core_account_id.h"
 
 HistorySyncOptinServiceDefaultDelegate::
     HistorySyncOptinServiceDefaultDelegate() = default;
@@ -46,7 +56,10 @@ void HistorySyncOptinServiceDefaultDelegate::
     FinishFlowWithoutHistorySyncOptin() {}
 
 HistorySyncOptinService::HistorySyncOptinService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  identity_manager_scoped_observation_.Observe(
+      IdentityManagerFactory::GetForProfile(profile_));
+}
 
 HistorySyncOptinService::~HistorySyncOptinService() = default;
 
@@ -73,6 +86,7 @@ bool HistorySyncOptinService::StartHistorySyncOptinFlow(
 
 void HistorySyncOptinService::Shutdown() {
   Reset();
+  identity_manager_scoped_observation_.Reset();
 }
 
 void HistorySyncOptinService::Reset() {
@@ -83,4 +97,168 @@ void HistorySyncOptinService::Reset() {
 
 void HistorySyncOptinService::OnHistorySyncOptinHelperFlowFinished() {
   Reset();
+}
+
+void HistorySyncOptinService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return;
+  }
+
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    return;
+  }
+
+  auto access_point = event_details.GetSetPrimaryAccountAccessPoint();
+  if (!access_point.has_value()) {
+    return;
+  }
+
+  syncer::UserSelectableTypeSet required_types;
+  int error_message_id = 0;
+  // Add more access points as needed. Typically, an error should be displayed
+  // if the `required_types` are needed for a specific action which the signin
+  // was triggered for, but cannot be enabled due to policies in the account.
+  // An example of this is the tabs from other devices page in history
+  // (`kRecentTabs`), which needs `syncer::UserSelectableType::kTabs` to be
+  // enabled in order to work. If the user signs in through a promo displayed in
+  // that page with an account that does not allow syncing tabs, an error is
+  // displayed after the management screens have been accepted.
+  switch (access_point.value()) {
+    case signin_metrics::AccessPoint::kRecentTabs:
+      required_types = {syncer::UserSelectableType::kTabs};
+      error_message_id = IDS_HISTORY_SYNC_DISABLED_ERROR_DESCRIPTION;
+      break;
+    case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
+    case signin_metrics::AccessPoint::kCollaborationShareTabGroup:
+      required_types = {syncer::UserSelectableType::kSavedTabGroups};
+      error_message_id = IDS_COLLABORATION_ENTREPRISE_TABS_SYNC_DISABLED_BODY;
+      break;
+    // All other access points should not trigger an error.
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kPasswordBubble:
+    case signin_metrics::AccessPoint::kAddressBubble:
+    case signin_metrics::AccessPoint::kStartPage:
+    case signin_metrics::AccessPoint::kNtpLink:
+    case signin_metrics::AccessPoint::kMenu:
+    case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSupervisedUser:
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+    case signin_metrics::AccessPoint::kExtensions:
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+    case signin_metrics::AccessPoint::kBookmarkManager:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kDevicesPage:
+    case signin_metrics::AccessPoint::kFullscreenSigninPromo:
+    case signin_metrics::AccessPoint::kUnknown:
+    case signin_metrics::AccessPoint::kAutofillDropdown:
+    case signin_metrics::AccessPoint::kResigninInfobar:
+    case signin_metrics::AccessPoint::kTabSwitcher:
+    case signin_metrics::AccessPoint::kMachineLogon:
+    case signin_metrics::AccessPoint::kGoogleServicesSettings:
+    case signin_metrics::AccessPoint::kSyncErrorCard:
+    case signin_metrics::AccessPoint::kForcedSignin:
+    case signin_metrics::AccessPoint::kAccountRenamed:
+    case signin_metrics::AccessPoint::kWebSignin:
+    case signin_metrics::AccessPoint::kSafetyCheck:
+    case signin_metrics::AccessPoint::kKaleidoscope:
+    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+    case signin_metrics::AccessPoint::kNtpFeedTopPromo:
+    case signin_metrics::AccessPoint::kSettingsSyncOffRow:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo:
+    case signin_metrics::AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+    case signin_metrics::AccessPoint::kNtpFeedCardMenuPromo:
+    case signin_metrics::AccessPoint::kNtpFeedBottomPromo:
+    case signin_metrics::AccessPoint::kDesktopSigninManager:
+    case signin_metrics::AccessPoint::kForYouFre:
+    case signin_metrics::AccessPoint::kCreatorFeedFollow:
+    case signin_metrics::AccessPoint::kReadingList:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
+    case signin_metrics::AccessPoint::kSearchCompanion:
+    case signin_metrics::AccessPoint::kSetUpList:
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
+    case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case signin_metrics::AccessPoint::kTabOrganization:
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+    case signin_metrics::AccessPoint::kTipsNotification:
+    case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
+    case signin_metrics::AccessPoint::kSigninChoiceRemembered:
+    case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case signin_metrics::AccessPoint::kNtpIdentityDisc:
+    case signin_metrics::AccessPoint::kOidcRedirectionInterception:
+    case signin_metrics::AccessPoint::kWebauthnModalDialog:
+    case signin_metrics::AccessPoint::kAccountMenu:
+    case signin_metrics::AccessPoint::kProductSpecifications:
+    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
+    case signin_metrics::AccessPoint::kGlicLaunchButton:
+    case signin_metrics::AccessPoint::kHistoryPage:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
+    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
+    case signin_metrics::AccessPoint::kNonModalSigninPasswordPromo:
+    case signin_metrics::AccessPoint::kNonModalSigninBookmarkPromo:
+    case signin_metrics::AccessPoint::kUserManagerWithPrefilledEmail:
+    case signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup:
+    case signin_metrics::AccessPoint::
+        kEnterpriseManagementDisclaimerAfterBrowserFocus:
+    case signin_metrics::AccessPoint::
+        kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
+      return;
+  }
+
+  CoreAccountId primary_account_id =
+      event_details.GetCurrentState().primary_account.account_id;
+
+  auto maybe_show_error_callback = base::BindOnce(
+      [](const syncer::UserSelectableTypeSet& required_types,
+         int error_message_id, Profile* profile, bool) {
+        if (!profile) {
+          return;
+        }
+
+        // If the required data types can be enabled, there is no need to
+        // display an error.
+        if (signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+                *profile, required_types) ||
+            signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
+                profile)) != signin_util::SignedInState::kSignedIn) {
+          return;
+        }
+
+        signin_util::ShowErrorDialogWithMessage(
+            chrome::FindLastActiveWithProfile(profile), error_message_id);
+      },
+      required_types, error_message_id);
+
+  ProfileManagementDisclaimerService* profile_management_disclaimer_service =
+      ProfileManagementDisclaimerServiceFactory::GetForProfile(profile_);
+  CHECK(profile_management_disclaimer_service);
+
+  // Make sure that there is not already another account being considered for
+  // management.
+  const CoreAccountId considered_managed_account_id =
+      profile_management_disclaimer_service
+          ->GetAccountBeingConsideredForManagementIfAny();
+  if (!considered_managed_account_id.empty() &&
+      considered_managed_account_id != primary_account_id) {
+    return;
+  }
+
+  profile_management_disclaimer_service->EnsureManagedProfileForAccount(
+      primary_account_id, access_point.value(),
+      std::move(maybe_show_error_callback));
 }
