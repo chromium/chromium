@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/public/popup_menu_ui_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/number_badge_view.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/text_badge_view.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
@@ -106,11 +105,7 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
     self.selectedBackgroundView = selectedBackgroundView;
 
     _titleLabel = [[UILabel alloc] init];
-    if (IsWebChannelsEnabled()) {
-      _titleLabel.numberOfLines = 2;
-    } else {
-      _titleLabel.numberOfLines = 0;
-    }
+    _titleLabel.numberOfLines = 0;
     _titleLabel.font = [self titleFont];
     [_titleLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow

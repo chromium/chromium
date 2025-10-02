@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/follow/model/follow_action_state.h"
-#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -335,9 +333,6 @@ using base::UserMetricsAction;
     mediator.promosManager = PromosManagerFactory::GetForProfile(profile);
     mediator.readingListBrowserAgent =
         ReadingListBrowserAgent::FromBrowser(browser);
-    if (IsWebChannelsEnabled()) {
-      mediator.followBrowserAgent = FollowBrowserAgent::FromBrowser(browser);
-    }
     // Set the AuthenticationService with the one from the original
     // ProfileIOS as the incognito one doesn't have that service.
     mediator.authenticationService =
@@ -445,10 +440,6 @@ using base::UserMetricsAction;
   self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
   self.mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  if (IsWebChannelsEnabled()) {
-    self.mediator.followBrowserAgent =
-        FollowBrowserAgent::FromBrowser(self.browser);
-  }
 
   self.contentBlockerMediator.consumer = self.mediator;
 

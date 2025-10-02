@@ -77,7 +77,7 @@ enum class IOSOverflowMenuAction {
   kNewTab = 1,
   kNewIncognitoTab = 2,
   kNewWindow = 3,
-  kFollow = 4,
+  // kFollow = 4, // Deprecated M143.
   kBookmark = 5,
   kReadingList = 6,
   kClearBrowsingData = 7,

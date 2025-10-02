@@ -47,8 +47,6 @@ IOSOverflowMenuAction HistogramActionFromActionType(
       return IOSOverflowMenuAction::kNewIncognitoTab;
     case overflow_menu::ActionType::NewWindow:
       return IOSOverflowMenuAction::kNewWindow;
-    case overflow_menu::ActionType::Follow:
-      return IOSOverflowMenuAction::kFollow;
     case overflow_menu::ActionType::Bookmark:
       return IOSOverflowMenuAction::kBookmark;
     case overflow_menu::ActionType::ReadingList:

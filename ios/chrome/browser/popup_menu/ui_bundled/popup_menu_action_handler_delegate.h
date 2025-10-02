@@ -21,10 +21,6 @@ class WebState;
 - (void)recordSettingsMetricsPerProfile;
 // Records open downloads metric per profile type.
 - (void)recordDownloadsMetricsPerProfile;
-// Toggles the follow status of the on browsing website. Called when the follow
-// menu option has been tapped. Follows or unfollows the website according to
-// the current follow status of the website.
-- (void)toggleFollowed;
 // The current web state.
 - (web::WebState*)currentWebState;
 @end

@@ -25,7 +25,6 @@ class WebState;
 
 class GURL;
 @class WebPageURLs;
-@protocol FollowMenuUpdater;
 @protocol HelpCommands;
 
 // FollowTabHelper encapsulates tab behavior related to following channels.
@@ -45,13 +44,6 @@ class FollowTabHelper : public web::WebStateObserver,
   void set_should_update_follow_item(bool shoud_update_follow_item) {
     should_update_follow_item_ = shoud_update_follow_item;
   }
-
-  // Sets the follow menu updater. `follow_menu_updater` is not retained by this
-  // tab helper.
-  void SetFollowMenuUpdater(id<FollowMenuUpdater> follow_menu_updater);
-
-  // Removes the follow menu updater.
-  void RemoveFollowMenuUpdater();
 
   // Updates the follow menu item.
   void UpdateFollowMenuItem();
@@ -108,9 +100,6 @@ class FollowTabHelper : public web::WebStateObserver,
   // navigation starts, to ensure the follow menu item would be updated when the
   // page finishes loading.
   bool should_update_follow_item_ = false;
-
-  // Used to update the follow menu item.
-  __weak id<FollowMenuUpdater> follow_menu_updater_ = nil;
 
   base::CancelableTaskTracker history_task_tracker_;
   base::WeakPtrFactory<FollowTabHelper> weak_ptr_factory_{this};

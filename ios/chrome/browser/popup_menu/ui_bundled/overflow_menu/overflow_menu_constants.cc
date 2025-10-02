@@ -84,8 +84,6 @@ std::optional<ActionType> ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::NewIncognitoTab;
   } else if (action == "NewWindow") {
     return overflow_menu::ActionType::NewWindow;
-  } else if (action == "Follow") {
-    return overflow_menu::ActionType::Follow;
   } else if (action == "Bookmark") {
     return overflow_menu::ActionType::Bookmark;
   } else if (action == "ReadingList") {
@@ -137,8 +135,6 @@ std::string StringNameForActionType(ActionType action) {
       return "NewIncognitoTab";
     case overflow_menu::ActionType::NewWindow:
       return "NewWindow";
-    case overflow_menu::ActionType::Follow:
-      return "Follow";
     case overflow_menu::ActionType::Bookmark:
       return "Bookmark";
     case overflow_menu::ActionType::ReadingList:

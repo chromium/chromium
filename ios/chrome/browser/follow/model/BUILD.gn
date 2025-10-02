@@ -47,7 +47,6 @@ source_set("enums") {
 
 source_set("tab_helper") {
   sources = [
-    "follow_menu_updater.h",
     "follow_tab_helper.h",
     "follow_tab_helper.mm",
   ]

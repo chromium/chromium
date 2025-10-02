@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/follow/model/follow_action_state.h"
 #import "ios/chrome/browser/follow/model/follow_features.h"
 #import "ios/chrome/browser/follow/model/follow_java_script_feature.h"
-#import "ios/chrome/browser/follow/model/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/model/follow_service.h"
 #import "ios/chrome/browser/follow/model/follow_service_factory.h"
 #import "ios/chrome/browser/follow/model/follow_util.h"
@@ -41,14 +40,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 #import "url/origin.h"
-
-namespace {
-
-// The prefix of domain name that can be removed. It is used when generating the
-// follow item text.
-const char kRemovablePrefix[] = "www.";
-
-}  // namespace.
 
 FollowTabHelper::~FollowTabHelper() {
   DCHECK(!web_state_);
@@ -69,15 +60,6 @@ void FollowTabHelper::set_help_handler(id<HelpCommands> help_handler) {
   help_handler_ = help_handler;
 }
 
-void FollowTabHelper::SetFollowMenuUpdater(
-    id<FollowMenuUpdater> follow_menu_updater) {
-  if (!IsWebChannelsEnabled()) {
-    return;
-  }
-  DCHECK(web_state_);
-  follow_menu_updater_ = follow_menu_updater;
-}
-
 void FollowTabHelper::UpdateFollowMenuItem() {
   if (!IsWebChannelsEnabled()) {
     return;
@@ -88,14 +70,6 @@ void FollowTabHelper::UpdateFollowMenuItem() {
         base::BindOnce(&FollowTabHelper::UpdateFollowMenuItemWithURL,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-void FollowTabHelper::RemoveFollowMenuUpdater() {
-  if (!IsWebChannelsEnabled()) {
-    return;
-  }
-  follow_menu_updater_ = nil;
-  should_update_follow_item_ = true;
 }
 
 void FollowTabHelper::DidStartNavigation(
@@ -257,33 +231,6 @@ void FollowTabHelper::OnDailyVisitQueryResult(
 
 void FollowTabHelper::UpdateFollowMenuItemWithURL(WebPageURLs* web_page_urls) {
   DCHECK(web_state_);
-
-  web::WebFrame* web_frame = FollowJavaScriptFeature::GetInstance()
-                                 ->GetWebFramesManager(web_state_)
-                                 ->GetMainWebFrame();
-  // Only update the follow menu item when web_page_urls is not null and when
-  // webFrame can be retrieved. Otherwise, leave the option disabled.
-  if (web_page_urls && web_frame) {
-    const bool followed =
-        FollowServiceFactory::GetForProfile(
-            ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
-            ->IsWebSiteFollowed(web_page_urls);
-
-    std::string domain_name = web_frame->GetSecurityOrigin().host();
-    if (base::StartsWith(domain_name, kRemovablePrefix)) {
-      domain_name = domain_name.substr(strlen(kRemovablePrefix));
-    }
-
-    const bool enabled =
-        GetFollowActionState(web_state_) == FollowActionStateEnabled;
-
-    [follow_menu_updater_
-        updateFollowMenuItemWithWebPage:web_page_urls
-                               followed:followed
-                             domainName:base::SysUTF8ToNSString(domain_name)
-                                enabled:enabled];
-  }
-
   should_update_follow_item_ = false;
 }
 

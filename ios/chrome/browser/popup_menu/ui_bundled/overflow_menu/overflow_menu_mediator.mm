@@ -38,10 +38,6 @@
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
-#import "ios/chrome/browser/follow/model/follow_menu_updater.h"
-#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
-#import "ios/chrome/browser/follow/model/follow_util.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -166,7 +162,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 @interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
                                     CRWWebStateObserver,
-                                    FollowMenuUpdater,
                                     IOSLanguageDetectionTabHelperObserving,
                                     OverflowMenuDestinationProvider,
                                     OverlayPresenterObserving,
@@ -239,7 +234,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 @property(nonatomic, strong) OverflowMenuAction* clearBrowsingDataAction;
 @property(nonatomic, strong) OverflowMenuAction* readerModeAction;
-@property(nonatomic, strong) OverflowMenuAction* followAction;
 @property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* editBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* readLaterAction;
@@ -314,8 +308,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.engagementTracker = nullptr;
   }
 
-  self.followBrowserAgent = nullptr;
-
   self.webState = nullptr;
   self.webStateList = nullptr;
 
@@ -365,14 +357,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)setWebState:(web::WebState*)webState {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserver.get());
-
-    if (self.followAction) {
-      FollowTabHelper* followTabHelper =
-          FollowTabHelper::FromWebState(_webState);
-      if (followTabHelper) {
-        followTabHelper->RemoveFollowMenuUpdater();
-      }
-    }
   }
 
   _webState = webState;
@@ -386,11 +370,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
         std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
             language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
             self);
-
-    FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(_webState);
-    if (followTabHelper) {
-      followTabHelper->SetFollowMenuUpdater(self);
-    }
   }
 }
 
@@ -609,14 +588,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                  }];
 
   self.clearBrowsingDataAction = [self newClearBrowsingDataAction];
-
-  if (GetFollowActionState(self.webState) != FollowActionStateHidden) {
-    OverflowMenuAction* action = [self newFollowAction];
-
-    action.enabled = NO;
-    self.followAction = action;
-  }
-
   self.addBookmarkAction = [self newAddBookmarkAction];
 
   NSString* editBookmarkHideItemText =
@@ -798,22 +769,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 
   return action;
-}
-
-- (OverflowMenuAction*)newFollowAction {
-  return [self
-      createOverflowMenuActionWithName:l10n_util::GetNSString(
-                                           IDS_IOS_TOOLS_MENU_CUSTOMIZE_FOLLOW)
-                            actionType:overflow_menu::ActionType::Follow
-                            symbolName:kPlusSymbol
-                          systemSymbol:YES
-                      monochromeSymbol:NO
-                       accessibilityID:kToolsMenuFollow
-                          hideItemText:
-                              l10n_util::GetNSStringF(
-                                  IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW, u"")
-                               handler:^{
-                               }];
 }
 
 - (OverflowMenuAction*)newAddBookmarkAction {
@@ -1770,19 +1725,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   return visibleItem->GetUserAgentType();
 }
 
-// Creates a follow action if needed, when the follow action state is not
-// hidden.
-- (OverflowMenuAction*)createFollowActionIfNeeded {
-  // Returns nil if the follow action state is hidden.
-  if (GetFollowActionState(self.webState) == FollowActionStateHidden) {
-    return nil;
-  }
-
-  OverflowMenuAction* action = [self newFollowAction];
-  action.enabled = NO;
-  return action;
-}
-
 - (void)dismissMenu {
   self.menuHasBeenDismissed = YES;
   [self.popupMenuHandler dismissPopupMenuAnimated:YES];
@@ -1888,15 +1830,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (!status.active_web_state_change()) {
     return;
   }
-
   self.webState = status.new_active_web_state;
-  if (self.webState && self.followAction) {
-    FollowTabHelper* followTabHelper =
-        FollowTabHelper::FromWebState(self.webState);
-    if (followTabHelper) {
-      followTabHelper->SetFollowMenuUpdater(self);
-    }
-  }
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -1959,53 +1893,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
   _templateURLService = nullptr;
-}
-
-#pragma mark - FollowMenuUpdater
-
-- (void)updateFollowMenuItemWithWebPage:(WebPageURLs*)webPageURLs
-                               followed:(BOOL)followed
-                             domainName:(NSString*)domainName
-                                enabled:(BOOL)enable {
-  DCHECK(IsWebChannelsEnabled());
-  self.followAction.enabled = enable;
-  if (followed) {
-    __weak __typeof(self) weakSelf = self;
-    self.followAction.name = l10n_util::GetNSStringF(
-        IDS_IOS_TOOLS_MENU_UNFOLLOW, base::SysNSStringToUTF16(domainName));
-    self.followAction.symbolName = kXMarkSymbol;
-    self.followAction.handler = [self
-        fullOverflowMenuActionHandlerForActionType:overflow_menu::ActionType::
-                                                       Follow
-                                           handler:^{
-                                             [weakSelf
-                                                 unfollowWebPage:webPageURLs];
-                                           }];
-    NSString* hideItemText =
-        l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_UNFOLLOW,
-                                base::SysNSStringToUTF16(domainName));
-    self.followAction.longPressItems = [self
-        actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
-                             hideItemText:hideItemText];
-  } else {
-    __weak __typeof(self) weakSelf = self;
-    self.followAction.name = l10n_util::GetNSStringF(
-        IDS_IOS_TOOLS_MENU_FOLLOW, base::SysNSStringToUTF16(domainName));
-    self.followAction.symbolName = kPlusSymbol;
-    self.followAction.handler = [self
-        fullOverflowMenuActionHandlerForActionType:overflow_menu::ActionType::
-                                                       Follow
-                                           handler:^{
-                                             [weakSelf
-                                                 followWebPage:webPageURLs];
-                                           }];
-    NSString* hideItemText =
-        l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW,
-                                base::SysNSStringToUTF16(domainName));
-    self.followAction.longPressItems = [self
-        actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
-                             hideItemText:hideItemText];
-  }
 }
 
 #pragma mark - BrowserContainerConsumer
@@ -2213,25 +2100,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.openIncognitoTabAction;
     case overflow_menu::ActionType::NewWindow:
       return self.openNewWindowAction;
-    case overflow_menu::ActionType::Follow: {
-      // Try to create the followAction if there isn't one. It's possible that
-      // sometimes when creating the model the followActionState is hidden so
-      // the followAction hasn't been created but at the time when updating the
-      // model, the followAction should be valid.
-      if (!self.followAction) {
-        self.followAction = [self createFollowActionIfNeeded];
-        DCHECK(!self.followAction || self.webState != nullptr);
-      }
-
-      if (self.followAction) {
-        FollowTabHelper* followTabHelper =
-            FollowTabHelper::FromWebState(self.webState);
-        if (followTabHelper) {
-          followTabHelper->UpdateFollowMenuItem();
-        }
-      }
-      return self.followAction;
-    }
     case overflow_menu::ActionType::Bookmark: {
       BOOL pageIsBookmarked =
           self.webState && self.bookmarkModel &&
@@ -2297,8 +2165,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::EditActions:
       NOTREACHED();
-    case overflow_menu::ActionType::Follow:
-      return [self newFollowAction];
     case overflow_menu::ActionType::Bookmark:
       return [self newAddBookmarkAction];
     case overflow_menu::ActionType::ReadingList:
@@ -2387,26 +2253,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   } else {
     [self.settingsHandler showClearBrowsingDataSettings];
   }
-}
-
-// Follows the website corresponding to `webPage` and dismisses the menu.
-- (void)followWebPage:(WebPageURLs*)webPage {
-  // FollowBrowserAgent may be null after -disconnect has been called.
-  FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
-  if (followBrowserAgent) {
-    followBrowserAgent->FollowWebSite(webPage, FollowSource::OverflowMenu);
-  }
-  [self dismissMenu];
-}
-
-// Unfollows the website corresponding to `webPage` and dismisses the menu.
-- (void)unfollowWebPage:(WebPageURLs*)webPage {
-  // FollowBrowserAgent may be null after -disconnect has been called.
-  FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
-  if (followBrowserAgent) {
-    followBrowserAgent->UnfollowWebSite(webPage, FollowSource::OverflowMenu);
-  }
-  [self dismissMenu];
 }
 
 // Dismisses the menu and adds the current page as a bookmark or opens the

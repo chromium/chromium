@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_consumer.h"
-#import "ios/chrome/browser/follow/model/follow_action_state.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
 
@@ -32,7 +31,6 @@ class AuthenticationService;
 @protocol BrowserCoordinatorCommands;
 class BrowserPolicyConnectorIOS;
 @protocol FindInPageCommands;
-class FollowBrowserAgent;
 @protocol HelpCommands;
 @protocol ReaderModeCommands;
 @protocol LensOverlayCommands;
@@ -129,9 +127,6 @@ class WebStateList;
 
 // The current browser policy connector.
 @property(nonatomic, assign) BrowserPolicyConnectorIOS* browserPolicyConnector;
-
-// The FollowBrowserAgent used to manage web channels subscriptions.
-@property(nonatomic, assign) FollowBrowserAgent* followBrowserAgent;
 
 // The Sync Service that provides the status of Sync.
 @property(nonatomic, assign) syncer::SyncService* syncService;
