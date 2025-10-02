@@ -6519,6 +6519,16 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:ContinueOnPopupStatus) -->
 
+<!-- LINT.IfChange(FedCmCrossSiteIframeType) -->
+
+<enum name="FedCmCrossSiteIframeType">
+  <int value="0" label="No value received"/>
+  <int value="1" label="Iframe is third party"/>
+  <int value="2" label="Iframe is same party"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:CrossSiteIframeType) -->
+
 <!-- LINT.IfChange(FedCmCspStatus) -->
 
 <enum name="FedCmCspStatus">

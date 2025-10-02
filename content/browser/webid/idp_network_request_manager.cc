@@ -730,9 +730,17 @@ void OnClientMetadataParsed(
   data.privacy_policy_url = ExtractUrl(response, kPrivacyPolicyKey);
   data.terms_of_service_url = ExtractUrl(response, kTermsOfServiceKey);
   if (is_cross_site_iframe) {
-    data.client_is_third_party_to_top_frame_origin =
-        response.FindBool(kClientIsThirdPartyToTopFrameOriginKey)
-            .value_or(false);
+    auto value = response.FindBool(kClientIsThirdPartyToTopFrameOriginKey);
+    webid::CrossSiteIframeType type_for_metrics;
+    if (!value) {
+      type_for_metrics = webid::CrossSiteIframeType::kNoValueReceived;
+    } else if (*value) {
+      type_for_metrics = webid::CrossSiteIframeType::kIframeIsThirdParty;
+    } else {
+      type_for_metrics = webid::CrossSiteIframeType::kIframeIsSameParty;
+    }
+    webid::RecordCrossSiteIframeType(type_for_metrics);
+    data.client_is_third_party_to_top_frame_origin = value.value_or(false);
   }
 
   const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
