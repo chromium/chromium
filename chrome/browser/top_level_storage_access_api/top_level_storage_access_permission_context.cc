@@ -216,8 +216,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 
   RecordOutcomeSample(outcome);
 
-  UpdateTabContext(request_data.id, request_data.requesting_origin,
-                   decision == PermissionDecision::kAllow);
+  UpdateTabContext(request_data, decision == PermissionDecision::kAllow);
 
   if (!persist) {
     auto status = blink::mojom::PermissionStatus::ASK;

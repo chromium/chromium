@@ -121,18 +121,17 @@ bool ProtectedMediaIdentifierPermissionContext::IsOriginAllowed(
 }
 
 void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
+    const permissions::PermissionRequestData& request_data,
     bool allowed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // WebContents may have gone away.
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.global_render_frame_host_id());
+          request_data.id.global_render_frame_host_id());
   if (content_settings) {
     content_settings->OnProtectedMediaIdentifierPermissionSet(
-        requesting_frame.DeprecatedGetOriginAsURL(), allowed);
+        request_data.requesting_origin.DeprecatedGetOriginAsURL(), allowed);
   }
 }
 

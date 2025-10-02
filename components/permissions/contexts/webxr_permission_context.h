@@ -38,8 +38,7 @@ class WebXrPermissionContext : public ContentSettingPermissionContextBase {
                            PermissionDecision decision,
                            bool is_final_decision) override;
 
-  void UpdateTabContext(const permissions::PermissionRequestID& id,
-                        const GURL& requesting_origin,
+  void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;
 
   void OnAndroidPermissionDecided(const PermissionRequestData& request_data,

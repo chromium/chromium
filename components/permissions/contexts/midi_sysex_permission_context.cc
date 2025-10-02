@@ -22,12 +22,12 @@ MidiSysexPermissionContext::MidiSysexPermissionContext(
 
 MidiSysexPermissionContext::~MidiSysexPermissionContext() = default;
 
-void MidiSysexPermissionContext::UpdateTabContext(const PermissionRequestID& id,
-                                                  const GURL& requesting_frame,
-                                                  bool allowed) {
+void MidiSysexPermissionContext::UpdateTabContext(
+    const PermissionRequestData& request_data,
+    bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.global_render_frame_host_id());
+          request_data.id.global_render_frame_host_id());
   if (!content_settings)
     return;
 
@@ -35,7 +35,8 @@ void MidiSysexPermissionContext::UpdateTabContext(const PermissionRequestID& id,
     content_settings->OnContentAllowed(ContentSettingsType::MIDI_SYSEX);
 
     content::ChildProcessSecurityPolicy::GetInstance()
-        ->GrantSendMidiSysExMessage(id.global_render_frame_host_id().child_id);
+        ->GrantSendMidiSysExMessage(
+            request_data.id.global_render_frame_host_id().child_id);
   } else {
     content_settings->OnContentBlocked(ContentSettingsType::MIDI_SYSEX);
   }

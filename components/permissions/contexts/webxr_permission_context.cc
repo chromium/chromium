@@ -177,8 +177,7 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
 }
 
 void WebXrPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
+    const PermissionRequestData& request_data,
     bool allowed) {
   // See the comment in `NotifyPermissionSet()` for context on why this method
   // should be empty.

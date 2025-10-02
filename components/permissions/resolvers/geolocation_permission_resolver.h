@@ -26,6 +26,8 @@ class GeolocationPermissionResolver : public PermissionResolver {
   PromptParameters GetPromptParameters(
       const PermissionSetting& current_setting_state) const override;
 
+  bool requested_precise() { return requested_precise_; }
+
  private:
   bool requested_precise_;
 };

@@ -132,8 +132,7 @@ class TestPermissionContext : public ContentSettingPermissionContextBase {
   void SetUsesAutomaticEmbargo(bool value) { uses_automatic_embargo_ = value; }
 
  protected:
-  void UpdateTabContext(const PermissionRequestID& id,
-                        const GURL& requesting_origin,
+  void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override {
     tab_context_updated_ = true;
   }

@@ -717,7 +717,7 @@ void PermissionContextBase::NotifyPermissionSet(
   }
 
   if (is_final_decision) {
-    UpdateTabContext(request_data.id, request_data.requesting_origin,
+    UpdateTabContext(request_data,
                      decision == PermissionDecision::kAllow ||
                          decision == PermissionDecision::kAllowThisTime);
     if (rfh && decision == PermissionDecision::kAllow) {

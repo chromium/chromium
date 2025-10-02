@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -121,12 +122,11 @@ GeolocationPermissionContext::CreatePermissionResolver(
 }
 
 void GeolocationPermissionContext::UpdateTabContext(
-    const PermissionRequestID& id,
-    const GURL& requesting_frame,
+    const PermissionRequestData& request_data,
     bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.global_render_frame_host_id());
+          request_data.id.global_render_frame_host_id());
 
   // WebContents might not exist (extensions) or no longer exist. In which
   // case, PageSpecificContentSettings will be null.

@@ -206,8 +206,7 @@ class PermissionContextBase : public content_settings::Observer {
 
   // Implementors can override this method to update the icons on the
   // url bar with the result of the new permission.
-  virtual void UpdateTabContext(const PermissionRequestID& id,
-                                const GURL& requesting_origin,
+  virtual void UpdateTabContext(const PermissionRequestData& request_data,
                                 bool allowed) {}
 
   // Returns the browser context associated with this permission context.

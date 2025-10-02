@@ -662,8 +662,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
                       net::SchemefulSite(request_data.requesting_origin));
 
   const bool permission_allowed = (decision == PermissionDecision::kAllow);
-  UpdateTabContext(request_data.id, request_data.requesting_origin,
-                   permission_allowed);
+  UpdateTabContext(request_data, permission_allowed);
 
   ContentSetting content_setting;
   switch (decision) {

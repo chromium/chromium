@@ -118,8 +118,7 @@ class NotificationPermissionContext
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
-  void UpdateTabContext(const permissions::PermissionRequestID& id,
-                        const GURL& requesting_frame,
+  void UpdateTabContext(const permissions::PermissionRequestData& request_data,
                         bool allowed) override;
 
   base::WeakPtrFactory<NotificationPermissionContext> weak_factory_ui_thread_{

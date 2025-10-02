@@ -46,8 +46,7 @@ class NfcPermissionContext : public ContentSettingPermissionContextBase {
   // PermissionContextBase:
   void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,
                         BrowserPermissionCallback callback) override;
-  void UpdateTabContext(const PermissionRequestID& id,
-                        const GURL& requesting_frame,
+  void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;
 };
 

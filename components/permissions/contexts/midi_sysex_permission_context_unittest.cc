@@ -51,8 +51,7 @@ class TestPermissionContext : public MidiSysexPermissionContext {
   }
 
  protected:
-  void UpdateTabContext(const PermissionRequestID& id,
-                        const GURL& requesting_origin,
+  void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override {
     tab_context_updated_ = true;
   }

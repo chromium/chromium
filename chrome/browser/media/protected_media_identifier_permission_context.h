@@ -40,8 +40,7 @@ class ProtectedMediaIdentifierPermissionContext
   friend class ProtectedMediaIdentifierPermissionContextTest;
   static bool IsOriginAllowed(const GURL& origin);
 
-  void UpdateTabContext(const permissions::PermissionRequestID& id,
-                        const GURL& requesting_frame,
+  void UpdateTabContext(const permissions::PermissionRequestData& request_data,
                         bool allowed) override;
 };
 
