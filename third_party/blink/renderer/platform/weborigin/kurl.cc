@@ -920,15 +920,13 @@ void KURL::Init(const KURL& base,
   url::RawCanonOutputT<char> output;
   if (!relative.IsNull() && relative.Is8Bit()) {
     StringUtf8Adaptor relative_utf8(relative);
-    is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
-                                     base.parsed_, relative_utf8.data(),
-                                     ClampTo<int>(relative_utf8.size()),
+    is_valid_ = url::ResolveRelative(base_utf8.AsStringView(), base.parsed_,
+                                     relative_utf8.AsStringView(),
                                      charset_converter, &output, &parsed_);
   } else {
-    is_valid_ = url::ResolveRelative(
-        base_utf8.data(), base_utf8.size(), base.parsed_,
-        UNSAFE_TODO(relative.Characters16()), ClampTo<int>(relative.length()),
-        charset_converter, &output, &parsed_);
+    is_valid_ = url::ResolveRelative(base_utf8.AsStringView(), base.parsed_,
+                                     relative.View16(), charset_converter,
+                                     &output, &parsed_);
   }
 
   // Constructing an AtomicString will re-hash the raw output and check the

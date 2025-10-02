@@ -338,12 +338,10 @@ bool DoCanonicalize(const CHAR* spec,
   return success;
 }
 
-template<typename CHAR>
-bool DoResolveRelative(const char* base_spec,
-                       int base_spec_len,
+template <typename CHAR>
+bool DoResolveRelative(std::string_view base_spec,
                        const Parsed& base_parsed,
-                       const CHAR* in_relative,
-                       int in_relative_length,
+                       std::basic_string_view<CHAR> in_relative,
                        CharsetConverter* charset_converter,
                        CanonOutput* output,
                        Parsed* output_parsed) {
@@ -351,17 +349,19 @@ bool DoResolveRelative(const char* base_spec,
   // copying to the new buffer.
   STACK_UNINITIALIZED RawCanonOutputT<CHAR> whitespace_buffer;
   int relative_length;
+  // TODO(crbug.com/350788890): RemoveURLWhitespace() should accept
+  // string_views.
   const CHAR* relative = RemoveURLWhitespace(
-      in_relative, in_relative_length, &whitespace_buffer, &relative_length,
+      in_relative.data(), base::checked_cast<int>(in_relative.length()),
+      &whitespace_buffer, &relative_length,
       &output_parsed->potentially_dangling_markup);
 
   bool base_is_authority_based = false;
   bool base_is_hierarchical = false;
-  if (base_spec &&
-      base_parsed.scheme.is_nonempty()) {
-    int after_scheme = base_parsed.scheme.end() + 1;  // Skip past the colon.
-    int num_slashes = CountConsecutiveSlashes(base_spec, after_scheme,
-                                              base_spec_len);
+  if (base_spec.data() && base_parsed.scheme.is_nonempty()) {
+    size_t after_scheme = base_parsed.scheme.end() + 1;  // Skip past the colon.
+    size_t num_slashes =
+        CountConsecutiveSlashesOrBackslashes(base_spec, after_scheme);
     base_is_authority_based = num_slashes > 1;
     base_is_hierarchical = num_slashes > 0;
   }
@@ -371,7 +371,8 @@ bool DoResolveRelative(const char* base_spec,
 
   bool is_relative;
   Component relative_component;
-  if (!IsRelativeURL(base_spec, base_parsed, relative, relative_length,
+  // TODO(crbug.com/350788890): IsRelativeURL() should accept string_views.
+  if (!IsRelativeURL(base_spec.data(), base_parsed, relative, relative_length,
                      (base_is_hierarchical || is_hierarchical_base),
                      &is_relative, &relative_component)) {
     // Error resolving.
@@ -385,13 +386,12 @@ bool DoResolveRelative(const char* base_spec,
   // non-standard URLs are treated as PathURLs, but if the base has an
   // authority we would like to preserve it.
   if (is_relative && base_is_authority_based && !is_hierarchical_base) {
-    Parsed base_parsed_authority =
-        ParseStandardURL(std::string_view(base_spec, base_spec_len));
+    Parsed base_parsed_authority = ParseStandardURL(base_spec);
     if (base_parsed_authority.host.is_nonempty()) {
       STACK_UNINITIALIZED RawCanonOutputT<char> temporary_output;
       bool did_resolve_succeed =
-          ResolveRelativeURL(base_spec, base_parsed_authority, false, relative,
-                             relative_component, charset_converter,
+          ResolveRelativeURL(base_spec.data(), base_parsed_authority, false,
+                             relative, relative_component, charset_converter,
                              &temporary_output, output_parsed);
       // The output_parsed is incorrect at this point (because it was built
       // based on base_parsed_authority instead of base_parsed) and needs to be
@@ -403,14 +403,21 @@ bool DoResolveRelative(const char* base_spec,
     }
   } else if (is_relative) {
     // Relative, resolve and canonicalize.
-    bool file_base_scheme = base_parsed.scheme.is_nonempty() &&
-        DoCompareSchemeComponent(base_spec, base_parsed.scheme, kFileScheme);
-    return ResolveRelativeURL(base_spec, base_parsed, file_base_scheme,
+    // TODO(crbug.com/350788890): DoCompareSchemeComponent() should accept
+    // string_views.
+    bool file_base_scheme =
+        base_parsed.scheme.is_nonempty() &&
+        DoCompareSchemeComponent(base_spec.data(), base_parsed.scheme,
+                                 kFileScheme);
+    // TODO(crbug.com/350788890): ResolveRelativeURL() should accept
+    // string_views.
+    return ResolveRelativeURL(base_spec.data(), base_parsed, file_base_scheme,
                               relative, relative_component, charset_converter,
                               output, output_parsed);
   }
 
   // Not relative, canonicalize the input.
+  // TODO(crbug.com/350788890): DoCanonicalize() should accept string_views.
   return DoCanonicalize(relative, relative_length, true,
                         DO_NOT_REMOVE_WHITESPACE, charset_converter, output,
                         output_parsed);
@@ -832,30 +839,24 @@ bool Canonicalize(const char16_t* spec,
                         charset_converter, output, output_parsed);
 }
 
-bool ResolveRelative(const char* base_spec,
-                     int base_spec_len,
+bool ResolveRelative(std::string_view base_spec,
                      const Parsed& base_parsed,
-                     const char* relative,
-                     int relative_length,
+                     std::string_view relative,
                      CharsetConverter* charset_converter,
                      CanonOutput* output,
                      Parsed* output_parsed) {
-  return DoResolveRelative(base_spec, base_spec_len, base_parsed,
-                           relative, relative_length,
-                           charset_converter, output, output_parsed);
+  return DoResolveRelative(base_spec, base_parsed, relative, charset_converter,
+                           output, output_parsed);
 }
 
-bool ResolveRelative(const char* base_spec,
-                     int base_spec_len,
+bool ResolveRelative(std::string_view base_spec,
                      const Parsed& base_parsed,
-                     const char16_t* relative,
-                     int relative_length,
+                     std::u16string_view relative,
                      CharsetConverter* charset_converter,
                      CanonOutput* output,
                      Parsed* output_parsed) {
-  return DoResolveRelative(base_spec, base_spec_len, base_parsed,
-                           relative, relative_length,
-                           charset_converter, output, output_parsed);
+  return DoResolveRelative(base_spec, base_parsed, relative, charset_converter,
+                           output, output_parsed);
 }
 
 bool ReplaceComponents(const char* spec,

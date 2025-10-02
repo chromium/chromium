@@ -69,9 +69,8 @@ class URLUtilTest : public testing::Test {
     StdStringCanonOutput output(&resolved);
 
     Parsed resolved_parsed;
-    bool valid = ResolveRelative(test.base.data(), test.base.size(),
-                                 base_parsed, test.rel.data(), test.rel.size(),
-                                 nullptr, &output, &resolved_parsed);
+    bool valid = ResolveRelative(test.base, base_parsed, test.rel, nullptr,
+                                 &output, &resolved_parsed);
     output.Complete();
 
     if (valid) {
@@ -434,9 +433,8 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
     std::string resolved;
     StdStringCanonOutput output(&resolved);
     Parsed resolved_parsed;
-    bool valid =
-        ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
-                        strlen(test.rel), nullptr, &output, &resolved_parsed);
+    bool valid = ResolveRelative(test.base, base_parsed, test.rel, nullptr,
+                                 &output, &resolved_parsed);
     ASSERT_TRUE(valid);
     output.Complete();
 
@@ -723,9 +721,8 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     std::string resolved;
     StdStringCanonOutput output(&resolved);
     Parsed resolved_parsed;
-    bool valid =
-        ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
-                        strlen(test.rel), nullptr, &output, &resolved_parsed);
+    bool valid = ResolveRelative(test.base, base_parsed, test.rel, nullptr,
+                                 &output, &resolved_parsed);
     output.Complete();
 
     EXPECT_EQ(test.is_valid, valid);

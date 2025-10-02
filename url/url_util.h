@@ -245,20 +245,16 @@ bool Canonicalize(const char16_t* spec,
 // Returns true if the output is valid, false if the input could not produce
 // a valid URL.
 COMPONENT_EXPORT(URL)
-bool ResolveRelative(const char* base_spec,
-                     int base_spec_len,
+bool ResolveRelative(std::string_view base_spec,
                      const Parsed& base_parsed,
-                     const char* relative,
-                     int relative_length,
+                     std::string_view relative,
                      CharsetConverter* charset_converter,
                      CanonOutput* output,
                      Parsed* output_parsed);
 COMPONENT_EXPORT(URL)
-bool ResolveRelative(const char* base_spec,
-                     int base_spec_len,
+bool ResolveRelative(std::string_view base_spec,
                      const Parsed& base_parsed,
-                     const char16_t* relative,
-                     int relative_length,
+                     std::u16string_view relative,
                      CharsetConverter* charset_converter,
                      CanonOutput* output,
                      Parsed* output_parsed);

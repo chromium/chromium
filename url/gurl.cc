@@ -177,10 +177,8 @@ GURL GURL::Resolve(std::string_view relative) const {
 
   GURL result;
   url::StdStringCanonOutput output(&result.spec_);
-  if (!url::ResolveRelative(spec_.data(), static_cast<int>(spec_.length()),
-                            parsed_, relative.data(),
-                            static_cast<int>(relative.length()),
-                            nullptr, &output, &result.parsed_)) {
+  if (!url::ResolveRelative(spec_, parsed_, relative, nullptr, &output,
+                            &result.parsed_)) {
     // Error resolving, return an empty URL.
     return GURL();
   }
@@ -203,10 +201,8 @@ GURL GURL::Resolve(std::u16string_view relative) const {
 
   GURL result;
   url::StdStringCanonOutput output(&result.spec_);
-  if (!url::ResolveRelative(spec_.data(), static_cast<int>(spec_.length()),
-                            parsed_, relative.data(),
-                            static_cast<int>(relative.length()),
-                            nullptr, &output, &result.parsed_)) {
+  if (!url::ResolveRelative(spec_, parsed_, relative, nullptr, &output,
+                            &result.parsed_)) {
     // Error resolving, return an empty URL.
     return GURL();
   }

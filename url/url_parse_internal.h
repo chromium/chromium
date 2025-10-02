@@ -77,6 +77,18 @@ inline int CountConsecutiveSlashes(const CHAR* str,
   return count;
 }
 
+template <typename CHAR>
+inline size_t CountConsecutiveSlashesOrBackslashes(
+    std::basic_string_view<CHAR> str,
+    size_t begin_offset) {
+  size_t count = 0;
+  while (begin_offset < str.length() &&
+         IsSlashOrBackslash(str[begin_offset++])) {
+    ++count;
+  }
+  return count;
+}
+
 // Returns true if char is a slash.
 inline bool IsSlash(char16_t ch) {
   return ch == '/';
