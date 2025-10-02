@@ -76,4 +76,9 @@ public interface RenderCoordinates {
      * @return Minimum page scale factor.
      */
     float getMinPageScaleFactor();
+
+    /**
+     * @return Local CSS converted to physical coordinates.
+     */
+    float fromLocalCssToPix(float css);
 }

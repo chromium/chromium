@@ -50,6 +50,7 @@ import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Page;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetError;
@@ -438,7 +439,19 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             View view = mTab.getView();
             if (view == null) return;
 
-            Rect boundsInView = new Rect(leftInView, topInView, rightInView, bottomInView);
+            // Correct bounds for page scale and browser UI offset to place in view coordinates
+            WebContents webContents = mTab.getWebContents();
+            if (webContents == null) return;
+
+            RenderCoordinates coords = RenderCoordinates.fromWebContents(webContents);
+            final int topOffset = coords.getContentOffsetYPixInt();
+
+            Rect boundsInView =
+                    new Rect(
+                            (int) coords.fromLocalCssToPix(leftInView),
+                            ((int) coords.fromLocalCssToPix(topInView)) + topOffset,
+                            (int) coords.fromLocalCssToPix(rightInView),
+                            ((int) coords.fromLocalCssToPix(bottomInView)) + topOffset);
             if (boundsInView.isEmpty()) return;
 
             // TODO(aaronmoss): when Baklava 36.1 support lands in Clank, remove delegate
