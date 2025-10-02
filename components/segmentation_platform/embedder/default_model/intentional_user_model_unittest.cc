@@ -8,6 +8,7 @@
 #include "components/segmentation_platform/public/constants.h"
 
 namespace segmentation_platform {
+using Feature = IntentionalUserModel::Feature;
 
 class IntentionalUserModelTest : public DefaultModelTestBase {
  public:
@@ -21,6 +22,7 @@ TEST_F(IntentionalUserModelTest, InitAndFetchModel) {
 }
 
 TEST_F(IntentionalUserModelTest, ExecuteModelWithInput) {
+  ExpectInitAndFetchModel();
   // Test with empty input.
   ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/true,
                            /*expected_result=*/{0});
@@ -31,18 +33,26 @@ TEST_F(IntentionalUserModelTest, ExecuteModelWithInput) {
 
   // If Chrome hasn't been launched from its main launcher icon then the user is
   // not intentional.
-  ExpectExecutionWithInput(/*inputs=*/{0}, /*expected_error=*/false,
+  ModelProvider::Request input1(Feature::kFeatureCount, 0);
+  input1[Feature::kFeatureLaunchCauseMainLauncherIcon] = 0;
+  ExpectExecutionWithInput(input1, /*expected_error=*/false,
                            /*expected_result=*/{0});
 
-  ExpectExecutionWithInput(/*inputs=*/{1}, /*expected_error=*/false,
+  ModelProvider::Request input2(Feature::kFeatureCount, 0);
+  input2[Feature::kFeatureLaunchCauseMainLauncherIcon] = 1;
+  ExpectExecutionWithInput(input2, /*expected_error=*/false,
                            /*expected_result=*/{0});
 
   // If chrome was launched at least twice from its main laincher icon then the
   // user is intentional.
-  ExpectExecutionWithInput(/*inputs=*/{2}, /*expected_error=*/false,
+  ModelProvider::Request input3(Feature::kFeatureCount, 0);
+  input3[Feature::kFeatureLaunchCauseMainLauncherIcon] = 2;
+  ExpectExecutionWithInput(input3, /*expected_error=*/false,
                            /*expected_result=*/{1});
 
-  ExpectExecutionWithInput(/*inputs=*/{10}, /*expected_error=*/false,
+  ModelProvider::Request input4(Feature::kFeatureCount, 0);
+  input4[Feature::kFeatureLaunchCauseMainLauncherIcon] = 10;
+  ExpectExecutionWithInput(input4, /*expected_error=*/false,
                            /*expected_result=*/{1});
 }
 
@@ -51,15 +61,27 @@ TEST_F(IntentionalUserModelTest, TestLabels) {
 
   // If Chrome hasn't been launched from its main launcher icon then the user is
   // not intentional.
-  ExpectClassifierResults({0}, {kLegacyNegativeLabel});
-  ExpectClassifierResults({1}, {kLegacyNegativeLabel});
+  ModelProvider::Request input1(Feature::kFeatureCount, 0);
+  input1[Feature::kFeatureLaunchCauseMainLauncherIcon] = 0;
+  ExpectClassifierResults(input1, {kLegacyNegativeLabel});
+
+  ModelProvider::Request input2(Feature::kFeatureCount, 0);
+  input2[Feature::kFeatureLaunchCauseMainLauncherIcon] = 1;
+  ExpectClassifierResults(input2, {kLegacyNegativeLabel});
 
   // If chrome was launched at least twice from its main laincher icon then the
   // user is intentional.
+  ModelProvider::Request input3(Feature::kFeatureCount, 0);
+  input3[Feature::kFeatureLaunchCauseMainLauncherIcon] = 2;
   ExpectClassifierResults(
-      {2}, {SegmentIdToHistogramVariant(SegmentId::INTENTIONAL_USER_SEGMENT)});
+      input3,
+      {SegmentIdToHistogramVariant(SegmentId::INTENTIONAL_USER_SEGMENT)});
+
+  ModelProvider::Request input4(Feature::kFeatureCount, 0);
+  input4[Feature::kFeatureLaunchCauseMainLauncherIcon] = 10;
   ExpectClassifierResults(
-      {10}, {SegmentIdToHistogramVariant(SegmentId::INTENTIONAL_USER_SEGMENT)});
+      input4,
+      {SegmentIdToHistogramVariant(SegmentId::INTENTIONAL_USER_SEGMENT)});
 }
 
 }  // namespace segmentation_platform
