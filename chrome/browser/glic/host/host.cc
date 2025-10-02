@@ -262,6 +262,7 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
       conversation_id = std::move(pending_panel_open_options_->conversation_id);
       pending_panel_open_options_.reset();
     }
+    // TODO(crbug.com/448924294): Only call here when reloading.
     web_client->PanelWillOpen(
         mojom::PanelOpeningData::New(delegate_->GetPanelState().Clone(),
                                      *invocation_source_,

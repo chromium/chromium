@@ -183,7 +183,7 @@ class GlicInstanceImpl : public GlicInstance,
   void SetActiveEmbedderAndNotifyStateChange(
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyStateChange();
-  void MaybeShowHostUi(GlicUiEmbedder* embedder);
+  void MaybeShowHostUi(GlicUiEmbedder* embedder, bool callPanelWillOpen);
   void OnBoundTabDestroyed(tabs::TabInterface* tab,
                            const InstanceId& instance_id);
   void OnBoundTabActivated(tabs::TabInterface* tab);
@@ -222,7 +222,11 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
-
+  // Keeps track of embedders in the auto-open state. Embedders are removed
+  // from this set being after explicitly closed (via entrypoint, closing a
+  // tab). This is different from embedders_ keyset which contains inactive
+  // embedders that were closed.
+  std::set<EmbedderKey> auto_open_embedders_;
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
 

@@ -158,7 +158,8 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
     SetActiveEmbedderAndNotifyStateChange(new_key);
   }
 
-  MaybeShowHostUi(embedder_to_show);
+  MaybeShowHostUi(embedder_to_show, auto_open_embedders_.size() == 0);
+  auto_open_embedders_.emplace(new_key);
   embedder_to_show->Show();
 }
 
@@ -166,6 +167,7 @@ void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
   EmbedderKey key = GetEmbedderKey(type, tab);
   auto* embedder = GetEmbedderForKey(key);
   if (embedder) {
+    auto_open_embedders_.erase(key);
     embedder->Close();
   }
   MaybeDeactivateEmbedderAndCloseHostUi(key);
@@ -302,7 +304,12 @@ void GlicInstanceImpl::UnbindTab(tabs::TabInterface* tab) {
       active_embedder_key_.value() == EmbedderKey(tab)) {
     DeactivateCurrentEmbedder();
   }
-  embedders_.erase(EmbedderKey(tab));
+  auto key = EmbedderKey(tab);
+  embedders_.erase(key);
+  auto_open_embedders_.erase(key);
+  if (auto_open_embedders_.size() == 0) {
+    host_.PanelWasClosed();
+  }
 }
 
 bool GlicInstanceImpl::IsOrphaned() const {
@@ -482,7 +489,8 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyStateChange() {
   return;
 }
 
-void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
+void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder,
+                                       bool callPanelWillOpen) {
   Host::EmbedderDelegate* delegate = embedder->GetHostEmbedderDelegate();
   if (!delegate) {
     return;
@@ -497,11 +505,13 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
   host_.NotifyWindowIntentToShow();
 
   // TODO: NotifyPanelStateChanged() here
-  // TODO: pass in the correct invocation source
-  Host::PanelWillOpenOptions options;
-  options.conversation_id = conversation_id();
-  host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
-                      std::move(options));
+  // TODO(crbug.com/448879415): pass in the correct invocation source
+  if (callPanelWillOpen) {
+    Host::PanelWillOpenOptions options;
+    options.conversation_id = conversation_id();
+    host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
+                        std::move(options));
+  }
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
@@ -534,9 +544,10 @@ void GlicInstanceImpl::SwitchConversation(
 
 void GlicInstanceImpl::MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key) {
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
-    // TODO: Figure out what else should go into host_.PanelWasClosed() and
-    // maybe call it here.
     DeactivateCurrentEmbedder();
+    if (auto_open_embedders_.size() == 0) {
+      host_.PanelWasClosed();
+    }
   }
 }
 
