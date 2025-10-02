@@ -3393,7 +3393,7 @@
 <translation id="3360306038446926262">窗口</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}other{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3361954577771524115">来自该应用</translation>
-<translation id="3362651095484543782">若要退出或返回到 Gemini，请使用键盘快捷键。</translation>
+<translation id="3362651095484543782">使用键盘快捷键退出或返回 Gemini。</translation>
 <translation id="3362915550009543917">这幅油画以宁静为主题，描绘了一片沐浴在黄色调中的草地，画面洋溢着宁静与沉思的氛围。</translation>
 <translation id="3363202073972776113">这份新个人资料将由贵组织管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+悬停</translation>
@@ -8121,7 +8121,7 @@
 <translation id="6716798148881908873">网络连接中断了。请检查您的网络连接状况，或尝试改用其他 Wi-Fi 网络。</translation>
 <translation id="6718849325281682232">Chrome 主题颜色已焕然一新，可更好地满足每个用户的需求，无论是处于深色模式还是浅色模式</translation>
 <translation id="671928215901716392">锁定屏幕</translation>
-<translation id="6721744718589119342">我们可能会向您发送电子邮件，获取更多信息或为您提供最新进展</translation>
+<translation id="6721744718589119342">我们可能会向您发送电子邮件，让您提供更多信息或向您告知最新进展</translation>
 <translation id="6721972322305477112">文件(&amp;F)</translation>
 <translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
 <translation id="6722744767592605627">您可以恢复 <ph name="EMAIL" />，但本地数据将被删除。</translation>
@@ -8953,7 +8953,7 @@
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">验证您的账号</translation>
 <translation id="7317831949569936035">学校注册</translation>
-<translation id="731827437403763009">AI 创新</translation>
+<translation id="731827437403763009">AI 创新功能</translation>
 <translation id="7319320447721994672">如果您访问的网站使用 Cookie，您可能需要暂时启用 Cookie，才能确保所有的网站功能均正常运行。</translation>
 <translation id="7319983568955948908">停止分享</translation>
 <translation id="7320213904474460808">设置默认网络</translation>

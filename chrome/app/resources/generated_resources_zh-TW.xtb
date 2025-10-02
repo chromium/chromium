@@ -3400,7 +3400,7 @@
 <translation id="3360306038446926262">視窗</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3361954577771524115">來源應用程式</translation>
-<translation id="3362651095484543782">如要離開或返回 Gemini，請使用鍵盤快速鍵。</translation>
+<translation id="3362651095484543782">使用鍵盤快速鍵離開或返回 Gemini。</translation>
 <translation id="3362915550009543917">這幅描繪黃色調草地的油畫滿溢安詳氛圍，勾起寧靜和智慧的反思。</translation>
 <translation id="3363202073972776113">這個新的設定檔將由貴機構管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt 鍵 + 游標懸停</translation>
@@ -5757,7 +5757,7 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5003070249435823986">使用表情進入捲動模式，然後將頭部轉向要捲動的方向。再次做出表情即可退出捲動模式。</translation>
 <translation id="5003993274120026347">下一句</translation>
-<translation id="5005113238422129109">使用麥克風與 Gemini 對話。與 Gemini 對話時，音訊內容會儲存到 Gemini 系列應用程式活動記錄 (如果已開啟這項設定)</translation>
+<translation id="5005113238422129109">使用麥克風與 Gemini 對話。對話過程中，音訊內容會儲存到 Gemini 系列應用程式活動記錄 (如果已開啟這項設定)</translation>
 <translation id="5005311809885666699">透過 Chrome 儲存</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
@@ -8957,7 +8957,7 @@
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">驗證帳戶</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
-<translation id="731827437403763009">AI 創新</translation>
+<translation id="731827437403763009">AI 創新功能</translation>
 <translation id="7319320447721994672">如果你造訪使用 Cookie 的網站，可能需要暫時啟用 Cookie，這樣才能讓所有網站功能正常運作。</translation>
 <translation id="7319983568955948908">停止共用</translation>
 <translation id="7320213904474460808">預設網路</translation>

@@ -8746,7 +8746,7 @@
 <translation id="7135729336746831607">هل تريد تفعيل البلوتوث؟</translation>
 <translation id="7136694880210472378">الضبط كمحرك البحث التلقائي
 </translation>
-<translation id="7137277889990479760">المتابعة باسم <ph name="EMAIL" /></translation>
+<translation id="7137277889990479760">المتابعة بحساب <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">سيؤدي هذا الإجراء إلى حذف <ph name="TOTAL_USAGE" /> من البيانات التي خزَّنتها المواقع الإلكترونية والتطبيقات المثبّتة.</translation>
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7139627972753429585">يستخدم تطبيق <ph name="APP_NAME" /> الميكروفون.</translation>
@@ -10953,7 +10953,7 @@
        <ph name="BREAK" />
        يمكنك إدارة الإعدادات من قائمة البطاقات أو الاطّلاع على المزيد من الخيارات عند النقر على الزر "تخصيص Chrome".</translation>
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
-<translation id="8662474268934425487">تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="8662474268934425487">سجّل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">الأشخاص</translation>
 <translation id="8662911384982557515">تغيير الصفحة الرئيسية إلى: <ph name="HOME_PAGE" /></translation>
