@@ -55,23 +55,13 @@ void ProfileReportGenerator::MaybeGenerate(
 
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  delegate_->GetAffiliationInfo(report_.get());
-#endif
-
   switch (report_type) {
-    // TODO(crbug.com/441536805): Rename report type `kFull` to `kBrowser`.
+    // TODO(crbug.com/330336666): Rename report type `kFull` to `kBrowser`.
     case ReportType::kFull:
       report_->set_id(path.AsUTF8Unsafe());
       break;
     case ReportType::kProfileReport:
-      if (report_->has_affiliation() &&
-          report_->affiliation().has_is_affiliated() &&
-          report_->affiliation().is_affiliated()) {
-        report_->set_id(path.AsUTF8Unsafe());
-      } else {
-        report_->set_id(ObfuscateFilePath(path.AsUTF8Unsafe()));
-      }
+      report_->set_id(ObfuscateFilePath(path.AsUTF8Unsafe()));
       break;
     case ReportType::kBrowserVersion:
       NOTREACHED();
@@ -81,6 +71,10 @@ void ProfileReportGenerator::MaybeGenerate(
 
   delegate_->GetSigninUserInfo(report_.get());
   delegate_->GetProfileName(report_.get());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  delegate_->GetAffiliationInfo(report_.get());
+#endif
 
   if (extensions_enabled_ &&
       (!extensions_enabled_callback_ || extensions_enabled_callback_.Run())) {
