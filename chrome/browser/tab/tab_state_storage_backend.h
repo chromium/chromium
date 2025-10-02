@@ -29,7 +29,7 @@ class TabStateStorageBackend {
 
   void Initialize();
 
-  void Save(std::unique_ptr<TabStoragePackage> package);
+  void Save(int id, int type, std::unique_ptr<TabStoragePackage> package);
 
   void LoadAllNodes(base::OnceCallback<void(std::vector<NodeState>)> callback);
 

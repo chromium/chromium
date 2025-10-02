@@ -67,18 +67,17 @@ void TabStateStorageBackend::Initialize() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TabStateStorageBackend::Save(std::unique_ptr<TabStoragePackage> package) {
+void TabStateStorageBackend::Save(int id,
+                                  int type,
+                                  std::unique_ptr<TabStoragePackage> package) {
   tabs_pb::TabState tab_state;
   PopulateTabState(&tab_state, *package);
   std::string payload;
   tab_state.SerializeToString(&payload);
-  // TODO(crbug.com/448151025): Use the storage id and a type enum.
-  int id =
-      package->android_tab_package_ ? package->android_tab_package_->id_ : 0;
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::SaveNode,
-                     base::Unretained(database_.get()), id, 1,
+                     base::Unretained(database_.get()), id, type,
                      std::move(payload), ""),
       base::BindOnce(&TabStateStorageBackend::OnWrite,
                      weak_ptr_factory_.GetWeakPtr()));

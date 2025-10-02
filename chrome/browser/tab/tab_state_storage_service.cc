@@ -28,7 +28,11 @@ void TabStateStorageService::SaveTab(TabInterface* tab) {
     package = packager_->ReleasePackage();
 
     DCHECK(package) << "Packager should return a package";
-    tab_backend_->Save(std::move(package));
+    int id =
+        package->android_tab_package_ ? package->android_tab_package_->id_ : 0;
+    // TODO(crbug.com/448151025): Define and use a proper type enum.
+    int type = 1;
+    tab_backend_->Save(id, type, std::move(package));
   }
 }
 
