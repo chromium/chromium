@@ -1082,7 +1082,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                    contents_rule->FakeParentRuleForFallback()->ChildRules()) {
           rules_to_add = contents_rule->FakeParentRuleForFallback();
         }
-        if (rules_to_add) {
+        if (rules_to_add && rules_to_add->ChildRules()) {
           rules_to_add =
               To<StyleRule>(rules_to_add->Clone(parent_rule, env_bindings));
           AddChildRules(parent_rule, *rules_to_add->ChildRules(), medium,
