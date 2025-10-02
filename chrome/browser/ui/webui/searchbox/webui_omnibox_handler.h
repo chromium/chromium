@@ -41,6 +41,14 @@ class WebuiOmniboxHandler : public SearchboxHandler,
 
   void OnThumbnailRemoved() override {}
 
+  std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
+      const AutocompleteMatch& match,
+      size_t line,
+      const OmniboxEditModel* edit_model,
+      bookmarks::BookmarkModel* bookmark_model,
+      const omnibox::GroupConfigMap& suggestion_groups_map,
+      const TemplateURLService* turl_service) const override;
+
   // OmniboxEditModel::Observer:
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection selection) override;
