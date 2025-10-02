@@ -24,6 +24,7 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -55,8 +56,8 @@ void AppHooksDelegate::IsInstalledGetterCallback(
   if (!script_context)
     return;
 
-  auto* hooks_delegate =
-      static_cast<AppHooksDelegate*>(info.Data().As<v8::External>()->Value());
+  auto* hooks_delegate = static_cast<AppHooksDelegate*>(
+      info.Data().As<v8::External>()->Value(gin::kAppHooksDelegateTag));
   // Since this is more-or-less an API, log it as an API call.
   APIActivityLogger::LogAPICall(hooks_delegate->ipc_sender_, context,
                                 "app.getIsInstalled",
@@ -144,7 +145,7 @@ void AppHooksDelegate::InitializeTemplate(
   object_template->SetNativeDataProperty(
       gin::StringToSymbol(isolate, "isInstalled"),
       &AppHooksDelegate::IsInstalledGetterCallback, EmptySetterCallback,
-      v8::External::New(isolate, this));
+      v8::External::New(isolate, this, gin::kAppHooksDelegateTag));
 }
 
 v8::Local<v8::Value> AppHooksDelegate::GetDetails(
