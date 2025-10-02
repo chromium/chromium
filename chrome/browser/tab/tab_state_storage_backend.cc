@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/tab/android_tab_package.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 
 namespace tabs {
@@ -19,7 +20,8 @@ constexpr base::TaskTraits kDBTaskTraits = {
 void TabStateStorageBackend::PopulateTabState(
     tabs_pb::TabState* tab_state,
     const TabStoragePackage& package) {
-  const auto& android_package = package.android_tab_package_;
+  const std::unique_ptr<AndroidTabPackage>& android_package =
+      package.android_tab_package_;
   if (android_package) {
     tab_state->set_parent_id(android_package->parent_id_);
     tab_state->set_timestamp_millis(android_package->timestamp_millis_);
