@@ -18,7 +18,7 @@ namespace dts {
 
 namespace {
 // Match a 32-bit sync word with the content in the buffer.
-bool MatchSyncWord(const uint8_t* data, uint32_t sync_word) {
+bool MatchSyncWord(base::span<const uint8_t> data, uint32_t sync_word) {
   return data[0] == static_cast<uint8_t>(sync_word >> 24) &&
          data[1] == static_cast<uint8_t>(sync_word >> 16) &&
          data[2] == static_cast<uint8_t>(sync_word >> 8) &&
@@ -36,19 +36,21 @@ base::span<const uint8_t> FindNextSyncWord(base::span<const uint8_t> buffer,
   size_t i = 0;
 
   while (i <= buffer.size() - 4) {
-    if (buffer[i] == first_sync_byte && MatchSyncWord(&buffer[i], sync_word)) {
+    if (buffer[i] == first_sync_byte &&
+        MatchSyncWord(buffer.subspan(i, 4u), sync_word)) {
       if (i != 0) {
         DVLOG(2) << __func__ << " skip " << i << " bytes.";
       }
       return buffer.subspan(i);
     }
 
-    const void* next =
-        memchr(&buffer[i + 1], first_sync_byte, buffer.size() - i - 1);
-    if (!next) {
+    const base::span<const uint8_t> search_span = buffer.subspan(i + 1);
+    auto it =
+        std::find(search_span.begin(), search_span.end(), first_sync_byte);
+    if (it == search_span.end()) {
       break;
     }
-    i = static_cast<const uint8_t*>(next) - buffer.data();
+    i = (it - search_span.begin()) + (i + 1);
   }
 
   return {};
@@ -60,11 +62,11 @@ base::span<const uint8_t> FindNextSyncWord(base::span<const uint8_t> buffer,
 // which could contain several complete DTS sync frames.
 // The parameter AudioCodec is for future samplecount support for DTSHD and
 // DTSX bitstreams.
-int ParseTotalSampleCount(const uint8_t* data,
-                          size_t size,
+int ParseTotalSampleCount(base::span<const uint8_t> buffer_span,
                           AudioCodec dts_codec_type) {
-  if (!data)
+  if (buffer_span.empty()) {
     return 0;
+  }
 
   uint32_t sync_word = 0;
   uint32_t header_size = 0;
@@ -81,11 +83,11 @@ int ParseTotalSampleCount(const uint8_t* data,
       header_size = 0;
   }
 
-  if (size < header_size)
+  if (buffer_span.size() < header_size) {
     return 0;
+  }
 
   DTSStreamParser parser;
-  base::span<const uint8_t> buffer_span(data, size);
   int total_sample_count = 0;
 
   while (buffer_span.size() > header_size) {

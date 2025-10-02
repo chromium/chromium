@@ -5,6 +5,7 @@
 #include "media/formats/mp4/ac4.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,7 +19,7 @@ namespace mp4 {
 namespace {
 // Refer to Table A.27: Speaker layouts and speaker indices in
 // https://www.etsi.org/deliver/etsi_ts/103100_103199/10319002/01.02.01_60/ts_10319002v010201p.pdf
-constexpr int kSpeakerIndicesMap[] = {
+constexpr auto kSpeakerIndicesMap = std::to_array<int>({
     2,  // (Group Index 00), Left (L) + Right (R)
     1,  // (Group Index 01), Centre (C)
     2,  // (Group Index 02), Left Surround (Ls) + Right Surround (Rs)
@@ -39,15 +40,11 @@ constexpr int kSpeakerIndicesMap[] = {
     2,  // (Group Index 17), Left Wide (Lw) + Right Wide (Rw)
     2,  // (Group Index 18), Vertical Height Left(Vhl) + Vertical Height
         // Right(Vhr)
-};
-
-// Refer to E.11.7 dsi_substream_channel_mask in
-// https://www.etsi.org/deliver/etsi_ts/103100_103199/10319002/01.02.01_60/ts_10319002v010201p.pdf
-constexpr int kMaxSpeakerGroupIndex = std::size(kSpeakerIndicesMap);
+});
 
 int ChannelMaskToChannelCount(int mask) {
   int channels = 0;
-  for (size_t i = 0; i < kMaxSpeakerGroupIndex; i++) {
+  for (size_t i = 0; i < kSpeakerIndicesMap.size(); i++) {
     if ((mask >> i) & 0x1) {
       channels += kSpeakerIndicesMap[i];
     }

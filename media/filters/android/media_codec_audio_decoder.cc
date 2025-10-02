@@ -445,7 +445,11 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else if (config_.codec() == AudioCodec::kDTS) {
       frame_count = media::dts::ParseTotalSampleCount(
-          audio_buffer->channel_data()[0], out.size, AudioCodec::kDTS);
+          // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once
+          // that class is spanified.
+          UNSAFE_TODO(base::span<const uint8_t>(audio_buffer->channel_data()[0],
+                                                out.size)),
+          AudioCodec::kDTS);
       DVLOG(2) << ": DTS Frame Count = " << frame_count;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else {

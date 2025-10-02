@@ -12,7 +12,7 @@
 #include "media/formats/dts/dts_util.h"
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  media::dts::ParseTotalSampleCount(data, size, media::AudioCodec::kDTS);
+extern "C" int LLVMFuzzerTestOneInput(base::span<const uint8_t> data_span) {
+  media::dts::ParseTotalSampleCount(data_span, media::AudioCodec::kDTS);
   return 0;
 }

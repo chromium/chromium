@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
@@ -877,7 +878,11 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled) {
-        memset(audio_data, 0, packet_size_frames_);
+        // SAFETY: |audio_data| points to a WASAPI-allocated buffer of
+        // |packet_size_bytes_| bytes. The Windows audio API guarantees this
+        // buffer is valid and will not overflow.
+        UNSAFE_BUFFERS(std::ranges::fill(
+            base::span<uint8_t>(audio_data, packet_size_bytes_), 0));
       }
 
       peak_detector_->FindPeak(audio_bus_.get());
