@@ -436,12 +436,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithDefaultTabContextDisabled,
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithDefaultTabContextEnabled,
                        testGetDefaultTabContextPermissionState) {
+  // Default kGlicDefaultTabContextEnabled value is true.
+  ExecuteJsTest();
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kGlicDefaultTabContextEnabled, false);
-  ExecuteJsTest();
-
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kGlicDefaultTabContextEnabled, true);
   ContinueJsTest();
 }
 
