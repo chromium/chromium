@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -48,9 +49,12 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -558,18 +562,22 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   model()->ConsumeCtrlKey();
 }
 
-PageActionIconView* OmniboxViewViews::GetAiModePageActionIconView() const {
+IconLabelBubbleView* OmniboxViewViews::GetAiModePageActionIconView() const {
   // Verify location bar is fully initialized because the
   // page_action_icon_controller may not be ready yet.
   if (!location_bar_view_ || !location_bar_view_->IsInitialized()) {
     return nullptr;
+  }
+  if (IsPageActionMigrated(PageActionIconType::kAiMode)) {
+    return location_bar_view_->page_action_container()->GetPageActionView(
+        kActionAiMode);
   }
   return location_bar_view_->page_action_icon_controller()->GetIconView(
       PageActionIconType::kAiMode);
 }
 
 void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
-  PageActionIconView* icon_view = GetAiModePageActionIconView();
+  IconLabelBubbleView* icon_view = GetAiModePageActionIconView();
   if (!icon_view) {
     return;
   }
@@ -596,7 +604,7 @@ void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
 }
 
 bool OmniboxViewViews::AimButtonVisible() const {
-  PageActionIconView* aim_icon_view = GetAiModePageActionIconView();
+  IconLabelBubbleView* aim_icon_view = GetAiModePageActionIconView();
   return aim_icon_view && aim_icon_view->GetVisible();
 }
 

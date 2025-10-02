@@ -51,10 +51,7 @@ class AiModePageActionIconView : public PageActionIconView {
   void UpdateImpl() override;
 
  private:
-  bool ShouldShow();
   OmniboxView* GetOmniboxView();
-
-  void UpdateFeatureTriggered(bool page_action_shown);
 
   const raw_ptr<BrowserWindowInterface> browser_;
 };

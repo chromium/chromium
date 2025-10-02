@@ -579,6 +579,12 @@ BASE_FEATURE_PARAM(bool,
                    "sharing_hub",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationAiMode,
+                   &kPageActionsMigration,
+                   "ai_mode",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCompositorLoadingAnimations, base::FEATURE_DISABLED_BY_DEFAULT);

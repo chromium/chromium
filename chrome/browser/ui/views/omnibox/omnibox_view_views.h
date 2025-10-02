@@ -41,7 +41,7 @@
 
 class LocationBarView;
 class OmniboxClient;
-class PageActionIconView;
+class IconLabelBubbleView;
 
 namespace content {
 class WebContents;
@@ -329,7 +329,7 @@ class OmniboxViewViews
 
   // Returns the AI Mode page action icon view, if present, or nullptr if the
   // view doesn't exist.
-  PageActionIconView* GetAiModePageActionIconView() const;
+  IconLabelBubbleView* GetAiModePageActionIconView() const;
 
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.

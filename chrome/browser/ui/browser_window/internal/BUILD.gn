@@ -41,6 +41,7 @@ source_set("internal") {
 
     deps += [
       "//chrome/browser/actor/ui",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
       "//chrome/browser/lens/region_search",

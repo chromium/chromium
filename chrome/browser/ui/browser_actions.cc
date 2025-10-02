@@ -39,10 +39,12 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_string_utils.h"
+#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
+#include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -82,6 +84,7 @@
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -865,6 +868,50 @@ void BrowserActions::InitializeBrowserActions() {
           .SetImage(ui::ImageModel().FromVectorIcon(
               kPersonFilledPaddedSmallIcon, ui::kColorIcon))
           .Build());
+
+  if (base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  bool via_keyboard = false;
+
+                  std::underlying_type_t<page_actions::PageActionTrigger>
+                      page_action_trigger = context.GetProperty(
+                          page_actions::kPageActionTriggerKey);
+
+                  if ((page_action_trigger !=
+                       page_actions::kInvalidPageActionTrigger) &&
+                      page_action_trigger ==
+                          base::to_underlying(
+                              page_actions::PageActionTrigger::kKeyboard)) {
+                    via_keyboard = true;
+                  }
+
+                  tabs::TabInterface* active_tab = bwi->GetActiveTabInterface();
+                  CHECK(active_tab);
+
+                  content::WebContents* web_contents =
+                      active_tab->GetContents();
+                  CHECK(web_contents);
+
+                  OmniboxView* omnibox_view =
+                      search::GetOmniboxView(web_contents);
+                  CHECK(omnibox_view);
+
+                  omnibox::AiModePageActionController::OpenAiMode(*omnibox_view,
+                                                                  via_keyboard);
+                },
+                bwi))
+            .SetActionId(kActionAiMode)
+            .SetText(l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
+            .SetTooltipText(
+                l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
+            .SetImage(ui::ImageModel::FromVectorIcon(omnibox::kSearchSparkIcon))
+            .SetProperty(actions::kActionItemPinnableKey, false)
+            .Build());
+  }
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

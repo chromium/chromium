@@ -17387,6 +17387,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "ai_mode": "true",
                         "autofill_address": "true",
                         "click_to_call": "true",
                         "collaboration_messaging": "true",

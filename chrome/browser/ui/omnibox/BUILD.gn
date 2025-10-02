@@ -17,6 +17,7 @@ source_set("omnibox") {
   ]
   if (!is_android) {
     public += [
+      "ai_mode_page_action_controller.h",
       "alternate_nav_infobar_delegate.h",
       "chrome_omnibox_client.h",
       "chrome_omnibox_navigation_observer.h",
@@ -44,6 +45,7 @@ source_set("omnibox") {
       "//services/network/public/mojom:url_loader_base",
       "//skia",
       "//ui/base",
+      "//ui/base/unowned_user_data",
       "//ui/gfx",
       "//ui/gfx/geometry",
     ]
@@ -79,6 +81,7 @@ source_set("impl") {
   ]
   if (!is_android) {
     sources += [
+      "ai_mode_page_action_controller.cc",
       "alternate_nav_infobar_delegate.cc",
       "chrome_omnibox_client.cc",
       "chrome_omnibox_navigation_observer.cc",
@@ -94,6 +97,7 @@ source_set("impl") {
       "//chrome/browser:browser_process",
       "//chrome/browser:primitives",
       "//chrome/browser/autocomplete",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/bitmap_fetcher",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/favicon",
@@ -111,6 +115,7 @@ source_set("impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/search",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/common",
       "//components/bookmarks/browser",
@@ -265,18 +270,24 @@ if (!is_android) {
     source_set("interactive_ui_tests") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-      sources = [ "omnibox_metrics_browsertest.cc" ]
+      sources = [
+        "ai_mode_page_action_controller_interactive_uitest.cc",
+        "omnibox_metrics_browsertest.cc",
+      ]
       deps = [
         "//base/test:test_support",
         "//chrome/browser/autocomplete",
+        "//chrome/browser/autocomplete:aim_eligibility_service",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/search_engines",
+        "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/location_bar",
         "//chrome/browser/ui/search",
         "//chrome/test:test_support",
         "//chrome/test:test_support_ui",
         "//components/omnibox/browser",
         "//components/omnibox/browser:location_bar",
+        "//components/omnibox/browser:test_support",
         "//components/search_engines",
         "//components/search_engines:search_engine_type",
         "//content/test:test_support",

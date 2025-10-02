@@ -182,6 +182,10 @@ namespace web_app {
 class AppBrowserController;
 }  // namespace web_app
 
+namespace omnibox {
+class AiModePageActionController;
+}  // namespace omnibox
+
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop.
 //
@@ -728,6 +732,9 @@ class BrowserWindowFeatures {
   raw_ptr<ui::AcceleratorProvider> accelerator_provider_;
 
   std::unique_ptr<FindBarOwner> find_bar_owner_;
+
+  std::unique_ptr<omnibox::AiModePageActionController>
+      ai_mode_page_action_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

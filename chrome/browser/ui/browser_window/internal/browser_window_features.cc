@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -117,6 +119,8 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -454,6 +458,19 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
           browser, browser_command_controller_.get(), location_bar);
     }
 
+    if (browser_view && IsPageActionMigrated(PageActionIconType::kAiMode)) {
+      const auto* aim_eligibility_service =
+          AimEligibilityServiceFactory::GetForProfile(profile);
+      if (OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+              aim_eligibility_service)) {
+        LocationBarView* location_bar_view = browser_view->GetLocationBarView();
+        ai_mode_page_action_controller_ =
+            GetUserDataFactory()
+                .CreateInstance<omnibox::AiModePageActionController>(
+                    *browser, *browser, *profile, *location_bar_view);
+      }
+    }
+
     auto* experiment_manager =
         extensions::ManifestV2ExperimentManager::Get(profile);
     if (experiment_manager) {
@@ -593,7 +610,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
   scrim_view_controller_ = std::make_unique<ScrimViewController>(browser_view);
 
-  // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to Init.
+  // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to
+  // Init.
   // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
   // browser.h types
   // Conceptually, SidePanelCoordinator handles the "model" whereas
@@ -817,6 +835,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   }
 
   find_bar_owner_.reset();
+
+  ai_mode_page_action_controller_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
