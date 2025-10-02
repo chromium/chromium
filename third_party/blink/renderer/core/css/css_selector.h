@@ -589,6 +589,9 @@ class CORE_EXPORT CSSSelector {
   bool IsLastInSelectorList() const {
     return bits_.get<IsLastInSelectorListField>();
   }
+  bool IsLastInSelectorListForOilpan() const {
+    return bits_.get_concurrently<IsLastInSelectorListField>();
+  }
   void SetLastInSelectorList(bool is_last) {
     bits_.set<IsLastInSelectorListField>(is_last);
   }

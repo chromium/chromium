@@ -538,7 +538,7 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   const CSSSelector* current = SelectorArray();
   do {
     visitor->Trace(*current);
-  } while (!(UNSAFE_TODO(current++))->IsLastInSelectorList());
+  } while (!(UNSAFE_TODO(current++))->IsLastInSelectorListForOilpan());
 
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
