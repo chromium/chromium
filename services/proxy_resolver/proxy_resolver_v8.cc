@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "net/base/ip_address.h"
@@ -516,7 +517,9 @@ class ProxyResolverV8::Context {
     v8::Isolate::Scope isolate_scope(isolate_);
     v8::HandleScope scope(isolate_);
 
-    v8_this_.Reset(isolate_, v8::External::New(isolate_, this));
+    v8_this_.Reset(
+        isolate_,
+        v8::External::New(isolate_, this, gin::kProxyResolverV8ContextTag));
     v8::Local<v8::External> v8_this =
         v8::Local<v8::External>::New(isolate_, v8_this_);
 
@@ -685,7 +688,8 @@ class ProxyResolverV8::Context {
   // V8 callback for when "alert()" is invoked by the PAC script.
   static void AlertCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     Context* context =
-        static_cast<Context*>(v8::External::Cast(*args.Data())->Value());
+        static_cast<Context*>(v8::External::Cast(*args.Data())
+                                  ->Value(gin::kProxyResolverV8ContextTag));
 
     // Like firefox we assume "undefined" if no argument was specified, and
     // disregard any arguments beyond the first.
@@ -733,7 +737,8 @@ class ProxyResolverV8::Context {
       const v8::FunctionCallbackInfo<v8::Value>& args,
       net::ProxyResolveDnsOperation op) {
     Context* context =
-        static_cast<Context*>(v8::External::Cast(*args.Data())->Value());
+        static_cast<Context*>(v8::External::Cast(*args.Data())
+                                  ->Value(gin::kProxyResolverV8ContextTag));
 
     std::string hostname;
 
