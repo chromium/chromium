@@ -31,10 +31,7 @@ PassthroughDiscardableManager::DiscardableCacheValue::~DiscardableCacheValue() =
     default;
 
 PassthroughDiscardableManager::PassthroughDiscardableManager(
-    const GpuPreferences& preferences)
-    : cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
-                            ? preferences.force_gpu_mem_discardable_limit_bytes
-                            : DiscardableCacheSizeLimit()) {
+    const GpuPreferences& preferences) {
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -61,23 +58,13 @@ bool PassthroughDiscardableManager::OnMemoryDump(
                            reinterpret_cast<uintptr_t>(this));
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes, total_size_);
+                    MemoryAllocatorDump::kUnitsBytes, 0);
 
     // Early out, no need for more detail in a BACKGROUND dump.
     return true;
   }
 
   return true;
-}
-
-void PassthroughDiscardableManager::HandleMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  size_t limit = DiscardableCacheSizeLimitForPressure(cache_size_limit_,
-                                                      memory_pressure_level);
-  EnforceCacheSizeLimit(limit);
-}
-
-void PassthroughDiscardableManager::EnforceCacheSizeLimit(size_t limit) {
 }
 
 }  // namespace gpu

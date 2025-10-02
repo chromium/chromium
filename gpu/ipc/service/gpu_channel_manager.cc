@@ -834,8 +834,6 @@ void GpuChannelManager::HandleMemoryPressure(
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {
       discardable_manager_.HandleMemoryPressure(memory_pressure_level);
-      passthrough_discardable_manager_.HandleMemoryPressure(
-          memory_pressure_level);
     shared_context_state_->PurgeMemory(memory_pressure_level);
   }
 

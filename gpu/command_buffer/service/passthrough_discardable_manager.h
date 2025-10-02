@@ -33,18 +33,10 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  void HandleMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
   // Test only functions
-  size_t TotalSizeForTesting() const { return total_size_; }
-  void SetCacheSizeLimitForTesting(size_t cache_size_limit) {
-    cache_size_limit_ = cache_size_limit;
-  }
+  size_t TotalSizeForTesting() const { return 0; }
 
  private:
-  void EnforceCacheSizeLimit(size_t limit);
-
   using DiscardableCacheKey = std::pair<uint32_t, const gles2::ContextGroup*>;
   struct DiscardableCacheValue {
     DiscardableCacheValue();
@@ -64,13 +56,6 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager
   // then all textures are deleted.
   void DeleteTextures(const gles2::ContextGroup* context_group,
                       bool has_context);
-
-  // Total size of all entries in the cache. The same as summing
-  // DiscardableCacheValue::size for each entry.
-  size_t total_size_ = 0;
-
-  // The limit above which the cache will start evicting resources.
-  size_t cache_size_limit_ = 0;
 };
 
 }  // namespace gpu
