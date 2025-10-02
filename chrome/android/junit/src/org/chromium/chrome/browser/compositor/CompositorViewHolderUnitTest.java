@@ -935,7 +935,10 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END)
+    @DisableFeatures({
+        ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END,
+        ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX
+    })
     public void testInMotionSupplier() {
         mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
         mCompositorViewHolder.onInterceptTouchEvent(MOTION_EVENT_DOWN);
@@ -971,6 +974,22 @@ public class CompositorViewHolderUnitTest {
         Assert.assertTrue(mCompositorViewHolder.getInMotionSupplier().get());
 
         mTabObserverCaptor.getAllValues().forEach((obs) -> obs.onGestureEnd());
+        Assert.assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
+    public void testInMotionSupplier_OnTouch() {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        mCompositorViewHolder.onContentChanged();
+        verify(mTab, atLeast(1)).addObserver(mTabObserverCaptor.capture());
+
+        mTabObserverCaptor.getAllValues().forEach((obs) -> obs.onTouchDown());
+        Assert.assertTrue(mCompositorViewHolder.getInMotionSupplier().get());
+
+        mTabObserverCaptor.getAllValues().forEach((obs) -> obs.onTouchUp());
         Assert.assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
     }
 

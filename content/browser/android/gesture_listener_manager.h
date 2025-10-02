@@ -70,6 +70,7 @@ class CONTENT_EXPORT GestureListenerManager
                         const float top_shown_pix,
                         bool top_changed);
   void UpdateOnTouchDown();
+  void UpdateOnTouchUp();
   void OnRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset);
 
   // RenderWidgetHostConnector implementation.

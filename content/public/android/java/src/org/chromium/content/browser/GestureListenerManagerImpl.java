@@ -209,10 +209,14 @@ public class GestureListenerManagerImpl
                 .setDoubleTapSupportEnabled(mNativeGestureListenerManager, supportsDoubleTap);
     }
 
-    /** Update all the listeners after touch down event occurred. */
     @CalledByNative
     private void updateOnTouchDown() {
         for (mIterator.rewind(); mIterator.hasNext(); ) mIterator.next().onTouchDown();
+    }
+
+    @CalledByNative
+    private void updateOnTouchUp() {
+        for (mIterator.rewind(); mIterator.hasNext(); ) mIterator.next().onTouchUp();
     }
 
     /** Returns whether there's an active, ongoing fling scroll. */
