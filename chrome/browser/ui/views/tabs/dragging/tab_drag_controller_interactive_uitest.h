@@ -14,6 +14,7 @@
 
 class Browser;
 class BrowserList;
+class BrowserWindowInterface;
 class TabStrip;
 class TabStripModel;
 class WindowFinder;
@@ -73,7 +74,7 @@ class TabDragControllerTest : public InProcessBrowserTest {
 namespace test {
 
 // Returns the TabStrip for `browser`.
-TabStrip* GetTabStripForBrowser(Browser* browser);
+TabStrip* GetTabStripForBrowser(BrowserWindowInterface* browser);
 
 // Sets the id of `web_contents` to `id`.
 void SetID(content::WebContents* web_contents, int id);
