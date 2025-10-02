@@ -19383,6 +19383,27 @@
             ]
         }
     ],
+    "PrivacySandboxWhatsNewSurvey": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "RTUwCNf90G6uR1hkrVX10XrazMww",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "PrivacySandboxWhatsNewSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivateAggregationApiErrorReporting": [
         {
             "platforms": [
