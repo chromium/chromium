@@ -49,7 +49,7 @@ public interface Highlighter {
 
         public Config(Context context) {
             // Color format: AARRGGBB
-            @ColorInt int color = SemanticColorUtils.getColorPrimary(context);
+            @ColorInt int color = SemanticColorUtils.getDefaultTextColorLink(context);
             // when converting to RRGGBBAA hex also add 25% opacity per UI specs.
             mHighlightBackgroundColorHex = String.format("#%06X", (0x00FFFFFF & color)) + "40";
         }
