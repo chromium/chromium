@@ -12,8 +12,10 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 #include "content/browser/permissions/permission_controller_impl.h"
@@ -28,6 +30,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-data-view.h"
 #include "url/origin.h"
 
 using blink::mojom::EmbeddedPermissionControlClient;
@@ -334,7 +337,24 @@ void PermissionServiceImpl::OnRequestPermissionsResponse(
 
 void PermissionServiceImpl::HasPermission(PermissionDescriptorPtr permission,
                                           PermissionStatusCallback callback) {
-  std::move(callback).Run(GetPermissionResult(permission).status);
+  auto permission_status = GetPermissionResult(permission).status;
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission) &&
+      blink::PermissionDescriptorToPermissionType(permission) ==
+          blink::PermissionType::GEOLOCATION &&
+      permission_status ==
+          blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS) {
+    // TODO(crbug.com/430586927): This is a short-term solution. Once the
+    // geolocation permission descriptor supports isPrecise, the correct
+    // preciseness should be queried. The query API uses a permission descriptor
+    // to query the permission state. Since the coarse location MVP currently
+    // doesn't use a special permission descriptor, the query API can only query
+    // whether precise location is granted, which results in UNSATISFIED_OPTIONS
+    // for a coarse location granted. We can map this to a GRANTED for the
+    // purposes of the query API.
+    permission_status = PermissionStatus::GRANTED;
+  }
+  std::move(callback).Run(permission_status);
 }
 
 void PermissionServiceImpl::RevokePermission(
