@@ -22,6 +22,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ip_protection {

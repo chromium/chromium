@@ -404,6 +404,7 @@ source_set("ip_protection_token_direct_fetcher") {
     ":ip_protection_token_fetcher",
     ":ip_protection_token_fetcher_helper",
     "//base",
+    "//net/third_party/quiche:blind_sign_auth",
     "//services/network/public/cpp",
   ]
   deps = [
@@ -412,7 +413,6 @@ source_set("ip_protection_token_direct_fetcher") {
     ":ip_protection_telemetry",
     ":ip_protection_token_fetcher_helper",
     "//components/signin/public/identity_manager",
-    "//net/third_party/quiche:blind_sign_auth",
   ]
 }
 
