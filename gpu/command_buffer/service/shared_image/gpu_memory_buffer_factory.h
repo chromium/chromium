@@ -5,9 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -18,10 +15,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
-namespace viz {
-class VulkanContextProvider;
-}  // namespace viz
-
 namespace gpu {
 
 class GPU_GLES2_EXPORT GpuMemoryBufferFactory {
@@ -31,14 +24,6 @@ class GPU_GLES2_EXPORT GpuMemoryBufferFactory {
   GpuMemoryBufferFactory& operator=(const GpuMemoryBufferFactory&) = delete;
 
   virtual ~GpuMemoryBufferFactory() = default;
-
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_OZONE)
-  // Creates a new factory instance for native GPU memory buffers. Returns null
-  // if native buffers are not supported.
-  static std::unique_ptr<GpuMemoryBufferFactory> CreateNativeType(
-      viz::VulkanContextProvider* vulkan_context_provider,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // Creation of native buffer handles is not supported on Android (the

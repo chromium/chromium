@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -258,8 +259,7 @@ SharedImageManager::SharedImageManager(
 #if BUILDFLAG(IS_WIN)
       ,
       gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider,
-                                                        std::move(io_runner)))
+          std::make_unique<GpuMemoryBufferFactoryDXGI>(std::move(io_runner)))
 #endif
 {
   DCHECK(!display_context_on_another_thread || thread_safe);

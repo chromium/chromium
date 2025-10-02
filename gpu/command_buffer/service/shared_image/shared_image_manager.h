@@ -20,6 +20,10 @@
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
+namespace viz {
+class VulkanContextProvider;
+}  // namespace viz
+
 #if BUILDFLAG(IS_WIN)
 namespace gfx {
 class D3DSharedFence;
