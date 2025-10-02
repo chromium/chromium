@@ -1348,6 +1348,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
   }
 
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
+    web_client_->NotifyPanelStateChange(panel_state.Clone());
+  }
+
   void ManualResizeChanged(bool resizing) override {
     web_client_->NotifyManualResizeChanged(resizing);
   }

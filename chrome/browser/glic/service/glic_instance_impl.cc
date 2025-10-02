@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -153,12 +155,11 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
   } else {
     DeactivateCurrentEmbedder();
     embedder_to_show = CreateActiveEmbedderFor(new_key);
-    active_embedder_key_ = new_key;
+    SetActiveEmbedderAndNotifyStateChange(new_key);
   }
 
   MaybeShowHostUi(embedder_to_show);
   embedder_to_show->Show();
-  NotifyStateChange();
 }
 
 void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
@@ -415,7 +416,7 @@ GlicUiEmbedder* GlicInstanceImpl::GetActiveEmbedder() {
 void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   auto* old_embedder = GetActiveEmbedder();
   if (!old_embedder) {
-    active_embedder_key_.reset();
+    ClearActiveEmbedderAndNotifyStateChange();
     return;
   }
 
@@ -424,8 +425,7 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   // Avoid use-after-free.
   host_.SetDelegate(&empty_embedder_delegate_);
   it->second.embedder = old_embedder->CreateInactiveEmbedder();
-  active_embedder_key_.reset();
-  NotifyStateChange();
+  ClearActiveEmbedderAndNotifyStateChange();
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
@@ -457,6 +457,25 @@ void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
   auto& entry = BindTab(tab);
   entry.embedder = std::make_unique<GlicInactiveSidePanelUi>(tab->GetWeakPtr());
   entry.embedder->Show();
+}
+
+void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
+    std::optional<EmbedderKey> new_key) {
+  active_embedder_key_ = new_key;
+  NotifyStateChange();
+  host_.PanelStateChanged(
+      GetActiveEmbedder()->GetHostEmbedderDelegate()->GetPanelState());
+}
+
+void GlicInstanceImpl::ClearActiveEmbedderAndNotifyStateChange() {
+  if (active_embedder_key_.has_value()) {
+    active_embedder_key_.reset();
+    NotifyStateChange();
+    mojom::PanelState panel_state;
+    panel_state.kind = mojom::PanelState_Kind::kHidden;
+    host_.PanelStateChanged(panel_state);
+  }
+  return;
 }
 
 void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {

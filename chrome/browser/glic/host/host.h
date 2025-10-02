@@ -165,6 +165,8 @@ class Host : public GlicSharingManagerProvider {
 
   void PanelWasClosed();
 
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state);
+
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback);
@@ -343,6 +345,7 @@ class Host : public GlicSharingManagerProvider {
   std::optional<mojom::InvocationSource> invocation_source_;
   std::optional<PanelWillOpenOptions> pending_panel_open_options_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
+  std::optional<mojom::PanelState> pending_panel_state_;
 
   // Owns the WebUI contents. May be null for glic hosts in chrome://glic tabs.
   // Keep profile alive as long as the glic web contents. This object should be

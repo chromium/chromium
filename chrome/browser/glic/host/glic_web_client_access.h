@@ -25,6 +25,10 @@ class GlicWebClientAccess {
   // client should not be destroyed until after `done` is called.
   virtual void PanelWasClosed(base::OnceClosure done) = 0;
 
+  // Informs the client that the state of the panel has changed.
+  virtual void PanelStateChanged(
+      const glic::mojom::PanelState& panel_state) = 0;
+
   // Informs the web client when the user starts and finishes dragging to resize
   // the panel.
   virtual void ManualResizeChanged(bool resizing) = 0;

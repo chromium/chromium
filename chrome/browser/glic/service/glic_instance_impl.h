@@ -180,6 +180,9 @@ class GlicInstanceImpl : public GlicInstance,
   void DeactivateCurrentEmbedder();
   GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
   void ShowInactiveSidePanelEmbedderFor(tabs::TabInterface* tab);
+  void SetActiveEmbedderAndNotifyStateChange(
+      std::optional<EmbedderKey> new_key);
+  void ClearActiveEmbedderAndNotifyStateChange();
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
   void OnBoundTabDestroyed(tabs::TabInterface* tab,
                            const InstanceId& instance_id);

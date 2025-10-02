@@ -120,6 +120,14 @@ void Host::PanelWasClosed() {
   }
 }
 
+void Host::PanelStateChanged(const glic::mojom::PanelState& panel_state) {
+  if (handler_info_ && handler_info_->web_client) {
+    handler_info_->web_client->PanelStateChanged(panel_state);
+  } else {
+    pending_panel_state_ = std::move(panel_state);
+  }
+}
+
 void Host::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
@@ -264,6 +272,12 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
             base::Unretained(this),
             // Unretained is safe because web_client is calling us.
             base::Unretained(web_client)));
+
+    if (pending_panel_state_) {
+      mojom::PanelState panel_state = pending_panel_state_.value();
+      pending_panel_state_.reset();
+      handler_info_->web_client->PanelStateChanged(panel_state);
+    }
   }
 }
 
