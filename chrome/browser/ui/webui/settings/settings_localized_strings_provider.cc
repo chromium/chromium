@@ -1212,12 +1212,12 @@ bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
       client->GetDeviceAuthenticator().get());
 }
 
-bool CheckCvcStorageAvailability() {
+bool IsCvcStorageAndFillingEnabled() {
   return base::FeatureList::IsEnabled(
       autofill::features::kAutofillEnableCvcStorageAndFilling);
 }
 
-bool EnableNewFopDisplayDesktop() {
+bool IsNewFopDisplayDesktopEnabled() {
   return base::FeatureList::IsEnabled(
       autofill::features::kAutofillEnableNewFopDisplayDesktop);
 }
@@ -1522,9 +1522,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("deviceAuthAvailable",
                           CheckDeviceAuthAvailability(web_contents));
 
-  html_source->AddBoolean("cvcStorageAvailable", CheckCvcStorageAvailability());
+  html_source->AddBoolean("cvcStorageAvailable",
+                          IsCvcStorageAndFillingEnabled());
 
-  html_source->AddBoolean("enableNewFopDisplay", EnableNewFopDisplayDesktop());
+  html_source->AddBoolean("enableNewFopDisplay",
+                          IsNewFopDisplayDesktopEnabled());
 
   html_source->AddBoolean("autofillCardBenefitsAvailable",
                           payments_data.IsCardBenefitsFeatureEnabled());
