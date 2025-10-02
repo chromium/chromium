@@ -215,26 +215,26 @@ TEST_F(GeminiCoordinatorTest, DismissOtherWindows) {
       startDispatchingToTarget:second_bwg_handler
                    forProtocol:@protocol(BWGCommands)];
 
-  OCMExpect([second_bwg_handler dismissBWGFlowWithCompletion:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        __weak ProceduralBlock block;
-        [invocation getArgument:&block atIndex:2];
+  OCMExpect([second_bwg_handler
+      dismissBWGFlowWithCompletion:[OCMArg checkWithBlock:^BOOL(
+                                               ProceduralBlock block) {
         if (block) {
           block();
         }
-      });
+        return YES;
+      }]]);
 
   StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);
 
   // Emulate starting the floaty from the first window.
-  OCMStub([mock_bwg_command_handler_ dismissBWGFlowWithCompletion:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        __weak ProceduralBlock block;
-        [invocation getArgument:&block atIndex:2];
-        if (block) {
-          block();
-        }
-      });
+  OCMStub([mock_bwg_command_handler_
+      dismissBWGFlowWithCompletion:[OCMArg
+                                       checkWithBlock:^(ProceduralBlock block) {
+                                         if (block) {
+                                           block();
+                                         }
+                                         return YES;
+                                       }]]);
 
   EXPECT_OCMOCK_VERIFY(mock_bwg_command_handler_);
   EXPECT_OCMOCK_VERIFY(second_bwg_handler);

@@ -298,14 +298,14 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
       suggestionsCompletionsQueue = [NSMutableArray array];
 
   OCMStub([providerMock
-              retrieveSuggestionsForForm:params
-                                webState:web_state_list_.GetActiveWebState()
-                accessoryViewUpdateBlock:OCMOCK_ANY])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained FormSuggestionsReadyCompletion completion;
-        [invocation getArgument:&completion atIndex:4];
-        [suggestionsCompletionsQueue addObject:[completion copy]];
-      });
+      retrieveSuggestionsForForm:params
+                        webState:web_state_list_.GetActiveWebState()
+        accessoryViewUpdateBlock:[OCMArg checkWithBlock:^BOOL(
+                                             FormSuggestionsReadyCompletion
+                                                 completion) {
+          [suggestionsCompletionsQueue addObject:[completion copy]];
+          return YES;
+        }]]);
 
   // Emit a form registration event to trigger the suggestions update code path.
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),

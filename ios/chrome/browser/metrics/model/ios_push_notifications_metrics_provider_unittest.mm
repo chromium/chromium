@@ -36,16 +36,16 @@ namespace {
 // mock will be uninstalled when the returned object is destroyed.
 id InstallMockPushNotificationUtil(UNAuthorizationStatus status) {
   id mock = OCMClassMock([PushNotificationUtil class]);
-  OCMStub(ClassMethod([mock getPermissionSettings:[OCMArg any]]))
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained void (^block)(UNNotificationSettings*) = nil;
-        [invocation getArgument:&block atIndex:2];
-        if (block) {
-          id mock_value = OCMClassMock([UNNotificationSettings class]);
-          OCMStub([mock_value authorizationStatus]).andReturn(status);
-          block(mock_value);
-        }
-      });
+  id mock_value = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([mock_value authorizationStatus]).andReturn(status);
+  OCMStub(ClassMethod(
+      [mock getPermissionSettings:[OCMArg checkWithBlock:^BOOL(id obj) {
+              void (^block)(UNNotificationSettings*) = obj;
+              if (block) {
+                block(mock_value);
+              }
+              return YES;
+            }]]));
   return mock;
 }
 

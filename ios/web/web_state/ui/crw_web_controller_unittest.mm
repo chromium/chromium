@@ -674,14 +674,11 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
         OCMStub([mock_download originatingFrame]).andReturn(frame_info);
       }
 
-      OCMStub([mock_download cancel:[OCMArg any]])
-          .andDo(^(NSInvocation* invocation) {
-            // Using __unsafe_unretained is required to extract the parameter
-            // from the NSInvocation otherwise ARC will over-release.
-            __unsafe_unretained void (^block)(NSData* data);
-            [invocation getArgument:&block atIndex:2];
-            block(nil);
-          });
+      OCMStub([mock_download cancel:[OCMArg checkWithBlock:^BOOL(id obj) {
+                               void (^block)(NSData* data) = obj;
+                               block(nil);
+                               return YES;
+                             }]]);
 
       [download_delegate download:mock_download
           decideDestinationUsingResponse:response

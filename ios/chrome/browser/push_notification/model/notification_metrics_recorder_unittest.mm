@@ -42,14 +42,12 @@ class NotificationMetricsRecorderTest : public PlatformTest {
     metrics_recorder_.classifier = classifier_;
 
     delivered_notifications_ = [NSMutableArray array];
-    id block = ^(NSInvocation* invocation) {
-      void (^completionHandler)(NSArray<UNNotification*>*);
-      [invocation getArgument:&completionHandler atIndex:2];
+    id block = ^(void (^completionHandler)(NSArray<UNNotification*>*)) {
       completionHandler([this->delivered_notifications_ copy]);
     };
-    OCMStub([notification_center_
-                getDeliveredNotificationsWithCompletionHandler:[OCMArg any]])
-        .andDo(block);
+    OCMStub(
+        [notification_center_ getDeliveredNotificationsWithCompletionHandler:
+                                  [OCMArg checkWithBlock:block]]);
   }
 
   // Creates a stub UNNotification with the given `identifier`.
