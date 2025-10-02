@@ -77092,6 +77092,19 @@
        {}
       ]
      ],
+     "position-visibility-anchors-visible-after-scroll-in-document.html": [
+      "f2c7dd68d07564dec982ba6712db6be82caf49ae",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-visibility-anchors-visible-after-scroll-in-document-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-visibility-anchors-visible-after-scroll-in.html": [
       "4a038f8de3e307634d888a36da084630d513104a",
       [
@@ -77229,6 +77242,19 @@
        [
         [
          "/css/css-anchor-position/position-visibility-anchors-visible-css-visibility-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "position-visibility-anchors-visible-in-overflow.html": [
+      "537fb031a568f82f7f12c456be59d700827f9b2b",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-visibility-anchors-visible-in-overflow-ref.html",
          "=="
         ]
        ],
@@ -320332,6 +320358,19 @@
         {}
        ]
       ],
+      "maction-click.html": [
+       "33cb8211a3c19f3d3ab91e6ac35910e61fb16b14",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/html5-tree/maction-click-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "required-extensions-2.html": [
        "738f1255077be3a412f7e282cc232d38a2746880",
        [
@@ -345526,6 +345565,10 @@
       "96b4e865512c2adf1215e7aaae43bc1053bd6356",
       []
      ],
+     "position-visibility-anchors-visible-after-scroll-in-document-ref.html": [
+      "6743dd85fa07b6e497990f82a72c217502f7f5e6",
+      []
+     ],
      "position-visibility-anchors-visible-after-scroll-in-ref.html": [
       "10f74d4fb09852a4d7c139de70ac2d10da94575e",
       []
@@ -345556,6 +345599,10 @@
      ],
      "position-visibility-anchors-visible-css-visibility-ref.html": [
       "3ac85888e484b15a27add7331f84ee731fa26f66",
+      []
+     ],
+     "position-visibility-anchors-visible-in-overflow-ref.html": [
+      "86b0873b4dbff0ff87c902532cc200d9d67b4f0c",
       []
      ],
      "position-visibility-anchors-visible-non-intervening-container-ref.html": [
@@ -429207,6 +429254,10 @@
       ],
       "link-color-001.tentative-ref.html": [
        "772fda7002f145dffe770055a72a25264fe4c913",
+       []
+      ],
+      "maction-click-ref.html": [
+       "c2d68064d0082e4d71f39e9628526d1559a3a4aa",
        []
       ],
       "math-global-event-handlers.tentative-expected.txt": [
