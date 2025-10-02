@@ -2148,12 +2148,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.SecureDnsMode" enum="SecureDnsModeDetails"
-    expires_after="2025-07-13">
+    expires_after="2026-10-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
     Records details of the secure DNS mode used to configure the host resolver
     at construction of the network service.
+
+    Warning: this histogram was expired from M140 to M142; data may be missing.
   </summary>
 </histogram>
 
