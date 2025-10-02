@@ -20,8 +20,6 @@ const char kFeedToggledAction[] = "IOS.HomeCustomization.MainPage.Feed.Toggled";
 
 // User action names for toggling cells from the Magic Stack page in the
 // customization menu.
-const char kSetUpListToggledAction[] =
-    "IOS.HomeCustomization.MagicStackPage.SetUpList.Toggled";
 const char kSafetyCheckToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.SafetyCheck.Toggled";
 const char kTabResumptionToggledAction[] =
@@ -49,9 +47,6 @@ const char kShopCardPriceTrackingAction[] =
       return;
 
       // Magic Stack toggles.
-    case CustomizationToggleType::kSetUpList:
-      base::RecordAction(base::UserMetricsAction(kSetUpListToggledAction));
-      return;
     case CustomizationToggleType::kSafetyCheck:
       base::RecordAction(base::UserMetricsAction(kSafetyCheckToggledAction));
       return;

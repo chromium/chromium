@@ -109,9 +109,6 @@
 // preferences.
 - (BOOL)isMagicStackCardEnabledForType:(CustomizationToggleType)type {
   switch (type) {
-    case CustomizationToggleType::kSetUpList:
-      return _prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackSetUpListEnabled);
     case CustomizationToggleType::kSafetyCheck:
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
@@ -150,10 +147,6 @@
       break;
 
     // Magic Stack page toggles.
-    case CustomizationToggleType::kSetUpList:
-      _prefService->SetBoolean(
-          prefs::kHomeCustomizationMagicStackSetUpListEnabled, enabled);
-      break;
     case CustomizationToggleType::kSafetyCheck:
       _prefService->SetBoolean(
           prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, enabled);

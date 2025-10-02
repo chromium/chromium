@@ -27,9 +27,6 @@
       return l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE);
 
       // Magic Stack page toggles.
-    case CustomizationToggleType::kSetUpList:
-      return l10n_util::GetNSString(
-          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_SET_UP_LIST);
     case CustomizationToggleType::kSafetyCheck:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_SAFETY_CHECK);
@@ -58,9 +55,6 @@
           IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_SUBTITLE);
 
       // Magic Stack page toggles.
-    case CustomizationToggleType::kSetUpList:
-      return l10n_util::GetNSString(
-          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_SET_UP_LIST);
     case CustomizationToggleType::kSafetyCheck:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_SAFETY_CHECK);
@@ -89,9 +83,6 @@
                                         kToggleIconPointSize);
 
       // Magic Stack page toggles.
-    case CustomizationToggleType::kSetUpList:
-      return DefaultSymbolWithPointSize(kListBulletClipboardSymbol,
-                                        kToggleIconPointSize);
     case CustomizationToggleType::kSafetyCheck:
       return DefaultSymbolWithPointSize(kCheckmarkShieldSymbol,
                                         kToggleIconPointSize);
@@ -124,8 +115,6 @@
       return kCustomizationToggleDiscoverIdentifier;
 
       // Magic Stack page toggles.
-    case CustomizationToggleType::kSetUpList:
-      return kCustomizationToggleSetUpListIdentifier;
     case CustomizationToggleType::kSafetyCheck:
       return kCustomizationToggleSafetyCheckIdentifier;
     case CustomizationToggleType::kTapResumption:
@@ -150,8 +139,6 @@
       return kCustomizationToggleDiscoverNavigableIdentifier;
 
       // Magic Stack page toggles.
-    case CustomizationToggleType::kSetUpList:
-      return nil;
     case CustomizationToggleType::kSafetyCheck:
       return nil;
     case CustomizationToggleType::kTapResumption:

@@ -75,12 +75,9 @@
 }
 
 - (void)
-    recordMagicStackCustomizationStateWithSetUpList:(BOOL)setUpListEnabled
-                                        safetyCheck:(BOOL)safetyCheckEnabled
-                                      tabResumption:(BOOL)tabResumptionEnabled
-                                               tips:(BOOL)tipsEnabled {
-  base::UmaHistogramBoolean(kMagicStackSetUpListEnabledHistogram,
-                            setUpListEnabled);
+    recordMagicStackCustomizationStateWithSafetyCheck:(BOOL)safetyCheckEnabled
+                                        tabResumption:(BOOL)tabResumptionEnabled
+                                                 tips:(BOOL)tipsEnabled {
   base::UmaHistogramBoolean(kMagicStackSafetyCheckEnabledHistogram,
                             safetyCheckEnabled);
   base::UmaHistogramBoolean(kMagicStackTabResumptionEnabledHistogram,

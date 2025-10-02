@@ -31,8 +31,6 @@ const char kNTPImpressionCustomizationStateHistogram[] =
     "IOS.NTP.Impression.CustomizationState";
 const char kNTPOverscrollActionHistogram[] = "IOS.NTP.OverscrollAction";
 
-const char kMagicStackSetUpListEnabledHistogram[] =
-    "IOS.HomeCustomization.MagicStack.SetUpList.Enabled";
 const char kMagicStackSafetyCheckEnabledHistogram[] =
     "IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled";
 const char kMagicStackTabResumptionEnabledHistogram[] =

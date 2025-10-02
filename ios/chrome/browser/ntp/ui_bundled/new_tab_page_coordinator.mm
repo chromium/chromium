@@ -1797,17 +1797,14 @@
       PrefService* prefService = self.prefService;
       BOOL safetyCheckEnabled = prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
-      BOOL setUpListEnabled = prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackSetUpListEnabled);
       BOOL tabResumptionEnabled = prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
       BOOL tipsEnabled = prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTipsEnabled);
       [self.NTPMetricsRecorder
-          recordMagicStackCustomizationStateWithSetUpList:setUpListEnabled
-                                              safetyCheck:safetyCheckEnabled
-                                            tabResumption:tabResumptionEnabled
-                                                     tips:tipsEnabled];
+          recordMagicStackCustomizationStateWithSafetyCheck:safetyCheckEnabled
+                                              tabResumption:tabResumptionEnabled
+                                                       tips:tipsEnabled];
 
       // TODO(crbug.com/350990359): Deprecate IOS.NTP.Impression when Home
       // Customization launches.

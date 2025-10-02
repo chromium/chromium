@@ -40,7 +40,6 @@ extern NSString* const kCustomizationToggleMagicStackIdentifier;
 extern NSString* const kCustomizationToggleDiscoverIdentifier;
 
 // The identifiers for the Magic Stack page toggle cells.
-extern NSString* const kCustomizationToggleSetUpListIdentifier;
 extern NSString* const kCustomizationToggleSafetyCheckIdentifier;
 extern NSString* const kCustomizationToggleTabResumptionIdentifier;
 extern NSString* const kCustomizationToggleShopCardPriceTrackingIdentifier;
@@ -101,7 +100,6 @@ enum class CustomizationToggleType : NSInteger {
 
   // Magic Stack page toggles.
   kTips,
-  kSetUpList,
   kSafetyCheck,
   kTapResumption,
   kShopCard,
