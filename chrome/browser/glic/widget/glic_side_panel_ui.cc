@@ -134,31 +134,8 @@ void GlicSidePanelUi::ClosePanel() {
 
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
-  return GlicInactiveSidePanelUi::From(*this, tab_);
-}
-
-void GlicSidePanelUi::TakeScreenshot(
-    ui::GrabSnapshotImageCallback callback) const {
-  content::WebContents* web_contents = delegate_->host().webui_contents();
-  if (!web_contents) {
-    std::move(callback).Run(gfx::Image());
-    return;
-  }
-
-  content::RenderWidgetHostView* render_widget_host_view =
-      web_contents->GetRenderWidgetHostView();
-  if (!render_widget_host_view) {
-    std::move(callback).Run(gfx::Image());
-    return;
-  }
-
-  render_widget_host_view->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
-      base::BindOnce(
-          [](ui::GrabSnapshotImageCallback callback, const SkBitmap& bitmap) {
-            std::move(callback).Run(gfx::Image::CreateFrom1xBitmap(bitmap));
-          },
-          std::move(callback)));
+  return GlicInactiveSidePanelUi::CreateForVisibleTab(
+      tab_, delegate_->host().webui_contents());
 }
 
 }  // namespace glic

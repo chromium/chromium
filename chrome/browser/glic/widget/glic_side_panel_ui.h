@@ -59,8 +59,6 @@ class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
 
   void VisibilityChanged(bool visible);
 
-  void TakeScreenshot(ui::GrabSnapshotImageCallback callback) const;
-
  private:
   base::CallbackListSubscription panel_visibility_subscription_;
   std::unique_ptr<views::View> CreateView(Profile* profile);

@@ -11,19 +11,22 @@
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace glic {
+namespace content {
+class WebContents;
+}
 
-class GlicSidePanelUi;
+namespace glic {
 
 // A GlicUiEmbedder for inactive Glic instances. This will show a
 // blurred screenshot of the previously active UI.
 class GlicInactiveSidePanelUi : public GlicUiEmbedder {
  public:
-  static std::unique_ptr<GlicInactiveSidePanelUi> From(
-      const GlicSidePanelUi& active_ui,
+  static std::unique_ptr<GlicInactiveSidePanelUi> CreateForVisibleTab(
+      base::WeakPtr<tabs::TabInterface> tab,
+      content::WebContents* glic_webui_contents);
+  static std::unique_ptr<GlicInactiveSidePanelUi> CreateForBackgroundTab(
       base::WeakPtr<tabs::TabInterface> tab);
 
-  explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab);
   ~GlicInactiveSidePanelUi() override;
 
   // GlicUiEmbedder:
@@ -36,6 +39,8 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
   void VisibilityChanged(bool visible);
 
  private:
+  explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab);
+
   std::unique_ptr<views::View> CreateView(
       base::WeakPtr<tabs::TabInterface> tab);
 

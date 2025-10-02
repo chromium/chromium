@@ -455,8 +455,8 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
 void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
     tabs::TabInterface* tab) {
   auto& entry = BindTab(tab);
-  entry.embedder = std::make_unique<GlicInactiveSidePanelUi>(tab->GetWeakPtr());
-  entry.embedder->Show();
+  entry.embedder =
+      GlicInactiveSidePanelUi::CreateForBackgroundTab(tab->GetWeakPtr());
 }
 
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(

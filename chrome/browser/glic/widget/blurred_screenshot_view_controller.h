@@ -11,6 +11,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace views {
 class ImageView;
 }  // namespace views
@@ -31,6 +35,8 @@ class BlurredScreenshotViewController : public views::ViewObserver {
   // Creates and returns the view managed by this controller. The controller
   // retains a raw_ptr to the ImageView within the hierarchy to update it.
   std::unique_ptr<views::View> CreateView();
+
+  void CaptureScreenshot(content::WebContents* glic_webui_contents);
 
   // Sets the screenshot to be displayed. This will trigger the initial blur and
   // display of the image.

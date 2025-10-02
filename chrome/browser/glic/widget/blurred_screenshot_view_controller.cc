@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/widget/blurred_screenshot_view_controller.h"
 
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -48,6 +50,33 @@ std::unique_ptr<views::View> BlurredScreenshotViewController::CreateView() {
   container->AddChildView(std::move(image_view));
 
   return container;
+}
+
+void BlurredScreenshotViewController::CaptureScreenshot(
+    content::WebContents* glic_webui_contents) {
+  if (!glic_webui_contents) {
+    OnScreenshotCaptured(gfx::Image());
+    return;
+  }
+
+  content::RenderWidgetHostView* render_widget_host_view =
+      glic_webui_contents->GetRenderWidgetHostView();
+  if (!render_widget_host_view) {
+    OnScreenshotCaptured(gfx::Image());
+    return;
+  }
+
+  render_widget_host_view->CopyFromSurface(
+      gfx::Rect(), gfx::Size(),
+      base::BindOnce(
+          [](base::WeakPtr<BlurredScreenshotViewController> weak_ptr,
+             const SkBitmap& bitmap) {
+            if (weak_ptr) {
+              weak_ptr->OnScreenshotCaptured(
+                  gfx::Image::CreateFrom1xBitmap(bitmap));
+            }
+          },
+          GetWeakPtr()));
 }
 
 void BlurredScreenshotViewController::OnScreenshotCaptured(

@@ -14,18 +14,29 @@
 namespace glic {
 
 // static
-std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
-    const GlicSidePanelUi& active_ui,
-    base::WeakPtr<tabs::TabInterface> tab) {
+std::unique_ptr<GlicInactiveSidePanelUi>
+GlicInactiveSidePanelUi::CreateForVisibleTab(
+    base::WeakPtr<tabs::TabInterface> tab,
+    content::WebContents* glic_webui_contents) {
   // Using `new` to access a private constructor.
   auto inactive_side_panel = base::WrapUnique(new GlicInactiveSidePanelUi(tab));
   inactive_side_panel->VisibilityChanged(/*visible=*/true);
 
   // Capture screenshot asynchronously and update the inactive panel.
-  active_ui.TakeScreenshot(base::BindOnce(
-      &BlurredScreenshotViewController::OnScreenshotCaptured,
-      inactive_side_panel->blurred_screenshot_view_controller_.GetWeakPtr()));
+  inactive_side_panel->blurred_screenshot_view_controller_.CaptureScreenshot(
+      glic_webui_contents);
 
+  return inactive_side_panel;
+}
+
+// static
+std::unique_ptr<GlicInactiveSidePanelUi>
+GlicInactiveSidePanelUi::CreateForBackgroundTab(
+    base::WeakPtr<tabs::TabInterface> tab) {
+  // Using `new` to access a private constructor.
+  auto inactive_side_panel = base::WrapUnique(new GlicInactiveSidePanelUi(tab));
+  // Mark the side panel for showing next time the tab becomes active.
+  inactive_side_panel->Show();
   return inactive_side_panel;
 }
 
