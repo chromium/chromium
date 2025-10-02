@@ -19719,25 +19719,6 @@
             ]
         }
     ],
-    "ProtectedAudienceBidderUseBalancingThreadSelector": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeBidderUseBalancingThreadSelector"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceClickiness": [
         {
             "platforms": [
@@ -19867,25 +19848,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgePrepareBidderContextsInAdvance"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProtectedAudienceSellerSignalsRequestsOneAtATime": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeSellerSignalsRequestsOneAtATime"
                     ]
                 }
             ]
