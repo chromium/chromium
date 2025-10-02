@@ -1457,6 +1457,57 @@
       }
     ]
   },
+  "mac-m4-mini-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "-v",
+          "--browser=builder",
+          "--upload-results",
+          "--test-shard-map-filename=mac-m4-mini-perf_map.json",
+          "--ignore-benchmark-exit-code",
+          "--assert-gpu-compositing"
+        ],
+        "merge": {
+          "args": [
+            "--lightweight",
+            "--skip-perf",
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "cpu": "arm",
+            "mac_model": "Mac16,10",
+            "os": "Mac",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "Mac16,10_arm64-64-Apple_M4_apple m4_32768_APPLE SSD AP2048Z"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 25
+        },
+        "test": "performance_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "win-10-perf": {
     "isolated_scripts": [
       {

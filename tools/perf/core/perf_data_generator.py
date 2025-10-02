@@ -105,8 +105,7 @@ LIGHTWEIGHT_TESTERS = [
     'win-10-perf',
     'win-10_laptop_low_end-perf',
     'win-11-perf',
-    'mac-laptop_high_end-perf',
-    'mac-laptop_low_end-perf',
+    'mac-m4-mini-perf',
 ]
 
 UPLOAD_SKIA_JSON_BUILDERS = frozenset([
@@ -144,6 +143,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'mac-m1_mini_2020-perf-pgo',
     'mac-m2-pro-perf',
     'mac-m3-pro-perf',
+    'mac-m4-mini-perf',
     'win-10-processor-perf',
     'win-10_amd_laptop-perf',
     'win-10_laptop_low_end-processor-perf',
@@ -1114,6 +1114,26 @@ BUILDERS = {
             'chrome.tests.perf',
             'synthetic_product_name':
             'Mac15,3_arm64-64-Apple_M3_apple m3_8192_APPLE SSD AP0512Z',
+        },
+    },
+    'mac-m4-mini-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu': 'arm',
+            'mac_model': 'Mac16,10',
+            'os': 'Mac',
+            'pool': 'chrome.tests.perf',
+            'synthetic_product_name':
+                'Mac16,10_arm64-64-Apple_M4_apple m4_32768_APPLE SSD AP2048Z',
         },
     },
     'win-10_amd_laptop-perf': {
