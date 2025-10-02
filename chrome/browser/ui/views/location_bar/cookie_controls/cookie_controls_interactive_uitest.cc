@@ -891,8 +891,14 @@ class CookieControlsInteractiveUiTrackingProtectionTest
   }
 };
 
+// TODO(crbug.com/446769877): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateExceptionIncognitoAct DISABLED_CreateExceptionIncognitoAct
+#else
+#define MAYBE_CreateExceptionIncognitoAct CreateExceptionIncognitoAct
+#endif
 IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
-                       CreateExceptionIncognitoAct) {
+                       MAYBE_CreateExceptionIncognitoAct) {
   BlockThirdPartyCookies(GetParam());
   EnableFpProtection();
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
