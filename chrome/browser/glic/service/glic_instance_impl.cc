@@ -58,11 +58,15 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override {
+    if (!new_contents) {
+      return;
+    }
+
     tabs::TabInterface* tab_to_bind =
         tabs::TabInterface::GetFromContents(new_contents);
     Profile* new_tab_profile =
         tab_to_bind->GetBrowserWindowInterface()->GetProfile();
-    if (!tab_to_bind || new_tab_profile != instance_->profile()) {
+    if (new_tab_profile != instance_->profile()) {
       return;
     }
 
