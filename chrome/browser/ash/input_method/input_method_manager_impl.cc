@@ -19,6 +19,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -785,7 +786,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
       input_method_id, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   manager_->GetMigratedInputMethodIDs(&input_method_ids);
 
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = &manager_->local_state_.get();
   local_state->SetString(prefs::kHardwareKeyboardLayout,
                          base::JoinString(input_method_ids, ","));
 
@@ -812,7 +813,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault(
     // Prefer policy-set input methods.
     input_method_ids_to_be_enabled = GetAllowedInputMethodIds();
   } else {
-    PrefService* local_state = g_browser_process->local_state();
+    PrefService* local_state = &manager_->local_state_.get();
     CHECK(local_state);
 
     // If the preferred keyboard for the login screen has been saved, use it.
@@ -1062,12 +1063,14 @@ InputMethodManagerImpl::GetActiveIMEState() {
 }
 
 InputMethodManagerImpl::InputMethodManagerImpl(
+    PrefService* local_state,
     std::unique_ptr<InputMethodDelegate> delegate,
     std::unique_ptr<ComponentExtensionIMEManagerDelegate>
         component_extension_ime_manager_delegate,
     bool enable_extension_loading,
     std::unique_ptr<ImeKeyboard> ime_keyboard)
-    : delegate_(std::move(delegate)),
+    : local_state_(CHECK_DEREF(local_state)),
+      delegate_(std::move(delegate)),
       util_(delegate_.get()),
       keyboard_(std::move(ime_keyboard)),
       enable_extension_loading_(enable_extension_loading),
@@ -1309,7 +1312,6 @@ InputMethodManagerImpl::GetComponentExtensionIMEManager() {
 scoped_refptr<InputMethodManager::State> InputMethodManagerImpl::CreateNewState(
     Profile* profile) {
   // Enabled and current (active) IM should be set to owner/user's default.
-  PrefService* local_state = g_browser_process->local_state();
   PrefService* user_prefs = profile ? profile->GetPrefs() : nullptr;
   std::string initial_input_method_id;
   if (user_prefs) {
@@ -1318,7 +1320,7 @@ scoped_refptr<InputMethodManager::State> InputMethodManagerImpl::CreateNewState(
   }
   if (initial_input_method_id.empty()) {
     initial_input_method_id =
-        local_state->GetString(language_prefs::kPreferredKeyboardLayout);
+        local_state_->GetString(language_prefs::kPreferredKeyboardLayout);
   }
 
   const InputMethodDescriptor* descriptor =

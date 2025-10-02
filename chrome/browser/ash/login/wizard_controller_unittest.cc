@@ -202,7 +202,7 @@ class WizardControllerTestBase : public ::testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    input_method::Initialize();
+    input_method::Initialize(TestingBrowserProcess::GetGlobal()->local_state());
     AshTestHelper::InitParams params;
     params.start_session = false;
     params.local_state = TestingBrowserProcess::GetGlobal()->local_state();

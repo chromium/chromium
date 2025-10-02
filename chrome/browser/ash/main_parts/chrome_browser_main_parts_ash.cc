@@ -951,7 +951,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       *g_browser_process->local_state());
 
   // AccessibilityManager and SystemKeyEventListener use InputMethodManager.
-  input_method::Initialize();
+  input_method::Initialize(g_browser_process->local_state());
 
   // keyboard::KeyboardController initializes ChromeKeyboardUI which depends
   // on ChromeKeyboardControllerClient.
