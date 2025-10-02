@@ -273,7 +273,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       task_executor_->framebuffer_completeness_cache(), feature_info,
       /*progress_reporter=*/nullptr, task_executor_->gpu_feature_info(),
       task_executor_->discardable_manager(),
-      task_executor_->passthrough_discardable_manager(),
       task_executor_->shared_image_manager());
 
 #if BUILDFLAG(IS_MAC)

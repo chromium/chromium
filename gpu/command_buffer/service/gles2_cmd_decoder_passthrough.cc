@@ -30,7 +30,6 @@
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/passthrough_program_cache.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"

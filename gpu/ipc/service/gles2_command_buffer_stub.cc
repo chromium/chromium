@@ -93,7 +93,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       manager->framebuffer_completeness_cache(), feature_info,
       manager->watchdog() /* progress_reporter */, manager->gpu_feature_info(),
       manager->discardable_manager(),
-      manager->passthrough_discardable_manager(),
       manager->shared_image_manager());
 
   // If the `fail_if_major_perf_caveat` context creation attribute was true

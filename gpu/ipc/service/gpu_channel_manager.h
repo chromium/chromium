@@ -29,7 +29,6 @@
 #include "gpu/command_buffer/service/gr_cache_controller.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
@@ -146,9 +145,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
   ServiceDiscardableManager* discardable_manager() {
     return &discardable_manager_;
-  }
-  PassthroughDiscardableManager* passthrough_discardable_manager() {
-    return &passthrough_discardable_manager_;
   }
   gles2::Outputter* outputter();
   gles2::ProgramCache* program_cache();
@@ -334,7 +330,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   scoped_refptr<gl::GLSurface> default_offscreen_surface_;
   GpuFeatureInfo gpu_feature_info_;
   ServiceDiscardableManager discardable_manager_;
-  PassthroughDiscardableManager passthrough_discardable_manager_;
 #if BUILDFLAG(IS_ANDROID)
   // Last time we know the GPU was powered on. Global for tracking across all
   // transport surfaces.

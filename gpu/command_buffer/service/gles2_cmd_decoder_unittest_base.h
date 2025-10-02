@@ -32,7 +32,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/gles2_query_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
@@ -984,9 +983,6 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
 
   void DoGetIntegerv(GLenum pname, GLint* result, size_t num_results);
 
-  PassthroughDiscardableManager* passthrough_discardable_texture_manager() {
-    return &passthrough_discardable_manager_;
-  }
   ContextGroup* group() { return group_.get(); }
   FeatureInfo* feature_info() { return group_->feature_info(); }
 
@@ -1016,7 +1012,6 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
   ShaderTranslatorCache shader_translator_cache_;
   FramebufferCompletenessCache framebuffer_completeness_cache_;
   ServiceDiscardableManager discardable_manager_;
-  PassthroughDiscardableManager passthrough_discardable_manager_;
   SharedImageManager shared_image_manager_;
 
   scoped_refptr<gl::GLSurface> surface_;

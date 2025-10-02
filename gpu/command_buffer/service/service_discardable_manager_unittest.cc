@@ -80,7 +80,7 @@ class ServiceDiscardableManagerTest : public GpuServiceTest {
         /*shader_translator_cache=*/nullptr,
         /*framebuffer_completeness_cache=*/nullptr, feature_info_,
         /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
-        /*passthrough_discardable_manager=*/nullptr, &shared_image_manager_);
+        &shared_image_manager_);
     TestHelper::SetupContextGroupInitExpectations(
         gl_.get(), DisallowedFeatures(), "GL_EXT_framebuffer_object",
         "OpenGL ES 2.0", CONTEXT_TYPE_OPENGLES2);

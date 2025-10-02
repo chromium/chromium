@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -111,9 +110,6 @@ class GLManager : private GpuControl {
   ServiceDiscardableManager* discardable_manager() {
     return discardable_manager_.get();
   }
-  PassthroughDiscardableManager* passthrough_discardable_manager() {
-    return passthrough_discardable_manager_.get();
-  }
 
   const GpuDriverBugWorkarounds& workarounds() const;
   const gpu::GpuPreferences& gpu_preferences() const {
@@ -158,8 +154,6 @@ class GLManager : private GpuControl {
 
   gles2::TraceOutputter outputter_;
   std::unique_ptr<ServiceDiscardableManager> discardable_manager_;
-  std::unique_ptr<PassthroughDiscardableManager>
-      passthrough_discardable_manager_;
   std::unique_ptr<gles2::ShaderTranslatorCache> translator_cache_;
   gles2::FramebufferCompletenessCache completeness_cache_;
   scoped_refptr<gl::GLShareGroup> share_group_;

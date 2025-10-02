@@ -34,7 +34,6 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/raster_decoder.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -352,8 +351,6 @@ class CommandBufferSetup {
 #endif
     discardable_manager_ =
         std::make_unique<ServiceDiscardableManager>(gpu_preferences_);
-    passthrough_discardable_manager_ =
-        std::make_unique<PassthroughDiscardableManager>(gpu_preferences_);
 
     if (gpu_preferences_.use_passthrough_cmd_decoder)
       recreate_context_ = true;
@@ -458,8 +455,7 @@ class CommandBufferSetup {
             gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
             &completeness_cache_, decoder_feature_info,
             /*progress_reporter=*/nullptr, gpu_feature_info,
-            discardable_manager_.get(), passthrough_discardable_manager_.get(),
-            shared_image_manager_.get());
+            discardable_manager_.get(), shared_image_manager_.get());
     auto* context = context_.get();
     decoder_ = gles2::GLES2Decoder::Create(command_buffer_.get(),
                                            command_buffer_->service(),
@@ -647,8 +643,6 @@ class CommandBufferSetup {
   gles2::TraceOutputter outputter_;
   scoped_refptr<gl::GLShareGroup> share_group_;
   std::unique_ptr<ServiceDiscardableManager> discardable_manager_;
-  std::unique_ptr<PassthroughDiscardableManager>
-      passthrough_discardable_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
 

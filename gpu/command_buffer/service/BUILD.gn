@@ -203,8 +203,6 @@ target(link_target_type, "gles2_sources") {
     "memory_program_cache.h",
     "multi_draw_manager.cc",
     "multi_draw_manager.h",
-    "passthrough_discardable_manager.cc",
-    "passthrough_discardable_manager.h",
     "passthrough_program_cache.cc",
     "passthrough_program_cache.h",
     "program_cache.cc",

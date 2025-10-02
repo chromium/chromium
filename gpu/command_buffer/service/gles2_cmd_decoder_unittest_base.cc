@@ -215,7 +215,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       gpu_preferences_, memory_tracker_, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,
       /*progress_reporter=*/nullptr, gpu_feature_info, &discardable_manager_,
-      nullptr, &shared_image_manager_);
+      &shared_image_manager_);
 
   InSequence sequence;
 
@@ -2284,8 +2284,7 @@ GLES2DecoderPassthroughTestBase::GLES2DecoderPassthroughTestBase(
     : context_type_(context_type),
       gpu_preferences_(GenerateGpuPreferencesForPassthroughTests()),
       shader_translator_cache_(gpu_preferences_),
-      discardable_manager_(gpu_preferences_),
-      passthrough_discardable_manager_(gpu_preferences_) {}
+      discardable_manager_(gpu_preferences_) {}
 
 GLES2DecoderPassthroughTestBase::~GLES2DecoderPassthroughTestBase() = default;
 
@@ -2331,7 +2330,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       gpu_preferences_, /*memory_tracker=*/nullptr, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,
       /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
-      &passthrough_discardable_manager_, &shared_image_manager_);
+      &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));
   context_ = gl::init::CreateGLContext(
