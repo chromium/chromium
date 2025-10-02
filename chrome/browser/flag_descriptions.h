@@ -2564,9 +2564,10 @@ extern const char kWallpaperSearchSettingsVisibilityDescription[];
 extern const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[];
 extern const char
     kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription[];
+#endif
+
 extern const char kWebAuthnPasskeyUpgradeName[];
 extern const char kWebAuthnPasskeyUpgradeDescription[];
-#endif
 
 extern const char kWebAuthnImmediateGetName[];
 extern const char kWebAuthnImmediateGetDescription[];

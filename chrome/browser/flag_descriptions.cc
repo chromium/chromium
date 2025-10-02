@@ -4433,6 +4433,7 @@ const char kAutofillReintroduceHybridPasskeyDropdownItemName[] =
 const char kAutofillReintroduceHybridPasskeyDropdownItemDescription[] =
     "Reintroduces the hybrid passkey entry point to the Autofill dropdown "
     "menu.";
+#endif
 
 const char kWebAuthnPasskeyUpgradeName[] =
     "Enable automatic passkey upgrades in Google Password Manager";
@@ -4440,7 +4441,6 @@ const char kWebAuthnPasskeyUpgradeDescription[] =
     "Enable the WebAuthn Conditional Create feature and let websites "
     "automatically create passkeys in GPM if there is a matching password "
     "credential for the same user.";
-#endif
 
 const char kWebAuthnImmediateGetName[] =
     "Enable immediate mediation for WebAuthn get requests";
