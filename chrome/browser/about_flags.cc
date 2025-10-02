@@ -4536,6 +4536,54 @@ const FeatureEntry::FeatureParam kGlicWarmingShorterDelays[] = {
 const FeatureEntry::FeatureVariation kGlicWarmingVariations[] = {
     {"with shorter delays", kGlicWarmingShorterDelays,
      std::size(kGlicWarmingShorterDelays), nullptr}};
+
+const char kGlicEntrypointVariationsShowLabel[] =
+    "glic-entrypoint-variations-show-label";
+const char kGlicEntrypointVariationsAltIcon[] =
+    "glic-entrypoint-variations-alt-icon";
+const char kGlicEntrypointVariationsHighlightNudge[] =
+    "glic-entrypoint-variations-highlight-nudge";
+const FeatureEntry::FeatureParam kGlicEntrypointVariationsHighlightOnly[] = {
+    {kGlicEntrypointVariationsHighlightNudge, "true"},
+    {kGlicEntrypointVariationsAltIcon, "false"},
+    {kGlicEntrypointVariationsShowLabel, "false"},
+};
+const FeatureEntry::FeatureParam kGlicEntrypointVariationsLabelOnly[] = {
+    {kGlicEntrypointVariationsHighlightNudge, "false"},
+    {kGlicEntrypointVariationsAltIcon, "false"},
+    {kGlicEntrypointVariationsShowLabel, "true"},
+};
+const FeatureEntry::FeatureParam kGlicEntrypointVariationsLabelAndHighlight[] =
+    {
+        {kGlicEntrypointVariationsHighlightNudge, "true"},
+        {kGlicEntrypointVariationsAltIcon, "false"},
+        {kGlicEntrypointVariationsShowLabel, "true"},
+};
+const FeatureEntry::FeatureParam kGlicEntrypointVariationsLabelAndIcon[] = {
+    {kGlicEntrypointVariationsHighlightNudge, "false"},
+    {kGlicEntrypointVariationsAltIcon, "true"},
+    {kGlicEntrypointVariationsShowLabel, "true"},
+};
+const FeatureEntry::FeatureParam
+    kGlicEntrypointVariationsLabelAndIconAndHighlight[] = {
+        {kGlicEntrypointVariationsHighlightNudge, "true"},
+        {kGlicEntrypointVariationsAltIcon, "true"},
+        {kGlicEntrypointVariationsShowLabel, "true"},
+};
+
+const FeatureEntry::FeatureVariation kGlicEntrypointVariations[] = {
+    {"highlight nudge only", kGlicEntrypointVariationsHighlightOnly,
+     std::size(kGlicEntrypointVariationsHighlightOnly), nullptr},
+    {"label only", kGlicEntrypointVariationsLabelOnly,
+     std::size(kGlicEntrypointVariationsLabelOnly), nullptr},
+    {"label, highlight nudge", kGlicEntrypointVariationsLabelAndHighlight,
+     std::size(kGlicEntrypointVariationsLabelAndHighlight), nullptr},
+    {"label, alt icon", kGlicEntrypointVariationsLabelAndIcon,
+     std::size(kGlicEntrypointVariationsLabelAndIcon), nullptr},
+    {"label, icon, highlight nudge",
+     kGlicEntrypointVariationsLabelAndIconAndHighlight,
+     std::size(kGlicEntrypointVariationsLabelAndIconAndHighlight), nullptr},
+};
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
@@ -11824,6 +11872,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-fre-pre-warming", flag_descriptions::kGlicFreWarmingName,
      flag_descriptions::kGlicFreWarmingDescription, kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicFreWarming)},
+    {"glic-entrypoint-variations",
+     flag_descriptions::kGlicEntrypointVariationsName,
+     flag_descriptions::kGlicEntrypointVariationsDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicEntrypointVariations,
+                                    kGlicEntrypointVariations,
+                                    "GlicEntrypointVariations")},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
