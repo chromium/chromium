@@ -43,6 +43,7 @@ namespace web_app {
 class WebAppInstallManager;
 class WebAppProvider;
 class ApplyPendingManifestUpdateCommand;
+class ManifestSilentUpdateCommand;
 
 using HomeTabIconBitmaps = std::vector<SkBitmap>;
 using SquareSizeDip = int;
@@ -252,9 +253,14 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       base::PassKey<ApplyPendingManifestUpdateCommand>,
       OverwriteAppIconsFromPendingIconsCallback callback);
 
+  class DeletePendingPassKey {
+    friend class ApplyPendingManifestUpdateCommand;
+    friend class ManifestSilentUpdateCommand;
+    DeletePendingPassKey() = default;
+  };
   using DeletePendingIconDataCallback = base::OnceCallback<void(bool success)>;
   void DeletePendingIconData(const webapps::AppId& app_id,
-                             base::PassKey<ApplyPendingManifestUpdateCommand>,
+                             DeletePendingPassKey,
                              DeletePendingIconDataCallback callback);
 
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not

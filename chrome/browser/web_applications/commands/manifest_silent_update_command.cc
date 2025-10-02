@@ -162,6 +162,9 @@ std::ostream& operator<<(std::ostream& os,
     case ManifestSilentUpdateCommandStage::
         kWritingPendingUpdateIconBitmapsToDisk:
       return os << "kWritingPendingUpdateIconBitmapsToDisk";
+    case web_app::ManifestSilentUpdateCommandStage::
+        kDeletingPendingUpdateIconsFromDisk:
+      return os << "kDeletingPendingUpdateIconsFromDisk";
   }
 }
 
@@ -841,49 +844,118 @@ void ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfo(
   WritePendingUpdateInfoThenComplete(std::move(pending_update_info), result);
 }
 
-// TODO always call this to clear if it's not written
 void ManifestSilentUpdateCommand::WritePendingUpdateInfoThenComplete(
     std::optional<proto::PendingUpdateInfo> pending_update,
     ManifestSilentUpdateCheckResult result) {
   // Evaluate before `pending_update` is std::move'd.
-  bool has_pending_icons_to_write =
-      pending_update.has_value() && !pending_update->trusted_icons().empty();
-  {
-    web_app::ScopedRegistryUpdate update =
-        app_lock_->sync_bridge().BeginUpdate();
-    web_app::WebApp* app_to_update = update->UpdateApp(app_id_);
-    // Used to notify observers at the end of the command.
-    pending_updated_changed_ =
-        app_to_update->pending_update_info() != pending_update;
-    CHECK(app_to_update);
-    app_to_update->SetPendingUpdateInfo(std::move(pending_update));
-  }
-  if (!has_pending_icons_to_write) {
+  enum class IconOperation {
+    kNone,
+    kWriteIcons,
+    kDeleteIcons
+  } icon_operation = IconOperation::kNone;
+
+  const WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
+  CHECK(web_app);
+
+  // Used to notify observers at the end of the command.
+  pending_updated_changed_ = web_app->pending_update_info() != pending_update;
+  // Exit early if there is no change to the pending update info.
+  if (!pending_updated_changed_) {
     CompleteCommandAndSelfDestruct(FROM_HERE, result);
     return;
   }
-  CHECK(!pending_trusted_icon_bitmaps_.empty());
-  CHECK(!pending_manifest_icon_bitmaps_.empty());
 
-  // Write the pending trusted and pending manifest icon bitmaps to disk.
-  SetStage(
-      ManifestSilentUpdateCommandStage::kWritingPendingUpdateIconBitmapsToDisk);
-  app_lock_->icon_manager().WritePendingIconData(
-      app_id_, std::move(pending_trusted_icon_bitmaps_),
-      std::move(pending_manifest_icon_bitmaps_),
-      base::BindOnce(
-          [](ManifestSilentUpdateCheckResult result,
-             bool bitmaps_write_success) {
-            if (!bitmaps_write_success) {
-              return ManifestSilentUpdateCheckResult::
-                  kPendingIconWriteToDiskFailed;
-            }
-            return result;
-          },
-          result)
-          .Then(base::BindOnce(
-              &ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct,
-              GetWeakPtr(), FROM_HERE)));
+  // Determine the icon operation if the pending update info is changing.
+  bool new_pending_update_has_icons =
+      pending_update.has_value() && !pending_update->trusted_icons().empty();
+  bool old_pending_update_has_icons =
+      web_app->pending_update_info().has_value() &&
+      !web_app->pending_update_info()->trusted_icons().empty();
+  if (!new_pending_update_has_icons && old_pending_update_has_icons) {
+    icon_operation = IconOperation::kDeleteIcons;
+  } else if (new_pending_update_has_icons && pending_updated_changed_) {
+    icon_operation = IconOperation::kWriteIcons;
+  }
+
+  auto write_pending_update_info_to_db =
+      base::BindOnce(&ManifestSilentUpdateCommand::WritePendingUpdateToWebApp,
+                     GetWeakPtr(), std::move(pending_update));
+
+  // Handle any writing or deleting the pending update icons.
+  switch (icon_operation) {
+    case IconOperation::kNone:
+      std::move(write_pending_update_info_to_db).Run();
+      CompleteCommandAndSelfDestruct(FROM_HERE, result);
+      return;
+    case IconOperation::kDeleteIcons:
+      SetStage(ManifestSilentUpdateCommandStage::
+                   kDeletingPendingUpdateIconsFromDisk);
+      // To mitigate the impact of failure conditions for deletion (system is
+      // shut down mid-command, crash mid-command, failure of the operation,
+      // etc), first update the web app protobuf to ensure that it doesn't
+      // expect images that aren't actually on disk.
+      //
+      // The failure case would be that we don't clean up the images on disk,
+      // which is acceptable.
+      std::move(write_pending_update_info_to_db).Run();
+      app_lock_->icon_manager().DeletePendingIconData(
+          app_id_, WebAppIconManager::DeletePendingPassKey(),
+          base::BindOnce(
+              [](ManifestSilentUpdateCheckResult originaL_result,
+                 bool icon_operation_success) {
+                if (!icon_operation_success) {
+                  return ManifestSilentUpdateCheckResult::
+                      kPendingIconWriteToDiskFailed;
+                }
+                return originaL_result;
+              },
+              result)
+              .Then(base::BindOnce(
+                  &ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct,
+                  GetWeakPtr(), FROM_HERE)));
+      return;
+    case IconOperation::kWriteIcons:
+      SetStage(ManifestSilentUpdateCommandStage::
+                   kWritingPendingUpdateIconBitmapsToDisk);
+      CHECK(!pending_trusted_icon_bitmaps_.empty());
+      CHECK(!pending_manifest_icon_bitmaps_.empty());
+      // To mitigate the impact of failure conditions for writing icons (system
+      // is shut down mid-command, crash mid-command, failure of the operation,
+      // etc), first write the images before updating the web app.  If the icons
+      // fail to write, then do NOT write the pending update to the database.
+      //
+      // The failure case would be that some icons on disk end up being updated,
+      // but all expected images sizes are there. This is acceptable, and is
+      // corrected the next time the new manifest is seen (as the new urls are
+      // not saved).
+      app_lock_->icon_manager().WritePendingIconData(
+          app_id_, std::move(pending_trusted_icon_bitmaps_),
+          std::move(pending_manifest_icon_bitmaps_),
+          base::BindOnce(
+              [](ManifestSilentUpdateCheckResult original_result,
+                 base::OnceClosure write_callback,
+                 bool icon_operation_success) {
+                if (!icon_operation_success) {
+                  return ManifestSilentUpdateCheckResult::
+                      kPendingIconWriteToDiskFailed;
+                }
+                std::move(write_callback).Run();
+                return original_result;
+              },
+              result, std::move(write_pending_update_info_to_db))
+              .Then(base::BindOnce(
+                  &ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct,
+                  GetWeakPtr(), FROM_HERE)));
+      return;
+  }
+}
+
+void ManifestSilentUpdateCommand::WritePendingUpdateToWebApp(
+    std::optional<proto::PendingUpdateInfo> pending_update) {
+  web_app::ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id_);
+  CHECK(app_to_update);
+  app_to_update->SetPendingUpdateInfo(std::move(pending_update));
 }
 
 void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(

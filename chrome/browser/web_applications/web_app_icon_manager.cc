@@ -1813,7 +1813,7 @@ void WebAppIconManager::OverwriteAppIconsFromPendingIcons(
 
 void WebAppIconManager::DeletePendingIconData(
     const webapps::AppId& app_id,
-    base::PassKey<ApplyPendingManifestUpdateCommand>,
+    DeletePendingPassKey,
     DeletePendingIconDataCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::DeletePendingIconData");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

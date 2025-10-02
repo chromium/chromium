@@ -98,7 +98,7 @@ void ApplyPendingManifestUpdateCommand::ApplyPendingIconToWebApp(bool success) {
   // only happen after the web app has been updated and OS integration is
   // completed.
   lock_->icon_manager().DeletePendingIconData(
-      app_id_, PassKey(),
+      app_id_, WebAppIconManager::DeletePendingPassKey(),
       base::BindOnce([](bool success) {
         return success ? ApplyPendingManifestUpdateResult::
                              kIconChangeAppliedSuccessfully

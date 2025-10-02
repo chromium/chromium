@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -44,6 +45,7 @@ enum class ManifestSilentUpdateCommandStage {
   kComparingManifestData,
   kFinalizingSilentManifestChanges,
   kWritingPendingUpdateIconBitmapsToDisk,
+  kDeletingPendingUpdateIconsFromDisk
 };
 
 // This enum is recorded by UMA, the numeric values must not change.
@@ -138,6 +140,7 @@ class ManifestSilentUpdateCommand
     bool IsSecuritySensitiveChangesOnly() const;
     base::Value::Dict ToDict() const;
   };
+
   static WebAppComparison CompareWebApps(
       const WebApp& existing_web_app,
       const WebAppInstallInfo& new_install_info);
@@ -166,6 +169,9 @@ class ManifestSilentUpdateCommand
   void WritePendingUpdateInfoThenComplete(
       std::optional<proto::PendingUpdateInfo>,
       ManifestSilentUpdateCheckResult result);
+
+  void WritePendingUpdateToWebApp(
+      std::optional<proto::PendingUpdateInfo> pending_update);
 
   void CompleteCommandAndSelfDestruct(
       base::Location location,

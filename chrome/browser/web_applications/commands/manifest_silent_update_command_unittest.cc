@@ -780,9 +780,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   // Verify pending update icon bitmaps are not saved to disk.
   EXPECT_FALSE(
-      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
-  EXPECT_FALSE(file_utils().PathExists(
-      GetAppPendingManifestIconsDir(profile(), app_id)));
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_FALSE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
@@ -838,9 +838,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   // Verify pending update icon bitmaps are not saved to disk.
   EXPECT_FALSE(
-      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
-  EXPECT_FALSE(file_utils().PathExists(
-      GetAppPendingManifestIconsDir(profile(), app_id)));
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_FALSE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
@@ -899,9 +899,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   // Verify pending update icon bitmaps are written to disk.
   EXPECT_TRUE(
-      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
-  EXPECT_TRUE(file_utils().PathExists(
-      GetAppPendingManifestIconsDir(profile(), app_id)));
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_TRUE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
   SkBitmap disk_bitmap =
       LoadTestPNGAsBitmap(GetAppPendingTrustedIconsDir(profile(), app_id)
                               .Append(FILE_PATH_LITERAL("Icons/96.png")));
@@ -968,9 +968,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   // Verify pending update icon bitmaps are written to disk.
   EXPECT_TRUE(
-      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
-  EXPECT_TRUE(file_utils().PathExists(
-      GetAppPendingManifestIconsDir(profile(), app_id)));
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_TRUE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
   SkBitmap disk_bitmap =
       LoadTestPNGAsBitmap(GetAppPendingTrustedIconsDir(profile(), app_id)
                               .Append(FILE_PATH_LITERAL("Icons/96.png")));
@@ -1037,9 +1037,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   // Verify pending update icon bitmaps are written to disk.
   EXPECT_TRUE(
-      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
-  EXPECT_TRUE(file_utils().PathExists(
-      GetAppPendingManifestIconsDir(profile(), app_id)));
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_TRUE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
   SkBitmap disk_bitmap =
       LoadTestPNGAsBitmap(GetAppPendingTrustedIconsDir(profile(), app_id)
                               .Append(FILE_PATH_LITERAL("Icons/96.png")));
@@ -1301,6 +1301,43 @@ TEST_F(ManifestSilentUpdateCommandTest, UpdateThenBackToOriginal) {
             ManifestSilentUpdateCheckResult::kAppUpToDate);
   EXPECT_FALSE(product_icon_fetched);
   EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
+
+  EXPECT_FALSE(base::PathExists(
+      provider().icon_manager().GetAppPendingManifestIconDirForTesting(
+          app_id)));
+  EXPECT_FALSE(base::PathExists(
+      provider().icon_manager().GetAppPendingTrustedIconDirForTesting(app_id)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest, UpdateWithIconWriteFailure) {
+  // Have the silent update command triggered twice, where the second reverts
+  // back to the original state, which should clear the pending update info.
+
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  file_utils().SetRemainingDiskSpaceSize(0);
+
+  blink::Manifest::ImageResource second_icon;
+  second_icon.src = GURL("https://example2.com/path/def_icon.png");
+  second_icon.sizes = {{96, 96}};
+  second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  GetPageManifest()->icons = {second_icon};
+  SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  auto& second_icon_state = web_contents_manager().GetOrCreateIconState(
+      GURL("https://example2.com/path/def_icon.png"));
+  second_icon_state.bitmaps = {second_bitmap};
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
+
+  EXPECT_FALSE(base::PathExists(
+      provider().icon_manager().GetAppPendingManifestIconDirForTesting(
+          app_id)));
+  EXPECT_FALSE(base::PathExists(
+      provider().icon_manager().GetAppPendingTrustedIconDirForTesting(app_id)));
 }
 
 class ManifestSilentUpdateCommandExternalAppsTest
@@ -1424,9 +1461,9 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
 
   // Verify pending update icon bitmaps are not written to disk.
   EXPECT_FALSE(
-      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
-  EXPECT_FALSE(file_utils().PathExists(
-      GetAppPendingManifestIconsDir(profile(), app_id)));
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_FALSE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
             GURL("https://example2.com/path/def_icon.png"));
@@ -1478,9 +1515,9 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
 
   // Verify pending update icon bitmaps are not saved to disk.
   EXPECT_FALSE(
-      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
-  EXPECT_FALSE(file_utils().PathExists(
-      GetAppPendingManifestIconsDir(profile(), app_id)));
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_FALSE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
