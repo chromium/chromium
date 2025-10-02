@@ -24,13 +24,11 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kComponentExtensionKey[] =
     "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+uU63MD6T82Ldq5wjrDFn5mGmPnnnj"
     "WZBWxYXfpG4kVf0s+p24VkXwTXsxeI12bRm8/ft9sOq0XiLfgQEh5JrVUZqvFlaZYoS+g"
     "iZfUqzKFGMLa4uiSMDnvv+byxrqAepKz5G8XX/q5Wm5cvpdjwgiu9z9iM768xJy+Ca/G5"
     "qQwIDAQAB";
-#endif
 
 // The value set by the script
 // in chrome/test/data/extensions/test_resources_test/script.js.
@@ -91,9 +89,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TestResourcesLoad) {
   EXPECT_EQ(kSentinelValue, RetrieveSentinelValue(GetActiveWebContents()));
 }
 
-// TODO(crbug.com/356905053): Enable the tests for component extensions on
-// desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that resources from _test_resources work in component extensions
 // (which have a slightly different load path).
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
@@ -103,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       R"({
            "name": "Test Extension",
            "version": "0.1",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "key": "%s"
          })";
   test_dir.WriteManifest(
@@ -180,7 +175,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   EXPECT_EQ(URLPattern(URLPattern::SCHEME_ALL, test_domain2),
             *info2->matches.begin());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that resources from _test_resources can be loaded from different
 // directories. Though the default is chrome/test/data/extensions, a test class
