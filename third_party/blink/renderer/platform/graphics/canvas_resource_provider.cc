@@ -492,8 +492,7 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
   current_resource_has_write_access_ = false;
 }
 
-void CanvasResourceProviderSharedImage::WillDrawInternal(
-    bool write_to_local_texture) {
+void CanvasResourceProviderSharedImage::WillDrawInternal() {
   DCHECK(resource_);
 
   if (IsGpuContextLost()) {
@@ -554,23 +553,17 @@ void CanvasResourceProviderSharedImage::WillDrawInternal(
                           mode_ == SkSurface::kRetain_ContentChangeMode);
     mode_ = SkSurface::kRetain_ContentChangeMode;
   }
-
-  if (write_to_local_texture) {
-    EnsureWriteAccess();
-  } else {
-    EndWriteAccess();
-  }
-
-  if (resource()) {
-    resource()->WillDraw();
-  }
 }
 
 void CanvasResourceProviderSharedImage::WillDraw() {
   if (is_software_) {
     return;
   }
-  WillDrawInternal(true);
+  WillDrawInternal();
+  EnsureWriteAccess();
+  if (resource()) {
+    resource()->WillDraw();
+  }
 }
 
 bool CanvasResourceProviderSharedImage::WritePixels(
@@ -595,13 +588,21 @@ bool CanvasResourceProviderSharedImage::WritePixels(
   // actually intended here and either don't call the former (preserving
   // current behavior) or call resource()->GetClientSharedImage() rather than
   // the latter (if the current behavior is a bug).
-  WillDrawInternal(true);
+  WillDrawInternal();
+  EnsureWriteAccess();
+  if (resource()) {
+    resource()->WillDraw();
+  }
 
   // End the internal write access before calling WillDrawInternal(), which
   // has a precondition that there should be no current write access on the
   // resource.
   EndWriteAccess();
-  WillDrawInternal(false);
+  WillDrawInternal();
+  EndWriteAccess();
+  if (resource()) {
+    resource()->WillDraw();
+  }
 
   auto client_si = resource()->GetClientSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
@@ -635,7 +636,11 @@ bool CanvasResourceProviderSharedImage::OverwriteImage(
   }
 
   EndWriteAccess();
-  WillDrawInternal(false);
+  WillDrawInternal();
+  EndWriteAccess();
+  if (resource()) {
+    resource()->WillDraw();
+  }
 
   auto dst_client_si = resource()->GetClientSharedImage();
   if (!dst_client_si) {
@@ -784,7 +789,12 @@ CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
   EndWriteAccess();
 
   const CanvasResource* const original_resource = resource_.get();
-  WillDrawInternal(false);
+  WillDrawInternal();
+  EndWriteAccess();
+  if (resource()) {
+    resource()->WillDraw();
+  }
+
   if (was_copy_performed != nullptr) {
     *was_copy_performed = resource_.get() != original_resource;
   }
@@ -815,7 +825,11 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
     // conditional WillDraw(), but we are getting memory leak on CreatePattern
     // with it. There should be a better way to solve this.
     if (cached_snapshot_) {
-      WillDrawInternal(true);
+      WillDrawInternal();
+      EnsureWriteAccess();
+      if (resource()) {
+        resource()->WillDraw();
+      }
     }
   }
 
@@ -883,7 +897,12 @@ void CanvasResourceProviderSharedImage::RasterRecord(
     return;
   }
 
-  WillDrawInternal(true);
+  WillDrawInternal();
+  EnsureWriteAccess();
+  if (resource()) {
+    resource()->WillDraw();
+  }
+
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;
   AcceleratedRasterRecord(std::move(last_recording), needs_clear,

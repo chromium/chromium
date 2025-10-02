@@ -601,7 +601,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
   void EnsureWriteAccess();
   void EndWriteAccess();
-  void WillDrawInternal(bool write_to_local_texture);
+  void WillDrawInternal();
 
   void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
