@@ -16,6 +16,34 @@ package sync_pb;
 
 // Sync datatype representing a contextual task.
 message ContextualTaskSpecifics {
-  // TODO(crbug.com/445840788): In CL #2, add fields that you wish to sync, then
-  // update proto_visitors.h and potentially proto_enum_conversions.*.
+  // ID to uniquely identify the specifics proto.
+  optional string guid = 1;
+
+  oneof entity {
+    ContextualTask contextual_task = 2;
+    UrlResource url_resource = 3;
+  }
+
+  // A mechanism to identify the client version that wrote this specifics.
+  // Designed to aid business logic when reading newly added fields that
+  // didn't exist in older clients.
+  // The client version must be incremented whenever a new field is added to the
+  // specifics.
+  optional int32 version = 4;
+}
+
+message ContextualTask {
+  // Title of the task.
+  optional string title = 1;
+
+  // ID of the AI thread that is associated with the task.
+  optional string thread_id = 2;
+}
+
+message UrlResource {
+  // The GUID of its task.
+  optional string task_guid = 1;
+
+  // URL attached to the task.
+  optional string url = 2;
 }
