@@ -84,6 +84,8 @@ BASE_FEATURE(kEnumerateDevicesRequestAudioCapabilities,
 #endif
 );
 
+BASE_FEATURE(kDeviceChangeRequiresPermission, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 template <typename IDLResolvedType>
@@ -1149,7 +1151,8 @@ void MediaDevices::OnDevicesChanged(
 }
 
 void MediaDevices::MaybeFireDeviceChangeEvent(bool has_permission) {
-  if (has_permission) {
+  if (has_permission ||
+      !base::FeatureList::IsEnabled(kDeviceChangeRequiresPermission)) {
     ScheduleDispatchEvent(Event::Create(event_type_names::kDevicechange));
   }
 }
