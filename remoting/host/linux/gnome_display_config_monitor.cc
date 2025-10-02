@@ -93,8 +93,13 @@ void GnomeDisplayConfigMonitor::CallWithCurrentConfig() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(current_config_.has_value());
 
+  // Note about reentrancy: registered callbacks may potentially add more
+  // callbacks to the callback list, which is fine. Per documentation of
+  // CallbackListBase::Notify, callbacks are not pruned until the outermost
+  // iteration completes, so `schedule_call` in
+  // GnomeDisplayConfigMonitor::AddCallback will be false, and the Notify call
+  // will run all callbacks added during the iteration.
   callbacks_pending_current_config_.Notify(*current_config_);
-  DCHECK(callbacks_pending_current_config_.empty());
 }
 
 }  // namespace remoting
