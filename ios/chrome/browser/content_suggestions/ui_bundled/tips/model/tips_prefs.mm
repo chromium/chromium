@@ -15,8 +15,6 @@ const char kTipsInMagicStackDisabledPref[] = "tips_magic_stack.disabled";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kTipsInMagicStackDisabledPref, false);
-  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
-                                true);
 }
 
 bool IsTipsInMagicStackDisabled(PrefService* prefs) {

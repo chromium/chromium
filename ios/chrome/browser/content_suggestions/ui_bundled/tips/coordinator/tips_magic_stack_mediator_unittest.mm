@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -37,7 +38,8 @@ class TipsMagicStackMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     profile_ = std::move(builder).Build();
 
-    tips_prefs::RegisterPrefs(profile_pref_service_.registry());
+    profile_pref_service_.registry()->RegisterBooleanPref(
+        prefs::kHomeCustomizationMagicStackTipsEnabled, true);
 
     // Create a `TipsMagicStackMediator` with an initial unknown
     // `TipIdentifier`.

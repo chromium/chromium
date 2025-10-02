@@ -474,11 +474,12 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_tipsMediator];
   }
 
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
+  if (segmentation_platform::features::IsAppBundlePromoEphemeralCardEnabled() &&
+      !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
     _appBundlePromoMediator = [[AppBundlePromoMediator alloc]
         initWithAppStoreBundleService:AppStoreBundleServiceFactory::
-                                          GetForProfile(self.profile)];
+                                          GetForProfile(self.profile)
+                   profilePrefService:prefs];
     _appBundlePromoMediator.presentationAudience = self;
     [moduleMediators addObject:_appBundlePromoMediator];
   }

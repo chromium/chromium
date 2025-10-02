@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator/app_bundle_promo_mediator.h"
 
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/providers/app_store_bundle/test_app_store_bundle_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -19,10 +22,13 @@ class AppBundlePromoMediatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+    profile_pref_service_.registry()->RegisterBooleanPref(
+        prefs::kHomeCustomizationMagicStackTipsEnabled, true);
     TestAppStoreBundleService* app_store_bundle_service =
         new TestAppStoreBundleService();
     mediator_to_test_ = [[AppBundlePromoMediator alloc]
-        initWithAppStoreBundleService:app_store_bundle_service];
+        initWithAppStoreBundleService:app_store_bundle_service
+                   profilePrefService:&profile_pref_service_];
     EXPECT_NE(mediator_to_test_.config, nil);
     delegate_mock_ = OCMProtocolMock(@protocol(AppBundlePromoMediatorDelegate));
     presentation_audience_mock_ =
@@ -41,17 +47,26 @@ class AppBundlePromoMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   AppBundlePromoMediator* mediator_to_test_;
+  TestingPrefServiceSimple profile_pref_service_;
   id delegate_mock_;
   id presentation_audience_mock_;
 };
 
+// Tests that`-removeModule` is called in response to a pref change disabling
+// Chrome Tips cards.
+TEST_F(AppBundlePromoMediatorTest, TestDisableModule) {
+  OCMExpect(
+      [delegate_mock_ removeAppBundlePromoModuleWithCompletion:[OCMArg any]]);
+  profile_pref_service_.SetBoolean(
+      prefs::kHomeCustomizationMagicStackTipsEnabled, false);
+  EXPECT_OCMOCK_VERIFY(delegate_mock_);
+}
+
 // Tests that the mediator correctly calls the delegate to remove the module.
 TEST_F(AppBundlePromoMediatorTest, TestRemoveModule) {
-  ProceduralBlock completion = ^{
-  };
   OCMExpect(
-      [delegate_mock_ removeAppBundlePromoModuleWithCompletion:completion]);
-  [mediator_to_test_ removeModuleWithCompletion:completion];
+      [delegate_mock_ removeAppBundlePromoModuleWithCompletion:[OCMArg any]]);
+  [mediator_to_test_ removeModuleWithCompletion:[OCMArg any]];
   EXPECT_OCMOCK_VERIFY(delegate_mock_);
 }
 

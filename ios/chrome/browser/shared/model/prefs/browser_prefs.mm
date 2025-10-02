@@ -951,6 +951,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 true);
 
   // Registers the Magic Stack module visibility prefs.
+  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
+                                true);
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSetUpListEnabled, true);
   registry->RegisterBooleanPref(

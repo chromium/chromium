@@ -13,6 +13,7 @@
 @class AppBundlePromoConfig;
 enum class ContentSuggestionsModuleType;
 class AppStoreBundleService;
+class PrefService;
 
 // Handles App Bundle promo module events.
 @protocol AppBundlePromoMediatorDelegate
@@ -40,7 +41,11 @@ class AppStoreBundleService;
     presentationAudience;
 
 - (instancetype)initWithAppStoreBundleService:
-    (AppStoreBundleService*)appStoreBundleService;
+                    (AppStoreBundleService*)appStoreBundleService
+                           profilePrefService:(PrefService*)profilePrefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects this mediator.
 - (void)disconnect;

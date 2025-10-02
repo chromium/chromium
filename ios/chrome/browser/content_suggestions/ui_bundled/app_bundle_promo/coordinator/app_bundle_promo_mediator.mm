@@ -6,33 +6,69 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-@interface AppBundlePromoMediator () <AppBundlePromoAudience>
+@interface AppBundlePromoMediator () <AppBundlePromoAudience,
+                                      PrefObserverDelegate>
 
 @end
 
 @implementation AppBundlePromoMediator {
+  // The App Store Bundle service.
   raw_ptr<AppStoreBundleService> _appStoreBundleService;
+
+  // The profile Pref service.
+  raw_ptr<PrefService> _profilePrefService;
+
+  // Registrar for user Pref changes notifications.
+  PrefChangeRegistrar _profilePrefChangeRegistrar;
+
+  // Bridge to listen to Pref changes.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
 }
 
 - (instancetype)initWithAppStoreBundleService:
-    (AppStoreBundleService*)appStoreBundleService {
-  CHECK(appStoreBundleService);
+                    (AppStoreBundleService*)appStoreBundleService
+                           profilePrefService:(PrefService*)profilePrefService {
   if ((self = [super init])) {
+    CHECK(appStoreBundleService);
+    CHECK(profilePrefService);
     _appStoreBundleService = appStoreBundleService;
+    _profilePrefService = profilePrefService;
     self.config = [[AppBundlePromoConfig alloc] init];
     self.config.audience = self;
+
+    if (!_prefObserverBridge) {
+      _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+
+      _profilePrefChangeRegistrar.Init(profilePrefService);
+
+      _prefObserverBridge->ObserveChangesForPreference(
+          (prefs::kHomeCustomizationMagicStackTipsEnabled),
+          &_profilePrefChangeRegistrar);
+    }
   }
   return self;
 }
 
 - (void)disconnect {
   self.config = nil;
+  _appStoreBundleService = nil;
+
+  if (_prefObserverBridge) {
+    _profilePrefChangeRegistrar.RemoveAll();
+    _prefObserverBridge.reset();
+  }
+  _profilePrefService = nil;
 }
 
 - (void)removeModuleWithCompletion:(ProceduralBlock)completion {
@@ -49,6 +85,16 @@
   CHECK(_appStoreBundleService);
   _appStoreBundleService->PresentAppStoreBundlePromo(baseViewController,
                                                      completion);
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  CHECK(_profilePrefService);
+  CHECK_EQ(preferenceName, prefs::kHomeCustomizationMagicStackTipsEnabled);
+  if (tips_prefs::IsTipsInMagicStackDisabled(_profilePrefService)) {
+    [self.delegate removeAppBundlePromoModuleWithCompletion:nil];
+  }
 }
 
 @end

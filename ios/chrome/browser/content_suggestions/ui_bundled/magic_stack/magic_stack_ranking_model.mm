@@ -566,8 +566,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         segmentation_platform::processing::ProcessedValue::FromFloat(
             [self isLensEnabled]));
 
-    if (base::FeatureList::IsEnabled(
-            segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
+    if (segmentation_platform::features::
+            IsAppBundlePromoEphemeralCardEnabled()) {
       CHECK(_appStoreBundleService);
       inputContext->metadata_args.emplace(
           segmentation_platform::kAppBundleAppsInstalledCount,
@@ -653,8 +653,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       }
     } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule) {
-      if (base::FeatureList::IsEnabled(
-              segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
+      if (segmentation_platform::features::
+              IsAppBundlePromoEphemeralCardEnabled() &&
+          !tips_prefs::IsTipsInMagicStackDisabled(_prefService)) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kAppBundlePromo;
         card = _appBundlePromoMediator.config;
         break;
@@ -938,8 +939,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       }
       case ContentSuggestionsModuleType::kAppBundlePromo:
-        if (base::FeatureList::IsEnabled(segmentation_platform::features::
-                                             kAppBundlePromoEphemeralCard) &&
+        if (segmentation_platform::features::
+                IsAppBundlePromoEphemeralCardEnabled() &&
             _appBundlePromoMediator && _appBundlePromoMediator.config) {
           [magicStackOrder addObject:_appBundlePromoMediator.config];
         }

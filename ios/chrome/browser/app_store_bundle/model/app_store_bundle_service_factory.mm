@@ -31,8 +31,7 @@ AppStoreBundleServiceFactory::~AppStoreBundleServiceFactory() = default;
 std::unique_ptr<KeyedService>
 AppStoreBundleServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
+  if (segmentation_platform::features::IsAppBundlePromoEphemeralCardEnabled()) {
     return ios::provider::CreateAppStoreBundleService();
   }
   return nullptr;

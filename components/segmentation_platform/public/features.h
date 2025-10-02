@@ -205,6 +205,9 @@ extern const base::FeatureParam<int> kMaxAppBundlePromoImpressions;
 // device to have the card be shown.
 extern const base::FeatureParam<int> kMaxAppBundleAppsInstalled;
 
+// Whether the App Bundle promo module should be shown in the Magic Stack.
+bool IsAppBundlePromoEphemeralCardEnabled();
+
 // Feature flag to enable the ephemeral Default Browser card in the Magic Stack
 // on iOS.
 BASE_DECLARE_FEATURE(kDefaultBrowserMagicStackIos);
