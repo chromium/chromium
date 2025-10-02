@@ -9,8 +9,11 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace content {
 

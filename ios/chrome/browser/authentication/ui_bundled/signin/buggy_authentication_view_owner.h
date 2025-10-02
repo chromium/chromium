@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_BUGGY_AUTHENTICATION_VIEW_OWNER_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_BUGGY_AUTHENTICATION_VIEW_OWNER_H_
 
+#include <Foundation/Foundation.h>
+
 // Coordinators implementing this protocol may have the authentication view
 // directly displayed on top of `self.baseViewController`. This view is known to
 // disappear silently; See crbug.com/395959814. Any coordinator that start a

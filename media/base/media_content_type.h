@@ -5,8 +5,11 @@
 #ifndef MEDIA_BASE_MEDIA_CONTENT_TYPE_H_
 #define MEDIA_BASE_MEDIA_CONTENT_TYPE_H_
 
-#include "base/time/time.h"
 #include "media/base/media_export.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace media {
 
