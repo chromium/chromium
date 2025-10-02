@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Request interface: attribute isReloadNavigation
+  assert_true: The prototype object must have a property "isReloadNavigation" expected true got false
+[FAIL] Request interface: new Request('about:blank') must inherit property "isReloadNavigation" with the proper type
+  assert_inherits: property "isReloadNavigation" not found in prototype chain
+Harness: the test ran to completion.
+
