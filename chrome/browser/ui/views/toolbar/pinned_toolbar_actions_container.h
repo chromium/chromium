@@ -116,6 +116,10 @@ class PinnedToolbarActionsContainer
 
   const std::vector<actions::ActionId>& PinnedActionIds() const override;
 
+  base::WeakPtr<PinnedToolbarActionsContainer> GetWeakPtrForTesting() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class PinnedSidePanelInteractiveTest;
   friend class PinnedToolbarActionsContainerTest;

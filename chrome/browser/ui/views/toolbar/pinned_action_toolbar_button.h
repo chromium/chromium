@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -26,9 +27,10 @@ class PinnedActionToolbarButton : public ToolbarButton {
   METADATA_HEADER(PinnedActionToolbarButton, ToolbarButton)
 
  public:
-  PinnedActionToolbarButton(Browser* browser,
-                            actions::ActionId action_id,
-                            PinnedToolbarActionsContainer* container);
+  PinnedActionToolbarButton(
+      Browser* browser,
+      actions::ActionId action_id,
+      base::WeakPtr<PinnedToolbarActionsContainer> container);
   ~PinnedActionToolbarButton() override;
 
   actions::ActionId GetActionId() { return action_id_; }
@@ -106,7 +108,11 @@ class PinnedActionToolbarButton : public ToolbarButton {
   // is pinned or active. This is used in cases like when the recent download
   // button should be visible after a download.
   bool should_show_in_toolbar_ = false;
-  raw_ptr<PinnedToolbarActionsContainer> container_;
+
+  // Track the owning container using a weak pointer, because if this were a raw
+  // pointer, it would point to the wrong type during teardown (as child views
+  // aren't destructed until the `views::View` destructor).
+  base::WeakPtr<PinnedToolbarActionsContainer> container_;
 };
 
 class PinnedActionToolbarButtonActionViewInterface

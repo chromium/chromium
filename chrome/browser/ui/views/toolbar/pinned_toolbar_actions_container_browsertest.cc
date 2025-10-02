@@ -106,7 +106,7 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanBeCalledFromNewTabPage) {
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
-      browser(), actions::kActionCut, container());
+      browser(), actions::kActionCut, container()->GetWeakPtrForTesting());
   pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanBeCalledFromNonNewTabPage) {
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
-      browser(), actions::kActionCut, container());
+      browser(), actions::kActionCut, container()->GetWeakPtrForTesting());
   pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -142,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
       true));
   AddBlankTabAndShow(incognito_browser);
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
-      incognito_browser, actions::kActionCut, container());
+      incognito_browser, actions::kActionCut,
+      container()->GetWeakPtrForTesting());
   EXPECT_FALSE(pinned_button->menu_model()->IsEnabledAt(2));
 }
 

@@ -856,7 +856,7 @@ PinnedToolbarActionsContainer::CreateOrGetButtonForAction(
   }
 
   auto button = std::make_unique<PinnedActionToolbarButton>(
-      browser_view_->browser(), id, this);
+      browser_view_->browser(), id, weak_ptr_factory_.GetWeakPtr());
   action_view_controller_->CreateActionViewRelationship(
       button.get(), GetActionItemFor(id)->GetAsWeakPtr());
 

@@ -63,7 +63,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(
 PinnedActionToolbarButton::PinnedActionToolbarButton(
     Browser* browser,
     actions::ActionId action_id,
-    PinnedToolbarActionsContainer* container)
+    base::WeakPtr<PinnedToolbarActionsContainer> container)
     : ToolbarButton(
           PressedCallback(),
           std::make_unique<PinnedActionToolbarButtonMenuModel>(browser,
@@ -81,7 +81,7 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   SetProperty(views::kMarginsKey,
               gfx::Insets::TLBR(
                   0, 0, 0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
-  set_drag_controller(container);
+  set_drag_controller(container_.get());
   GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
@@ -181,6 +181,10 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
   // This makes sure the buttons are at least the toolbar button sized width.
   // The preferred size might be smaller when the button's icon is removed
   // during drag/drop.
+  if (!container_) {
+    // Want to avoid this ever getting called during teardown.
+    return gfx::Size();
+  }
   const gfx::Size toolbar_button_size = container_->GetDefaultButtonSize();
   const gfx::Size preferred_size =
       ToolbarButton::CalculatePreferredSize(available_size);
