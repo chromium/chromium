@@ -16500,6 +16500,29 @@
             ]
         }
     ],
+    "NtpRealboxNextDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CyclingPlaceholders": "true",
+                        "RealboxLayoutMode": "Tall"
+                    },
+                    "enable_features": [
+                        "NtpRealboxNext"
+                    ]
+                }
+            ]
+        }
+    ],
     "OcclusionCullingQuadSplitLimit": [
         {
             "platforms": [

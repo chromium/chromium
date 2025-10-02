@@ -562,10 +562,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      ntp_composebox::kShowComposeboxZps.Get());
   source->AddBoolean("composeboxShowTypedSuggest",
                      ntp_composebox::kShowComposeboxTypedSuggest.Get());
-  source->AddString(
-      "realboxLayoutMode",
-      ntp_composebox::RealboxLayoutModeToString(
-          ntp_composebox::kRealboxLayoutMode.Get()));
   source->AddBoolean("composeboxShowImageSuggest",
                      ntp_composebox::kShowComposeboxImageSuggestions.Get());
   source->AddBoolean("composeboxShowContextMenuDescription",
@@ -844,8 +840,7 @@ void NewTabPageUI::BindInterface(
   std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder;
   // Only create the composebox query controller and metrics recorder needed for
   // contextual search if realbox next is enabled.
-  if (ntp_composebox::kRealboxLayoutMode.Get() !=
-      ntp_composebox::RealboxLayoutMode::kDefault) {
+  if (ntp_realbox::IsNtpRealboxNextEnabled(profile_)) {
     query_controller = std::make_unique<ComposeboxQueryController>(
         IdentityManagerFactory::GetForProfile(profile_),
         g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
