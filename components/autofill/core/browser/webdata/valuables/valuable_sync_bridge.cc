@@ -219,11 +219,11 @@ bool ValuableSyncBridge::IsEntityDataValid(
     case sync_pb::AutofillValuableSpecifics::kFlightReservation:
       // TODO(crbug.com/436547381): Add stronger validation for flight
       // reservation.
-      return IsSyncWalletVehicleRegistrationsEnabled();
+      return IsSyncWalletFlightReservationsEnabled();
     case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
       // TODO(crbug.com/436547381): Add stronger validation for vehicle
       // registration.
-      return IsSyncWalletFlightReservationsEnabled();
+      return IsSyncWalletVehicleRegistrationsEnabled();
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Ignore new entry types that the client doesn't know about.
       return false;
