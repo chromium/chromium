@@ -808,6 +808,17 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_ALREADY_TRACKED_SUBTITLE" desc="Text for the subtitle string of the Parcel Tracking 'Package Already Tracked' infobar.">
         This package has already been tracked on Chromium.
       </message>
+      <message name="IDS_IOS_PASSKEY_ENROLLMENT_FOOTER_MESSAGE" desc="Message displayed at the bottom of the passkey enrollement welcome screen, but just over the primary action button. Lets the user know to which account the passkey they're creating will be saved in if they do to tap the primary action button and keep going with the enrollment process.">
+        This passkey will be saved to Password Manager for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_PASSKEY_ENROLLMENT_TITLE" desc="Title of the screen shown when the user needs to create their Password Manager pin to set up and use passkeys with their Google Account.">
+        Start saving passkeys with Password Manager
+      </message>
+      <message name="IDS_IOS_PASSKEY_PARTIAL_BOOTSTRAPPING_SUBTITLE" desc="Subtitle of the screen shown when the user needs to create their Password Manager pin to set up passkeys on their device.">
+        To keep your passkeys safe, you’ll first need to create a recovery PIN.
+
+        Passkeys are saved in Password Manager, which lets you use them in Chromium on any device.
+      </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE" desc="Title of the password bottom sheet. [iOS only]">
           Google Password Manager
       </message>
