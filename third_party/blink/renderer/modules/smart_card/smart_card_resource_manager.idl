@@ -11,6 +11,6 @@
   IsolatedContext
 ]
 interface SmartCardResourceManager {
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, MeasureAs=SmartCardEstablishContext, RaisesException]
   Promise<SmartCardContext> establishContext();
 };

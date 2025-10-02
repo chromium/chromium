@@ -4985,6 +4985,8 @@ enum WebFeature {
   kResolvedColumnRuleWidthWithNoneOrHiddenStyle = 5670,
   kResolvedOutlineWidthWithNoneOrHiddenStyle = 5671,
   kContextMenuEventDefaultPrevented = 5672,
+  kSmartCardEstablishContext = 5673,
+  kSmartCardConnect = 5674,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
