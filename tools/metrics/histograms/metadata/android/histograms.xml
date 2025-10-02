@@ -611,6 +611,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AssistContent.WebPage" units="BooleanSuccess"
+    expires_after="2026-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records whether a JSON string with ContentProvider URIs was attached to an
+    AssistContent object when assistant was invoked while ChromeActivity was in
+    the foreground.
+
+    Recorded when an assistant is invoked while viewing a non-incognito http/s
+    web page.
+  </summary>
+</histogram>
+
 <histogram name="Android.AssistContent.WebPageContentProvider.Events"
     enum="WebPageContentProviderEvent" expires_after="2026-03-08">
   <owner>salg@google.com</owner>
