@@ -78,12 +78,11 @@ constexpr char kPromoIconId[] = "#bodyIcon";
 constexpr char kSignInIconName[] = "account_circle";
 constexpr char kExtensionsIconName[] = "my_extensions";
 constexpr char kCustomizationIconName[] = "palette";
-constexpr int kLongSampleTextIds = IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS;
-// This can be any short string; it tests that the promo doesn't shrink if the
-// text doesn't fill the promo.
-constexpr int kShortSampleTextIds =
-    IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN;
-
+const std::u16string kShortPromoText = u"Short promo text";
+const std::u16string kLongPromoText =
+    u"This is a long promo text string that should cause the promo to grow "
+    "vertically, stretching the bounds of the promo; no text should be "
+    "truncated or harmed in the adjustment of this element's sizing";
 constexpr std::string_view kNtpURL = chrome::kChromeUINewTabURL;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpElementId);
@@ -97,6 +96,7 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMetricsRecordedEvent);
 struct NtpPromoUiTestParams {
   NtpBrowserPromoType promo_type = NtpBrowserPromoType::kNone;
   std::optional<int> individual_promos = std::nullopt;
+  bool long_text = false;
   ui::NativeTheme::PreferredColorScheme color_scheme =
       ui::NativeTheme::PreferredColorScheme::kLight;
   bool wide_screen = false;
@@ -107,6 +107,9 @@ struct NtpPromoUiTestParams {
     oss << promo_type;
     if (individual_promos.has_value()) {
       oss << "_" << individual_promos.value();
+    }
+    if (long_text) {
+      oss << "_long_text";
     }
     if (color_scheme == ui::NativeTheme::PreferredColorScheme::kDark) {
       oss << "_dark";
@@ -563,6 +566,13 @@ INSTANTIATE_TEST_SUITE_P(
             .individual_promos = 2,
         },
         {
+            // Tests that the individual promos match in height, despite
+            // lengthy text in one of the promos.
+            .promo_type = NtpBrowserPromoType::kSimple,
+            .individual_promos = 2,
+            .long_text = true,
+        },
+        {
             // Tests that the promos sit side-by-side.
             .promo_type = NtpBrowserPromoType::kSimple,
             .individual_promos = 2,
@@ -570,6 +580,10 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .promo_type = NtpBrowserPromoType::kSetupList,
+        },
+        {
+            .promo_type = NtpBrowserPromoType::kSetupList,
+            .long_text = true,
         },
         {
             .promo_type = NtpBrowserPromoType::kSetupList,
@@ -600,11 +614,22 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
     base::i18n::SetRTLForTesting(true);
   }
 
+  if (GetParam().long_text) {
+    // Override promo text to very long (and short) strings, to exercise the
+    // promos growing to fit (nor not shrinking unexpectedly).
+    auto& bundle = ui::ResourceBundle::GetSharedInstance();
+    bundle.OverrideLocaleStringResource(IDS_NTP_CUSTOMIZATION_PROMO,
+                                        kLongPromoText);
+    bundle.OverrideLocaleStringResource(IDS_NTP_EXTENSIONS_PROMO,
+                                        kShortPromoText);
+  }
+
   // Use fake promos to exercise pending/completed state and short/long text.
   ClearRegisteredPromos();
-  RegisterTestPromo("1", Eligibility::kEligible, kLongSampleTextIds);
-  RegisterTestPromo("2", Eligibility::kEligible, kShortSampleTextIds);
-  RegisterTestPromo("3", Eligibility::kCompleted, kLongSampleTextIds);
+  RegisterTestPromo("1", Eligibility::kEligible,
+                    IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS);
+  RegisterTestPromo("2", Eligibility::kEligible, IDS_NTP_CUSTOMIZATION_PROMO);
+  RegisterTestPromo("3", Eligibility::kCompleted, IDS_NTP_EXTENSIONS_PROMO);
 
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -615,5 +640,5 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
                               "Screenshots not captured on this platform."),
       ScreenshotWebUi(kNtpElementId, GetPromosPath(),
                       /*screenshot_name=*/std::string(),
-                      /*baseline_cl=*/"6896001"));
+                      /*baseline_cl=*/"6998053"));
 }

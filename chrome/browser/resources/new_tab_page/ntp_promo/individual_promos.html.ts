@@ -14,7 +14,9 @@ export function getHtml(this: IndividualPromosElement) {
     aria-label="${item.buttonText}"
   >
     <cr-icon id="bodyIcon" icon="ntp-promo:${item.iconName}"></cr-icon>
-    <p id="bodyText">${item.bodyText}</p>
+    <p id="bodyText" class=${this.eligiblePromos_.length > 1 ?
+       'multiplePromos' : 'singlePromo'}
+    >${item.bodyText}</p>
     <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
   </button>
   `)}
