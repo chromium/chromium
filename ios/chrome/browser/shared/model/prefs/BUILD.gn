@@ -115,7 +115,6 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check:prefs",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:prefs",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/tips/model",
     "//ios/chrome/browser/cross_platform_promos/model",
     "//ios/chrome/browser/download/model/auto_deletion",
     "//ios/chrome/browser/drive/model:policy",

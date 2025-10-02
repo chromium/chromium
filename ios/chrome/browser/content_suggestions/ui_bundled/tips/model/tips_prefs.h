@@ -10,12 +10,6 @@ class PrefService;
 
 namespace tips_prefs {
 
-// Pref that indicates whether the Tips module is disabled.
-extern const char kTipsInMagicStackDisabledPref[];
-
-// Registers the prefs associated with the Tips module.
-void RegisterPrefs(PrefRegistrySimple* registry);
-
 // Returns `true` if the Tips module is disabled.
 bool IsTipsInMagicStackDisabled(PrefService* prefs);
 

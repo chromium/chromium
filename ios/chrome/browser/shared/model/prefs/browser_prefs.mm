@@ -103,7 +103,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
@@ -217,6 +216,10 @@ inline constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
 constexpr char kGaiaCookieLastListAccountsData[] =
     "gaia_cookie.last_list_accounts_data";
 inline constexpr char kFRESourceTrial[] = "FileMetricsProviderFRESourceTrial";
+
+// Deprecated 10/2025
+inline constexpr char kTipsInMagicStackDisabledPref[] =
+    "tips_magic_stack.disabled";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -698,7 +701,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   RegisterPriceTrackingPromoPrefs(registry);
   regional_capabilities::prefs::RegisterProfilePrefs(registry);
   shop_card_prefs::RegisterPrefs(registry);
-  tips_prefs::RegisterPrefs(registry);
   RegisterVoiceSearchBrowserStatePrefs(registry);
   safe_browsing::RegisterProfilePrefs(registry);
   segmentation_platform::SegmentationPlatformService::RegisterProfilePrefs(
@@ -1099,6 +1101,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 0);
   registry->RegisterStringPref(kGaiaCookieLastListAccountsData, std::string());
   registry->RegisterStringPref(kFRESourceTrial, std::string());
+
+  // Deprecated 10/2025
+  registry->RegisterBooleanPref(kTipsInMagicStackDisabledPref, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1272,6 +1277,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kNtpShownBookmarksFolder);
   prefs->ClearPref(kGaiaCookieLastListAccountsData);
   prefs->ClearPref(kFRESourceTrial);
+
+  // Added 10/2025
+  prefs->ClearPref(kTipsInMagicStackDisabledPref);
 }
 
 void MigrateObsoleteUserDefault() {

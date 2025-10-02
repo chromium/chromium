@@ -11,12 +11,6 @@
 
 namespace tips_prefs {
 
-const char kTipsInMagicStackDisabledPref[] = "tips_magic_stack.disabled";
-
-void RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kTipsInMagicStackDisabledPref, false);
-}
-
 bool IsTipsInMagicStackDisabled(PrefService* prefs) {
   return !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
 }
