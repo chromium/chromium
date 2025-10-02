@@ -1105,7 +1105,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     return;
   }
   auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();
-  memcpy(buffer_access->data(), data, length);
+  memcpy(buffer_access->data(), data,
+         std::min(static_cast<size_t>(length), buffer_access->mapped_size()));
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       format.frame_size, format.frame_rate, PIXEL_FORMAT_Y16);
   OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,
