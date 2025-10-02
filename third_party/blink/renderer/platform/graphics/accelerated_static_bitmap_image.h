@@ -138,13 +138,15 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   void CreateImageFromMailboxIfNeeded();
 
+  // Fields must be safe to destroy on any thread or invalidtaed in Transfer().
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   SkAlphaType alpha_type_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;
 
-  // The context this TextureBacking is bound to.
+  // The context `texture_backing_` is bound to. This and `texture_backing_` are
+  // thread-affine state that must be invalidated in Transfer().
   base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       skia_context_provider_wrapper_;
   sk_sp<MailboxTextureBacking> texture_backing_;

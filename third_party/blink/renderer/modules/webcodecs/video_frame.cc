@@ -818,6 +818,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     auto* sbi = static_cast<StaticBitmapImage*>(image.get());
 
+    // We don't know which thread the video frame might end up on, so Transfer()
+    // the image so that it doesn't hold on to any thread-affine state.
+    sbi->Transfer();
+
     // The sync token needs to be updated when |frame| is released, but
     // AcceleratedStaticBitmapImage::UpdateSyncToken() is not thread-safe.
     auto release_cb = base::BindPostTaskToCurrentDefault(
