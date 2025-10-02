@@ -369,9 +369,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   friend class FlushForImageListener;
 
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
-  // Notifies before any drawing will be done on the resource used by this
-  // provider.
-  virtual void WillDraw() {}
 
   size_t ComputeSurfaceSize() const;
   size_t GetSize() const override;
@@ -570,7 +567,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void WillDraw() final;
+  // Notifies before any unaccelerated drawing will be done on the resource used
+  // by this provider.
+  void WillDrawUnaccelerated();
 
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();

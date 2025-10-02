@@ -555,11 +555,13 @@ void CanvasResourceProviderSharedImage::WillDrawInternal() {
   }
 }
 
-void CanvasResourceProviderSharedImage::WillDraw() {
+void CanvasResourceProviderSharedImage::WillDrawUnaccelerated() {
+  CHECK(!IsAccelerated());
+
   if (is_software_) {
     return;
   }
-  WillDrawInternal();
+  cached_snapshot_.reset();
   EnsureWriteAccess();
 }
 
@@ -570,6 +572,7 @@ bool CanvasResourceProviderSharedImage::WritePixels(
     int x,
     int y) {
   if (!is_accelerated_) {
+    WillDrawUnaccelerated();
     return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
   }
 
@@ -860,6 +863,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
 void CanvasResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
+    WillDrawUnaccelerated();
     UnacceleratedRasterRecord(std::move(last_recording));
     return;
   }
@@ -990,7 +994,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   bool IsSingleBuffered() const override { return true; }
 
  private:
-  void WillDraw() override {
+  void WillDraw() {
     needs_present_ = true;
     needs_flush_ = true;
   }
@@ -1608,8 +1612,6 @@ void CanvasResourceProvider::NotifyWillTransfer(
 
 void CanvasResourceProvider::EnsureSkiaCanvas() {
   CHECK(!IsAccelerated());
-
-  WillDraw();
 
   if (skia_canvas_)
     return;
