@@ -746,6 +746,13 @@
       },
     },
   },
+  'non-gce': {
+    'swarming': {
+      'dimensions': {
+        'gce': '0',
+      },
+    },
+  },
   'nvidia_geforce_gtx_1660': {
     'swarming': {
       'dimensions': {

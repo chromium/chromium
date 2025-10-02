@@ -629,6 +629,24 @@ targets.legacy_matrix_compound_suite(
                 "gce",
             ],
         ),
+        "ondevice_model_benchmark_tests_gpu_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        "ondevice_model_benchmark_tests_gpu_no_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        "ondevice_model_benchmark_tests_cpu_no_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
     },
 )
 
@@ -690,6 +708,24 @@ targets.legacy_matrix_compound_suite(
                 "AMD_RADEON_RX_5500_XT",
                 "INTEL_UHD_630_OR_770",
                 "NVIDIA_GEFORCE_GTX_1660",
+            ],
+        ),
+        "ondevice_model_benchmark_tests_gpu_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        "ondevice_model_benchmark_tests_gpu_no_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        "ondevice_model_benchmark_tests_cpu_no_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
             ],
         ),
     },

@@ -2939,6 +2939,24 @@
           'gce',
         ],
       },
+      'ondevice_model_benchmark_tests_cpu_no_submodel_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
+      'ondevice_model_benchmark_tests_gpu_no_submodel_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
+      'ondevice_model_benchmark_tests_gpu_submodel_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
       'ondevice_stability_tests_suite': {
         'variants': [
           'NVIDIA_GEFORCE_GTX_1660',
@@ -2988,6 +3006,24 @@
       'model_validation_tests_suite': {
         'mixins': [
           'gce',
+        ],
+      },
+      'ondevice_model_benchmark_tests_cpu_no_submodel_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
+      'ondevice_model_benchmark_tests_gpu_no_submodel_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
+      'ondevice_model_benchmark_tests_gpu_submodel_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
         ],
       },
       'ondevice_stability_tests_suite': {

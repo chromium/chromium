@@ -888,6 +888,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "non-gce",
+    swarming = targets.swarming(
+        dimensions = {
+            "gce": "0",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu_gtest_common_args",
     android_args = [
         targets.magic_args.ANDROID_DESKTOP_FORCE_MAIN_USER,
