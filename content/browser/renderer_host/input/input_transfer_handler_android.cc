@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/input/input_transfer_handler_android.h"
 
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -125,7 +126,7 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     TRACE_EVENT_INSTANT("input,input.scrolling", "DownTimeAfterEventTime");
     EmitTransferResultHistogramAndTraceEvent(
         TransferInputToVizResult::kDownTimeAfterEventTime);
-    if (active_touch_sequence_on_viz) {
+    if (!NewPointersGoDirectlyToViz() && active_touch_sequence_on_viz) {
       OnStartDroppingSequence(
           event,
           InputOnVizSequenceDroppedReason::kActiveSeqOnVizAbnormalDownTime);
@@ -169,6 +170,10 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
   if (transfer_result == TransferInputToVizResult::kSuccessfullyTransferred) {
     OnTouchTransferredSuccessfully(event, /*browser_would_have_handled=*/false);
     return true;
+  }
+
+  if (NewPointersGoDirectlyToViz()) {
+    return false;
   }
 
   if (!active_touch_sequence_on_viz) {
@@ -232,6 +237,38 @@ bool InputTransferHandlerAndroid::IsTouchSequencePotentiallyActiveOnViz()
 
 void InputTransferHandlerAndroid::OnTouchEnd(base::TimeTicks event_time) {
   last_seen_touch_end_ts_ = event_time;
+}
+
+bool InputTransferHandlerAndroid::NewPointersGoDirectlyToViz() {
+  using base::android::android_info::SdkVersion;
+  if (base::android::android_info::sdk_int() ==
+      base::android::android_info::SDK_VERSION_V) {
+    // Some of the earlier Android 15 versions might have new pointer downs
+    // going to Viz, but we are defensively saying `false` here since there's no
+    // reliable way to check this which builds of Android 15 have new pointers
+    // going to Viz.
+    return false;
+  }
+
+  // The fix referred to in comments below: http://ag/32215438.
+  if (base::android::android_info::sdk_int() ==
+      base::android::android_info::SDK_VERSION_BAKLAVA) {
+    if (base::android::android_info::manufacturer() == "Google") {
+      // All Google's Android 16 devices have the fix available and pointer
+      // downs go directly to Viz.
+      return true;
+    } else {
+      // Some of OEMs might not have picked up the fix which was done quite late
+      // in the release cycle of Android 16.
+      return false;
+    }
+  }
+
+  CHECK_GT(base::android::android_info::sdk_int(),
+           base::android::android_info::SDK_VERSION_BAKLAVA);
+  // On Android 17+, the fix is always available, the pointer downs from the
+  // same touch sequence will go to Viz.
+  return true;
 }
 
 void InputTransferHandlerAndroid::OnStartDroppingSequence(

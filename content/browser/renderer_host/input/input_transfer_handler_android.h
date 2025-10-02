@@ -82,6 +82,8 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
 
   void OnTouchEnd(base::TimeTicks event_time);
 
+  static bool NewPointersGoDirectlyToViz();
+
   // Virtual for testing.
   virtual bool IsTouchSequencePotentiallyActiveOnViz() const;
 
