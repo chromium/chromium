@@ -140,9 +140,20 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     }
     for (AutofillEditProfileField* nonAddressField in
          [_delegate inputNonAddressFields]) {
+      if ([self isNameAndEmailProfile] &&
+          ![[_delegate fieldTypeToTypeName:autofill::FieldType::NAME_FULL]
+              isEqualToString:nonAddressField.fieldType]) {
+        continue;
+      }
       [model addItem:[self profileEditItem:nonAddressField.fieldLabel
                                  fieldType:nonAddressField.fieldType]
           toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
+    }
+
+    if ([self isNameAndEmailProfile]) {
+      [model addItem:[self emailItem]
+          toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
+      return;
     }
   }
 
@@ -268,7 +279,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   CHECK(_addressContext == SaveAddressContext::kEditingSavedAddress);
   TableViewModel* model = _controller.tableViewModel;
 
-  if ([self isAccountProfile]) {
+  if ([self isAccountProfile] || [self isNameAndEmailProfile]) {
     CHECK(_userEmail);
     [model
         addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFooter];
@@ -673,7 +684,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the footer message.
 - (NSString*)footerMessage {
   CHECK([_userEmail length] > 0);
-  if ([self isHomeOrWorkProfile] &&
+  if (([self isHomeOrWorkProfile] || [self isNameAndEmailProfile]) &&
       _addressContext == SaveAddressContext::kEditingSavedAddress) {
     return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER,
                                    base::SysNSStringToUTF16(_userEmail));
@@ -812,6 +823,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (BOOL)isHomeOrWorkProfile {
   return _recordType == autofill::AutofillProfile::RecordType::kAccountHome ||
          _recordType == autofill::AutofillProfile::RecordType::kAccountWork;
+}
+
+- (BOOL)isNameAndEmailProfile {
+  return _recordType ==
+         autofill::AutofillProfile::RecordType::kAccountNameEmail;
 }
 
 @end

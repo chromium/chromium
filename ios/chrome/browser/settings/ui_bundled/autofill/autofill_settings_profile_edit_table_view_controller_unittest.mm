@@ -12,8 +12,10 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
@@ -48,65 +50,50 @@ class AutofillSettingsProfileEditTableViewControllerTest
         std::make_unique<autofill::TestPersonalDataManager>();
     profile_ = std::make_unique<autofill::AutofillProfile>(
         autofill::test::GetFullProfile2());
+    delegate_mock_ = [OCMockObject
+        mockForProtocol:
+            @protocol(AutofillSettingsProfileEditTableViewControllerDelegate)];
+  }
+
+  void SetUpWithLegacyProfile() {
+    [[[delegate_mock_ stub]
+        andReturnValue:OCMOCK_VALUE(autofill::AutofillProfile::RecordType::
+                                        kLocalOrSyncable)] accountRecordType];
+    CreateController();
+    CheckController();
+  }
+
+  void SetUpWithAccountProfile() {
+    [[[delegate_mock_ stub]
+        andReturnValue:OCMOCK_VALUE(
+                           autofill::AutofillProfile::RecordType::kAccount)]
+        accountRecordType];
+    test_api(*profile_).set_record_type(
+        autofill::AutofillProfile::RecordType::kAccount);
+    CreateController();
+    CheckController();
+  }
+
+  void SetupWithNameEmailProfile() {
+    [[[delegate_mock_ stub]
+        andReturnValue:OCMOCK_VALUE(autofill::AutofillProfile::RecordType::
+                                        kAccountNameEmail)] accountRecordType];
+    test_api(*profile_).set_record_type(
+        autofill::AutofillProfile::RecordType::kAccountNameEmail);
+    CreateController();
+    CheckController();
+  }
+
+  LegacyChromeTableViewController* InstantiateController() override {
     autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
            initWithDelegate:nil
         personalDataManager:personal_data_manager_.get()
             autofillProfile:profile_.get()
           isMigrationPrompt:NO
            addManualAddress:NO];
-    CreateController();
-    CheckController();
-
-    // Reload the model so that the changes are propogated.
-    [controller() loadModel];
-  }
-
-  LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
-                            initWithDelegate:nil
-            shouldShowMigrateToAccountButton:NO
-                                   userEmail:nil];
-    autofill_profile_edit_table_view_controller_ =
-        [[AutofillProfileEditTableViewController alloc]
-            initWithDelegate:autofill_profile_edit_mediator_
-                   userEmail:nil
-                  controller:viewController
-              addressContext:SaveAddressContext::kEditingSavedAddress];
-    viewController.handler = autofill_profile_edit_table_view_controller_;
-    autofill_profile_edit_mediator_.consumer =
-        autofill_profile_edit_table_view_controller_;
-    return viewController;
-  }
-
-  AutofillProfileEditTableViewController*
-      autofill_profile_edit_table_view_controller_;
-  AutofillProfileEditMediator* autofill_profile_edit_mediator_;
-  std::unique_ptr<autofill::AutofillProfile> profile_;
-  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
-  id delegate_mock_;
-};
-
-// Default test case of no addresses or credit cards.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
-  TableViewModel* model = [controller() tableViewModel];
-
-  EXPECT_EQ(3, [model numberOfSections]);
-  EXPECT_EQ(2, [model numberOfItemsInSection:0]);
-  EXPECT_EQ(5, [model numberOfItemsInSection:1]);
-  EXPECT_EQ(2, [model numberOfItemsInSection:2]);
-}
-
-// TODO(crbug.com/40233297): Merge into main test fixture.
-class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
-    : public AutofillSettingsProfileEditTableViewControllerTest {
- protected:
-  AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled() {}
-
-  LegacyChromeTableViewController* InstantiateController() override {
-    AutofillSettingsProfileEditTableViewController* viewController =
-        [[AutofillSettingsProfileEditTableViewController alloc]
-                            initWithDelegate:nil
+                            initWithDelegate:delegate_mock_
             shouldShowMigrateToAccountButton:NO
                                    userEmail:base::SysUTF16ToNSString(
                                                  kTestSyncingEmail)];
@@ -120,14 +107,6 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;
     return viewController;
-  }
-
-  void CreateAccountProfile() {
-    [autofill_profile_edit_table_view_controller_
-        setProfileRecordType:autofill::AutofillProfile::RecordType::kAccount];
-
-    // Reload the model so that the changes are propogated.
-    [controller() loadModel];
   }
 
   // Tests the data in the address section.
@@ -181,28 +160,49 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
       indexOfItemInSection++;
     }
   }
+
+  AutofillProfileEditTableViewController*
+      autofill_profile_edit_table_view_controller_;
+  AutofillProfileEditMediator* autofill_profile_edit_mediator_;
+  std::unique_ptr<autofill::AutofillProfile> profile_;
+  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
+  id delegate_mock_;
 };
 
-// Adding an account address results in an address section.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       TestAccountProfileView) {
-  CreateAccountProfile();
-  EXPECT_EQ(4, [[controller() tableViewModel] numberOfSections]);
-  TestViewData();
-}
-
 // Adding an address results in an address section.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       TestProfileView) {
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestProfileView) {
+  SetUpWithLegacyProfile();
   EXPECT_EQ(3, [[controller() tableViewModel] numberOfSections]);
   TestViewData();
 }
 
+// Adding an account address results in an address section.
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest,
+       TestAccountProfileView) {
+  SetUpWithAccountProfile();
+  EXPECT_EQ(4, [[controller() tableViewModel] numberOfSections]);
+  TestViewData();
+}
+
+// Tests the sections and items in the address view for name and email profile.
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest,
+       TestNameEmailProfileView) {
+  SetupWithNameEmailProfile();
+  TableViewModel* model = [controller() tableViewModel];
+  EXPECT_EQ(3, [[controller() tableViewModel] numberOfSections]);
+  EXPECT_EQ(2, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(1, [model numberOfItemsInSection:1]);
+  NSString* expected_footer_text = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER, kTestSyncingEmail);
+  TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:2];
+  EXPECT_NSEQ(expected_footer_text, footer.text);
+}
+
 // Tests the footer text of the view controller for the address profiles with
 // source kAccount.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest,
        TestFooterTextWithEmail) {
-  CreateAccountProfile();
+  SetUpWithAccountProfile();
   TableViewModel* model = [controller() tableViewModel];
 
   NSString* expected_footer_text = l10n_util::GetNSStringF(
@@ -215,6 +215,12 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
     : public AutofillSettingsProfileEditTableViewControllerTest {
  protected:
   LegacyChromeTableViewController* InstantiateController() override {
+    autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
+           initWithDelegate:nil
+        personalDataManager:personal_data_manager_.get()
+            autofillProfile:profile_.get()
+          isMigrationPrompt:NO
+           addManualAddress:NO];
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil

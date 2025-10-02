@@ -74,10 +74,17 @@ const CGFloat kSymbolSize = 22;
     _userEmail = userEmail;
     _editIncompleteProfileForAccountView = NO;
     _migrationToAccountSectionWasClicked = NO;
-    autofill::AutofillProfile::RecordType type = [_delegate accountRecordType];
-    _showEditButtonAsCell =
-        (type == autofill::AutofillProfile::RecordType::kAccountHome ||
-         type == autofill::AutofillProfile::RecordType::kAccountWork);
+    switch ([_delegate accountRecordType]) {
+      case autofill::AutofillProfile::RecordType::kAccountHome:
+      case autofill::AutofillProfile::RecordType::kAccountWork:
+      case autofill::AutofillProfile::RecordType::kAccountNameEmail:
+        _showEditButtonAsCell = YES;
+        break;
+      case autofill::AutofillProfile::RecordType::kAccount:
+      case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
+        _showEditButtonAsCell = NO;
+        break;
+    }
   }
 
   return self;
@@ -256,27 +263,26 @@ const CGFloat kSymbolSize = 22;
     return;
   }
   if (itemType == AutofillProfileDetailsItemTypeEdit) {
-    autofill::AutofillProfile::RecordType type = [_delegate accountRecordType];
-    if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
-      [self.applicationHandler closePresentedViewsAndOpenURL:command];
-      return;
+    std::string URL;
+    switch ([_delegate accountRecordType]) {
+      case autofill::AutofillProfile::RecordType::kAccountHome:
+        URL = kGoogleMyAccountHomeAddressURL;
+        break;
+      case autofill::AutofillProfile::RecordType::kAccountWork:
+        URL = kGoogleMyAccountWorkAddressURL;
+        break;
+      case autofill::AutofillProfile::RecordType::kAccountNameEmail:
+        URL = kGoogleAccountNameEmailAddressEditURL;
+        break;
+      case autofill::AutofillProfile::RecordType::kAccount:
+      case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
+        NOTREACHED();
     }
 
-    if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
-      [self.applicationHandler closePresentedViewsAndOpenURL:command];
-      return;
-    }
-
-    if (type == autofill::AutofillProfile::RecordType::kAccountNameEmail) {
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:GURL(kGoogleAccountNameEmailAddressEditURL)];
-      [self.applicationHandler closePresentedViewsAndOpenURL:command];
-      return;
-    }
+    OpenNewTabCommand* command =
+        [OpenNewTabCommand commandWithURLFromChrome:GURL(URL)];
+    [self.applicationHandler closePresentedViewsAndOpenURL:command];
+    return;
   }
   [self.handler didSelectRowAtIndexPath:indexPath];
 }
