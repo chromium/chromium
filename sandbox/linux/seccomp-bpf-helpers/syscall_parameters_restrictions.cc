@@ -297,7 +297,7 @@ ResultExpr RestrictFcntlCommands() {
   const uint64_t kAllowedMask = O_ACCMODE | O_APPEND | O_NONBLOCK | O_SYNC |
                                 kOLargeFileFlag | O_CLOEXEC | O_NOATIME;
 #if BUILDFLAG(IS_ANDROID)
-  const uint64_t kOsSpecificSeals = F_SEAL_FUTURE_WRITE;
+  const uint64_t kOsSpecificSeals = F_SEAL_WRITE | F_SEAL_FUTURE_WRITE;
 #else
   const uint64_t kOsSpecificSeals = 0;
 #endif
