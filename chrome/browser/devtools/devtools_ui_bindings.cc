@@ -787,8 +787,6 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       ->AddObserver(this);
 #endif
   can_access_aida_ = IsAnyAidaPoweredFeatureEnabled();
-
-  MaybeStartLogging();
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
@@ -2206,6 +2204,7 @@ base::TimeDelta DevToolsUIBindings::GetTimeSinceSessionStart() {
 }
 
 void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
+  MaybeStartLogging();
   for (const auto& ve : event.impressions) {
     metrics::structured::StructuredMetricsClient::Record(
         metrics::structured::events::v2::dev_tools::Impression()
@@ -2222,6 +2221,7 @@ void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
 }
 
 void DevToolsUIBindings::RecordResize(const ResizeEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::Resize()
           .SetVeId(event.veid)
@@ -2232,6 +2232,7 @@ void DevToolsUIBindings::RecordResize(const ResizeEvent& event) {
 }
 
 void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::Click()
           .SetVeId(event.veid)
@@ -2243,6 +2244,7 @@ void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
 }
 
 void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::Hover()
           .SetVeId(event.veid)
@@ -2253,6 +2255,7 @@ void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
 }
 
 void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::Drag()
           .SetVeId(event.veid)
@@ -2263,6 +2266,7 @@ void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
 }
 
 void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::Change()
           .SetVeId(event.veid)
@@ -2272,6 +2276,7 @@ void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
 }
 
 void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::KeyDown()
           .SetVeId(event.veid)
@@ -2281,6 +2286,7 @@ void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
 }
 
 void DevToolsUIBindings::RecordSettingAccess(const SettingAccessEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::SettingAccess()
           .SetName(event.name)
@@ -2291,6 +2297,7 @@ void DevToolsUIBindings::RecordSettingAccess(const SettingAccessEvent& event) {
 }
 
 void DevToolsUIBindings::RecordFunctionCall(const FunctionCallEvent& event) {
+  MaybeStartLogging();
   metrics::structured::StructuredMetricsClient::Record(
       metrics::structured::events::v2::dev_tools::FunctionCall()
           .SetName(event.name)
@@ -2666,6 +2673,7 @@ void DevToolsUIBindings::RegisterAidaClientEvent(DispatchCallback callback,
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {
   delegate_.reset(delegate);
+  MaybeStartLogging();
 }
 
 void DevToolsUIBindings::TransferDelegate(DevToolsUIBindings& other) {
