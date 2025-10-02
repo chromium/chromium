@@ -98,6 +98,12 @@ message FlightReservation {
   // The arrival date. This is a server-provided timestamp with units in
   // microseconds.
   optional int64 arrival_date_unix_epoch_micros = 8;
+
+  // The airline logo. This is a Google URI pointing to an image.
+  optional string airline_logo = 9;
+
+  // The carrier code e.g. BA for British Airways.
+  optional string carrier_code = 10;
 }
 
 // Valuables coming from Google Wallet.
