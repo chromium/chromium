@@ -1,6 +1,6 @@
 [package]
 name = "anstyle"
-version = "1.0.11"
+version = "1.0.13"
 description = "ANSI text styling"
 categories = ["command-line-interface"]
 keywords = ["ansi", "terminal", "color", "no_std"]
@@ -12,7 +12,7 @@ include.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--cfg", "docsrs", "--generate-link-to-definition"]
+rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.release]
 tag-prefix = ""
@@ -32,6 +32,7 @@ std = []
 
 [dev-dependencies]
 lexopt = "0.3.0"
+snapbox = "0.6.5"
 
 [lints]
 workspace = true

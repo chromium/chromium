@@ -44,7 +44,7 @@ ub-risk-4 = "ub-risk-4"
 [policy."adler2:2.0.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."anstyle:1.0.11"]
+[policy."anstyle:1.0.13"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."anyhow:1.0.100"]

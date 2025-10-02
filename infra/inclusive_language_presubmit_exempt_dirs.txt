@@ -286,8 +286,6 @@ third_party/afl/src/docs
 third_party/afl/src/llvm_mode
 third_party/afl/src/qemu_mode
 third_party/android_build_tools/json
-third_party/android_deps/autorolled/committed/libs/com_google_errorprone_error_prone_annotations
-third_party/android_deps/autorolled/committed/libs/com_google_protobuf_protobuf_javalite
 third_party/android_deps/buildSrc/src/main/groovy
 third_party/android_deps/libs
 third_party/android_toolchain
@@ -443,7 +441,6 @@ third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-styleshe
 third_party/blink/web_tests/wpt_internal/webgpu/canvas_webgpu_transfer
 third_party/brotli
 third_party/brotli/enc
-third_party/bspatch
 third_party/byte_buddy
 third_party/chevron
 third_party/closure_compiler/compiler
