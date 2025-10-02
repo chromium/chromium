@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtilsJni;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -1100,5 +1102,82 @@ public class AutofillLocalCardEditorTest {
         mCvc.setText("101");
 
         verify(mMockScannerManager).fieldEdited(FieldType.UNKNOWN);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
+    public void saveCard_withBillingAddress_SettingsContainmentDisabled() {
+        CreditCard card = getSampleLocalCard();
+        List<AutofillProfile> profiles = setupBillingAddressProfiles();
+        initFragment(card);
+
+        mCardEditor.mBillingAddressSpinner.setSelection(
+                2); // 0 is "Select", 1 is address1, 2 is address2
+        mDoneButton.performClick();
+
+        verify(mMockPersonalDataManager)
+                .setCreditCard(
+                        argThat(
+                                c -> {
+                                    assertThat(c.getBillingAddressId())
+                                            .isEqualTo(profiles.get(1).getGUID());
+                                    return true;
+                                }));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
+    public void saveCard_withBillingAddress_SettingsContainmentEnabled() {
+        CreditCard card = getSampleLocalCard();
+        List<AutofillProfile> profiles = setupBillingAddressProfiles();
+        initFragment(card);
+
+        // Simulate that the user has selected the second billing address.
+        // We set the text for visual confirmation and directly set the selected profile
+        // to bypass the complexities of simulating a dropdown item click in Robolectric.
+        mCardEditor.mBillingAddressDropdown.setText(profiles.get(1).getLabel(), false);
+        mCardEditor.mSelectedBillingProfile = profiles.get(1);
+        mDoneButton.performClick();
+
+        verify(mMockPersonalDataManager)
+                .setCreditCard(
+                        argThat(
+                                c -> {
+                                    assertThat(c.getBillingAddressId())
+                                            .isEqualTo(profiles.get(1).getGUID());
+                                    return true;
+                                }));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
+    public void saveCard_noBillingAddressSelected_SettingsContainmentEnabled() {
+        CreditCard card = getSampleLocalCard();
+        setupBillingAddressProfiles();
+        initFragment(card);
+
+        // Do not simulate a selection. The default (no selection) should result in an empty GUID.
+        mDoneButton.performClick();
+
+        verify(mMockPersonalDataManager)
+                .setCreditCard(
+                        argThat(
+                                c -> {
+                                    assertThat(c.getBillingAddressId()).isEmpty();
+                                    return true;
+                                }));
+    }
+
+    private List<AutofillProfile> setupBillingAddressProfiles() {
+        AutofillProfile billingAddress1 =
+                AutofillProfile.builder().setGUID("guid-1").setStreetAddress("1 Main St").build();
+        AutofillProfile billingAddress2 =
+                AutofillProfile.builder().setGUID("guid-2").setStreetAddress("2 Main St").build();
+        List<AutofillProfile> profiles = List.of(billingAddress1, billingAddress2);
+        when(mMockPersonalDataManager.getProfilesForSettings()).thenReturn(profiles);
+        return profiles;
     }
 }

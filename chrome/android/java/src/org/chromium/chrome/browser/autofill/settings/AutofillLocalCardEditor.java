@@ -438,7 +438,15 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             card.setYear((String) mExpirationYear.getSelectedItem());
         }
 
-        card.setBillingAddressId(((AutofillProfile) mBillingAddress.getSelectedItem()).getGUID());
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            card.setBillingAddressId(
+                    mSelectedBillingProfile != null ? mSelectedBillingProfile.getGUID() : "");
+        } else {
+            assert mBillingAddressSpinner != null;
+            AutofillProfile selectedProfile =
+                    (AutofillProfile) mBillingAddressSpinner.getSelectedItem();
+            card.setBillingAddressId(selectedProfile != null ? selectedProfile.getGUID() : "");
+        }
         card.setNickname(mNicknameText.getText().toString().trim());
 
         // Get the current card count before setting the new card.
