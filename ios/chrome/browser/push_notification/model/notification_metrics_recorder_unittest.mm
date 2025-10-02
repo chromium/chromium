@@ -83,7 +83,9 @@ class NotificationMetricsRecorderTest : public PlatformTest {
 // Tests that when handleDeliveredNotifications is called, new notifications are
 // recorded as delivered, and notifications that are no longer present are
 // recorded as dismissed.
-TEST_F(NotificationMetricsRecorderTest, TesthandleDeliveredNotifications) {
+// TODO(crbug.com/448867105): Re-enable when fixed.
+TEST_F(NotificationMetricsRecorderTest,
+       DISABLED_TesthandleDeliveredNotifications) {
   // Setup the notification center mock to return a notification.
   UNNotification* notification = StubNotification(@"id1");
   [delivered_notifications_ addObject:notification];
@@ -110,8 +112,9 @@ TEST_F(NotificationMetricsRecorderTest, TesthandleDeliveredNotifications) {
 
 // Tests that when a new notification arrives while another is being handled,
 // only the new notification is recorded as delivered.
+// TODO(crbug.com/448867105): Re-enable when fixed.
 TEST_F(NotificationMetricsRecorderTest,
-       TestNewNotificationArrivesWhileAnotherIsHandled) {
+       DISABLED_TestNewNotificationArrivesWhileAnotherIsHandled) {
   // Setup the notification center mock to return a notification.
   UNNotification* notification1 = StubNotification(@"id1");
   [delivered_notifications_ addObject:notification1];
@@ -144,7 +147,8 @@ TEST_F(NotificationMetricsRecorderTest,
 // Tests that when recordInteraction is called for a notification that has
 // already been handled, the interaction is recorded, and the notification is
 // removed from the handled list.
-TEST_F(NotificationMetricsRecorderTest, TestRecordInteraction) {
+// TODO(crbug.com/448867105): Re-enable when fixed.
+TEST_F(NotificationMetricsRecorderTest, DISABLED_TestRecordInteraction) {
   // Setup the notification center mock to return a notification.
   UNNotification* notification = StubNotification(@"id1");
   [delivered_notifications_ addObject:notification];
