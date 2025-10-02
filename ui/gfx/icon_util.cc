@@ -9,12 +9,15 @@
 
 #include "ui/gfx/icon_util.h"
 
+#include <windows.h>
+
 #include <algorithm>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -32,6 +35,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/skbitmap_operations.h"
+#include "ui/gfx/switches.h"
 
 namespace {
 
@@ -360,6 +364,23 @@ base::win::ScopedGDIObject<HICON> IconUtil::CreateCursorFromSkBitmap(
   ii.yHotspot = hotspot.y();
   ii.hbmMask = mask.get();
   ii.hbmColor = bitmap_handle.get();
+  if (base::FeatureList::IsEnabled(features::kTransparentIconWorkaround)) {
+    // Windows renders fully transparent cursors as black squares, instead of
+    // creating an invisible cursor. To avoid this, we set both the color and
+    // mask bitmaps to null, which has the same effect as creating a fully
+    // transparent cursor. See https://crbug.com/441293180
+    bool fully_transparent = true;
+    for (int y = 0; y < bitmap.height() && fully_transparent; y++) {
+      for (int x = 0; x < bitmap.width() && fully_transparent; x++) {
+        fully_transparent &=
+            SkColorGetA(bitmap.getColor(x, y)) == SK_AlphaTRANSPARENT;
+      }
+    }
+    if (fully_transparent) {
+      ii.hbmMask = nullptr;
+      ii.hbmColor = nullptr;
+    }
+  }
 
   return base::win::ScopedGDIObject<HICON>(CreateIconIndirect(&ii));
 }

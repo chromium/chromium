@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/switches.h"
 
 namespace {
 
@@ -67,11 +69,19 @@ class IconUtilTest : public testing::Test {
     return base::win::ScopedGDIObject<HICON>(icon);
   }
 
-  SkBitmap CreateBlackSkBitmap(int width, int height) {
+  SkBitmap CreateTransparentBlackSkBitmap(int width, int height) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(width, height);
     // Setting the pixels to transparent-black.
     memset(bitmap.getPixels(), 0, width * height * 4);
+    return bitmap;
+  }
+
+  SkBitmap CreateNonTransparentSkBitmap(int width, int height) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(width, height, /*isOpaque=*/true);
+    // Setting the pixels to non-transparent white.
+    memset(bitmap.getPixels(), 0xFF, width * height * 4);
     return bitmap;
   }
 
@@ -87,6 +97,10 @@ class IconUtilTest : public testing::Test {
 
   // Directory for creating files by this test.
   base::ScopedTempDir temp_directory_;
+};
+
+class IconUtilTransparentCursorTest : public IconUtilTest,
+                                      public testing::WithParamInterface<bool> {
 };
 
 void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
@@ -270,7 +284,8 @@ TEST_F(IconUtilTest, TestCreateSkBitmapFromHICON) {
 // the returned handle is valid and refers to an icon with the expected
 // dimensions color depth etc.
 TEST_F(IconUtilTest, TestBasicCreateHICONFromSkBitmap) {
-  SkBitmap bitmap = CreateBlackSkBitmap(kSmallIconWidth, kSmallIconHeight);
+  SkBitmap bitmap =
+      CreateTransparentBlackSkBitmap(kSmallIconWidth, kSmallIconHeight);
   base::win::ScopedGDIObject<HICON> icon(
       IconUtil::CreateHICONFromSkBitmap(bitmap));
   EXPECT_TRUE(icon.is_valid());
@@ -314,26 +329,28 @@ TEST_F(IconUtilTest, TestCreateIconFileFromImageFamily) {
 
   // Test with only a 16x16 icon. Should only scale up to 48x48.
   image_family.Add(gfx::Image::CreateFrom1xBitmap(
-      CreateBlackSkBitmap(kSmallIconWidth, kSmallIconHeight)));
+      CreateTransparentBlackSkBitmap(kSmallIconWidth, kSmallIconHeight)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                       icon_filename));
   CheckAllIconSizes(icon_filename, 48);
 
   // Test with a 48x48 icon. Should only scale down.
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(CreateBlackSkBitmap(48, 48)));
+  image_family.Add(
+      gfx::Image::CreateFrom1xBitmap(CreateTransparentBlackSkBitmap(48, 48)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                       icon_filename));
   CheckAllIconSizes(icon_filename, 48);
 
   // Test with a 64x64 icon. Should scale up to 256x256.
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(CreateBlackSkBitmap(64, 64)));
+  image_family.Add(
+      gfx::Image::CreateFrom1xBitmap(CreateTransparentBlackSkBitmap(64, 64)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                       icon_filename));
   CheckAllIconSizes(icon_filename, 256);
 
   // Test with a 256x256 icon. Should include the 256x256 in the output.
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(
-      CreateBlackSkBitmap(256, 256)));
+  image_family.Add(
+      gfx::Image::CreateFrom1xBitmap(CreateTransparentBlackSkBitmap(256, 256)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                       icon_filename));
   CheckAllIconSizes(icon_filename, 256);
@@ -341,7 +358,8 @@ TEST_F(IconUtilTest, TestCreateIconFileFromImageFamily) {
   // Test with a 49x49 icon. Should scale up to 256x256, but exclude the
   // original 49x49 representation from the output.
   image_family.clear();
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(CreateBlackSkBitmap(49, 49)));
+  image_family.Add(
+      gfx::Image::CreateFrom1xBitmap(CreateTransparentBlackSkBitmap(49, 49)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                       icon_filename));
   CheckAllIconSizes(icon_filename, 256);
@@ -349,14 +367,16 @@ TEST_F(IconUtilTest, TestCreateIconFileFromImageFamily) {
   // Test with a non-square 16x32 icon. Should scale up to 48, but exclude the
   // original 16x32 representation from the output.
   image_family.clear();
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(CreateBlackSkBitmap(16, 32)));
+  image_family.Add(
+      gfx::Image::CreateFrom1xBitmap(CreateTransparentBlackSkBitmap(16, 32)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                       icon_filename));
   CheckAllIconSizes(icon_filename, 48);
 
   // Test with a non-square 32x49 icon. Should scale up to 256, but exclude the
   // original 32x49 representation from the output.
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(CreateBlackSkBitmap(32, 49)));
+  image_family.Add(
+      gfx::Image::CreateFrom1xBitmap(CreateTransparentBlackSkBitmap(32, 49)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                       icon_filename));
   CheckAllIconSizes(icon_filename, 256);
@@ -365,7 +385,8 @@ TEST_F(IconUtilTest, TestCreateIconFileFromImageFamily) {
   // The empty image should be ignored.
   image_family.clear();
   image_family.Add(gfx::Image());
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(CreateBlackSkBitmap(16, 16)));
+  image_family.Add(
+      gfx::Image::CreateFrom1xBitmap(CreateTransparentBlackSkBitmap(16, 16)));
   ASSERT_TRUE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                        icon_filename));
   CheckAllIconSizes(icon_filename, 48);
@@ -432,3 +453,48 @@ TEST_F(IconUtilTest, TestTransparentIcon) {
       IconUtil::CreateSkBitmapFromHICON(icon.get(), gfx::Size(size, size));
   EXPECT_EQ(bitmap_loaded.getColor(1, 1), semi_transparent_red);
 }
+
+// This test ensures that when an custom cursor is created from an SkBitmap
+// that is not fully transparent, the returned handle is a valid HICON.
+TEST_P(IconUtilTransparentCursorTest,
+       TestCreateNonTransparentCursorFromSkBitmap) {
+  base::test::ScopedFeatureList feature_list_;
+  if (GetParam()) {
+    feature_list_.InitAndEnableFeature(features::kTransparentIconWorkaround);
+  } else {
+    feature_list_.InitAndDisableFeature(features::kTransparentIconWorkaround);
+  }
+  SkBitmap bitmap =
+      CreateNonTransparentSkBitmap(kSmallIconWidth, kSmallIconHeight);
+  base::win::ScopedGDIObject<HICON> icon(
+      IconUtil::CreateCursorFromSkBitmap(bitmap, gfx::Point()));
+  // The feature being enabled shouldn't affect non-transparent cursors.
+  EXPECT_TRUE(icon.is_valid());
+}
+
+// This test ensures that when an custom cursor is created from a fully
+// transparent SkBitmap, the returned handle is a null shape. This is a
+// workaround to an issue in Windows where fully transparent cursors are
+// rendered as black squares. Instead of creating a fully transparent
+// cursor. See https://crbug.com/441293180
+TEST_P(IconUtilTransparentCursorTest, TestCreateTransparentCursorFromSkBitmap) {
+  base::test::ScopedFeatureList feature_list_;
+  if (GetParam()) {
+    feature_list_.InitAndEnableFeature(features::kTransparentIconWorkaround);
+  } else {
+    feature_list_.InitAndDisableFeature(features::kTransparentIconWorkaround);
+  }
+  SkBitmap bitmap =
+      CreateTransparentBlackSkBitmap(kSmallIconWidth, kSmallIconHeight);
+  base::win::ScopedGDIObject<HICON> icon(
+      IconUtil::CreateCursorFromSkBitmap(bitmap, gfx::Point()));
+  // If the feature is enabled, the icon will have a nullptr mask and bitmap and
+  // will be invalid.
+  if (!GetParam()) {
+    EXPECT_TRUE(icon.is_valid());
+  } else {
+    EXPECT_FALSE(icon.is_valid());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, IconUtilTransparentCursorTest, ::testing::Bool());
