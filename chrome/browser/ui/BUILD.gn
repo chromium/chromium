@@ -3777,10 +3777,6 @@ static_library("ui") {
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/app_menu_button_observer.h",
-
-      # TODO(https://crbug.com/443281722): Remove browser_frame.h a couple weeks
-      # after the refactor of BrowserFrame => BrowserWindow lands.
-      "views/frame/browser_frame.h",
       "views/frame/browser_frame_view.cc",
       "views/frame/browser_frame_view.h",
       "views/frame/browser_native_widget.h",
