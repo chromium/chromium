@@ -215,7 +215,7 @@ BASE_FEATURE_PARAM(int,
 // (PNA), and if this is on PNA features may stop working.
 //
 // Spec: https://wicg.github.io/local-network-access/
-BASE_FEATURE(kLocalNetworkAccessChecks, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLocalNetworkAccessChecks, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If true, local network access checks will only be warnings.
 BASE_FEATURE_PARAM(bool,
