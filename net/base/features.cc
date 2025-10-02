@@ -133,13 +133,13 @@ BASE_FEATURE(kPrefixCookieHostHttp, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSearchEnginePreconnectInterval,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSearchEnginePreconnect2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSearchEnginePreconnect2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kIdleTimeoutInSeconds,
                    &kSearchEnginePreconnect2,
                    "IdleTimeoutInSeconds",
-                   120);
+                   30);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kShortSessionThreshold,
@@ -156,13 +156,13 @@ BASE_FEATURE_PARAM(int,
                    kPingIntervalInSeconds,
                    &kSearchEnginePreconnect2,
                    "PingIntervalInSeconds",
-                   30);
+                   27);
 
 BASE_FEATURE_PARAM(std::string,
                    kQuicConnectionOptions,
                    &kSearchEnginePreconnect2,
                    "QuicConnectionOptions",
-                   "");
+                   "ECCP");
 
 BASE_FEATURE_PARAM(bool,
                    kFallbackInLowPowerMode,
