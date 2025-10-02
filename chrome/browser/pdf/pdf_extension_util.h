@@ -9,14 +9,14 @@
 #include <vector>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "pdf/buildflags.h"
 #include "ui/base/webui/resource_path.h"
-#include "url/gurl.h"
 
 #if !BUILDFLAG(ENABLE_PDF)
 #error "PDF must be enabled"
 #endif
+
+class GURL;
 
 namespace content {
 class BrowserContext;

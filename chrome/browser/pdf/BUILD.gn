@@ -16,8 +16,15 @@ source_set("pdf") {
     "pdf_viewer_stream_manager.cc",
     "pdf_viewer_stream_manager.h",
   ]
-  deps = [
+  public_deps = [
     "//base",
+    "//components/pdf/browser",
+    "//content/public/browser",
+    "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
+    "//pdf:buildflags",
+  ]
+  deps = [
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
@@ -25,17 +32,12 @@ source_set("pdf") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/pdf:resources",
     "//chrome/common",
-    "//components/pdf/browser",
     "//components/pdf/browser:interceptors",
     "//components/pdf/common:util",
     "//components/prefs",
     "//components/zoom",
-    "//content/public/browser",
     "//extensions/browser",
     "//extensions/common:common_constants",
-    "//extensions/common/api",
-    "//mojo/public/cpp/bindings",
-    "//pdf:buildflags",
     "//pdf:features",
     "//printing/buildflags",
     "//third_party/blink/public/common:headers",
