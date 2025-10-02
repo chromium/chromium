@@ -29,6 +29,14 @@ constexpr int64_t kSignalStorageLength = 28;
 // No signals are being collected, so no collection length is required.
 constexpr int64_t kMinSignalCollectionLength = 0;
 
+constexpr FeaturePair<ComposePromotion::Feature> kComposePromotionFeatures[] = {
+    {ComposePromotion::Feature::kLabelRandom,
+     features::Feature::FromCustomInput(
+         features::CustomInput{.tensor_length = 1,
+                               .fill_policy = proto::CustomInput::FILL_RANDOM,
+                               .name = "random"})},
+};
+
 }  // namespace
 
 // static
@@ -54,10 +62,8 @@ ComposePromotion::GetModelConfig() {
   writer.SetDefaultSegmentationMetadataConfig(kMinSignalCollectionLength,
                                               kSignalStorageLength);
 
-  writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 1,
-      .fill_policy = proto::CustomInput::FILL_RANDOM,
-      .name = "random"});
+  writer.AddFeatures<ComposePromotion::Feature>(
+      base::span(kComposePromotionFeatures));
 
   writer.AddOutputConfigForBinaryClassifier(
       0.5,
@@ -70,14 +76,14 @@ void ComposePromotion::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != 1) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
   float result = 0;
-  if (inputs[0] <
+  if (inputs[kLabelRandom] <
       compose::GetComposeConfig().proactive_nudge_show_probability) {
     result = 1;
   }

@@ -16,6 +16,11 @@ namespace segmentation_platform {
 // Model to predict whether the user belongs to ComposePromotion segment.
 class ComposePromotion : public DefaultModelProvider {
  public:
+  enum Feature {
+    kLabelRandom,
+    kFeatureCount,
+  };
+
   ComposePromotion();
   ~ComposePromotion() override = default;
 
