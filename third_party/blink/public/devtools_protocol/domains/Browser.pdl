@@ -119,8 +119,9 @@ domain Browser
       # Context to override. When omitted, default browser context is used.
       optional BrowserContextID browserContextId
 
-  # Grant specific permissions to the given origin and reject all others.
-  experimental command grantPermissions
+  # Grant specific permissions to the given origin and reject all others. Deprecated. Use
+  # setPermission instead.
+  experimental deprecated command grantPermissions
     parameters
       array of PermissionType permissions
       # Origin the permission applies to, all origins if not specified.
