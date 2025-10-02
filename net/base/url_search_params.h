@@ -25,6 +25,9 @@ namespace net {
 //    specified `keys`
 //  - deletion of all `(key, values)` pairs except pairs for which `key` is part
 //    of a set of specified `keys`
+//
+// See also UrlSearchParamsView, which is more efficient but unsuitable for
+// long-term storage as it doesn't copy the values.
 class NET_EXPORT UrlSearchParams {
  public:
   explicit UrlSearchParams(const GURL& url);
