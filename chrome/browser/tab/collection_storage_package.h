@@ -1,0 +1,29 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_TAB_COLLECTION_STORAGE_PACKAGE_H_
+#define CHROME_BROWSER_TAB_COLLECTION_STORAGE_PACKAGE_H_
+
+#include <string>
+
+#include "chrome/browser/tab/storage_package.h"
+
+namespace tabs {
+
+// A StoragePackage implementation for TabCollection data.
+class CollectionStoragePackage : public StoragePackage {
+ public:
+  CollectionStoragePackage();
+  ~CollectionStoragePackage() override;
+
+  CollectionStoragePackage(const CollectionStoragePackage&) = delete;
+  CollectionStoragePackage& operator=(const CollectionStoragePackage&) = delete;
+
+  // StoragePackage:
+  std::string SerializePayload() const override;
+};
+
+}  // namespace tabs
+
+#endif  // CHROME_BROWSER_TAB_COLLECTION_STORAGE_PACKAGE_H_

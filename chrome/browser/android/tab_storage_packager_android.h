@@ -11,11 +11,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/android_tab_package.h"
-#include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
+class StoragePackage;
+class TabInterface;
+class TabCollection;
 
 // This class is the Android implementation of the TabStoragePackager.
 class TabStoragePackagerAndroid : public TabStoragePackager {
@@ -28,8 +30,9 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       delete;
 
   // TabStoragePackager overrides:
-  void Package(TabInterface* tab) override;
-  std::unique_ptr<TabStoragePackage> ReleasePackage() override;
+  void Package(const TabInterface* tab) override;
+  void Package(const TabCollection* collection) override;
+  std::unique_ptr<StoragePackage> ReleasePackage() override;
 
   void ConsolidatePackageData(
       JNIEnv* env,
@@ -43,7 +46,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
-  std::unique_ptr<TabStoragePackage> package_;
+  std::unique_ptr<StoragePackage> package_;
   // A reference to the Java version of this class.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };

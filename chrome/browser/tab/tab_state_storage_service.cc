@@ -8,6 +8,7 @@
 
 #include "base/token.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -22,19 +23,27 @@ TabStateStorageService::TabStateStorageService(
 
 TabStateStorageService::~TabStateStorageService() = default;
 
-void TabStateStorageService::SaveTab(TabInterface* tab) {
-  std::unique_ptr<TabStoragePackage> package;
-  if (packager_) {
-    packager_->Package(tab);
-    package = packager_->ReleasePackage();
-
-    DCHECK(package) << "Packager should return a package";
-    int id =
-        package->android_tab_package_ ? package->android_tab_package_->id_ : 0;
-    // TODO(crbug.com/448151025): Define and use a proper type enum.
-    int type = 1;
-    tab_backend_->Save(id, type, std::move(package));
+void TabStateStorageService::SaveTab(const TabInterface* tab) {
+  if (!packager_) {
+    return;
   }
+
+  packager_->Package(tab);
+  std::unique_ptr<StoragePackage> package = packager_->ReleasePackage();
+  DCHECK(package) << "Packager should return a package";
+  // TODO(https://crbug.com/448875689): Save through backend when we have an id.
+}
+
+void TabStateStorageService::SaveCollection(
+    const tabs::TabCollection* collection) {
+  if (!packager_) {
+    return;
+  }
+
+  packager_->Package(collection);
+  std::unique_ptr<StoragePackage> package = packager_->ReleasePackage();
+  DCHECK(package) << "Packager should return a package";
+  // TODO(https://crbug.com/448875689): Save through backend when we have an id.
 }
 
 void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {

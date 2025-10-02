@@ -13,6 +13,7 @@
 #include "base/token.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/android_tab_package.h"
+#include "chrome/browser/tab/collection_storage_package.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 
@@ -28,10 +29,15 @@ TabStoragePackagerAndroid::TabStoragePackagerAndroid() {
       Java_TabStoragePackager_create(env, reinterpret_cast<intptr_t>(this)));
 }
 
-void TabStoragePackagerAndroid::Package(TabInterface* tab) {
+void TabStoragePackagerAndroid::Package(const TabInterface* tab) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_TabStoragePackager_packageTab(env, java_obj_,
-                                     static_cast<TabAndroid*>(tab));
+                                     static_cast<const TabAndroid*>(tab));
+}
+
+void TabStoragePackagerAndroid::Package(const TabCollection* collection) {
+  // TODO(https://crbug.com/448875689): Fill this package with relevant data.
+  package_ = std::make_unique<CollectionStoragePackage>();
 }
 
 void TabStoragePackagerAndroid::ConsolidatePackageData(
@@ -72,7 +78,7 @@ void TabStoragePackagerAndroid::ConsolidatePackageData(
       std::move(android_package));
 }
 
-std::unique_ptr<TabStoragePackage> TabStoragePackagerAndroid::ReleasePackage() {
+std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::ReleasePackage() {
   DCHECK(package_) << "Package was not instantiated.";
   return std::move(package_);
 }

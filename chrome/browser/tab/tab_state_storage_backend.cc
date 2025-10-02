@@ -43,6 +43,8 @@ void TabStateStorageBackend::Save(int id,
                                   int type,
                                   std::unique_ptr<StoragePackage> package) {
   std::string payload = package->SerializePayload();
+  // TODO(https://crbug.com/448875689): Get serialized children data from
+  // package.
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::SaveNode,

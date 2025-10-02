@@ -32,7 +32,7 @@ public class TabStoragePackager {
     }
 
     @CalledByNative
-    public void packageTab(@JniType("TabAndroid*") Tab tab) {
+    public void packageTab(@JniType("const TabAndroid*") Tab tab) {
         WebContentsState state = tab.getWebContentsState();
         TabStoragePackagerJni.get()
                 .consolidatePackageData(
