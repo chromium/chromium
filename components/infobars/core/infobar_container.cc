@@ -115,7 +115,8 @@ void InfoBarContainer::OnInfoBarReplaced(InfoBar* old_infobar,
   AddInfoBar(new_infobar, position, false);
 }
 
-void InfoBarContainer::OnManagerShuttingDown(InfoBarManager* infobar_manager) {
+void InfoBarContainer::OnManagerWillBeDestroyed(
+    InfoBarManager* infobar_manager) {
   CHECK_EQ(manager(), infobar_manager);
   scoped_observation_.Reset();
 }

@@ -92,7 +92,7 @@ class TranslateOverlayTabHelper
    private:
     // infobars::InfoBarManager::Observer:
     void OnInfoBarAdded(infobars::InfoBar* infobar) override;
-    void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+    void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
     // Scoped observer that facilitates observing an InfoBarManager
     base::ScopedObservation<infobars::InfoBarManager,

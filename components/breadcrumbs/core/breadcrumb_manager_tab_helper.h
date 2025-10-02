@@ -164,7 +164,7 @@ class BreadcrumbManagerTabHelper : public infobars::InfoBarManager::Observer {
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
   void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
                          infobars::InfoBar* new_infobar) override;
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+  void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
   // A unique identifier for this tab helper, used in breadcrumb event logs to
   // identify events associated with the underlying tab.

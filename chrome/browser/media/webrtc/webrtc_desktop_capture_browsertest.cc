@@ -190,7 +190,7 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
       NOTREACHED();
     }
 
-    void OnManagerShuttingDown(infobars::InfoBarManager* manager) override {
+    void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override {
       manager->RemoveObserver(this);
       DCHECK(!shutdown_callback_.is_null());
       std::move(shutdown_callback_).Run(this);

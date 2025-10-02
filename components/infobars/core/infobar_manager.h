@@ -33,7 +33,7 @@ class InfoBarManager {
     virtual void OnInfoBarAdded(InfoBar* infobar);
     virtual void OnInfoBarRemoved(InfoBar* infobar, bool animate);
     virtual void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar);
-    virtual void OnManagerShuttingDown(InfoBarManager* manager);
+    virtual void OnManagerWillBeDestroyed(InfoBarManager* manager);
   };
 
   InfoBarManager();
@@ -42,11 +42,6 @@ class InfoBarManager {
   InfoBarManager& operator=(const InfoBarManager&) = delete;
 
   virtual ~InfoBarManager();
-
-  // Must be called before destruction.
-  // TODO(droger): Merge this method with the destructor once the virtual calls
-  // for notifications are removed (see http://crbug.com/354380).
-  void ShutDown();
 
   // Adds the specified |infobar|, which already owns a delegate.
   //

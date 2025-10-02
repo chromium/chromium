@@ -122,7 +122,6 @@ class CollaborationGroupInfoBarDelegateTest : public PlatformTest {
   }
 
   ~CollaborationGroupInfoBarDelegateTest() override {
-    InfoBarManagerImpl::FromWebState(active_web_state_)->ShutDown();
     [browser_->GetCommandDispatcher() stopDispatchingToTarget:mock_handler_];
   }
 

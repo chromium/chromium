@@ -43,17 +43,7 @@ InfoBarManagerImpl::InfoBarManagerImpl(web::WebState* web_state)
   web_state_->AddObserver(this);
 }
 
-InfoBarManagerImpl::~InfoBarManagerImpl() {
-  ShutDown();
-
-  // As the object can commit suicide, it is possible that its destructor
-  // is called before WebStateDestroyed. In that case stop observing the
-  // WebState.
-  if (web_state_) {
-    web_state_->RemoveObserver(this);
-    web_state_ = nullptr;
-  }
-}
+InfoBarManagerImpl::~InfoBarManagerImpl() = default;
 
 int InfoBarManagerImpl::GetActiveEntryID() {
   web::NavigationItem* visible_item =
@@ -78,6 +68,10 @@ void InfoBarManagerImpl::DidFinishNavigation(
 
 void InfoBarManagerImpl::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
+
+  // Detach from the WebState before it disappears.
+  web_state_->RemoveObserver(this);
+
   // The WebState is going away; be aggressively paranoid and delete this
   // InfoBarManagerImpl lest other parts of the system attempt to add infobars
   // or use it otherwise during the destruction. As this is the equivalent of

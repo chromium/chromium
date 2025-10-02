@@ -60,7 +60,7 @@ class InfoBarObserver : public InfoBarManager::Observer {
   void OnInfoBarAdded(InfoBar* infobar) override { info_bar_added_ = true; }
   void OnInfoBarRemoved(InfoBar* infobar, bool animate) override {}
   void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar) override {}
-  void OnManagerShuttingDown(InfoBarManager* manager) override {}
+  void OnManagerWillBeDestroyed(InfoBarManager* manager) override {}
 
   bool info_bar_added_ = false;
 

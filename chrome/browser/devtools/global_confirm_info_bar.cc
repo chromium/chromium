@@ -291,13 +291,13 @@ void GlobalConfirmInfoBar::OnInfoBarRemoved(infobars::InfoBar* info_bar,
   // Do not process alien infobars.
   for (const auto& it : proxies_) {
     if (it.second->infobar() == info_bar) {
-      OnManagerShuttingDown(info_bar->owner());
+      OnManagerWillBeDestroyed(info_bar->owner());
       break;
     }
   }
 }
 
-void GlobalConfirmInfoBar::OnManagerShuttingDown(
+void GlobalConfirmInfoBar::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   manager->RemoveObserver(this);
   proxies_.erase(manager);

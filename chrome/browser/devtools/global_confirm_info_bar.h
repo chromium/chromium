@@ -43,7 +43,7 @@ class GlobalConfirmInfoBar : public infobars::InfoBarManager::Observer {
 
   // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* info_bar, bool animate) override;
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+  void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
   // Closes all the infobars.
   void Close();

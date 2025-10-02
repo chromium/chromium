@@ -50,7 +50,7 @@ class PermissionsTabHelper
 
   // infobars::InfoBarManager::Observer implementation.
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+  void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
  private:
   friend class web::WebStateUserData<PermissionsTabHelper>;
