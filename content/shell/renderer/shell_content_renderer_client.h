@@ -56,6 +56,10 @@ class ShellContentRendererClient : public ContentRendererClient {
   CreateURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType provider_type) override;
 
+  bool OverrideCreatePlugin(content::RenderFrame* render_frame,
+                            const blink::WebPluginParams& params,
+                            blink::WebPlugin** plugin) override;
+
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
       content::RenderFrame* render_frame,

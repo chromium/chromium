@@ -122,6 +122,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<RenderFrameHost*>* map) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   void OpenURL(SiteInstance* site_instance,
                const OpenURLParams& params,
                base::OnceCallback<void(WebContents*)> callback) override;

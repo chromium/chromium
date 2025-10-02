@@ -47,6 +47,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/secure_embed/buildflags/buildflags.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
@@ -141,6 +142,11 @@
 #include "media/mojo/mojom/media_foundation_preferences.mojom.h"
 #include "media/mojo/services/media_foundation_preferences.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#include "components/secure_embed/browser/secure_embed_host.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 
 namespace content {
 
@@ -674,6 +680,23 @@ void ShellContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<media::mojom::MediaFoundationPreferences>(
       &BindMediaFoundationPreferences);
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+void ShellContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+  associated_registry.AddInterface<secure_embed::mojom::SecureEmbedHost>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<
+                 secure_embed::mojom::SecureEmbedHost> receiver) {
+            secure_embed::SecureEmbedHost::BindSecureEmbedHost(
+                render_frame_host, std::move(receiver));
+          },
+          &render_frame_host));
+#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 }
 
 void ShellContentBrowserClient::OpenURL(

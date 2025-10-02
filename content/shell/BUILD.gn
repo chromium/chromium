@@ -10,6 +10,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
+import("//components/secure_embed/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
@@ -392,6 +393,13 @@ static_library("content_shell_lib") {
     sources += [
       "browser/shell_plugin_service_filter.cc",
       "browser/shell_plugin_service_filter.h",
+    ]
+  }
+
+  if (enable_secure_embed) {
+    deps += [
+      "//components/secure_embed/browser",
+      "//components/secure_embed/renderer",
     ]
   }
 

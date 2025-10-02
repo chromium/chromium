@@ -19,6 +19,7 @@
 #include "base/types/pass_key.h"
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
+#include "components/secure_embed/buildflags/buildflags.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/pseudonymization_util.h"
@@ -49,6 +50,10 @@
 #include "base/feature_list.h"
 #include "media/base/media_switches.h"
 #endif
+
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#include "components/secure_embed/renderer/create_plugin.h"
+#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
@@ -354,6 +359,18 @@ std::unique_ptr<blink::URLLoaderThrottleProvider>
 ShellContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType provider_type) {
   return std::make_unique<ShellContentRendererUrlLoaderThrottleProvider>();
+}
+
+bool ShellContentRendererClient::OverrideCreatePlugin(
+    content::RenderFrame* render_frame,
+    const blink::WebPluginParams& params,
+    blink::WebPlugin** plugin) {
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+  if (secure_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+  return false;
 }
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
