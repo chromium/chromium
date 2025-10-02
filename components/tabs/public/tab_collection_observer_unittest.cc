@@ -422,4 +422,88 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
   }
 }
 
+TEST_F(TabCollectionObserverTest, OnCollectionRemoved) {
+  MockTabCollectionObserver& observer = GetObserver();
+  tabs::TabStripCollection* collection = GetTabstripCollection();
+
+  // Set up a group.
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  EXPECT_CALL(*GetGroupFactory(), Create)
+      .WillOnce(testing::Invoke(
+          [&](tabs::TabGroupTabCollection* collection,
+              const tab_groups::TabGroupId& id,
+              const tab_groups::TabGroupVisualData& visual_data) {
+            // Return a valid MockTabGroup object.
+            return std::make_unique<MockTabGroup>(collection, id, visual_data);
+          }));
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          *GetGroupFactory(), group_id, tab_groups::TabGroupVisualData());
+  tabs::TabGroupTabCollection* group_collection_ptr = group_collection.get();
+  tabs::TabCollectionHandle group_handle = group_collection->GetHandle();
+  group_collection->AddTab(CreateMockTab(), 0);
+  collection->InsertTabCollectionAt(std::move(group_collection), 0, false,
+                                    std::nullopt);
+
+  // Add a split to the group.
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+  std::unique_ptr<tabs::SplitTabCollection> split_collection =
+      std::make_unique<tabs::SplitTabCollection>(
+          split_id, split_tabs::SplitTabVisualData(
+                        split_tabs::SplitTabLayout::kVertical, 0.5));
+  tabs::SplitTabCollection* split_collection_ptr = split_collection.get();
+  tabs::TabCollectionHandle split_handle = split_collection->GetHandle();
+  split_collection->AddTab(CreateMockTab(), 0);
+  split_collection->AddTab(CreateMockTab(), 0);
+  collection->InsertTabCollectionAt(std::move(split_collection), 1, false,
+                                    group_id);
+
+  // Remove the split.
+  {
+    EXPECT_CALL(
+        observer,
+        OnChildrenRemoved(testing::Eq(tabs::TabCollectionNodes{split_handle})))
+        .Times(1);
+
+    collection->RemoveTabCollection(split_collection_ptr);
+  }
+
+  // Remove the group.
+  {
+    EXPECT_CALL(
+        observer,
+        OnChildrenRemoved(testing::Eq(tabs::TabCollectionNodes{group_handle})))
+        .Times(1);
+
+    collection->RemoveTabCollection(group_collection_ptr);
+  }
+}
+
+TEST_F(TabCollectionObserverTest, OnUnsplit) {
+  MockTabCollectionObserver& observer = GetObserver();
+  tabs::TabStripCollection* collection = GetTabstripCollection();
+
+  // Set up a split.
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+  std::unique_ptr<tabs::SplitTabCollection> split_collection =
+      std::make_unique<tabs::SplitTabCollection>(
+          split_id, split_tabs::SplitTabVisualData(
+                        split_tabs::SplitTabLayout::kVertical, 0.5));
+  tabs::TabCollectionHandle split_handle = split_collection->GetHandle();
+  split_collection->AddTab(CreateMockTab(), 0);
+  split_collection->AddTab(CreateMockTab(), 1);
+  collection->InsertTabCollectionAt(std::move(split_collection), 0, false,
+                                    std::nullopt);
+
+  // Unsplit.
+  {
+    EXPECT_CALL(
+        observer,
+        OnChildrenRemoved(testing::Eq(tabs::TabCollectionNodes{split_handle})))
+        .Times(1);
+
+    collection->Unsplit(split_id);
+  }
+}
+
 }  // namespace tabs
