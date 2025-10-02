@@ -2259,7 +2259,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateOriginTrialStateHost(
       mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver);
 
+  FrameTreeNode* GetPrerenderOuterMostMainFrame();
   // Prerender2:
+  // Tells PrerenderHostRegistry to cancel the prerendering of the page this
+  // frame is in when a loading error happens. When Prerender2ReuseHost is
+  // enabled, ABORT will be passed from the previous page when committing the
+  // navigation of the new page.
+  // Returns true if a prerender was canceled.
+  // Does nothing and returns false if `this` is not prerendered or the page
+  // is not yet committed for loading.
+  bool CancelPrerenderingForLoadingError(int32_t loading_error_code);
   // Tells PrerenderHostRegistry to cancel the prerendering of the page this
   // frame is in, which destroys this frame.
   // Returns true if a prerender was canceled. Does nothing and returns false if
