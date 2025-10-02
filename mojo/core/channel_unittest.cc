@@ -833,6 +833,10 @@ class CallbackIpczChannelDelegate : public Channel::Delegate {
   bool has_error_ = false;
 };
 
+// For a few ipcz message header sizes checks that sending the message results
+// in OnChannelMessage() getting called on the delegate at the receiver side.
+// Note: While this test emulates sending behavior of old clients, it does not
+// emulate old receiving behaviors.
 TEST(ChannelTest, IpczHeaderCompatibilityTest) {
   // The delegate is created before the task environment, because it will be
   // notified when the channel is destructed, which happens when the task
@@ -870,13 +874,16 @@ TEST(ChannelTest, IpczHeaderCompatibilityTest) {
     header->size = actual_header_size;
     header->num_handles = 0;
     header->num_bytes = static_cast<uint32_t>(message.size());
+    if (Channel::Message::IsAtLeastV2(*header)) {
+      header->v2.creation_timeticks_us =
+          (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds();
+    }
 
     auto on_message = [&](const void* payload, size_t payload_size,
                           scoped_refptr<ipcz_driver::Envelope> envelope) {
       got_message = true;
       EXPECT_EQ(100u, payload_size);
-      EXPECT_EQ(0, memcmp(payload,
-                          message.data() + Channel::Message::kMinIpczHeaderSize,
+      EXPECT_EQ(0, memcmp(payload, message.data() + actual_header_size,
                           payload_size));
     };
     receiver_delegate.set_on_message(base::BindLambdaForTesting(on_message));
@@ -913,6 +920,8 @@ class TestEnvelope : public ipcz_driver::Envelope {
 
 }  // namespace
 
+// Sends an ipcz message (in the oldest format) and expects OnChannelMessage()
+// to be called on the delegate at the receiver side.
 TEST(ChannelTest, TryDispatchMessageWithEnvelope) {
   // The delegate is created before the task environment, because it will be
   // notified when the channel is destructed, which happens when the task
