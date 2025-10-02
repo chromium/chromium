@@ -53,6 +53,7 @@ class ProtocolHandlerPickerCoordinator {
   void OnPickerClosed(const GURL& protocol_url,
                       std::optional<ProtocolHandlerPickerDialogResult> result);
   bool HasOpenDialogWidget() const;
+  void CloseDialogWidget(views::Widget::ClosedReason reason);
 
   const raw_ref<tabs::TabInterface> tab_;
   ui::ScopedUnownedUserData<ProtocolHandlerPickerCoordinator>

@@ -19100,7 +19100,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
     </if>
 
-<!-- Isolated Web Apps Window Management notification. -->
+    <!-- Isolated Web Apps Window Management notification. -->
     <message name="IDS_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_NOTIFICATION_TITLE" desc="Title for the notification displayed when an Isolated Web App opens multiple tabs.">
             <ph name="APP_NAME">$1<ex>Example App</ex></ph> has opened multiple tabs.
           </message>
@@ -19116,6 +19116,32 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_NOTIFICATION_CLOSE_BUTTON" desc="Text for the button on the multiple tabs opened notification that closes all additional tabs opened by the app.">
       Close opened tabs
     </message>
+
+    <!-- Web App Protocol Handler Picker Dialog. -->
+    <if expr="is_chromeos">
+        <message name="IDS_PROTOCOL_HANDLER_PICKER_TITLE_SINGLE_APP" desc="Title for a dialog asking the user to confirm opening a URL in a
+          specific app. The first placeholder is the protocol scheme with slashes (e.g., 'mailto://'), and the second is the app name (e.g.,
+          'Gmail').">
+          Open <ph name="PROTOCOL_SCHEME">$1<ex>mailto://</ex></ph> links in <ph name="APP_NAME">$2<ex>Gmail</ex></ph>
+        </message>
+
+        <message name="IDS_PROTOCOL_HANDLER_PICKER_TITLE_MULTIPLE_APPS" desc="Title for a dialog asking the user to choose an app to open a
+          URL. The placeholder is the protocol scheme with slashes (e.g., 'mailto://').">
+          Choose an app to open the <ph name="PROTOCOL_SCHEME">$1<ex>mailto://</ex></ph> link
+        </message>
+
+        <message name="IDS_PROTOCOL_HANDLER_PICKER_DIALOG_ALWAYS_OPEN_IN_THIS_APP" desc="Title of an Isolated Web App installer item on the ChromeOS Shelf.">
+          Always open <ph name="PROTOCOL_SCHEME">$1<ex>mailto://</ex></ph> links in this app
+        </message>
+
+        <message name="IDS_PROTOCOL_HANDLER_PICKER_PARAGRAPH_WITH_ORIGIN" desc="Paragraph in the protocol handler picker dialog explaining that a specific website (the placeholder) initiated the request to open a link in an app.">
+          The site <ph name="ORIGIN">$1</ph> wants to open this link in an app.
+        </message>
+
+        <message name="IDS_PROTOCOL_HANDLER_PICKER_PARAGRAPH_GENERIC" desc="Paragraph in the protocol handler picker dialog explaining that a website initiated the request to open a link in an app. Used when the specific website is not known.">
+          The website wants to open this link in an app.
+        </message>
+    </if>
 
     <!-- Common WebUI elements. -->
     <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature.">

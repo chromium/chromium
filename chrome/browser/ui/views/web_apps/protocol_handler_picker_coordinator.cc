@@ -16,6 +16,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -26,6 +28,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "url/gurl.h"
 
 namespace {
@@ -135,24 +138,64 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
     const GURL& protocol_url,
     const std::optional<url::Origin>& initiator_origin,
     ProtocolHandlerPickerDialogEntries app_entries) {
-  auto dialog_model = CreateProtocolHandlerPickerDialog(
-      protocol_url, app_entries, initiator_origin,
-      base::BindOnce(&ProtocolHandlerPickerCoordinator::OnPickerClosed,
-                     weak_factory_.GetWeakPtr(), protocol_url));
-  // TODO(cbug.com/422422887): Attach `dialog_model` to `tab_dialog_manager()`.
+  if (HasOpenDialogWidget()) {
+    return;
+  }
+
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      CreateProtocolHandlerPickerDialog(
+          protocol_url, app_entries, initiator_origin,
+          base::BindOnce(&ProtocolHandlerPickerCoordinator::OnPickerClosed,
+                         weak_factory_.GetWeakPtr(), protocol_url));
+
+  views::BubbleDialogModelHost* model_host =
+      views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
+                                                ui::mojom::ModalType::kChild)
+          .release();
+  model_host->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  auto params = std::make_unique<tabs::TabDialogManager::Params>();
+  params->close_on_detach = false;
+
+  dialog_ = tab_->GetTabFeatures()->tab_dialog_manager()->CreateAndShowDialog(
+      model_host, std::move(params));
+
+  // This will be called after the callback supplied to
+  // `CreateProtocolHandlerPickerDialog()`.
+  dialog_->MakeCloseSynchronous(
+      base::BindOnce(&ProtocolHandlerPickerCoordinator::CloseDialogWidget,
+                     weak_factory_.GetWeakPtr()));
+  // By default, the dialog may not have its initially focused view
+  // actually focused on some platforms (see crbug.com/440104083).
+  // Explicitly call RequestFocus() to ensure this happens.
+  model_host->GetInitiallyFocusedView()->RequestFocus();
+}
+
+bool ProtocolHandlerPickerCoordinator::HasOpenDialogWidget() const {
+  return dialog_ && !dialog_->IsClosed();
 }
 
 void ProtocolHandlerPickerCoordinator::OnPickerClosed(
     const GURL& protocol_url,
     std::optional<ProtocolHandlerPickerDialogResult> result) {
-  if (result) {
-    const auto& app_id = result->selected_app_id;
-    if (result->remember_choice) {
-      proxy_->SetProtocolLinkPreference(app_id, protocol_url.scheme());
-    }
-    LaunchApp(protocol_url, app_id);
+  if (!result) {
+    return;
   }
+  const auto& app_id = result->selected_app_id;
+  if (result->remember_choice) {
+    proxy_->SetProtocolLinkPreference(app_id, protocol_url.scheme());
+  }
+  LaunchApp(protocol_url, app_id);
+}
 
+void ProtocolHandlerPickerCoordinator::CloseDialogWidget(
+    views::Widget::ClosedReason reason) {
+  // TODO(cbug.com/422422887): Record `reason`?
+  dialog_.reset();
+
+  // If this is a new tab just for protocol navigations, it has to be closed
+  // now; this might lead to this class getting destroyed too.
   MaybeCloseTabAsync(*tab_);
 }
 
