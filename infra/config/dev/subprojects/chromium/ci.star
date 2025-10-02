@@ -33,7 +33,7 @@ luci.bucket(
     name = "ci.shadow",
     shadows = "ci",
     constraints = luci.bucket_constraints(
-        pools = ["luci.chromium.ci"],
+        pools = ["luci.chromium.ci", "luci.chromium.btrfs"],
         service_accounts = ["chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com"],
     ),
     bindings = [
