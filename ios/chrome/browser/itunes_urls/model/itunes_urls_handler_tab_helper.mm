@@ -49,9 +49,9 @@ const size_t kITunesUrlMediaTypeComponentDefaultIndex = 1;
 // iTunes URL should start with apple host and has product id.
 bool IsITunesProductUrl(const GURL& url) {
   if (!url.SchemeIsHTTPOrHTTPS() ||
-      !(strcmp(url.host().c_str(), kLegacyITunesUrlHost) == 0 ||
-        strcmp(url.host().c_str(), kLegacyITunesGlobalUrlHost) == 0 ||
-        strcmp(url.host().c_str(), kAppUrlHost) == 0)) {
+      !(strcmp(url.GetHost().c_str(), kLegacyITunesUrlHost) == 0 ||
+        strcmp(url.GetHost().c_str(), kLegacyITunesGlobalUrlHost) == 0 ||
+        strcmp(url.GetHost().c_str(), kAppUrlHost) == 0)) {
     return false;
   }
 
@@ -93,7 +93,7 @@ bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
   // HOST/OPTIONAL_REGION_CODE/MEDIA_TYPE/OPTIONAL_MEDIA_NAME/ID?PARAMETERS
   // Check the URL media type, to determine if it is supported.
   std::vector<std::string> path_components = base::SplitString(
-      url.path(), "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      url.GetPath(), "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (path_components.size() < kITunesUrlPathMinComponentsCount) {
     return false;

@@ -52,7 +52,7 @@ bool IsValidAppUrl(const GURL& app_url) {
 bool HasChromeAppScheme(const GURL& app_url) {
   NSArray* chrome_schemes =
       [[ChromeAppConstants sharedInstance] allBundleURLSchemes];
-  NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.scheme());
+  NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.GetScheme());
   return [chrome_schemes containsObject:app_url_scheme];
 }
 

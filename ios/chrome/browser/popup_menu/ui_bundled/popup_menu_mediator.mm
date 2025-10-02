@@ -789,7 +789,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   }
   const GURL& URL = navItem->GetURL();
   // Show site info for offline pages.
-  if (URL.SchemeIs(kChromeUIScheme) && URL.host() == kChromeUIOfflineHost) {
+  if (URL.SchemeIs(kChromeUIScheme) && URL.GetHost() == kChromeUIOfflineHost) {
     return YES;
   }
   // Do not show site info for NTP.

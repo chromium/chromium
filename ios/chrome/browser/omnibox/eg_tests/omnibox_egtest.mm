@@ -506,7 +506,7 @@ void FocusFakebox() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
-                            _URL1.host())];
+                            _URL1.GetHost())];
 }
 
 - (void)testCopyPaste {

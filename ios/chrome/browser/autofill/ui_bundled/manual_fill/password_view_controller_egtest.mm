@@ -821,7 +821,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   CheckPasswordFillingOptionIsVisible(
-      /*site=*/base::SysUTF8ToNSString(self.URL.host()));
+      /*site=*/base::SysUTF8ToNSString(self.URL.GetHost()));
 
   // Select a username.
   [[EarlGrey selectElementWithMatcher:UsernameButtonMatcher()]
@@ -858,7 +858,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   CheckPasswordFillingOptionIsVisible(
-      /*site=*/base::SysUTF8ToNSString(self.URL.host()));
+      /*site=*/base::SysUTF8ToNSString(self.URL.GetHost()));
 
   // Select a password.
   [[EarlGrey selectElementWithMatcher:manual_fill::PasswordButtonMatcher()]
@@ -1254,7 +1254,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
   // Scroll down to the backup credential cell and tap the "Autofill form"
   // button.
-  NSString* host = base::SysUTF8ToNSString(self.URL.host());
+  NSString* host = base::SysUTF8ToNSString(self.URL.GetHost());
   int password_index = 1;
   [[[EarlGrey selectElementWithMatcher:BackupCredentialAutofillFormButton(
                                            host, password_index,

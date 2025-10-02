@@ -591,7 +591,7 @@ void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
     // The WKWebView URL underneath a forced-offline page is chrome://offline,
     // which has an embedded entry URL. Apply that entryURL to the virtualURL
     // here.
-    if (item->GetVirtualURL().host() == kChromeUIOfflineHost) {
+    if (item->GetVirtualURL().GetHost() == kChromeUIOfflineHost) {
       item->SetVirtualURL(
           reading_list::EntryURLForOfflineURL(item->GetVirtualURL()));
     }

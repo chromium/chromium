@@ -92,7 +92,7 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
                           PolicyDecisionCallback callback) override {
     PolicyDecision decision = PolicyDecision::Allow();
     GURL URL = net::GURLWithNSURL(request.URL);
-    if (URL.path() != path_ || URL.query() == blocked_request_query_) {
+    if (URL.GetPath() != path_ || URL.GetQuery() == blocked_request_query_) {
       decision = PolicyDecision::CancelAndDisplayError(CreateEmbedderError());
     }
     std::move(callback).Run(decision);
@@ -102,7 +102,7 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
                            PolicyDecisionCallback callback) override {
     PolicyDecision decision = PolicyDecision::Allow();
     GURL URL = net::GURLWithNSURL(response.URL);
-    if (URL.path() != path_ || URL.query() != allowed_query_) {
+    if (URL.GetPath() != path_ || URL.GetQuery() != allowed_query_) {
       decision = PolicyDecision::CancelAndDisplayError(CreateEmbedderError());
     }
     std::move(callback).Run(decision);

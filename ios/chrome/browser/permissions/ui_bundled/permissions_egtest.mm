@@ -147,7 +147,7 @@ void TapDoneButtonOnInfobarModal() {
              @"Permissions dialog was not shown.");
   NSString* alertText = l10n_util::GetNSStringF(
       IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE,
-      base::UTF8ToUTF16(self.testServer->base_url().host()),
+      base::UTF8ToUTF16(self.testServer->base_url().GetHost()),
       base::SysNSStringToUTF16(permissionsString));
   id<GREYMatcher> textMatcher = grey_allOf(
       grey_ancestor(dialogMatcher), grey_accessibilityLabel(alertText), nil);

@@ -128,7 +128,7 @@ TEST_F(PasswordPickerViewControllerTest, TestPasswordPickerLayout) {
         item.title);
     EXPECT_NSEQ(
         ([NSString stringWithFormat:@"%@%d%@", @"www.example", i, @".com"]),
-        base::SysUTF8ToNSString(item.URL.gurl.host()));
+        base::SysUTF8ToNSString(item.URL.gurl.GetHost()));
   }
 }
 

@@ -392,7 +392,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   [[EarlGrey selectElementWithMatcher:
                  grey_text([NSString
                      stringWithCString:[ChromeEarlGrey webStateVisibleURL]
-                                           .host()
+                                           .GetHost()
                                            .c_str()
                               encoding:[NSString defaultCStringEncoding]])]
       assertWithMatcher:grey_sufficientlyVisible()];

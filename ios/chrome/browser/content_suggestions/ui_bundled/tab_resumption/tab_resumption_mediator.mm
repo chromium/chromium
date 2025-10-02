@@ -965,7 +965,7 @@ class TabResumptionMediatorProxy {
                         forItem:(TabResumptionItem*)item {
   __weak TabResumptionMediator* weakSelf = self;
   if (!URL.is_valid() || !URL.SchemeIsCryptographic() ||
-      !base::EndsWith(URL.host(), kGStatic)) {
+      !base::EndsWith(URL.GetHost(), kGStatic)) {
     return;
   }
   _imageFetcher->FetchImageData(

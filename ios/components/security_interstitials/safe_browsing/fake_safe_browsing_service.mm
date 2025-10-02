@@ -23,16 +23,16 @@ using safe_browsing::SBThreatType;
 
 // Helper for mapping test urls to safe browsing threat types.
 SBThreatType GetThreatTypeForUrl(const GURL& url) {
-  if (url.host() == FakeSafeBrowsingService::kUnsafeHost ||
-      url.host() == FakeSafeBrowsingService::kAsyncUnsafeHost) {
+  if (url.GetHost() == FakeSafeBrowsingService::kUnsafeHost ||
+      url.GetHost() == FakeSafeBrowsingService::kAsyncUnsafeHost) {
     return SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   }
 
-  if (url.host() == FakeSafeBrowsingService::kEnterpriseBlockHost) {
+  if (url.GetHost() == FakeSafeBrowsingService::kEnterpriseBlockHost) {
     return SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
   }
 
-  if (url.host() == FakeSafeBrowsingService::kEnterpriseWarnHost) {
+  if (url.GetHost() == FakeSafeBrowsingService::kEnterpriseWarnHost) {
     return SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   }
 
@@ -174,9 +174,9 @@ class FakeSafeBrowsingUrlCheckerImpl
  protected:
   // Returns true if the given `url` should be deemed unsafe.
   virtual bool IsUrlUnsafe(const GURL& url) {
-    return url.host() == FakeSafeBrowsingService::kUnsafeHost ||
-           url.host() == FakeSafeBrowsingService::kEnterpriseBlockHost ||
-           url.host() == FakeSafeBrowsingService::kEnterpriseWarnHost;
+    return url.GetHost() == FakeSafeBrowsingService::kUnsafeHost ||
+           url.GetHost() == FakeSafeBrowsingService::kEnterpriseBlockHost ||
+           url.GetHost() == FakeSafeBrowsingService::kEnterpriseWarnHost;
   }
 
   raw_ptr<FakeSafeBrowsingClient> client_ = nullptr;
@@ -201,7 +201,7 @@ class FakeAsyncSafeBrowsingUrlCheckerImpl
 
  protected:
   bool IsUrlUnsafe(const GURL& url) override {
-    if (url.host() == FakeSafeBrowsingService::kAsyncUnsafeHost) {
+    if (url.GetHost() == FakeSafeBrowsingService::kAsyncUnsafeHost) {
       return true;
     }
     return FakeSafeBrowsingUrlCheckerImpl::IsUrlUnsafe(url);

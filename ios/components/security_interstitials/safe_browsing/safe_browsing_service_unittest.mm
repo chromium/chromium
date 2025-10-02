@@ -268,7 +268,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
     threat_info->set_threat_type(
         safe_browsing::RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
     threat_info->set_cache_duration_sec(100);
-    threat_info->set_cache_expression_using_match_type(bad_url.host() + "/");
+    threat_info->set_cache_expression_using_match_type(bad_url.GetHost() + "/");
     threat_info->set_cache_expression_match_type(
         safe_browsing::RTLookupResponse::ThreatInfo::COVERING_MATCH);
     verdict_cache_manager_->CacheRealTimeUrlVerdict(response,

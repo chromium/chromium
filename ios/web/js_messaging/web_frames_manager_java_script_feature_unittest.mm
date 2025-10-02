@@ -52,8 +52,8 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
     OCMStub([security_origin port])
         .andReturn(web_frame->GetSecurityOrigin().port());
     OCMStub([security_origin protocol])
-        .andReturn(
-            base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().scheme()));
+        .andReturn(base::SysUTF8ToNSString(
+            web_frame->GetSecurityOrigin().scheme()));
 
     // Mock WKFrameInfo.
     WKFrameInfo* frame_info = OCMClassMock([WKFrameInfo class]);
@@ -87,8 +87,8 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
     OCMStub([security_origin port])
         .andReturn(web_frame->GetSecurityOrigin().port());
     OCMStub([security_origin protocol])
-        .andReturn(
-            base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().scheme()));
+        .andReturn(base::SysUTF8ToNSString(
+            web_frame->GetSecurityOrigin().scheme()));
 
     // Mock WKFrameInfo.
     WKFrameInfo* frame_info = OCMClassMock([WKFrameInfo class]);

@@ -251,10 +251,10 @@ std::string FontSizeTabHelper::GetCurrentUserZoomMultiplierKey() const {
 
 std::string FontSizeTabHelper::GetUserZoomMultiplierKeyUrlPart() const {
   if (IsGoogleCachedAMPPage()) {
-    return web_state_->GetLastCommittedURL().host().append("/amp");
+    return web_state_->GetLastCommittedURL().GetHost().append("/amp");
   }
 
-  return web_state_->GetLastCommittedURL().host();
+  return web_state_->GetLastCommittedURL().GetHost();
 }
 
 double FontSizeTabHelper::GetCurrentUserZoomMultiplier() const {
@@ -286,7 +286,7 @@ bool FontSizeTabHelper::IsGoogleCachedAMPPage() const {
   if (!google_util::IsGoogleDomainUrl(
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) ||
-      url.path().compare(0, 5, "/amp/") != 0) {
+      url.GetPath().compare(0, 5, "/amp/") != 0) {
     return false;
   }
 

@@ -36,7 +36,7 @@
 }
 
 - (NSString*)uniqueIdentifier {
-  return self.URL ? base::SysUTF8ToNSString(self.URL.gurl.host()) : @"";
+  return self.URL ? base::SysUTF8ToNSString(self.URL.gurl.GetHost()) : @"";
 }
 
 #pragma mark - Private

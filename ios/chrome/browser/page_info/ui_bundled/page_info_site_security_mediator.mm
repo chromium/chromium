@@ -98,7 +98,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   }
 
   // At this point, this is a web page.
-  dataHolder.siteURL = base::SysUTF8ToNSString(URL.host());
+  dataHolder.siteURL = base::SysUTF8ToNSString(URL.GetHost());
   dataHolder.isEmpty = NO;
   dataHolder.status =
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE);

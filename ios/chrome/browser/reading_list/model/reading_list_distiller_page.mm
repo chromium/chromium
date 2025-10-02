@@ -242,7 +242,7 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
   if (!google_util::IsGoogleDomainUrl(
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) ||
-      !url.path().compare(0, 4, "amp/")) {
+      !url.GetPath().compare(0, 4, "amp/")) {
     return false;
   }
   const web::SSLStatus& ssl_status = CurrentWebState()
@@ -302,7 +302,7 @@ bool ReadingListDistillerPage::IsWikipediaPage() {
   if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
     return false;
   }
-  return (base::EndsWith(url.host(), ".m.wikipedia.org",
+  return (base::EndsWith(url.GetHost(), ".m.wikipedia.org",
                          base::CompareCase::SENSITIVE));
 }
 

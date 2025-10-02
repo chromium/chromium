@@ -1339,7 +1339,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
                                       navigationManager:navManager];
     [_SSLStatusUpdater setDelegate:self];
   }
-  NSString* host = base::SysUTF8ToNSString(_documentURL.host());
+  NSString* host = base::SysUTF8ToNSString(_documentURL.GetHost());
   BOOL hasOnlySecureContent = [self.webView hasOnlySecureContent];
   base::apple::ScopedCFTypeRef<SecTrustRef> trust;
   trust.reset([self.webView serverTrust], base::scoped_policy::RETAIN);
@@ -1722,9 +1722,9 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
           web::features::kCrashOnUnexpectedURLChange)) {
     if (_documentURL.DeprecatedGetOriginAsURL() !=
         newURL.DeprecatedGetOriginAsURL()) {
-      if (!_documentURL.host().empty() &&
-          (base::Contains(newURL.username(), _documentURL.host()) ||
-           base::Contains(newURL.password(), _documentURL.host()))) {
+      if (!_documentURL.GetHost().empty() &&
+          (base::Contains(newURL.GetUsername(), _documentURL.GetHost()) ||
+           base::Contains(newURL.GetPassword(), _documentURL.GetHost()))) {
         NOTREACHED();
       }
     }

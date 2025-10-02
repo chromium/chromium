@@ -27,7 +27,7 @@ const char kPageWithGreenAndBlueColor[] = "/green_and_blue_page.html";
 // page filled with different color.
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() == kPageWithRedColor) {
+  if (request.GetURL().GetPath() == kPageWithRedColor) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     result->set_content(R"(<html>
@@ -45,7 +45,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 </body></html>)");
     return std::move(result);
   }
-  if (request.GetURL().path() == kPageWithGreenAndBlueColor) {
+  if (request.GetURL().GetPath() == kPageWithGreenAndBlueColor) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     result->set_content(R"(<html>

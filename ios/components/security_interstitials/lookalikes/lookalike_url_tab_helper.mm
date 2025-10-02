@@ -64,7 +64,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   // If the URL is in the allowlist, don't show any warning.
   LookalikeUrlTabAllowList* allow_list =
       LookalikeUrlTabAllowList::FromWebState(web_state());
-  if (allow_list->IsDomainAllowed(response_url.host())) {
+  if (allow_list->IsDomainAllowed(response_url.GetHost())) {
     std::move(callback).Run(CreateAllowDecision());
     return;
   }

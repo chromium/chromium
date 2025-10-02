@@ -123,11 +123,11 @@ using bookmarks::BookmarkNode;
 
     // Construct the title from domain + path (stripping trailing slash from
     // path).
-    std::string path = URL.GetWithoutRef().GetWithoutFilename().path();
+    std::string path = URL.GetWithoutRef().GetWithoutFilename().GetPath();
     if (path.length() > 0) {
       path.pop_back();
     }
-    NSString* title = base::SysUTF8ToNSString(URL.host() + path);
+    NSString* title = base::SysUTF8ToNSString(URL.GetHost() + path);
 
     const BookmarkNode* existingBookmark =
         _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);

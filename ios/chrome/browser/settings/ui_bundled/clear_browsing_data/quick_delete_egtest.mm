@@ -1626,7 +1626,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Check that my activity link was opened.
   GREYAssertEqual(std::string(kMyActivityURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
                   @"Did not navigate to the search activity url.");
 
   // Assert that the metrics are populated.
@@ -1665,7 +1665,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Check that my activity link was opened.
   GREYAssertEqual(std::string(kMyActivityURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
                   @"Did not navigate to the search activity url.");
 
   // Assert that the metrics are populated.

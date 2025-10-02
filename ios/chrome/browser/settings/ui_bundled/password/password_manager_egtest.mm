@@ -2435,7 +2435,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Check that the help center article was opened.
   GREYAssertEqual(std::string("support.google.com"),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
                   @"Did not navigate to the help center article.");
 }
 

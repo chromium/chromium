@@ -94,7 +94,7 @@ void OptimizationGuideValidationTabHelper::
 
   auto expected_metadata =
       optimization_guide::features::ShouldMetadataValidationFetchHostKeyed()
-          ? url.host()
+          ? url.GetHost()
           : url.spec();
 
   auto string_metadata =

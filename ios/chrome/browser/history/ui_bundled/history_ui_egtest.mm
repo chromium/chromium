@@ -181,7 +181,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
       assertWithMatcher:grey_notNil()];
 
   NSString* searchString =
-      [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
+      [NSString stringWithFormat:@"%s", _URL1.GetPath().c_str()];
 
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(searchString)];
@@ -551,7 +551,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_tap()];
   NSString* searchString =
-      [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
+      [NSString stringWithFormat:@"%s", _URL1.GetPath().c_str()];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(searchString)];
 

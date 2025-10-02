@@ -1450,7 +1450,7 @@ TEST_F(NavigationManagerTest, ApplyTransientRewriters) {
       web::HttpsUpgradeType::kNone);
 
   NavigationItem* pending_item = navigation_manager()->GetPendingItem();
-  EXPECT_EQ(kRewrittenQueryParam, pending_item->GetURL().query());
+  EXPECT_EQ(kRewrittenQueryParam, pending_item->GetURL().GetQuery());
 
   // Now that the transient rewriters are consumed, the next URL should not be
   // changed.
@@ -2255,7 +2255,8 @@ TEST_F(NavigationManagerTest, TransientURLRewritersOnlyUsedForPendingItem) {
       NavigationInitiationType::BROWSER_INITIATED,
       /*is_post_navigation=*/false, /*is_error_navigation=*/false,
       web::HttpsUpgradeType::kNone);
-  EXPECT_EQ(kRewrittenQueryParam, manager_->GetPendingItem()->GetURL().query());
+  EXPECT_EQ(kRewrittenQueryParam,
+            manager_->GetPendingItem()->GetURL().GetQuery());
 }
 
 // Tests DiscardNonCommittedItems discards pending items.

@@ -165,10 +165,10 @@ class CookieStoreIOSTest : public PlatformTest {
                        const std::string& value) {
     system_store_->SetCookieAsync(
         [NSHTTPCookie cookieWithProperties:@{
-          NSHTTPCookiePath : base::SysUTF8ToNSString(url.path()),
+          NSHTTPCookiePath : base::SysUTF8ToNSString(url.GetPath()),
           NSHTTPCookieName : base::SysUTF8ToNSString(name),
           NSHTTPCookieValue : base::SysUTF8ToNSString(value),
-          NSHTTPCookieDomain : base::SysUTF8ToNSString(url.host()),
+          NSHTTPCookieDomain : base::SysUTF8ToNSString(url.GetHost()),
         }],
         base::BindOnce(&net::CookieStoreIOS::NotifySystemCookiesChanged));
     base::RunLoop().RunUntilIdle();

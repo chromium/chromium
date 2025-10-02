@@ -52,14 +52,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   std::string image_binary;
   EXPECT_TRUE(base::Base64Decode(kImageBase64, &image_binary));
 
-  if (request.GetURL().path() == "/image") {
+  if (request.GetURL().GetPath() == "/image") {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("image/png");
     result->set_content(image_binary);
     result->AddCustomHeader("Access-Control-Allow-Origin", "*");
     return std::move(result);
   }
-  if (request.GetURL().path() == "/image_delayed") {
+  if (request.GetURL().GetPath() == "/image_delayed") {
     auto result = std::make_unique<net::test_server::DelayedHttpResponse>(
         base::Milliseconds(kImageDelayInMs));
     result->set_content_type("image/png");

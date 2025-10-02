@@ -330,21 +330,21 @@ TEST_F(DownloadManagerMediatorTest, DisplayOrigin) {
   // WebState and task have the same domain.
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
-              base::SysUTF8ToNSString(GURL(kSameDomainURL).host()));
+              base::SysUTF8ToNSString(GURL(kSameDomainURL).GetHost()));
   EXPECT_FALSE(consumer_.originatingHostDisplayed);
 
   // WebState and task have different domains.
   web_state_->SetCurrentURL(GURL(kCrossDomainURL));
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
-              base::SysUTF8ToNSString(GURL(kSameDomainURL).host()));
+              base::SysUTF8ToNSString(GURL(kSameDomainURL).GetHost()));
   EXPECT_TRUE(consumer_.originatingHostDisplayed);
 
   // Navigate back, origin should still be visible.
   web_state_->SetCurrentURL(GURL(kSameDomainURL));
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
-              base::SysUTF8ToNSString(GURL(kSameDomainURL).host()));
+              base::SysUTF8ToNSString(GURL(kSameDomainURL).GetHost()));
   EXPECT_TRUE(consumer_.originatingHostDisplayed);
 
   // Reset Mediator.
@@ -356,10 +356,10 @@ TEST_F(DownloadManagerMediatorTest, DisplayOrigin) {
   // Check that the originating host is used.
   task()->SetRedirectedURL(GURL(kCrossDomainURL2));
   task()->SetOriginatingHost(
-      base::SysUTF8ToNSString(GURL(kCrossDomainURL).host()));
+      base::SysUTF8ToNSString(GURL(kCrossDomainURL).GetHost()));
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
-              base::SysUTF8ToNSString(GURL(kCrossDomainURL).host()));
+              base::SysUTF8ToNSString(GURL(kCrossDomainURL).GetHost()));
   EXPECT_TRUE(consumer_.originatingHostDisplayed);
 
   // Reset Mediator.

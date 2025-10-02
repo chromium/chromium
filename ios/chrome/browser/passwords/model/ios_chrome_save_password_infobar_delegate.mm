@@ -220,7 +220,7 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetPasswordText() const {
 }
 
 NSString* IOSChromeSavePasswordInfoBarDelegate::GetURLHostText() const {
-  return base::SysUTF8ToNSString(form_to_save_->GetURL().host());
+  return base::SysUTF8ToNSString(form_to_save_->GetURL().GetHost());
 }
 
 std::optional<std::string>

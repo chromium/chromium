@@ -365,9 +365,9 @@
     [self showSignOutWithItemView:[view contentView]];
     return;
   }
-  NSString* baseURL =
-      [NSString stringWithCString:(url.gurl.host() + url.gurl.path()).c_str()
-                         encoding:[NSString defaultCStringEncoding]];
+  NSString* baseURL = [NSString
+      stringWithCString:(url.gurl.GetHost() + url.gurl.GetPath()).c_str()
+               encoding:[NSString defaultCStringEncoding]];
   if ([[NSString stringWithCString:(kClearBrowsingDataDSESearchUrlInFooterURL)
                           encoding:[NSString defaultCStringEncoding]]
           rangeOfString:baseURL]

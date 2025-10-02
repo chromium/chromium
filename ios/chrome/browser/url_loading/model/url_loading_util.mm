@@ -22,7 +22,8 @@
 
 bool IsURLAllowedInIncognito(const GURL& url) {
   // Most URLs are allowed in incognito; the following is an exception.
-  return !(url.SchemeIs(kChromeUIScheme) && url.host() == kChromeUIHistoryHost);
+  return !(url.SchemeIs(kChromeUIScheme) &&
+           url.GetHost() == kChromeUIHistoryHost);
 }
 
 void LoadJavaScriptURL(const GURL& url,

@@ -9,7 +9,7 @@
 namespace net {
 
 std::string GetContentAndFragmentForUrl(const GURL& url) {
-  return url.GetContent() + (url.has_ref() ? "#" + url.ref() : "");
+  return url.GetContent() + (url.has_ref() ? "#" + url.GetRef() : "");
 }
 
 }  // namespace net

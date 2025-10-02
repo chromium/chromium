@@ -884,7 +884,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                           nil)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
-                            self.testServer->base_url().host())];
+                            self.testServer->base_url().GetHost())];
 
   SignOut();
 }

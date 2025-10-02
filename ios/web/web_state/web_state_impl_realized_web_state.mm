@@ -381,7 +381,7 @@ void WebStateImpl::RealizedWebState::OnFaviconUrlUpdated(
 
 void WebStateImpl::RealizedWebState::CreateWebUI(const GURL& url) {
   if (HasWebUI()) {
-    if (web_ui_->GetController()->GetHost() == url.host()) {
+    if (web_ui_->GetController()->GetHost() == url.GetHost()) {
       // Don't recreate webUI for the same host.
       return;
     }

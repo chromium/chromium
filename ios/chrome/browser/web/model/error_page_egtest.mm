@@ -31,7 +31,7 @@ const std::string kRedirectPage = "/redirect-page.html";
 // Provides responses for the different pages.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() == kRedirectPage) {
+  if (request.GetURL().GetPath() == kRedirectPage) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_code(net::HTTP_MOVED_PERMANENTLY);
     result->AddCustomHeader("Location", "data:text/plain,Hello World");

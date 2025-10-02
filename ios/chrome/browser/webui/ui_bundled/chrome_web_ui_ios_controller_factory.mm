@@ -69,7 +69,7 @@ using WebUIIOSFactoryFunction =
 template <class T>
 std::unique_ptr<WebUIIOSController> NewWebUIIOS(WebUIIOS* web_ui,
                                                 const GURL& url) {
-  return std::make_unique<T>(web_ui, url.host());
+  return std::make_unique<T>(web_ui, url.GetHost());
 }
 
 template <>
@@ -100,7 +100,7 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
 
   // Please keep this in alphabetical order. If #ifs or special logic is
   // required, add it below in the appropriate section.
-  const std::string url_host = url.host();
+  const std::string url_host = url.GetHost();
   if (url_host == kChromeUIAutofillInternalsHost) {
     return &NewWebUIIOS<AutofillInternalsUIIOS>;
   }
@@ -215,7 +215,7 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
 
 NSInteger ChromeWebUIIOSControllerFactory::GetErrorCodeForWebUIURL(
     const GURL& url) const {
-  if (url.host() == kChromeUIDinoHost) {
+  if (url.GetHost() == kChromeUIDinoHost) {
     return NSURLErrorNotConnectedToInternet;
   }
   if (GetWebUIIOSFactoryFunction(url)) {

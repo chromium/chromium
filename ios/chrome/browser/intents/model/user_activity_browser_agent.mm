@@ -871,7 +871,8 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
   // `transition_type` to `PAGE_TRANSITION_AUTO_BOOKMARK` instead of
   // `PAGE_TRANSITION_LINK` allows this load to complete successfully.
   if (connection_information_.startupParameters.openedViaWidgetScheme &&
-      url.scheme() == kChromeUIScheme && url.host() == kChromeUIDinoHost) {
+      url.GetScheme() == kChromeUIScheme &&
+      url.GetHost() == kChromeUIDinoHost) {
     params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   }
 

@@ -37,7 +37,7 @@ using security_interstitials::omnibox_https_upgrades::kEventHistogram;
 namespace {
 
 std::string GetURLWithoutScheme(const GURL& url) {
-  return url.spec().substr(url.scheme().size() + strlen("://"));
+  return url.spec().substr(url.GetScheme().size() + strlen("://"));
 }
 
 }  // namespace

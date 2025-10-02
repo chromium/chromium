@@ -168,7 +168,7 @@
     return nil;
   }
   GURL url = _webState->GetLastCommittedURL();
-  return base::SysUTF8ToNSString(url.host());
+  return base::SysUTF8ToNSString(url.GetHost());
 }
 
 #pragma mark - CRWWebStateObserver

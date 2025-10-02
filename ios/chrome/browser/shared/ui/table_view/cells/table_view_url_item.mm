@@ -71,7 +71,7 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   if (!self.URL) {
     return @"";
   }
-  return base::SysUTF8ToNSString(self.URL.gurl.host());
+  return base::SysUTF8ToNSString(self.URL.gurl.GetHost());
 }
 
 #pragma mark Private

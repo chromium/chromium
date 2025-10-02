@@ -60,7 +60,7 @@
 }
 
 - (NSString*)uniqueIdentifier {
-  return base::SysUTF8ToNSString(self.URL.host());
+  return base::SysUTF8ToNSString(self.URL.GetHost());
 }
 
 #pragma mark - Accessibility

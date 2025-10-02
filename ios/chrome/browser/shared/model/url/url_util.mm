@@ -21,13 +21,14 @@
 
 bool UrlIsExternalFileReference(const GURL& url) {
   return url.SchemeIs(kChromeUIScheme) &&
-         base::EqualsCaseInsensitiveASCII(url.host(),
+         base::EqualsCaseInsensitiveASCII(url.GetHost(),
                                           kChromeUIExternalFileHost);
 }
 
 bool UrlIsDownloadedFile(const GURL& url) {
   return url.SchemeIs(kChromeUIScheme) &&
-         base::EqualsCaseInsensitiveASCII(url.host(), kChromeUIDownloadsHost);
+         base::EqualsCaseInsensitiveASCII(url.GetHost(),
+                                          kChromeUIDownloadsHost);
 }
 
 bool UrlHasChromeScheme(const GURL& url) {
@@ -129,7 +130,7 @@ NSSet<NSString*>* GetItmsSchemes() {
 }
 
 bool UrlHasAppStoreScheme(const GURL& url) {
-  return SchemeIsAppStoreScheme(url.scheme());
+  return SchemeIsAppStoreScheme(url.GetScheme());
 }
 
 bool SchemeIsAppStoreScheme(const std::string& scheme) {

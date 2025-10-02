@@ -245,16 +245,16 @@ void DownloadManagerMediator::UpdateConsumer() {
     if ([download_task_->GetOriginatingHost() length]) {
       // Use the originating host provided by WKWebView.
       originating_host = download_task_->GetOriginatingHost();
-    } else if (download_task_->GetRedirectedUrl().host().size()) {
+    } else if (download_task_->GetRedirectedUrl().GetHost().size()) {
       // If originating host is not available (e.g. the download is triggered
       // by a data:// frame, use the download host instead).
       originating_host =
-          base::SysUTF8ToNSString(download_task_->GetRedirectedUrl().host());
+          base::SysUTF8ToNSString(download_task_->GetRedirectedUrl().GetHost());
     }
     // Only show the compute the originating host if it is not what is displayed
     // in the omnibox.
     display_originating_host =
-        download_task_->GetWebState()->GetLastCommittedURL().host() !=
+        download_task_->GetWebState()->GetLastCommittedURL().GetHost() !=
         base::SysNSStringToUTF8(originating_host);
 
     // If the host was already displayed, keep it displayed

@@ -60,7 +60,8 @@ PermissionsDialogRequest::PermissionsDialogRequest(
     NOTREACHED();
   }
   message_ = l10n_util::GetNSStringF(
-      IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE, base::UTF8ToUTF16(url.host()),
+      IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE,
+      base::UTF8ToUTF16(url.GetHost()),
       l10n_util::GetStringUTF16(string_id_for_permission));
 }
 

@@ -122,7 +122,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Add 3 for the "://" which is not considered part of the scheme
   std::string URLWithoutScheme =
-      destinationURL.spec().substr(destinationURL.scheme().length() + 3);
+      destinationURL.spec().substr(destinationURL.GetScheme().length() + 3);
 
   [[EarlGrey selectElementWithMatcher:TabWithTitle(URLWithoutScheme)]
       assertWithMatcher:grey_notNil()];
@@ -140,7 +140,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Add 3 for the "://" which is not considered part of the scheme
   std::string URLWithoutScheme =
-      destinationURL.spec().substr(destinationURL.scheme().length() + 3);
+      destinationURL.spec().substr(destinationURL.GetScheme().length() + 3);
 
   [[EarlGrey selectElementWithMatcher:TabWithTitle(URLWithoutScheme)]
       assertWithMatcher:grey_notNil()];

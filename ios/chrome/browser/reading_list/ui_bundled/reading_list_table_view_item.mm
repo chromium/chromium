@@ -97,7 +97,8 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
       base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   URLCell.titleLabel.text = [self titleLabelText];
   URLCell.URLLabel.text = [self URLLabelText];
-  URLCell.cellUniqueIdentifier = base::SysUTF8ToNSString(self.entryURL.host());
+  URLCell.cellUniqueIdentifier =
+      base::SysUTF8ToNSString(self.entryURL.GetHost());
   URLCell.accessibilityTraits |= UIAccessibilityTraitButton;
   URLCell.metadataImage.image =
       self.showCloudSlashIcon

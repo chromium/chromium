@@ -141,7 +141,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 
   // The tests use `self.testServer` as the optimization guide hints server.
   self.testServer->RegisterRequestHandler(base::BindRepeating(
-      &HandleGetHintsRequest, origin_server->base_url().host(),
+      &HandleGetHintsRequest, origin_server->base_url().GetHost(),
       std::cref(_response_type), std::ref(_count_hints_requests_received)));
   GREYAssertTrue(self.testServer->Start(), @"Hints server failed to start.");
 
@@ -155,7 +155,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
   [OptimizationGuideTestAppInterface setGetHintsURL:hints_server_host];
   [OptimizationGuideTestAppInterface
       setComponentUpdateHints:base::SysUTF8ToNSString(
-                                  origin_server->base_url().host())];
+                                  origin_server->base_url().GetHost())];
   [OptimizationGuideTestAppInterface
       registerOptimizationType:optimization_guide::proto::OptimizationType::
                                    NOSCRIPT];

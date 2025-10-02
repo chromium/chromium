@@ -331,7 +331,7 @@ using chrome_test_util::WindowWithNumber;
 
   // Check that the URL of the help center was opened.
   GREYAssertEqual(std::string(kMyActivityURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
                   @"Did not navigate to the search activity url.");
 }
 

@@ -84,7 +84,7 @@ HttpsOnlyModeUpgradeTabHelper::HttpsOnlyModeUpgradeTabHelper(
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
-  return service_->IsHttpAllowedForHost(url.host());
+  return service_->IsHttpAllowedForHost(url.GetHost());
 }
 
 void HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout() {

@@ -116,8 +116,8 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
         gurl = [params externalURL];
       }
       UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(gurl, virtualURL);
-      if (gurl.scheme() == kChromeUIScheme &&
-          gurl.host() == kChromeUIDinoHost) {
+      if (gurl.GetScheme() == kChromeUIScheme &&
+          gurl.GetHost() == kChromeUIDinoHost) {
         urlLoadParams.web_params.transition_type =
             ui::PAGE_TRANSITION_AUTO_BOOKMARK;
       }

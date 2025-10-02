@@ -230,7 +230,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)DISABLED_testDeleteHistoricalSuggestion {
   [self populateHistory];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.host()],
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
                        [NSString cr_fromString:_URL3.port()]];
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
@@ -279,7 +279,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.host()],
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
                        [NSString cr_fromString:_URL3.port()]];
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
@@ -303,7 +303,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 
   [ChromeEarlGreyUI
-      focusOmniboxAndReplaceText:[NSString cr_fromString:_URL3.host()]];
+      focusOmniboxAndReplaceText:[NSString cr_fromString:_URL3.GetHost()]];
 
   // Check that we have the switch button for the second page.
   [[EarlGrey
@@ -328,7 +328,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Open a new tab and switch to the first tab.
   [ChromeEarlGrey openNewTab];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.host()],
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.GetHost()],
                        [NSString cr_fromString:_URL1.port()]];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
@@ -361,7 +361,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText([NSString cr_fromString:_URL1.host()])];
+      performAction:grey_replaceText([NSString cr_fromString:_URL1.GetHost()])];
 
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.
@@ -426,7 +426,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Start typing url of the two opened pages in a new tab.
   [ChromeEarlGrey openNewTab];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.host()],
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.GetHost()],
                        [NSString cr_fromString:_URL1.port()]];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
@@ -458,7 +458,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [self populateHistory];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.host()],
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
                        [NSString cr_fromString:_URL3.port()]];
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];

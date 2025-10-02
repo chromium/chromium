@@ -42,7 +42,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetMobileConfigResponse(
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
   result->set_code(net::HTTP_OK);
 
-  if (request.GetURL().path() == kMobileConfigPath) {
+  if (request.GetURL().GetPath() == kMobileConfigPath) {
     result->AddCustomHeader("Content-Type", kMobileConfigurationType);
     result->set_content(
         testing::GetTestFileContents(testing::kMobileConfigFilePath));

@@ -193,7 +193,7 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   // NOTE: This check for the Crash Host URL is here to avoid the URL from
   // ending up in the history causing the app to crash at every subsequent
   // restart.
-  if (web_params.url.host() == kChromeUIBrowserCrashHost) {
+  if (web_params.url.GetHost() == kChromeUIBrowserCrashHost) {
     CrashReporterURLObserver::GetSharedInstance()->RecordURL(
         web_params.url, current_web_state, /*pending=*/true);
     InduceBrowserCrash(web_params.url);

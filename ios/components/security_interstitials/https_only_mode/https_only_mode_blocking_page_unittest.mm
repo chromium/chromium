@@ -88,13 +88,13 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
 // allow list and reloading the page.
 TEST_F(HttpsOnlyModeBlockingPageTest, HandleProceedCommand) {
   page_ = CreateBlockingPage(&web_state_, url_, service());
-  ASSERT_FALSE(service()->IsHttpAllowedForHost(url_.host()));
+  ASSERT_FALSE(service()->IsHttpAllowedForHost(url_.GetHost()));
   ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
 
   // Send the proceed command.
   SendCommand(security_interstitials::CMD_PROCEED);
 
-  EXPECT_TRUE(service()->IsHttpAllowedForHost(url_.host()));
+  EXPECT_TRUE(service()->IsHttpAllowedForHost(url_.GetHost()));
   EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
 
   // Verify that metrics are recorded correctly.

@@ -247,7 +247,7 @@ void OfflinePageTabHelper::ReplaceLocationUrlAndReload(const GURL& url) {
 
 GURL OfflinePageTabHelper::GetOnlineURLFromNavigationURL(
     const GURL& url) const {
-  if (url.host() == kChromeUIOfflineHost) {
+  if (url.GetHost() == kChromeUIOfflineHost) {
     return reading_list::EntryURLForOfflineURL(url);
   }
   return url;

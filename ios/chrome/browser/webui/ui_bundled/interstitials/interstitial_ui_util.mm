@@ -46,7 +46,7 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
 CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
-  DCHECK_EQ(kChromeInterstitialSslPath, url.path());
+  DCHECK_EQ(kChromeInterstitialSslPath, url.GetPath());
   // Fake parameters for SSL blocking page.
   GURL request_url("https://example.com");
   std::string url_param;

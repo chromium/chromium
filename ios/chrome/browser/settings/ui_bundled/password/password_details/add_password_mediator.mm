@@ -219,7 +219,7 @@ bool CheckForDuplicates(
 }
 
 - (BOOL)isTLDMissing {
-  std::string hostname = self.URL.host();
+  std::string hostname = self.URL.GetHost();
   return !base::Contains(hostname, '.');
 }
 

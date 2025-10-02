@@ -83,7 +83,7 @@ void HttpsOnlyModeBlockingPage::HandleCommand(
         security_interstitials::MetricsHelper::DONT_PROCEED);
     controller_->GoBack();
   } else if (command == security_interstitials::CMD_PROCEED) {
-    service_->AllowHttpForHost(request_url().host());
+    service_->AllowHttpForHost(request_url().GetHost());
 
     controller_->metrics_helper()->RecordUserDecision(
         security_interstitials::MetricsHelper::PROCEED);

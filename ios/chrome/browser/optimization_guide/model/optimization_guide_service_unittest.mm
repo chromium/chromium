@@ -137,8 +137,8 @@ class OptimizationGuideServiceTest : public PlatformTest {
 
     const optimization_guide::HintsComponentInfo& component_info =
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
-            optimization_guide::proto::NOSCRIPT, {hints_url.host()},
-            hints_url.path().substr(1));
+            optimization_guide::proto::NOSCRIPT, {hints_url.GetHost()},
+            hints_url.GetPath().substr(1));
 
     optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
         ->MaybeUpdateHintsComponent(component_info);

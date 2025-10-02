@@ -1776,7 +1776,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
   [[EarlGrey selectElementWithMatcher:ShareButton()] performAction:grey_tap()];
 
-  NSString* hostString = base::SysUTF8ToNSString(URL.host());
+  NSString* hostString = base::SysUTF8ToNSString(URL.GetHost());
   XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
   BOOL hostStringPresent = [currentApplication.otherElements[hostString]
       waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()];

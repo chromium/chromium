@@ -252,7 +252,7 @@
     (const plus_addresses::PlusProfile&)plusProfile {
   GURL URL(plusProfile.facet.canonical_spec());
 
-  std::string host = URL.host();
+  std::string host = URL.GetHost();
   std::string siteName = net::registry_controlled_domains::GetDomainAndRegistry(
       host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 

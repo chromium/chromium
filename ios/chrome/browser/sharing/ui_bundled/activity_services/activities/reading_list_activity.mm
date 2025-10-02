@@ -70,7 +70,7 @@ NSString* const kReadingListActivityType =
   [self activityDidFinish:YES];
   // Reading list does not support not having title, so add host instead.
   NSString* title =
-      _title ? _title : base::SysUTF8ToNSString(_activityURL.host());
+      _title ? _title : base::SysUTF8ToNSString(_activityURL.GetHost());
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:_activityURL title:title];
   _readingListBrowserAgent->AddURLsToReadingList(command.URLs);

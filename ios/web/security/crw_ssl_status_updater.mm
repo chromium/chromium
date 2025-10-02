@@ -137,7 +137,7 @@ using web::SecurityStyle;
   web::SSLStatus& SSLStatus = item->GetSSL();
   if (item->GetURL().SchemeIsCryptographic() && !!SSLStatus.certificate &&
       cert && SSLStatus.certificate->EqualsIncludingChain(cert.get()) &&
-      item->GetURL().host() == GURLHost) {
+      item->GetURL().GetHost() == GURLHost) {
     web::SSLStatus previousSSLStatus = item->GetSSL();
     SSLStatus.cert_status = certStatus;
     SSLStatus.security_style = style;

@@ -78,7 +78,7 @@ class FakeWebUIIOSControllerFactory : public WebUIIOSControllerFactory {
     if (!url.SchemeIs(kTestWebUIScheme) && !url.SchemeIs(kChromeScheme)) {
       return NSURLErrorUnsupportedURL;
     }
-    if (url.host() == kOfflineHost) {
+    if (url.GetHost() == kOfflineHost) {
       return NSURLErrorNotConnectedToInternet;
     }
     return 0;

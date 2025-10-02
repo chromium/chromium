@@ -42,28 +42,28 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
   result->set_code(net::HTTP_OK);
 
-  if (request.GetURL().path() == "/single") {
+  if (request.GetURL().GetPath() == "/single") {
     result->set_content("<a id='bad' href='/single-bad'>Bad</a>"
                         "<a id='good' href='/single-good'>Good</a>");
-  } else if (request.GetURL().path() == "/bundle") {
+  } else if (request.GetURL().GetPath() == "/bundle") {
     result->set_content("<a id='bad' href='/bundle-bad'>Bad</a>"
                         "<a id='good' href='/bundle-good'>Good</a>"
                         "<a id='semi' href='/bundle-semi'>Semi</a>");
-  } else if (request.GetURL().path() == "/single-bad") {
+  } else if (request.GetURL().GetPath() == "/single-bad") {
     result->AddCustomHeader("Content-Type", kPkPassMimeType);
     result->set_content("corrupted");
-  } else if (request.GetURL().path() == "/single-good") {
+  } else if (request.GetURL().GetPath() == "/single-good") {
     result->AddCustomHeader("Content-Type", kPkPassMimeType);
     result->set_content(testing::GetTestFileContents(testing::kPkPassFilePath));
-  } else if (request.GetURL().path() == "/bundle-bad") {
+  } else if (request.GetURL().GetPath() == "/bundle-bad") {
     result->AddCustomHeader("Content-Type", kPkBundledPassMimeType);
     // Returning a valid pass unzipped is invalid for a bundled pass.
     result->set_content(testing::GetTestFileContents(testing::kPkPassFilePath));
-  } else if (request.GetURL().path() == "/bundle-good") {
+  } else if (request.GetURL().GetPath() == "/bundle-good") {
     result->AddCustomHeader("Content-Type", kPkBundledPassMimeType);
     result->set_content(
         testing::GetTestFileContents(testing::kBundledPkPassFilePath));
-  } else if (request.GetURL().path() == "/bundle-semi") {
+  } else if (request.GetURL().GetPath() == "/bundle-semi") {
     result->AddCustomHeader("Content-Type", kPkBundledPassMimeType);
     result->set_content(
         testing::GetTestFileContents(testing::kSemiValidBundledPkPassFilePath));

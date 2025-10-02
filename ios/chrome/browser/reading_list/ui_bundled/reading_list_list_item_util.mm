@@ -60,7 +60,7 @@ BOOL AreReadingListListItemsEqual(id<ReadingListListItem> first,
     return NO;
   }
   return [first.title isEqualToString:second.title] &&
-         first.entryURL.host() == second.entryURL.host() &&
+         first.entryURL.GetHost() == second.entryURL.GetHost() &&
          first.distillationState == second.distillationState &&
          [first.distillationDateText
              isEqualToString:second.distillationDateText] &&

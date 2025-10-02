@@ -55,7 +55,7 @@ std::u16string GenerateKeywordFromNavigationItem(
   // To relax the path constraint, make sure to sanitize the path
   // elements and update AutocompletePopup to look for keywords using the path.
   // See http://b/issue?id=863583.
-  if (!url.SchemeIsHTTPOrHTTPS() || url.path().length() > 1) {
+  if (!url.SchemeIsHTTPOrHTTPS() || url.GetPath().length() > 1) {
     return std::u16string();
   }
 

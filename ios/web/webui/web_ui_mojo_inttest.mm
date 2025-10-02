@@ -144,8 +144,8 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
     if (!url.SchemeIs(kTestWebUIScheme)) {
       return nullptr;
     }
-    DCHECK_EQ(url.host(), kTestWebUIURLHost);
-    return std::make_unique<TestUI>(web_ui, url.host(), ui_handler_);
+    DCHECK_EQ(url.GetHost(), kTestWebUIURLHost);
+    return std::make_unique<TestUI>(web_ui, url.GetHost(), ui_handler_);
   }
 
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {

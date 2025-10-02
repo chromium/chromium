@@ -101,7 +101,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
     }
 
     std::string purge_additions = "";
-    if (base::Contains(request.url.path(), kPurgeURL)) {
+    if (base::Contains(request.url.GetPath(), kPurgeURL)) {
       purge_additions = kJavaScriptReload;
     }
 
@@ -257,7 +257,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForPageLoadTimeout,
                  ^bool {
-                   return [ChromeEarlGrey webStateVisibleURL].query() ==
+                   return [ChromeEarlGrey webStateVisibleURL].GetQuery() ==
                           "reloaded";
                  }),
              @"Page did not reload");

@@ -189,7 +189,7 @@ NSString* HostnameFromGURL(GURL URL) {
   // Verify that the location bar shows the distant tab URL in a short form.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
-                            self.testServer->base_url().host())];
+                            self.testServer->base_url().GetHost())];
 }
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
@@ -232,7 +232,7 @@ NSString* HostnameFromGURL(GURL URL) {
   // Verify that the location bar shows the local tab URL in a short form.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
-                            destinationUrl.host())];
+                            destinationUrl.GetHost())];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Anyone know any good pony jokes?"];
   // The most recent tab is the second one.

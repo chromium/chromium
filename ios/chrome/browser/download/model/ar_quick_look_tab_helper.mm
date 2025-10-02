@@ -166,7 +166,7 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     // URL, but this appears to work well enough for https://crbug.com/1341660
     // issue.
     url = GURL(base::UnescapeURLComponent(
-        url.path(),
+        url.GetPath(),
         base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
   }
 

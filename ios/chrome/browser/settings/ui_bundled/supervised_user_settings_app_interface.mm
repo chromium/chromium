@@ -50,7 +50,7 @@ class StaticUrlCheckerClient : public safe_search_api::URLCheckerClient {
 
 void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
   supervised_user::SupervisedUserTestEnvironment::SetManualFilterForHost(
-      url.host(), isAllowed,
+      url.GetHost(), isAllowed,
       *SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile()));
 }
@@ -139,7 +139,8 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
-  settings_service->RecordLocalWebsiteApproval(net::GURLWithNSURL(url).host());
+  settings_service->RecordLocalWebsiteApproval(
+      net::GURLWithNSURL(url).GetHost());
 }
 
 + (void)setFilteringToAllowAllSites {

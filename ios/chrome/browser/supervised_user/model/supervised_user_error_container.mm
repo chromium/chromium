@@ -115,7 +115,7 @@ void SupervisedUserErrorContainer::HandleCommand(
 
 bool SupervisedUserErrorContainer::IsRemoteApprovalPendingForUrl(
     const GURL& url) {
-  return base::Contains(requested_hosts_, url.host());
+  return base::Contains(requested_hosts_, url.GetHost());
 }
 
 void SupervisedUserErrorContainer::URLFilterCheckCallback(
@@ -175,7 +175,7 @@ void SupervisedUserErrorContainer::OnRequestCreated(
     const GURL& url,
     bool successfully_created_request) {
   if (successfully_created_request) {
-    requested_hosts_.insert(url.host());
+    requested_hosts_.insert(url.GetHost());
   }
   std::move(callback).Run(successfully_created_request);
 }
