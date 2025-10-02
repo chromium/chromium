@@ -355,7 +355,8 @@ void ProfilePickerSignInProvider::FinishFlow(
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
   ResetWebContentsDelegates();
-  std::move(callback_).Run(profile_.get(), account_info, std::move(contents_));
+  std::move(callback_).Run(profile_.get(), account_info, std::move(contents_),
+                           SigninUIError::Ok());
 }
 
 void ProfilePickerSignInProvider::FinishFlowInPickerWithSyncConfirmation(
@@ -398,6 +399,7 @@ void ProfilePickerSignInProvider::ShowSigninError(
         base::Unretained(host_),
         ForceSigninUIError::SigninPatternNotMatching(
             base::UTF16ToUTF8(error.email())))));
+    return;
   }
 
   if (error.type() ==
@@ -410,9 +412,11 @@ void ProfilePickerSignInProvider::ShowSigninError(
                                   base::ToString(error.another_profile_path()));
 
     host_->ShowScreenInPickerContents(profile_switch_url, base::OnceClosure());
+    return;
   }
 
-  // TODO(crbug.com/40276801): Handle other errors in the profile picker.
+  std::move(callback_).Run(profile_.get(), CoreAccountInfo(),
+                           std::move(contents_), error);
 }
 
 void ProfilePickerSignInProvider::ResetWebContentsDelegates() {

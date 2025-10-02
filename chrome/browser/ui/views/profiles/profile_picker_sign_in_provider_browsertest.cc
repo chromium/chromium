@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
       signin_finished_callback;
 
   // Sign-in is exited, the callback should never run.
-  EXPECT_CALL(signin_finished_callback, Run(_, _, _)).Times(0);
+  EXPECT_CALL(signin_finished_callback, Run(_, _, _, _)).Times(0);
 
   {
     ProfilePickerSignInProvider provider{
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
       signin_finished_callback;
 
   // Sign-in is exited, the callback should never run.
-  EXPECT_CALL(signin_finished_callback, Run(_, _, _)).Times(0);
+  EXPECT_CALL(signin_finished_callback, Run(_, _, _, _)).Times(0);
 
   {
     ProfilePickerSignInProvider provider{

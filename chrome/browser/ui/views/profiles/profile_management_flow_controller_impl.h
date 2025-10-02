@@ -17,6 +17,7 @@ class Profile;
 class ProfilePickerWebContentsHost;
 class ProfileManagementStepController;
 class ProfilePickerPostSignInAdapter;
+class SigninUIError;
 
 namespace content {
 class WebContents;
@@ -95,6 +96,10 @@ class ProfileManagementFlowControllerImpl
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       StepSwitchFinishedCallback step_switch_finished_callback);
+
+  void HandleSigninError(Profile* profile,
+                         content::WebContents* contents,
+                         const SigninUIError& error);
 
   // The list of steps that are added to the flow.
   // It is populated by the return value of `RegisterPostIdentitySteps` that
