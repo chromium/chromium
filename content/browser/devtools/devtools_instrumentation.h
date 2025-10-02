@@ -109,12 +109,12 @@ void ApplyAuctionNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
                                          network::ResourceRequest* request,
                                          bool* network_instrumentation_enabled);
 
-// If this function caused the User-Agent header to be overridden,
-// `devtools_user_agent_overridden` will be set to true; otherwise, it will be
-// set to false. If this function caused the Accept-Language header to be
-// overridden, `devtools_accept_language_overridden` will be set to true;
-// otherwise, it will be set to false. If the Referrer header was overridden,
-// `referrer_override` will be set to the new Referrer header value.
+// If this function overrides the `User-Agent` header value, it sets
+// `devtools_user_agent_overridden` to true; otherwise, false. If
+// this function overrides the `Accept-Language` header, it sets
+// `devtools_accept_language_overridden` to true; otherwise, false. If
+// this function overrides the `Referrer` header, it sets `referrer_override` to
+// the new Referrer header value.
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
