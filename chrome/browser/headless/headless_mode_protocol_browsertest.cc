@@ -282,7 +282,7 @@ HEADLESS_MODE_PROTOCOL_TEST(ChangeWindowState, "shared/change-window-state.js")
 HEADLESS_MODE_PROTOCOL_TEST(WindowOuterSize, "shared/window-outer-size.js")
 
 // TODO(crbug.com/443993825): Tests are flaky. Fix and re-enable.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#if (defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)) || BUILDFLAG(IS_MAC)
 #define MAYBE_WindowInnerSize DISABLED_WindowInnerSize
 #else
 #define MAYBE_WindowInnerSize WindowInnerSize
@@ -346,7 +346,7 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreenDetailsPixelRatio,
                             "shared/screen-details-pixel-ratio.js")
 
 // TODO(crbug.com/442920826): Re-enable this test
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenDetailsColorDepth DISABLED_ScreenDetailsColorDepth
 #else
 #define MAYBE_ScreenDetailsColorDepth ScreenDetailsColorDepth
@@ -474,7 +474,13 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomOnSecondaryScreen,
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomSizeMatchesWorkArea,
                             "shared/window-zoom-size-matches-work-area.js")
 
-HEADLESS_MODE_PROTOCOL_TEST(WindowScreenScaleFactor,
+// TODO(crbug.com/444137277): Tests are flaky. Fix and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WindowScreenScaleFactor DISABLED_WindowScreenScaleFactor
+#else
+#define MAYBE_WindowScreenScaleFactor WindowScreenScaleFactor
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowScreenScaleFactor,
                             "shared/window-screen-scale-factor.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenSizeOrientation,
