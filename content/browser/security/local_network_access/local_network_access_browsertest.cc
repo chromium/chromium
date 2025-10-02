@@ -1702,4 +1702,459 @@ INSTANTIATE_TEST_SUITE_P(,
                                       : "OriginKeyedProcessesByDefault_enabled";
                          });
 
+// ================================
+// SECURE CONTEXT INHERITANCE TESTS
+// ================================
+//
+// These tests verify that `ClientSecurityState.is_web_secure_context` is
+// correctly inherited by child iframes and openee documents for a variety of
+// URLs with local schemes.
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForAboutBlankFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForAboutBlankFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForAboutBlankFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForAboutBlankFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsSecureContextForAboutBlankFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsSecureContextForAboutBlankFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    IframeInheritsSecureContextForInitialEmptyDocFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    IframeInheritsSecureContextForInitialEmptyDocFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForInitialEmptyDocFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForInitialEmptyDocFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    OpeneeInheritsSecureContextForInitialEmptyDocFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    OpeneeInheritsSecureContextForInitialEmptyDocFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForAboutSrcdocFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForAboutSrcdocFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForAboutSrcdocFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForAboutSrcdocFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForDataURLFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForDataURLFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForDataURLFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    LocalNetworkAccessSandboxedDataBrowserTest,
+    SandboxedIframeInheritsSecureContextForDataURLFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForJavascriptURLFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    IframeInheritsSecureContextForJavascriptURLFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    OpeneeInheritsSecureContextForJavascriptURLFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsSecureContextForJavascriptURLFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForBlobURLFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsSecureContextForBlobURLFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForBlobURLFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsSecureContextForBlobURLFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsSecureContextForBlobURLFromSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsSecureContextForBlobURLFromInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
 }  // namespace content
