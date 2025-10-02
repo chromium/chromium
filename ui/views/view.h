@@ -1093,6 +1093,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // the hierarchy beneath it.
   void Paint(const PaintInfo& parent_paint_info);
 
+  // Returns the type of scaling to be done for this View. Override this to
+  // change the default scaling type from |kScaleToFit|. You would want to
+  // override this for a view and return |kScaleToScaleFactor| in cases where
+  // scaling should cause no distortion. Such as in the case of an image or
+  // an icon.
+  virtual PaintInfo::ScaleType GetPaintScaleType() const;
+
   // The background object may be null.
   void SetBackground(std::unique_ptr<Background> b);
   Background* GetBackground() const;
@@ -1920,13 +1927,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Override to paint a border not specified by SetBorder().
   virtual void OnPaintBorder(gfx::Canvas* canvas);
-
-  // Returns the type of scaling to be done for this View. Override this to
-  // change the default scaling type from |kScaleToFit|. You would want to
-  // override this for a view and return |kScaleToScaleFactor| in cases where
-  // scaling should cause no distortion. Such as in the case of an image or
-  // an icon.
-  virtual PaintInfo::ScaleType GetPaintScaleType() const;
 
   // Accelerated painting ------------------------------------------------------
 

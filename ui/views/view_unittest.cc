@@ -2434,6 +2434,27 @@ TEST_F(ViewTest, PaintIntersectsOneChildInRTL) {
   EXPECT_TRUE(v2->did_paint_);
 }
 
+TEST_F(ViewTest, GetPaintScaleType) {
+  View view;
+
+  // When PixelCanvasRecording is enabled, the scale type should be
+  // kScaleWithEdgeSnapping.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(::features::kEnablePixelCanvasRecording);
+    EXPECT_EQ(view.GetPaintScaleType(),
+              PaintInfo::ScaleType::kScaleWithEdgeSnapping);
+  }
+
+  // When PixelCanvasRecording is disabled, the scale type should return
+  // kUniformScaling.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(::features::kEnablePixelCanvasRecording);
+    EXPECT_EQ(view.GetPaintScaleType(), PaintInfo::ScaleType::kUniformScaling);
+  }
+}
+
 TEST_F(ViewTest, PaintInPromotedToLayer) {
   ScopedTestPaintWidget widget(CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP));
