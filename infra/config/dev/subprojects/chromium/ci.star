@@ -174,6 +174,9 @@ ci_builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
