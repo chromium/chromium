@@ -158,6 +158,8 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   EXPECT_EQ("Canvas," + std::string(kNormalAppName) +
                 ",OsSettings,Help,Play Store,Camera",
             RunZeroStateSearch());
+
+  arc_test().TearDown();
 }
 
 TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {

@@ -319,6 +319,8 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
   // called.
   arc_test.WaitForRemoveAllApps();
   EXPECT_TRUE(AreEqual(reference_icon.image_skia(), image_before_badging));
+
+  arc_test.TearDown();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

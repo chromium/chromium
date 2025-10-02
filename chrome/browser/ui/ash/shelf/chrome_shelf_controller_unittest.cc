@@ -726,7 +726,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   void TearDown() override {
     browser_controller_.reset();
     app_registry_cache_observer_.Reset();
-    arc_test_.TearDown();
+    if (auto_start_arc_test_) {
+      arc_test_.TearDown();
+    }
     shelf_controller_ = nullptr;
     wallpaper_controller_client_.reset();
     multi_user_window_manager_browser_adaptor_.reset();
@@ -4752,6 +4754,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, MAYBE_DefaultApps) {
   }
   EXPECT_TRUE(
       ValidateImageIsFullyLoaded(shelf_controller_->GetItem(shelf_id)->image));
+
+  arc_test_.TearDown();
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
@@ -4779,6 +4783,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc::kPlayStoreAppId));
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(
       arc::kPlayStoreAppId));
+
+  arc_test_.TearDown();
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
@@ -4833,6 +4839,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
   // resets samples, so we expect here only one recorded.
   EXPECT_EQ(1, histogram->SnapshotDelta()->TotalCount());
   play_store_window->Close();
+
+  arc_test_.TearDown();
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
@@ -4873,6 +4881,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
   std::unique_ptr<base::HistogramSamples> samples = histogram->SnapshotDelta();
   ASSERT_EQ(1, samples->TotalCount());
   play_store_window->Close();
+
+  arc_test_.TearDown();
 }
 
 // Tests that the Play Store is not visible in AOSP image and visible in default

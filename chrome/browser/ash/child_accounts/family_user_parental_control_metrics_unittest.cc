@@ -265,6 +265,8 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
   histogram_tester_.ExpectTotalCount(
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
       /*expected_count=*/2);
+
+  arc_test_.TearDown();
 }
 
 }  // namespace ash

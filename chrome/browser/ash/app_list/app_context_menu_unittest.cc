@@ -542,6 +542,8 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   // No app available case.
   menu = GetContextMenuModel(item.get());
   EXPECT_EQ(nullptr, menu);
+
+  arc_test.TearDown();
 }
 
 TEST_F(AppContextMenuTest, ArcMenuShortcut) {
@@ -605,6 +607,8 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
     if (index < menu->GetItemCount())
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
+
+  arc_test.TearDown();
 }
 
 TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
@@ -645,6 +649,8 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
         EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
     }
   }
+
+  arc_test.TearDown();
 }
 
 // In suspended state app does not have launch item.
@@ -681,6 +687,8 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
     if (index < menu->GetItemCount())
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
+
+  arc_test.TearDown();
 }
 
 TEST_F(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {
