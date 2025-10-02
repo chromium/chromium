@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
 
@@ -151,15 +150,11 @@ bool DateTimeEditBuilder::Build(const String& format_string) {
 }
 
 bool DateTimeEditBuilder::NeedMillisecondField() const {
+  static constexpr int kMillisecondsPerSecond =
+      static_cast<int>(base::Time::kMillisecondsPerSecond);
   return date_value_.Millisecond() ||
-         !GetStepRange()
-              .Minimum()
-              .Remainder(static_cast<int>(kMsPerSecond))
-              .IsZero() ||
-         !GetStepRange()
-              .Step()
-              .Remainder(static_cast<int>(kMsPerSecond))
-              .IsZero();
+         !GetStepRange().Minimum().Remainder(kMillisecondsPerSecond).IsZero() ||
+         !GetStepRange().Step().Remainder(kMillisecondsPerSecond).IsZero();
 }
 
 void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
@@ -431,10 +426,11 @@ bool DateTimeEditBuilder::ShouldHourFieldDisabled() const {
     return false;
   }
 
-  const Decimal decimal_ms_per_day(static_cast<int>(kMsPerDay));
+  const Decimal decimal_ms_per_day(
+      static_cast<int>(base::Time::kMillisecondsPerDay));
   Decimal hour_part_of_minimum =
       (GetStepRange().StepBase().Abs().Remainder(decimal_ms_per_day) /
-       static_cast<int>(kMsPerHour))
+       static_cast<int>(base::Hours(1).InMilliseconds()))
           .Floor();
   return hour_part_of_minimum == date_value_.Hour() &&
          GetStepRange().Step().Remainder(decimal_ms_per_day).IsZero();
@@ -445,7 +441,8 @@ bool DateTimeEditBuilder::ShouldMillisecondFieldDisabled() const {
       millisecond_range_.minimum == date_value_.Millisecond())
     return true;
 
-  const Decimal decimal_ms_per_second(static_cast<int>(kMsPerSecond));
+  const Decimal decimal_ms_per_second(
+      static_cast<int>(base::Time::kMillisecondsPerSecond));
   return GetStepRange().StepBase().Abs().Remainder(decimal_ms_per_second) ==
              date_value_.Millisecond() &&
          GetStepRange().Step().Remainder(decimal_ms_per_second).IsZero();
@@ -456,10 +453,11 @@ bool DateTimeEditBuilder::ShouldMinuteFieldDisabled() const {
       minute_range_.minimum == date_value_.Minute())
     return true;
 
-  const Decimal decimal_ms_per_hour(static_cast<int>(kMsPerHour));
+  const Decimal decimal_ms_per_hour(
+      static_cast<int>(base::Hours(1).InMilliseconds()));
   Decimal minute_part_of_minimum =
       (GetStepRange().StepBase().Abs().Remainder(decimal_ms_per_hour) /
-       static_cast<int>(kMsPerMinute))
+       static_cast<int>(base::Minutes(1).InMilliseconds()))
           .Floor();
   return minute_part_of_minimum == date_value_.Minute() &&
          GetStepRange().Step().Remainder(decimal_ms_per_hour).IsZero();
@@ -470,10 +468,11 @@ bool DateTimeEditBuilder::ShouldSecondFieldDisabled() const {
       second_range_.minimum == date_value_.Second())
     return true;
 
-  const Decimal decimal_ms_per_minute(static_cast<int>(kMsPerMinute));
+  const Decimal decimal_ms_per_minute(
+      static_cast<int>(base::Minutes(1).InMilliseconds()));
   Decimal second_part_of_minimum =
       (GetStepRange().StepBase().Abs().Remainder(decimal_ms_per_minute) /
-       static_cast<int>(kMsPerSecond))
+       static_cast<int>(base::Time::kMillisecondsPerSecond))
           .Floor();
   return second_part_of_minimum == date_value_.Second() &&
          GetStepRange().Step().Remainder(decimal_ms_per_minute).IsZero();
