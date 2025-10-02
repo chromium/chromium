@@ -29,29 +29,32 @@ constexpr std::array<int32_t, 1> kUrlOnly{0};
 constexpr std::array<int32_t, 1> kSearchOnly{1};
 
 // InputFeatures.
-constexpr std::array<MetadataWriter::UMAFeature, 10> kUMAFeatures = {
-    MetadataWriter::UMAFeature::FromUserAction("MobileMenuAddToBookmarks", 7),
-    MetadataWriter::UMAFeature::FromUserAction("MobileMenuTranslate", 7),
-    MetadataWriter::UMAFeature::FromUserAction("Suggestions.Content.Opened", 7),
-    MetadataWriter::UMAFeature::FromUserAction("MobileMenuAllBookmarks", 7),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "MobileBookmarkManagerEntryOpened",
-        7),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "Autofill.KeyMetrics.FillingAssistance.CreditCard",
-        7),
-    MetadataWriter::UMAFeature::FromUserAction("PasswordManager_Autofilled", 7),
-    MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 7),
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "Omnibox.SuggestionUsed.ClientSummarizedResultType",
-        7,
-        kUrlOnly.data(),
-        kUrlOnly.size()),
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "Omnibox.SuggestionUsed.ClientSummarizedResultType",
-        7,
-        kSearchOnly.data(),
-        kSearchOnly.size()),
+constexpr FeaturePair<FrequentFeatureUserModel::Feature> kUMAFeatures[] = {
+    {FrequentFeatureUserModel::kFeatureMobileMenuAddToBookmarks,
+     features::UserAction("MobileMenuAddToBookmarks", 7)},
+    {FrequentFeatureUserModel::kFeatureMobileMenuTranslate,
+     features::UserAction("MobileMenuTranslate", 7)},
+    {FrequentFeatureUserModel::kFeatureSuggestionsContentOpened,
+     features::UserAction("Suggestions.Content.Opened", 7)},
+    {FrequentFeatureUserModel::kFeatureMobileMenuAllBookmarks,
+     features::UserAction("MobileMenuAllBookmarks", 7)},
+    {FrequentFeatureUserModel::kFeatureMobileBookmarkManagerEntryOpened,
+     features::UserAction("MobileBookmarkManagerEntryOpened", 7)},
+    {FrequentFeatureUserModel::kFeatureAutofillCreditCard,
+     features::UserAction("Autofill.KeyMetrics.FillingAssistance.CreditCard",
+                          7)},
+    {FrequentFeatureUserModel::kFeaturePasswordManagerAutofilled,
+     features::UserAction("PasswordManager_Autofilled", 7)},
+    {FrequentFeatureUserModel::kFeatureMobileNTPMostVisited,
+     features::UserAction("MobileNTPMostVisited", 7)},
+    {FrequentFeatureUserModel::kFeatureOmniboxUrl,
+     features::UMAEnum("Omnibox.SuggestionUsed.ClientSummarizedResultType",
+                       7,
+                       kUrlOnly)},
+    {FrequentFeatureUserModel::kFeatureOmniboxSearch,
+     features::UMAEnum("Omnibox.SuggestionUsed.ClientSummarizedResultType",
+                       7,
+                       kSearchOnly)},
 };
 
 }  // namespace
@@ -92,7 +95,7 @@ FrequentFeatureUserModel::GetModelConfig() {
       /*default_ttl=*/7, proto::TimeUnit::DAY);
 
   // Set features.
-  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
+  writer.AddFeatures<Feature>(kUMAFeatures);
 
   constexpr int kModelVersion = 2;
   return std::make_unique<ModelConfig>(
@@ -103,17 +106,20 @@ void FrequentFeatureUserModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kUMAFeatures.size()) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
   int total_non_search_feature = 0;
-  for (int i = 0; i <= 8; ++i)
+  for (int i = 0; i <= kFeatureOmniboxUrl; ++i) {
     total_non_search_feature += inputs[i];
+  }
 
-  float result = (total_non_search_feature > 0 && inputs[9] > 0) ? 1 : 0;
+  float result =
+      (total_non_search_feature > 0 && inputs[kFeatureOmniboxSearch] > 0) ? 1
+                                                                          : 0;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
