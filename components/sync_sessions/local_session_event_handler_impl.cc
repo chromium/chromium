@@ -249,41 +249,10 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
           session_tracker_->LookupSessionTab(current_session_tag_, tab_id);
 
 #if BUILDFLAG(IS_ANDROID)
-      // Metrics recording will only occur if AssociateWindows is called through
-      // a session restore, denoted by is_session_restore.
       if (placeholder_tab) {
-        if (tab && is_session_restore) {
-          RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_FOUND);
-        } else if (!tab) {
-          // The placeholder tab doesn't have a tracked counterpart. This is
-          // possible, for example, if the tab was created as a placeholder tab.
-          SyncedTabDelegate* synced_tab = window_delegate->GetTabAt(j);
-          bool was_tab_resynced = AssociatePlaceholderTab(
-              synced_tab->ReadPlaceholderTabSnapshotIfItShouldSync(
-                  sessions_client_),
-              batch);
-
-          if (was_tab_resynced) {
-            // If the tab was presumed to have resynced successfully, perform
-            // another lookup.
-            tab = session_tracker_->LookupSessionTab(current_session_tag_,
-                                                     tab_id);
-
-            if (is_session_restore) {
-              RecordPlaceholderTabResyncResult(
-                  tab ? PLACEHOLDER_TAB_RESYNCED
-                      : PLACEHOLDER_TAB_RESYNC_FAILED);
-            }
-          } else if (is_session_restore) {
-            RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_RESYNC_FAILED);
-          }
-        } else if (is_session_restore) {
-          // This metric logic path will likely record no tab data as long as
-          // the RestoreSyncedPlaceholderTabs flag is enabled. If it is
-          // disabled, this path will record all placeholder tabs that the
-          // flag-guarded logic would have attempted to target.
-          RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_NOT_SYNCED);
-        }
+        HandlePlaceholderTabForAssociate(is_session_restore,
+                                         window_delegate->GetTabAt(j), &tab,
+                                         batch);
       }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -499,6 +468,46 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
 
   return specifics;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void LocalSessionEventHandlerImpl::HandlePlaceholderTabForAssociate(
+    bool is_session_restore,
+    SyncedTabDelegate* synced_tab,
+    const sessions::SessionTab** tab,
+    WriteBatch* batch) {
+  // Metrics recording will only occur if AssociateWindows is called through a
+  // session restore, denoted by is_session_restore.
+  if (*tab && is_session_restore) {
+    RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_FOUND);
+  } else if (!*tab) {
+    // The placeholder tab doesn't have a tracked counterpart. This is
+    // possible, for example, if the tab was created as a placeholder tab.
+    SessionID tab_id = synced_tab->GetSessionId();
+    bool was_tab_resynced = AssociatePlaceholderTab(
+        synced_tab->ReadPlaceholderTabSnapshotIfItShouldSync(sessions_client_),
+        batch);
+
+    if (was_tab_resynced) {
+      // If the tab was presumed to have resynced successfully, perform another
+      // lookup.
+      *tab = session_tracker_->LookupSessionTab(current_session_tag_, tab_id);
+
+      if (is_session_restore) {
+        RecordPlaceholderTabResyncResult(
+            *tab ? PLACEHOLDER_TAB_RESYNCED : PLACEHOLDER_TAB_RESYNC_FAILED);
+      }
+    } else if (is_session_restore) {
+      RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_RESYNC_FAILED);
+    }
+  } else if (is_session_restore) {
+    // This metric logic path will likely record no tab data as long as
+    // the RestoreSyncedPlaceholderTabs flag is enabled. If it is
+    // disabled, this path will record all placeholder tabs that the
+    // flag-guarded logic would have attempted to target.
+    RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_NOT_SYNCED);
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool LocalSessionEventHandlerImpl::AssociatePlaceholderTab(
     std::unique_ptr<SyncedTabDelegate> snapshot,
