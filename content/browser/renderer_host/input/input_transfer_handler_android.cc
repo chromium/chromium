@@ -273,8 +273,13 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
   // over to Viz.
   if (event.GetAction() == ui::MotionEvent::Action::CANCEL) {
     if (event.GetRawDownTime() != cached_transferred_sequence_down_time_ms_) {
-      // TODO(crbug.com/411338242): Investigate touch cancel received with
-      // different downtime.
+      // The `transferTouchGesture` API doesn't tell us about the sequence that
+      // was successfully transferred. In a scenario like this: TouchDown1,
+      // TouchUp1, TouchDown2.
+      // Chrome sees TouchDown1 and requests for transfer, but by the time
+      // OS processed the request a new sequence with downtime of TouchDown2 had
+      // started. In such scenarios the cancel is generated with downtime of
+      // TouchDown2.
       TRACE_EVENT_INSTANT("input,input.scrolling",
                           "CancelWithDifferentDownTime");
     }
@@ -298,6 +303,10 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
         kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
     num_events_in_dropped_sequence_ = 0;
   }
+  if (event.GetAction() == ui::MotionEvent::Action::DOWN) {
+    client_->SendStateOnTouchTransfer(event,
+                                      last_sent_browser_would_have_handled_);
+  }
   if (event.GetAction() == ui::MotionEvent::Action::MOVE) {
     touch_moves_seen_after_transfer_++;
   }
@@ -320,6 +329,7 @@ void InputTransferHandlerAndroid::OnTouchTransferredSuccessfully(
   CHECK_EQ(handler_state_, HandlerState::kIdle);
   handler_state_ = HandlerState::kConsumeEventsUntilCancel;
   cached_transferred_sequence_down_time_ms_ = event.GetRawDownTime();
+  last_sent_browser_would_have_handled_ = browser_would_have_handled;
   client_->SendStateOnTouchTransfer(event, browser_would_have_handled);
   // Corresponding to the `ACTION_DOWN` event which initiated the touch
   // transfer.

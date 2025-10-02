@@ -161,6 +161,12 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
 
   base::TimeTicks last_seen_touch_end_ts_;
 
+  // In cases where system transfers a different sequence than the one requested
+  // by Chrome, a new state is transferred corresponding to the potential
+  // transferred touch sequence. To create new state in such scenarios this
+  // variable is being used.
+  bool last_sent_browser_would_have_handled_ = false;
+
   InputObserver input_observer_;
 };
 
