@@ -157,6 +157,7 @@ fuzzer_test("media_jpeg_parser_picture_fuzzer") {
   deps = [
     ":parsers",
     "//base",
+    "//media:test_support",
   ]
   seed_corpus = "//media/test/data"
   dict = "//media/test/jpeg.dict"
@@ -176,6 +177,7 @@ fuzzer_test("media_vp8_parser_fuzzer") {
 fuzzer_test("media_vp9_parser_fuzzer") {
   sources = [ "vp9_parser_fuzzertest.cc" ]
   deps = [
+    ":parsers",
     "//base",
     "//media:test_support",
   ]
@@ -197,6 +199,7 @@ fuzzer_test("media_webp_parser_fuzzer") {
   deps = [
     ":parsers",
     "//base",
+    "//media:test_support",
   ]
   seed_corpus = "//media/test/data"
   dict = "//media/test/webp.dict"
