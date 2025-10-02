@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GPU_DRAWING_CONTEXT_H_
 
 #include "third_party/blink/renderer/modules/xr/xr_layer_drawing_context.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/xr_gpu_frame_transport_delegate.h"
 
 namespace blink {
 
@@ -16,8 +15,7 @@ class XRGPUBinding;
 class XRGPUSwapChain;
 class XRSession;
 
-class XRGPUDrawingContext final : public XRLayerDrawingContext,
-                                  public XRGpuFrameTransportContext {
+class XRGPUDrawingContext final : public XRLayerDrawingContext {
  public:
   XRGPUDrawingContext(XRGPUBinding*,
                       XRGPUSwapChain* color_swap_chain,
@@ -40,9 +38,6 @@ class XRGPUDrawingContext final : public XRLayerDrawingContext,
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
   XRFrameTransportDelegate* GetTransportDelegate() override;
 
-  // XRGpuFrameTransportContext overrides.
-  scoped_refptr<DawnControlClientHolder> GetDawnControlClient() const override;
-
   GPUDevice* device() { return device_; }
 
   XRGPUSwapChain* color_swap_chain() { return color_swap_chain_.Get(); }
@@ -56,7 +51,7 @@ class XRGPUDrawingContext final : public XRLayerDrawingContext,
   Member<GPUDevice> device_;
   Member<XRGPUSwapChain> color_swap_chain_;
   Member<XRGPUSwapChain> depth_stencil_swap_chain_;
-  Member<XrGpuFrameTransportDelegate> transport_delegate_;
+  Member<XRGPUBinding> binding_;
 };
 
 }  // namespace blink

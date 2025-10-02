@@ -13,15 +13,15 @@
 namespace blink {
 
 XRWebGLDrawingContext::XRWebGLDrawingContext(
-    WebGLRenderingContextBase* webgl_context,
+    XRWebGLBinding* binding,
     XRWebGLSwapChain* color_swap_chain,
     XRWebGLSwapChain* depth_stencil_swap_chain)
-    : webgl_context_(webgl_context),
+    : webgl_context_(binding->context()),
       color_swap_chain_(color_swap_chain),
-      depth_stencil_swap_chain_(depth_stencil_swap_chain) {
+      depth_stencil_swap_chain_(depth_stencil_swap_chain),
+      binding_(binding) {
   CHECK(color_swap_chain_);
-  transport_delegate_ = MakeGarbageCollected<XRWebGLFrameTransportDelegate>(
-      MakeGarbageCollected<XRWebGLFrameTransportContextImpl>(webgl_context));
+  CHECK(binding_);
 }
 
 void XRWebGLDrawingContext::SetCompositionLayer(XRCompositionLayer* layer) {
@@ -71,14 +71,14 @@ XRWebGLDrawingContext::TransferToStaticBitmapImage() {
 }
 
 XRFrameTransportDelegate* XRWebGLDrawingContext::GetTransportDelegate() {
-  return transport_delegate_;
+  return binding_->GetTransportDelegate();
 }
 
 void XRWebGLDrawingContext::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_context_);
   visitor->Trace(color_swap_chain_);
   visitor->Trace(depth_stencil_swap_chain_);
-  visitor->Trace(transport_delegate_);
+  visitor->Trace(binding_);
   XRLayerDrawingContext::Trace(visitor);
 }
 

@@ -12,11 +12,11 @@ namespace blink {
 class WebGLRenderingContextBase;
 class XRWebGLSwapChain;
 class XRCompositionLayer;
-class XRWebGLFrameTransportDelegate;
+class XRWebGLBinding;
 
 class XRWebGLDrawingContext final : public XRLayerDrawingContext {
  public:
-  XRWebGLDrawingContext(WebGLRenderingContextBase*,
+  XRWebGLDrawingContext(XRWebGLBinding*,
                         XRWebGLSwapChain* color_swap_chain,
                         XRWebGLSwapChain* depth_stencil_swap_chain);
   ~XRWebGLDrawingContext() override = default;
@@ -47,7 +47,7 @@ class XRWebGLDrawingContext final : public XRLayerDrawingContext {
   Member<WebGLRenderingContextBase> webgl_context_;
   Member<XRWebGLSwapChain> color_swap_chain_;
   Member<XRWebGLSwapChain> depth_stencil_swap_chain_;
-  Member<XRWebGLFrameTransportDelegate> transport_delegate_;
+  Member<XRWebGLBinding> binding_;
 };
 
 }  // namespace blink

@@ -17,9 +17,10 @@ XRGPUDrawingContext::XRGPUDrawingContext(
     XRGPUSwapChain* depth_stencil_swap_chain)
     : device_(binding->device()),
       color_swap_chain_(color_swap_chain),
-      depth_stencil_swap_chain_(depth_stencil_swap_chain) {
+      depth_stencil_swap_chain_(depth_stencil_swap_chain),
+      binding_(binding) {
   CHECK(color_swap_chain_);
-  transport_delegate_ = MakeGarbageCollected<XrGpuFrameTransportDelegate>(this);
+  CHECK(binding_);
 }
 
 uint16_t XRGPUDrawingContext::TextureWidth() const {
@@ -71,24 +72,15 @@ XRGPUDrawingContext::TransferToStaticBitmapImage() {
 }
 
 XRFrameTransportDelegate* XRGPUDrawingContext::GetTransportDelegate() {
-  return transport_delegate_;
-}
-
-scoped_refptr<DawnControlClientHolder>
-XRGPUDrawingContext::GetDawnControlClient() const {
-  if (!device_) {
-    return nullptr;
-  }
-  return device_->GetDawnControlClient();
+  return binding_->GetTransportDelegate();
 }
 
 void XRGPUDrawingContext::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(color_swap_chain_);
   visitor->Trace(depth_stencil_swap_chain_);
-  visitor->Trace(transport_delegate_);
+  visitor->Trace(binding_);
   XRLayerDrawingContext::Trace(visitor);
-  XRGpuFrameTransportContext::Trace(visitor);
 }
 
 }  // namespace blink

@@ -81,7 +81,9 @@ XRGPUBinding* XRGPUBinding::Create(XRSession* session,
 }
 
 XRGPUBinding::XRGPUBinding(XRSession* session, GPUDevice* device)
-    : XRGraphicsBinding(session), device_(device) {}
+    : XRGraphicsBinding(session), device_(device) {
+  transport_delegate_ = MakeGarbageCollected<XrGpuFrameTransportDelegate>(this);
+}
 
 XRProjectionLayer* XRGPUBinding::createProjectionLayer(
     const XRGPUProjectionLayerInit* init,
@@ -225,6 +227,18 @@ V8GPUTextureFormat XRGPUBinding::getPreferredColorFormat() {
   return FromDawnEnum(GPU::GetPreferredCanvasFormat());
 }
 
+XrGpuFrameTransportDelegate* XRGPUBinding::GetTransportDelegate() {
+  return transport_delegate_;
+}
+
+scoped_refptr<DawnControlClientHolder> XRGPUBinding::GetDawnControlClient()
+    const {
+  if (!device_) {
+    return nullptr;
+  }
+  return device_->GetDawnControlClient();
+}
+
 bool XRGPUBinding::CanCreateLayer(ExceptionState& exception_state) {
   if (session()->ended()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -280,6 +294,7 @@ bool XRGPUBinding::ValidateFormats(const XRGPUProjectionLayerInit* init,
 
 void XRGPUBinding::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
+  visitor->Trace(transport_delegate_);
   XRGraphicsBinding::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_buffer_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_frame_transport_context_impl.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_sub_image.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
@@ -99,7 +100,10 @@ XRWebGLBinding::XRWebGLBinding(XRSession* session,
                                bool webgl2)
     : XRGraphicsBinding(session),
       webgl_context_(webgl_context),
-      webgl2_(webgl2) {}
+      webgl2_(webgl2),
+      transport_delegate_(MakeGarbageCollected<XRWebGLFrameTransportDelegate>(
+          MakeGarbageCollected<XRWebGLFrameTransportContextImpl>(
+              webgl_context_))) {}
 
 bool XRWebGLBinding::usesDepthValues() const {
   return false;
@@ -215,7 +219,7 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
   }
 
   auto* drawing_context = MakeGarbageCollected<XRWebGLDrawingContext>(
-      webgl_context_, color_swap_chain, depth_stencil_swap_chain);
+      this, color_swap_chain, depth_stencil_swap_chain);
 
   return MakeGarbageCollected<XRProjectionLayer>(this, drawing_context);
 }
@@ -554,6 +558,10 @@ gfx::Rect XRWebGLBinding::GetViewportForView(XRProjectionLayer* layer,
                    layer->textureHeight() * view->CurrentViewportScale());
 }
 
+XRFrameTransportDelegate* XRWebGLBinding::GetTransportDelegate() {
+  return transport_delegate_;
+}
+
 bool XRWebGLBinding::ValidateSessionAndContext(
     ExceptionState& exception_state) {
   if (session()->ended()) {
@@ -805,6 +813,7 @@ bool XRWebGLBinding::ValidateShapedLayerData(const XRLayerInit* init,
 
 void XRWebGLBinding::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_context_);
+  visitor->Trace(transport_delegate_);
   XRGraphicsBinding::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
