@@ -16,7 +16,7 @@
 #include "extensions/common/extension_builder.h"
 #include "ui/gfx/native_ui_types.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
   EXPECT_EQ(ExtensionInstallPrompt::Result::ABORTED, helper.result());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that ExtensionInstallPrompt aborts the install if the gfx::NativeWindow
 // which is passed to the ExtensionInstallPrompt constructor is destroyed.
 // TODO(crbug.com/397754565): Port to desktop Android when the install UI is
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::ABORTED, helper.result());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that ExtensionInstallPrompt shows the dialog normally if no parent
 // web contents or parent gfx::NativeWindow is passed to the

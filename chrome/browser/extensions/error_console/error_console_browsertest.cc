@@ -32,7 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_action_runner.h"
 #endif
 
@@ -208,7 +208,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   enum Action {
     // Navigate to a (non-chrome) page to allow a content script to run.
     ACTION_NAVIGATE,
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Simulate a browser action click.
     // TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
     ACTION_BROWSER_ACTION,
@@ -261,7 +261,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
         content::WaitForLoadStop(web_contents);
         break;
       }
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       case ACTION_BROWSER_ACTION: {
         ExtensionActionRunner::GetForWebContents(web_contents)
             ->RunAction(*extension, true);

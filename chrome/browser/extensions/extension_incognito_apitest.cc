@@ -19,7 +19,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #endif
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoSplitKeepListener) {
   EXPECT_TRUE(event_router->HasNonLazyEventListenerForTesting(kEvent));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that an extension which is enabled for incognito mode doesn't
 // accidentally create an incognito profile.
 // TODO(https://crbug.com/390226690): Enable on Android when chrome.windows

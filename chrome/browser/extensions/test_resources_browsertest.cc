@@ -18,17 +18,13 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/test/test_extension_dir.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_browsertest.h"
-#endif
-
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kComponentExtensionKey[] =
     "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+uU63MD6T82Ldq5wjrDFn5mGmPnnnj"
     "WZBWxYXfpG4kVf0s+p24VkXwTXsxeI12bRm8/ft9sOq0XiLfgQEh5JrVUZqvFlaZYoS+g"
@@ -97,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TestResourcesLoad) {
 
 // TODO(crbug.com/356905053): Enable the tests for component extensions on
 // desktop android.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that resources from _test_resources work in component extensions
 // (which have a slightly different load path).
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
@@ -184,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   EXPECT_EQ(URLPattern(URLPattern::SCHEME_ALL, test_domain2),
             *info2->matches.begin());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that resources from _test_resources can be loaded from different
 // directories. Though the default is chrome/test/data/extensions, a test class
