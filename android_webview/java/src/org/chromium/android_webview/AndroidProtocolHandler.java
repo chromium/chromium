@@ -19,6 +19,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -27,12 +29,10 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-/**
- * Implements the Java side of Android URL protocol jobs.
- * See android_protocol_handler.cc.
- */
+/** Implements the Java side of Android URL protocol jobs. See android_protocol_handler.cc. */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
+@NullMarked
 public class AndroidProtocolHandler {
     private static final String TAG = "AndroidProtocolHandler";
 
@@ -48,12 +48,14 @@ public class AndroidProtocolHandler {
      * @return An InputStream to the Android resource.
      */
     @CalledByNative
-    public static InputStream open(GURL url) {
+    public static @Nullable InputStream open(@Nullable GURL url) {
         Uri uri = verifyUrl(url);
         if (uri == null) {
             return null;
         }
         InputStream stream = openByScheme(uri);
+        assert uri.getLastPathSegment() != null
+                : "URI should have a path because it is hierarchical.";
         if (stream != null && uri.getLastPathSegment().endsWith(".svgz")) {
             try {
                 stream = new GZIPInputStream(stream);
@@ -65,10 +67,12 @@ public class AndroidProtocolHandler {
         return stream;
     }
 
-    private static InputStream openByScheme(Uri uri) {
+    private static @Nullable InputStream openByScheme(Uri uri) {
         try {
+            assert uri.getScheme() != null : "URI should have a scheme because it is not relative.";
             if (uri.getScheme().equals(FILE_SCHEME)) {
                 String path = uri.getPath();
+                assert path != null : "URI should have a path because it is hierarchical.";
                 if (path.startsWith(AndroidProtocolHandlerJni.get().getAndroidAssetPath())) {
                     return openAsset(uri);
                 } else if (path.startsWith(
@@ -86,7 +90,7 @@ public class AndroidProtocolHandler {
 
     // Assumes input string is in the format "foo.bar.baz" and strips out the last component.
     // Returns null on failure.
-    private static String removeOneSuffix(String input) {
+    private static @Nullable String removeOneSuffix(@Nullable String input) {
         if (input == null) return null;
         int lastDotIndex = input.lastIndexOf('.');
         if (lastDotIndex == -1) return null;
@@ -145,7 +149,8 @@ public class AndroidProtocolHandler {
         return value.type;
     }
 
-    private static InputStream openResource(Uri uri) {
+    private static @Nullable InputStream openResource(Uri uri) {
+        assert uri.getScheme() != null : "URI should have a scheme because it is not relative.";
         assert uri.getScheme().equals(FILE_SCHEME);
         assert uri.getPath() != null;
         assert uri.getPath().startsWith(AndroidProtocolHandlerJni.get().getAndroidResourcePath());
@@ -193,7 +198,8 @@ public class AndroidProtocolHandler {
         }
     }
 
-    private static InputStream openAsset(Uri uri) {
+    private static @Nullable InputStream openAsset(Uri uri) {
+        assert uri.getScheme() != null : "URI should have a scheme because it is not relative.";
         assert uri.getScheme().equals(FILE_SCHEME);
         assert uri.getPath() != null;
         assert uri.getPath().startsWith(AndroidProtocolHandlerJni.get().getAndroidAssetPath());
@@ -210,7 +216,8 @@ public class AndroidProtocolHandler {
         }
     }
 
-    private static InputStream openContent(Uri uri) {
+    private static @Nullable InputStream openContent(Uri uri) {
+        assert uri.getScheme() != null : "URI should have a scheme because it is not relative.";
         assert uri.getScheme().equals(CONTENT_SCHEME);
         try {
             return ContextUtils.getApplicationContext().getContentResolver().openInputStream(uri);
@@ -228,13 +235,16 @@ public class AndroidProtocolHandler {
      * @return The mime type or null if the type is unknown.
      */
     @CalledByNative
-    public static @JniType("std::string") String getMimeType(InputStream stream, GURL url) {
+    public static @JniType("std::string") @Nullable String getMimeType(
+            InputStream stream, @Nullable GURL url) {
         Uri uri = verifyUrl(url);
         if (uri == null) {
             return null;
         }
         try {
             String path = uri.getPath();
+            assert uri.getScheme() != null : "URI should have a scheme because it is not relative.";
+            assert path != null : "URI should have a path because it is hierarchical.";
             // The content URL type can be queried directly.
             if (uri.getScheme().equals(CONTENT_SCHEME)) {
                 return ContextUtils.getApplicationContext().getContentResolver().getType(uri);
@@ -272,7 +282,7 @@ public class AndroidProtocolHandler {
      *
      * @return a Uri instance, or null if the URL was invalid.
      */
-    private static Uri verifyUrl(GURL url) {
+    private static @Nullable Uri verifyUrl(@Nullable GURL url) {
         if (url == null) return null;
         if (url.isEmpty()) return null;
         // Never null. parse() doesn't actually parse or verify anything.
