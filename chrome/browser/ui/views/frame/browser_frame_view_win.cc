@@ -230,7 +230,8 @@ BrowserLayoutParams BrowserFrameViewWin::GetBrowserLayoutParams() const {
   } else {
     params.trailing_exclusion.content =
         gfx::SizeF(width() - caption.x(), caption.bottom() - top);
-    if (window_icon_) {
+    // In overlay mode, the icon is present but hidden.
+    if (window_icon_ && !browser_view()->IsWindowControlsOverlayEnabled()) {
       const auto& icon = window_icon_->bounds();
       params.leading_exclusion.content =
           gfx::SizeF(icon.right(), icon.bottom() - top);

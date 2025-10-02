@@ -186,7 +186,12 @@ class BrowserFrameView : public views::FrameView {
 
   // Returns true if the top UI (tabstrip, toolbar) should be hidden because the
   // browser is in fullscreen mode.
-  virtual bool ShouldHideTopUIForFullscreen() const;
+  virtual bool ShouldHideTopUIInFullscreen() const;
+
+  // Returns true if a toolbar should be shown in the current browser, false if
+  // not. If this returns false, there is no reason to call e.g.
+  // `GetBoundsForWebAppFrameToolbar()`.
+  virtual bool ShouldShowWebAppFrameToolbar() const;
 
   // Returns whether the user is allowed to exit fullscreen on their own (some
   // special modes lock the user in fullscreen).

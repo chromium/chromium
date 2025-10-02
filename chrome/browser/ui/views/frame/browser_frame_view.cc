@@ -174,8 +174,15 @@ void BrowserFrameView::LayoutWebAppWindowTitle(
 
 void BrowserFrameView::UpdateFullscreenTopUI() {}
 
-bool BrowserFrameView::ShouldHideTopUIForFullscreen() const {
-  return browser_widget_->IsFullscreen();
+bool BrowserFrameView::ShouldHideTopUIInFullscreen() const {
+  return true;
+}
+
+bool BrowserFrameView::ShouldShowWebAppFrameToolbar() const {
+  if (browser_widget_->IsFullscreen() && ShouldHideTopUIInFullscreen()) {
+    return false;
+  }
+  return true;
 }
 
 bool BrowserFrameView::CanUserExitFullscreen() const {

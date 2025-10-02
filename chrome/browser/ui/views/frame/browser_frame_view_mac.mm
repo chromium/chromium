@@ -198,9 +198,6 @@ gfx::Rect BrowserFrameViewMac::GetBoundsForTabStripRegion(
 
 gfx::Rect BrowserFrameViewMac::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
-  if (ShouldHideTopUIForFullscreen()) {
-    return gfx::Rect();
-  }
   gfx::Rect bounds(0, 0, width(),
                    toolbar_preferred_size.height() + kWebAppMenuMargin * 2);
 
@@ -210,6 +207,15 @@ gfx::Rect BrowserFrameViewMac::GetBoundsForWebAppFrameToolbar(
   }
 
   return bounds;
+}
+
+BrowserLayoutParams BrowserFrameViewMac::GetBrowserLayoutParams() const {
+  if (browser_view()->IsFullscreen()) {
+    // No insets for caption buttons in fullscreen, since caption buttons are on
+    // a separate pane that slides in.
+    return BrowserLayoutParams{.visual_client_area = GetBoundsForClientView()};
+  }
+  return BrowserFrameView::GetBrowserLayoutParams();
 }
 
 int BrowserFrameViewMac::GetTopInset(bool restored) const {
@@ -296,12 +302,9 @@ void BrowserFrameViewMac::OnAppRegistrarDestroyed() {
   always_show_toolbar_in_fullscreen_observation_.Reset();
 }
 
-bool BrowserFrameViewMac::ShouldHideTopUIForFullscreen() const {
-  if (browser_widget()->IsFullscreen()) {
-    return [fullscreen_toolbar_controller_ toolbarStyle] !=
-           FullscreenToolbarStyle::TOOLBAR_PRESENT;
-  }
-  return false;
+bool BrowserFrameViewMac::ShouldHideTopUIInFullscreen() const {
+  return [fullscreen_toolbar_controller_ toolbarStyle] !=
+         FullscreenToolbarStyle::TOOLBAR_PRESENT;
 }
 
 void BrowserFrameViewMac::UpdateThrobber(bool running) {}

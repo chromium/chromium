@@ -60,6 +60,7 @@ class BrowserFrameViewChromeOS
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
+  bool ShouldShowWebAppFrameToolbar() const override;
   int GetTopInset(bool restored) const override;
   void UpdateThrobber(bool running) override;
   bool CanUserExitFullscreen() const override;

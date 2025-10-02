@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
 // static
@@ -211,6 +212,9 @@ BrowserViewLayoutDelegateImplOld::GetBoundsForToolbarInVerticalTabBrowserView()
 gfx::Rect
 BrowserViewLayoutDelegateImplOld::GetBoundsForWebAppFrameToolbarInBrowserView()
     const {
+  if (!GetFrameView()->ShouldShowWebAppFrameToolbar()) {
+    return gfx::Rect();
+  }
   const gfx::Size web_app_frame_toolbar_preferred_size =
       browser_view().web_app_frame_toolbar()->GetPreferredSize();
   gfx::RectF bounds_f =
@@ -284,9 +288,10 @@ BrowserViewLayoutDelegateImplNew::GetBoundsForToolbarInVerticalTabBrowserView()
 gfx::Rect
 BrowserViewLayoutDelegateImplNew::GetBoundsForWebAppFrameToolbarInBrowserView()
     const {
-  if (browser_view().ShouldHideUIForFullscreen()) {
+  if (!GetFrameView()->ShouldShowWebAppFrameToolbar()) {
     return gfx::Rect();
   }
+
   const gfx::Size web_app_frame_toolbar_preferred_size =
       browser_view().web_app_frame_toolbar()->GetPreferredSize();
 

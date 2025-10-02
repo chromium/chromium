@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -729,7 +730,11 @@ gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForTabStripRegion(
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
-  return gfx::Rect();
+  NOTREACHED() << "Web app toolbar should never be shown in PiP.";
+}
+
+bool PictureInPictureBrowserFrameView::ShouldShowWebAppFrameToolbar() const {
+  return false;
 }
 
 int PictureInPictureBrowserFrameView::GetTopInset(bool restored) const {

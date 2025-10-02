@@ -474,7 +474,8 @@ ui::ImageModel OpaqueBrowserFrameView::GetFaviconForTabIconView() {
 bool OpaqueBrowserFrameView::ShouldShowWindowIcon() const {
   views::WidgetDelegate* delegate = browser_widget()->widget_delegate();
   return GetShowWindowTitleBar() && delegate &&
-         delegate->ShouldShowWindowIcon();
+         delegate->ShouldShowWindowIcon() &&
+         !browser_view()->IsWindowControlsOverlayEnabled();
 }
 
 bool OpaqueBrowserFrameView::ShouldShowWindowTitle() const {
