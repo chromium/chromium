@@ -359,6 +359,13 @@ void StaticSocketDataProvider::Resume() {
   paused_ = false;
 }
 
+void StaticSocketDataProvider::ExpectAllReadDataConsumed() const {
+  helper_.ExpectAllReadDataConsumed(printer_.get());
+}
+void StaticSocketDataProvider::ExpectAllWriteDataConsumed() const {
+  helper_.ExpectAllWriteDataConsumed(printer_.get());
+}
+
 MockRead StaticSocketDataProvider::OnRead() {
   if (AllReadDataConsumed()) {
     const net::MockRead pending_read(net::SYNCHRONOUS, net::ERR_IO_PENDING);

@@ -339,6 +339,12 @@ class TestCustomProxyConnectionObserver
   std::optional<HeadersReceived> headers_received_;
 };
 
+// Tests in ip_protection_url_request_http_job_unittest.cc exercise the delegate
+// by making a network request. This tests the full integration path through
+// the network stack.
+//
+// Therefore, prefer adding new tests to that suite if its simpler
+// MockIpProtectionCore is sufficient.
 class IpProtectionProxyDelegateTest : public testing::Test {
  public:
   IpProtectionProxyDelegateTest() = default;
@@ -503,83 +509,6 @@ TEST_F(IpProtectionProxyDelegateTest,
       /*chain_index=*/0, base::BindOnce(DoNotCallCallback));
   ASSERT_TRUE(headers.has_value());
   EXPECT_TRUE(headers->IsEmpty());
-}
-
-TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
-  std::map<std::string, std::set<std::string>> first_party_map;
-  first_party_map["example.com"] = {};
-  auto masked_domain_list_manager = CreateMdlManager(first_party_map);
-  auto ipp_core =
-      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
-  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"}),
-                          MakeChain({"backup-proxya", "backup-proxyb"})});
-  auto delegate = CreateDelegate(ipp_core.get());
-
-  net::ProxyRetryInfoMap retry_map;
-  net::ProxyRetryInfo& info = retry_map[net::ProxyChain::ForIpProtection(
-      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxya", std::nullopt),
-       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxyb", std::nullopt)})];
-  info.bad_until = base::TimeTicks::Now() + base::Days(2);
-
-  net::ProxyInfo result;
-  result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl),
-                           net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("https://top.com"))),
-                           "GET", std::move(retry_map), &result);
-
-  net::ProxyList expected_proxy_list;
-  expected_proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection(
-      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "backup-proxya", std::nullopt),
-       net::ProxyServer::FromSchemeHostAndPort(
-           net::ProxyServer::SCHEME_HTTPS, "backup-proxyb", std::nullopt)}));
-  expected_proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection({}));
-  expected_proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection(
-      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxya", std::nullopt),
-       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxyb", std::nullopt)}));
-
-  EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
-      << "Got: " << result.proxy_list().ToDebugString();
-  EXPECT_TRUE(result.is_for_ip_protection());
-  histogram_tester_.ExpectUniqueSample(kProxyResolutionHistogram,
-                                       ProxyResolutionResult::kAttemptProxy, 1);
-}
-
-TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyAllProxiesBad) {
-  std::map<std::string, std::set<std::string>> first_party_map;
-  first_party_map["example.com"] = {};
-  auto masked_domain_list_manager = CreateMdlManager(first_party_map);
-  auto ipp_core =
-      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
-  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
-  auto delegate = CreateDelegate(ipp_core.get());
-
-  net::ProxyRetryInfoMap retry_map;
-  net::ProxyRetryInfo& info = retry_map[net::ProxyChain::ForIpProtection(
-      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxya", std::nullopt),
-       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxyb", std::nullopt)})];
-  info.bad_until = base::TimeTicks::Now() + base::Days(2);
-
-  net::ProxyInfo result;
-  result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl),
-                           net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("https://top.com"))),
-                           "GET", std::move(retry_map), &result);
-
-  EXPECT_TRUE(result.is_direct());
-  EXPECT_FALSE(result.is_for_ip_protection());
-  histogram_tester_.ExpectUniqueSample(kProxyResolutionHistogram,
-                                       ProxyResolutionResult::kAttemptProxy, 1);
 }
 
 TEST_F(IpProtectionProxyDelegateTest,

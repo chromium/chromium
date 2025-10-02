@@ -47,19 +47,48 @@ constexpr std::string_view kResponseHeaders =
     "HTTP/1.1 200 OK\r\n"
     "Content-Length: 12\r\n\r\n";
 
-const char kResponseBody[] = "Test Content";
+const std::string_view kResponseBody = "Test Content";
+
+constexpr std::string_view kConnectToProxyBHeaders =
+    "CONNECT proxy-b:443 HTTP/1.1\r\n"
+    "Host: proxy-b:443\r\n"
+    "Proxy-Connection: keep-alive\r\n\r\n";
+constexpr std::string_view kConnectToProxyDHeaders =
+    "CONNECT proxy-d:443 HTTP/1.1\r\n"
+    "Host: proxy-d:443\r\n"
+    "Proxy-Connection: keep-alive\r\n\r\n";
+
+constexpr std::string_view kConnectToProxyResponse =
+    "HTTP/1.1 200 Connection Established\r\n\r\n";
+
+constexpr std::string_view kConnectToDestinationHeaders =
+    "CONNECT www.example.com:80 HTTP/1.1\r\n"
+    "Host: www.example.com:80\r\n"
+    "Proxy-Connection: keep-alive\r\n\r\n";
+constexpr std::string_view kConnectToDestinationResponse =
+    "HTTP/1.1 200 Connection Established\r\n\r\n";
 
 net::ProxyChain GetIpProtectionProxyChain() {
-  net::ProxyServer proxy_server_a = net::ProxyServer::FromSchemeHostAndPort(
-      net::ProxyServer::SCHEME_HTTPS, "proxy-a", 443);
-  net::ProxyServer proxy_server_b = net::ProxyServer::FromSchemeHostAndPort(
-      net::ProxyServer::SCHEME_HTTPS, "proxy-b", 443);
-  return net::ProxyChain::ForIpProtection({proxy_server_a, proxy_server_b});
+  return net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy-a", 443),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy-b", 443)});
+}
+
+net::ProxyChain GetIpProtectionProxyChain2() {
+  return net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy-c", 443),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy-d", 443)});
 }
 
 // A wrapper around SocketDataProvider that owns the reads and writes.
 struct SocketDataWrapper {
-  std::unique_ptr<net::StaticSocketDataProvider> socket_data;
+  std::unique_ptr<net::StaticSocketDataProvider> socket_data_provider;
+  // For successful requests that use SSL.
+  std::vector<net::SSLSocketDataProvider> ssl_data_providers;
   // Might be empty if the request only mocks connection.
   std::vector<net::MockWrite> writes;
   std::vector<net::MockRead> reads;
@@ -67,8 +96,9 @@ struct SocketDataWrapper {
 
 SocketDataWrapper CreateRequestFailsSocketData() {
   SocketDataWrapper wrapper;
-  wrapper.socket_data = std::make_unique<net::StaticSocketDataProvider>();
-  wrapper.socket_data->set_connect_data(
+  wrapper.socket_data_provider =
+      std::make_unique<net::StaticSocketDataProvider>();
+  wrapper.socket_data_provider->set_connect_data(
       net::MockConnect(net::SYNCHRONOUS, net::ERR_CONNECTION_RESET));
   return wrapper;
 }
@@ -81,8 +111,42 @@ SocketDataWrapper CreateDirectRequestSucceedsSocketData() {
   wrapper.reads.emplace_back(kResponseBody);
   wrapper.reads.emplace_back(net::ASYNC, net::OK);
 
-  wrapper.socket_data = std::make_unique<net::StaticSocketDataProvider>(
-      wrapper.reads, wrapper.writes);
+  wrapper.socket_data_provider =
+      std::make_unique<net::StaticSocketDataProvider>(wrapper.reads,
+                                                      wrapper.writes);
+  return wrapper;
+}
+
+SocketDataWrapper CreateProxiedRequestSucceedsSocketData(
+    const net::ProxyChain& proxy_chain) {
+  SocketDataWrapper wrapper;
+
+  // We can't construct the string dynamically because net::MockWrite doesn't
+  // store the string; it stores a string_view.
+  std::string_view connect_to_proxy_headers;
+  std::string second_hop_proxy_host = proxy_chain.GetProxyServer(1).GetHost();
+  if (second_hop_proxy_host == "proxy-b") {
+    connect_to_proxy_headers = kConnectToProxyBHeaders;
+  } else if (second_hop_proxy_host == "proxy-d") {
+    connect_to_proxy_headers = kConnectToProxyDHeaders;
+  } else {
+    NOTREACHED();
+  }
+  wrapper.writes.emplace_back(connect_to_proxy_headers);
+  wrapper.reads.emplace_back(kConnectToProxyResponse);
+  wrapper.ssl_data_providers.emplace_back(net::ASYNC, net::OK);
+
+  wrapper.writes.emplace_back(kConnectToDestinationHeaders);
+  wrapper.reads.emplace_back(kConnectToDestinationResponse);
+  wrapper.ssl_data_providers.emplace_back(net::ASYNC, net::OK);
+
+  wrapper.writes.emplace_back(kSimpleGetMockWrite);
+  wrapper.reads.emplace_back(kResponseHeaders);
+  wrapper.reads.emplace_back(kResponseBody);
+
+  wrapper.socket_data_provider =
+      std::make_unique<net::StaticSocketDataProvider>(wrapper.reads,
+                                                      wrapper.writes);
   return wrapper;
 }
 
@@ -172,8 +236,11 @@ class UrlRequestContextWrapper {
                                    TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
-  void AddSocketDataProvider(SocketDataWrapper& wrapper) {
-    socket_factory_.AddSocketDataProvider(wrapper.socket_data.get());
+  void AddSocketData(SocketDataWrapper& wrapper) {
+    socket_factory_.AddSocketDataProvider(wrapper.socket_data_provider.get());
+    for (auto& ssl_data : wrapper.ssl_data_providers) {
+      socket_factory_.AddSSLSocketDataProvider(&ssl_data);
+    }
   }
 
  private:
@@ -260,10 +327,10 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, FallbackToDirect) {
 
   // Mock a request to the proxy that fails.
   auto connect_data = CreateRequestFailsSocketData();
-  request_context.AddSocketDataProvider(connect_data);
+  request_context.AddSocketData(connect_data);
   // Mock a direct request that succeeds.
   auto direct_data = CreateDirectRequestSucceedsSocketData();
-  request_context.AddSocketDataProvider(direct_data);
+  request_context.AddSocketData(direct_data);
 
   net::TestDelegate delegate;
   base::HistogramTester histograms;
@@ -295,7 +362,7 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, NoProxies) {
 
   // Mock a direct request that succeeds.
   auto direct_data = CreateDirectRequestSucceedsSocketData();
-  request_context.AddSocketDataProvider(direct_data);
+  request_context.AddSocketData(direct_data);
 
   base::HistogramTester histograms;
   net::TestDelegate delegate;
@@ -329,7 +396,7 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
 
   // Mock a direct request that succeeds.
   auto direct_data = CreateDirectRequestSucceedsSocketData();
-  request_context.AddSocketDataProvider(direct_data);
+  request_context.AddSocketData(direct_data);
 
   base::HistogramTester histograms;
   net::TestDelegate delegate;
@@ -350,21 +417,26 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
   CheckRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
 }
 
-TEST_F(IpProtectionUrlRequestHttpJobTest, BadProxyChain) {
+TEST_F(IpProtectionUrlRequestHttpJobTest, AllBadProxyChains) {
   base::test::ScopedFeatureList scoped_feature_list(
       net::features::kEnableIpProtectionProxy);
 
   UrlRequestContextWrapper request_context;
-  request_context.ipp_core().SetProxyList({GetIpProtectionProxyChain()});
+  request_context.ipp_core().SetProxyList(
+      {GetIpProtectionProxyChain(), GetIpProtectionProxyChain2()});
 
   {
     // Mock a request to the proxy that fails.
-    auto connect_data = CreateRequestFailsSocketData();
-    request_context.AddSocketDataProvider(connect_data);
+    auto connect_data1 = CreateRequestFailsSocketData();
+    request_context.AddSocketData(connect_data1);
+
+    // Mock a request to the proxy that fails.
+    auto connect_data2 = CreateRequestFailsSocketData();
+    request_context.AddSocketData(connect_data2);
 
     // Mock a direct request that succeeds.
     auto direct_data = CreateDirectRequestSucceedsSocketData();
-    request_context.AddSocketDataProvider(direct_data);
+    request_context.AddSocketData(direct_data);
 
     base::HistogramTester histograms;
     net::TestDelegate delegate;
@@ -384,7 +456,7 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, BadProxyChain) {
 
   // Mock a direct request that succeeds.
   auto direct_data = CreateDirectRequestSucceedsSocketData();
-  request_context.AddSocketDataProvider(direct_data);
+  request_context.AddSocketData(direct_data);
 
   base::HistogramTester histograms;
   net::TestDelegate delegate;
@@ -399,6 +471,67 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, BadProxyChain) {
 
   EXPECT_EQ(net::ProxyChain::Direct(), request->proxy_chain());
   CheckRequestMetrics(histograms, RequestMetricsExpectations::kDirectOnly);
+}
+
+TEST_F(IpProtectionUrlRequestHttpJobTest, OneBadProxyChain) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      net::features::kEnableIpProtectionProxy);
+
+  UrlRequestContextWrapper request_context;
+  request_context.ipp_core().SetProxyList(
+      {GetIpProtectionProxyChain(), GetIpProtectionProxyChain2()});
+
+  {
+    // Mock a request to the ProxyChain that fails. This proxy chain will be
+    // marked as a bad proxy chain.
+    auto connect_data = CreateRequestFailsSocketData();
+    request_context.AddSocketData(connect_data);
+
+    // Mock a request to the proxy chain that succeeds.
+    auto proxy_data =
+        CreateProxiedRequestSucceedsSocketData(GetIpProtectionProxyChain2());
+    request_context.AddSocketData(proxy_data);
+
+    base::HistogramTester histograms;
+    net::TestDelegate delegate;
+    std::unique_ptr<net::URLRequest> request =
+        request_context.CreateRequest(GURL(kUrl), &delegate);
+    request->Start();
+    ASSERT_TRUE(request->is_pending());
+    delegate.RunUntilComplete();
+
+    ASSERT_THAT(delegate.request_status(), IsOk());
+    EXPECT_EQ(GetIpProtectionProxyChain2(), request->proxy_chain());
+    EXPECT_THAT(request_context.proxy_resolution_service().proxy_retry_info(),
+                Contains(Key(GetIpProtectionProxyChain())));
+    CheckRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
+  }
+
+  // Mock a request to the proxy that fails.
+  auto connect_data = CreateRequestFailsSocketData();
+  request_context.AddSocketData(connect_data);
+  // Mock a request to direct that fails.
+  auto direct_data = CreateRequestFailsSocketData();
+  request_context.AddSocketData(direct_data);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<net::URLRequest> request =
+      request_context.CreateRequest(GURL(kUrl), &delegate);
+
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  delegate.RunUntilComplete();
+
+  // Since the first proxy chain was marked as bad, it should have been removed
+  // from the proxy list. We shouldn't fall back and the request should fail.
+  EXPECT_THAT(delegate.request_status(),
+              net::test::IsError(net::ERR_CONNECTION_RESET));
+  EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
+
+  connect_data.socket_data_provider->ExpectAllReadDataConsumed();
+  connect_data.socket_data_provider->ExpectAllWriteDataConsumed();
+  direct_data.socket_data_provider->ExpectAllReadDataConsumed();
+  direct_data.socket_data_provider->ExpectAllWriteDataConsumed();
 }
 
 }  // namespace ip_protection

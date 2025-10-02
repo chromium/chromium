@@ -551,6 +551,10 @@ class StaticSocketDataProvider : public SocketDataProvider {
   void Pause();
   void Resume();
 
+  // EXPECTs that all data has been consumed, printing any un-consumed data.
+  void ExpectAllReadDataConsumed() const;
+  void ExpectAllWriteDataConsumed() const;
+
   // From SocketDataProvider:
   MockRead OnRead() override;
   MockWriteResult OnWrite(const std::string& data) override;

@@ -213,7 +213,8 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   }
 
   if (!net::features::kIpPrivacyDirectOnly.Get()) {
-    proxy_list.DeprioritizeBadProxyChains(proxy_retry_info);
+    proxy_list.DeprioritizeBadProxyChains(proxy_retry_info,
+                                          /*remove_bad_proxy_chains=*/true);
     if (proxy_list.IsEmpty()) {
       return;
     }
