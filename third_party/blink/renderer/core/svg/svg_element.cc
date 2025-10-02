@@ -795,9 +795,6 @@ void SVGElement::SynchronizeAllSVGAttributes() const {
 
 MutableCSSPropertyValueSet*
 SVGElement::GetPresentationAttributeStyleForDirectUpdate() {
-  if (!RuntimeEnabledFeatures::SvgEagerPresAttrStyleUpdateEnabled()) {
-    return nullptr;
-  }
   // If the element is not attached to the layout tree, then just mark dirty.
   if (!GetLayoutObject()) {
     return nullptr;
