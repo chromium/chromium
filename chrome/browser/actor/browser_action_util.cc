@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -716,6 +717,10 @@ void FetchCallback(
         (fetch_result.annotated_page_content_result.value().end_time -
          start_time)
             .InMilliseconds());
+    base::UmaHistogramMediumTimes(
+        "Actor.PageContext.APC.Duration",
+        fetch_result.annotated_page_content_result.value().end_time -
+            fetch_context_time);
   }
 
   {
@@ -727,6 +732,9 @@ void FetchCallback(
     latency_step->set_latency_stop_ms(
         (fetch_result.screenshot_result.value().end_time - start_time)
             .InMilliseconds());
+    base::UmaHistogramMediumTimes(
+        "Actor.PageContext.Screenshot.Duration",
+        fetch_result.screenshot_result.value().end_time - fetch_context_time);
   }
 
   // TODO(khushalsagar): Remove this once consumers use ActionResults for script
@@ -874,6 +882,8 @@ void BuildActionsResultWithObservations(
                        actions_start_time, base::TimeTicks::Now(),
                        base::Unretained(latency_info)));
   }
+  base::UmaHistogramCounts1000("Actor.PageContext.TabCount",
+                               tabs_to_fetch.size());
 }
 
 apc::ActionsResult BuildErrorActionsResult(

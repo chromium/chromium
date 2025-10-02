@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -76,12 +77,22 @@ MultiStep GlicActorGeneralUiTest::WaitAction(
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateTaskAndNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
+  base::HistogramTester histogram_tester;
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
                   WaitForWebContentsReady(kNewActorTabId, task_url));
+
+  // Two samples of 1 tab for CreateTab, Navigate actions.
+  // The durations should not be zero.
+  histogram_tester.ExpectUniqueSample("Actor.PageContext.TabCount", 1, 2);
+  histogram_tester.ExpectBucketCount("Actor.PageContext.APC.Duration", 0, 0);
+  histogram_tester.ExpectTotalCount("Actor.PageContext.APC.Duration", 2);
+  histogram_tester.ExpectBucketCount("Actor.PageContext.Screenshot.Duration", 0,
+                                     0);
+  histogram_tester.ExpectTotalCount("Actor.PageContext.Screenshot.Duration", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,

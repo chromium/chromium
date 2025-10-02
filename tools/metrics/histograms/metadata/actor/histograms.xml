@@ -80,6 +80,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.PageContext.APC.Duration" units="ms"
+    expires_after="2026-08-11">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Duration of fetching of the annotated page context for the PerformActions
+    response.
+  </summary>
+</histogram>
+
+<histogram name="Actor.PageContext.Screenshot.Duration" units="ms"
+    expires_after="2026-08-11">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>Duration of screenshot for the PerformActions response.</summary>
+</histogram>
+
+<histogram name="Actor.PageContext.TabCount" units="count"
+    expires_after="2026-08-11">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>Number of tabs to observe in PerformActions response.</summary>
+</histogram>
+
 <histogram name="Actor.Task.Count.Cancelled" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>
