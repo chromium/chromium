@@ -1901,7 +1901,7 @@
   {
     "name": "content-push-notifications",
     "owners": [ "sczs@chromium.org", "guiperez@google.com", "chrome-sherlock@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 144
   },
   {
     "name": "content-settings-partitioning",
