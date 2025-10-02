@@ -78,10 +78,10 @@ static int device_api_level() {
   return s_api_level;
 }
 
-static int board_api_level() {
+static int vendor_api_level() {
   static int v_api_level = -1;
   if (v_api_level < 0)
-    v_api_level = system_property_get_int("ro.board.api_level");
+    v_api_level = system_property_get_int("ro.vendor.api_level");
   return v_api_level;
 }
 
@@ -148,8 +148,9 @@ static size_t ashmem_dev_get_size_region(int fd) {
 
 // Starting with API level 26, the following functions from
 // libandroid.so should be used to create shared memory regions,
-// unless the device's SDK version is 37 or newer, in which case,
-// use memfd directly instead of the ASharedMemory API.
+// unless the device's vendor.api_level is 202604 (Android 17)
+// or newer, in which case, use memfd directly instead of
+// the ASharedMemory API.
 typedef int(*ASharedMemory_createFunc)(const char*, size_t);
 // ASharedMemory_setProtFunc() is typically invoked in conjunction with ASharedMemory_createFunc(),
 // so it's okay for setProt to implicitly assume the type of fd it needs to work with.
@@ -231,61 +232,19 @@ static int memfd_get_prot_region(int fd) {
   return prot;
 }
 
-static bool write_seal_breaks_ro_shared_mmap() {
-  /*
-   * Until Linux kernel version 6.7, there was a bug that prevented memfds sealed with F_SEAL_WRITE
-   * from being mapped as shared and read-only:
-   *
-   * https://lore.kernel.org/all/cover.1697116581.git.lstoakes@gmail.com/T/#m28fbfb0d5727e5693e54a7fb2e0c9ac30e95eca5
-   *
-   * This bug was fixed for kernels 5.4-6.6, and this check can be removed once the SDK is
-   * finalized, since the kernels will have the fix by then.
-   */
-   bool ret = true;
-   const size_t page_size = getpagesize();
-   int fd = memfd_create_region("test-chromium-buf", page_size);
-   if (fd == -1) {
-    return true;
-   }
-
-   if (fcntl(fd, F_ADD_SEALS, F_SEAL_WRITE) == -1) {
-    LOG_E("Cannot apply F_SEAL_WRITE to memfd: %m");
-    goto out;
-   }
-
-   void *buf = mmap(NULL, page_size, PROT_READ, MAP_SHARED, fd, 0);
-   if (buf == MAP_FAILED) {
-    goto out;
-   }
-
-   ret = false;
-   munmap(buf, page_size);
-out:
-   close(fd);
-   return ret;
-}
-
-static bool use_memfd() {
-  /*
-   * When a device is using SDK version 37, ASharedMemory will allocate memfds and attempt to
-   * relabel them by using fsetxattr() to work around how SELinux handles memfds as well as
-   * compatibility issues with sepolicy for upgrading devices.
-   *
-   * fsetxattr() is not allowlisted in our seccomp filter, and allowlisting it may be unsafe.
-   * Since memfds from Chromium should be accessible with the existing sepolicy for appdomain_tmpfs
-   * files, just allocate memfds directly if the device is running Android 17.
-   *
-   * While we should just care about the device SDK version, the SDK version is not bumped up until
-   * late in the development cycle, so consider the board_api_level() as well, which is updated
-   * earlier. The board_api_level() check can be removed after SDK version 37 has been finalized.
-   */
-   return (device_api_level() >= 37 || board_api_level() >= 202604) &&
-          !write_seal_breaks_ro_shared_mmap();
-}
-
 static void ashmem_init_funcs() {
   ASharedMemoryFuncs* funcs = &s_ashmem_funcs;
-  if (use_memfd()) {
+  /*
+   * When a device conforms to the VSR for API level 202604 (Android 17),
+   * ASharedMemory will allocate memfds and attempt to relabel them by using
+   * fsetxattr() to workaround how SELinux handles memfds.
+   *
+   * fsetxattr() is not allowlisted in our seccomp filter, and allowlisting
+   * it may be unsafe. Since memfds from Chromium should be accessible with
+   * the existing sepolicy for appdomain_tmpfs files, just allocate memfds
+   * directly if the device conforms to the VSR for API level 202604.
+   */
+  if (vendor_api_level() >= 202604) {
     funcs->create = &memfd_create_region;
     funcs->setProt = &memfd_set_prot_region;
   } else {
