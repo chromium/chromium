@@ -64,8 +64,6 @@ class CanvasNoiseTest : public PageTestBase {
         CanvasContextCreationAttributesCore::WillReadFrequently::kFalse;
     canvas_element_->GetCanvasRenderingContext(
         GetDocument().GetExecutionContext(), /*canvas_type=*/"2d", attributes);
-    static_cast<CanvasRenderingContext2D*>(CanvasElement().RenderingContext())
-        ->GetOrCreateCanvas2DResourceProvider();
     GetDocument().GetExecutionContext()->SetCanvasNoiseToken(
         NoiseToken(0x1234567890123456));
     EnableInterventions();
@@ -382,6 +380,10 @@ TEST_P(MaybeNoiseSnapshotTest, NoNoiseWhenCanvasInterventionsDisabled) {
 }
 
 TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
+  // Note: This test requires the context's paint canvas to be present as a
+  // precondition.
+  Context2D()->GetOrCreatePaintCanvas();
+
   CanvasElement().DisableAccelerationForCanvas2D();
   base::HistogramTester histogram_tester;
 
@@ -553,6 +555,11 @@ TEST_F(CanvasNoiseTest, TriggerOnFillWithPath2DWithNoise) {
   base::HistogramTester histogram_tester;
   NonThrowableExceptionState exception_state;
   V8TestingScope scope;
+
+  // Note: This test requires the context's paint canvas to be present as a
+  // precondition.
+  Context2D()->GetOrCreatePaintCanvas();
+
   Path2D* canvas_path = Path2D::Create(GetScriptState());
   canvas_path->lineTo(10, 10);
   canvas_path->lineTo(15, 15);
@@ -727,6 +734,11 @@ TEST_F(CanvasNoiseTest, NoisedAfterPatternFromOffscreenCanvas) {
   ScriptState::Scope script_state_scope(script_state);
   NonThrowableExceptionState exception_state;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), 300, 300);
+
+  // Note: This test requires the context's paint canvas to be present as a
+  // precondition.
+  Context2D()->GetOrCreatePaintCanvas();
+
   OffscreenCanvasRenderingContext2D* context =
       static_cast<OffscreenCanvasRenderingContext2D*>(
           host->GetCanvasRenderingContext(
