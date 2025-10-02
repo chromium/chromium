@@ -7,8 +7,10 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/lock_subtle.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/persistent_cache/entry.h"
@@ -16,14 +18,26 @@
 
 namespace gpu {
 
+// We have to enable lock tracking to allow PersistentCache to be used on
+// multiple threads/different sequences.
+#if DCHECK_IS_ON()
+#define SCOPED_LOCK(lock) \
+  base::AutoLock auto_lock(lock, base::subtle::LockTracking::kEnabled)
+#else
+#define SCOPED_LOCK(lock) base::AutoLock auto_lock(lock)
+#endif  // DCHECK_IS_ON()
+
 GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix)
     : cache_prefix_(cache_prefix) {}
 
-GpuPersistentCache::~GpuPersistentCache() = default;
+GpuPersistentCache::~GpuPersistentCache() {
+  SCOPED_LOCK(lock_);
+  persistent_cache_.reset();
+}
 
 void GpuPersistentCache::InitializeCache(
     persistent_cache::BackendParams backend_params) {
-  base::AutoLock auto_lock(lock_);
+  SCOPED_LOCK(lock_);
   persistent_cache_ =
       persistent_cache::PersistentCache::Open(std::move(backend_params));
 }
@@ -32,7 +46,7 @@ size_t GpuPersistentCache::LoadData(const void* key,
                                     size_t key_size,
                                     void* value,
                                     size_t value_size) {
-  base::AutoLock auto_lock(lock_);
+  SCOPED_LOCK(lock_);
   TRACE_EVENT1("gpu", "GpuPersistentCache::LoadData", "persistent_cache_",
                !!persistent_cache_);
   base::UmaHistogramBoolean(GetHistogramName("Load.CacheAvailable"),
@@ -71,7 +85,7 @@ void GpuPersistentCache::StoreData(const void* key,
                                    size_t key_size,
                                    const void* value,
                                    size_t value_size) {
-  base::AutoLock auto_lock(lock_);
+  SCOPED_LOCK(lock_);
   TRACE_EVENT1("gpu", "GpuPersistentCache::StoreData", "persistent_cache_",
                !!persistent_cache_);
   base::UmaHistogramBoolean(GetHistogramName("Store.CacheAvailable"),

@@ -11,6 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/test/trace_test_utils.h"
+#include "base/trace_event/trace_config.h"
+#include "base/trace_event/trace_log.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +49,8 @@ class GpuPersistentCacheTest : public testing::Test {
                                 base::File::FLAG_READ | base::File::FLAG_WRITE);
   }
 
+  void RunStoreAndLoadDataMultiThreaded(int num_threads);
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   GpuPersistentCache cache_{"Test"};
@@ -74,17 +79,14 @@ TEST_F(GpuPersistentCacheTest, LoadNonExistentKey) {
   EXPECT_EQ(loaded_size, 0u);
 }
 
-// Tests that the cache can be safely written to and read from by multiple
-// threads concurrently.
-TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreaded) {
-  constexpr int kNumThreads = 8;
+void GpuPersistentCacheTest::RunStoreAndLoadDataMultiThreaded(int num_threads) {
   constexpr int kNumOperationsPerThread = 2;
 
   base::RunLoop run_loop;
-  auto barrier = base::BarrierClosure(kNumThreads, run_loop.QuitClosure());
+  auto barrier = base::BarrierClosure(num_threads, run_loop.QuitClosure());
 
   // Post tasks to multiple threads to store and immediately load data.
-  for (int i = 0; i < kNumThreads; ++i) {
+  for (int i = 0; i < num_threads; ++i) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
@@ -116,7 +118,7 @@ TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreaded) {
   // After all threads are done, verify from the main thread that all data is
   // still present and correct. This ensures that writes from different threads
   // did not corrupt each other's data.
-  for (int i = 0; i < kNumThreads; ++i) {
+  for (int i = 0; i < num_threads; ++i) {
     for (int j = 0; j < kNumOperationsPerThread; ++j) {
       std::string key =
           "key_" + base::NumberToString(i) + "_" + base::NumberToString(j);
@@ -129,6 +131,26 @@ TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreaded) {
       EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
     }
   }
+}
+
+// Tests that the cache can be safely written to and read from by multiple
+// threads concurrently.
+TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreaded) {
+  RunStoreAndLoadDataMultiThreaded(8);
+}
+
+// Some internal sql code especially tracings checks that they are called on a correct
+// sequence. This test verifies that we can use the cache on multiple threads without
+// violating sequence checkers. There is no need to stress test with many threads like the
+// above StoreAndLoadDataMultiThreaded. A minimal number of threads should suffice
+TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreadedWithSqlTrace) {
+  base::test::TracingEnvironment tracing_environment;
+  base::trace_event::TraceLog::GetInstance()->SetEnabled(
+      base::trace_event::TraceConfig("sql", ""));
+
+  RunStoreAndLoadDataMultiThreaded(3);
+
+  base::trace_event::TraceLog::GetInstance()->SetDisabled();
 }
 
 }  // namespace gpu
