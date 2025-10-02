@@ -1097,7 +1097,7 @@ BASE_FEATURE(kTestDefaultEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 // and more" screen in the Chrome settings that don't apply in third party mode
 // and would confuse the user.
 BASE_FEATURE(kThirdPartyDisableChromeAutofillSettingsScreen,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarPhoneAnimationRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 

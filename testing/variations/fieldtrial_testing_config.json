@@ -24948,21 +24948,6 @@
             ]
         }
     ],
-    "ThirdPartyDisableChromeAutofillSettingsScreenStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ThirdPartyDisableChromeAutofillSettingsScreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThreadCacheMinCachedMemoryForPurging": [
         {
             "platforms": [
