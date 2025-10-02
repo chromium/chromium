@@ -183,7 +183,7 @@ bool ReaderModeTabHelper::CurrentPageIsEligibleForReaderMode() const {
          !google_util::IsYoutubeDomainUrl(
              current_url, google_util::ALLOW_SUBDOMAIN,
              google_util::ALLOW_NON_STANDARD_PORTS) &&
-         !kGoogleWorkspaceBlocklist.contains(current_url.host());
+         !kGoogleWorkspaceBlocklist.contains(current_url.host_piece());
 }
 
 bool ReaderModeTabHelper::CurrentPageIsDistillable() const {

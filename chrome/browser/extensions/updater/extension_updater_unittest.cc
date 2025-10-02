@@ -178,7 +178,7 @@ constexpr base::TimeDelta kUpdateFrequency = base::Seconds(15);
 // Extracts the integer value of the |authuser| query parameter. Returns 0 if
 // the parameter is not set.
 int GetAuthUserQueryValue(const GURL& url) {
-  std::string_view query_piece = url.query();
+  std::string_view query_piece = url.query_piece();
   url::Component query(0, query_piece.length());
   url::Component key, value;
   while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {

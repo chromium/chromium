@@ -130,12 +130,10 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
       const GURL& url) override {
-    if (url.host() == "foo") {
+    if (url.host_piece() == "foo")
       return std::make_unique<FooUI>(web_ui);
-    }
-    if (url.host() == "foobar") {
+    if (url.host_piece() == "foobar")
       return std::make_unique<FooBarUI>(web_ui);
-    }
 
     return nullptr;
   }

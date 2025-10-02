@@ -207,7 +207,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     GURL absolute_url = test_server_->GetURL(request.relative_url);
     std::string path = absolute_url.GetPath();
-    auto it = path_response_map_.find(absolute_url.path());
+    auto it = path_response_map_.find(absolute_url.path_piece());
     if (it == path_response_map_.end()) {
       return nullptr;
     }

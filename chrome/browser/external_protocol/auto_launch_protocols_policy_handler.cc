@@ -45,9 +45,8 @@ bool IsValidProtocol(std::string_view protocol) {
 // pattern.
 bool IsValidOriginMatchingPattern(std::string_view origin_pattern) {
   GURL gurl(origin_pattern);
-  if (gurl.has_path() && gurl.path() != "/") {
+  if (gurl.has_path() && gurl.path_piece() != "/")
     return false;
-  }
   if (gurl.has_query())
     return false;
   return true;

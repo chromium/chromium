@@ -434,13 +434,13 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
   // and the operation may proceed."
   GURL appid_url = GURL(appid);
   if (!appid_url.is_valid() || appid_url.GetScheme() != url::kHttpsScheme ||
-      appid_url.scheme() != caller_origin.scheme()) {
+      appid_url.scheme_piece() != caller_origin.scheme()) {
     return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
   }
 
   // This check is repeated inside |SameDomainOrHost|, just after this. However
   // it's cheap and mirrors the structure of the spec.
-  if (appid_url.host() == caller_origin.host()) {
+  if (appid_url.host_piece() == caller_origin.host()) {
     *out_appid = appid;
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }

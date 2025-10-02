@@ -211,7 +211,7 @@ void ServiceWorkerHost::DidStartServiceWorkerContext(
     return;
   }
   CHECK(service_worker_scope.SchemeIs(kExtensionScheme) &&
-        extension_id == service_worker_scope.host());
+        extension_id == service_worker_scope.host_piece());
 
   ServiceWorkerTaskQueue::Get(browser_context)
       ->RendererDidStartServiceWorkerContext(
@@ -239,7 +239,7 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
     return;
   }
   CHECK(service_worker_scope.SchemeIs(kExtensionScheme) &&
-        extension_id == service_worker_scope.host());
+        extension_id == service_worker_scope.host_piece());
   CHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
            service_worker_version_id);
   ServiceWorkerTaskQueue::Get(browser_context)

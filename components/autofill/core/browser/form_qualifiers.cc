@@ -141,7 +141,7 @@ bool ShouldBeParsed(const T& form,
 
   // Rule out search forms.
   if (MatchesRegex<kUrlSearchActionRe>(
-          base::UTF8ToUTF16(action(form).path()))) {
+          base::UTF8ToUTF16(action(form).path_piece()))) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingUrlMatchesSearchRegex
                         << form;

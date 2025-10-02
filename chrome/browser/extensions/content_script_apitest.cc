@@ -1460,8 +1460,8 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ContentScriptUrls) {
     ASSERT_EQ(1u, observer.messages().size());
     GURL source_url(observer.messages()[0].source_id);
     ASSERT_TRUE(source_url.is_valid());
-    EXPECT_EQ(kExtensionScheme, source_url.scheme());
-    EXPECT_EQ(extension->id(), source_url.host());
+    EXPECT_EQ(kExtensionScheme, source_url.scheme_piece());
+    EXPECT_EQ(extension->id(), source_url.host_piece());
   };
 
   // Test the script url from both a static content script specified in the

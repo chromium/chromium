@@ -141,13 +141,11 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
       const GURL& url) override {
-    if (url.host() == kTestWebUIHost) {
+    if (url.host_piece() == kTestWebUIHost)
       return std::make_unique<MojoFileSystemAccessUI>(web_ui);
-    }
 
-    if (url.host() == kOrdinaryWebUIHost) {
+    if (url.host_piece() == kOrdinaryWebUIHost)
       return std::make_unique<OrdinaryMojoWebUI>(web_ui);
-    }
 
     return nullptr;
   }

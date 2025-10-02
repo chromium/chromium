@@ -153,9 +153,9 @@ const re2::RE2* GetVisitCheckoutPattern(const GURL& url) {
 }
 
 std::string CanonicalURL(const GURL& url) {
-  return base::JoinString(
-      {url.scheme(), "://", url.host(), url.path().substr(0, kLengthLimit)},
-      "");
+  return base::JoinString({url.scheme_piece(), "://", url.host_piece(),
+                           url.path_piece().substr(0, kLengthLimit)},
+                          "");
 }
 
 }  // namespace

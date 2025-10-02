@@ -50,8 +50,8 @@ namespace {
 const char kServiceWorkerFileName[] = "newtab-serviceworker.js";
 
 bool MatchesOrigin(const GURL& my_url, const GURL& other_url) {
-  return my_url.scheme() == other_url.scheme() &&
-         my_url.host() == other_url.host() &&
+  return my_url.scheme_piece() == other_url.scheme_piece() &&
+         my_url.host_piece() == other_url.host_piece() &&
          my_url.GetPort() == other_url.GetPort();
 }
 
@@ -62,7 +62,8 @@ bool MatchesOrigin(const GURL& my_url, const GURL& other_url) {
 // Defined outside of the anonymous namespace so that it's accessible to unit
 // tests.
 bool MatchesOriginAndPath(const GURL& my_url, const GURL& other_url) {
-  return MatchesOrigin(my_url, other_url) && my_url.path() == other_url.path();
+  return MatchesOrigin(my_url, other_url) &&
+         my_url.path_piece() == other_url.path_piece();
 }
 
 namespace {
@@ -253,7 +254,7 @@ bool IsNTPOrRelatedURL(const GURL& url, Profile* profile) {
 
 bool IsNTPURL(const GURL& url) {
   if (url.SchemeIs(chrome::kChromeSearchScheme) &&
-      url.host() == chrome::kChromeSearchRemoteNtpHost) {
+      url.host_piece() == chrome::kChromeSearchRemoteNtpHost) {
     return true;
   }
 #if BUILDFLAG(IS_ANDROID)
@@ -327,7 +328,7 @@ bool ShouldAssignURLToInstantRenderer(const GURL& url, Profile* profile) {
 bool ShouldUseProcessPerSiteForInstantSiteURL(const GURL& site_url,
                                               Profile* profile) {
   return ShouldAssignURLToInstantRenderer(site_url, profile) &&
-         site_url.host() == chrome::kChromeSearchRemoteNtpHost;
+         site_url.host_piece() == chrome::kChromeSearchRemoteNtpHost;
 }
 
 std::optional<GURL> GetEffectiveURLForInstant(const GURL& url,

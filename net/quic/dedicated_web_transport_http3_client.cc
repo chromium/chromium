@@ -510,13 +510,11 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
 int DedicatedWebTransportHttp3Client::DoInit() {
   if (!url_.is_valid())
     return ERR_INVALID_URL;
-  if (url_.scheme() != url::kHttpsScheme) {
+  if (url_.scheme_piece() != url::kHttpsScheme)
     return ERR_DISALLOWED_URL_SCHEME;
-  }
 
-  if (!IsPortAllowedForScheme(url_.EffectiveIntPort(), url_.scheme())) {
+  if (!IsPortAllowedForScheme(url_.EffectiveIntPort(), url_.scheme_piece()))
     return ERR_UNSAFE_PORT;
-  }
 
   if (!application_protocols_.empty() &&
       !webtransport::ValidateSubprotocolList(application_protocols_)) {

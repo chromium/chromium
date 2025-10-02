@@ -296,7 +296,7 @@ void FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest::
   // Resolve "google.test" to 127.0.0.1 so that these tests can navigate to
   // "google.test" and work as desired.
   host_resolver()->AddRule("google.test",
-                           embedded_test_server()->base_url().host());
+                           embedded_test_server()->base_url().host_piece());
 }
 
 // ==== FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest ====

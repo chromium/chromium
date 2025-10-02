@@ -62,7 +62,7 @@ RegisterProtocolHandlerPermissionRequest::GetMessageTextFragment() const {
              : l10n_util::GetStringFUTF16(
                    IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE_FRAGMENT,
                    handler_.GetProtocolDisplayName(),
-                   base::UTF8ToUTF16(old_handler.url().host()));
+                   base::UTF8ToUTF16(old_handler.url().host_piece()));
 }
 
 void RegisterProtocolHandlerPermissionRequest::PermissionDecided(

@@ -1156,7 +1156,7 @@ int HttpCache::Transaction::DoInitEntry() {
           base::Microseconds(1), base::Seconds(1), 50);
     }
     if ((effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED) &&
-        IsGoogleHostWithAlpnH3(request_->url.host())) {
+        IsGoogleHostWithAlpnH3(request_->url.host_piece())) {
       base::UmaHistogramTimes(
           "HttpCache.NoVarySearch.NotUsableLostTime2.GoogleHost.MainFrame",
           elapsed);
@@ -3910,7 +3910,7 @@ void HttpCache::Transaction::RecordHistograms() {
   UMA_HISTOGRAM_ENUMERATION("HttpCache.NoVarySearch.UseResult2",
                             no_vary_search_use_result_);
   if (is_html && is_main_frame &&
-      IsGoogleHostWithAlpnH3(request_->url.host())) {
+      IsGoogleHostWithAlpnH3(request_->url.host_piece())) {
     base::UmaHistogramEnumeration(
         "HttpCache.NoVarySearch.UseResult2.GoogleHost.MainFrameHTML",
         no_vary_search_use_result_);

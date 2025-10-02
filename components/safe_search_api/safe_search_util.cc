@@ -62,7 +62,7 @@ bool IsSafeSearchSettingUrl(const GURL& url) {
     return false;
   }
 
-  return url.path() == "/safesearch";
+  return url.path_piece() == "/safesearch";
 }
 
 }  // namespace

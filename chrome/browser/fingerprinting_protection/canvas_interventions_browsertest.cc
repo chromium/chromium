@@ -190,7 +190,7 @@ class CanvasInterventionsBrowserTest
   testing::AssertionResult RegisterServiceWorker(
       const content::ToRenderFrameHost& to_rfh) {
     auto* rfh = to_rfh.render_frame_host();
-    if (rfh->GetLastCommittedURL().path() !=
+    if (rfh->GetLastCommittedURL().path_piece() !=
         "/service_worker/create_service_worker.html") {
       return testing::AssertionFailure()
              << "Not in '/service_worker/create_service_worker.html'";

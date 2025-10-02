@@ -18,7 +18,7 @@ namespace {
 
 bool IsHostAllowedInIncognito(const GURL& url) {
   std::string scheme = url.GetScheme();
-  std::string_view host = url.host();
+  std::string_view host = url.host_piece();
   if (scheme != content::kChromeUIScheme) {
     return true;
   }

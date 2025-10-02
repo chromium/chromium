@@ -877,7 +877,7 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
  private:
   bool InterceptHashFetch(
       content::URLLoaderInterceptor::RequestParams* params) {
-    if (params->url_request.url.path() != "/getsignature") {
+    if (params->url_request.url.path_piece() != "/getsignature") {
       return false;
     }
 

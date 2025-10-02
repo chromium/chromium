@@ -209,7 +209,8 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
     // port here, because in the !may_include_site_ case that's already covered
     // by being same-origin, and in the may_include_site_ case it's ok for the
     // port to differ.
-    if (rule.MatchesHostAndPath(url) && url.scheme() == origin_.scheme()) {
+    if (rule.MatchesHostAndPath(url) &&
+        url.scheme_piece() == origin_.scheme()) {
       return rule.rule_type;
     }
   }
@@ -235,7 +236,7 @@ bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
     return false;
   }
 
-  std::string_view url_path = url.path();
+  std::string_view url_path = url.path_piece();
   if (!url_path.starts_with(path_prefix)) {
     return false;
   }

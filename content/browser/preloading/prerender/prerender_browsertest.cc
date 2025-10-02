@@ -409,7 +409,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   static std::unique_ptr<net::test_server::HttpResponse>
   HandleCredentialedRequest(const net::test_server::HttpRequest& request) {
     GURL request_url = request.GetURL();
-    std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
+    std::string dest =
+        base::UnescapeBinaryURLComponent(request_url.query_piece());
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();

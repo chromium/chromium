@@ -164,13 +164,13 @@ class ChromeWorkerUserAgentBrowserTest : public InProcessBrowserTest {
                 return false;
 
               std::string path = "chrome/test/data/workers";
-              path.append(std::string(params->url_request.url.path()));
+              path.append(std::string(params->url_request.url.path_piece()));
 
               std::string headers = "HTTP/1.1 200 OK\n";
               base::StrAppend(
                   &headers,
                   {"Content-Type: text/",
-                   base::EndsWith(params->url_request.url.path(), ".js")
+                   base::EndsWith(params->url_request.url.path_piece(), ".js")
                        ? "javascript"
                        : "html",
                    "\n"});

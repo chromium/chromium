@@ -87,7 +87,7 @@ bool LocationBarModelDelegateIOS::ShouldDisplayURL() const {
       if (!url.SchemeIs(kChromeUIScheme)) {
         url = virtual_url;
       }
-      std::string_view host = url.host();
+      std::string_view host = url.host_piece();
       return host != kChromeUINewTabHost;
     }
   }

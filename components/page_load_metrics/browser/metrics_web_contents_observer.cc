@@ -488,7 +488,7 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  if (!ShouldTrackScheme(resource_load_info.final_url.scheme())) {
+  if (!ShouldTrackScheme(resource_load_info.final_url.scheme_piece())) {
     return;
   }
 
@@ -1227,7 +1227,7 @@ bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     return true;
   }
 
-  if (!ShouldTrackScheme(tracker->GetUrl().scheme())) {
+  if (!ShouldTrackScheme(tracker->GetUrl().scheme_piece())) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
     return true;
   }
@@ -1319,7 +1319,7 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
     return true;
   }
 
-  return ShouldTrackSchemeForNonWebUI(url.scheme());
+  return ShouldTrackSchemeForNonWebUI(url.scheme_piece());
 }
 
 bool MetricsWebContentsObserver::ShouldTrackScheme(

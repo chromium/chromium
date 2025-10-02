@@ -12,9 +12,10 @@
 #include "url/gurl.h"
 
 bool ShouldTrackURLForRestore(const GURL& url) {
-  return url.is_valid() && !(url.SchemeIs(content::kChromeUIScheme) &&
-                             (url.host() == chrome::kChromeUIQuitHost ||
-                              url.host() == chrome::kChromeUIRestartHost));
+  return url.is_valid() &&
+         !(url.SchemeIs(content::kChromeUIScheme) &&
+           (url.host_piece() == chrome::kChromeUIQuitHost ||
+            url.host_piece() == chrome::kChromeUIRestartHost));
 }
 
 int GetNavigationIndexToSelect(const sessions::SessionTab& tab) {

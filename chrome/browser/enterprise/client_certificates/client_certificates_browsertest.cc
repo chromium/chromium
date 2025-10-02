@@ -112,7 +112,7 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     const auto& request_url = request.GetURL();
-    if (request_url.path() != "/mtls") {
+    if (request_url.path_piece() != "/mtls") {
       SCOPED_TRACE("Unexpected request.");
       return nullptr;
     }

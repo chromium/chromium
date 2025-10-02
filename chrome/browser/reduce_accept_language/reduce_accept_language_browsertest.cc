@@ -443,7 +443,7 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
       resource_path = "chrome/test/data/reduce_accept_language";
     }
     resource_path.append(
-        static_cast<std::string>(params->url_request.url.path()));
+        static_cast<std::string>(params->url_request.url.path_piece()));
 
     URLLoaderInterceptor::WriteResponse(resource_path, params->client.get(),
                                         &headers, std::nullopt,

@@ -47,7 +47,8 @@ const ProtocolHandler& LookupHandler(
 GURL TranslateUrl(
     const ProtocolHandlerRegistry::ProtocolHandlerMap& handler_map,
     const GURL& url) {
-  const ProtocolHandler& handler = LookupHandler(handler_map, url.scheme());
+  const ProtocolHandler& handler =
+      LookupHandler(handler_map, url.scheme_piece());
   if (handler.IsEmpty())
     return GURL();
 

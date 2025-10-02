@@ -52,7 +52,7 @@ content::WebUIConfig* UntrustedWebUIControllerFactory::GetConfigIfWebUIEnabled(
   if (!url.SchemeIs(content::kChromeUIUntrustedScheme))
     return nullptr;
 
-  auto it = GetWebUIConfigMap().find(url.host());
+  auto it = GetWebUIConfigMap().find(url.host_piece());
   if (it == GetWebUIConfigMap().end())
     return nullptr;
 

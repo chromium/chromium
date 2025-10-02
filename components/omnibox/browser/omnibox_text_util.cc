@@ -198,7 +198,7 @@ void AdjustTextForCopy(int sel_min,
   // guess at user intent, so early exit and leave |text| as-is as plain text.
   if (!current_page_url.SchemeIsHTTPOrHTTPS() ||
       !url_from_text->SchemeIsHTTPOrHTTPS() ||
-      current_page_url.host() != url_from_text->host()) {
+      current_page_url.host_piece() != url_from_text->host_piece()) {
     return;
   }
 
@@ -219,7 +219,7 @@ void AdjustTextForCopy(int sel_min,
 
       // Amend the copied URL to match the prefixed string.
       GURL::Replacements replace_scheme;
-      replace_scheme.SetSchemeStr(current_page_url.scheme());
+      replace_scheme.SetSchemeStr(current_page_url.scheme_piece());
       *url_from_text = url_from_text->ReplaceComponents(replace_scheme);
     }
   }

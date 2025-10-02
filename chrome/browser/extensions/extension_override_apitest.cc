@@ -80,9 +80,8 @@ class ExtensionOverrideTest : public ExtensionApiTest {
     GURL gurl = web_contents->GetController().GetLastCommittedEntry()->GetURL();
     if (!gurl.SchemeIs(kExtensionScheme))
       return testing::AssertionFailure() << gurl;
-    if (gurl.host() != extension_id) {
+    if (gurl.host_piece() != extension_id)
       return testing::AssertionFailure() << gurl;
-    }
     return testing::AssertionSuccess();
   }
 

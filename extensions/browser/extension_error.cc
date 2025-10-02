@@ -148,7 +148,7 @@ void RuntimeError::CleanUpInit() {
   // background page in this case.
   GURL source_url = GURL(source_);
   if (context_url_.is_empty() &&
-      source_url.path() ==
+      source_url.path_piece() ==
           std::string("/") + kGeneratedBackgroundPageFilename) {
     context_url_ = source_url;
   }

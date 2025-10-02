@@ -82,9 +82,9 @@ void RecordOpenPageMetric(const GURL& url) {
     return;
   }
   std::string trimmed_path;
-  // We remove '/' characters from the path. `url.path()` will return the
+  // We remove '/' characters from the path. `url.path_piece()` will return the
   // '/' along with the path value.
-  base::TrimString(url.path(), "/", &trimmed_path);
+  base::TrimString(url.path_piece(), "/", &trimmed_path);
   // Check if the path is URL generator path.
   if (trimmed_path.compare(kUrlGeneratorPath) == 0) {
     base::UmaHistogramEnumeration(

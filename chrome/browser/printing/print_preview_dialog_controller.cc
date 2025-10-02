@@ -283,13 +283,13 @@ void PrintPreviewDialogController::ForEachPreviewDialog(
 // static
 bool PrintPreviewDialogController::IsPrintPreviewURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
-         url.host() == chrome::kChromeUIPrintHost;
+         url.host_piece() == chrome::kChromeUIPrintHost;
 }
 
 // static
 bool PrintPreviewDialogController::IsPrintPreviewContentURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-         url.host() == chrome::kChromeUIPrintHost;
+         url.host_piece() == chrome::kChromeUIPrintHost;
 }
 
 void PrintPreviewDialogController::EraseInitiatorInfo(

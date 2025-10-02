@@ -7140,9 +7140,9 @@ TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
 
   const auto kQuicProxyChain = ProxyChain::ForIpProtection(
       {ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                          kProxy1Url.host(), 70),
+                                          kProxy1Url.host_piece(), 70),
        ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                          kProxy2Url.host(), 80)});
+                                          kProxy2Url.host_piece(), 80)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -7154,33 +7154,33 @@ TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
   QuicTestPacketMaker to_proxy1(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kProxy1Url.host(), quic::Perspective::IS_CLIENT,
+      context_.clock(), kProxy1Url.host_piece(), quic::Perspective::IS_CLIENT,
       /*client_priority_uses_incremental=*/true);
 
   int from_proxy1_packet_num = 1;
   QuicTestPacketMaker from_proxy1(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kProxy1Url.host(), quic::Perspective::IS_SERVER);
+      context_.clock(), kProxy1Url.host_piece(), quic::Perspective::IS_SERVER);
 
   int to_proxy2_packet_num = 1;
   QuicTestPacketMaker to_proxy2(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kProxy2Url.host(), quic::Perspective::IS_CLIENT,
+      context_.clock(), kProxy2Url.host_piece(), quic::Perspective::IS_CLIENT,
       /*client_priority_uses_incremental=*/true);
 
   int from_proxy2_packet_num = 1;
   QuicTestPacketMaker from_proxy2(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kProxy2Url.host(), quic::Perspective::IS_SERVER);
+      context_.clock(), kProxy2Url.host_piece(), quic::Perspective::IS_SERVER);
 
   int to_endpoint_packet_num = 1;
   QuicTestPacketMaker to_endpoint(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kUrl.host(), quic::Perspective::IS_CLIENT,
+      context_.clock(), kUrl.host_piece(), quic::Perspective::IS_CLIENT,
       /*client_priority_uses_incremental=*/true,
       /*use_priority_header=*/true);
 
@@ -7188,7 +7188,7 @@ TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
   QuicTestPacketMaker from_endpoint(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kUrl.host(), quic::Perspective::IS_SERVER);
+      context_.clock(), kUrl.host_piece(), quic::Perspective::IS_SERVER);
 
   // The browser sends the initial settings to proxy1.
   socket_data
@@ -7201,9 +7201,9 @@ TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
       .AddWrite("proxy1-connect-udp",
                 ConstructConnectUdpRequestPacket(
                     to_proxy1, to_proxy1_packet_num++, kStreamId0,
-                    base::StrCat({kProxy1Url.host(), ":70"}),
-                    base::StrCat({"/.well-known/masque/udp/", kProxy2Url.host(),
-                                  "/80/"}),
+                    base::StrCat({kProxy1Url.host_piece(), ":70"}),
+                    base::StrCat({"/.well-known/masque/udp/",
+                                  kProxy2Url.host_piece(), "/80/"}),
                     /*fin=*/false))
       .Sync();
 
@@ -7239,9 +7239,9 @@ TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
               kStreamId0, 0,
               ConstructConnectUdpRequestPacket(
                   to_proxy2, to_proxy2_packet_num++, kStreamId0,
-                  base::StrCat({kProxy2Url.host(), ":80"}),
+                  base::StrCat({kProxy2Url.host_piece(), ":80"}),
                   base::StrCat(
-                      {"/.well-known/masque/udp/", kUrl.host(), "/443/"}),
+                      {"/.well-known/masque/udp/", kUrl.host_piece(), "/443/"}),
                   /*fin=*/false)))
           .Build());
 

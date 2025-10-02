@@ -97,7 +97,7 @@ void LogHistogram(web::DownloadTask* download_task) {
 // parse ref).
 GURL ConvertRefToQueryInUrl(const GURL& url) {
   GURL::Replacements replacement;
-  replacement.SetQueryStr(url.ref());
+  replacement.SetQueryStr(url.ref_piece());
   replacement.ClearRef();
 
   return url.ReplaceComponents(replacement);

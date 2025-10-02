@@ -350,7 +350,7 @@ bool IsUrlPotentiallyTrustworthy(const GURL& url) {
   //    context in which they were created. Therefore, blobs created in a
   //    trustworthy origin will themselves be potentially trustworthy.
   url::Origin origin = url::Origin::Create(url);
-  if (origin.opaque() && IsSchemeConsideredAuthenticated(url.scheme())) {
+  if (origin.opaque() && IsSchemeConsideredAuthenticated(url.scheme_piece())) {
     // Authenticated schemes should be treated as trustworthy, even if they
     // translate into an opaque origin (e.g. because some of them might also be
     // registered as a no-access, like the //content-layer chrome-error:// or

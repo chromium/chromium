@@ -578,9 +578,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
 // with the length indicated by the query string.
 std::unique_ptr<net::test_server::HttpResponse> HandleResponseSize(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != kResponseSizePath) {
+  if (request.GetURL().path_piece() != kResponseSizePath)
     return nullptr;
-  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> response =
       std::make_unique<net::test_server::BasicHttpResponse>();
@@ -599,9 +598,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleResponseSize(
 // response body. No body bytes will be read successfully.
 std::unique_ptr<net::test_server::HttpResponse> HandleInvalidGzip(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != kInvalidGzipPath) {
+  if (request.GetURL().path_piece() != kInvalidGzipPath)
     return nullptr;
-  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> response =
       std::make_unique<net::test_server::BasicHttpResponse>();
@@ -615,9 +613,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleInvalidGzip(
 // truncated body. Consumer should see an error after reading some data.
 std::unique_ptr<net::test_server::HttpResponse> HandleTruncatedBody(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != kTruncatedBodyPath) {
+  if (request.GetURL().path_piece() != kTruncatedBodyPath)
     return nullptr;
-  }
 
   std::unique_ptr<net::test_server::RawHttpResponse> response =
       std::make_unique<net::test_server::RawHttpResponse>(
@@ -634,9 +631,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleTruncatedBody(
 std::unique_ptr<net::test_server::HttpResponse> FailOnceThenEchoBody(
     bool* has_failed_request,
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != kFailOnceThenEchoBody) {
+  if (request.GetURL().path_piece() != kFailOnceThenEchoBody)
     return nullptr;
-  }
 
   if (!*has_failed_request) {
     EXPECT_FALSE(request.content.empty());

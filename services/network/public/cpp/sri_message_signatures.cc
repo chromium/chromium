@@ -334,8 +334,8 @@ std::string SerializeDerivedComponent(
   if (component->name == "@authority") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-authority
     if (url_request.url().has_port()) {
-      return base::StrCat(
-          {url_request.url().host(), ":", url_request.url().port()});
+      return base::StrCat({url_request.url().host_piece(), ":",
+                           url_request.url().port_piece()});
     }
     return url_request.url().GetHost();
   } else if (component->name == "@query") {

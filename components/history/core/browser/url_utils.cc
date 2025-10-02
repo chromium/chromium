@@ -47,7 +47,8 @@ bool CanonicalURLStringCompare(const std::string& s1, const std::string& s2) {
 }
 
 bool HaveSameSchemeHostAndPort(const GURL&url1, const GURL& url2) {
-  return url1.scheme() == url2.scheme() && url1.host() == url2.host() &&
+  return url1.scheme_piece() == url2.scheme_piece() &&
+         url1.host_piece() == url2.host_piece() &&
          url1.GetPort() == url2.GetPort();
 }
 

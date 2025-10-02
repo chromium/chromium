@@ -49,7 +49,7 @@ base::FilePath ExternalFileURLToVirtualPath(const GURL& url) {
     return base::FilePath();
   }
   return base::FilePath::FromUTF8Unsafe(
-      base::UnescapeBinaryURLComponent(url.path()));
+      base::UnescapeBinaryURLComponent(url.path_piece()));
 }
 
 GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {

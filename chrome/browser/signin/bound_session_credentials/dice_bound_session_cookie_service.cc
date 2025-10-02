@@ -55,7 +55,7 @@ void DiceBoundSessionCookieService::OnBoundSessionTerminated(
     const GURL& site,
     const base::flat_set<std::string>& bound_cookie_names) {
   const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
-  if (!gaia_url.DomainIs(site.host())) {
+  if (!gaia_url.DomainIs(site.host_piece())) {
     return;
   }
 

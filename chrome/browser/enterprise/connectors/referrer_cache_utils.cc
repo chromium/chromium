@@ -79,7 +79,7 @@ safe_browsing::ReferrerChain GetOrCreateReferrerChain(
   safe_browsing::ReferrerChainEntry download_chain_entry;
   download_chain_entry.set_url(download_item.GetURL().spec());
   download_chain_entry.set_type(safe_browsing::ReferrerChainEntry::EVENT_URL);
-  download_chain_entry.add_ip_addresses(download_item.GetURL().host());
+  download_chain_entry.add_ip_addresses(download_item.GetURL().host_piece());
 
   content::RenderFrameHost* rfh =
       content::DownloadItemUtils::GetRenderFrameHost(&download_item);

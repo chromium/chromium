@@ -504,7 +504,7 @@ class NetworkResponder {
 
     // Cross-origin iframe handling is covered by integration tests, for cases
     // that request .well-known URLs.
-    if (params->url_request.url.path() ==
+    if (params->url_request.url.path_piece() ==
         "/.well-known/interest-group/permissions/") {
       NOTREACHED();
     }

@@ -337,7 +337,7 @@ bool PageLoadMetricsEmbedder::IsInternalWebUI(const GURL& url) {
   // showing internal WebUI when a user does not have kInternalOnlyUisEnabled
   // set. That URL does not return true from content::IsInternalWebUI.
   return content::IsInternalWebUI(url) ||
-         url.host() == chrome::kChromeUIInternalDebugPagesDisabledHost;
+         url.host_piece() == chrome::kChromeUIInternalDebugPagesDisabledHost;
 }
 
 bool PageLoadMetricsEmbedder::ShouldObserveScheme(std::string_view scheme) {

@@ -51,7 +51,7 @@ safe_browsing::RealTimeUrlLookupServiceBase* g_lookup_service = nullptr;
 
 bool IsWatermarkWebUIURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
-         url.host() == chrome::kChromeUIWatermarkHost;
+         url.host_piece() == chrome::kChromeUIWatermarkHost;
 }
 
 content::Page& GetPageFromWebContents(content::WebContents* web_contents) {

@@ -24,7 +24,7 @@ bool IsSubDomain(const GURL& url, std::string_view domain) {
   if (registryLength == 0 && domain != "localhost") {
     return false;
   }
-  const std::string_view urlContent = url.host();
+  const std::string_view urlContent = url.host_piece();
   const std::string_view urlDomain = urlContent.substr(
       0, urlContent.length() - registryLength - (registryLength == 0 ? 0 : 1));
 

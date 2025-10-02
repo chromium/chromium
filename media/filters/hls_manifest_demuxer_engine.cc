@@ -899,7 +899,7 @@ void HlsManifestDemuxerEngine::DetermineStreamContainer(
 
   // In the best case, we can just assert the mime type based on extension,
   // but if it's unrecognized, we have to fetch and parse it.
-  const auto first_segment_path = segments[0]->GetUri().path();
+  const auto first_segment_path = segments[0]->GetUri().path_piece();
 
   std::optional<RelaxedParserSupportedType> mime = std::nullopt;
   if (first_segment_path.ends_with(".ts")) {

@@ -918,7 +918,8 @@ bool UkmRecorderImpl::ShouldDropExtensionUrl(
   // If the extension is not a webstore extension, drop the record with
   // `EXTENSION_NOT_SYNCED`.
   if (!is_webstore_extension_callback_ ||
-      !is_webstore_extension_callback_.Run(sanitized_extension_url.host())) {
+      !is_webstore_extension_callback_.Run(
+          sanitized_extension_url.host_piece())) {
     RecordDroppedSource(has_recorded_reason,
                         DroppedDataReason::EXTENSION_NOT_SYNCED);
     return true;

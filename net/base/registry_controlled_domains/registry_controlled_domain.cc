@@ -505,7 +505,8 @@ bool SameDomainOrHost(std::string_view host1,
 
 std::string GetDomainAndRegistry(const GURL& gurl,
                                  PrivateRegistryFilter filter) {
-  return std::string(GetDomainAndRegistryAsStringPiece(gurl.host(), filter));
+  return std::string(
+      GetDomainAndRegistryAsStringPiece(gurl.host_piece(), filter));
 }
 
 std::string GetDomainAndRegistry(const url::Origin& origin,
@@ -532,7 +533,7 @@ std::string_view GetDomainAndRegistryAsStringPiece(
 bool SameDomainOrHost(const GURL& gurl1,
                       const GURL& gurl2,
                       PrivateRegistryFilter filter) {
-  return SameDomainOrHost(gurl1.host(), gurl2.host(), filter);
+  return SameDomainOrHost(gurl1.host_piece(), gurl2.host_piece(), filter);
 }
 
 bool SameDomainOrHost(const url::Origin& origin1,
@@ -551,13 +552,14 @@ bool SameDomainOrHost(const url::Origin& origin1,
 bool SameDomainOrHost(const GURL& gurl,
                       const url::Origin& origin,
                       PrivateRegistryFilter filter) {
-  return SameDomainOrHost(gurl.host(), origin.host(), filter);
+  return SameDomainOrHost(gurl.host_piece(), origin.host(), filter);
 }
 
 size_t GetRegistryLength(const GURL& gurl,
                          UnknownRegistryFilter unknown_filter,
                          PrivateRegistryFilter private_filter) {
-  return GetRegistryLengthImpl(gurl.host(), unknown_filter, private_filter)
+  return GetRegistryLengthImpl(gurl.host_piece(), unknown_filter,
+                               private_filter)
       .registry_length;
 }
 

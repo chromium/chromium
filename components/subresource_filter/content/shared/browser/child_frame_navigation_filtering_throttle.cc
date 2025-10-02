@@ -65,7 +65,7 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
     const GURL& base_url = navigation_handle()->GetURL();
 
     for (const auto& alias : navigation_handle()->GetDnsAliases()) {
-      if (alias == navigation_handle()->GetURL().host()) {
+      if (alias == navigation_handle()->GetURL().host_piece()) {
         continue;
       }
 

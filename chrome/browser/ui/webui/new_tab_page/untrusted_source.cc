@@ -231,7 +231,8 @@ void UntrustedSource::StartDataRequest(
   }
   if (path == "custom_background_image") {
     // Parse all query parameters to hash map and decode values.
-    std::map<std::string, std::string> params = ExtractQueryParams(url.query());
+    std::map<std::string, std::string> params =
+        ExtractQueryParams(url.query_piece());
 
     // Extract desired values.
     ServeBackgroundImage(
@@ -263,7 +264,7 @@ void UntrustedSource::StartDataRequest(
 }
 
 std::string UntrustedSource::GetMimeType(const GURL& url) {
-  const std::string_view stripped_path = url.path();
+  const std::string_view stripped_path = url.path_piece();
   if (base::EndsWith(stripped_path, ".js",
                      base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/javascript";

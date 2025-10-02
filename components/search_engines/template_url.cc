@@ -642,7 +642,7 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
   url::Component position;
 
   if (search_term_key_location_ == url::Parsed::PATH) {
-    source = url.path();
+    source = url.path_piece();
 
     // If the path does not contain the expected prefix and suffix, then this is
     // not a match.
@@ -657,8 +657,9 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
   } else {
     DCHECK(search_term_key_location_ == url::Parsed::QUERY ||
            search_term_key_location_ == url::Parsed::REF);
-    source = (search_term_key_location_ == url::Parsed::QUERY) ? url.query()
-                                                               : url.ref();
+    source = (search_term_key_location_ == url::Parsed::QUERY)
+                 ? url.query_piece()
+                 : url.ref_piece();
 
     url::Component query, key, value;
     query.len = static_cast<int>(source.size());
@@ -980,7 +981,7 @@ void TemplateURLRef::ParsePath(const std::string& path) const {
 }
 
 bool TemplateURLRef::PathIsEqual(const GURL& url) const {
-  std::string_view path = url.path();
+  std::string_view path = url.path_piece();
   if (!path_wildcard_present_)
     return path == path_prefix_;
   return ((path.length() >= path_prefix_.length() + path_suffix_.length()) &&
@@ -1003,9 +1004,9 @@ void TemplateURLRef::ParseHostAndSearchTermKey(
   if (!url.is_valid())
     return;
 
-  SearchTermLocation query_result(url.query(), url::Parsed::QUERY);
-  SearchTermLocation ref_result(url.ref(), url::Parsed::REF);
-  SearchTermLocation path_result(url.path(), url::Parsed::PATH);
+  SearchTermLocation query_result(url.query_piece(), url::Parsed::QUERY);
+  SearchTermLocation ref_result(url.ref_piece(), url::Parsed::REF);
+  SearchTermLocation path_result(url.path_piece(), url::Parsed::PATH);
   const bool in_query = query_result.found();
   const bool in_ref = ref_result.found();
   const bool in_path = path_result.found();

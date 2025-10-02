@@ -157,9 +157,9 @@ bool IsWelcomePageUrl(const GURL& url) {
 #endif
 
   return url.SchemeIs(content::kChromeUIScheme) &&
-         (url.host() == kChromeUIWelcomeHost
+         (url.host_piece() == kChromeUIWelcomeHost
 #if BUILDFLAG(IS_WIN)
-          || url.host() == kChromeUIWelcomeWin10Host
+          || url.host_piece() == kChromeUIWelcomeWin10Host
 #endif
          );
 }
@@ -279,7 +279,7 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
   if (is_first_run) {
     tabs.reserve(first_run_tabs.size());
     for (GURL url : first_run_tabs) {
-      if (url.host() == kNewTabUrlHost) {
+      if (url.host_piece() == kNewTabUrlHost) {
         url = GURL(chrome::kChromeUINewTabURL);
       }
       if (IsWelcomePageUrl(url)) {

@@ -1272,7 +1272,7 @@ TEST_P(NoVarySearchCacheReplayTest, MergeFrom) {
       const GURL& url = to_insert.url;
       std::optional<std::string_view> query;
       if (url.has_query()) {
-        query = url.query();
+        query = url.query_piece();
       }
       std::string base_url = url.spec();
       if (size_t pos = base_url.find('?'); pos != std::string::npos) {

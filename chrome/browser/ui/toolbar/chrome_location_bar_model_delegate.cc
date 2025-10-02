@@ -220,8 +220,8 @@ bool ChromeLocationBarModelDelegate::IsNewTabPage() const {
   }
 
   GURL ntp_url(chrome::kChromeUINewTabPageURL);
-  return ntp_url.scheme() == entry->GetURL().scheme() &&
-         ntp_url.host() == entry->GetURL().host();
+  return ntp_url.scheme_piece() == entry->GetURL().scheme_piece() &&
+         ntp_url.host_piece() == entry->GetURL().host_piece();
 }
 
 bool ChromeLocationBarModelDelegate::IsNewTabPageURL(const GURL& url) const {

@@ -478,7 +478,7 @@ class SitePerProcessWithMainFrameThresholdAndSiteRestrictionBrowserClient
       const GURL& site_instance_original_url) override {
     // Only reuse for foo.com/title1.html specifically.
     if (site_instance_original_url.DomainIs("foo.com") &&
-        site_instance_original_url.path() == "/title1.html") {
+        site_instance_original_url.path_piece() == "/title1.html") {
       return true;
     }
     // For all other URLs, including other paths on foo.com or other domains,

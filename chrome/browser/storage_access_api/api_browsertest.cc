@@ -3236,7 +3236,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
           return false;
         }
 
-        CHECK_EQ(params->url_request.url.host(), kHostB);
+        CHECK_EQ(params->url_request.url.host_piece(), kHostB);
         content::URLLoaderInterceptor::WriteResponse(
             "HTTP/1.1 200 OK\n"
             "Content-type: text/html\n"
@@ -4162,7 +4162,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenSubFrameTest,
       content::FrameMatchingPredicate(
           popin_web_contents->GetPrimaryPage(),
           base::BindRepeating([](content::RenderFrameHost* rfh) {
-            return rfh->GetLastCommittedURL().path() == "/title1.html";
+            return rfh->GetLastCommittedURL().path_piece() == "/title1.html";
           }));
 
   // Expect no first-party data for cross-origin popin subframes.

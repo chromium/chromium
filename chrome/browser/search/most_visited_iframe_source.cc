@@ -59,7 +59,7 @@ void MostVisitedIframeSource::StartDataRequest(
 }
 
 std::string MostVisitedIframeSource::GetMimeType(const GURL& url) {
-  std::string_view path = url.path();
+  std::string_view path = url.path_piece();
   if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII))
     return "application/javascript";
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII))
@@ -84,7 +84,7 @@ bool MostVisitedIframeSource::ShouldServiceRequest(
   return InstantService::ShouldServiceRequest(url, browser_context,
                                               render_process_id) &&
          url.SchemeIs(chrome::kChromeSearchScheme) &&
-         url.host() == GetSource() && ServesPath(url.GetPath());
+         url.host_piece() == GetSource() && ServesPath(url.GetPath());
 }
 
 bool MostVisitedIframeSource::ShouldDenyXFrameOptions() {

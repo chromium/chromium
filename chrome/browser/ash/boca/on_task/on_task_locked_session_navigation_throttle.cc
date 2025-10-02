@@ -165,7 +165,7 @@ bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
   if (google_util::IsGoogleDomainUrl(
           url, google_util::SubdomainPermission::DISALLOW_SUBDOMAIN,
           google_util::PortPermission::ALLOW_NON_STANDARD_PORTS) &&
-      url.path().starts_with("/sorry/")) {
+      url.path_piece().starts_with("/sorry/")) {
     return true;
   }
 

@@ -5463,7 +5463,7 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
       return nullptr;
     }
     std::string destination =
-        base::UnescapeBinaryURLComponent(request.GetURL().query());
+        base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_content_type("text/plain");

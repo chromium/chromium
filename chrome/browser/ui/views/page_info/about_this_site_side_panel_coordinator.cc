@@ -190,7 +190,7 @@ SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
 
 GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {
   DCHECK(last_url_info_.has_value());
-  DCHECK(!base::Contains(last_url_info_.value().new_tab_url.query(),
+  DCHECK(!base::Contains(last_url_info_.value().new_tab_url.query_piece(),
                          page_info::AboutThisSiteRenderModeParameterName));
   return last_url_info_.value().new_tab_url;
 }

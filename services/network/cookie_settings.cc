@@ -250,7 +250,7 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
           url.SchemeIsCryptographic()) ||
          (base::Contains(matching_scheme_cookies_allowed_schemes_,
                          url.GetScheme()) &&
-          url.SchemeIs(first_party_url.scheme()));
+          url.SchemeIs(first_party_url.scheme_piece()));
 }
 
 net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(

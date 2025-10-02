@@ -465,7 +465,7 @@ GURL SanitizeFrontendURL(const GURL& url,
             base::StringPrintf("%s=%s", key.c_str(), value.c_str()));
       }
     }
-    if (url.has_ref() && url.ref().find('\'') == std::string_view::npos) {
+    if (url.has_ref() && url.ref_piece().find('\'') == std::string_view::npos) {
       fragment = '#' + url.GetRef();
     }
   }
@@ -2514,7 +2514,7 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     GURL url =
         extensions::chrome_manifest_urls::GetDevToolsPage(extension.get());
     const bool is_extension_url = url.SchemeIs(extensions::kExtensionScheme) &&
-                                  url.host() == extension->id();
+                                  url.host_piece() == extension->id();
     CHECK(is_extension_url || url.SchemeIsHTTPOrHTTPS());
 
     // Each devtools extension will need to be able to run in the devtools

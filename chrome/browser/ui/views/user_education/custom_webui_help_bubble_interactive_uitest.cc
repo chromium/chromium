@@ -110,7 +110,7 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
       content::WebUI* web_ui,
       const GURL& url) override {
     if (url.SchemeIs(content::kChromeUIScheme) &&
-        url.host() == kTestWebUIHost) {
+        url.host_piece() == kTestWebUIHost) {
       return std::make_unique<TestWebUIHelpBubbleController>(web_ui);
     }
 

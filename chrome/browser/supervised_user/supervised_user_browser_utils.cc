@@ -75,8 +75,9 @@ bool IsSupportedChromeExtensionURL(const GURL& effective_url) {
 
   for (const char* crx_download_url_str : kCrxDownloadUrls) {
     GURL crx_download_url(crx_download_url_str);
-    if (crx_download_url.host() == effective_url.host() &&
-        base::StartsWith(effective_url.path(), crx_download_url.path(),
+    if (crx_download_url.host_piece() == effective_url.host_piece() &&
+        base::StartsWith(effective_url.path_piece(),
+                         crx_download_url.path_piece(),
                          base::CompareCase::SENSITIVE)) {
       return true;
     }

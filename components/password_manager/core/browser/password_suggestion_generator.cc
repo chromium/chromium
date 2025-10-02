@@ -387,7 +387,8 @@ bool CanShowPendingStatePromo(const PasswordManagerClient& password_client) {
   // password manager
   const bool is_external_url =
       !gaia::HasGaiaSchemeHostPort(password_client.GetLastCommittedURL()) &&
-      password_client.GetLastCommittedURL().host() != kPasswordManagerHost;
+      password_client.GetLastCommittedURL().host_piece() !=
+          kPasswordManagerHost;
 
   return password_client.GetIdentityManager()
              ->HasAccountWithRefreshTokenInPersistentErrorState(

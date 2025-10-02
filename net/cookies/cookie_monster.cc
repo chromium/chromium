@@ -775,7 +775,7 @@ void CookieMonster::GetCookieListWithOptions(
     // Retrieve the domain, check this domain to see if this is the first
     // time it is entering legacy mode, if it is delete all aliasing cookies
     // within this domain.
-    CheckAndActivateLegacyScopeBehavior(url.host());
+    CheckAndActivateLegacyScopeBehavior(url.host_piece());
     std::vector<CanonicalCookie*> cookie_ptrs =
         FindCookiesForRegistryControlledHost(url);
 
@@ -1288,7 +1288,7 @@ CookieMonster::FindCookiesForRegistryControlledHost(
   Time current_time = Time::Now();
 
   // Retrieve all cookies for a given key
-  const std::string key(GetKey(url.host()));
+  const std::string key(GetKey(url.host_piece()));
 
   std::vector<CanonicalCookie*> cookies;
   for (CookieMapItPair its = cookie_map->equal_range(key);
@@ -2966,7 +2966,7 @@ void CookieMonster::DoCookieCallback(base::OnceClosure callback) {
 
 void CookieMonster::DoCookieCallbackForURL(base::OnceClosure callback,
                                            const GURL& url) {
-  DoCookieCallbackForHostOrDomain(std::move(callback), url.host());
+  DoCookieCallbackForHostOrDomain(std::move(callback), url.host_piece());
 }
 
 void CookieMonster::DoCookieCallbackForHostOrDomain(

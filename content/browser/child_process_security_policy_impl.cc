@@ -2214,7 +2214,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
         const GURL& lock_url = actual_process_lock.GetProcessLockURL();
         // SitePerProcessBrowserTest.TwoBlobURLsWithNullOriginDontShareProcess.
         if (lock_url.SchemeIsBlob() &&
-            base::StartsWith(lock_url.path(), "null/")) {
+            base::StartsWith(lock_url.path_piece(), "null/")) {
           return true;
         }
 
@@ -2906,9 +2906,9 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
   // if "https://foo.com" is an isolated origin, "https://foo.com." should
   // match it.
   if (it == isolated_origins_.end() && site_url.has_host() &&
-      site_url.host().back() == '.') {
+      site_url.host_piece().back() == '.') {
     GURL::Replacements replacements;
-    std::string_view host(site_url.host());
+    std::string_view host(site_url.host_piece());
     host.remove_suffix(1);
     replacements.SetHostStr(host);
     it = isolated_origins_.find(site_url.ReplaceComponents(replacements));

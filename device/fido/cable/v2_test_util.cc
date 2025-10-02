@@ -78,7 +78,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       override {
     CHECK(url.has_path());
 
-    std::string_view path = url.path();
+    std::string_view path = url.path_piece();
     static const char kNewPrefix[] = "/cable/new/";
     static const char kConnectPrefix[] = "/cable/connect/";
     static const char kContactPrefix[] = "/cable/contact/";

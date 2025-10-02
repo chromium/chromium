@@ -354,8 +354,8 @@ class FakeTenorServer {
     GURL url = params->url_request.url;
     // tenor.googleapis.com hosts the API endpoints for Tenor.
     if (url.DomainIs("tenor.googleapis.com")) {
-      if (url.path().ends_with("/search") ||
-          url.path().ends_with("/featured")) {
+      if (url.path_piece().ends_with("/search") ||
+          url.path_piece().ends_with("/featured")) {
         return HandleSearchOrFeatured(params);
       }
       return false;

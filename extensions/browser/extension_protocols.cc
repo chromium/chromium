@@ -258,7 +258,7 @@ bool URLIsForExtensionIcon(const GURL& url, const Extension* extension) {
   }
 
   DCHECK_EQ(url.GetHost(), extension->id());
-  std::string_view path = url.path();
+  std::string_view path = url.path_piece();
   DCHECK(path.length() > 0 && path[0] == '/');
   std::string_view path_without_slash = path.substr(1);
   return IconsInfo::GetIcons(extension).ContainsPath(path_without_slash);
@@ -341,7 +341,7 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
 }
 
 bool IsPathEqualTo(const GURL& url, std::string_view test) {
-  std::string_view path_piece = url.path();
+  std::string_view path_piece = url.path_piece();
   return path_piece.size() > 1 && path_piece.substr(1) == test;
 }
 

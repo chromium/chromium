@@ -33,9 +33,10 @@ bool DetectGoogleAd(content::RenderFrameHost* render_frame_host,
     }
   }
 
-  return base::EndsWith(frame_url.host(), ".safeframe.googlesyndication.com",
+  return base::EndsWith(frame_url.host_piece(),
+                        ".safeframe.googlesyndication.com",
                         base::CompareCase::SENSITIVE) &&
-         base::StartsWith(frame_url.path(), "/safeframe",
+         base::StartsWith(frame_url.path_piece(), "/safeframe",
                           base::CompareCase::SENSITIVE);
 }
 

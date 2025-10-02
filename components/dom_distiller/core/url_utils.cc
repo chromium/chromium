@@ -64,10 +64,11 @@ GURL GetOriginalUrlFromDistillerUrl(const GURL& url) {
   net::GetValueForKeyInQuery(url, kUrlKey, &original_url_str);
 
   // Make sure kDomDistillerScheme is considered standard scheme for
-  // |GURL::host()| to work correctly.
+  // |GURL::host_piece()| to work correctly.
   DCHECK(url::IsStandard(kDomDistillerScheme));
-  std::vector<std::string_view> pieces = base::SplitStringPiece(
-      url.host(), kSeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string_view> pieces =
+      base::SplitStringPiece(url.host_piece(), kSeparator,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (pieces.size() != 2)
     return GURL();
   if (SHA256InHex(original_url_str) != pieces[1])

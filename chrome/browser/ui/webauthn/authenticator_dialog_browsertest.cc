@@ -958,7 +958,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleNetworkRequest(
       const net::test_server::HttpRequest& request) {
     const GURL url = request.GetURL();
-    const std::string_view path = url.path();
+    const std::string_view path = url.path_piece();
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
 
     if (path == "/encryption/unlock/desktop") {

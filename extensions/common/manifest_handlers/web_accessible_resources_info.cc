@@ -210,12 +210,12 @@ bool IsResourceWebAccessibleImpl(
       // `upstream_url` or the `target_url` because the goal of this feature is
       // to ensure that the dynamic url was used for fetching the resource.
       if (entry.use_dynamic_url) {
-        bool is_guid_target_url = extension.guid() == target_url.host();
+        bool is_guid_target_url = extension.guid() == target_url.host_piece();
         if (upstream_url.is_empty()) {
           result = is_guid_target_url;
         } else {
-          result =
-              extension.guid() == upstream_url.host() || is_guid_target_url;
+          result = extension.guid() == upstream_url.host_piece() ||
+                   is_guid_target_url;
         }
         if (!result) {
           continue;

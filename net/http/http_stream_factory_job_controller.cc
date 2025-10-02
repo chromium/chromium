@@ -1248,14 +1248,14 @@ HttpStreamFactory::JobController::GetAdvertisedAltSvcFor(
     type = NO_ALTERNATIVE_SERVICE;
   } else if (alternative_service_info.info.protocol() ==
              NextProto::kProtoQUIC) {
-    if (request_info.url.host() ==
+    if (request_info.url.host_piece() ==
         alternative_service_info.info.alternative_service().host) {
       type = QUIC_SAME_DESTINATION;
     } else {
       type = QUIC_DIFFERENT_DESTINATION;
     }
   } else {
-    if (request_info.url.host() ==
+    if (request_info.url.host_piece() ==
         alternative_service_info.info.alternative_service().host) {
       type = NOT_QUIC_SAME_DESTINATION;
     } else {
@@ -1371,7 +1371,7 @@ HttpStreamFactory::JobController::GetAdvertisedAltSvcInternal(
 
     GURL destination = CreateAltSvcUrl(
         request_info.url, alternative_service_info.GetHostPortPair());
-    if (session_key.host() != destination.host() &&
+    if (session_key.host() != destination.host_piece() &&
         !session_->context().quic_context->params()->allow_remote_alt_svc) {
       continue;
     }

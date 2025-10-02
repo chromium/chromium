@@ -32,7 +32,7 @@ FileTypePoliciesOverrideResult ShouldOverrideFileTypePolicies(
 
   // If the download is a local file, suppress "dangerous file" warnings because
   // they are not helpful at this point; the file is already on disk.
-  if (url.SchemeIsFile() && url.host().empty()) {
+  if (url.SchemeIsFile() && url.host_piece().empty()) {
     return FileTypePoliciesOverrideResult::kOverrideAsNotDangerous;
   }
 

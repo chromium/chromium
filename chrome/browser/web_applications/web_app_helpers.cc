@@ -56,7 +56,7 @@ std::string MaybeConcatenateParentAppManifestId(
 const char kCrxAppPrefix[] = "_crx_";
 
 std::string GenerateApplicationNameFromURL(const GURL& url) {
-  return base::StrCat({url.host(), "_", url.path()});
+  return base::StrCat({url.host_piece(), "_", url.path_piece()});
 }
 
 std::string GenerateApplicationNameFromAppId(const webapps::AppId& app_id) {

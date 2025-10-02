@@ -111,7 +111,8 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
       !params.scope.origin.empty()) {
     std::string_view origin_view =
         base::TrimWhitespaceASCII(params.scope.origin, base::TRIM_ALL);
-    if ((scope_origin_as_url.has_path() && scope_origin_as_url.path() != "/") ||
+    if ((scope_origin_as_url.has_path() &&
+         scope_origin_as_url.path_piece() != "/") ||
         base::EndsWith(origin_view, "/")) {
       return base::unexpected(SessionError{SessionError::kInvalidScopeOrigin});
     }

@@ -124,9 +124,9 @@ void PasswordRequirementsSpecFetcherImpl::Fetch(GURL origin,
   }
 
   // Canonicalize away trailing periods in hostname.
-  while (!origin.host().empty() && origin.host().back() == '.') {
+  while (!origin.host_piece().empty() && origin.host_piece().back() == '.') {
     std::string_view new_host =
-        origin.host().substr(0, origin.host().length() - 1);
+        origin.host_piece().substr(0, origin.host_piece().length() - 1);
     GURL::Replacements replacements;
     replacements.SetHostStr(new_host);
     origin = origin.ReplaceComponents(replacements);

@@ -44,7 +44,8 @@ class HeadlessOriginTrialsBrowserTest : public HeadlessBrowserTest {
         std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
             [&](URLLoaderInterceptor::RequestParams* params) -> bool {
               URLLoaderInterceptor::WriteResponse(
-                  base::StrCat({kBaseDataDir, params->url_request.url.path()}),
+                  base::StrCat(
+                      {kBaseDataDir, params->url_request.url.path_piece()}),
                   params->client.get());
               return true;
             }));

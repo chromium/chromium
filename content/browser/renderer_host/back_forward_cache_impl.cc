@@ -1731,9 +1731,8 @@ bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
   const auto& it = blocked_urls_.find(current_url.GetHost());
   if (it != blocked_urls_.end()) {
     for (const std::string& blocked_path : it->second) {
-      if (base::StartsWith(current_url.path(), blocked_path)) {
+      if (base::StartsWith(current_url.path_piece(), blocked_path))
         return false;
-      }
     }
   }
 
@@ -1749,9 +1748,8 @@ bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
   const auto& entry = allowed_urls_.find(current_url.GetHost());
   if (entry != allowed_urls_.end()) {
     for (const std::string& allowed_path : entry->second) {
-      if (base::StartsWith(current_url.path(), allowed_path)) {
+      if (base::StartsWith(current_url.path_piece(), allowed_path))
         return true;
-      }
     }
   }
   return false;
@@ -1759,7 +1757,7 @@ bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
 
 bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
   std::vector<std::string> cgi_params =
-      base::SplitString(current_url.query(), "&", base::TRIM_WHITESPACE,
+      base::SplitString(current_url.query_piece(), "&", base::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
   for (const std::string& cgi_param : cgi_params) {
     if (base::Contains(blocked_cgi_params_, cgi_param))

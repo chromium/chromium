@@ -87,7 +87,7 @@ void ChromeExtensionsRendererClient::RecordMetricsForURLRequest(
   // TODO(crbug.com/41240557): Remove metrics after bug is fixed.
   GURL request_url(target_url);
   if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
-      request_url.host() == extension_misc::kDocsOfflineExtensionId) {
+      request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {
     if (!ukm_recorder_) {
       mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
       content::RenderThread::Get()->BindHostReceiver(

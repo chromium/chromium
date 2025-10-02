@@ -59,13 +59,15 @@ bool IsAsanDebugURL(const GURL& url) {
     return false;
   }
 
-  if (url.path() == kAsanHeapOverflow || url.path() == kAsanHeapUnderflow ||
-      url.path() == kAsanUseAfterFree) {
+  if (url.path_piece() == kAsanHeapOverflow ||
+      url.path_piece() == kAsanHeapUnderflow ||
+      url.path_piece() == kAsanUseAfterFree) {
     return true;
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (url.path() == kAsanCorruptHeapBlock || url.path() == kAsanCorruptHeap) {
+  if (url.path_piece() == kAsanCorruptHeapBlock ||
+      url.path_piece() == kAsanCorruptHeap) {
     return true;
   }
 #endif
@@ -79,25 +81,25 @@ void HandleAsanDebugURL(const GURL& url) {
   CHECK(IsAsanDebugURL(url));
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_HWASAN)
 #if BUILDFLAG(IS_WIN)
-  if (url.path() == kAsanCorruptHeapBlock) {
+  if (url.path_piece() == kAsanCorruptHeapBlock) {
     base::debug::AsanCorruptHeapBlock();
     return;
   }
-  if (url.path() == kAsanCorruptHeap) {
+  if (url.path_piece() == kAsanCorruptHeap) {
     base::debug::AsanCorruptHeap();
     return;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (url.path() == kAsanHeapOverflow) {
+  if (url.path_piece() == kAsanHeapOverflow) {
     base::debug::AsanHeapOverflow();
     return;
   }
-  if (url.path() == kAsanHeapUnderflow) {
+  if (url.path_piece() == kAsanHeapUnderflow) {
     base::debug::AsanHeapUnderflow();
     return;
   }
-  if (url.path() == kAsanUseAfterFree) {
+  if (url.path_piece() == kAsanUseAfterFree) {
     base::debug::AsanHeapUseAfterFree();
     return;
   }

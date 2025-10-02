@@ -645,7 +645,7 @@ TEST_F(WebSocketEndToEndTest, HttpsProxyUsed) {
 
 std::unique_ptr<HttpResponse> ProxyPacHandler(const HttpRequest& request) {
   GURL url = request.GetURL();
-  EXPECT_EQ(url.path(), "/proxy.pac");
+  EXPECT_EQ(url.path_piece(), "/proxy.pac");
   EXPECT_TRUE(url.has_query());
   std::string proxy;
   EXPECT_TRUE(GetValueForKeyInQuery(url, "proxy", &proxy));

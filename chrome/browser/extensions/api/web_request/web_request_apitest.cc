@@ -4602,7 +4602,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
         if (request.relative_url.starts_with("/server-redirect-with-csp")) {
           auto response =
               std::make_unique<net::test_server::BasicHttpResponse>();
-          response->AddCustomHeader("Location", request.GetURL().query());
+          response->AddCustomHeader("Location", request.GetURL().query_piece());
           response->AddCustomHeader("Content-Security-Policy",
                                     "frame-ancestors 'none'");
           response->set_code(net::HTTP_MOVED_PERMANENTLY);

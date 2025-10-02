@@ -232,7 +232,7 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
       return nullptr;
     }
     if (origin == ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN &&
-        source_web_contents->GetVisibleURL().host() == url.host()) {
+        source_web_contents->GetVisibleURL().host_piece() == url.host_piece()) {
       origin = ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN;
     }
     // TODO(ajwong): This does not correctly handle storage for isolated apps.

@@ -184,7 +184,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!request.url.has_host() || !request.url.has_path() ||
-        request.url.host() != "securitydomain-pa.googleapis.com") {
+        request.url.host_piece() != "securitydomain-pa.googleapis.com") {
       return std::nullopt;
     }
 
@@ -193,7 +193,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
                             std::string("fail_all_requests() has been called"));
     }
 
-    const std::string_view path = request.url.path();
+    const std::string_view path = request.url.path_piece();
     if (path.starts_with("/v1/users/me/members")) {
       return ListMembers();
     } else if (path.starts_with("/v1/users/me/securitydomains/")) {

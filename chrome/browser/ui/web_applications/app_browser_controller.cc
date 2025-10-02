@@ -270,7 +270,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
   }
 
   GURL start_url = GetAppStartUrl();
-  std::string_view start_url_scheme = start_url.scheme();
+  std::string_view start_url_scheme = start_url.scheme_piece();
 
   bool is_internal_start_url_scheme =
       start_url_scheme == extensions::kExtensionScheme ||

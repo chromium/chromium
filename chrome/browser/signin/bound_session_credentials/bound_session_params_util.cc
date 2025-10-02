@@ -124,7 +124,7 @@ GURL GetBoundSessionScope(const BoundSessionParams& bound_session_params) {
     // components (like scheme and port) from `site`.
     GURL credential_scope = site.ReplaceComponents(replacements);
     if (!credential_scope.is_valid() ||
-        !credential_scope.DomainIs(site.host())) {
+        !credential_scope.DomainIs(site.host_piece())) {
       return GURL();
     }
 

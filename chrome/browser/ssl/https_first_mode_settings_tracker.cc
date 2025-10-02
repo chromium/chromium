@@ -508,12 +508,12 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
     DCHECK_GE(
         detail.total_score,
         site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
-    if (origin.SchemeIsCryptographic() && origin.port().empty() &&
+    if (origin.SchemeIsCryptographic() && origin.port_piece().empty() &&
         detail.total_score >= kHttpsAddThreshold.Get() &&
         engagement_service->GetScore(GetHttpUrlFromHttps(origin)) <=
             kHttpAddThreshold.Get() &&
         !base::Contains(enabled_origins, origin) &&
-        !net::IsHostnameNonUnique(origin.host())) {
+        !net::IsHostnameNonUnique(origin.host_piece())) {
       state->SetHttpsEnforcementForHost(origin.GetHost(), /*enforced=*/true,
                                         partition);
     }
@@ -524,12 +524,12 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
     DCHECK(state->IsHttpsEnforcedForUrl(origin, partition));
     DCHECK(origin.SchemeIsCryptographic());
     DCHECK(origin.SchemeIsHTTPOrHTTPS());
-    DCHECK(origin.port().empty());
+    DCHECK(origin.port_piece().empty());
     DCHECK(state->IsHttpsEnforcedForUrl(origin, partition));
     if (engagement_service->GetScore(origin) <= kHttpsRemoveThreshold.Get() ||
         engagement_service->GetScore(GetHttpUrlFromHttps(origin)) >=
             kHttpRemoveThreshold.Get() ||
-        net::IsHostnameNonUnique(origin.host())) {
+        net::IsHostnameNonUnique(origin.host_piece())) {
       state->SetHttpsEnforcementForHost(origin.GetHost(), /*enforced=*/false,
                                         partition);
     }

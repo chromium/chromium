@@ -34,7 +34,8 @@ const char kBypassSimpleHostnames[] = "<local>";
 bool IsLinkLocalIP(const GURL& url) {
   // Quick fail if definitely not link-local, to avoid doing unnecessary work in
   // common case.
-  if (!(url.host().starts_with("169.254.") || url.host().starts_with("["))) {
+  if (!(url.host_piece().starts_with("169.254.") ||
+        url.host_piece().starts_with("["))) {
     return false;
   }
 
@@ -52,7 +53,7 @@ bool IsLinkLocalIP(const GURL& url) {
 // addresses. However for proxy resolving such URLs should bypass the use
 // of a PAC script, since the destination is local.
 bool IsIPv4MappedLoopback(const GURL& url) {
-  if (!url.host().starts_with("[::ffff")) {
+  if (!url.host_piece().starts_with("[::ffff")) {
     return false;
   }
 
@@ -75,7 +76,7 @@ class BypassSimpleHostnamesRule : public SchemeHostPortMatcherRule {
       delete;
 
   SchemeHostPortMatcherResult Evaluate(const GURL& url) const override {
-    return ((url.host().find('.') == std::string::npos) &&
+    return ((url.host_piece().find('.') == std::string::npos) &&
             !url.HostIsIPAddress())
                ? SchemeHostPortMatcherResult::kInclude
                : SchemeHostPortMatcherResult::kNoMatch;
@@ -252,7 +253,8 @@ bool ProxyBypassRules::MatchesImplicitRules(const GURL& url) {
          IsLinkLocalIP(url)
 #if BUILDFLAG(IS_WIN)
          // See http://crbug.com/904889
-         || (url.host() == "loopback") || (url.host() == "loopback.")
+         || (url.host_piece() == "loopback") ||
+         (url.host_piece() == "loopback.")
 #endif
       ;
 }

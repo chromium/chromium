@@ -126,8 +126,8 @@ bool SupervisedUserVerificationPage::IsSignInUrl(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }
-  return url.host() == reauth_url_.host() ||
-         url.host() == sign_in_continue_url_.host();
+  return url.host_piece() == reauth_url_.host_piece() ||
+         url.host_piece() == sign_in_continue_url_.host_piece();
 }
 
 void SupervisedUserVerificationPage::OnGoogleAuthStateUpdate() {

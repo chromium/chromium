@@ -93,11 +93,11 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     return false;
   }
 
-  if (!base::Contains(target_url.host(), "maps.google.")) {
+  if (!base::Contains(target_url.host_piece(), "maps.google.")) {
     return false;
   }
 
-  if (!base::StartsWith(target_url.path(), "/maps/")) {
+  if (!base::StartsWith(target_url.path_piece(), "/maps/")) {
     return false;
   }
 

@@ -24,10 +24,10 @@
 namespace {
 
 int GetFaviconResourceIdForNativeURL(const GURL& url) {
-  if (url.host() == kChromeUICrashesHost) {
+  if (url.host_piece() == kChromeUICrashesHost) {
     return IDR_CRASH_SAD_FAVICON;
   }
-  if (url.host() == kChromeUIFlagsHost) {
+  if (url.host_piece() == kChromeUIFlagsHost) {
     return IDR_FLAGS_FAVICON;
   }
   return -1;

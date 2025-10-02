@@ -101,7 +101,7 @@ const char kHistogramSyntheticResponseSuffix[] = ".SyntheticResponse";
 namespace {
 
 bool IsDocsSite(const GURL& url) {
-  return url.host() == "docs.google.com";
+  return url.host_piece() == "docs.google.com";
 }
 
 bool IsForwardBackLoad(ui::PageTransition transition) {

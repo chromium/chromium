@@ -483,7 +483,7 @@ base::FilePath GetInstallTempDir(const base::FilePath& extensions_dir) {
 }
 
 base::FilePath ExtensionURLToRelativeFilePath(const GURL& url) {
-  std::string_view url_path = url.path();
+  std::string_view url_path = url.path_piece();
   if (url_path.empty() || url_path[0] != '/') {
     return base::FilePath();
   }

@@ -77,7 +77,7 @@ GURL AppendUtmSource(const GURL& url, std::string_view utm_source_value) {
 
 GURL GetWebstoreExtensionsCategoryURL() {
   GURL base_url = GetNewWebstoreLaunchURL();
-  CHECK_EQ(base_url.path(), "/")
+  CHECK_EQ(base_url.path_piece(), "/")
       << "GURL::Resolve() won't work with a URL with a path.";
   return base_url.Resolve("category/extensions");
 }
@@ -148,8 +148,8 @@ bool IsWebstoreOrigin(const url::Origin& origin) {
 
 bool IsWebstoreUpdateUrl(const GURL& update_url) {
   GURL store_url = GetWebstoreUpdateUrl();
-  return (update_url.host() == store_url.host() &&
-          update_url.path() == store_url.path());
+  return (update_url.host_piece() == store_url.host_piece() &&
+          update_url.path_piece() == store_url.path_piece());
 }
 
 bool IsWebstoreApiUrl(const GURL& url) {
@@ -166,7 +166,7 @@ bool IsBlocklistUpdateUrl(const GURL& url) {
 
 bool IsSafeBrowsingUrl(const GURL& url) {
   url::Origin origin = url::Origin::Create(url);
-  std::string_view path = url.path();
+  std::string_view path = url.path_piece();
   return origin.DomainIs("sb-ssl.google.com") ||
          origin.DomainIs("safebrowsing.googleapis.com") ||
          (origin.DomainIs("safebrowsing.google.com") &&

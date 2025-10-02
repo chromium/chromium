@@ -1311,7 +1311,7 @@ bool ExtensionTabUtil::IsKillURL(const GURL& url) {
       content::kChromeUIMemoryExhaustHost,
   });
 
-  return kKillHosts.contains(url.host());
+  return kKillHosts.contains(url.host_piece());
 }
 
 base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(

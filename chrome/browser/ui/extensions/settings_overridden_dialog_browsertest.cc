@@ -162,7 +162,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
                                        ->tab_strip_model()
                                        ->GetActiveWebContents()
                                        ->GetLastCommittedURL()
-                                       .host());
+                                       .host_piece());
     }
 
     return true;
