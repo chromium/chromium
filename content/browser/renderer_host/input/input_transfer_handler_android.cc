@@ -268,6 +268,7 @@ void InputTransferHandlerAndroid::DropCurrentSequence(
 void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
     const ui::MotionEventAndroid& event) {
   CHECK_EQ(handler_state_, HandlerState::kConsumeEventsUntilCancel);
+  num_events_in_dropped_sequence_++;
   // TODO(crbug.com/383307455): Forward events seen on Browser post transfer
   // over to Viz.
   if (event.GetAction() == ui::MotionEvent::Action::CANCEL) {
@@ -283,7 +284,19 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
 
     handler_state_ = HandlerState::kIdle;
     touch_moves_seen_after_transfer_ = 0;
+    num_events_in_dropped_sequence_ = 0;
     return;
+  }
+  if (event.GetAction() == ui::MotionEvent::Action::UP) {
+    // The touch sequence transferred by system was probably a different one
+    // than the one Chrome requested for.
+    base::UmaHistogramEnumeration(
+        kTouchSequenceDroppedReasonHistogram,
+        InputOnVizSequenceDroppedReason::kAndroidOSTransferredANewSequence);
+    base::UmaHistogramCustomCounts(
+        kEventsInDroppedSequenceHistogram, num_events_in_dropped_sequence_,
+        kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
+    num_events_in_dropped_sequence_ = 0;
   }
   if (event.GetAction() == ui::MotionEvent::Action::MOVE) {
     touch_moves_seen_after_transfer_++;
@@ -308,6 +321,9 @@ void InputTransferHandlerAndroid::OnTouchTransferredSuccessfully(
   handler_state_ = HandlerState::kConsumeEventsUntilCancel;
   cached_transferred_sequence_down_time_ms_ = event.GetRawDownTime();
   client_->SendStateOnTouchTransfer(event, browser_would_have_handled);
+  // Corresponding to the `ACTION_DOWN` event which initiated the touch
+  // transfer.
+  num_events_in_dropped_sequence_ = 1;
 }
 
 InputTransferHandlerAndroid::InputObserver::InputObserver(

@@ -1179,6 +1179,7 @@ chromium-metrics-reviews@google.com.
 <enum name="InputOnVizSequenceDroppedReason">
   <int value="0" label="ActiveSeqOnVizAbnormalDownTime"/>
   <int value="1" label="FailedToTransferPotentialPointer"/>
+  <int value="2" label="AndroidOSTransferredANewSequence"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/input/input_transfer_handler_android.h:InputOnVizSequenceDroppedReason)-->
