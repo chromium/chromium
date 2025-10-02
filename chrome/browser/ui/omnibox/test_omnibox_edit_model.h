@@ -23,11 +23,6 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   // OmniboxEditModel:
   bool PopupIsOpen() const override;
   AutocompleteMatch CurrentMatch(GURL* alternate_nav_url) const override;
-
-  void SetPopupIsOpen(bool open);
-
-  void SetCurrentMatchForTest(const AutocompleteMatch& match);
-
   void OnPopupDataChanged(const std::u16string& temporary_text,
                           bool is_temporary_text,
                           const std::u16string& inline_autocompletion,
@@ -36,6 +31,17 @@ class TestOmniboxEditModel : public OmniboxEditModel {
                           bool is_keyword_hint,
                           const std::u16string& additional_text,
                           const AutocompleteMatch& match) override;
+
+  // Lookup the bitmap for the first `match` in
+  // `autocomplete_controller()->result()` that has `keyword` as its
+  // `associated_keyword`. Used to fetch bitmap where the `result_index` is
+  // unknown.  Returns nullptr if not found.
+  const SkBitmap* GetPopupRichSuggestionBitmapForKeyword(
+      const std::u16string& keyword) const;
+
+  void SetPopupIsOpen(bool open);
+
+  void SetCurrentMatchForTest(const AutocompleteMatch& match);
 
   bool HasTemporaryText() { return has_temporary_text_; }
 

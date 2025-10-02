@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -29,6 +30,18 @@ AutocompleteMatch TestOmniboxEditModel::CurrentMatch(
   }
 
   return OmniboxEditModel::CurrentMatch(alternate_nav_url);
+}
+
+const SkBitmap* TestOmniboxEditModel::GetPopupRichSuggestionBitmapForKeyword(
+    const std::u16string& keyword) const {
+  const auto& result = autocomplete_controller()->result();
+  auto it =
+      std::ranges::find_if(result, [&keyword](const AutocompleteMatch& match) {
+        return match.associated_keyword == keyword;
+      });
+  return it == result.end()
+             ? nullptr
+             : GetPopupRichSuggestionBitmap(std::distance(result.begin(), it));
 }
 
 void TestOmniboxEditModel::SetPopupIsOpen(bool open) {

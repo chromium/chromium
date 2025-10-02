@@ -485,13 +485,6 @@ class OmniboxEditModel {
   // Lookup the bitmap for |result_index|. Returns nullptr if not found.
   const SkBitmap* GetPopupRichSuggestionBitmap(int result_index) const;
 
-  // Lookup the bitmap for the first `match` in
-  // `autocomplete_controller()->result()` that has `keyword` as its
-  // `associated_keyword`. Used to fetch bitmap where the `result_index` is
-  // unknown.  Returns nullptr if not found.
-  const SkBitmap* GetPopupRichSuggestionBitmap(
-      const std::u16string& keyword) const;
-
   // Lookup the bitmap based on the image URL.  Similar to above,
   // but used to fetch bitmap where the `result_index` is unknown and where
   // there are possibly multiple suggestions with the same `keyword` but not the

@@ -2155,20 +2155,6 @@ const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
 }
 
 const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
-    const std::u16string& keyword) const {
-  DCHECK(popup_view_);
-
-  auto it = std::ranges::find_if(autocomplete_controller()->result(),
-                                 [&keyword](const AutocompleteMatch& match) {
-                                   return match.associated_keyword == keyword;
-                                 });
-  return it == autocomplete_controller()->result().end()
-             ? nullptr
-             : GetPopupRichSuggestionBitmap(std::distance(
-                   autocomplete_controller()->result().begin(), it));
-}
-
-const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
     const GURL& image_url) const {
   DCHECK(popup_view_);
   auto iter =

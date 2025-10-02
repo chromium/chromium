@@ -1610,9 +1610,9 @@ TEST_F(OmniboxEditModelPopupTest,
   auto* result = &controller()->autocomplete_controller()->published_result_;
   result->AppendMatches(matches);
 
-  const SkBitmap* actual_bitmap = model()->GetPopupRichSuggestionBitmap(
-      u"match_without_associated_keyword");
-
+  const SkBitmap* actual_bitmap =
+      model()->GetPopupRichSuggestionBitmapForKeyword(
+          u"match_without_associated_keyword");
   EXPECT_FALSE(actual_bitmap);
 }
 
@@ -1643,12 +1643,12 @@ TEST_F(OmniboxEditModelPopupTest,
   model()->rich_suggestion_bitmaps_.insert({1, expected_bitmap});
 
   const SkBitmap* match_without_bitmap_bitmap =
-      model()->GetPopupRichSuggestionBitmap(u"match_without_bitmap");
+      model()->GetPopupRichSuggestionBitmapForKeyword(u"match_without_bitmap");
   EXPECT_FALSE(match_without_bitmap_bitmap);
 
   const SkBitmap* match_with_bitmap_bitmap =
-      model()->GetPopupRichSuggestionBitmap(u"match_with_bitmap");
-  EXPECT_TRUE(match_with_bitmap_bitmap);
+      model()->GetPopupRichSuggestionBitmapForKeyword(u"match_with_bitmap");
+  ASSERT_TRUE(match_with_bitmap_bitmap);
   gfx::test::CheckColors(expected_bitmap.getColor(0, 0),
                          match_with_bitmap_bitmap->getColor(0, 0));
 }
