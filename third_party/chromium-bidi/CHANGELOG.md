@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.2.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.2.0...chromium-bidi-v9.2.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* don't report interception for DataUrl and servedFromCache ([#3797](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3797)) ([de963da](https://github.com/GoogleChromeLabs/chromium-bidi/commit/de963da9ffc5cf30362b152f992d1aedb953e3aa))
+
 ## [9.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.1.0...chromium-bidi-v9.2.0) (2025-09-29)
 
 
