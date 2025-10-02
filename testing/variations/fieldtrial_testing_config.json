@@ -13508,6 +13508,21 @@
             ]
         }
     ],
+    "IOSNewTabGridTransitions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGridNewTransitions"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOmahaResyncTimerOnForeground": [
         {
             "platforms": [
@@ -24704,21 +24719,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabGridEmptyThumbnail"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabGridNewTransitions": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGridNewTransitions"
                     ]
                 }
             ]
