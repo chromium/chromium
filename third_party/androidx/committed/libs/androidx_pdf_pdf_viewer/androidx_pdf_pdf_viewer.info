@@ -13,7 +13,7 @@ aidl = [
 assets = []
 has_classes_jar = true
 has_native_libraries = false
-has_proguard_flags = false
+has_proguard_flags = true
 has_r_text_file = true
 is_manifest_empty = false
 manifest_package = "androidx.pdf"
@@ -83,15 +83,22 @@ resources = [
   "res/drawable/selection_drag_handle_left.xml",
   "res/drawable/page_indicator_background.xml",
   "res/drawable/fastscroll_background.xml",
+  "res/drawable/tooltip_bottom_center.xml",
+  "res/drawable/tooltip_bottom_right.xml",
   "res/drawable/keyboard_up.xml",
+  "res/drawable/tooltip_top_left.xml",
   "res/drawable/shape_textbox.xml",
   "res/drawable/shape_find_in_file.xml",
   "res/drawable/selection_drag_handle_right.xml",
-  "res/drawable/custom_edit_text_cursor.xml",
+  "res/drawable/form_edit_text_background.xml",
   "res/drawable/drag_indicator.xml",
   "res/drawable/close_button.xml",
   "res/drawable/shape_oval.xml",
+  "res/drawable/tooltip_bottom_left.xml",
+  "res/drawable/tooltip_top_center.xml",
+  "res/drawable/tooltip_top_right.xml",
   "res/drawable/keyboard_down.xml",
+  "res/drawable/fast_scroll_thumb_drawable.xml",
   "res/values-gu/values-gu.xml",
   "res/values-te/values-te.xml",
   "res/values-tr/values-tr.xml",
@@ -103,7 +110,8 @@ resources = [
   "res/layout/find_in_file.xml",
   "res/layout/pdf_search_view.xml",
   "res/layout/search.xml",
-  "res/layout/toolbox_view.xml",
+  "res/layout/tool_box_view.xml",
+  "res/layout/pdf_content_layout.xml",
   "res/layout/dialog_password.xml",
   "res/layout/page_indicator.xml",
   "res/layout/pdf_view_container.xml",

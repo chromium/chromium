@@ -61,6 +61,9 @@ _IGNORE_WARNINGS = (
     # TODO(b/404818708): androidx.appsearch code is referencing classes in the
     # Android B sdk thus we must ignore these warnings until after the sdk roll.
     r'Missing class .* androidx.appsearch.platformstorage.converter.*\$ApiHelperForB',
+    # This class is only in SDK 36.1. Until we are updated to or past that
+    # version, R8 will complain of AndroidX's usage of this.
+    r'Missing class android.graphics.pdf.component.*',
     # Ignore MethodParameter attribute count isn't matching in espresso.
     # This is a banner warning and each individual file affected will have
     # its own warning.
