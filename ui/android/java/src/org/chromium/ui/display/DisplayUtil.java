@@ -425,6 +425,30 @@ public abstract class DisplayUtil {
     }
 
     /**
+     * Converts local coordinates (display and pixel coordinates relative to the origin of the
+     * display) to global dip coordinates (as in Web API spec). Rounds the resulting Rect outwards
+     * to the nearest dip.
+     *
+     * @param display Reference display of the local coordinates provided.
+     * @param localCoordinatesPx Display coordinates in pixels.
+     * @return Global coordinates in dips.
+     */
+    public static Rect convertLocalPxToGlobalDipCoordinates(
+            DisplayAndroid display, Rect localCoordinatesPx) {
+        final float displayDipScale = display.getDipScale();
+        final Rect displayBoundsGlobalCoordinatesDip = display.getBounds();
+
+        final Rect localCoordinatesDip =
+                scaleToEnclosingRect(localCoordinatesPx, 1.0f / displayDipScale);
+
+        final Rect globalCoordinatesDip = new Rect(localCoordinatesDip);
+        globalCoordinatesDip.offset(
+                displayBoundsGlobalCoordinatesDip.left, displayBoundsGlobalCoordinatesDip.top);
+
+        return globalCoordinatesDip;
+    }
+
+    /**
      * Scales a given rectangle by a specified factor and rounds the result to the smallest
      * integer-based rectangle that encloses it.
      *

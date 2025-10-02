@@ -158,6 +158,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   bool SetHasKeyboardCapture(bool keyboard_capture);
 
+  // Returns bounds of this window in global dp coordinates (takes display
+  // topology into account).
   std::optional<gfx::Rect> GetBoundsInScreenCoordinates();
 
   class TestHooks {

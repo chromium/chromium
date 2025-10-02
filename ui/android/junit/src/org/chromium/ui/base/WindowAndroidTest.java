@@ -135,6 +135,7 @@ public class WindowAndroidTest {
 
         doReturn(boundsPx).when(mWindowMetrics).getBounds();
         doReturn(2.0f).when(mDisplay).getDipScale();
+        doReturn(new Rect(0, 0, 540, 960)).when(mDisplay).getBounds();
 
         final int[] expectedBoundsDp = new int[] {5, 10, 540, 960}; // x, y, width, height
         final int[] actualBounds = mWindowAndroid.getBoundsInScreenCoordinates();

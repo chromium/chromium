@@ -1385,6 +1385,9 @@ public class WindowAndroid
         return aconfigFlaggedApiDelegate.setKeyboardCaptureEnabled(window, hasCapture);
     }
 
+    /**
+     * Returns bounds of this window in global dp coordinates (takes display topology into account).
+     */
     @CalledByNative
     @VisibleForTesting(otherwise = PRIVATE)
     public int @Nullable [] getBoundsInScreenCoordinates() {
@@ -1401,12 +1404,11 @@ public class WindowAndroid
         final WindowManager wm = context.getSystemService(WindowManager.class);
         final Rect boundsPx = wm.getCurrentWindowMetrics().getBounds();
         final DisplayAndroid display = getDisplay();
+        final Rect globalBoundsDp =
+                DisplayUtil.convertLocalPxToGlobalDipCoordinates(display, boundsPx);
 
         return new int[] {
-            DisplayUtil.pxToDp(display, boundsPx.left),
-            DisplayUtil.pxToDp(display, boundsPx.top),
-            DisplayUtil.pxToDp(display, boundsPx.width()),
-            DisplayUtil.pxToDp(display, boundsPx.height())
+            globalBoundsDp.left, globalBoundsDp.top, globalBoundsDp.width(), globalBoundsDp.height()
         }; // x, y, width, height
     }
 

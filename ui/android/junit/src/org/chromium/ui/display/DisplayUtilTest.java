@@ -687,4 +687,89 @@ public class DisplayUtilTest {
                     DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
         }
     }
+
+    @Test
+    public void testConvertLocalPxToGlobalDipCoordinates_fullDisplayBounds() {
+        final float displayDipScale = 1.25f;
+        final Rect displayLocalCoordinatesPx = new Rect(0, 0, 3120, 1980);
+        final Rect displayGlobalCoordinatesDp = new Rect(-960, -720, 1536, 864);
+
+        prepareDisplayAndroid(
+                displayGlobalCoordinatesDp, displayLocalCoordinatesPx, displayDipScale);
+        assertEquals(
+                "Conversion between coordinate systems failed",
+                displayGlobalCoordinatesDp,
+                DisplayUtil.convertLocalPxToGlobalDipCoordinates(
+                        mDisplayAndroid, displayLocalCoordinatesPx));
+    }
+
+    @Test
+    public void testConvertLocalPxToGlobalDipCoordinates_rounding() {
+        final float displayDipScale = 1.2f;
+        final Rect displayLocalCoordinatesPx = new Rect(0, 0, 1000, 1000);
+        final Rect displayGlobalCoordinatesDp = new Rect(0, 0, 834, 834);
+        final Rect testLocalCoordinatesPx = new Rect(1, 3, 100, 1000);
+        final Rect expectedGlobalCoordinatesDp = new Rect(0, 2, 84, 834);
+
+        prepareDisplayAndroid(
+                displayGlobalCoordinatesDp, displayLocalCoordinatesPx, displayDipScale);
+        assertEquals(
+                "Conversion between coordinate systems failed",
+                expectedGlobalCoordinatesDp,
+                DisplayUtil.convertLocalPxToGlobalDipCoordinates(
+                        mDisplayAndroid, testLocalCoordinatesPx));
+    }
+
+    @Test
+    public void testConvertLocalPxToGlobalDipCoordinates_emptyRect() {
+        final float displayDipScale = 1.3f;
+        final Rect displayLocalCoordinatesPx = new Rect(0, 0, 1000, 1000);
+        final Rect displayGlobalCoordinatesDp = new Rect(0, 0, 770, 770);
+        final Rect testLocalCoordinatesPx = new Rect(123, 456, 123, 456);
+        final Rect expectedGlobalCoordinatesDp = new Rect(94, 350, 95, 351);
+
+        prepareDisplayAndroid(
+                displayGlobalCoordinatesDp, displayLocalCoordinatesPx, displayDipScale);
+        assertEquals(
+                "Conversion between coordinate systems failed",
+                expectedGlobalCoordinatesDp,
+                DisplayUtil.convertLocalPxToGlobalDipCoordinates(
+                        mDisplayAndroid, testLocalCoordinatesPx));
+    }
+
+    @Test
+    public void testConvertLocalPxToGlobalDipCoordinates_displayOriginTranslation() {
+        final float displayDipScale = 1.75f;
+        final Rect displayLocalCoordinatesPx = new Rect(0, 0, 1000, 1000);
+        final Rect displayGlobalCoordinatesDp = new Rect(-100, -200, 472, 372);
+        final Rect testLocalCoordinatesPx = new Rect(12, 34, 567, 890);
+        final Rect expectedGlobalCoordinatesDp =
+                new Rect(-100 + 6, -200 + 19, -100 + 324, -200 + 509);
+
+        prepareDisplayAndroid(
+                displayGlobalCoordinatesDp, displayLocalCoordinatesPx, displayDipScale);
+        assertEquals(
+                "Conversion between coordinate systems failed",
+                expectedGlobalCoordinatesDp,
+                DisplayUtil.convertLocalPxToGlobalDipCoordinates(
+                        mDisplayAndroid, testLocalCoordinatesPx));
+    }
+
+    @Test
+    public void testConvertLocalPxToGlobalDipCoordinates_coordinatesNotInsideDisplay() {
+        final float displayDipScale = 0.5f;
+        final Rect displayLocalCoordinatesPx = new Rect(0, 0, 1000, 1000);
+        final Rect displayGlobalCoordinatesDp = new Rect(-500, 700, 1500, 2700);
+        final Rect testLocalCoordinatesPx = new Rect(-600, -400, -100, 1300);
+        final Rect expectedGlobalCoordinatesDp =
+                new Rect(-500 - 1200, 700 - 800, -500 - 200, 700 + 2600);
+
+        prepareDisplayAndroid(
+                displayGlobalCoordinatesDp, displayLocalCoordinatesPx, displayDipScale);
+        assertEquals(
+                "Conversion between coordinate systems failed",
+                expectedGlobalCoordinatesDp,
+                DisplayUtil.convertLocalPxToGlobalDipCoordinates(
+                        mDisplayAndroid, testLocalCoordinatesPx));
+    }
 }
