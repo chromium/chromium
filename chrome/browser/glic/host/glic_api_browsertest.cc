@@ -1747,15 +1747,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
-// Win-asan is flaky.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_testFetchInactiveTabScreenshot \
-  DISABLED_testFetchInactiveTabScreenshot
-#else
-#define MAYBE_testFetchInactiveTabScreenshot testFetchInactiveTabScreenshot
-#endif
+// TODO(crbug.com/441588906): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
-                       MAYBE_testFetchInactiveTabScreenshot) {
+                       DISABLED_testFetchInactiveTabScreenshot) {
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
   ExecuteJsTest();
