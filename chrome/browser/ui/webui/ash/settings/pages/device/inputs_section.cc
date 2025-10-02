@@ -635,7 +635,7 @@ void InputsSection::InputMethodChanged(
 }
 
 bool InputsSection::ShouldShowEmojiSuggestionsSettings() const {
-  return false;
+  return pref_service_->GetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed);
 }
 
 bool InputsSection::IsSpellCheckEnabled() const {
