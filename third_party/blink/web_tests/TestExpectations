@@ -9743,3 +9743,7 @@ crbug.com/448490201 [ Debug Linux ] virtual/forced-high-contrast-colors/external
 
 crbug.com/448507881 [ Linux ] external/wpt/css/css-anchor-position/anchored-transition-display-none.html [ Pass Timeout ]
 crbug.com/448507881 [ Linux ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchored-transition-display-none.html [ Pass Timeout ]
+
+# Gardener 2025-10-02
+crbug.com/427523525 [ Mac ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
+crbug.com/427523525 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
