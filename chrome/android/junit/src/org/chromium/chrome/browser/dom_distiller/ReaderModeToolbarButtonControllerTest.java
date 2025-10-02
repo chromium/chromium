@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -191,6 +193,12 @@ public class ReaderModeToolbarButtonControllerTest {
     public void testReaderModeButton_timesOut() throws Exception {
         ReaderModeToolbarButtonController controller = createController();
 
+
+        when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
+        assertTrue(controller.shouldShowButton(mMockTab));
+
         CallbackHelper callbackHelper = new CallbackHelper();
         ButtonDataProvider.ButtonDataObserver observer =
                 new ButtonDataProvider.ButtonDataObserver() {
@@ -214,6 +222,26 @@ public class ReaderModeToolbarButtonControllerTest {
         // Simulate the button being shown, and verify that the button is hidden after a delay.
         controller.onActionShown();
         callbackHelper.waitForNext();
+        assertFalse(controller.shouldShowButton(mMockTab));
+
         watcher.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
+    public void testReaderModeShouldShowButton_whenDistillInAppDisabled() throws Exception {
+        // When ReaderModeDistillInApp is disabled, the button should always be "available" to be
+        // shown. The actual showing of the button is driven through ReaderModeActionProvider.
+        ReaderModeToolbarButtonController controller = createController();
+
+        when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
+        assertTrue(controller.shouldShowButton(mMockTab));
+
+        when(mMockTab.getUrl()).thenReturn(new GURL("http://test.com"));
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
+        controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
+        assertTrue(controller.shouldShowButton(mMockTab));
     }
 }
