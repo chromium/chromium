@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -251,7 +250,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
   app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &LoginDisplayHostCommon::OnAppTerminating, base::Unretained(this)));
-  BrowserList::AddObserver(this);
+  BrowserController::GetInstance()->AddObserver(this);
 }
 
 LoginDisplayHostCommon::~LoginDisplayHostCommon() = default;
@@ -675,17 +674,17 @@ WizardContext* LoginDisplayHostCommon::GetWizardContextForTesting() {
   return GetWizardContext();
 }
 
-void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {
-  VLOG(4) << "OnBrowserAdded " << session_starting_;
+void LoginDisplayHostCommon::OnBrowserCreated(BrowserDelegate* browser) {
+  VLOG(4) << "OnBrowserCreated " << session_starting_;
   // Browsers created before session start (windows opened by extensions, for
   // example) are ignored.
   if (session_starting_) {
-    // OnBrowserAdded is called when the browser is created, but not shown yet.
-    // Lock window has to be closed at this point so that a browser window
+    // OnBrowserCreated is called when the browser is created, but not shown
+    // yet. Lock window has to be closed at this point so that a browser window
     // exists and the window can acquire input focus.
     OnBrowserCreated();
     app_terminating_subscription_ = {};
-    BrowserList::RemoveObserver(this);
+    BrowserController::GetInstance()->RemoveObserver(this);
   }
 }
 
@@ -772,7 +771,7 @@ void LoginDisplayHostCommon::Cleanup() {
 
   SigninProfileHandler::Get()->ClearSigninProfile(base::DoNothing());
   app_terminating_subscription_ = {};
-  BrowserList::RemoveObserver(this);
+  BrowserController::GetInstance()->RemoveObserver(this);
   login_ui_pref_controller_.reset();
 
   // Cancel kiosk session start since kiosk holds a pointer to `this` during

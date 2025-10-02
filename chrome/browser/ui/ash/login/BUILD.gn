@@ -58,7 +58,6 @@ static_library("login") {
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/tpm",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/keyboard",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/session_manager",
