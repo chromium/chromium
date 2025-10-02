@@ -170,9 +170,10 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns {scrollLeft, scrollTop}.
   gfx::Vector2dF GetScrollOffset() const;
 
-  // Sets {scrollLeft, scrollTop}, returns true if the scroll was completed (or
-  // will be completed via a smooth scroll animation), false if the element
-  // cannot scroll (e.g. it's not rendered, no scroll extent).
+  // Sets {scrollLeft, scrollTop} and forces instant scroll, returns true if the
+  // scroll was completed (or will be completed via a smooth scroll animation),
+  // false if the element cannot scroll (e.g. it's not rendered, no scroll
+  // extent).
   bool SetScrollOffset(const gfx::Vector2dF& offset);
 
   // Scrolls the element into view if it isn't already visible.

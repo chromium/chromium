@@ -2769,13 +2769,6 @@ ScriptPromise<IDLUndefined> Element::scrollTo(
   return CreateScrollResolvedPromise(script_state);
 }
 
-bool Element::SetScrollOffset(const ScrollOffset& offset) {
-  ScrollToOptions* scroll_to_options = ScrollToOptions::Create();
-  scroll_to_options->setLeft(offset.x());
-  scroll_to_options->setTop(offset.y());
-  return SetScrollOffset(scroll_to_options);
-}
-
 bool Element::SetScrollOffset(const ScrollToOptions* scroll_to_options) {
   if (!InActiveDocument()) {
     return false;

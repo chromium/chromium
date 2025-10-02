@@ -554,7 +554,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void scrollByForTesting(double x, double y);
   void scrollToForTesting(double x, double y);
 
-  bool SetScrollOffset(const ScrollOffset&);
   bool SetScrollOffset(const ScrollToOptions*);
 
   // Returns the bounds of this Element, unclipped, in the coordinate space of

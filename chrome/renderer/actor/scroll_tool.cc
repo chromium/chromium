@@ -8,7 +8,6 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/to_string.h"
-#include "base/time/time.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
@@ -29,11 +28,6 @@ namespace actor {
 using ::blink::WebElement;
 using ::blink::WebLocalFrame;
 using ::blink::WebNode;
-
-namespace {
-// The default maximum duration for a scroll animation is 700ms.
-constexpr base::TimeDelta kSmoothScrollDelay = base::Milliseconds(700);
-}  // namespace
 
 ScrollTool::ScrollTool(content::RenderFrame& frame,
                        TaskId task_id,
@@ -68,14 +62,11 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
   bool did_scroll =
       scrolling_element.SetScrollOffset(start_offset_css + offset_css);
 
-  targeting_smooth_scroller_ = scrolling_element.HasScrollBehaviorSmooth();
-
   journal_->Log(task_id_, "ScrollTool::Execute",
                 JournalDetailsBuilder()
                     .Add("element", scrolling_element)
                     .Add("start_offset", start_offset_css)
                     .Add("offset", offset_css)
-                    .Add("smooth_scroll", targeting_smooth_scroller_)
                     .Build());
 
   std::move(callback).Run(
@@ -88,11 +79,6 @@ std::string ScrollTool::DebugString() const {
   return absl::StrFormat("ScrollTool[%s;direction(%s);distance(%f)]",
                          ToDebugString(target_),
                          base::ToString(action_->direction), action_->distance);
-}
-
-base::TimeDelta ScrollTool::ExecutionObservationDelay() const {
-  return targeting_smooth_scroller_ ? kSmoothScrollDelay
-                                    : ToolBase::ExecutionObservationDelay();
 }
 
 ScrollTool::ValidatedResult ScrollTool::Validate() const {

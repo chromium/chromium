@@ -6,17 +6,11 @@
 
 #include <optional>
 
-#include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/actor_utils.h"
 
 namespace actor {
-
-namespace {
-// The default maximum duration for a scroll animation is 700ms.
-constexpr base::TimeDelta kPageStabilityStartDelay = base::Milliseconds(700);
-}  // namespace
 
 using ::tabs::TabHandle;
 
@@ -64,19 +58,6 @@ mojom::ToolActionPtr ScrollToolRequest::ToMojoToolAction(
 
 std::unique_ptr<PageToolRequest> ScrollToolRequest::Clone() const {
   return std::make_unique<ScrollToolRequest>(*this);
-}
-
-std::optional<ObservationDelayController::PageStabilityConfig>
-ScrollToolRequest::GetObservationPageStabilityConfig() const {
-  if (UseGeneralPageStabilityAllTools()) {
-    // TODO(b/447308187): Consider optimization and only delay for smooth
-    // scrolls.
-    return ObservationDelayController::PageStabilityConfig{
-        .start_delay = kPageStabilityStartDelay,
-    };
-  } else {
-    return std::nullopt;
-  }
 }
 
 }  // namespace actor
