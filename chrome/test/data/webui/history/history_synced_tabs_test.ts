@@ -450,6 +450,22 @@ suite('<history-sync-optin>', function() {
     assertTrue(isChildVisible(element, '#verify-its-you-button'));
   });
 
+  test('check elements in SYNC_DISABLED sign in state', async () => {
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SYNC_DISABLED,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+
+    // The 'no synced tabs' message should be shown.
+    assertTrue(isChildVisible(element, '#no-synced-tabs'));
+
+    // The promo elements are not shown
+    assertFalse(isChildVisible(element, '#history-sync-optin'));
+    assertFalse(isChildVisible(element, '#sync-history-button'));
+    assertFalse(isChildVisible(element, '#verify-its-you-button'));
+  });
 
   test('initializes account info', async () => {
     await testService.handler.whenCalled('requestAccountInfo');

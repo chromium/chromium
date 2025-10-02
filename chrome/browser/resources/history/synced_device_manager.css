@@ -95,7 +95,6 @@ history-synced-device-card {
   text-align: center;
   font-size: 24px;
   font-weight: 500;
-  line-height: 32px;
 }
 
 .sync-history-promo-desc {
@@ -104,7 +103,6 @@ history-synced-device-card {
   color: var(--cr-secondary-text-color);
   text-align: center;
   font-size: 16px;
-  line-height: 24px;
 }
 
 .avatar {
@@ -153,14 +151,12 @@ history-synced-device-card {
 
 .account-name {
   font-size: 13px;
-  line-height: 20px;
 }
 
 .account-email {
   color: var(--cr-primary-text-color);
   font-size: 12px;
   font-weight: 400;
-  line-height: 16px;
 }
 
 .action-button {

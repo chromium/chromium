@@ -18,9 +18,12 @@ HistorySignInState GetHistorySignInState(
     const syncer::SyncService* sync_service) {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    if (!identity_manager) {
-      return HistorySignInState::kSignedOut;
+    if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+            sync_service, syncer::UserSelectableTypeSet(
+                              {syncer::UserSelectableType::kTabs}))) {
+      return HistorySignInState::kSyncDisabled;
     }
+
     switch (signin_util::GetSignedInState(identity_manager)) {
       case signin_util::SignedInState::kSignedOut:
         return HistorySignInState::kSignedOut;

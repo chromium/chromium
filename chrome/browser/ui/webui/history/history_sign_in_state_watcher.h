@@ -34,6 +34,8 @@ enum class HistorySignInState {
   kSignInPendingNotSyncingTabs = 4,
   // The user is pending sign-in and opted in to history/tabs sync before.
   kSignInPendingSyncingTabs = 5,
+  // The sync is disabled.
+  kSyncDisabled = 6,
 };
 // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:HistorySignInState)
 

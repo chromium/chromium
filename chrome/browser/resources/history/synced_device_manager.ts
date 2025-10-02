@@ -307,6 +307,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
 
   protected shouldShowHistorySyncOptIn_(): boolean {
     return this.replaceSyncPromosWithSignInPromos_ &&
+        !this.isSignInState_(HistorySignInState.SYNC_DISABLED) &&
         !this.isSignInState_(HistorySignInState.SIGNED_IN_SYNCING_TABS);
   }
 
@@ -320,7 +321,8 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
    * Decide whether or not should display no synced tabs message.
    */
   protected showNoSyncedMessage_(): boolean {
-    if (this.guestSession_) {
+    if (this.guestSession_ ||
+        this.signInState === HistorySignInState.SYNC_DISABLED) {
       return true;
     }
 
