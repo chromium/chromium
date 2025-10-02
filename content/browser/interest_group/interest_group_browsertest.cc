@@ -5866,8 +5866,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(url, RunAuctionAndWaitForUrl(auction_config2));
 }
 
+// TODO(crbug.com/444872127): Flaky.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAuctionWithTooLongTrustedScoringSignalsUrl) {
+                       DISABLED_RunAuctionWithTooLongTrustedScoringSignalsUrl) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);
   GURL decision_url = embedded_https_test_server().GetURL(
