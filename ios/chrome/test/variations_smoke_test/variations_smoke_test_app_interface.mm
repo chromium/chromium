@@ -37,19 +37,17 @@ base::Time GetProcessStartTime() {
 @implementation VariationsSmokeTestAppInterface
 
 + (void)isVariationsSeedStored:(void (^)(BOOL hasSeed))completion {
-  variations::SeedReaderWriter* seedReaderWriter =
-      GetApplicationContext()
-          ->GetVariationsService()
-          ->GetSeedStoreForTesting()
-          ->GetSeedReaderWriterForTesting();
-  if (seedReaderWriter->HasPendingWrite()) {
-    completion(NO);
-  }
-  seedReaderWriter->ReadSeedData(base::BindLambdaForTesting(
-      [completion](variations::SeedReaderWriter::ReadSeedDataResult result) {
-        BOOL hasSeed = (result.result != variations::LoadSeedResult::kEmpty);
-        completion(hasSeed);
-      }));
+  GetApplicationContext()
+      ->GetVariationsService()
+      ->GetSeedStoreForTesting()
+      ->GetSeedReaderWriterForTesting()
+      ->ReadSeedData(base::BindLambdaForTesting(
+          [completion](
+              variations::SeedReaderWriter::ReadSeedDataResult result) {
+            BOOL hasSeed =
+                (result.result != variations::LoadSeedResult::kEmpty);
+            completion(hasSeed);
+          }));
 }
 
 + (BOOL)variationsSeedFetchedInCurrentLaunch {

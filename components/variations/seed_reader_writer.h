@@ -175,9 +175,6 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Updates the time of the last fetch of the seed.
   void SetFetchTime(base::Time client_fetch_time);
 
-  // Returns true if a write is scheduled but has not yet completed.
-  bool HasPendingWrite() const;
-
   // Clears the permanent consistency country and version.
   void ClearPermanentConsistencyCountryAndVersion();
 
@@ -296,6 +293,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // won't be processed, if the seed needs to be used, use ReadSeedData()
   // instead.
   void GetSeedData(GetSeedDataCallback done_callback);
+
+  // Returns true if a write is scheduled but has not yet completed.
+  bool HasPendingWrite() const;
 
   // Processes the stored seed data and returns the result of the load. If a
   // pointer for the `signature` is provided, the signature will be read and

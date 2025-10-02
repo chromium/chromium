@@ -338,11 +338,6 @@ void SeedReaderWriter::SetFetchTime(base::Time fetch_time) {
   local_state_->SetTime(fields_prefs_->client_fetch_time, fetch_time);
 }
 
-bool SeedReaderWriter::HasPendingWrite() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return seed_writer_ && seed_writer_->HasPendingWrite();
-}
-
 void SeedReaderWriter::ClearPermanentConsistencyCountryAndVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
@@ -783,6 +778,11 @@ void SeedReaderWriter::GetSeedData(GetSeedDataCallback done_callback) {
       FROM_HERE, base::BindOnce(&ReadSeedFromFile, seed_writer_->path()),
       base::BindOnce(read_file_cb, std::move(done_callback),
                      std::move(signature)));
+}
+
+bool SeedReaderWriter::HasPendingWrite() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return seed_writer_ && seed_writer_->HasPendingWrite();
 }
 
 // TODO(crbug.com/433877973): Execute in background thread if sync is not
