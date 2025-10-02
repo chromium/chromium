@@ -21,14 +21,6 @@ extern const char kPriceInsightsDescription[];
 extern const char kDiscountOnNavigationName[];
 extern const char kDiscountOnNavigationDescription[];
 
-#if BUILDFLAG(IS_IOS)
-extern const char kPriceInsightsIosName[];
-extern const char kPriceInsightsIosDescription[];
-
-extern const char kPriceInsightsHighPriceIosName[];
-extern const char kPriceInsightsHighPriceIosDescription[];
-#endif
-
 extern const char kShoppingPageTypesName[];
 extern const char kShoppingPageTypesDescription[];
 

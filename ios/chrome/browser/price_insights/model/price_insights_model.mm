@@ -39,17 +39,7 @@ const char kPriceInsightsModelIsSubscribed[] =
     "IOS.PriceInsights.Model.IsSubscribed";
 
 std::string getHighConfidenceMomentsText() {
-  std::string low_price_value = GetLowPriceParamValue();
-  if (low_price_value == std::string(kLowPriceParamGoodDealNow)) {
-    return l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL);
-  }
-  if (low_price_value == std::string(kLowPriceParamSeePriceHistory)) {
-    return l10n_util::GetStringUTF8(
-        IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY);
-  }
-
-  return l10n_util::GetStringUTF8(
-      IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE);
+  return l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL);
 }
 
 }  // namespace
@@ -223,44 +213,13 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
 
   commerce::PriceInsightsInfo info =
       execution_it->second->config->price_insights_info.value();
-  std::string message;
-  switch (info.price_bucket) {
-    case commerce::PriceBucket::kLowPrice: {
-      message = getHighConfidenceMomentsText();
-      break;
-    }
-    case commerce::PriceBucket::kHighPrice: {
-      if (!IsPriceInsightsHighPriceEnabled()) {
-        execution_it->second->config->relevance =
-            ContextualPanelItemConfiguration::low_relevance;
-        return;
-      }
-
-      execution_it->second->config->entrypoint_image_name =
-          base::SysNSStringToUTF8(kUpTrendSymbol);
-
-      if (!execution_it->second->config->can_price_track ||
-          execution_it->second->config->is_subscribed) {
-        execution_it->second->config->relevance =
-            ContextualPanelItemConfiguration::low_relevance;
-        return;
-      }
-      message =
-          l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT);
-      break;
-    }
-    case commerce::PriceBucket::kTypicalPrice: {
-      execution_it->second->config->relevance =
-          ContextualPanelItemConfiguration::low_relevance;
-      return;
-    }
-    case commerce::PriceBucket::kUnknown: {
-      execution_it->second->config->relevance =
-          ContextualPanelItemConfiguration::low_relevance;
-      return;
-    }
+  if (info.price_bucket != commerce::PriceBucket::kLowPrice) {
+    execution_it->second->config->relevance =
+        ContextualPanelItemConfiguration::low_relevance;
+    return;
   }
 
+  std::string message = getHighConfidenceMomentsText();
   execution_it->second->config->relevance =
       ContextualPanelItemConfiguration::high_relevance;
   execution_it->second->config->accessibility_label = message;

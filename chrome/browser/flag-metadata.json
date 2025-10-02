@@ -8250,16 +8250,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "price-insights-high-price-ios",
-    "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "price-insights-ios",
-    "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "price-tracking-subscription-service-locale-key",
     "owners": [ "qib@google.com", "chrommerce-eng@google.com" ],
     "expiry_milestone": 135

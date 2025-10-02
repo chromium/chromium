@@ -59,11 +59,6 @@ BASE_DECLARE_FEATURE(kDiscountAutofill);
 
 BASE_DECLARE_FEATURE(kShoppingAlternateServer);
 
-#if BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kPriceInsightsIos);
-BASE_DECLARE_FEATURE(kPriceInsightsHighPriceIos);
-#endif
-
 // Feature flag for Discounts on navigation.
 enum class DiscountDialogAutoPopupBehavior {
   // Only popup for the first time

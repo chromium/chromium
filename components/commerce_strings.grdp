@@ -445,12 +445,6 @@
   <message name="IDS_INSIGHTS_RICH_IPH_TEXT" desc="The text displayed in the price insights rich IPH.">
     See price history and more to help you shop smarter.
   </message>
-  <message name="IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT" desc="The expanded text for the price insights icon when price is high, indicating that the user should track the page.">
-    Track this item
-  </message>
-  <message name="IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY" desc="The expanded text for the price insights icon in the location bar, indicating to see the price history.">
-    See Price History
-  </message>
   <message name="IDS_PRICE_INSIGHTS_ACCESSIBILITY" desc="Accessibility string for the price insights entry point when the confidence is low.">
     Price Insights
   </message>

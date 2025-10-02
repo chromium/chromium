@@ -564,10 +564,6 @@ TEST_F(PriceInsightsModelTest, TestFetchPriceInsightsWhenTrackUnavailable) {
 TEST_F(PriceInsightsModelTest, TestPriceBucketUnknownEmptyMessageLowRelevance) {
   base::RunLoop run_loop;
 
-  features_.InitAndEnableFeatureWithParameters(
-      commerce::kPriceInsightsIos,
-      {{kLowPriceParam, kLowPriceParamPriceIsLow}});
-
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   std::optional<commerce::ProductInfo> info;
@@ -621,77 +617,9 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketUnknownEmptyMessageLowRelevance) {
 
 // Test that when the price bucket is low, the entrypoint message is set to a
 // specific string, and the relevance is set to high.
-TEST_F(PriceInsightsModelTest, TestPriceBucketLowLowPriceMessageHighRelevance) {
-  base::RunLoop run_loop;
-
-  features_.InitAndEnableFeatureWithParameters(
-      commerce::kPriceInsightsIos,
-      {{kLowPriceParam, kLowPriceParamPriceIsLow}});
-
-  shopping_service_->SetIsSubscribedCallbackValue(true);
-
-  std::optional<commerce::ProductInfo> info;
-  info.emplace();
-  info->title = kTestTitle;
-  info->product_cluster_id = 12345L;
-  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
-
-  std::optional<commerce::PriceInsightsInfo> price_info;
-  price_info.emplace();
-  price_info->product_cluster_id = 123u;
-  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
-  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
-  price_info->price_bucket = commerce::PriceBucket::kLowPrice;
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-      std::move(price_info));
-
-  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
-
-  price_insights_model_->FetchConfigurationForWebState(
-      web_state_.get(),
-      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()));
-
-  run_loop.Run();
-
-  PriceInsightsItemConfiguration* config =
-      static_cast<PriceInsightsItemConfiguration*>(
-          returned_configuration_.get());
-
-  EXPECT_EQ(l10n_util::GetStringUTF8(
-                IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE),
-            config->accessibility_label);
-  EXPECT_EQ(l10n_util::GetStringUTF8(
-                IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE),
-            config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
-  EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
-            config->relevance);
-  EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
-            config->iph_feature);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointUsed,
-            config->iph_entrypoint_used_event_name);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
-            config->iph_entrypoint_explicitly_dismissed);
-}
-
-// Test that when the price bucket is low, the entrypoint message is set to a
-// specific string, and the relevance is set to high.
 TEST_F(PriceInsightsModelTest, TestPriceBucketLowGoodDealMessageHighRelevance) {
   base::RunLoop run_loop;
 
-  features_.InitAndEnableFeatureWithParameters(
-      commerce::kPriceInsightsIos,
-      {{kLowPriceParam, kLowPriceParamGoodDealNow}});
-
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   std::optional<commerce::ProductInfo> info;
@@ -745,68 +673,12 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketLowGoodDealMessageHighRelevance) {
             config->iph_entrypoint_explicitly_dismissed);
 }
 
-// Test that when the price bucket is low, the entrypoint message is set to a
-// specific string, and the relevance is set to high.
-TEST_F(PriceInsightsModelTest,
-       TestPriceBucketLowSeePriceHistoryMessageHighRelevance) {
-  base::RunLoop run_loop;
-
-  features_.InitAndEnableFeatureWithParameters(
-      commerce::kPriceInsightsIos,
-      {{kLowPriceParam, kLowPriceParamSeePriceHistory}});
-
-  shopping_service_->SetIsSubscribedCallbackValue(true);
-
-  std::optional<commerce::ProductInfo> info;
-  info.emplace();
-  info->title = kTestTitle;
-  info->product_cluster_id = 12345L;
-  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
-
-  std::optional<commerce::PriceInsightsInfo> price_info;
-  price_info.emplace();
-  price_info->product_cluster_id = 123u;
-  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
-  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
-  price_info->price_bucket = commerce::PriceBucket::kLowPrice;
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-      std::move(price_info));
-
-  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
-
-  price_insights_model_->FetchConfigurationForWebState(
-      web_state_.get(),
-      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()));
-
-  run_loop.Run();
-
-  PriceInsightsItemConfiguration* config =
-      static_cast<PriceInsightsItemConfiguration*>(
-          returned_configuration_.get());
-
-  EXPECT_EQ(
-      l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY),
-      config->accessibility_label);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY),
-      config->entrypoint_message);
-  EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
-            config->relevance);
-}
-
-// Test that when the price bucket is high and PriceInisghtsHighPrice is
-// disabled, the relevance is set to low and the accessibility text are not
-// empty.
+// Test that when the price bucket is high, the relevance is set to low and the
+// accessibility text are not empty.
 TEST_F(PriceInsightsModelTest,
        TestHighPriceDisabledPriceBucketHighEmptyMessageLowRelevance) {
   base::RunLoop run_loop;
 
-  features_.InitAndDisableFeature(commerce::kPriceInsightsHighPriceIos);
-
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   std::optional<commerce::ProductInfo> info;
@@ -847,183 +719,6 @@ TEST_F(PriceInsightsModelTest,
   EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
-  EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
-            config->iph_feature);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointUsed,
-            config->iph_entrypoint_used_event_name);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
-            config->iph_entrypoint_explicitly_dismissed);
-}
-
-// Test that when the price bucket is high and the page is subscribed, the
-// relevance is set to low and the accessibility text are not empty.
-TEST_F(PriceInsightsModelTest, TestPriceBucketHighSubscribedLowRelevance) {
-  base::RunLoop run_loop;
-
-  features_.InitAndEnableFeature(commerce::kPriceInsightsHighPriceIos);
-
-  shopping_service_->SetIsSubscribedCallbackValue(true);
-
-  std::optional<commerce::ProductInfo> info;
-  info.emplace();
-  info->title = kTestTitle;
-  info->product_cluster_id = 12345L;
-  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
-
-  std::optional<commerce::PriceInsightsInfo> price_info;
-  price_info.emplace();
-  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
-  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
-  price_info->price_bucket = commerce::PriceBucket::kHighPrice;
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-      std::move(price_info));
-
-  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
-
-  price_insights_model_->FetchConfigurationForWebState(
-      web_state_.get(),
-      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()));
-
-  run_loop.Run();
-
-  PriceInsightsItemConfiguration* config =
-      static_cast<PriceInsightsItemConfiguration*>(
-          returned_configuration_.get());
-
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY),
-            config->accessibility_label);
-  EXPECT_EQ("", config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kUpTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
-  EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
-  EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
-            config->iph_feature);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointUsed,
-            config->iph_entrypoint_used_event_name);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
-            config->iph_entrypoint_explicitly_dismissed);
-}
-
-// Test that when the price bucket is high and the page can not be tracked, the
-// relevance is set to low and the accessibility text is not empty.
-TEST_F(PriceInsightsModelTest,
-       TestPriceBucketHighTrackNotAvailableLowRelevance) {
-  base::RunLoop run_loop;
-
-  features_.InitAndEnableFeature(commerce::kPriceInsightsHighPriceIos);
-
-  shopping_service_->SetIsSubscribedCallbackValue(true);
-
-  std::optional<commerce::ProductInfo> info;
-  info.emplace();
-  info->title = kTestTitle;
-  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
-
-  std::optional<commerce::PriceInsightsInfo> price_info;
-  price_info.emplace();
-  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
-  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
-  price_info->price_bucket = commerce::PriceBucket::kHighPrice;
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-      std::move(price_info));
-
-  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
-
-  price_insights_model_->FetchConfigurationForWebState(
-      web_state_.get(),
-      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()));
-
-  run_loop.Run();
-
-  PriceInsightsItemConfiguration* config =
-      static_cast<PriceInsightsItemConfiguration*>(
-          returned_configuration_.get());
-
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY),
-            config->accessibility_label);
-  EXPECT_EQ("", config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kUpTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
-  EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
-  EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
-            config->iph_feature);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointUsed,
-            config->iph_entrypoint_used_event_name);
-  EXPECT_EQ(feature_engagement::events::
-                kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
-            config->iph_entrypoint_explicitly_dismissed);
-}
-
-// Test that when the price bucket is high and the page is currently not
-// subscribed, the relevance is set to high and both the entrypoint text and
-// accessibility text are not empty.
-TEST_F(PriceInsightsModelTest, TestPriceBucketHighHighRelevance) {
-  base::RunLoop run_loop;
-
-  features_.InitAndEnableFeature(commerce::kPriceInsightsHighPriceIos);
-
-  shopping_service_->SetIsSubscribedCallbackValue(false);
-
-  std::optional<commerce::ProductInfo> info;
-  info.emplace();
-  info->title = kTestTitle;
-  info->product_cluster_id = 12345L;
-  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
-
-  std::optional<commerce::PriceInsightsInfo> price_info;
-  price_info.emplace();
-  price_info->product_cluster_id = 123u;
-  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
-  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
-  price_info->price_bucket = commerce::PriceBucket::kHighPrice;
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-      std::move(price_info));
-
-  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
-
-  price_insights_model_->FetchConfigurationForWebState(
-      web_state_.get(),
-      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()));
-
-  run_loop.Run();
-
-  PriceInsightsItemConfiguration* config =
-      static_cast<PriceInsightsItemConfiguration*>(
-          returned_configuration_.get());
-
-  EXPECT_EQ(
-      l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT),
-      config->accessibility_label);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT),
-      config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kUpTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
-  EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
-            config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
             config->iph_feature);
   EXPECT_EQ(feature_engagement::events::
@@ -1038,10 +733,6 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketHighHighRelevance) {
 // is set to low and the entry point does not have a message.
 TEST_F(PriceInsightsModelTest, TestPriceBucketLowNoHistoryLowRelevance) {
   base::RunLoop run_loop;
-
-  features_.InitAndEnableFeatureWithParameters(
-      commerce::kPriceInsightsIos,
-      {{kLowPriceParam, kLowPriceParamPriceIsLow}});
 
   shopping_service_->SetIsSubscribedCallbackValue(true);
 

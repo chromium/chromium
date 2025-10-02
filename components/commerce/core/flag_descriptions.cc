@@ -20,19 +20,6 @@ const char kDiscountOnNavigationName[] = "Discounts on navigation";
 const char kDiscountOnNavigationDescription[] =
     "Enable to show available discounts on the page after navigation.";
 
-#if BUILDFLAG(IS_IOS)
-extern const char kPriceInsightsIosName[] = "Price Insights";
-extern const char kPriceInsightsIosDescription[] =
-    "When enabled, the user will be able to get price insights on product "
-    "pages.";
-
-extern const char kPriceInsightsHighPriceIosName[] =
-    "Price Insights with high price";
-extern const char kPriceInsightsHighPriceIosDescription[] =
-    "When enabled, price insight will report a high confidence when the price "
-    "is high.";
-#endif
-
 const char kPriceTrackingSubscriptionServiceLocaleKeyName[] =
     "Price Tracking Subscription Service Local Key";
 const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[] =

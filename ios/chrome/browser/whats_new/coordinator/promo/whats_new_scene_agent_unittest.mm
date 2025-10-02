@@ -56,7 +56,6 @@ class WhatsNewSceneAgentTest : public PlatformTest {
 
 // Tests that the What's New promo continuous registers in the promo manager.
 TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistration) {
-  feature_list_.InitAndEnableFeature(commerce::kPriceInsightsIos);
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(
                                           promos_manager::Promo::WhatsNew))
       .Times(1);

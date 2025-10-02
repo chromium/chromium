@@ -238,14 +238,6 @@ BASE_FEATURE(kShoppingPDPMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSubscriptionsApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kPriceInsightsIos, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPriceInsightsHighPriceIos,
-             "PriceInsightsHighPrice",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kShoppingPageTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRetailCoupons, base::FEATURE_ENABLED_BY_DEFAULT);
