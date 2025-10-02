@@ -1,4 +1,5 @@
 chromium/try/android-10-arm64-rel
+chromium/try/android-10-x86-nofieldtrial-rel
 chromium/try/android-10-x86-rel
 chromium/try/android-11-x86-rel
 chromium/try/android-12-x64-rel

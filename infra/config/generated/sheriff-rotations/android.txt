@@ -7,6 +7,7 @@ ci/Android x86 Builder (dbg)
 ci/Deterministic Android
 ci/Deterministic Android (dbg)
 ci/android-10-arm64-rel
+ci/android-10-x86-nofieldtrial-rel
 ci/android-10-x86-rel
 ci/android-11-x86-rel
 ci/android-12-x64-rel
