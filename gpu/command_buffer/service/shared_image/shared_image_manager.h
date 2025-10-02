@@ -9,12 +9,12 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
@@ -28,6 +28,8 @@ class VulkanContextProvider;
 namespace gfx {
 class D3DSharedFence;
 }
+
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #endif
 
 namespace gpu {
@@ -162,7 +164,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   }
 
 #if BUILDFLAG(IS_WIN)
-  GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
+  GpuMemoryBufferFactoryDXGI* gpu_memory_buffer_factory() {
     return gpu_memory_buffer_factory_.get();
   }
 #endif
@@ -215,7 +217,7 @@ class GPU_GLES2_EXPORT SharedImageManager
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  std::unique_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
+  std::unique_ptr<GpuMemoryBufferFactoryDXGI> gpu_memory_buffer_factory_;
 #endif
 
   THREAD_CHECKER(thread_checker_);

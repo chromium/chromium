@@ -12,14 +12,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 
-class GPU_GLES2_EXPORT GpuMemoryBufferFactoryDXGI
-    : public GpuMemoryBufferFactory {
+class GPU_GLES2_EXPORT GpuMemoryBufferFactoryDXGI {
  public:
   // Creates new instance of GpuMemoryBufferFactoryDXGI. `io_runner` is needed
   // in order to create GpuMemoryBuffers on the correct thread. GpuServiceImpl
@@ -29,20 +30,19 @@ class GPU_GLES2_EXPORT GpuMemoryBufferFactoryDXGI
   // `FrameSinkVideoCapturerImpl` when running in GMB mode on Windows).
   explicit GpuMemoryBufferFactoryDXGI(
       scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
-  ~GpuMemoryBufferFactoryDXGI() override;
+  ~GpuMemoryBufferFactoryDXGI();
 
   GpuMemoryBufferFactoryDXGI(const GpuMemoryBufferFactoryDXGI&) = delete;
   GpuMemoryBufferFactoryDXGI& operator=(const GpuMemoryBufferFactoryDXGI&) =
       delete;
 
-  // Overridden from GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
       viz::SharedImageFormat format,
-      gfx::BufferUsage usage) override;
+      gfx::BufferUsage usage);
   bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory) override;
+      base::UnsafeSharedMemoryRegion shared_memory);
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
