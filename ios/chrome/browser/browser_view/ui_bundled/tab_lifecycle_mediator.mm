@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_tab_helper.h"
@@ -282,6 +283,13 @@
     id<BWGCommands> BWGCommandsHandler =
         HandlerForProtocol(_commandDispatcher, BWGCommands);
     BWGTabHelper->SetBwgCommandsHandler(BWGCommandsHandler);
+
+    // TODO(crbug.com/448157489): Remove this or refactor to
+    // `HandlerForProtocol`.
+    if (IsAskGeminiSnackbarEnabled()) {
+      BWGTabHelper->SetSnackbarCommandsHandler(
+          static_cast<id<SnackbarCommands>>(_commandDispatcher));
+    }
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
@@ -411,6 +419,9 @@
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
   if (BWGTabHelper) {
     BWGTabHelper->SetBwgCommandsHandler(nil);
+    if (IsAskGeminiSnackbarEnabled()) {
+      BWGTabHelper->SetSnackbarCommandsHandler(nil);
+    }
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);

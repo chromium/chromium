@@ -35,8 +35,15 @@ bool IsProactiveSuggestionsFrameworkEnabled() {
 
 BASE_FEATURE(kAskGeminiChip, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kAskGeminiChipUseSnackbar[] = "AskGeminiChipUseSnackbar";
+
 bool IsAskGeminiChipEnabled() {
   return base::FeatureList::IsEnabled(kAskGeminiChip);
+}
+
+bool IsAskGeminiSnackbarEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kAskGeminiChip, kAskGeminiChipUseSnackbar, false);
 }
 
 BASE_FEATURE(kGeminiCrossTab, base::FEATURE_DISABLED_BY_DEFAULT);

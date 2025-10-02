@@ -9,15 +9,24 @@
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/google/core/common/google_util.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#import "components/optimization_guide/core/hints/optimization_metadata.h"
+#import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_snapshot_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
@@ -62,10 +71,20 @@ std::optional<const base::Value::Dict*> GetSessionDictFromPrefs(
 }  // namespace
 
 BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  optimization_guide_decider_ =
+      OptimizationGuideServiceFactory::GetForProfile(profile);
   web_state_observation_.Observe(web_state);
 }
 
-BwgTabHelper::~BwgTabHelper() {}
+BwgTabHelper::~BwgTabHelper() {
+  if (web_state_) {
+    web_state_->RemoveObserver(this);
+    web_state_ = nullptr;
+  }
+  optimization_guide_decider_ = nullptr;
+}
 
 void BwgTabHelper::SetBwgUiShowing(bool showing) {
   is_bwg_ui_showing_ = showing;
@@ -181,6 +200,11 @@ void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
   bwg_commands_handler_ = handler;
 }
 
+void BwgTabHelper::SetSnackbarCommandsHandler(id<SnackbarCommands> handler) {
+  CHECK(IsAskGeminiSnackbarEnabled());
+  snackbar_commands_handler_ = handler;
+}
+
 #pragma mark - WebStateObserver
 
 void BwgTabHelper::WasShown(web::WebState* web_state) {
@@ -200,6 +224,32 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
   }
 
   UpdateWebStateSnapshotInStorage();
+}
+
+void BwgTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (!IsAskGeminiChipEnabled()) {
+    return;
+  }
+
+  const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();
+  if (previous_main_frame_url_ == current_url ||
+      navigation_context->IsSameDocument()) {
+    return;
+  }
+
+  previous_main_frame_url_ = current_url;
+  latest_load_contextual_cueing_metadata_.reset();
+
+  if (!optimization_guide_decider_ || !current_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  optimization_guide_decider_->CanApplyOptimization(
+      current_url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
+      base::BindOnce(&BwgTabHelper::OnOptimizationGuideDecision,
+                     weak_ptr_factory_.GetWeakPtr(), current_url));
 }
 
 void BwgTabHelper::PageLoaded(
@@ -224,6 +274,10 @@ void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
     CleanupSessionFromPrefs(GetClientId());
   }
   web_state_ = nullptr;
+  if (IsAskGeminiChipEnabled()) {
+    optimization_guide_decider_ = nullptr;
+    latest_load_contextual_cueing_metadata_.reset();
+  }
 }
 
 #pragma mark - Private
@@ -306,5 +360,35 @@ void BwgTabHelper::UpdateWebStateSnapshotInStorage() {
 
   if (cached_snapshot_) {
     snapshot_tab_helper->UpdateSnapshotStorageWithImage(cached_snapshot_);
+  }
+}
+
+void BwgTabHelper::OnOptimizationGuideDecision(
+    const GURL& main_frame_url,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  CHECK(IsAskGeminiChipEnabled());
+  // The URL has changed so the metadata is obsolete.
+  if (previous_main_frame_url_ != main_frame_url) {
+    return;
+  }
+
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    return;
+  }
+
+  latest_load_contextual_cueing_metadata_ = metadata.ParsedMetadata<
+      optimization_guide::proto::GlicContextualCueingMetadata>();
+  if (latest_load_contextual_cueing_metadata_) {
+    SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+    action.handler = ^{
+      [bwg_commands_handler_ startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
+    };
+    action.title = [NSString stringWithFormat:@"✦ %@", @"Ask Gemini"];
+    SnackbarMessage* message =
+        [[SnackbarMessage alloc] initWithTitle:@"Ask about page?"];
+    message.action = action;
+
+    [snackbar_commands_handler_ showSnackbarMessage:message];
   }
 }

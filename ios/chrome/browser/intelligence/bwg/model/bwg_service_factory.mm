@@ -7,6 +7,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -21,7 +23,8 @@ std::unique_ptr<KeyedService> BuildBwgService(ProfileIOS* profile) {
   }
   return std::make_unique<BwgService>(
       profile, AuthenticationServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      OptimizationGuideServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -42,6 +45,7 @@ BwgServiceFactory::BwgServiceFactory()
     : ProfileKeyedServiceFactoryIOS("BwgService") {
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
 BwgServiceFactory::~BwgServiceFactory() = default;

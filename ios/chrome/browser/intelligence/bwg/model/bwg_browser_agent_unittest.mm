@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -28,10 +30,16 @@ class BwgBrowserAgentTest : public PlatformTest {
  protected:
   BwgBrowserAgentTest() {
     TestProfileIOS::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_ = std::move(profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     BwgBrowserAgent::CreateForBrowser(browser_.get());
     bwg_browser_agent_ = BwgBrowserAgent::FromBrowser(browser_.get());
+
+    optimization_guide_service_ =
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
 
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -63,6 +71,7 @@ class BwgBrowserAgentTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<BwgBrowserAgent> bwg_browser_agent_;
   raw_ptr<BwgTabHelper> bwg_tab_helper_;
+  raw_ptr<OptimizationGuideService> optimization_guide_service_;
   id mock_settings_handler_;
   id mock_bwg_handler_;
 };

@@ -8,10 +8,15 @@
 #import <UIKit/UIKit.h>
 
 #import "base/scoped_observation.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#import "components/optimization_guide/core/hints/optimization_metadata.h"
+#import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol BWGCommands;
+@protocol SnackbarCommands;
 
 // Tab helper controlling the BWG feature and its current state for a given tab.
 class BwgTabHelper : public web::WebStateObserver,
@@ -61,6 +66,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // Set the BWG commands handler, used to show/hide the BWG UI.
   void SetBwgCommandsHandler(id<BWGCommands> handler);
 
+  // Set the snackbar commands handler for presenting snackbars.
+  void SetSnackbarCommandsHandler(id<SnackbarCommands> handler);
+
   // Sets the state of `is_first_run`.
   void SetIsFirstRun(bool is_first_run);
 
@@ -70,6 +78,8 @@ class BwgTabHelper : public web::WebStateObserver,
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -79,6 +89,12 @@ class BwgTabHelper : public web::WebStateObserver,
   explicit BwgTabHelper(web::WebState* web_state);
 
   friend class web::WebStateUserData<BwgTabHelper>;
+
+  // Callback from OptimizationGuide metadata request.
+  void OnOptimizationGuideDecision(
+      const GURL& main_frame_url,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
 
   // Adding BwgTabHelperTest as a friend to facilitate validation of behavior in
   // tests.
@@ -119,12 +135,29 @@ class BwgTabHelper : public web::WebStateObserver,
   // Commands handler for BWG commands.
   __weak id<BWGCommands> bwg_commands_handler_ = nil;
 
+  // Commands handler for snackbars.
+  __weak id<SnackbarCommands> snackbar_commands_handler_ = nil;
+
   // The observation of the Web State.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
 
   // Whether this is a first run experience.
   bool is_first_run_ = false;
+
+  // The URL from the previous successful main frame navigation. This will be
+  // empty if this is the first navigation for this tab or post-restart.
+  GURL previous_main_frame_url_;
+
+  // The contextual cueing metadata for the latest page loaded.
+  std::optional<optimization_guide::proto::GlicContextualCueingMetadata>
+      latest_load_contextual_cueing_metadata_;
+
+  // The optimization guide decider for page metadata.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
+
+  base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_

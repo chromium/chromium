@@ -35,6 +35,11 @@ BASE_DECLARE_FEATURE(kAskGeminiChip);
 // Returns true if the Ask Gemini chip is enabled.
 bool IsAskGeminiChipEnabled();
 
+// Returns true if a snackbar should be shown when a site is eligible for Ask
+// Gemini.
+bool IsAskGeminiSnackbarEnabled();
+extern const char kAskGeminiChipUseSnackbar[];
+
 // Feature flag controlling the cross-tab floaty chat persistence.
 BASE_DECLARE_FEATURE(kGeminiCrossTab);
 

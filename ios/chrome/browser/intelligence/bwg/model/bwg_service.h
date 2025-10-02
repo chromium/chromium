@@ -13,6 +13,7 @@ class AuthenticationService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+class OptimizationGuideService;
 class PrefService;
 class ProfileIOS;
 namespace web {
@@ -26,7 +27,8 @@ class BwgService : public KeyedService,
   BwgService(ProfileIOS* profile,
              AuthenticationService* auth_service,
              signin::IdentityManager* identity_manager,
-             PrefService* pref_service);
+             PrefService* pref_service,
+             OptimizationGuideService* optimization_guide);
   ~BwgService() override;
   void Shutdown() override;
 
@@ -54,6 +56,9 @@ class BwgService : public KeyedService,
 
   // The PrefService associated with the Profile.
   raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
+
+  // The optimization guide service for model execution and page metadata.
+  raw_ptr<OptimizationGuideService> optimization_guide_ = nullptr;
 
   // Whether the user is ineligible by the Gemini Enterprise policy (not Chrome
   // Enterprise).

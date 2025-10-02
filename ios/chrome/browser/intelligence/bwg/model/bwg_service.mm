@@ -12,6 +12,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -22,12 +23,19 @@
 BwgService::BwgService(ProfileIOS* profile,
                        AuthenticationService* auth_service,
                        signin::IdentityManager* identity_manager,
-                       PrefService* pref_service) {
+                       PrefService* pref_service,
+                       OptimizationGuideService* optimization_guide) {
   profile_ = profile;
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
   identity_manager_->AddObserver(this);
   pref_service_ = pref_service;
+
+  if (IsAskGeminiChipEnabled()) {
+    optimization_guide_ = optimization_guide;
+    optimization_guide_->RegisterOptimizationTypes(
+        {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
+  }
 
   CheckGeminiEnterpriseEligibility();
 }

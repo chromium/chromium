@@ -8,6 +8,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -33,11 +35,17 @@ class BWGSessionHandlerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_list_ = browser_->GetWebStateList();
     session_handler_ =
         [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+
+    optimization_guide_service_ =
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
 
     // Set up mock handlers.
     mock_bwg_handler_ = OCMProtocolMock(@protocol(BWGCommands));
@@ -75,6 +83,7 @@ class BWGSessionHandlerTest : public PlatformTest {
   raw_ptr<WebStateList> web_state_list_;
   base::HistogramTester histogram_tester_;
   BWGSessionHandler* session_handler_;
+  raw_ptr<OptimizationGuideService> optimization_guide_service_;
   id mock_bwg_handler_;
   id mock_settings_handler_;
 };
