@@ -46,13 +46,10 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/interactive_test_utils.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -236,9 +233,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
 }
 
 // Native notifications don't support (or use) observers.
-// TODO(crbug.com/371431032): Port to desktop Android. LoadExtensionAndWait()
-// times out. Also, the test extensions may need to move to manifest V3.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/by_user");
@@ -324,9 +319,6 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/371431032): Port to desktop Android. LoadExtensionAndWait()
-// times out. Also, the test extensions may need to move to manifest V3.
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestOnPermissionLevelChanged) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/permission");
@@ -413,6 +405,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestRequireInteraction) {
   EXPECT_TRUE(notification->never_timeout());
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+// The following tests exercise platform app behavior.
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayNormal) {
   ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension = LoadAppWithWindowState(
@@ -540,5 +534,4 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
   EXPECT_FALSE(notification->small_image().IsEmpty());
   EXPECT_TRUE(notification->small_image_needs_additional_masking());
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
