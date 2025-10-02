@@ -56,6 +56,8 @@
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
@@ -888,14 +890,24 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
       webrtc::VideoFrameBuffer& frame_buffer);
   scoped_refptr<media::VideoFrame> CreateNV12SharedImageFrame(
       webrtc::VideoFrameBuffer& frame_buffer,
-      const gfx::Rect& visible_rect);
+      scoped_refptr<media::VideoFrame> frame);
 
   // Perform encoding on an input frame from the input queue.
   void EncodeOneFrame(FrameChunk frame_chunk);
 
+  // Checks the format and prepares the frame for native input.
+  void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk);
+
   // Perform encoding on an input frame from the input queue using VEA native
   // input mode.  The input frame must be backed with GpuMemoryBuffer buffers.
-  void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk);
+  void DoNativeEncodeWithNativeInput(FrameChunk frame_chunk,
+                                     scoped_refptr<media::VideoFrame> frame);
+
+  // Asynchronously converts the RGBA texture frame to NV12 GMB frame if
+  // possible. Returns true if the conversion has started. The result will be
+  // passed to `DoNativeEncodeWithNativeInput` in the callback.
+  bool ConvertRGBAToNV12AndEncode(FrameChunk frame_chunk,
+                                  scoped_refptr<media::VideoFrame> frame);
 
   // Creates a MappableSI frame filled with black pixels. Returns true if
   // the frame is successfully created; false otherwise.
@@ -1034,6 +1046,11 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // The current active spatial layer range. This is set in
   // CreateAndInitializeVEA() and updated in RequestEncodingParametersChange().
   ActiveSpatialLayers active_spatial_layers_;
+
+  // Used to convert ARGB textured frames to NV12 frames.
+  std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
+
+  bool use_accelerated_pool_ = true;
 
 #if BUILDFLAG(RTC_USE_H265)
   // Parameter sets(VPS/SPS/PPS) tracker used for H.265, to ensure parameter
@@ -1232,7 +1249,8 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
           use_native_input_ = false;
         }
       } else if (frame->storage_type() ==
-                 media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+                     media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
+                 frame->HasSharedImage()) {
         if (!use_native_input_) {
           use_native_input_ = true;
           // TODO(https://issuetracker.google.com/issues/337130619): Ideally
@@ -2175,17 +2193,18 @@ scoped_refptr<media::VideoFrame> RTCVideoEncoder::Impl::CreateMemoryFrame(
 scoped_refptr<media::VideoFrame>
 RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
     webrtc::VideoFrameBuffer& frame_buffer,
-    const gfx::Rect& visible_rect) {
+    scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!input_buffers_free_.empty());
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::CreateNV12SharedImageFrame",
-               "visible_rect", visible_rect.ToString());
+               "visible_rect", frame->visible_rect().ToString());
   const int index = input_buffers_free_.back();
   scoped_refptr<gpu::ClientSharedImage>& nv12_shared_image =
       input_buffers_[index].nv12_shared_image;
-  if (!nv12_shared_image || nv12_shared_image->size() != visible_rect.size()) {
+  if (!nv12_shared_image ||
+      nv12_shared_image->size() != frame->visible_rect().size()) {
     nv12_shared_image =
-        CreateClientSharedImage(gpu_factories_, visible_rect.size());
+        CreateClientSharedImage(gpu_factories_, frame->visible_rect().size());
     if (!nv12_shared_image) {
       NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
                          "Failed to allocate shared image"});
@@ -2212,8 +2231,8 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
   uint8_t* dst_uv = mapping->GetMemoryForPlane(1).data();
   const size_t dst_y_stride = mapping->Stride(0);
   const size_t dst_uv_stride = mapping->Stride(1);
-  const size_t width = visible_rect.width();
-  const size_t height = visible_rect.height();
+  const size_t width = frame->visible_rect().width();
+  const size_t height = frame->visible_rect().height();
   if (libyuv::I420ToNV12(i420_buffer->DataY(), i420_buffer->StrideY(),
                          i420_buffer->DataU(), i420_buffer->StrideU(),
                          i420_buffer->DataV(), i420_buffer->StrideV(), dst_y,
@@ -2231,9 +2250,9 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
   TRACE_EVENT_END0("webrtc", "CreateNV12SharedImageFrame-GenVerifiedSyncToken");
   // The timestamp is set later in EncodeOneFrameWithNativeInput().
-  auto frame = media::VideoFrame::WrapMappableSharedImage(
-      nv12_shared_image, sync_token, base::NullCallback(), visible_rect,
-      visible_rect.size(), base::TimeDelta());
+  frame = media::VideoFrame::WrapMappableSharedImage(
+      nv12_shared_image, sync_token, base::NullCallback(),
+      frame->visible_rect(), frame->visible_rect().size(), base::TimeDelta());
   if (!frame) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderFailedEncode,
                        "Failed to create video frame"});
@@ -2304,6 +2323,41 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
 }
 
+bool RTCVideoEncoder::Impl::ConvertRGBAToNV12AndEncode(
+    FrameChunk frame_chunk,
+    scoped_refptr<media::VideoFrame> frame) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::ConvertRGBAToNV12");
+
+  if (!frame->HasSharedImage()) {
+    return false;
+  }
+
+  if (use_accelerated_pool_ && !accelerated_frame_pool_ &&
+      WebGraphicsContext3DVideoFramePool::
+          IsGpuMemoryBufferReadbackFromTextureEnabled()) {
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      accelerated_frame_pool_ =
+          std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper);
+      if (!accelerated_frame_pool_) {
+        use_accelerated_pool_ = false;
+      }
+    }
+  }
+  if (!accelerated_frame_pool_) {
+    return false;
+  }
+  if (!accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+          frame->coded_size(), frame->shared_image(),
+          frame->acquire_sync_token(), gfx::ColorSpace::CreateREC709(),
+          base::BindOnce(&RTCVideoEncoder::Impl::DoNativeEncodeWithNativeInput,
+                         weak_this_, std::move(frame_chunk)))) {
+    use_accelerated_pool_ = false;
+    return false;
+  }
+
+  return true;
+}
+
 void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
     FrameChunk frame_chunk) {
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
@@ -2338,13 +2392,25 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
     frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                 ->getMediaVideoFrame();
     if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-      frame = CreateNV12SharedImageFrame(*frame_buffer, frame->visible_rect());
+      // TODO(crbug.com/443107135): remove this call once MFVEA can process
+      // frames created by CreateNV12SharedImageFrame() without readback and
+      // reupload.
+      if (ConvertRGBAToNV12AndEncode(frame_chunk, frame)) {
+        return;
+      }
+
+      frame = CreateNV12SharedImageFrame(*frame_buffer, frame);
       if (!frame) {
         return;
       }
     }
   }
+  DoNativeEncodeWithNativeInput(frame_chunk, frame);
+}
 
+void RTCVideoEncoder::Impl::DoNativeEncodeWithNativeInput(
+    FrameChunk frame_chunk,
+    scoped_refptr<media::VideoFrame> frame) {
   frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));
   CHECK_EQ(frame->storage_type(), media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 

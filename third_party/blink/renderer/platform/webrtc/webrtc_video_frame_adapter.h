@@ -97,6 +97,10 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     virtual scoped_refptr<viz::RasterContextProvider>
     GetRasterContextProvider();
 
+    virtual void ScaleAndMapFrameAsync(
+        scoped_refptr<media::VideoFrame> frame,
+        base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback);
+
     // Constructs a VideoFrame from a texture by invoking RasterInterface,
     // which would perform a blocking call to a GPU process.
     // The pixel data is copied and may be in ARGB pixel format in some cases,
@@ -245,6 +249,13 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
   std::string storage_representation() const override;
 
+  void PrepareMappedBufferAsync(
+      size_t width,
+      size_t height,
+      webrtc::scoped_refptr<webrtc::VideoFrameBuffer::PreparedFrameHandler>
+          handler,
+      size_t frame_identifier) override;
+
  protected:
   ~WebRtcVideoFrameAdapter() override;
 
@@ -267,6 +278,13 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       const ScaledBufferSize& size);
   AdaptedFrame AdaptBestFrame(const ScaledBufferSize& size) const
       EXCLUSIVE_LOCKS_REQUIRED(adapted_frames_lock_);
+
+  void OnFramePrepared(
+      webrtc::scoped_refptr<webrtc::VideoFrameBuffer::PreparedFrameHandler>
+          handler,
+      size_t frame_identifier,
+      const gfx::Rect& visible_rect,
+      scoped_refptr<media::VideoFrame> converted_frame);
 
   base::Lock adapted_frames_lock_;
   const scoped_refptr<media::VideoFrame> frame_;
