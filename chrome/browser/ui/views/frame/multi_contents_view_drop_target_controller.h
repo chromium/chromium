@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DROP_TARGET_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DROP_TARGET_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -106,22 +108,26 @@ class MultiContentsViewDropTargetController final
   // Assumes the dragged data is droppable (e.g. tab or link).
   void HandleDragUpdate(const gfx::Point& point_in_view,
                         MultiContentsDropTargetView::DragType drag_type);
-  void HandleDragUpdateForNudge(
-      const gfx::Point& point_in_view,
-      MultiContentsDropTargetView::DragType drag_type);
+  void HandleDragUpdateForNudge(const gfx::Point& point_in_view);
 
   // Starts or updates a running timer to show `target_to_show`.
   void StartOrUpdateDropTargetTimer(
       MultiContentsDropTargetView::DropSide drop_side,
       MultiContentsDropTargetView::DragType drag_type);
-  void ResetDropTargetTimer();
+  void ResetDropTargetTimers();
 
   // Shows the drop target that should be displayed at the end of the delay.
   void ShowTimerDelayedDropTarget();
 
-  // Timer to hides the drop target if the drag isn't over web contents or
+  // Timer to hide the drop target if the drag isn't over web contents or
   // drop target.
   void StartDropTargetHideTimer();
+
+  // Timer to show the nudge after a small delay.
+  void StartNudgeShowTimer(MultiContentsDropTargetView::DropSide drop_side);
+
+  // Actually show the drop target nudge.
+  void ShowTimerDelayedNudge(MultiContentsDropTargetView::DropSide drop_side);
 
   // Used to determine if the drop target should be hidden because the OS drop
   // target would be visible. Estimation based on when OS drop targets typically
@@ -143,6 +149,8 @@ class MultiContentsViewDropTargetController final
   std::optional<DropTargetShowTimer> show_drop_target_timer_ = std::nullopt;
 
   base::OneShotTimer hide_drop_target_timer_;
+
+  std::optional<DropTargetShowTimer> show_nudge_timer_ = std::nullopt;
 
   // The view that is displayed when drags hover over the "drop" region of
   // the content area.

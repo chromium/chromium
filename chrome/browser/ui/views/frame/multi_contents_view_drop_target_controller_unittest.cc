@@ -566,6 +566,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudge) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
+  EXPECT_FALSE(drop_target_view().GetVisible());
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
@@ -582,6 +584,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudge) {
 
   // Drag to the end of the screen should show the nudge on the end side.
   DragURLTo(kDragPointForEndDropTargetShow);
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::END);
@@ -661,6 +664,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudgeRTL) {
 
   // Drag to the start of the screen should show the nudge on the end side.
   DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::END);
@@ -677,6 +681,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudgeRTL) {
 
   // Drag to the end of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForEndDropTargetShow);
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
@@ -687,6 +692,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudgeRTL) {
 TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeToFull) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudge);
@@ -703,6 +709,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeToFull) {
 TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeToFullToHidden) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Fire the drag entered event to expand the nudge.
@@ -827,6 +834,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
        FullToNudgeTransitionNotAllowed) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudge);
@@ -841,6 +849,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
   // Dragging to the nudge area should not transition back to nudge.
   DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
