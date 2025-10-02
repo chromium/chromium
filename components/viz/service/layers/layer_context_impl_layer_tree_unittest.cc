@@ -253,7 +253,7 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
 
   // Update to new color spaces.
   gfx::DisplayColorSpaces color_spaces1(gfx::ColorSpace::CreateSRGB(),
-                                        gfx::BufferFormat::RGBA_8888);
+                                        SinglePlaneFormat::kRGBA_8888);
   auto update2 = CreateDefaultUpdate();
   update2->display_color_spaces = color_spaces1;
   EXPECT_TRUE(
@@ -269,7 +269,7 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
 
   // Update to different color spaces (e.g., P3).
   gfx::DisplayColorSpaces color_spaces2(gfx::ColorSpace::CreateDisplayP3D65(),
-                                        gfx::BufferFormat::BGRA_8888);
+                                        SinglePlaneFormat::kBGRA_8888);
   auto update4 = CreateDefaultUpdate();
   update4->display_color_spaces = color_spaces2;
   EXPECT_TRUE(
@@ -281,7 +281,7 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
       gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
   gfx::DisplayColorSpaces color_spaces_hdr(hdr_color_space_object,
-                                           gfx::BufferFormat::RGBA_F16);
+                                           SinglePlaneFormat::kRGBA_F16);
   auto update5 = CreateDefaultUpdate();
   update5->display_color_spaces = color_spaces_hdr;
   EXPECT_TRUE(
