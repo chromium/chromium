@@ -21,6 +21,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -42,6 +44,7 @@ using ::content::EvalJs;
 using ::content::RenderFrameHost;
 using ::content::TestNavigationManager;
 using ::content::WebContents;
+using ::tabs::TabInterface;
 
 using State = ::actor::ObservationDelayController::State;
 
@@ -233,6 +236,8 @@ class ObservationDelayControllerTest : public InProcessBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  TabInterface* active_tab() { return chrome_test_utils::GetActiveTab(this); }
+
   std::string GetOutputText() {
     return EvalJs(web_contents(), "document.getElementById('output').innerText")
         .ExtractString();
@@ -414,6 +419,52 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
   ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
   ASSERT_TRUE(controller.WaitForState(State::kDone));
   ASSERT_TRUE(result.Wait());
+}
+
+// Ensure that putting a tab into the background while its waiting to stabilize
+// doesn't affect the PageStabilityMonitor.
+// TODO(b/448641423): This test better belongs in PageStabilityMonitor browser
+// tests but is much clearer to write here. Move once the tests are sharing
+// infrastructure.
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
+                       BackgroundTabWhileWaitingForStability) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/observation_delay.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  ASSERT_TRUE(InitiateFetchRequest());
+
+  // Start waiting, since a fetch is in progress we should be waiting for page
+  // stability.
+  TestFuture<void> result;
+  controller.Wait(result.GetCallback());
+  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+  EXPECT_FALSE(result.IsReady());
+
+  // Ensure the tab can still produce frames while backgrounded.
+  auto scoped_decrement_closure =
+      web_contents()->IncrementCapturerCount(gfx::Size(),
+                                             /*stay_hidden=*/false,
+                                             /*stay_awake=*/true,
+                                             /*is_activity=*/true);
+
+  TabInterface* observed_tab = active_tab();
+  ASSERT_TRUE(observed_tab->IsActivated());
+
+  // Now open a new tab, putting the tab waiting on page stability in the
+  // background.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_FALSE(observed_tab->IsActivated());
+  ASSERT_NE(active_tab(), observed_tab);
+
+  // Ensure the controller doesn't break out of waiting for page stability.
+  EXPECT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 }
 
 }  // namespace

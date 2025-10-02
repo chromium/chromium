@@ -24,6 +24,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 
 namespace actor {
 
@@ -146,8 +147,8 @@ void PageStabilityMonitor::DidFailProvisionalLoad() {
 }
 
 void PageStabilityMonitor::DidSetPageLifecycleState(
-    bool restoring_from_bfcache) {
-  if (restoring_from_bfcache) {
+    blink::BFCacheStateChange bfcache_change) {
+  if (bfcache_change != blink::BFCacheStateChange::kStoredToBFCache) {
     return;
   }
 
