@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginBottom="20dp">
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/tips_promo_details_settings_button" style="@style/FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+        android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"
+        android:text="@string/tips_promo_bottom_sheet_positive_button_text"/>
+</LinearLayout>

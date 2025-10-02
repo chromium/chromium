@@ -5,16 +5,17 @@
 package org.chromium.chrome.browser.notifications.tips;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,11 +25,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link TipsPromoViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,7 +43,10 @@ public class TipsPromoViewBinderUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private ActivityScenario<TestActivity> mActivityScenario;
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private Activity mActivity;
     private PropertyModel mModel;
     private View mView;
@@ -48,8 +55,7 @@ public class TipsPromoViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenario = ActivityScenario.launch(TestActivity.class);
-        mActivityScenario.onActivity(activity -> mActivity = activity);
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mView =
@@ -62,9 +68,8 @@ public class TipsPromoViewBinderUnitTest {
         PropertyModelChangeProcessor.create(mModel, mView, TipsPromoViewBinder::bind);
     }
 
-    @After
-    public void tearDown() {
-        mActivityScenario.close();
+    private void onActivity(TestActivity activity) {
+        mActivity = activity;
     }
 
     @SmallTest
@@ -75,5 +80,21 @@ public class TipsPromoViewBinderUnitTest {
 
         assertEquals(PROMO_TITLE, mTitleView.getText());
         assertEquals(PROMO_DESCRIPTION, mDescriptionView.getText());
+    }
+
+    @SmallTest
+    @Test
+    public void testDetailsButtonClickListener() throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        OnClickListener clickListener =
+                (view) -> {
+                    callbackHelper.notifyCalled();
+                };
+
+        mModel.set(TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER, clickListener);
+        View onClickListener = mView.findViewById(R.id.tips_promo_details_button);
+        assertNotNull(onClickListener);
+        onClickListener.performClick();
+        callbackHelper.waitForOnly();
     }
 }

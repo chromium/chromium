@@ -12,6 +12,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** Binds the tips promo bottom sheet properties to the view. */
 @NullMarked
@@ -31,6 +32,10 @@ public class TipsPromoViewBinder {
             mainPageTitleView.setText(promoData.mainPageTitle);
             TextView mainPageDescriptionView = view.findViewById(R.id.main_page_description_text);
             mainPageDescriptionView.setText(promoData.mainPageDescription);
+        } else if (key == TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER) {
+            ButtonCompat detailsButton = view.findViewById(R.id.tips_promo_details_button);
+            detailsButton.setOnClickListener(
+                    model.get(TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER));
         }
     }
 }
