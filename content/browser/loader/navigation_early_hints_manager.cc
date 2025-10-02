@@ -199,83 +199,6 @@ network::mojom::CredentialsMode CalculateCredentialsMode(
 
 }  // namespace
 
-NavigationEarlyHintsManagerParams::NavigationEarlyHintsManagerParams(
-    const url::Origin& origin,
-    net::IsolationInfo isolation_info,
-    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory)
-    : origin(origin),
-      isolation_info(std::move(isolation_info)),
-      loader_factory(std::move(loader_factory)) {}
-
-NavigationEarlyHintsManagerParams::~NavigationEarlyHintsManagerParams() =
-    default;
-
-NavigationEarlyHintsManagerParams::NavigationEarlyHintsManagerParams(
-    NavigationEarlyHintsManagerParams&&) = default;
-
-NavigationEarlyHintsManagerParams& NavigationEarlyHintsManagerParams::operator=(
-    NavigationEarlyHintsManagerParams&&) = default;
-
-// Represents a preconnect.
-struct NavigationEarlyHintsManager::PreconnectEntry {
-  PreconnectEntry(const url::Origin& origin,
-                  network::mojom::CrossOriginAttribute cross_origin);
-  ~PreconnectEntry();
-  PreconnectEntry(const PreconnectEntry&);
-  PreconnectEntry& operator=(const PreconnectEntry&);
-
-  bool operator==(const PreconnectEntry&);
-  bool operator<(const PreconnectEntry&) const;
-
-  url::Origin origin;
-  network::mojom::CrossOriginAttribute cross_origin;
-};
-
-NavigationEarlyHintsManager::PreconnectEntry::PreconnectEntry(
-    const url::Origin& origin,
-    network::mojom::CrossOriginAttribute cross_origin)
-    : origin(origin), cross_origin(cross_origin) {}
-
-NavigationEarlyHintsManager::PreconnectEntry::~PreconnectEntry() = default;
-
-NavigationEarlyHintsManager::PreconnectEntry::PreconnectEntry(
-    const PreconnectEntry&) = default;
-
-NavigationEarlyHintsManager::PreconnectEntry&
-NavigationEarlyHintsManager::PreconnectEntry::operator=(
-    const PreconnectEntry&) = default;
-
-bool NavigationEarlyHintsManager::PreconnectEntry::operator==(
-    const PreconnectEntry& other) {
-  return origin == other.origin && cross_origin == other.cross_origin;
-}
-
-bool NavigationEarlyHintsManager::PreconnectEntry::operator<(
-    const PreconnectEntry& other) const {
-  if (origin == other.origin) {
-    return cross_origin < other.cross_origin;
-  }
-  return origin < other.origin;
-}
-
-NavigationEarlyHintsManager::PreloadedResource::PreloadedResource() = default;
-
-NavigationEarlyHintsManager::PreloadedResource::~PreloadedResource() = default;
-
-NavigationEarlyHintsManager::PreloadedResource::PreloadedResource(
-    const PreloadedResource&) = default;
-
-NavigationEarlyHintsManager::PreloadedResource&
-NavigationEarlyHintsManager::PreloadedResource::operator=(
-    const PreloadedResource&) = default;
-
-NavigationEarlyHintsManager::InflightPreload::InflightPreload(
-    std::unique_ptr<blink::ThrottlingURLLoader> loader,
-    std::unique_ptr<PreloadURLLoaderClient> client)
-    : client(std::move(client)), loader(std::move(loader)) {}
-
-NavigationEarlyHintsManager::InflightPreload::~InflightPreload() = default;
-
 // A URLLoaderClient which drains the content of a request to put a
 // response into the disk cache. If the response was already in the cache,
 // this tries to cancel reading body to avoid further disk access.
@@ -372,6 +295,83 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   PreloadedResource result_;
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
 };
+
+NavigationEarlyHintsManagerParams::NavigationEarlyHintsManagerParams(
+    const url::Origin& origin,
+    net::IsolationInfo isolation_info,
+    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory)
+    : origin(origin),
+      isolation_info(std::move(isolation_info)),
+      loader_factory(std::move(loader_factory)) {}
+
+NavigationEarlyHintsManagerParams::~NavigationEarlyHintsManagerParams() =
+    default;
+
+NavigationEarlyHintsManagerParams::NavigationEarlyHintsManagerParams(
+    NavigationEarlyHintsManagerParams&&) = default;
+
+NavigationEarlyHintsManagerParams& NavigationEarlyHintsManagerParams::operator=(
+    NavigationEarlyHintsManagerParams&&) = default;
+
+// Represents a preconnect.
+struct NavigationEarlyHintsManager::PreconnectEntry {
+  PreconnectEntry(const url::Origin& origin,
+                  network::mojom::CrossOriginAttribute cross_origin);
+  ~PreconnectEntry();
+  PreconnectEntry(const PreconnectEntry&);
+  PreconnectEntry& operator=(const PreconnectEntry&);
+
+  bool operator==(const PreconnectEntry&);
+  bool operator<(const PreconnectEntry&) const;
+
+  url::Origin origin;
+  network::mojom::CrossOriginAttribute cross_origin;
+};
+
+NavigationEarlyHintsManager::PreconnectEntry::PreconnectEntry(
+    const url::Origin& origin,
+    network::mojom::CrossOriginAttribute cross_origin)
+    : origin(origin), cross_origin(cross_origin) {}
+
+NavigationEarlyHintsManager::PreconnectEntry::~PreconnectEntry() = default;
+
+NavigationEarlyHintsManager::PreconnectEntry::PreconnectEntry(
+    const PreconnectEntry&) = default;
+
+NavigationEarlyHintsManager::PreconnectEntry&
+NavigationEarlyHintsManager::PreconnectEntry::operator=(
+    const PreconnectEntry&) = default;
+
+bool NavigationEarlyHintsManager::PreconnectEntry::operator==(
+    const PreconnectEntry& other) {
+  return origin == other.origin && cross_origin == other.cross_origin;
+}
+
+bool NavigationEarlyHintsManager::PreconnectEntry::operator<(
+    const PreconnectEntry& other) const {
+  if (origin == other.origin) {
+    return cross_origin < other.cross_origin;
+  }
+  return origin < other.origin;
+}
+
+NavigationEarlyHintsManager::PreloadedResource::PreloadedResource() = default;
+
+NavigationEarlyHintsManager::PreloadedResource::~PreloadedResource() = default;
+
+NavigationEarlyHintsManager::PreloadedResource::PreloadedResource(
+    const PreloadedResource&) = default;
+
+NavigationEarlyHintsManager::PreloadedResource&
+NavigationEarlyHintsManager::PreloadedResource::operator=(
+    const PreloadedResource&) = default;
+
+NavigationEarlyHintsManager::InflightPreload::InflightPreload(
+    std::unique_ptr<blink::ThrottlingURLLoader> loader,
+    std::unique_ptr<PreloadURLLoaderClient> client)
+    : client(std::move(client)), loader(std::move(loader)) {}
+
+NavigationEarlyHintsManager::InflightPreload::~InflightPreload() = default;
 
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
     BrowserContext& browser_context,

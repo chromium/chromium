@@ -8,13 +8,12 @@
 #include <memory>
 
 #include "content/common/content_export.h"
+#include "content/renderer/navigation_state.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "url/gurl.h"
 
 namespace content {
-
-class NavigationState;
 
 // RenderFrameImpl stores an instance of this class in the "extra data" of each
 // WebDocumentLoader.

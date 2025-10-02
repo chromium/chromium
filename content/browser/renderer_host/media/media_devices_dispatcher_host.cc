@@ -630,13 +630,6 @@ void MediaDevicesDispatcherHost::OnEnumeratedAudioOutputDevices(
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (enumeration.empty()) {
-    auto result = blink::mojom::SelectAudioOutputResult::New();
-    result->status = blink::mojom::AudioOutputStatus::kNoDevices;
-    std::move(select_audio_output_callback_).Run(std::move(result));
-    return;
-  }
-
   if (!hashed_device_id.empty()) {
     for (const auto& device_info :
          enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]) {

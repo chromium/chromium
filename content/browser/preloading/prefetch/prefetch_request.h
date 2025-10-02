@@ -16,6 +16,7 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
@@ -27,7 +28,6 @@ namespace content {
 
 class BrowserContext;
 class PrefetchDocumentManager;
-class PrefetchRequestStatusListener;
 class PreloadPipelineInfo;
 class PreloadPipelineInfoImpl;
 class PreloadingAttempt;

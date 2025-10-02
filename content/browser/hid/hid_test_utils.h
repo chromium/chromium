@@ -12,7 +12,7 @@
 #include "content/public/browser/hid_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "services/device/public/mojom/hid.mojom-forward.h"
+#include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #include "url/origin.h"
