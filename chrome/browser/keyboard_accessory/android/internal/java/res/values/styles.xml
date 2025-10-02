@@ -84,19 +84,22 @@ found in the LICENSE file.
     <style name="KeyboardAccessoryLoyaltyCardTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
     </style>
     <style name="KeyboardAccessoryLoyaltyCardLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
     </style>
-    <!-- TODO: crbug.com/444403583 - Figure out correct padding for Home&Word suggestions. -->
     <style name="KeyboardAccessoryHomeAndWorkTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
     </style>
     <style name="KeyboardAccessoryHomeAndWorkLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
     </style>
     <style name="KeyboardAccessoryTwoLineActionButton" parent="FilledButton.Tonal.ButtonStyle">
         <item name="android:gravity">center</item>
