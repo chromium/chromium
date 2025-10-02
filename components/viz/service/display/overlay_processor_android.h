@@ -54,7 +54,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
   void SetViewportSize(const gfx::Size& size) override {}
 
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates) override;
   gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& overlay) const override;

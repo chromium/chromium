@@ -73,7 +73,7 @@ bool OverlayProcessorSurfaceControl::NeedsSurfaceDamageRectList() const {
 }
 
 void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
-    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidates) {
   DCHECK(!candidates->empty());
 
@@ -146,17 +146,19 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
 }
 
 void OverlayProcessorSurfaceControl::AdjustOutputSurfaceOverlay(
-    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    std::optional<OverlayCandidate>& output_surface_plane) {
   // For surface control, we should always have a valid |output_surface_plane|
   // here.
-  DCHECK(output_surface_plane && output_surface_plane->has_value());
+  DCHECK(output_surface_plane);
 
-  OutputSurfaceOverlayPlane& plane = output_surface_plane->value();
+  OverlayCandidate& plane = output_surface_plane.value();
   DCHECK(gfx::SurfaceControl::SupportsColorSpace(plane.color_space))
       << "The main overlay must only use color space supported by the "
          "device";
 
-  DCHECK_EQ(plane.transform, gfx::OVERLAY_TRANSFORM_NONE);
+  DCHECK(std::holds_alternative<gfx::OverlayTransform>(plane.transform));
+  DCHECK_EQ(std::get<gfx::OverlayTransform>(plane.transform),
+            gfx::OVERLAY_TRANSFORM_NONE);
   DCHECK(plane.display_rect == ClipFromOrigin(plane.display_rect));
 
   plane.transform = display_transform_;

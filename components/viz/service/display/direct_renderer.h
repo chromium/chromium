@@ -155,8 +155,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     // When we have a buffer queue, the output surface could be treated as an
     // overlay plane, and the struct to store that information is in
     // |output_surface_plane|.
-    std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
-        output_surface_plane;
+    std::optional<OverlayCandidate> output_surface_plane;
   };
 
   void SetCurrentFrameForTesting(const DrawingFrame& frame);

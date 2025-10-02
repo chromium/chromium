@@ -46,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
       const QuadList& quad_list) override;
 
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* surfaces) override;
   // If UseMultipleOverlays is enabled, set `ReceiveHardwareCapabilities` as a
   // callback on `overlay_candidates_` to be called with a

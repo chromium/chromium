@@ -35,7 +35,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
   bool IsOverlaySupported() const override { return true; }
   bool NeedsSurfaceDamageRectList() const override { return false; }
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* surfaces) override {}
   size_t GetStrategyCount() const { return 1; }
 };
