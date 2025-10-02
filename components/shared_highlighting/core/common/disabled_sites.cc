@@ -19,7 +19,7 @@ namespace {
 
 bool IsAmpGenerationEnabled() {
 #if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(kSharedHighlightingAmp);
+  return false;
 #else
   return true;
 #endif

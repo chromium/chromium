@@ -13705,21 +13705,6 @@
             ]
         }
     ],
-    "IOSSharedHighlightingColorChange": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSSharedHighlightingColorChange"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSkipCookieCaching": [
         {
             "platforms": [
@@ -23261,21 +23246,6 @@
                     },
                     "enable_features": [
                         "SharedDictionaryCache"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SharedHighlightingAmp": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SharedHighlightingAmp"
                     ]
                 }
             ]

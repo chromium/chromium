@@ -81,16 +81,7 @@ void LinkToTextJavaScriptFeature::RunGenerationJS(
 bool LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
     std::optional<shared_highlighting::LinkGenerationError> error,
     const GURL& main_frame_url) {
-  if (!base::FeatureList::IsEnabled(
-          shared_highlighting::kSharedHighlightingAmp)) {
-    return false;
-  }
-  if (!error ||
-      error.value() !=
-          shared_highlighting::LinkGenerationError::kIncorrectSelector) {
-    return false;
-  }
-  return shared_highlighting::SupportsLinkGenerationInIframe(main_frame_url);
+  return false;
 }
 
 void LinkToTextJavaScriptFeature::HandleResponse(

@@ -839,16 +839,6 @@ const char kNTPMIAEntrypointName[] = "Entrypoint for MIA in the new tab page";
 const char kNTPMIAEntrypointDescription[] =
     "Selects which variant of the MIA entrypoint is used in the new tab page";
 
-const char kIOSSharedHighlightingColorChangeName[] =
-    "IOS Shared Highlighting color change";
-const char kIOSSharedHighlightingColorChangeDescription[] =
-    "Changes the Shared Highlighting color of the text fragment"
-    "away from the default yellow in iOS. Works with #scroll-to-text-ios flag.";
-
-const char kIOSSharedHighlightingAmpName[] = "Shared Highlighting on AMP pages";
-const char kIOSSharedHighlightingAmpDescription[] =
-    "Enables the Create Link option on AMP pages.";
-
 const char kIOSSoftLockName[] = "Soft Lock on iOS";
 const char kIOSSoftLockDescription[] = "Enables experimental Soft Lock on iOS.";
 

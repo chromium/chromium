@@ -33,9 +33,6 @@ BASE_DECLARE_FEATURE(kEnablePersistentDownloads);
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 BASE_DECLARE_FEATURE(kSetRequestAttribution);
 
-// Feature flag that enable Shared Highlighting color change in iOS.
-BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
-
 // Feature flag to enable Measurements detection.
 BASE_DECLARE_FEATURE(kEnableMeasurements);
 

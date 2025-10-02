@@ -490,12 +490,6 @@ extern const char kNotificationCollisionManagementDescription[];
 extern const char kNTPMIAEntrypointName[];
 extern const char kNTPMIAEntrypointDescription[];
 
-extern const char kIOSSharedHighlightingColorChangeName[];
-extern const char kIOSSharedHighlightingColorChangeDescription[];
-
-extern const char kIOSSharedHighlightingAmpName[];
-extern const char kIOSSharedHighlightingAmpDescription[];
-
 extern const char kIOSSoftLockName[];
 extern const char kIOSSoftLockDescription[];
 

@@ -6216,11 +6216,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "ios-shared-highlighting-color-change",
-    "owners": [ "cheickcisse@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "ios-shop-card",
     "owners": [
       "davidjm@google.com",
@@ -9247,11 +9242,6 @@
     "name": "shared-data-types-kill-switch",
     "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "shared-highlighting-amp",
-    "owners": ["cheickcisse@google.com", "sczs@chromium.org"],
-    "expiry_milestone": 120
   },
   {
     "name": "shared-highlighting-ios",
