@@ -87,10 +87,10 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++++inlineTextBox name='Hello' nextOnLineId=staticText:" " previousOnLineId=staticText
 ++++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
 ++++++++++++staticText name='world this' nextOnLineId=staticText:" "
-++++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" " previousOnLineId=staticText:" "
+++++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" "
 ++++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
 ++++++++++++staticText name='is just like docs, and your kitchen sink'
-++++++++++++++inlineTextBox name='is just like docs, and your kitchen sink' previousOnLineId=staticText:" "
+++++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
 ++++++++paragraph isLineBreakingObject=true
 ++++++++++staticText name='The end'
 ++++++++++++inlineTextBox name='The end'
