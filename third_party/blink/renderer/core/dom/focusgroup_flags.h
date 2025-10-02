@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 
 namespace blink {
 
@@ -99,6 +100,11 @@ CORE_EXPORT String FocusgroupFlagsToStringForTesting(FocusgroupFlags flags);
 // Returns true if the parsed data represents an actual focusgroup (i.e. not
 // the empty sentinel and not explicitly opted out via kOptOut).
 CORE_EXPORT bool IsActualFocusgroup(const FocusgroupData& data);
+
+// Returns the minimum ARIA role that should be applied to an element with the
+// given focusgroup flags.
+CORE_EXPORT ax::mojom::blink::Role FocusgroupMinimumAriaRole(
+    const FocusgroupData& data);
 }  // namespace focusgroup
 
 // The "::blink" prefix is to avoid false-positive of audit_non_blink_usages.py.

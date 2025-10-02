@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {
 
@@ -1145,6 +1146,45 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
   EXPECT_EQ(
       "FocusgroupData(Toolbar:FocusgroupFlags(Block|NoMemory))",
       focusgroup::FocusgroupDataToStringForTesting(toolbar_no_memory_data));
+}
+
+TEST_F(ElementTest, FocusgroupMinimumAriaRole) {
+  // Test mapping from focusgroup behavior flags to ARIA roles.
+  // Note: FocusgroupMinimumAriaRole requires valid focusgroup flags
+  // (kNone and kOptOut are invalid and will cause a CHECK failure)
+
+  // Behavior flags should map to corresponding ARIA roles
+  EXPECT_EQ(ax::mojom::blink::Role::kToolbar,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kToolbar, FocusgroupFlags::kNone}));
+  EXPECT_EQ(ax::mojom::blink::Role::kTabList,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kTablist, FocusgroupFlags::kNone}));
+  EXPECT_EQ(ax::mojom::blink::Role::kRadioGroup,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kRadiogroup, FocusgroupFlags::kNone}));
+  EXPECT_EQ(ax::mojom::blink::Role::kListBox,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kListbox, FocusgroupFlags::kNone}));
+  EXPECT_EQ(ax::mojom::blink::Role::kMenu,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kMenu, FocusgroupFlags::kNone}));
+  EXPECT_EQ(ax::mojom::blink::Role::kMenuBar,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kMenubar, FocusgroupFlags::kNone}));
+  EXPECT_EQ(ax::mojom::blink::Role::kGrid,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kGrid, FocusgroupFlags::kNone}));
+
+  // Behavior flags combined with navigation modifiers should still return
+  // the correct role (navigation modifiers don't change the base role)
+  EXPECT_EQ(ax::mojom::blink::Role::kToolbar,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline}));
+
+  EXPECT_EQ(ax::mojom::blink::Role::kGrid,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kGrid, FocusgroupFlags::kWrapInline}));
 }
 
 TEST_F(ElementTest, MixStyleAttributeAndCSSOMChanges) {

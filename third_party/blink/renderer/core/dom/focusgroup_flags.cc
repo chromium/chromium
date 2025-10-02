@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink::focusgroup {
 
@@ -521,6 +522,36 @@ bool IsActualFocusgroup(const FocusgroupData& data) {
          (data.flags == FocusgroupFlags::kNone));
   return data.behavior != FocusgroupBehavior::kNoBehavior &&
          data.behavior != FocusgroupBehavior::kOptOut;
+}
+
+ax::mojom::blink::Role FocusgroupMinimumAriaRole(const FocusgroupData& data) {
+  // Return appropriate role based on behavior token.
+  if (data.behavior == FocusgroupBehavior::kToolbar) {
+    return ax::mojom::blink::Role::kToolbar;
+  }
+  if (data.behavior == FocusgroupBehavior::kTablist) {
+    return ax::mojom::blink::Role::kTabList;
+  }
+  if (data.behavior == FocusgroupBehavior::kRadiogroup) {
+    return ax::mojom::blink::Role::kRadioGroup;
+  }
+  if (data.behavior == FocusgroupBehavior::kListbox) {
+    return ax::mojom::blink::Role::kListBox;
+  }
+  if (data.behavior == FocusgroupBehavior::kMenu) {
+    return ax::mojom::blink::Role::kMenu;
+  }
+  if (data.behavior == FocusgroupBehavior::kMenubar) {
+    return ax::mojom::blink::Role::kMenuBar;
+  }
+  if (data.behavior == FocusgroupBehavior::kGrid) {
+    return ax::mojom::blink::Role::kGrid;
+  }
+
+  // Default case should never be reached because this function should only be
+  // called with valid focusgroup flags (i.e. not kNone or kOptOut).
+  NOTREACHED() << "FocusgroupMinimumAriaRole called with invalid behavior "
+               << FocusgroupDataToStringForTesting(data);
 }
 
 }  // namespace blink::focusgroup
