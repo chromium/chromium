@@ -408,13 +408,7 @@ class MdnsResponderManager::SocketHandler {
  public:
   SocketHandler(uint16_t id,
                 std::unique_ptr<net::DatagramServerSocket> socket,
-                MdnsResponderManager* responder_manager)
-      : id_(id),
-        scheduler_(std::make_unique<ResponseScheduler>(this)),
-        socket_(std::move(socket)),
-        responder_manager_(responder_manager),
-        io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
-            net::dns_protocol::kMaxMulticastSize + 1)) {}
+                MdnsResponderManager* responder_manager);
 
   SocketHandler(const SocketHandler&) = delete;
   SocketHandler& operator=(const SocketHandler&) = delete;
@@ -647,6 +641,17 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
 
   base::WeakPtrFactory<ResponseScheduler> weak_factory_{this};
 };
+
+MdnsResponderManager::SocketHandler::SocketHandler(
+    uint16_t id,
+    std::unique_ptr<net::DatagramServerSocket> socket,
+    MdnsResponderManager* responder_manager)
+    : id_(id),
+      scheduler_(std::make_unique<ResponseScheduler>(this)),
+      socket_(std::move(socket)),
+      responder_manager_(responder_manager),
+      io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
+          net::dns_protocol::kMaxMulticastSize + 1)) {}
 
 bool MdnsResponderManager::SocketHandler::Send(
     scoped_refptr<net::IOBufferWithSize> buf,

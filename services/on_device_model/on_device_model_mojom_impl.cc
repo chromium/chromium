@@ -40,12 +40,8 @@ class SessionWrapper final : public mojom::Session {
   SessionWrapper(base::WeakPtr<OnDeviceModelMojomImpl> model,
                  mojo::PendingReceiver<mojom::Session> receiver,
                  std::unique_ptr<BackendSession> session,
-                 mojom::Priority priority)
-      : model_(model),
-        receiver_(this, std::move(receiver)),
-        session_(std::move(session)),
-        priority_(priority) {}
-  ~SessionWrapper() override = default;
+                 mojom::Priority priority);
+  ~SessionWrapper() override;
 
   SessionWrapper(const SessionWrapper&) = delete;
   SessionWrapper& operator=(const SessionWrapper&) = delete;
@@ -149,6 +145,17 @@ class AsrStreamWrapper final : public mojom::AsrStreamInput {
   mojo::Receiver<mojom::AsrStreamInput> receiver_;
   base::WeakPtrFactory<AsrStreamWrapper> weak_ptr_factory_{this};
 };
+
+SessionWrapper::SessionWrapper(base::WeakPtr<OnDeviceModelMojomImpl> model,
+                               mojo::PendingReceiver<mojom::Session> receiver,
+                               std::unique_ptr<BackendSession> session,
+                               mojom::Priority priority)
+    : model_(model),
+      receiver_(this, std::move(receiver)),
+      session_(std::move(session)),
+      priority_(priority) {}
+
+SessionWrapper::~SessionWrapper() = default;
 
 void SessionWrapper::Append(mojom::AppendOptionsPtr options,
                             mojo::PendingRemote<mojom::ContextClient> client) {
