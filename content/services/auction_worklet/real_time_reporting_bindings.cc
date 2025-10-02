@@ -18,6 +18,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/features.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
@@ -112,7 +113,8 @@ void RealTimeReportingBindings::AttachToContext(
   }
 
   v8::Isolate* isolate = v8_helper_->isolate();
-  v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
+  v8::Local<v8::External> v8_this =
+      v8::External::New(isolate, this, gin::kRealTimeReportingBindingsTag);
   v8::Local<v8::Object> real_time_reporting = v8::Object::New(isolate);
 
   v8::Local<v8::Function> real_time_histogram =
@@ -139,7 +141,8 @@ void RealTimeReportingBindings::Reset() {
 void RealTimeReportingBindings::ContributeToHistogram(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   RealTimeReportingBindings* bindings = static_cast<RealTimeReportingBindings*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())
+          ->Value(gin::kRealTimeReportingBindingsTag));
   ParseAndCollectContribution(bindings->v8_helper_.get(),
                               bindings->v8_logger_.get(), args,
                               bindings->real_time_reporting_contributions_);

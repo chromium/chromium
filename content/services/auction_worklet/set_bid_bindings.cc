@@ -23,6 +23,7 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -241,7 +242,7 @@ void SetBidBindings::ReInitialize(
 
 void SetBidBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+      v8::External::New(v8_helper_->isolate(), this, gin::kSetBidBindingsTag);
   v8::Local<v8::Function> v8_function =
       v8::Function::New(context, &SetBidBindings::SetBid, v8_this)
           .ToLocalChecked();
@@ -732,8 +733,8 @@ bool SetBidBindings::IsSelectedReportingIdValid(
 
 // static
 void SetBidBindings::SetBid(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  SetBidBindings* bindings =
-      static_cast<SetBidBindings*>(v8::External::Cast(*args.Data())->Value());
+  SetBidBindings* bindings = static_cast<SetBidBindings*>(
+      v8::External::Cast(*args.Data())->Value(gin::kSetBidBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   v8::Local<v8::Value> argument_value;

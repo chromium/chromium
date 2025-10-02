@@ -15,6 +15,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -37,7 +38,7 @@ ReportBindings::~ReportBindings() = default;
 
 void ReportBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+      v8::External::New(v8_helper_->isolate(), this, gin::kReportBindingsTag);
   v8::Local<v8::Function> v8_function =
       v8::Function::New(context, &ReportBindings::SendReportTo, v8_this)
           .ToLocalChecked();
@@ -69,8 +70,8 @@ void ReportBindings::Reset() {
 
 void ReportBindings::SendReportTo(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  ReportBindings* bindings =
-      static_cast<ReportBindings*>(v8::External::Cast(*args.Data())->Value());
+  ReportBindings* bindings = static_cast<ReportBindings*>(
+      v8::External::Cast(*args.Data())->Value(gin::kReportBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
@@ -120,8 +121,8 @@ void ReportBindings::SendReportTo(
 
 void ReportBindings::QueueReportAggregateWin(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  ReportBindings* bindings =
-      static_cast<ReportBindings*>(v8::External::Cast(*args.Data())->Value());
+  ReportBindings* bindings = static_cast<ReportBindings*>(
+      v8::External::Cast(*args.Data())->Value(gin::kReportBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());

@@ -12,6 +12,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "url/url_util.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
@@ -26,8 +27,8 @@ RegisterAdMacroBindings::RegisterAdMacroBindings(AuctionV8Helper* v8_helper)
 RegisterAdMacroBindings::~RegisterAdMacroBindings() = default;
 
 void RegisterAdMacroBindings::AttachToContext(v8::Local<v8::Context> context) {
-  v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+  v8::Local<v8::External> v8_this = v8::External::New(
+      v8_helper_->isolate(), this, gin::kRegisterAdMacroBindingsTag);
   v8::Local<v8::Function> v8_function =
       v8::Function::New(context, &RegisterAdMacroBindings::RegisterAdMacro,
                         v8_this)
@@ -45,7 +46,8 @@ void RegisterAdMacroBindings::Reset() {
 void RegisterAdMacroBindings::RegisterAdMacro(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   RegisterAdMacroBindings* bindings = static_cast<RegisterAdMacroBindings*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())
+          ->Value(gin::kRegisterAdMacroBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
