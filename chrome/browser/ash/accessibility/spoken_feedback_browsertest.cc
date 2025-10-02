@@ -789,6 +789,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
                                                kTestAsGuestUser)));
 
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUser,
+    SpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUser,
+    SpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsGuestUser)));
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableSpokenFeedback) {
   chromevox_test_utils()->EnableChromeVox();
   sm()->Replay();
@@ -1262,6 +1274,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
   sm()->Replay();
 }
 
+// TODO(https://crbug.com/388867840): Re-enable this test on MSAN. Note that
+// MAYBE_ doesn't work well with parameterized tests.
+#if !defined(MEMORY_SANITIZER)
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenSettingsFromPanel) {
   chromevox_test_utils()->EnableChromeVox();
   base::RunLoop waiter;
@@ -1284,8 +1299,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenSettingsFromPanel) {
   // We should have tried to open the settings subpage.
   waiter.Run();
 }
+#endif  // !defined(MEMORY_SANITIZER)
 
-// Fails on ASAN. See http://crbug.com/776308 . (Note MAYBE_ doesn't work well
+// Fails on ASAN. See http://crbug.com/776308. (Note MAYBE_ doesn't work well
 // with parameterized tests).
 #if !defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
