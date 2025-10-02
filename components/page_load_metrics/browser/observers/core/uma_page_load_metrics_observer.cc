@@ -29,6 +29,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/common/process_type.h"
+#include "net/base/load_timing_info.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "third_party/blink/public/common/features.h"

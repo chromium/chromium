@@ -9,6 +9,7 @@
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "net/base/load_timing_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -152,12 +153,12 @@ PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
 
 PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
     content::WebContents* web_contents,
-    const char* observer_name_)
-    : MetricsLifecycleObserver(web_contents), observer_name_(observer_name_) {}
+    const char* observer_name)
+    : MetricsLifecycleObserver(web_contents), observer_name_(observer_name) {}
 
 PageLoadMetricsTestWaiter::~PageLoadMetricsTestWaiter() {
   CHECK(did_add_observer_);
-  CHECK_EQ(nullptr, run_loop_.get());
+  CHECK(!run_loop_);
 }
 
 void PageLoadMetricsTestWaiter::AddPageExpectation(TimingField field) {
@@ -338,7 +339,7 @@ void PageLoadMetricsTestWaiter::OnSoftNavigationMetricsUpdated(
   }
 
   // Increment image lcp update counts.
-  if (!new_soft_navigation_metrics.largest_contentful_paint.is_null()) {
+  if (new_soft_navigation_metrics.largest_contentful_paint) {
     if (new_soft_navigation_metrics.largest_contentful_paint
             ->largest_image_paint.has_value() &&
         new_soft_navigation_metrics.largest_contentful_paint
@@ -354,7 +355,7 @@ void PageLoadMetricsTestWaiter::OnSoftNavigationMetricsUpdated(
   }
 
   // Increment text lcp update counts.
-  if (!new_soft_navigation_metrics.largest_contentful_paint.is_null()) {
+  if (new_soft_navigation_metrics.largest_contentful_paint) {
     if (new_soft_navigation_metrics.largest_contentful_paint->largest_text_paint
             .has_value() &&
         new_soft_navigation_metrics.largest_contentful_paint->largest_text_paint

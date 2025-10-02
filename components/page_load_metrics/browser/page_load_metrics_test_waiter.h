@@ -53,8 +53,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   };
 
   explicit PageLoadMetricsTestWaiter(content::WebContents* web_contents);
-  explicit PageLoadMetricsTestWaiter(content::WebContents* web_contents,
-                                     const char* observer_name_);
+  PageLoadMetricsTestWaiter(content::WebContents* web_contents,
+                            const char* observer_name);
 
   ~PageLoadMetricsTestWaiter() override;
 
