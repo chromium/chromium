@@ -1320,6 +1320,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1880618477732738742">Newid a chaniatáu mynediad i nodweddion fel geoleoliad, meicroffon, camera, cwcis, ac ati, ar gyfer eich holl wefannau ac estyniadau, gan gynnwys yr estyniad hwn.</translation>
 <translation id="1881445033931614352">Cynllun y bysellfwrdd</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Eitem}zero{# eitem}two{# eitem}few{# eitem}many{# eitem}other{# eitem}}</translation>
+<translation id="188177382966899059">Chwilio Dwfn</translation>
 <translation id="1884340228047885921">Y gosodiad gwelededd presennol yw rhai cysylltiadau</translation>
 <translation id="1884705339276589024">Newid maint disg Linux</translation>
 <translation id="1885066963699478692">Ffeiliau XML sy'n cael eu defnyddio i osod y polisïau.</translation>
@@ -3838,6 +3839,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3629664892718440872">Cofiwch y dewis hwn</translation>
 <translation id="3630132874740063857">Eich ffôn</translation>
 <translation id="3630995161997703415">Ychwanegwch y wefan hon at eich silff i'w defnyddio ar unrhyw adeg</translation>
+<translation id="3633492436029262388">I gael eich cyfrineiriau, nodau tudalen, a rhagor ar eich holl ddyfeisiau, cadwch nhw yn eich Cyfrif Google</translation>
 <translation id="3633759325857031264">Dyfais HDMI</translation>
 <translation id="3634652306074934350">Cais am ganiatâd wedi dod i ben</translation>
 <translation id="3635199270495525546">Canfu Modiwl Platfform Dibynadwy (TPM)</translation>
@@ -4008,6 +4010,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3735039640698208086">Wrth chwarae sain...</translation>
 <translation id="3735740477244556633">Trefnu yn ôl</translation>
 <translation id="3735827758948958091">Methu ag agor <ph name="FILE_NAMES" /> tra ar gysylltiad mesuredig</translation>
+<translation id="3736575924150462398">Ychwanegu tabiau neu ragor</translation>
 <translation id="3737058101969549870">Cadw data pori presennol ar wahân i'r proffil newydd hwn?</translation>
 <translation id="3738632186060045350">Bydd data <ph name="DEVICE_TYPE" /> yn cael eu dileu mewn 24 awr</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -8009,6 +8012,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6569931898053264308">Arbedion Canolig</translation>
 <translation id="6570622975915850879">Defnyddio dyfais wahanol</translation>
 <translation id="65711204837946324">Mae angen caniatâd i lawrlwytho</translation>
+<translation id="6571178651832779742">I lanhau unrhyw nodau tudalen dyblyg, cadwch nhw yn eich Cyfrif Google</translation>
 <translation id="6571533309669248172">Fformatio testun</translation>
 <translation id="6571772921213691236">Golygu data mewngofnodi</translation>
 <translation id="657229725818377235">Cael rhagor o amddiffyniad rhag gwefannau peryglus a lawrlwythiadau</translation>
@@ -8653,6 +8657,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7001066449188684145">Mae angen adnabod i argraffu i <ph name="PRINTER_NAME" />. Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="7001397294201412227">Defnyddio ffôn, llechen, neu allwedd ddiogelwch</translation>
 <translation id="7001556399332161712">Chwilio ac awgrymiadau</translation>
+<translation id="7001809623433867903">Glanhau nodau tudalen?</translation>
 <translation id="7003339318920871147">Cronfeydd data gwe</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ffeil}zero{{COUNT} ffeil}two{{COUNT} ffeil}few{{COUNT} ffeil}many{{COUNT} ffeil}other{{COUNT} ffeil}}</translation>
 <translation id="7003644704445046755">Ffeiliau llais <ph name="LANGUAGE" /> o ansawdd uchel wedi'u lawrlwytho</translation>
@@ -9132,6 +9137,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7356908624372060336">Cofnodion Rhwydwaith</translation>
 <translation id="7357271391997763660">Rhedeg gwiriad cyfrinair?</translation>
 <translation id="735745346212279324">Mae'r VPN wedi'i ddatgysylltu</translation>
+<translation id="7359326150089800742">Ychwanegu tab neu ffeil at eich chwiliad, a defnyddio offeryn hefyd</translation>
 <translation id="7359680654975233185">Methu â chastio tab</translation>
 <translation id="7360257054721917104">Gweld desgiau a thempledi sydd wedi'u cadw. Pwyswch Tab i lywio.</translation>
 <translation id="7360333718677093875">dewisydd emoji</translation>
@@ -9938,6 +9944,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Gwnewch yn siŵr bod pyrth Linux ar gael i ddyfeisiau eraill ar eich rhwydwaith.</translation>
 <translation id="7906440585529721295">Bydd data lleol yn cael eu dileu</translation>
+<translation id="7907312522152480478">I gael eich tabiau o'ch dyfeisiau eraill, cadarnhewch mai chi sydd yno a chysoni eich hanes a'ch tabiau. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="7907502219904644296">Newid mynediad</translation>
 <translation id="7907837847548254634">Dangos amlygu cyflym ar y gwrthrych sydd dan sylw</translation>
 <translation id="7908378463497120834">Mae'n ddrwg gennym, ni ellir gosod o leiaf un rhaniad ar eich dyfais storfa allanol.</translation>
@@ -10573,6 +10580,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8323167517179506834">Teipiwch URL</translation>
 <translation id="8323317289166663449">Darllen a newid eich holl ddata ar eich cyfrifiadur a phob gwefan</translation>
 <translation id="8323518750352551353">Gwahanu pori?</translation>
+<translation id="8323744572398547859">I gael eich tabiau o'ch dyfeisiau eraill, mewngofnodwch a chysoni hanes. Byddwch hefyd yn cael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="8324158725704657629">Peidio â gofyn eto</translation>
 <translation id="8325413836429495820">Ni chaniateir gweld eich clipfwrdd</translation>
 <translation id="8326478304147373412">PKCS #7, cadwyn tystysgrifau</translation>

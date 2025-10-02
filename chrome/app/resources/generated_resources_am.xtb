@@ -1315,6 +1315,7 @@
 <translation id="1880618477732738742">ይህን ቅጥያ ጨምሮ ለሁሉም የእርስዎ ድር ጣቢያዎች እና ቅጥያዎች እንደ ጂዮ አካባቢ፣ ማይክሮፎን፣ ካሜራ፣ ኩኪዎች፣ ወዘተ ያሉ ባህሪያትን ይለውጡ እና መዳረሻ ይስጡ።</translation>
 <translation id="1881445033931614352">የቁልፍ ሰሌዳ አቀማመጥ</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ንጥል}one{# ንጥሎች}other{# ንጥሎች}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">አሁን ያለው የታይነት ቅንብር አንዳንድ እውቂያዎች ነው</translation>
 <translation id="1884705339276589024">የLinux ዲስክ መጠንን ቀይር</translation>
 <translation id="1885066963699478692">መመሪያዎቹን ለማቀናበር ሥራ ላይ የሚውሉ የXML ፋይሎች።</translation>
@@ -3831,6 +3832,7 @@
 <translation id="3629664892718440872">ይህን ምርጫ አስታውስ</translation>
 <translation id="3630132874740063857">የእርስዎ ስልክ</translation>
 <translation id="3630995161997703415">ይህን ጣቢያ በማንኛውም ጊዜ ለመጠቀም ወደ መደርደሪያዎ ያክሉት</translation>
+<translation id="3633492436029262388">የእርስዎን የይለፍ ቃላት፣ ዕልባቶች እና ሌሎችን በመሣሪያዎችዎ ላይ ለማግኘት በGoogle መለያዎ ውስጥ ያስቀምጧቸው</translation>
 <translation id="3633759325857031264">የHDMI መሣሪያ</translation>
 <translation id="3634652306074934350">የፈቃድ ጥያቄ ጊዜው አልፎበታል</translation>
 <translation id="3635199270495525546">የታመነ መሰረተ ስርዓት ሞዱል (TPM) ተገኝቷል</translation>
@@ -4001,6 +4003,7 @@
 <translation id="3735039640698208086">ኦዲዮ በመጫወት ላይ ሳለ...</translation>
 <translation id="3735740477244556633">ደርድር በ</translation>
 <translation id="3735827758948958091">በሜትር ግንኙነት ላይ እያለ <ph name="FILE_NAMES" />ን መክፈት አይቻልም</translation>
+<translation id="3736575924150462398">ትሮችን ወይም ተጨማሪ ያክሉ</translation>
 <translation id="3737058101969549870">ነባሩ የአሰሳ ውሂብ ከዚህ አዲስ መገለጫ እንደተለየ ይቆይ?</translation>
 <translation id="3738632186060045350">የ<ph name="DEVICE_TYPE" /> ውሂብ በ24 ሰዓታት ውስጥ ይሰረዛል</translation>
 <translation id="3738924763801731196"><ph name="OID" />፦</translation>
@@ -8000,6 +8003,7 @@
 <translation id="6569931898053264308">መካከለኛ ቁጠባዎች</translation>
 <translation id="6570622975915850879">የተለየ መሣሪያ ተጠቀም</translation>
 <translation id="65711204837946324">ለማውረድ ፈቃድ ያስፈልገዋል</translation>
+<translation id="6571178651832779742">ማናቸውንም የተባዙ ዕልባቶች ለማጽዳት በGoogle መለያዎ ውስጥ ያስቀምጧቸው</translation>
 <translation id="6571533309669248172">የጽሑፍ ቅርጸት በመስራት ላይ</translation>
 <translation id="6571772921213691236">የመለያ መግቢያ ውሂብን ያርትዑ</translation>
 <translation id="657229725818377235">ከአደገኛ ድር ጣቢያዎች እና ውርዶች ተጨማሪ ጥብቃን ያግኙ</translation>
@@ -8638,6 +8642,7 @@
 <translation id="7001066449188684145">ወደ <ph name="PRINTER_NAME" /> ለማተም መታወቂያ ያስፈልጋል። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="7001397294201412227">ስልክ፣ ጡባዊ ወይም የደህንነት ቁልፍ ይጠቀሙ</translation>
 <translation id="7001556399332161712">ፍለጋ እና ጥቆማዎች</translation>
+<translation id="7001809623433867903">ዕልባቶች ይጸዱ?</translation>
 <translation id="7003339318920871147">የድር ውሂብ ጎታዎች</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ፋይል}one{{COUNT} ፋይሎች}other{{COUNT} ፋይሎች}}</translation>
 <translation id="7003644704445046755">ከፍተኛ ጥራት ያላቸው የ<ph name="LANGUAGE" /> የድምጽ ፋይሎች ወርደዋል</translation>
@@ -9118,6 +9123,7 @@
 <translation id="7356908624372060336">የአውታረ መረብ ምዝግብ ማስታወሻዎች</translation>
 <translation id="7357271391997763660">የይለፍ ቃል ፍተሻ ይሂድ?</translation>
 <translation id="735745346212279324">የቪ ፒ ኤን ግንኙነት ተቋርጧል</translation>
+<translation id="7359326150089800742">ወደ ፍለጋዎ ትር ወይም ፋይል ያክሉ እና መሣሪያም ይጠቀሙ</translation>
 <translation id="7359680654975233185">ትርን cast ማድረግ አልተቻለም</translation>
 <translation id="7360257054721917104">የተቀመጡ ዴስኮችን እና ቅንብር ደንቦችን በመመልከት ላይ። ለማሰስ ትርን ይጫኑ።</translation>
 <translation id="7360333718677093875">ስሜት ገላጭ ምስል መራጭ</translation>
@@ -9924,6 +9930,7 @@
 <translation id="7903984238293908205">ካታካና</translation>
 <translation id="7904526211178107182">በአውታረ መረብዎ ላይ የLinux ወደቦች ለሌሎች መሣሪያዎች የሚገኙ ያድርጓቸው።</translation>
 <translation id="7906440585529721295">አካባቢያዊ ውሂብ የሚሰረዝ ይሆናል</translation>
+<translation id="7907312522152480478">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት፣ እርስዎ መሆንዎን ያረጋግጡ እና የእርስዎን ታሪክ እና ትሮች ያስምሩ። ቅንብሮች ውስጥ በማንኛውም ጊዜ ማስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="7907502219904644296">መዳረሻ ለውጥ</translation>
 <translation id="7907837847548254634">ትኩረት በተደረገበት ነገር ላይ ፈጣን አጭር ማሳያን አሳይ</translation>
 <translation id="7908378463497120834">ይቅርታ፣ ቢያንስ አንድ በውጫዊ ማከማቻዎ ላይ ያለ ክፍልፍል ሊፈናጠጥ አልቻለም።</translation>
@@ -10565,6 +10572,7 @@ nil</translation>
 <translation id="8323167517179506834">ዩአርኤል ይተይቡ</translation>
 <translation id="8323317289166663449">በኮምፒተርዎ እና በሁሉም ድር ጣቢያዎች ላይ ሁሉንም ውሂብዎን ያንብቡ እና ይቀይሩ</translation>
 <translation id="8323518750352551353">የተለየ አሰሳ?</translation>
+<translation id="8323744572398547859">የእርስዎን ትሮች ከሌሎች መሣሪያዎችዎ ለማግኘት ይግቡ እና ታሪክን ያስምሩ። እንዲሁም የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ያገኛሉ። ቅንብሮች ውስጥ በማንኛውም ጊዜ ማስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="8324158725704657629">ዳግም አትጠይቅ</translation>
 <translation id="8325413836429495820">ቅንጥብ ሰሌዳዎን ለማየት አልተፈቀደም</translation>
 <translation id="8326478304147373412">PKCS #7፣ የሰርቲፊኬት ሰንሰለት</translation>

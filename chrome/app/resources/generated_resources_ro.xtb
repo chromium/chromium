@@ -1308,6 +1308,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1880618477732738742">Modifică și acordă acces la funcții cum ar fi localizarea geografică, microfonul, camera, cookie-urile etc. pentru toate site-urile și extensiile tale, inclusiv această extensie.</translation>
 <translation id="1881445033931614352">Structura tastaturii</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}few{# elemente}other{# de elemente}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Setarea actuală de vizibilitate este pentru anumite persoane de contact</translation>
 <translation id="1884705339276589024">Redimensionează discul Linux</translation>
 <translation id="1885066963699478692">Fișierele XML folosite pentru a seta politicile.</translation>
@@ -3822,6 +3823,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3629664892718440872">Reține această alegere</translation>
 <translation id="3630132874740063857">Telefonul</translation>
 <translation id="3630995161997703415">Adaugă acest site pe raft pentru a-l folosi oricând</translation>
+<translation id="3633492436029262388">Pentru a accesa parolele, marcajele și alte date pe toate dispozitivele, salvează-le în Contul Google</translation>
 <translation id="3633759325857031264">Dispozitiv HDMI</translation>
 <translation id="3634652306074934350">Solicitarea permisiunii a expirat</translation>
 <translation id="3635199270495525546">S-a detectat un Trusted Platform Module (TPM)</translation>
@@ -3992,6 +3994,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3735039640698208086">Când se redă conținut audio...</translation>
 <translation id="3735740477244556633">Sortează după</translation>
 <translation id="3735827758948958091">Nu poți deschide <ph name="FILE_NAMES" /> atât timp cât folosești o conexiune contorizată</translation>
+<translation id="3736575924150462398">Adaugă file sau altele</translation>
 <translation id="3737058101969549870">Păstrezi datele de navigare existente separat de acest profil nou?</translation>
 <translation id="3738632186060045350">Datele de pe <ph name="DEVICE_TYPE" /> vor fi șterse în termen de 24 de ore</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7991,6 +7994,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6569931898053264308">Economii medii de memorie</translation>
 <translation id="6570622975915850879">Folosește alt dispozitiv</translation>
 <translation id="65711204837946324">Necesită permisiunea pentru descărcare</translation>
+<translation id="6571178651832779742">Pentru a elimina marcajele dublură, salvează-le în Contul Google</translation>
 <translation id="6571533309669248172">Formatarea textului</translation>
 <translation id="6571772921213691236">Editează datele de conectare</translation>
 <translation id="657229725818377235">Beneficiază de mai multă protecție împotriva site-urilor și a descărcărilor periculoase</translation>
@@ -8629,6 +8633,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7001066449188684145">Pentru a printa la <ph name="PRINTER_NAME" /> este necesară identificarea. Contactează administratorul.</translation>
 <translation id="7001397294201412227">Folosește un telefon, o tabletă sau o cheie de securitate</translation>
 <translation id="7001556399332161712">Căutare și sugestii</translation>
+<translation id="7001809623433867903">Cureți marcajele?</translation>
 <translation id="7003339318920871147">Baze de date web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fișier}few{{COUNT} fișiere}other{{COUNT} de fișiere}}</translation>
 <translation id="7003644704445046755">S-au descărcat fișierele vocale de calitate înaltă în <ph name="LANGUAGE" /></translation>
@@ -9109,6 +9114,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7356908624372060336">Jurnale de rețea</translation>
 <translation id="7357271391997763660">Rulezi verificarea parolelor?</translation>
 <translation id="735745346212279324">Rețea VPN deconectată</translation>
+<translation id="7359326150089800742">Adaugă o filă sau un fișier la căutare și folosește și un instrument</translation>
 <translation id="7359680654975233185">Nu se poate proiecta fila</translation>
 <translation id="7360257054721917104">Se afișează desktopurile și șabloanele salvate. Apasă tasta Tab pentru a naviga.</translation>
 <translation id="7360333718677093875">selector de emoji</translation>
@@ -9915,6 +9921,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Fă porturile Linux disponibile pentru alte dispozitive din rețea.</translation>
 <translation id="7906440585529721295">Datele locale se vor șterge</translation>
+<translation id="7907312522152480478">Pentru a accesa filele de pe celelalte dispozitive, confirmă-ți identitatea și sincronizează istoricul și filele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="7907502219904644296">Modifică accesul</translation>
 <translation id="7907837847548254634">Afișează o evidențiere rapidă a obiectului selectat</translation>
 <translation id="7908378463497120834">Ne pare rău, cel puțin o partiție de pe dispozitivul de stocare externă nu a putut fi montată.</translation>
@@ -10551,6 +10558,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8323167517179506834">Introduceți adresa URL</translation>
 <translation id="8323317289166663449">să citească și să modifice toate datele de pe computer și de pe toate site-urile</translation>
 <translation id="8323518750352551353">Navigare separată?</translation>
+<translation id="8323744572398547859">Pentru a accesa filele de pe alte dispozitive, conectează-te și sincronizează istoricul. În plus, vei putea accesa parolele și multe altele pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="8324158725704657629">Nu mai întreba</translation>
 <translation id="8325413836429495820">Nu au permisiunea de a vedea clipboardul</translation>
 <translation id="8326478304147373412">PKCS #7, lanț de certificate</translation>

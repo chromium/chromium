@@ -3835,6 +3835,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3629664892718440872">Választás megjegyzése</translation>
 <translation id="3630132874740063857">Telefon</translation>
 <translation id="3630995161997703415">Adja hozzá ezt a webhelyet a polchoz, hogy bármikor használhassa</translation>
+<translation id="3633492436029262388">Ha az összes eszközén szeretne hozzáférni jelszavaihoz, könyvjelzőihez és egyebekhez, mentse őket a Google-fiókjába.</translation>
 <translation id="3633759325857031264">HDMI-eszköz</translation>
 <translation id="3634652306074934350">Az engedélykérés lejárt</translation>
 <translation id="3635199270495525546">A rendszer platformmegbízhatósági modult (TPM) észlelt</translation>
@@ -8007,6 +8008,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6569931898053264308">Közepes megtakarítás</translation>
 <translation id="6570622975915850879">Másik eszköz használata</translation>
 <translation id="65711204837946324">Jogosultság szükséges a letöltéshez</translation>
+<translation id="6571178651832779742">Ha szeretne rendet rakni az ismétlődő könyvjelzők között, mentse őket a Google-fiókjába.</translation>
 <translation id="6571533309669248172">Szövegformázás</translation>
 <translation id="6571772921213691236">Bejelentkezési adatok szerkesztése</translation>
 <translation id="657229725818377235">Hatékonyabb védelmet kaphat a veszélyes webhelyekkel és letöltésekkel szemben</translation>
@@ -8643,6 +8645,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7001066449188684145">Azonosítás szükséges a(z) <ph name="PRINTER_NAME" /> nyomtatón való nyomtatáshoz. Forduljon a rendszergazdához.</translation>
 <translation id="7001397294201412227">Telefon, táblagép vagy biztonsági kulcs használata</translation>
 <translation id="7001556399332161712">Keresés és javaslatok</translation>
+<translation id="7001809623433867903">Szeretne rendet rakni a könyvjelzők között?</translation>
 <translation id="7003339318920871147">Internetes adatbázisok</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fájl}other{{COUNT} fájl}}</translation>
 <translation id="7003644704445046755">Jó minőségű <ph name="LANGUAGE" /> nyelvű hangfájlok letöltve</translation>

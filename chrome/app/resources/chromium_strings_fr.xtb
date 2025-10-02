@@ -235,6 +235,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="379589255253486813">Chromium vous avertira si quelque chose doit être examiné</translation>
 <translation id="3802055581630249637">Chromium précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="3810973564298564668">Gérer</translation>
+<translation id="3846683726093018685">**Résume :** En une seule phrase de moins de 30 mots, décris le sujet principal et l'objectif du contenu de la capture d'écran.
+
+          **Suggère des questions** : génère une liste à puces de trois à cinq questions qui poussent à la réflexion et qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant spécifiquement sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="3885770153807205175">Outil de sélection de langue</translation>
 <translation id="388648406173476553">Personnalisez et contrôlez Chromium. Une action de votre part est requise. Cliquez pour en savoir plus.</translation>
@@ -501,6 +504,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation interrompue.</translation>
 <translation id="7045244423563602563">Personnalisez Chromium</translation>
+<translation id="7047386856539490735">Ces résultats sont-ils utiles ?</translation>
 <translation id="705851970750939768">Mettre à jour Chromium</translation>
 <translation id="7067091210845072982">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="7141270731789036260">Personnaliser Chrome for Testing</translation>

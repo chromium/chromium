@@ -1289,6 +1289,7 @@
 <translation id="3137507986424712703">{COUNT,plural, =0{कुनै पनि होइन}=1{१ खाताको साइन इनसम्बन्धी डेटा}other{# खाताहरूको साइन इनसम्बन्धी डेटा}}</translation>
 <translation id="3140646734028448730">व्यावसायिक सेवाहरू</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
+<translation id="3141337053413339205">यो ट्याब प्रयोग गर्नुहोस्</translation>
 <translation id="3141641372357166056">सहमति जनाउने कि नजनाउने भनेर निर्णय गरिएको छैन</translation>
 <translation id="3144458715650412431">परीक्षणसम्बन्धी नीतिहरू लागू गरिएका छन्। chrome://policy/test मा गई ती नीतिहरूको समीक्षा गरी रिसेट गर्नुहोस्। एड्मिनसम्बन्धी नीतिहरू लागू गरिने छैनन्।</translation>
 <translation id="3145945101586104090">प्रतिक्रिया डिकोड गर्न असफल भयो</translation>
@@ -3431,6 +3432,7 @@
 <translation id="6671697161687535275">Chromium बाट फारम सुझाव हटाउने हो?</translation>
 <translation id="6675846980676550611">AR प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="6677351035258626477">फास्ट फुड</translation>
+<translation id="6677738644213083042">यो ट्याब प्रयोग गर्नुहोस्</translation>
 <translation id="6679354743514146922">Chrome ब्राउजरले <ph name="APP_NAME" /> मा तपाईंको पासवर्ड हाल्न खोज्दै छ।</translation>
 <translation id="6681790815630918386">CVC सेभ गरिएको छ</translation>
 <translation id="6683022854667115063">हेडफोन</translation>

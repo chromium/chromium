@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Sending to <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Also clear data from these sites &amp; apps?</translation>
 <translation id="1034259925032978114">Window is open</translation>
+<translation id="1035113036584565771">Tips notifications promo closed</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1045899828449635435">Also clear data from these sites?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Some of your passwords aren't accessible</translation>
 <translation id="1058669287135776095">You’re offline. Check your Internet connection and try again.</translation>
+<translation id="1066338698580889414">Tips notifications promo opened at full height</translation>
 <translation id="1070689840697074178">You can download PDFs here</translation>
 <translation id="107147699690128016">If you change the file extension, the file may open in a different application and potentially be a hazard to your device.</translation>
 <translation id="1087799850623149508">You can touch and hold to move the address bar to the bottom</translation>
@@ -151,6 +153,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1696555181932908973">You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Change your Dark theme settings?</translation>
 <translation id="1702907158640575240">Managed browser</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, pinned Incognito tab</translation>
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1726477445370128854">You can browse and search faster when Chrome preloads pages that it thinks you might visit</translation>
 <translation id="1728803206919861584">Save passkey outside Incognito?</translation>
@@ -439,6 +442,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3027950907978057636">From <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">No preloading</translation>
 <translation id="3029704984691124060">Passphrases do not match</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, pinned selected tab</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
@@ -626,6 +630,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="397583555483684758">Sync has stopped working</translation>
 <translation id="3976396876660209797">Remove and recreate this shortcut</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, pinned tab</translation>
 <translation id="3985022125189960801">Add a site back if you want it in the pool of sites that can guess what you like</translation>
 <translation id="3985215325736559418">Do you want to download <ph name="FILE_NAME" /> again?</translation>
 <translation id="3987993985790029246">Copy link</translation>
@@ -1413,6 +1418,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7375125077091615385">Type:</translation>
 <translation id="7376560087009844242">By including more of a page’s text, you might see better results when using Touch to Search. You can always visit <ph name="BEGIN_LINK" />settings<ph name="END_LINK" /> to change this.</translation>
 <translation id="7379900596734708416">Dark theme for sites is available</translation>
+<translation id="7384486627147155832">Tips notifications promo opened at half height</translation>
 <translation id="7388615499319468910">Sites and advertisers can understand how ads perform. This setting is off.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Other 1 file in list}other{Other # files in list}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8090732854597034573">If you need help, ask your parent</translation>
 <translation id="8101414242770404289">No tabs from the <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Incognito Tab</translation>
+<translation id="810433609302852">Tips notifications feature promo and usage steps bottom sheet</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Close sort options</translation>
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>
@@ -1825,6 +1832,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9189607089796819144">Do you want to download '<ph name="FILE_NAME" />' (<ph name="FILE_SIZE" />) anyway?</translation>
 <translation id="9190276265094487094">You’ll have your history on all your synced devices so that you can continue what you were doing</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, pinned selected Incognito tab</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>
 <translation id="9205933215779845960">Can’t find that page. Check your spelling or try a search on <ph name="SEARCH_ENGINE" />.</translation>

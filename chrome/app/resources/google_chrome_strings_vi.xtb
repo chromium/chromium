@@ -251,6 +251,9 @@
 <translation id="3810973564298564668">Quản lý</translation>
 <translation id="383928141529488001">Google Chrome cần có quyền truy cập Bluetooth để tìm 
  các thiết bị Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Tóm tắt:** Hãy mô tả chủ đề và mục đích chính của nội dung trong ảnh chụp màn hình này bằng một câu dưới 30 từ.
+
+          **Đề xuất câu hỏi:** Tạo một danh sách có dấu đầu dòng gồm 3 đến 5 câu hỏi gợi mở mà người dùng có thể đặt ra để hiểu rõ hơn về ảnh chụp màn hình này. Danh sách này phải có ít nhất một câu hỏi cụ thể về một đối tượng trực quan trong ảnh và thiết kế hoặc vị trí của đối tượng đó.</translation>
 <translation id="386202838227397562">Vui lòng đóng tất cả cửa sổ của Google Chrome và thử lại.</translation>
 <translation id="3873044882194371212">Mở đường liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
 <translation id="3885770153807205175">Bộ chọn ngôn ngữ</translation>
@@ -512,6 +515,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6885412569789873916">Ứng dụng Chrome Beta</translation>
 <translation id="6893363893008038481">Loại bỏ tài khoản khỏi Chrome</translation>
 <translation id="6896758677409633944">Sao chép</translation>
+<translation id="6927941417289800361">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chrome. Bạn có thể thay đổi tuỳ chọn này bất cứ lúc nào trong phần cài đặt.</translation>
 <translation id="6930294499209825">Dịch vụ này giúp cập nhật phần mềm Google của bạn. Nếu dịch vụ này bị vô hiệu hoá hoặc bị dừng, phần mềm Google của bạn sẽ không được cập nhật. Điều này nghĩa là lỗ hổng bảo mật phát sinh sẽ không thể khắc phục được và các tính năng có thể không hoạt động. Dịch vụ này sẽ tự gỡ cài đặt khi không được phần mềm Google nào dùng.</translation>
 <translation id="6933858244219479645">Hệ thống ChromeOS</translation>
 <translation id="6938166777909186039">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 8.1.</translation>
@@ -524,6 +528,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7024536598735240744">Lỗi khi giải nén: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Đã dừng cài đặt.</translation>
 <translation id="7025800014283535195">Bạn có thể chuyển đổi giữa các hồ sơ trên Chrome tại đây</translation>
+<translation id="7047386856539490735">Những kết quả này có hữu ích không?</translation>
 <translation id="7051685429025310665">Gần đây bạn không truy cập trang web này. Chrome đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Biến Chrome thành trình duyệt của riêng bạn</translation>
 <translation id="7060643578009939353">Sử dụng Google Ống kính để tìm kiếm video này</translation>

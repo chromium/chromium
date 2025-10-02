@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Piilota "Hinnanalennukset avoimilla välilehdillä" ‑kortti</translation>
 <translation id="1508931164824684991">Sivustot voivat käyttää JavaScriptiä</translation>
 <translation id="1510341833810331442">Sivustot eivät saa tallentaa dataa laitteellesi</translation>
+<translation id="1532175480576580256">Omat pikakuvakkeet ‑alapaneeli avattu kokonaan</translation>
 <translation id="1538031354170655462">Sivustot käyttävät yleensä Near Field Communication (NFC) -teknologiaa toimiakseen lähellä olevien tagien tai laitteiden kanssa, esimerkiksi tunnusten skannaamiseen tai lähimaksamiseen</translation>
 <translation id="1547123415014299762">Kolmannen osapuolen evästeet on sallittu</translation>
 <translation id="1569054338208717605">Nopeuta sivustoja Chromen V8-moottorilla, mutta heikennä Chromen suojaa hyökkäyksiä vastaan</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">Useimmat avaamasi sivustot tallentavat todennäköisesti dataa laitteellesi. Tarkoituksena on yleensä parantaa kokemustasi tallentamalla sivustolle jakamiasi asetuksia tai tietoja. Suosittelemme pitämään asetuksen päällä.</translation>
 <translation id="2289270750774289114">Kysy aina, kun sivusto pyytää lupaa löytää lähellä olevat Bluetooth-laitteet (suositus)</translation>
 <translation id="2315043854645842844">Käyttöjärjestelmä ei tue palvelimen varmennevalintaa.</translation>
+<translation id="2347601491101454548">Omat pikakuvakkeet ‑alapaneeli avattu puoliksi</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2379925928934107488">Jos mahdollista, käytä tummaa teemaa sivustoilla, kun se on Chromen käytössä</translation>
 <translation id="2390272837142897736">Lisää zoomausta</translation>

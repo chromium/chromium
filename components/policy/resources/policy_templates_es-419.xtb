@@ -1908,7 +1908,7 @@ Si no estableces esta política o la inhabilitas, no se permitirá la transferen
       Esta política solo afecta el acceso a dispositivos USB a través de la API de Web Serial. Para otorgar el acceso a dispositivos USB a través de la API de WebUSB, consulta la política <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2246450159673309951">Si estableces la política <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" />, se detendrá la carga de las páginas web que tengan URLs prohibidas en el modo Incógnito. Los administradores pueden especificar la lista de patrones de URL que se bloquearán. Si no la estableces, no se bloqueará ninguna URL en el modo Incógnito. Se pueden definir hasta 1,000 excepciones en <ph name="INCOGNITO_MODE_ALLOWLIST_POLICY_NAME" />. Consulta cómo darle formato a un patrón de URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
-Esta política solo afecta el modo Incógnito. Para bloquear las URL en todos los perfiles de usuario, usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
+Esta política solo afecta el modo Incógnito. Para bloquear las URLs en todos los perfiles de usuario, usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="2246565294817797392">Bloquear cookies truncadas</translation>
 <translation id="2246621891161157804">Permitir que Chrome bloquee la navegación a protocolos externos dentro de iframes de la zona de pruebas</translation>
 <translation id="224750967938323855">No mostrar el consentimiento de sincronización durante el acceso</translation>

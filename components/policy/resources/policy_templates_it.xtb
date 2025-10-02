@@ -635,6 +635,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): questo valore è obsoleto a partire dalla versione M121. A partire dalla versione M121, i valori verranno trattati come EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Disattiva controllo ortografico</translation>
+<translation id="1434936032334586168">Attiva stampa silenziosa</translation>
 <translation id="1435031247649241006">Nella schermata di blocco gli utenti hanno la possibilità di aprire una finestra di
 riautenticazione online e utilizzarla per il processo di autenticazione per rientrare nella sessione. Questa
 policy può essere utilizzata per aprire automaticamente la finestra se
@@ -1965,6 +1966,7 @@ Se la policy non viene configurata, gli utenti possono modificare l'elenco di ap
 <translation id="2306505001667207184">Richiedi all'utente di selezionare il certificato client quando la policy di selezione automatica corrisponde a più certificati.</translation>
 <translation id="230713790688681130">Attiva il layout Hindi Inscript</translation>
 <translation id="2307496301287881990">Segnala stati del display e della grafica</translation>
+<translation id="2308899582897965249">Disattiva stampa silenziosa</translation>
 <translation id="2309284543927494965">Blocca aggiornamenti</translation>
 <translation id="2309341709647905294">Non segnalare informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
@@ -2147,6 +2149,14 @@ Se questa policy non viene impostata, la Schermata sulla privacy verrà inizialm
 <translation id="2439733504887695659">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse per le credenziali inserite</translation>
 <translation id="2446029789419870019">Consenti l'utilizzo della funzionalità e il miglioramento dei modelli di AI</translation>
 <translation id="2446244536806499267">Non considerare l'utente inattivo durante la riproduzione di audio</translation>
+<translation id="2450392422484526374">L'impostazione di questa policy su true attiva la stampa silenziosa, che chiude immediatamente
+la finestra di anteprima di stampa, se aperta, e invia la stampa alla stampante predefinita con
+le opzioni predefinite. Se l'impostazione predefinita della stampante è "Salva come PDF", il file verrà
+salvato nella cartella Download.
+
+La mancata configurazione della policy o l'impostazione della policy su false disattiva la stampa silenziosa;
+la finestra di anteprima di stampa non si chiude automaticamente e
+l'utente deve effettuare una selezione come di consueto.</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>

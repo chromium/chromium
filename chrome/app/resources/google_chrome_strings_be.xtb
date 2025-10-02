@@ -252,6 +252,9 @@
 <translation id="3809772425479558446">Для браўзера Google Chrome патрабуецца Windows 10 або навейшая версія.</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="383928141529488001">Браўзеру Google Chrome неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Падсумуй.** Апішы асноўную тэму і мэту змесціва на здымку экрана адным сказам, які змяшчае да 30 слоў.
+
+          **Прапануй пытанні.** Ствары маркіраваны спіс з 3-5 стымулюючых пытанняў, якія можа задаць карыстальнік, каб лепш зразумець гэты здымак экрана. Як мінімум адно з гэтых пытанняў павінна тычыцца візуальнага аб’екта, яго афармлення або размяшчэння.</translation>
 <translation id="386202838227397562">Закрыйце ўсе вокны Google Chrome і паўтарыце спробу.</translation>
 <translation id="3873044882194371212">Адкрыць спасылку ў акне &amp;інкогніта Chrome</translation>
 <translation id="3885770153807205175">Інструмент выбару мовы</translation>
@@ -527,6 +530,7 @@
 <translation id="7024536598735240744">Памылка распакоўкі: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Усталяванне спынена.</translation>
 <translation id="7025800014283535195">Пераключацца паміж профілямі Chrome можна тут</translation>
+<translation id="7047386856539490735">Ці карысныя гэтыя вынікі?</translation>
 <translation id="7051685429025310665">Вы даўно не наведвалі сайт. Браўзер Chrome адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Дастасуйце Chrome да сваіх мэт</translation>
 <translation id="7060643578009939353">Шукаць гэта відэа з дапамогай Google Аб’ектыва</translation>

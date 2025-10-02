@@ -3822,6 +3822,7 @@
 <translation id="3629664892718440872">આ પસંદ યાદ રાખો</translation>
 <translation id="3630132874740063857">તમારો ફોન</translation>
 <translation id="3630995161997703415">આ સાઇટને ગમે ત્યારે ઉપયોગમાં લેવા માટે તેને તમારા શેલ્ફમાં ઉમેરો</translation>
+<translation id="3633492436029262388">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજુ ઘણું મેળવવા માટે, તેમને તમારા Google એકાઉન્ટમાં સાચવો</translation>
 <translation id="3633759325857031264">HDMI ડિવાઇસ</translation>
 <translation id="3634652306074934350">પરવાનગીની વિનંતીનો સમય સમાપ્ત થયો</translation>
 <translation id="3635199270495525546">વિશ્વસનીય પ્લૅટફૉર્મ મૉડ્યૂલ (TPM)ની ભાળ મળી</translation>
@@ -7996,6 +7997,7 @@ USB ડિવાઇસ</translation>
 <translation id="6569931898053264308">મધ્યમ પ્રમાણમાં મેમરી બચત</translation>
 <translation id="6570622975915850879">કોઈ અલગ ડિવાઇસનો ઉપયોગ કરો</translation>
 <translation id="65711204837946324">ડાઉનલોડ કરવા માટે પરવાનગીની જરૂર છે</translation>
+<translation id="6571178651832779742">કોઈપણ ડુપ્લિકેટ બુકમાર્ક ક્લિન અપ કરવા માટે, તેમને તમારા Google એકાઉન્ટમાં સાચવો</translation>
 <translation id="6571533309669248172">ટેક્સ્ટ ફૉર્મેટિંગ</translation>
 <translation id="6571772921213691236">સાઇન-ઇન ડેટામાં ફેરફાર કરો</translation>
 <translation id="657229725818377235">જોખમી વેબસાઇટ અને ડાઉનલોડ સામે વધુ સંરક્ષણ મેળવો</translation>
@@ -8634,6 +8636,7 @@ USB ડિવાઇસ</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવા માટે લૉગ ઇન વિગત વડે ઓળખ કરવી જરૂરી છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="7001397294201412227">કોઈ ફોન, ટૅબ્લેટ કે સિક્યુરિટી કીનો ઉપયોગ કરો</translation>
 <translation id="7001556399332161712">શોધ અને સૂચનો</translation>
+<translation id="7001809623433867903">બુકમાર્ક ક્લિન અપ કરીએ?</translation>
 <translation id="7003339318920871147">વેબ ડેટાબેસેસ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ફાઇલ}one{{COUNT} ફાઇલ}other{{COUNT} ફાઇલ}}</translation>
 <translation id="7003644704445046755">ઉચ્ચ ક્વૉલિટીની <ph name="LANGUAGE" /> વૉઇસ ફાઇલો ડાઉનલોડ થઈ</translation>

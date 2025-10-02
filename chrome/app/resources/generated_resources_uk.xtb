@@ -3839,6 +3839,7 @@
 <translation id="3629664892718440872">Запам’ятати цей вибір</translation>
 <translation id="3630132874740063857">Ваш номер телефону</translation>
 <translation id="3630995161997703415">Додайте цей сайт на полицю, щоб завжди мати його під рукою</translation>
+<translation id="3633492436029262388">Щоб мати доступ до паролів, закладок і інших даних на всіх пристроях, збережіть їх у своєму обліковому записі Google</translation>
 <translation id="3633759325857031264">Пристрій HDMI</translation>
 <translation id="3634652306074934350">Термін дії запиту на дозвіл закінчився</translation>
 <translation id="3635199270495525546">Виявлено модуль Trusted Platform Module (TPM)</translation>
@@ -8006,6 +8007,7 @@
 <translation id="6569931898053264308">Помірне заощадження</translation>
 <translation id="6570622975915850879">Використовувати інший пристрій</translation>
 <translation id="65711204837946324">Потрібен дозвіл, щоб завантажити</translation>
+<translation id="6571178651832779742">Щоб видалити повторювані закладки, збережіть їх у своєму обліковому записі Google</translation>
 <translation id="6571533309669248172">Форматування тексту</translation>
 <translation id="6571772921213691236">Змінити дані для входу</translation>
 <translation id="657229725818377235">Посильте захист від небезпечних веб-сайтів і завантажень</translation>
@@ -8648,6 +8650,7 @@
 <translation id="7001066449188684145">Щоб друкувати через принтер "<ph name="PRINTER_NAME" />", потрібно надати облікові дані. Зв’яжіться з адміністратором.</translation>
 <translation id="7001397294201412227">Використати телефон, планшет або ключ безпеки</translation>
 <translation id="7001556399332161712">Пошук і пропозиції</translation>
+<translation id="7001809623433867903">Видалити закладки?</translation>
 <translation id="7003339318920871147">Онлайнові бази даних</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файли}many{{COUNT} файлів}other{{COUNT} файлу}}</translation>
 <translation id="7003644704445046755">Завантажено голосові файли високої якості такою мовою: <ph name="LANGUAGE" /></translation>

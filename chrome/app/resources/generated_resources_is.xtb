@@ -1318,6 +1318,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1880618477732738742">Breytt og veitt aðgang að eiginleikum á borð við staðsetningarmerkingu, hljóðnema, myndavél, fótspor o.s.frv. fyrir öll vefsvæði þín og viðbætur, þ.m.t. þessa viðbót.</translation>
 <translation id="1881445033931614352">Lyklaskipan</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Atriði}one{# atriði}other{# atriði}}</translation>
+<translation id="188177382966899059">Djúpleit</translation>
 <translation id="1884340228047885921">Sýnileiki er stilltur á suma tengiliði</translation>
 <translation id="1884705339276589024">Breyta diskstærð fyrir Linux</translation>
 <translation id="1885066963699478692">XML-skrár sem eru notaðar til að stilla reglurnar.</translation>
@@ -3836,6 +3837,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3629664892718440872">Muna þetta val</translation>
 <translation id="3630132874740063857">Síminn þinn</translation>
 <translation id="3630995161997703415">Bættu þessu vefsvæði við hilluna til að geta opnað það hvenær sem er</translation>
+<translation id="3633492436029262388">Til að fá aðgang að aðgangsorðunum þínum, bókamerkjunum og fleiru í öllum tækjunum þínum skaltu vista þau á Google-reikningnum þínum.</translation>
 <translation id="3633759325857031264">HDMI-tæki</translation>
 <translation id="3634652306074934350">Heimildabeiðni útrunnin</translation>
 <translation id="3635199270495525546">TPM (Trusted Platform Module) greindist</translation>
@@ -4006,6 +4008,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3735039640698208086">Þegar hljóð er spilað...</translation>
 <translation id="3735740477244556633">Raða eftir</translation>
 <translation id="3735827758948958091">Ekki er hægt að opna <ph name="FILE_NAMES" /> með gagnamældri tengingu.</translation>
+<translation id="3736575924150462398">Bæta við flipum eða fleiru</translation>
 <translation id="3737058101969549870">Halda núverandi vefskoðunargögnum aðskildum frá þessum nýja prófíl?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> gögnum verður eytt eftir sólarhring</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -8007,6 +8010,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6569931898053264308">Miðlungs sparnaður</translation>
 <translation id="6570622975915850879">Nota annað tæki</translation>
 <translation id="65711204837946324">Þarf heimild til að sækja</translation>
+<translation id="6571178651832779742">Til að hreinsa tvítekin bókamerki skaltu vista þau á Google-reikningnum þínum</translation>
 <translation id="6571533309669248172">Textasnið</translation>
 <translation id="6571772921213691236">Breyta innskráningargögnum</translation>
 <translation id="657229725818377235">Fáðu aukna vernd gegn hættulegum vefsvæðum og niðurhali</translation>
@@ -8645,6 +8649,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7001066449188684145">Auðkenningar er krafist til að prenta út með <ph name="PRINTER_NAME" />. Hafðu samband við kerfisstjórann.</translation>
 <translation id="7001397294201412227">Nota síma, spjaldtölvu eða öryggislykil</translation>
 <translation id="7001556399332161712">Leit og tillögur</translation>
+<translation id="7001809623433867903">Hreinsa til í bókamerkjum?</translation>
 <translation id="7003339318920871147">Vefgagnagrunnar</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} skrá}one{{COUNT} skrá}other{{COUNT} skrár}}</translation>
 <translation id="7003644704445046755">Hágæðaraddskrár á tungumálinu <ph name="LANGUAGE" /> sóttar</translation>
@@ -9124,6 +9129,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7356908624372060336">Annálar netkerfis</translation>
 <translation id="7357271391997763660">Athuga aðgangsorð?</translation>
 <translation id="735745346212279324">VPN ótengt</translation>
+<translation id="7359326150089800742">Bæta flipa eða skrá við leitina þína, og nota einnig sem verkfæri</translation>
 <translation id="7359680654975233185">Ekki er hægt að varpa flipa</translation>
 <translation id="7360257054721917104">Skoðar vistuð skrifborð og sniðmát. Ýttu á dálkalykilinn (Tab) til að fletta.</translation>
 <translation id="7360333718677093875">emoji-val</translation>
@@ -9930,6 +9936,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Gerðu Linux-gáttir tiltækar fyrir önnur tæki í netkerfinu þínu.</translation>
 <translation id="7906440585529721295">Staðbundnum gögnum verður eytt</translation>
+<translation id="7907312522152480478">Til að sækja flipana þína úr öðrum tækjum skaltu staðfesta að þetta sért þú og samstilla feril þinn og flipa. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="7907502219904644296">Breyta aðgangi</translation>
 <translation id="7907837847548254634">Auðkenna hlut í fókus í stutta stund</translation>
 <translation id="7908378463497120834">Því miður tókst ekki að setja upp að minnsta kosti eina disksneið á ytra geymslutækinu.</translation>
@@ -10565,6 +10572,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8323167517179506834">Sláðu inn vefslóð</translation>
 <translation id="8323317289166663449">Lesa og breyta öllum gögnum í tölvunni þinni og á öllum vefsvæðum</translation>
 <translation id="8323518750352551353">Aðgreind skoðun?</translation>
+<translation id="8323744572398547859">Til að sækja flipana þína úr öðrum tækjum skaltu skrá þig inn og samstilla feril. Þú færð einnig aðgangsorðin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="8324158725704657629">Ekki spyrja aftur</translation>
 <translation id="8325413836429495820">Mega ekki sjá klippiborðið</translation>
 <translation id="8326478304147373412">PKCS #7, vottorðakeðja</translation>

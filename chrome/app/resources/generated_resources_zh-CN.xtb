@@ -392,6 +392,7 @@
 <translation id="125097549534200450">清除</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">正在搜寻移动数据网络…</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{有 1 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {BOOKMARK_COUNT} 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="125220115284141797">默认</translation>
 <translation id="1252219782845132919">隐藏组</translation>
 <translation id="1252987234827889034">发生个人资料错误</translation>
@@ -3245,6 +3246,7 @@
 <translation id="3239373508713281971">“<ph name="APP_NAME" />”的使用时限已被移除</translation>
 <translation id="3240299564104448052">您似乎处于离线状态。</translation>
 <translation id="3240426699337459095">已复制链接</translation>
+<translation id="3240718227457961717">如需查看您在其他设备上打开的标签页，请将历史记录和标签页同步到 <ph name="ACCOUNT_EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="3241638166094654466">每行中的单元格数：</translation>
 <translation id="3241680850019875542">选择要打包的扩展程序的根目录。要更新某个扩展程序，还需选择要再次使用的私有密钥文件。</translation>
 <translation id="3241810535741601486">此更改是永久性的，无法撤消。延长更新适用于此设备的所有用户。<ph name="LINK_START" />了解详情<ph name="LINK_END" /></translation>
@@ -3411,7 +3413,7 @@
 <translation id="3360306038446926262">窗口</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}other{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3361954577771524115">来自该应用</translation>
-<translation id="3362651095484543782">若要退出或返回到 Gemini，请使用键盘快捷键。</translation>
+<translation id="3362651095484543782">使用键盘快捷键退出或返回 Gemini。</translation>
 <translation id="3362915550009543917">这幅油画以宁静为主题，描绘了一片沐浴在黄色调中的草地，画面洋溢着宁静与沉思的氛围。</translation>
 <translation id="3363202073972776113">这份新个人资料将由贵组织管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+悬停</translation>
@@ -4113,6 +4115,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">添加其他指纹</translation>
 <translation id="3812525830114410218">证书有误</translation>
+<translation id="3813275565773644111">您的组织已关闭在您的 Google 账号中保存历史记录和标签页的功能</translation>
 <translation id="3813296892522778813">如果您找不到要查找的内容，请参阅 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 帮助<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">翻译页面和快速解答时使用的语言</translation>
 <translation id="3813458570141926987">主题列表，这些主题是 Chrome 根据您近期的浏览记录推测的</translation>
@@ -6176,6 +6179,7 @@
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5271578170655641944">撤消 Google 云端硬盘访问权限？</translation>
+<translation id="5272198173084686007">没有从其他设备打开的标签页</translation>
 <translation id="527335345740023523">您目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />和 <ph name="NUMBERED_ITEM_3" />以及其他一些数据。您的组织 (<ph name="ACCOUNT_MANAGER" />) 将能够查看和管理这些数据。</translation>
 <translation id="5273806377963980154">修改网站网址</translation>
 <translation id="5275084684151588738">用户字典</translation>
@@ -6255,6 +6259,7 @@
 <translation id="5327248766486351172">名称</translation>
 <translation id="5327570636534774768">此设备已被标记为受另一网域管理。您需要取消此设备在该网域中的配置，然后才能设置演示模式。</translation>
 <translation id="5327912693242073631">所有需要使用通知的功能都将无法正常运行</translation>
+<translation id="5328551442597731838">查看其他设备上的标签页</translation>
 <translation id="532943162177641444">请点按您的 <ph name="PHONE_NAME" /> 设备上的通知，以设置可供此设备使用的移动热点。</translation>
 <translation id="5329858601952122676">删除(&amp;D)</translation>
 <translation id="5331568967879689647">Chrome 操作系统系统应用</translation>
@@ -7449,6 +7454,7 @@
 <translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
 <translation id="6185132558746749656">设备位置</translation>
 <translation id="6185151644843671709">已保存通行密钥并创建 PIN 码</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{有 1 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {PASSWORD_COUNT} 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="6186177419203903310">此操作将为系统中的所有新 USB 外围设备启用通知功能。确定要继续吗？</translation>
 <translation id="6190953336330058278">Phone Hub 应用</translation>
 <translation id="6192333916571137726">下载文件</translation>
@@ -7583,6 +7589,7 @@
 <translation id="6274089201566806618">正在连接到“<ph name="HOST_DEVICE_NAME" />”</translation>
 <translation id="6274108044476515407">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK1" />网站推荐广告<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告。详细了解如何<ph name="BEGIN_LINK3" />管理广告隐私权<ph name="LINK_END3" />。</translation>
 <translation id="6274202259872570803">抓屏</translation>
+<translation id="627581157848786026">查看其他设备上的标签页</translation>
 <translation id="6276210637549544171">代理 <ph name="PROXY_SERVER" /> 要求提供用户名和密码。</translation>
 <translation id="6277105963844135994">网络超时</translation>
 <translation id="6277518330158259200">屏幕截图(&amp;A)</translation>
@@ -8196,7 +8203,7 @@
 <translation id="6718849325281682232">Chrome 主题颜色已焕然一新，可更好地满足每个用户的需求，无论是处于深色模式还是浅色模式</translation>
 <translation id="671928215901716392">锁定屏幕</translation>
 <translation id="6719839880830057298">文件上传完成</translation>
-<translation id="6721744718589119342">我们可能会向您发送电子邮件，获取更多信息或为您提供最新进展</translation>
+<translation id="6721744718589119342">我们可能会向您发送电子邮件，让您提供更多信息或向您告知最新进展</translation>
 <translation id="6721770155320398589">充电量限制</translation>
 <translation id="6721972322305477112">文件(&amp;F)</translation>
 <translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
@@ -8216,7 +8223,7 @@
 <translation id="6729192290958770680">请输入用户名</translation>
 <translation id="6729280095610283088">森林上空闪耀着明亮的北极光。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
-<translation id="6730744976532805323">与 Gemini 分享当前标签页，即使切换标签页也是如此</translation>
+<translation id="6730744976532805323">与 Gemini 分享当前标签页，即使切换标签页也无妨</translation>
 <translation id="6731320427842222405">这可能需要几分钟时间</translation>
 <translation id="6732956960067639542">请改为打开新的 Chrome 浏览器会话。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID：<ph name="EXTENSION_OR_APP_ID" />）</translation>
@@ -8513,6 +8520,7 @@
 <translation id="6922763095098248079">您的设备由贵单位管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
 <translation id="6924109527536857168">需要同步</translation>
+<translation id="6927200998271693557">如需快速重新访问浏览过的网站，请将历史记录和标签页同步到 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">自动撤消未使用的网站的权限</translation>
 <translation id="6929126689972602640">学校账号不支持家长控制功能。如果您想添加学校账号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人账号登录。您可于需要时再在设置中添加学校账号。</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{有 1 个扩展程序已被拒}other{有 # 个扩展程序已被拒}}</translation>
@@ -9037,7 +9045,7 @@
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">验证您的账号</translation>
 <translation id="7317831949569936035">学校注册</translation>
-<translation id="731827437403763009">AI 创新</translation>
+<translation id="731827437403763009">AI 创新功能</translation>
 <translation id="7319320447721994672">如果您访问的网站使用 Cookie，您可能需要暂时启用 Cookie，才能确保所有的网站功能均正常运行。</translation>
 <translation id="7319983568955948908">停止分享</translation>
 <translation id="7320213904474460808">设置默认网络</translation>
@@ -10202,6 +10210,7 @@
 <translation id="8086610718778464681">无法备份 Linux 应用和文件</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{这个文件已加密。请让它的所有者进行解密。}other{这些文件中的部分文件已加密。请让它们的所有者进行解密。}}</translation>
 <translation id="808894953321890993">更改密码</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {BOOKMARK_COUNT} 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="8090234456044969073">读取您最常访问的网站列表</translation>
 <translation id="8090513782447872344">日后您可随时回来查看</translation>
 <translation id="8090686009202681725">利用 AI 创建主题</translation>
@@ -10335,6 +10344,7 @@
 <translation id="8184288427634747179">改用“<ph name="AVATAR_NAME" />”</translation>
 <translation id="8184318863960255706">更多信息</translation>
 <translation id="8184472985242519288">均匀</translation>
+<translation id="8185614942934189676">邮箱已自动验证</translation>
 <translation id="8186013737729037962">详细了解由企业注册的设备</translation>
 <translation id="8186047833733689201">已打开变音符号菜单。按向左键、向右键或数字键可浏览，按 Enter 键可插入。</translation>
 <translation id="8186609076106987817">服务器找不到该文件。</translation>
@@ -11251,6 +11261,7 @@
 <translation id="8809147117840417135">浅蓝绿色</translation>
 <translation id="8811862054141704416">Crostini 麦克风使用权限</translation>
 <translation id="8811923271770626905">此扩展程序可能会在后台运行</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{有 1 个密码只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {PASSWORD_COUNT} 个密码只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="8813199641941291474">已被禁止对 MIDI 设备进行控制和重新编程</translation>
 <translation id="8813698869395535039">无法登录 <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">请让家长批准安装“<ph name="EXTENSION_NAME" />”</translation>
@@ -11294,6 +11305,7 @@
 <translation id="8838770651474809439">汉堡</translation>
 <translation id="8838841425230629509">从书签栏上取消固定分组</translation>
 <translation id="883924185304953854">按图搜索</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {ITEM_COUNT} 项内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="8841843049738266382">读取和更改已列入许可名单的用户</translation>
 <translation id="8841884135319684422">结束任务</translation>
 <translation id="8842594465773264717">删除此指纹</translation>

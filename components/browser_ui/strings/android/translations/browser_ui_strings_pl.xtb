@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Utrzymuj porządek dzięki grupom kart</translation>
 <translation id="2597457036804169544">Nie stosuj ciemnego motywu witryn</translation>
 <translation id="2606760465469169465">Automatyczna weryfikacja</translation>
+<translation id="2610903128639500624">Zarządzaj w <ph name="BEGIN_LINK1" />ustawieniach Androida<ph name="END_LINK1" />
+
+Zaawansowana ochrona kontroluje te ustawienia Chrome:
+• Opcja „Zawsze używaj bezpiecznych połączeń” jest włączona.
+• Opcja „Optymalizator JavaScriptu” jest wyłączona. <ph name="BEGIN_LINK2" />Zarządzaj wyjątkami dotyczącymi witryny<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Zezwól na użycie JavaScriptu w określonej witrynie.</translation>
 <translation id="2626708220538466178">Plansza dolna przeglądarki domyślnej zamknięta</translation>
 <translation id="2653659639078652383">Prześlij</translation>

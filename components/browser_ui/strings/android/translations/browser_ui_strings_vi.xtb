@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Ẩn thẻ thông báo giảm giá trên thẻ</translation>
 <translation id="1508931164824684991">Các trang web có thể dùng JavaScript</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
+<translation id="1532175480576580256">Bảng các lối tắt của tôi ở dưới cùng đã mở toàn bộ</translation>
 <translation id="1538031354170655462">Các trang web thường sử dụng công nghệ giao tiếp phạm vi gần (NFC) để tương tác với thẻ hoặc thiết bị lân cận, chẳng hạn như quét thẻ hoặc thanh toán không tiếp xúc</translation>
 <translation id="1547123415014299762">Cho phép sử dụng cookie của bên thứ ba</translation>
 <translation id="1569054338208717605">Tăng tốc độ tải trang web bằng công cụ V8 của Chrome nhưng làm giảm khả năng chống lại các cuộc tấn công của Chrome</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">Hầu hết trang web bạn truy cập có thể sẽ lưu dữ liệu vào thiết bị, thường là để cải thiện trải nghiệm của bạn bằng cách lưu các lựa chọn ưu tiên hoặc thông tin mà bạn chia sẻ với trang web. Chúng tôi khuyên bạn luôn bật chế độ cài đặt này.</translation>
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
 <translation id="2315043854645842844">Lựa chọn chứng chỉ phía ứng dụng khách không được hệ điều hành hỗ trợ.</translation>
+<translation id="2347601491101454548">Bảng các lối tắt của tôi ở dưới cùng đã mở trên một nửa màn hình</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2379925928934107488">Áp dụng giao diện tối cho các trang web khi Chrome sử dụng giao diện tối, nếu có thể</translation>
 <translation id="2390272837142897736">Tăng mức thu phóng</translation>
@@ -145,6 +147,10 @@
 <translation id="2588271083332682494">Sắp xếp gọn gàng nhờ các nhóm thẻ</translation>
 <translation id="2597457036804169544">Không áp dụng giao diện tối cho các trang web</translation>
 <translation id="2606760465469169465">Tự động xác minh</translation>
+<translation id="2610903128639500624">Quản lý trong phần <ph name="BEGIN_LINK1" />Cài đặt Android<ph name="END_LINK1" />
+Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt sau của Chrome:
+• Chế độ "Luôn sử dụng kết nối bảo mật" đang bật.
+• "Trình tối ưu hoá JavaScript" đang tắt. <ph name="BEGIN_LINK2" />Quản lý các ngoại lệ của trang web<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
 <translation id="2626708220538466178">Bảng dưới cùng của trình duyệt mặc định đã đóng</translation>
 <translation id="2653659639078652383">Gửi</translation>
@@ -337,6 +343,7 @@
 <translation id="4816495437032298535">Mức thu phóng đã lưu cho các trang web</translation>
 <translation id="4836046166855586901">Hỏi khi một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
 <translation id="483914009762354899">Bao gồm tất cả trang web thuộc miền này</translation>
+<translation id="4852997963351138624">Mã màu hex của màu nền</translation>
 <translation id="4882919381756638075">Các trang web thường sử dụng micrô cho các tính năng giao tiếp như trò chuyện video</translation>
 <translation id="4883854917563148705">Bạn không thể đặt lại các tùy chọn cài đặt được quản lý</translation>
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
@@ -500,6 +507,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Nội dung được bảo vệ</translation>
 <translation id="662080504995468778">Ở lại</translation>
+<translation id="6630443592285535486">Nhập mã màu hex tại đây</translation>
 <translation id="6635327442719709864">Khi bạn bật nút này, các trang web có thể yêu cầu sử dụng cổng nối tiếp. Khi bạn tắt nút này, các trang web không thể sử dụng cổng nối tiếp.</translation>
 <translation id="6678072580827808850">Xem lại kết quả Kiểm tra an toàn</translation>
 <translation id="6682057173375416470">Xem các bài viết được đề xuất trên trang Thẻ mới</translation>
@@ -557,6 +565,7 @@
 <translation id="7399802613464275309">Kiểm tra an toàn</translation>
 <translation id="7406113532070524618">Chế độ cài đặt này có hiệu lực mà không cần xác định danh tính của bạn hay cho phép các trang web xem nhật ký duyệt web của bạn mặc dù các trang web có thể chia sẻ một lượng thông tin nhỏ trong quá trình xác minh</translation>
 <translation id="7409735910987429903">Các trang web có thể hiển thị quảng cáo trong cửa sổ bật lên hoặc sử dụng lệnh chuyển hướng để đưa bạn đến trang web mà bạn có thể không muốn truy cập</translation>
+<translation id="7412160840120117304">Mã màu hex của màu chính</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc bảng nhớ tạm</translation>
 <translation id="7425915948813553151">Giao diện tối cho các trang web</translation>

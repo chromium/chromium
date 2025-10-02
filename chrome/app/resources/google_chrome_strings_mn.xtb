@@ -252,6 +252,9 @@
 <translation id="3810973564298564668">удирдах</translation>
 <translation id="383928141529488001">Google Chrome-д Bluetooth төхөөрөмжүүдийг судлахад 
  Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Хураангуйлах:** 30-аас цөөн үгтэй нэг өгүүлбэрээр дэлгэцийн агшны агуулгын үндсэн сэдэв, зорилгыг тайлбарлана уу.
+
+          **Асуулт санал болгох:** Хэрэглэгч дэлгэцийн агшныг илүү сайн ойлгохын тулд асууж болох 3-5 бодлогошруулах асуултын жагсаалтын тэмдэгтэй жагсаалт (bulleted list) үүсгэнэ үү. Эдгээр асуултын дор хаяж нэг нь визуал объект, үүний дизайн, байршлын талаарх тодорхой асуулт байх ёстой.</translation>
 <translation id="386202838227397562">Бүх Google Chrome-ын цонхнуудыг хааж дахин оролдоно уу.</translation>
 <translation id="3873044882194371212">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>
 <translation id="3885770153807205175">Хэл сонгогч</translation>
@@ -527,6 +530,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7024536598735240744">Задлахад алдаа гарлаа: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Суулгахыг зогсоосон.</translation>
 <translation id="7025800014283535195">Та энд Chrome-н профайлууд хооронд сэлгэх боломжтой</translation>
+<translation id="7047386856539490735">Эдгээр илэрц хэрэг болж байна уу?</translation>
 <translation id="7051685429025310665">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
 <translation id="7059914902409643750">Chrome-г өөрийн болгоорой</translation>
 <translation id="7060643578009939353">Google Lens-р энэ видеоноос хай</translation>

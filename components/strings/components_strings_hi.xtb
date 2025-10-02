@@ -1254,6 +1254,7 @@
 <translation id="3087734570205094154">नीचे</translation>
 <translation id="3090667236485488075">ग्लास</translation>
 <translation id="3093122472063815077">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की प्रोग्रेस स्क्रीन, आधी स्क्रीन पर खुली है.</translation>
+<translation id="309381737510736393">अगर आपका संगठन, Google खाते में डेटा सेव करने की सुविधा को सीमित कर देता है, तो आपके पास टैब शेयर करने या दूसरों के साथ मिलकर काम करने का विकल्प नहीं होता है</translation>
 <translation id="3094051226187213523">इस सुझाव के साथ एआई मोड खोलें.</translation>
 <translation id="3095940652251934233">जानकारी</translation>
 <translation id="3098513225387949945">नज़रअंदाज़ किया गया, क्योंकि 'बंद है' वाली सूची में '*' जैसा पैटर्न शामिल है. इसका मतलब नीति को बंद करना होता है.</translation>
@@ -1698,6 +1699,7 @@
 <translation id="3784372983762739446">ब्लूटूथ डिवाइस</translation>
 <translation id="3785246317262748285">Chrome आम तौर पर आपको साइटों से सुरक्षित तरीके से कनेक्ट करता है, लेकिन इस बार इसे साइट पर सुरक्षित कनेक्शन नहीं मिला. ऐसा हो सकता है कि कोई हमलावर चोरी-छिपे आपके इंटरनेट पर नज़र रख रहा हो या उसमें बदलाव करने की कोशिश कर रहा हो. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" के हिसाब से सबसे सही नतीजे</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> या <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
 <translation id="3791118028061680614">ऐप्लिकेशन स्विच किए बिना पेमेंट करें</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इंच)</translation>
@@ -2679,6 +2681,7 @@
 <translation id="5412040515238827314">अमान्य फ़ॉर्मैट: पैटर्न की सूची होनी चाहिए.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टैकर 4</translation>
+<translation id="5414306071315087019">Google Pay पर 'अभी खरीदें, बाद में पेमेंट करें' सुविधा उपलब्ध है</translation>
 <translation id="5414446060143308245">ट्रांसफ़र करने से पहले, समीक्षा करना ज़रूरी है</translation>
 <translation id="5414511064953050917">फिर भी ट्रांसफ़र करें</translation>
 <translation id="5418700249417444482">आपने जिन पेजों को विज़िट किया है उनका यूआरएल, विश्लेषण के लिए Google Cloud या तीसरे पक्ष की कंपनियों को भेजा जाता है. ये यूआरएल, आपके एडमिन को भी दिख सकते हैं. उदाहरण के लिए, इन्हें असुरक्षित वेबसाइटों का पता लगाने या एडमिन के सेट किए गए नियमों के आधार पर वेबसाइटों को फ़िल्टर करने के लिए स्कैन किया जा सकता है.</translation>
@@ -2799,6 +2802,7 @@
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
 <translation id="5596939519753369075">2 x 3.5 इंच</translation>
 <translation id="5597254438174353289">ब्लू 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> या <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">प्रबंधन समर्थित नहीं</translation>
 <translation id="5605249000617390290">कीमत ट्रैक करने के बारे में ज़्यादा जानें</translation>
 <translation id="5605670050355397069">लेजर</translation>

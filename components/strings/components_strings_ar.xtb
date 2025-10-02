@@ -990,6 +990,7 @@
 <translation id="2610561535971892504">النقر لنسخ النص</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
 <translation id="2612993535136743634">‏سيتم حذف كل رموز الأمان المحفوظة على جهازك وفي حسابك على Google.</translation>
+<translation id="2614835674900828050">هذا الخيار غير متاح لعملية الشراء هذه</translation>
 <translation id="2616412942031748191">تسويق وتحسين محركات بحث</translation>
 <translation id="2618206371527040026">مؤتمرات ومنشورات أكاديمية</translation>
 <translation id="2619052155095999743">إدخال</translation>
@@ -1253,6 +1254,7 @@
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="3090667236485488075">زجاج</translation>
 <translation id="3093122472063815077">‏تم فتح شاشة التقدّم في عملية "الدفع الآجل" (BNPL) في نصف الشاشة.</translation>
+<translation id="309381737510736393">‏عندما تفرض مؤسستك قيودًا على حفظ المعلومات في حسابك على Google، لن يكون بإمكانك مشاركة علامات التبويب أو التعاون مع الآخرين</translation>
 <translation id="3094051226187213523">‏يمكنك فتح "وضع AI" باستخدام هذا الاقتراح.</translation>
 <translation id="3095940652251934233">كشف</translation>
 <translation id="3098513225387949945">تم التجاهل لأنّ قائمة الإيقاف تتضمّن نمطًا يعادل حرف البدل "*"، ما يعادل إيقاف السياسة.</translation>
@@ -1698,6 +1700,7 @@
 <translation id="3784372983762739446">أجهزة بلوتوث</translation>
 <translation id="3785246317262748285">‏يمكنك عادةً الاتصال بالمواقع الإلكترونية بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي، وقد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">أفضل نتيجة مطابِقة لعبارة البحث "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215">‫"<ph name="ISSUER_1_NAME" />" أو "<ph name="ISSUER_2_NAME" />" أو "<ph name="ISSUER_3_NAME" />"</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3791118028061680614">الدفع بدون التبديل بين التطبيقات</translation>
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> بوصة)</translation>
@@ -2679,6 +2682,7 @@
 <translation id="5412040515238827314">تنسيق غير صالح: كان من المتوقّع ظهور قائمة بالأنماط.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">المكدِّس 4</translation>
+<translation id="5414306071315087019">‏خيار "الدفع الآجل" (BNPL) متاح في Google Pay</translation>
 <translation id="5414446060143308245">يجب مراجعة الملفات قبل نقلها</translation>
 <translation id="5414511064953050917">النقل على أي حال</translation>
 <translation id="5418700249417444482">‏تُرسَل إلى Google Cloud أو جهات خارجية عناوين URL الخاصة بالصفحات التي تزورها وذلك لتحليلها، وقد تكون مرئية للمشرف. على سبيل المثال، قد يتم فحص هذه الصفحات لرصد المواقع الإلكترونية غير الآمنة أو فلترة المواقع الإلكترونية استنادًا إلى القواعد التي حدّدها المشرف.</translation>
@@ -2799,6 +2803,7 @@
 <translation id="5595485650161345191">تعديل العنوان</translation>
 <translation id="5596939519753369075">2 × 3.5 بوصة</translation>
 <translation id="5597254438174353289">أزرق 3</translation>
+<translation id="5603469469737324249">‫"<ph name="ISSUER_1_NAME" />" أو "<ph name="ISSUER_2_NAME" />"</translation>
 <translation id="560412284261940334">الإدارة غير متوفرة</translation>
 <translation id="5605249000617390290">مزيد من المعلومات حول ميزة "تتبُّع الأسعار"</translation>
 <translation id="5605670050355397069">Ledger</translation>

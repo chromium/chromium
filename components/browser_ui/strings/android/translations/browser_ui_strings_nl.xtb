@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Kaart Prijsdalingen op tabbladen verbergen</translation>
 <translation id="1508931164824684991">Sites kunnen JavaScript gebruiken</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
+<translation id="1532175480576580256">Blad onderaan voor Mijn snelkoppelingen is op volledige hoogte geopend</translation>
 <translation id="1538031354170655462">Sites gebruiken meestal Near Field Communication (NFC) om te werken met tags of apparaten in de buurt, zoals badges scannen of contactloos betalen</translation>
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
 <translation id="1569054338208717605">Sites versnellen met de V8-engine van Chrome, maar Chrome iets minder goed bestand maken tegen aanvallen</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">De meeste sites die je bezoekt, slaan waarschijnlijk gegevens op je apparaat op. Dit gebeurt vaak om de functionaliteit te verbeteren door je voorkeuren of met de site gedeelde informatie op te slaan. We raden je aan deze instelling aan te laten.</translation>
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
+<translation id="2347601491101454548">Blad onderaan voor Mijn snelkoppelingen is op halve hoogte geopend</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2379925928934107488">Donker thema zo mogelijk toepassen op sites als Chrome het donkere thema gebruikt</translation>
 <translation id="2390272837142897736">Zoomniveau vergroten</translation>
@@ -337,6 +339,7 @@
 <translation id="4816495437032298535">Opgeslagen zoomniveau voor sites</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="483914009762354899">Alle sites in dit domein opnemen</translation>
+<translation id="4852997963351138624">Hexadecimale code voor achtergrondkleur</translation>
 <translation id="4882919381756638075">Sites gebruiken je microfoon vaak voor communicatiefuncties zoals videochatten</translation>
 <translation id="4883854917563148705">Beheerde instellingen kunnen niet worden gereset</translation>
 <translation id="4887024562049524730">Vragen voordat sites je virtualreality-apparaat en -gegevens mogen gebruiken (aanbevolen)</translation>
@@ -500,6 +503,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beschermde content</translation>
 <translation id="662080504995468778">Blijven</translation>
+<translation id="6630443592285535486">Typ hier de hexadecimale code</translation>
 <translation id="6635327442719709864">Als deze optie aanstaat, kunnen sites vragen of ze seriële poorten mogen gebruiken. Staat de optie uit, dan kunnen sites geen seriële poorten gebruiken.</translation>
 <translation id="6678072580827808850">Veiligheidscheck controleren</translation>
 <translation id="6682057173375416470">Voorgestelde artikelen krijgen op de pagina Nieuw tabblad</translation>
@@ -557,6 +561,7 @@
 <translation id="7399802613464275309">Veiligheidscheck</translation>
 <translation id="7406113532070524618">Deze instelling werkt zonder je te identificeren of sites toegang te geven tot je browsegeschiedenis, maar sites kunnen wel een kleine hoeveelheid informatie delen als onderdeel van de verificatie</translation>
 <translation id="7409735910987429903">Sites sturen mogelijk pop-ups om advertenties te bekijken of gebruiken omleidingen die je naar websites leiden die je mogelijk niet wilt bezoeken</translation>
+<translation id="7412160840120117304">Hexadecimale code voor primaire kleur</translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
 <translation id="7425915948813553151">Donker thema voor sites</translation>

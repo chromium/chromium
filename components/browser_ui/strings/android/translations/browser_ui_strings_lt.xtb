@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Tvarkykite naudodami skirtukų grupes</translation>
 <translation id="2597457036804169544">Netaikyti tamsiosios temos svetainėms</translation>
 <translation id="2606760465469169465">Automatinis patvirtinimas</translation>
+<translation id="2610903128639500624">Tvarkykite <ph name="BEGIN_LINK1" />„Android“ nustatymuose<ph name="END_LINK1" />
+
+Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
+• Įjungta parinktis „Visada naudoti saugų ryšį“.
+• Parinktis „JavaScript“ optimizavimo priemonė“ išjungta. <ph name="BEGIN_LINK2" />Tvarkyti svetainės išimtis<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Leisti „JavaScript“ konkrečioje svetainėje.</translation>
 <translation id="2626708220538466178">Numatytosios naršyklės apatinis lapas uždarytas</translation>
 <translation id="2653659639078652383">Pateikti</translation>

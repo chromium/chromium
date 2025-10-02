@@ -993,6 +993,7 @@
 <translation id="2610561535971892504">ចុច​ដើម្បី​ចម្លង</translation>
 <translation id="2612676031748830579">លេខកាត</translation>
 <translation id="2612993535136743634">លេខកូដ​សុវត្ថិភាព​ទាំងអស់​ដែលបានរក្សាទុក​នៅលើ​ឧបករណ៍​របស់អ្នក និង​នៅក្នុង​គណនី Google នឹងត្រូវបានលុប</translation>
+<translation id="2614835674900828050">មិនអាចប្រើ​សម្រាប់​ការទិញ​នេះបានទេ</translation>
 <translation id="2616412942031748191">ការធ្វើទីផ្សារ និងការបង្កើនប្រសិទ្ធភាព​ម៉ាស៊ីន​ស្វែងរក</translation>
 <translation id="2618206371527040026">សន្និសីទ​ការសិក្សា និង​ការបោះ​ពុម្ព​ផ្សាយ</translation>
 <translation id="2619052155095999743">ដាក់ចូល</translation>
@@ -1256,6 +1257,7 @@
 <translation id="3087734570205094154">ខាងក្រោម</translation>
 <translation id="3090667236485488075">កញ្ចក់</translation>
 <translation id="3093122472063815077">បានបើក​អេក្រង់​ដំណើរវិវឌ្ឍន៍ "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ពាក់កណ្ដាល​អេក្រង់។</translation>
+<translation id="309381737510736393">នៅពេល​ស្ថាប័ន​របស់អ្នក​ដាក់កំហិតលើ​ការរក្សាទុក​ទៅគណនី Google របស់អ្នក នោះអ្នក​មិនអាច​ចែករំលែក​ផ្ទាំង ឬ​សហការ​ជាមួយ​អ្នកផ្សេងទៀត​បានទេ</translation>
 <translation id="3094051226187213523">បើក​មុខងារ AI ដោយប្រើ​ការណែនាំនេះ។</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">មិនបាន​អើពើ ដោយសារ​បញ្ជីបិទ​មានតួអក្សរ​ជំនួស '*' ដែលស្មើនឹង​ការបិទ​គោលការណ៍។</translation>
@@ -1701,6 +1703,7 @@
 <translation id="3784372983762739446">ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="3785246317262748285">ជាធម្មតា អ្នកភ្ជាប់ទៅ​គេហទំព័រ​ដោយសុវត្ថិភាព ប៉ុន្តែ Chrome មិនអាចប្រើ​ការ​តភ្ជាប់ដែលមានសុវត្ថិភាព​នៅពេលនេះបានទេ។ អ្នកវាយ​ប្រហារ​ប្រហែលជា​កំពុង​ព្យាយាម​លួចស្ដាប់ ឬ​កែប្រែ​ការតភ្ជាប់បណ្ដាញ​របស់អ្នក។ <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">លទ្ធផលត្រូវគ្នាបំផុតសម្រាប់ "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> ឬ <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">តំឡើង</translation>
 <translation id="3791118028061680614">បង់ប្រាក់ដោយមិនចាំបាច់ប្ដូរកម្មវិធី</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -2683,6 +2686,7 @@
 <translation id="5412040515238827314">ទម្រង់​មិន​ត្រឹមត្រូវ៖ បានរំពឹង​ទុក​បញ្ជី​នៃលំនាំ។</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ទម្រគំនរ​ទី 4</translation>
+<translation id="5414306071315087019">អាចទូទាត់​តាមរយៈ Google Pay សម្រាប់ "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" បាន</translation>
 <translation id="5414446060143308245">តម្រូវឱ្យ​ពិនិត្យមើល មុនពេល​ផ្ទេរ</translation>
 <translation id="5414511064953050917">មិនអីទេ ផ្លាស់ទីចុះ</translation>
 <translation id="5418700249417444482">URL នៃទំព័រ​ដែលអ្នក​ចូលមើល​ត្រូវបាន​បញ្ជូន​ទៅកាន់ Google Cloud ឬ​ភាគីទីបី​ដើម្បីវិភាគ និង​អាចមើលឃើញ​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក។ ឧទាហរណ៍ URL ទាំង​នោះ​អាច​ត្រូ​វបាន​ស្កេន​ដើម្បី​ចាប់ដឹង​គេហទំព័រ​ដែល​គ្មាន​សុវត្ថិភាព ឬ​ត្រង​គេហទំព័រ ដោយផ្អែកលើ​វិធាន​ដែល​បាន​កំណត់​ដោយ​អ្នក​គ្រប់គ្រង។</translation>
@@ -2803,6 +2807,7 @@
 <translation id="5595485650161345191">កែអាសយដ្ឋាន</translation>
 <translation id="5596939519753369075">2 x 3.5 in</translation>
 <translation id="5597254438174353289">ខៀវទី 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ឬ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ការគ្រប់គ្រងមិនត្រូវបានគាំទ្រទេ</translation>
 <translation id="5605249000617390290">ស្វែងយល់​បន្ថែម​អំពី​ការតាមដាន​តម្លៃ</translation>
 <translation id="5605670050355397069">Ledger</translation>

@@ -990,6 +990,7 @@
 <translation id="2610561535971892504">ನಕಲಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="2612993535136743634">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮತ್ತು Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಎಲ್ಲಾ ಭದ್ರತಾ ಕೋಡ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="2614835674900828050">ಈ ಖರೀದಿಗೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="2616412942031748191">ಸರ್ಚ್‌ ಎಂಜಿನ್‌ ಆಪ್ಟಿಮೈಸೇಷನ್‌ ಮತ್ತು ಮಾರ್ಕೆಟಿಂಗ್</translation>
 <translation id="2618206371527040026">ಶೈಕ್ಷಣಿಕ ಸಮ್ಮೇಳನಗಳು ಮತ್ತು ಪ್ರಕಟಣೆಗಳು</translation>
 <translation id="2619052155095999743">Insert</translation>
@@ -1253,6 +1254,7 @@
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
 <translation id="3090667236485488075">ಗ್ಲಾಸ್</translation>
 <translation id="3093122472063815077">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ ಪ್ರಗತಿ ಸ್ಕ್ರೀನ್‌ ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
+<translation id="309381737510736393">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡುವುದನ್ನು ಸೀಮಿತಗೊಳಿಸಿದಾಗ, ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಇತರರೊಂದಿಗೆ ಕೊಲಾಬೊರೇಟ್ ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3094051226187213523">ಈ ಸಲಹೆಯೊಂದಿಗೆ AI ಮೋಡ್ ಅನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ ಪಟ್ಟಿಯು '*' ಗೆ ಸಮಾನವಾದ ಪ್ಯಾಟರ್ನ್ ಅನ್ನು ಹೊಂದಿದೆ, ಇದು ನೀತಿಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದಕ್ಕೆ ಸಮನಾಗಿರುತ್ತದೆ.</translation>
@@ -1695,6 +1697,7 @@
 <translation id="3784372983762739446">ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನಗಳು</translation>
 <translation id="3785246317262748285">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಸೈಟ್‌ಗಳಿಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಕನೆಕ್ಟ್‌ ಆಗಿರುತ್ತೀರಿ, ಆದರೆ Chrome ಗೆ ಈ ಸಮಯದಲ್ಲಿ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಅಟ್ಯಾಕರ್‌ಗಳು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಕದ್ದಾಲಿಕೆ ಮಾಡಲು ಅಥವಾ ಮಾರ್ಪಡಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" ಗಾಗಿ ಉತ್ತಮ ಹೊಂದಾಣಿಕೆಗಳು</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" />, ಅಥವಾ <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="3791118028061680614">ಆ್ಯಪ್‌ಗಳನ್ನು ಬದಲಿಸದೆಯೇ ಪಾವತಿಸಿ</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ಇಂಚು)</translation>
@@ -2676,6 +2679,7 @@
 <translation id="5412040515238827314">ಅಮಾನ್ಯ ಫಾರ್ಮ್ಯಾಟ್: ಪ್ಯಾಟರ್ನ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ಸ್ಟ್ಯಾಕರ್ 4</translation>
+<translation id="5414306071315087019">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸುವ ಫೀಚರ್ Google Pay ಜೊತೆಗೆ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5414446060143308245">ವರ್ಗಾವಣೆ ಮಾಡುವ ಮೊದಲು ಪರಿಶೀಲನೆಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5414511064953050917">ಹೇಗಿದ್ದರೂ ಸರಿಸಿ</translation>
 <translation id="5418700249417444482">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳನ್ನು ವಿಶ್ಲೇಷಣೆಗಾಗಿ Google Cloud ಅಥವಾ ಥರ್ಡ್ ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಗೋಚರಿಸಬಹುದು. ಉದಾಹರಣೆಗೆ, ಅಸುರಕ್ಷಿತ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಅಥವಾ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ ನಿಯಮಗಳ ಆಧಾರದ ಮೇಲೆ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಫಿಲ್ಟರ್ ಮಾಡಲು ಅವುಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು.</translation>
@@ -2796,6 +2800,7 @@
 <translation id="5595485650161345191">ವಿಳಾಸ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5596939519753369075">2 x 3.5 ಇಂಚು</translation>
 <translation id="5597254438174353289">ನೀಲಿ 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ಅಥವಾ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ನಿರ್ವಾಹಕ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="5605249000617390290">ಬೆಲೆಯ ಟ್ರ್ಯಾಕಿಂಗ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5605670050355397069">Ledger</translation>

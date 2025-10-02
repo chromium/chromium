@@ -252,6 +252,9 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3809772425479558446">Voor Google Chrome is Windows 10 of hoger vereist.</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="383928141529488001">Google Chrome heeft bluetooth-toegang nodig om bluetooth-apparaten te verkennen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Samenvatten:** Beschrijf in één zin van maximaal 30 woorden het belangrijkste onderwerp en doel van de content in het screenshot.
+
+          **Vragen voorstellen:** Genereer een lijst met 3 tot 5 prikkelende vragen die een gebruiker kan stellen om het screenshot beter te begrijpen. Deze vragen moeten minstens één vraag bevatten die specifiek over een visueel object, het ontwerp of de plaatsing ervan gaat.</translation>
 <translation id="386202838227397562">Sluit alle Google Chrome-vensters en probeer het opnieuw.</translation>
 <translation id="3873044882194371212">Link openen in een Chrome-inco&amp;gnitovenster</translation>
 <translation id="3885770153807205175">Taalkiezer</translation>
@@ -525,6 +528,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="7024536598735240744">Fout bij uitpakken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installatie gestopt.</translation>
 <translation id="7025800014283535195">Je kunt hier schakelen tussen verschillende Chrome-profielen</translation>
+<translation id="7047386856539490735">Zijn deze resultaten nuttig?</translation>
 <translation id="7051685429025310665">Je bent hier niet recent geweest. Chrome heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en <ph name="PERMISSION_3" /> verwijderd.</translation>
 <translation id="7059914902409643750">Chrome personaliseren</translation>
 <translation id="7060643578009939353">Deze video doorzoeken met Google Lens</translation>

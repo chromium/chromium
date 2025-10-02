@@ -249,6 +249,9 @@
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="383928141529488001">Google Chrome necessita accés al Bluetooth per cercar 
  dispositius Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
+<translation id="3846683726093018685">**Resumeix**: en una sola frase de menys de 30 paraules, descriu el tema i la finalitat principals del contingut de la captura de pantalla.
+
+          **Preguntes suggerides**: genera una llista de pics d'entre 3 i 5 preguntes que facin reflexionar i que un usuari podria fer per entendre millor la captura de pantalla. Aquestes preguntes n'han d'incloure com a mínim una que sigui específicament sobre un objecte visual, el seu disseny o el seu emplaçament.</translation>
 <translation id="386202838227397562">Tanqueu totes les finestres de Google Chrome i torneu-ho a provar.</translation>
 <translation id="3873044882194371212">Obre l'enllaç en una finestra d'incò&amp;gnit a Chrome</translation>
 <translation id="3885770153807205175">Selector d'idioma</translation>
@@ -520,6 +523,7 @@
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025789849649390912">La instal·lació s'ha aturat.</translation>
 <translation id="7025800014283535195">Pots canviar entre perfils de Chrome aquí</translation>
+<translation id="7047386856539490735">Aquests resultats són útils?</translation>
 <translation id="7051685429025310665">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
 <translation id="7060643578009939353">Cerca aquest vídeo amb Google Lens</translation>

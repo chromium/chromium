@@ -1308,6 +1308,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1880618477732738742">Modifiez et accordez l'accès à des fonctionnalités telles que la géolocalisation, le micro, la caméra, les cookies, etc. pour tous vos sites Web et extensions, y compris celle-ci.</translation>
 <translation id="1881445033931614352">Disposition des touches du clavier</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Élément}one{# élément}other{# éléments}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Le paramètre actuel de visibilité s'applique à certains contacts</translation>
 <translation id="1884705339276589024">Redimensionner le disque Linux</translation>
 <translation id="1885066963699478692">Fichiers XML utilisés pour définir les règles.</translation>
@@ -3821,6 +3822,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3629664892718440872">Mémoriser ce choix</translation>
 <translation id="3630132874740063857">Votre téléphone</translation>
 <translation id="3630995161997703415">Ajoutez ce site à votre étagère pour l'utiliser à tout moment</translation>
+<translation id="3633492436029262388">Pour accéder à vos mots de passe, vos favoris et bien plus sur tous vos appareils, enregistrez-les dans votre compte Google</translation>
 <translation id="3633759325857031264">Appareil HDMI</translation>
 <translation id="3634652306074934350">La demande d'autorisation a expiré</translation>
 <translation id="3635199270495525546">TPM détecté</translation>
@@ -3991,6 +3993,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3735039640698208086">Lors de la lecture audio…</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3735827758948958091">Impossible d'ouvrir <ph name="FILE_NAMES" /> lorsque la connexion est limitée</translation>
+<translation id="3736575924150462398">Ajouter des onglets ou plus</translation>
 <translation id="3737058101969549870">Séparer les données de navigation existantes de ce nouveau profil ?</translation>
 <translation id="3738632186060045350">Les données du <ph name="DEVICE_TYPE" /> seront supprimées dans 24 heures</translation>
 <translation id="3738924763801731196"><ph name="OID" /> :</translation>
@@ -7991,6 +7994,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>
 <translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Autorisation de téléchargement nécessaire</translation>
+<translation id="6571178651832779742">Pour supprimer les doublons, enregistrez vos favoris dans votre compte Google</translation>
 <translation id="6571533309669248172">Mise en forme du texte</translation>
 <translation id="6571772921213691236">Modifier les données de connexion</translation>
 <translation id="657229725818377235">Bénéficiez d'une meilleure protection contre les sites Web et les téléchargements dangereux</translation>
@@ -8629,6 +8633,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7001066449188684145">Identification requise pour imprimer sur <ph name="PRINTER_NAME" />. Veuillez contacter votre administrateur.</translation>
 <translation id="7001397294201412227">Utiliser un téléphone, une tablette ou une clé de sécurité</translation>
 <translation id="7001556399332161712">Recherches et suggestions</translation>
+<translation id="7001809623433867903">Organiser les favoris ?</translation>
 <translation id="7003339318920871147">Bases de données Web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
 <translation id="7003644704445046755">Fichiers de voix <ph name="LANGUAGE" /> de haute qualité téléchargés</translation>
@@ -9109,6 +9114,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7356908624372060336">Journaux réseau</translation>
 <translation id="7357271391997763660">Lancer la vérification du mot de passe ?</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
+<translation id="7359326150089800742">Ajouter un onglet ou un fichier à votre recherche, et aussi utiliser un outil</translation>
 <translation id="7359680654975233185">Impossible de caster l'onglet</translation>
 <translation id="7360257054721917104">Affichage des bureaux enregistrés et des modèles. Appuyez sur Tabulation pour naviguer.</translation>
 <translation id="7360333718677093875">sélecteur d'emoji</translation>
@@ -9915,6 +9921,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Rendre les ports Linux disponibles pour les autres appareils de votre réseau.</translation>
 <translation id="7906440585529721295">Les données locales seront supprimées</translation>
+<translation id="7907312522152480478">Pour accédez à vos onglets sur vos autres appareils, validez votre identité et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7907502219904644296">Modifier l'accès</translation>
 <translation id="7907837847548254634">Entourer brièvement l'objet sélectionné</translation>
 <translation id="7908378463497120834">Désolé, impossible d'installer au moins une partition de votre périphérique de stockage externe.</translation>
@@ -10551,6 +10558,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8323167517179506834">Saisir une URL</translation>
 <translation id="8323317289166663449">Accéder à toutes vos données sur votre ordinateur et tous les sites Web et les modifier</translation>
 <translation id="8323518750352551353">Séparer la navigation ?</translation>
+<translation id="8323744572398547859">Pour accéder à vos onglets sur vos autres appareils, connectez-vous et synchronisez l'historique. Vous pourrez également accéder à vos mots de passe et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8325413836429495820">Non autorisé à voir votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS #7, chaîne de certificats</translation>

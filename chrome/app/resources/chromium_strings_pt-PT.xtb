@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">Fixado! Pode aceder novamente à Pesquisa de imagens através do novo botão na barra de ferramentas</translation>
 <translation id="1356661055722410047">Novo! Pode traduzir texto e imagens no ecrã</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1397530502368084401">&amp;Gerir perfis do Chromium</translation>
 <translation id="1414495520565016063">Tem sessão iniciada no Chromium!</translation>
 <translation id="141901961143729572">Partilhe a sua opinião</translation>
 <translation id="1465192221147974788">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
@@ -494,6 +495,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6877155553248388166">canto inferior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte inferior <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6901631050894301805">Defina o Chromium como o navegador predefinido e afixe-o à barra de tarefas</translation>
+<translation id="6909503629704372277">&amp;Gerir perfis do Chromium</translation>
 <translation id="6934579572334859869">Pergunte à pesquisa de imagens acerca desta imagem</translation>
 <translation id="6964305034639999644">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
 <translation id="6965382102122355670">OK</translation>

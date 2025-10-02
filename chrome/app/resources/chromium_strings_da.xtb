@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">Panelet er fastgjort. Du kan tilgå billedsøgning igen via den nye knap på værktøjslinjen</translation>
 <translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
 <translation id="1383876407941801731">Søg</translation>
+<translation id="1397530502368084401">&amp;Administrer Chromium-profiler</translation>
 <translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
 <translation id="141901961143729572">Del dine tanker</translation>
 <translation id="1465192221147974788">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele dit vindue.</translation>
@@ -235,6 +236,9 @@
 <translation id="379589255253486813">Chromium giver dig besked, hvis der er noget, du skal gennemgå</translation>
 <translation id="3802055581630249637">Chromium forudindlæser sider, du sandsynligvis vil besøge, så disse sider indlæses hurtigere, når du besøger dem</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3846683726093018685">**Opsummer:** Beskriv det primære emne og formålet med indholdet på screenshottet i én sætning på under 30 ord.
+
+          **Foreslå spørgsmål:** Generér en opstilling med punkttegn med 3-5 tankevækkende spørgsmål, som en bruger kan stille for bedre at forstå screenshottet. Disse spørgsmål skal omfatte mindst ét spørgsmål, der specifikt handler om et visuelt objekt, dets design eller dets placering.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="3885770153807205175">Sprogvælger</translation>
 <translation id="388648406173476553">Tilpas og administrer Chromium. Noget kræver din opmærksomhed – klik for at få oplysninger.</translation>
@@ -490,6 +494,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6877155553248388166">nederste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, nederste <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6901631050894301805">Angiv Chromium som din standardbrowser, og fastgør den til din proceslinje</translation>
+<translation id="6909503629704372277">&amp;Administrer Chromium-profiler</translation>
 <translation id="6934579572334859869">Stil Billedsøgning spørgsmål om dette billede</translation>
 <translation id="6964305034639999644">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -501,6 +506,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="7024536598735240744">Fejl under udpakning: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installationen blev afbrudt.</translation>
 <translation id="7045244423563602563">Tilpas Chromium</translation>
+<translation id="7047386856539490735">Er disse resultater nyttige?</translation>
 <translation id="705851970750939768">Opdater Chromium</translation>
 <translation id="7067091210845072982">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chromium at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser.</translation>
 <translation id="7141270731789036260">Tilpas Chrome for Testing</translation>

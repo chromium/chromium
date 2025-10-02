@@ -596,6 +596,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2)：這個值已於 M121 淘汰。在 M121 以上版本中，系統會將值視為 EnabledBelowThreshold。
       </translation>
 <translation id="1434300053894025056">停用拼字檢查功能</translation>
+<translation id="1434936032334586168">啟用靜默列印</translation>
 <translation id="1435031247649241006">在螢幕鎖定畫面上，使用者可以開啟線上重新驗證視窗並進行驗證，以便回到工作階段。如果需要線上重新驗證，這項政策可用於自動開啟重新驗證視窗。
 
 如果將這項政策設為啟用，系統就會在需要線上重新驗證時，自動開啟線上重新驗證視窗。
@@ -1864,6 +1865,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="2306505001667207184">每當自動選取政策與多個憑證相符時，提示使用者選取用戶端憑證。</translation>
 <translation id="230713790688681130">啟用北印度文 InScript 版面配置</translation>
 <translation id="2307496301287881990">回報顯示狀態和圖形狀態</translation>
+<translation id="2308899582897965249">停用靜默列印</translation>
 <translation id="2309284543927494965">禁止更新</translation>
 <translation id="2309341709647905294">不要回報裝置所連結周邊裝置的相關資訊</translation>
 <translation id="2309390639296060546">預設地理位置設定</translation>
@@ -2046,6 +2048,9 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="2439733504887695659">針對已輸入的憑證啟用關閉密碼遭到外洩的防護警示</translation>
 <translation id="2446029789419870019">允許使用功能並協助改良 AI 模型</translation>
 <translation id="2446244536806499267">音訊播放時不要將使用者狀態視為閒置</translation>
+<translation id="2450392422484526374">如果將這項政策設為 True 來啟用靜默列印功能，系統會立即關閉開啟的列印預覽視窗，並使用預設選項在預設印表機上列印。如果預設印表機是「另存為 PDF」，檔案會儲存至「下載」資料夾。
+
+如果將這項政策設為 False 或不設定，系統會停用靜默列印功能，不會自動關閉列印預覽視窗，使用者必須照常選取列印選項。</translation>
 <translation id="2452225615952836461">一律使用大寫字母要求方法</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>

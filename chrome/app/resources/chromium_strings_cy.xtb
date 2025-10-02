@@ -237,6 +237,9 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="379589255253486813">Bydd Chromium yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth</translation>
 <translation id="3802055581630249637">Mae Chromium yn rhaglwytho tudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn ymweld â nhw</translation>
 <translation id="3810973564298564668">Rheoli</translation>
+<translation id="3846683726093018685">**Crynhoi:** Mewn un frawddeg o dan 30 gair, disgrifiwch brif bwnc a phwrpas y cynnwys yn y sgrinlun.
+
+          **Awgrymu Cwestiynau:** Cynhyrchwch restr fwled o 3-5 cwestiwn sy'n ysgogi'r meddwl y gallai defnyddiwr eu gofyn i ddeall y sgrinlun yn well. Dylai'r cwestiynau hyn gynnwys o leiaf un sy'n ymwneud yn benodol â gwrthrych gweledol, ei ddyluniad, neu ei leoliad.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="3885770153807205175">Dewisydd iaith</translation>
 <translation id="388648406173476553">Personoleiddio a rheoli Chromium. Mae angen eich sylw ar rywbeth - cliciwch i gael manylion.</translation>
@@ -503,6 +506,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 <translation id="7024536598735240744">Gwall dadbacio: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Wedi Stopio Gosod.</translation>
 <translation id="7045244423563602563">Personoleiddiwch Chromium</translation>
+<translation id="7047386856539490735">Ydy'r canlyniadau hyn yn ddefnyddiol?</translation>
 <translation id="705851970750939768">Diweddaru Chromium</translation>
 <translation id="7067091210845072982">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
 <translation id="7141270731789036260">Addasu Chrome for Testing</translation>

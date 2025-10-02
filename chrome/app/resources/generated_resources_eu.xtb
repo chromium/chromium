@@ -1307,6 +1307,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1880618477732738742">Aldatu eta eman baimena geokokapena, mikrofonoa, kamera eta cookieak bezalako eginbideak erabiltzeko webgune eta luzapen guztiei, baita luzapen honi ere.</translation>
 <translation id="1881445033931614352">Teklatuaren diseinua</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elementua}other{# elementu}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Oraingo ikusgaitasun-ezarpena: Kontaktu batzuk</translation>
 <translation id="1884705339276589024">Aldatu Linux-en diskoaren tamaina</translation>
 <translation id="1885066963699478692">Gidalerroak ezartzeko erabiltzen diren XML fitxategiak.</translation>
@@ -3820,6 +3821,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3629664892718440872">Gogoratu aukera hau</translation>
 <translation id="3630132874740063857">Zure telefonoa</translation>
 <translation id="3630995161997703415">Gehitu webgunea apalean edonoiz erabili ahal izateko</translation>
+<translation id="3633492436029262388">Pasahitzak, laster-markak eta gehiago gailu guztietan izateko, gorde itzazu Google-ko kontuan</translation>
 <translation id="3633759325857031264">HDMI gailua</translation>
 <translation id="3634652306074934350">Iraungi da baimen-eskaera</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) bat hauteman da</translation>
@@ -3990,6 +3992,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3735039640698208086">Audioa erreproduzitzean…</translation>
 <translation id="3735740477244556633">Ordenatzeko irizpidea</translation>
 <translation id="3735827758948958091">Ezin da ireki <ph name="FILE_NAMES" /> konexio neurtu batean</translation>
+<translation id="3736575924150462398">Gehitu fitxak edo gehiago</translation>
 <translation id="3737058101969549870">Lehendik dauden arakatze-datuak profil berri honetatik bereizita mantendu nahi dituzu?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> gailuko datuak 24 ordu barru ezabatuko dira</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7986,6 +7989,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6569931898053264308">Aurrezte ertaina</translation>
 <translation id="6570622975915850879">Erabili beste gailu bat</translation>
 <translation id="65711204837946324">Deskargatzeko baimena behar da</translation>
+<translation id="6571178651832779742">Laster-marka bikoiztuak garbitzeko, gorde itzazu Google-ko kontuan</translation>
 <translation id="6571533309669248172">Testuaren formatua</translation>
 <translation id="6571772921213691236">Editatu saioa hasteko datuak</translation>
 <translation id="657229725818377235">Handitu webgune, deskarga eta luzapen arriskutsuen aurkako babesa</translation>
@@ -8622,6 +8626,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7001066449188684145">Identitatea egiaztatu behar duzu <ph name="PRINTER_NAME" /> inprimagailuaren bidez inprimatzeko. Jarri administratzailearekin harremanetan.</translation>
 <translation id="7001397294201412227">Erabili telefono, tableta edo segurtasun-giltza bat</translation>
 <translation id="7001556399332161712">Bilaketa eta iradokizunak</translation>
+<translation id="7001809623433867903">Laster-markak garbitu nahi dituzu?</translation>
 <translation id="7003339318920871147">Webguneetako datu-baseak</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fitxategi}other{{COUNT} fitxategi}}</translation>
 <translation id="7003644704445046755">Deskargatu dira <ph name="LANGUAGE" /> hizkuntzako kalitate handiko ahots-fitxategiak</translation>
@@ -9101,6 +9106,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7356908624372060336">Sarearen erregistroak</translation>
 <translation id="7357271391997763660">Pasahitz-egiaztapena exekutatu nahi duzu?</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
+<translation id="7359326150089800742">Gehitu fitxa edo fitxategi bat bilaketan, eta erabili tresna bat ere</translation>
 <translation id="7359680654975233185">Ezin da igorri fitxa</translation>
 <translation id="7360257054721917104">Gordetako lan-eremuak eta txantiloiak ikusgai. Nabigatzeko, sakatu tabuladorea.</translation>
 <translation id="7360333718677093875">emoji-hautatzailea</translation>
@@ -9906,6 +9912,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Ezarri Linux-eko atakak sareko beste gailu batzuentzat erabilgarri.</translation>
 <translation id="7906440585529721295">Gailuko datuak ezabatuko dira</translation>
+<translation id="7907312522152480478">Beste gailuetako fitxak lortzeko, egiaztatu zeu zarela eta sinkronizatu historia eta fitxak. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="7907502219904644296">Aldatu sarbidea</translation>
 <translation id="7907837847548254634">Erakutsi puntu argi bizkor bat fokuratutako objektuan</translation>
 <translation id="7908378463497120834">Ezin izan da muntatu kanpoko biltegiratze-gailuaren partizio bat edo gehiago.</translation>
@@ -10541,6 +10548,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8323167517179506834">Idatzi URLa</translation>
 <translation id="8323317289166663449">Ordenagailuan eta edozein webgunetan dauzkazun datu guztiak irakurri eta aldatu.</translation>
 <translation id="8323518750352551353">Arakatze-jarduerak bereizi nahi dituzu?</translation>
+<translation id="8323744572398547859">Beste gailuetako fitxak lortzeko, hasi saioa eta sinkronizatu historia. Pasahitzak eta datu gehiago ere izango dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="8324158725704657629">Ez galdetu berriro</translation>
 <translation id="8325413836429495820">Ezin dute ikusi arbela</translation>
 <translation id="8326478304147373412">PKCS #7, ziurtagiri-katea</translation>

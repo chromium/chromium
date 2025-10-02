@@ -252,6 +252,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="383928141529488001">Google Chrome a besoin d'accéder au Bluetooth pour explorer 
  les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Résume :** En une seule phrase de moins de 30 mots, décris le sujet principal et l'objectif du contenu de la capture d'écran.
+
+          **Suggère des questions** : génère une liste à puces de trois à cinq questions qui poussent à la réflexion et qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant spécifiquement sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="3885770153807205175">Outil de sélection de langue</translation>
@@ -527,6 +530,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation interrompue.</translation>
 <translation id="7025800014283535195">Vous pouvez passer d'un profil Chrome à un autre ici</translation>
+<translation id="7047386856539490735">Ces résultats sont-ils utiles ?</translation>
 <translation id="7051685429025310665">Vous n'avez pas consulté le site récemment. Chrome a supprimé "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" et "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
 <translation id="7060643578009939353">Rechercher dans cette vidéo avec Google Lens</translation>

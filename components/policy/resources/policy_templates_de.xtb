@@ -615,6 +615,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Dieser Wert wird ab M121 eingestellt. Ab M121 werden Werte als „EnabledBelowThreshold“ behandelt.
       </translation>
 <translation id="1434300053894025056">Rechtschreibprüfung deaktivieren</translation>
+<translation id="1434936032334586168">Stummes Drucken aktivieren</translation>
 <translation id="1435031247649241006">Nutzer können auf dem Sperrbildschirm ein Fenster für die erneute Onlineauthentifizierung öffnen. Dieses Fenster können sie für den Authentifizierungsprozess verwenden, um ihre Sitzung wieder aufzunehmen. Diese Richtlinie kann verwendet werden, um das Fenster automatisch zu öffnen, wenn eine erneute Onlineauthentifizierung erforderlich ist.
 
 Wenn diese Richtlinie aktiviert ist und eine erneute Onlineauthentifizierung erforderlich ist, wird das Fenster für die erneute Onlineauthentifizierung automatisch geöffnet.
@@ -1902,6 +1903,7 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 <translation id="2306505001667207184">Fordert Nutzer auf, das Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt.</translation>
 <translation id="230713790688681130">Inscript-Layout für Hindi aktivieren</translation>
 <translation id="2307496301287881990">Status von Display und Grafikkarte melden</translation>
+<translation id="2308899582897965249">Stummes Drucken deaktivieren</translation>
 <translation id="2309284543927494965">Updates blockieren</translation>
 <translation id="2309341709647905294">Keine Daten zu Peripheriegeräten melden, die an das Gerät angeschlossen sind</translation>
 <translation id="2309390639296060546">Standardeinstellung für "Standortbestimmung"</translation>
@@ -2084,6 +2086,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2439733504887695659">Schließen von Warnungen zu gehackten Passwörtern für eingegebene Anmeldedaten aktivieren</translation>
 <translation id="2446029789419870019">Nutzung der Funktion mit Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="2446244536806499267">Nutzer wird während der Audiowiedergabe nicht als inaktiv angesehen</translation>
+<translation id="2450392422484526374">Wird diese Richtlinie auf „True“ gesetzt, wird das stumme Drucken aktiviert. Dabei wird das Druckvorschaufenster nach dem Öffnen sofort geschlossen und der Druckvorgang wird mit den Standardeinstellungen auf dem Standarddrucker gestartet. Wenn unter „Standarddrucker“ die Option „Als PDF speichern“ ausgewählt ist, wird die Datei im Ordner „Downloads“ gespeichert.
+
+Wird diese Richtlinie nicht konfiguriert oder auf „False“ festgelegt, wird das stumme Drucken deaktiviert. In diesem Fall wird das Druckvorschaufenster nicht automatisch geschlossen und der Nutzer muss wie gewohnt eine Auswahl treffen.</translation>
 <translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
 <translation id="2455033019778127130">Verwendet das Standard-Browserverhalten, zeigt die Nutzungsbedingungen an und wartet auf die Zustimmung des Nutzers.</translation>

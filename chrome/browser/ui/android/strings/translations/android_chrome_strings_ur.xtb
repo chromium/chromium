@@ -9,11 +9,13 @@
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> پر بھیجا جا رہا ہے…</translation>
 <translation id="103269572468856066">ان سائٹس اور ایپس سے ڈیٹا بھی صاف کریں؟</translation>
 <translation id="1034259925032978114">ونڈو کھلا ہوا ہے</translation>
+<translation id="1035113036584565771">تجاویز کی اطلاعات کا پرومو بند ہو گیا</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1045899828449635435">ان سائٹس سے ڈیٹا بھی صاف کریں؟</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="1052842760770519282">آپ کے کچھ پاس ورڈز قابل رسائی نہیں ہیں</translation>
 <translation id="1058669287135776095">آپ آف لائن ہیں۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="1066338698580889414">تجاویز کی اطلاعات کا پرومو پوری اونچائی پر کھولا گیا</translation>
 <translation id="1070689840697074178">‏آپ یہاں PDFs کو ڈاؤن لوڈ کر سکتے ہیں</translation>
 <translation id="107147699690128016">اگر آپ فائل ایکسٹینشن تبدیل کرتے ہیں تو فائل مختلف ایپلیکیشن میں کھل سکتی ہے اور ممکنہ طور پر آپ کے آلہ کے لیے نقصان دہ ہو سکتی ہے۔</translation>
 <translation id="1087799850623149508">آپ ایڈریس بار کو نیچے منتقل کرنے کے لیے ٹچ کر کے دبائے رکھ سکتے ہیں</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973">آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
 <translation id="1702543251015153180">اپنی گہری تھیم کی ترتیبات کو تبدیل کریں؟</translation>
 <translation id="1702907158640575240">نظم کردہ براؤزر</translation>
+<translation id="170478069042229393">‫<ph name="TAB_TITLE" />، پن کردہ پوشیدگی ٹیب</translation>
 <translation id="1718835860248848330">پچھلے گھنٹے</translation>
 <translation id="1726477445370128854">‏آپ تیزی سے براؤز اور تلاش کر سکتے ہیں جب Chrome ایسے صفحات کو پیشگی لوڈ کرتا ہے جن کے بارے میں اسے لگتا ہے کہ آپ ملاحظہ کر سکتے ہیں</translation>
 <translation id="1728803206919861584">پاسکی کو پوشیدگی سے باہر محفوظ کریں؟</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> سے</translation>
 <translation id="3029276696788198026">کوئی بھی پیشگی لوڈنگ نہیں</translation>
 <translation id="3029704984691124060">پاس فریزز مماثل نہیں ہیں</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />، منتخب کردہ ٹیب پن ہو گیا</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />مدد حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">قیمت ٹریک کی جا رہی ہے</translation>
 <translation id="3037517125981011456">‏Chrome میں سائن ان کرنے کے لیے پرامپٹس دکھاتا ہے</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="397583555483684758">مطابقت پذیری نے کام کرنا بند کر دیا ہے</translation>
 <translation id="3976396876660209797">ہٹا کر یہ شارٹ کٹ تخلیق کریں</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />، پن کردہ ٹیب</translation>
 <translation id="3985022125189960801">اگر آپ سائٹس کے پول میں ایسی سائٹ چاہتے ہیں جو اندازہ لگا سکے کہ آپ کو کیا پسند ہے تو اسے دوبارہ شامل کریں</translation>
 <translation id="3985215325736559418">کیا آپ <ph name="FILE_NAME" /> کو دوبارہ ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
@@ -1413,6 +1418,7 @@
 <translation id="7375125077091615385">قسم:</translation>
 <translation id="7376560087009844242">صفحے کے مزید متن کو شامل کر کے، آپ تلاش کرنے کے لیے ٹچ کریں کا استعمال کرتے وقت بہتر نتائج دیکھ سکتے ہیں۔ آپ اسے تبدیل کرنے کے لیے ہمیشہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="7379900596734708416">سائٹس کے لیے گہری تھیم دستیاب ہے</translation>
+<translation id="7384486627147155832">تجاویز کی اطلاعات کا پرومو نصف اونچائی پر کھولا گیا</translation>
 <translation id="7388615499319468910">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آف ہے۔</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{فہرست میں دیگر 1 فائل}other{فہرست میں دیگر # فائلز}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@
 <translation id="8090732854597034573">اگر آپ کو مدد کی ضرورت ہو تو اپنے والدین سے پوچھیں</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> سے کوئی ٹیب نہیں</translation>
 <translation id="8103578431304235997">پوشیدگی ٹیب</translation>
+<translation id="810433609302852">تجاویز کی اطلاعات کی خصوصیت کا پرومو اور استعمال کے مراحل کی نیچے کی شیٹ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">ترتیب دینے کے اختیارات بند کریں</translation>
 <translation id="8110024788458304985">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
@@ -1825,6 +1832,7 @@
 <translation id="9169507124922466868">نیویگیشن کی سرگزشت آدھی کھلی ہوئی ہے</translation>
 <translation id="9189607089796819144">کیا آپ بہر صورت "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) کو ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="9190276265094487094">آپ کے تمام مطابقت پذیر آلات پر آپ کی سرگزشت موجود ہوگی تاکہ آپ جو کچھ کر رہے تھے اسے جاری رکھ سکیں</translation>
+<translation id="9197941237799589838">‫<ph name="TAB_TITLE" />، منتخب کردہ پوشیدگی ٹیب پن ہو گیا</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 منٹ پہلے چیک کیا گيا}other{# منٹ پہلے چیک کیا گیا}}</translation>
 <translation id="9204836675896933765">1 فائل باقی ہے</translation>
 <translation id="9205933215779845960">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا <ph name="SEARCH_ENGINE" /> پر تلاش کرنے کی کوشش کریں۔</translation>

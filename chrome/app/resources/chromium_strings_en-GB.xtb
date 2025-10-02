@@ -35,6 +35,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1345251407431278948">Pinned! You can access image search again from the new button on the toolbar</translation>
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="1397530502368084401">&amp;Manage Chromium profiles</translation>
 <translation id="1414495520565016063">You're signed in to Chromium!</translation>
 <translation id="141901961143729572">Share your thoughts</translation>
 <translation id="1465192221147974788">To share your window, allow screen recording for Chromium in System Settings.</translation>
@@ -73,6 +74,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1896836275755235458">Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Ask about this page</translation>
 <translation id="1900969832270057921">Chromium updater service</translation>
+<translation id="1911666947158375684">While you're signed in, you can use your passwords and more from your Google Account in Chromium. You can change this at any time in settings.</translation>
 <translation id="1911763535808217981">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chromium</translation>
 <translation id="1916451563296275579">Remove this app's data from Chromium</translation>
 <translation id="1929939181775079593">Chromium is unresponsive. Relaunch now?</translation>
@@ -495,6 +497,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6877155553248388166">bottom-right corner of search area: right <ph name="RIGHT" />%, bottom <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6901631050894301805">Set Chromium as your default browser and pin it to your taskbar</translation>
+<translation id="6909503629704372277">&amp;Manage Chromium profiles</translation>
 <translation id="6934579572334859869">Ask image search about this image</translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6965382102122355670">OK</translation>

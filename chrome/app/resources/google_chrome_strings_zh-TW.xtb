@@ -248,6 +248,9 @@
 <translation id="3809772425479558446">Google Chrome 僅支援 Windows 10 以上版本的作業系統。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="383928141529488001">Google Chrome 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**摘要：** 請用一句話 (不超過 30 個字) 說明螢幕截圖內容的主要主題和目的。
+
+          **建議問題：** 生成項目符號清單，列出使用者可以提出的 3 至 5 個問題，以便啟發思考，深入瞭解螢幕截圖內容。其中至少應有一個問題與某個視覺物件、其設計或位置相關。</translation>
 <translation id="386202838227397562">請關閉所有 Google Chrome 視窗，並再試一次</translation>
 <translation id="3873044882194371212">在 Chrome 無痕視窗中開啟連結(&amp;G)</translation>
 <translation id="3885770153807205175">語言選單</translation>
@@ -521,6 +524,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7025800014283535195">你可以在這裡切換不同的 Chrome 設定檔</translation>
+<translation id="7047386856539490735">這些結果實用嗎？</translation>
 <translation id="7051685429025310665">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
 <translation id="7060643578009939353">使用 Google 智慧鏡頭搜尋這部影片</translation>

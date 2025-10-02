@@ -252,6 +252,9 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3809772425479558446">Google Chrome kërkon Windows 10 ose një version më të lartë.</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="383928141529488001">Google Chrome ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Përmblidh:** Në një fjali të vetme deri në 30 fjalë, përshkruaj subjektin kryesor dhe qëllimin e përmbajtjes në pamjen e ekranit.
+
+          **Sugjero pyetje:** Gjenero një listë me pika prej 3 deri në 5 pyetje që nxisin të menduarit dhe që mund të bëhen nga një përdorues për të kuptuar më mirë pamjen e ekranit. Këto pyetje duhet të përfshijnë të paktën një pyetje që ka të bëjë në mënyrë specifike me një objekt vizual, dizajnin ose vendosjen e tij.</translation>
 <translation id="386202838227397562">Mbyll të gjitha dritaret e Google Chrome dhe provo përsëri.</translation>
 <translation id="3873044882194371212">Hape lidhjen në një dritare të fshehtë të Chrome</translation>
 <translation id="3885770153807205175">Zgjedhësi i gjuhës</translation>
@@ -527,6 +530,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7024536598735240744">Gabim shpaketimi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalimi ndaloi.</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
+<translation id="7047386856539490735">A janë të dobishme këto rezultate?</translation>
 <translation id="7051685429025310665">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Bëje Chrome tëndin</translation>
 <translation id="7060643578009939353">Kërkoje këtë video me "Lenten e Google"</translation>

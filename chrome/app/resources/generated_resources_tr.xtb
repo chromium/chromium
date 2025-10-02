@@ -1307,6 +1307,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1880618477732738742">Bu uzantı da dahil olmak üzere tüm uzantılarınızın ve web sitelerinizin coğrafi konum, mikrofon, kamera, çerezler gibi özelliklere erişimini değiştirin ve erişmesine izin verin.</translation>
 <translation id="1881445033931614352">Klavye düzeni</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Öğe}other{# öğe}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Mevcut görünürlük ayarı bazı kişiler şeklindedir</translation>
 <translation id="1884705339276589024">Linux Disk'i yeniden yeniden boyutlandırma</translation>
 <translation id="1885066963699478692">Politikaları ayarlamak için kullanılan XML dosyaları.</translation>
@@ -3818,6 +3819,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3629664892718440872">Bu tercihi hatırla</translation>
 <translation id="3630132874740063857">Telefonunuz</translation>
 <translation id="3630995161997703415">Bu siteyi istediğiniz zaman kullanmak için rafınıza ekleyin</translation>
+<translation id="3633492436029262388">Şifrelerinizi, yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Google Hesabınıza kaydedin</translation>
 <translation id="3633759325857031264">HDMI cihazı</translation>
 <translation id="3634652306074934350">İzin isteğinin süresi doldu</translation>
 <translation id="3635199270495525546">Güvenilir Platform Modülü (TPM) saptandı</translation>
@@ -3988,6 +3990,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3735039640698208086">Ses çalarken...</translation>
 <translation id="3735740477244556633">Sıralama ölçütü</translation>
 <translation id="3735827758948958091">Sayaçlı bağlantı kullanılırken <ph name="FILE_NAMES" /> açılamaz</translation>
+<translation id="3736575924150462398">Sekme veya diğer öğeleri ekleyin</translation>
 <translation id="3737058101969549870">Mevcut tarama verileri bu yeni profilden ayrı tutulsun mu?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> verileri 24 saat içinde silinecek</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7989,6 +7992,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6569931898053264308">Orta Seviye Tasarruf</translation>
 <translation id="6570622975915850879">Farklı bir cihaz kullan</translation>
 <translation id="65711204837946324">İndirme için izin gerekiyor</translation>
+<translation id="6571178651832779742">Yinelenen yer işaretlerini temizlemek için yer işaretlerini Google Hesabınıza kaydedin</translation>
 <translation id="6571533309669248172">Metin biçimlendirme</translation>
 <translation id="6571772921213691236">Oturum açma verilerini düzenleyin</translation>
 <translation id="657229725818377235">Tehlikeli web sitelerine ve indirmelere karşı daha fazla koruma elde edin</translation>
@@ -8625,6 +8629,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> yazıcısında yazdırmak için kimlik gerekiyor. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="7001397294201412227">Bir telefon, tablet veya güvenlik anahtarı kullanın</translation>
 <translation id="7001556399332161712">Arama ve öneriler</translation>
+<translation id="7001809623433867903">Yer işaretleri temizlensin mi?</translation>
 <translation id="7003339318920871147">Web veritabanları</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} dosya}other{{COUNT} dosya}}</translation>
 <translation id="7003644704445046755">Yüksek kaliteli <ph name="LANGUAGE" /> ses dosyaları indirildi</translation>
@@ -9044,7 +9049,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7314989823816739632">Romantik</translation>
 <translation id="7317342082064136423">Hesabınızı doğrulayın</translation>
 <translation id="7317831949569936035">Okula kayıt</translation>
-<translation id="731827437403763009">Yapay zeka alanındaki yenilikler</translation>
+<translation id="731827437403763009">Yapay zeka yenilikleri</translation>
 <translation id="7319320447721994672">Çerez kullanan bir siteyi ziyaret ederseniz tüm site özelliklerinin çalışması için çerezleri geçici olarak etkinleştirmeniz gerekebilir.</translation>
 <translation id="7319983568955948908">Paylaşmayı Durdur</translation>
 <translation id="7320213904474460808">Varsayılan olarak ağa bağlan</translation>
@@ -9105,6 +9110,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7356908624372060336">Ağ günlükleri</translation>
 <translation id="7357271391997763660">Şifre kontrolü çalıştırılsın mı?</translation>
 <translation id="735745346212279324">VPN bağlantısı kesildi</translation>
+<translation id="7359326150089800742">Aramanıza sekme veya dosya eklemenin yanı sıra bir araç kullanın</translation>
 <translation id="7359680654975233185">Sekme yayınlanamıyor</translation>
 <translation id="7360257054721917104">Kayıtlı masalar ve şablonlar gösteriliyor. Gezinmek için sekme tuşuna basın.</translation>
 <translation id="7360333718677093875">emoji seçici</translation>
@@ -9910,6 +9916,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Linux bağlantı noktalarını ağınızdaki diğer cihazların kullanımına sunun.</translation>
 <translation id="7906440585529721295">Yerel veriler silinecek</translation>
+<translation id="7907312522152480478">Diğer cihazlarınızdaki sekmeleri görmek için kimliğinizi doğrulayıp geçmişinizi ve sekmelerinizi senkronize edin. Senkronizasyonu istediğiniz zaman Ayarlar'dan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="7907502219904644296">Erişimi değiştir</translation>
 <translation id="7907837847548254634">Odaklanılmış nesnede kısa bir vurgulama göster</translation>
 <translation id="7908378463497120834">Maalesef, harici depolama cihazınızdaki en az bir bölüm eklenemedi.</translation>
@@ -10546,6 +10553,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8323167517179506834">URL yaz</translation>
 <translation id="8323317289166663449">Bilgisayarınızda ve web sitelerinde tüm verilerinizi okuma ve değiştirme</translation>
 <translation id="8323518750352551353">Tarama İşlemleri Ayrılsın mı?</translation>
+<translation id="8323744572398547859">Diğer cihazlarınızdaki sekmeleri görmek için oturum açın ve geçmişi senkronize edin. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman Ayarlar'dan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="8324158725704657629">Tekrar sorma</translation>
 <translation id="8325413836429495820">Panonuzu görmesine izin verilmeyenler</translation>
 <translation id="8326478304147373412">PKCS #7, sertifika zinciri</translation>

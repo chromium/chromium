@@ -1307,6 +1307,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1880618477732738742">Modifica e concedi l'accesso a funzionalità come geolocalizzazione, microfono, videocamera, cookie e così via per tutti i tuoi siti web e le tue estensioni, inclusa questa estensione.</translation>
 <translation id="1881445033931614352">Layout tastiera</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementi}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">L'attuale impostazione di visibilità è Alcuni contatti</translation>
 <translation id="1884705339276589024">Ridimensiona disco Linux</translation>
 <translation id="1885066963699478692">I file XML usati per impostare le policy.</translation>
@@ -3545,7 +3546,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3441824746233675597">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. <ph name="PRODUCT_NAME" /> utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Consenti a Google di usare i dati relativi al tuo hardware per migliorare <ph name="DEVICE_OS" />. Se rifiuti, questi dati vengono comunque inviati a Google per stabilire gli aggiornamenti appropriati, ma non vengono archiviati o usati in altro modo.</translation>
 <translation id="3443545121847471732">Inserisci un PIN di 6 cifre</translation>
-<translation id="3443702190855647469">Gestisci le app collegate</translation>
+<translation id="3443702190855647469">Gestisci le app connesse</translation>
 <translation id="3443744348829035122">Timeout di <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Hai già le password per questi account in <ph name="BRAND" />. Se scegli di importare una delle password seguenti, quella esistente sostituirà quella esistente.</translation>
 <translation id="344449859752187052">Cookie di terze parti bloccati</translation>
@@ -3822,12 +3823,13 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3629664892718440872">Ricorda questa scelta</translation>
 <translation id="3630132874740063857">Il tuo telefono</translation>
 <translation id="3630995161997703415">Aggiungi questo sito alla barra delle app per usarlo in qualsiasi momento</translation>
+<translation id="3633492436029262388">Per trovare le password, i preferiti e altri dati su tutti i dispositivi, salvali nel tuo Account Google</translation>
 <translation id="3633759325857031264">Dispositivo HDMI</translation>
 <translation id="3634652306074934350">Richiesta di autorizzazione scaduta</translation>
 <translation id="3635199270495525546">TPM (Trusted Platform Module) rilevato</translation>
 <translation id="3635353578505343390">Invia feedback a Google</translation>
 <translation id="3635960017746711110">Preferenze USB su Crostini</translation>
-<translation id="3636538438330991674">Gestisci le app a cui collegare Gemini</translation>
+<translation id="3636538438330991674">Gestisci le app a cui connettere Gemini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> rimanenti</translation>
 <translation id="3636940436873918441">Lingue preferite</translation>
 <translation id="3637203148990213388">Account aggiuntivi</translation>
@@ -3992,6 +3994,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3735039640698208086">Durante la riproduzione audio...</translation>
 <translation id="3735740477244556633">Ordina per</translation>
 <translation id="3735827758948958091">Impossibile aprire <ph name="FILE_NAMES" /> durante una connessione a consumo</translation>
+<translation id="3736575924150462398">Aggiungi schede o altro</translation>
 <translation id="3737058101969549870">Vuoi mantenere i dati di navigazione esistenti separati da questo nuovo profilo?</translation>
 <translation id="3738632186060045350">I dati del <ph name="DEVICE_TYPE" /> verranno eliminati tra 24 ore</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7989,6 +7992,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6569931898053264308">Medi risparmi</translation>
 <translation id="6570622975915850879">Usa un dispositivo diverso</translation>
 <translation id="65711204837946324">Richiede l'autorizzazione al download</translation>
+<translation id="6571178651832779742">Per eliminare i preferiti duplicati, salvali nel tuo Account Google</translation>
 <translation id="6571533309669248172">Formattazione del testo</translation>
 <translation id="6571772921213691236">Modifica i dati di accesso</translation>
 <translation id="657229725818377235">Aumenta la protezione da download e siti web pericolosi</translation>
@@ -8224,7 +8228,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6729192290958770680">Inserisci il tuo nome utente</translation>
 <translation id="6729280095610283088">Rivoli luminosi dell'aurora boreale su una foresta.</translation>
 <translation id="6729493062119577923">Attività del gruppo di schede condiviso</translation>
-<translation id="6730744976532805323">Condivide la scheda corrente con Gemini, anche quando cambi scheda</translation>
+<translation id="6730744976532805323">Condivide la scheda corrente con Gemini, anche quando cambi scheda.</translation>
 <translation id="6731320427842222405">L'operazione potrebbe richiedere alcuni minuti</translation>
 <translation id="6732956960067639542">Apri una nuova sessione del browser Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -8625,6 +8629,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7001066449188684145">Identificazione obbligatoria per stampare dalla stampante <ph name="PRINTER_NAME" />. Contatta l'amministratore.</translation>
 <translation id="7001397294201412227">Usa uno smartphone, un tablet o un token di sicurezza</translation>
 <translation id="7001556399332161712">Ricerca e suggerimenti</translation>
+<translation id="7001809623433867903">Eliminare i preferiti?</translation>
 <translation id="7003339318920871147">Database web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} file}}</translation>
 <translation id="7003644704445046755">File vocali in lingua <ph name="LANGUAGE" /> di alta qualità scaricati</translation>
@@ -9105,6 +9110,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7356908624372060336">Log di rete</translation>
 <translation id="7357271391997763660">Eseguire il controllo della password?</translation>
 <translation id="735745346212279324">VPN scollegata</translation>
+<translation id="7359326150089800742">Aggiungi una scheda o un file alla ricerca e usa anche uno strumento</translation>
 <translation id="7359680654975233185">Impossibile trasmettere la scheda</translation>
 <translation id="7360257054721917104">Sono visualizzati modelli e scrivanie salvati. Premi Tab per navigare.</translation>
 <translation id="7360333718677093875">selettore di emoji</translation>
@@ -9911,6 +9917,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Rendi disponibili le porte Linux per altri dispositivi sulla tua rete.</translation>
 <translation id="7906440585529721295">I dati locali verranno eliminati</translation>
+<translation id="7907312522152480478">Per recuperare le schede dagli altri tuoi dispositivi, esegui la verifica della tua identità e sincronizza la cronologia e le schede. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="7907502219904644296">Modifica accesso</translation>
 <translation id="7907837847548254634">Evidenzia brevemente l'oggetto attivo</translation>
 <translation id="7908378463497120834">Spiacenti, impossibile montare almeno una partizione del dispositivo di archiviazione esterno.</translation>
@@ -10547,6 +10554,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8323167517179506834">Digita un URL</translation>
 <translation id="8323317289166663449">Leggere e modificare tutti i tuoi dati sul computer e su tutti i siti web</translation>
 <translation id="8323518750352551353">Separare la navigazione?</translation>
+<translation id="8323744572398547859">Accedi e sincronizza la cronologia per recuperare le schede dagli altri tuoi dispositivi. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="8324158725704657629">Non chiedermelo più</translation>
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>

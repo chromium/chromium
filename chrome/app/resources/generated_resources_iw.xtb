@@ -3837,6 +3837,7 @@
 <translation id="3629664892718440872">אני רוצה להשתמש באפשרות הזו גם בעתיד</translation>
 <translation id="3630132874740063857">הטלפון שלך</translation>
 <translation id="3630995161997703415">כדי שניתן יהיה תמיד להשתמש באתר הזה יש להוסיף אותו למדף</translation>
+<translation id="3633492436029262388">‏כדי לקבל גישה לסיסמאות, לסימניות ולנתונים נוספים בכל המכשירים, צריך לשמור אותם בחשבון Google</translation>
 <translation id="3633759325857031264">‏מכשיר HDMI</translation>
 <translation id="3634652306074934350">פג תוקפה של הבקשה להרשאה</translation>
 <translation id="3635199270495525546">‏זוהה מודול פלטפורמה מהימן (TPM)</translation>
@@ -4007,7 +4008,7 @@
 <translation id="3735039640698208086">בהשמעת אודיו...</translation>
 <translation id="3735740477244556633">מיון לפי</translation>
 <translation id="3735827758948958091">לא ניתן לפתוח את הקובץ <ph name="FILE_NAMES" /> במהלך חיבור עם חיוב לפי שימוש בנתונים</translation>
-<translation id="3736575924150462398">הוספת כרטיסיות או יותר</translation>
+<translation id="3736575924150462398">הוספת כרטיסיות ועוד</translation>
 <translation id="3737058101969549870">לשמור את נתוני הגלישה הקיימים בנפרד מהפרופיל החדש?</translation>
 <translation id="3738632186060045350">הנתונים של <ph name="DEVICE_TYPE" /> יימחקו בתוך 24 שעות</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -8015,6 +8016,7 @@
 <translation id="6569931898053264308">חיסכון של נפח בינוני</translation>
 <translation id="6570622975915850879">שימוש במכשיר אחר</translation>
 <translation id="65711204837946324">נדרשת הרשאה כדי להוריד</translation>
+<translation id="6571178651832779742">‏כדי למחוק סימניות כפולות, צריך לשמור אותן בחשבון Google</translation>
 <translation id="6571533309669248172">עיצוב טקסט</translation>
 <translation id="6571772921213691236">עריכה נתוני הכניסה</translation>
 <translation id="657229725818377235">הגנה נוספת מפני הורדות אתרים מסוכנים</translation>
@@ -8656,6 +8658,7 @@
 <translation id="7001066449188684145">נדרש מזהה להדפסה ב-<ph name="PRINTER_NAME" />. צריך לפנות למנהל המערכת.</translation>
 <translation id="7001397294201412227">שימוש בטלפון, בטאבלט או במפתח אבטחה</translation>
 <translation id="7001556399332161712">חיפוש והצעות</translation>
+<translation id="7001809623433867903">למחוק את הסימניות?</translation>
 <translation id="7003339318920871147">מסדי נתונים באינטרנט</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{קובץ אחד ({COUNT})}one{{COUNT} קבצים}two{{COUNT} קבצים}other{{COUNT} קבצים}}</translation>
 <translation id="7003644704445046755">הורדת קובצי קול באיכות גבוהה <ph name="LANGUAGE" /></translation>
@@ -9136,7 +9139,7 @@
 <translation id="7356908624372060336">יומני רשת</translation>
 <translation id="7357271391997763660">להריץ את בדיקת הסיסמאות?</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
-<translation id="7359326150089800742">אפשר להוסיף כרטיסייה או קובץ לחיפוש, וגם להשתמש בכלי</translation>
+<translation id="7359326150089800742">אפשר להוסיף כרטיסייה או קובץ לחיפוש, או להשתמש בכלי כלשהו</translation>
 <translation id="7359680654975233185">‏אי אפשר להפעיל Cast של הכרטיסייה</translation>
 <translation id="7360257054721917104">‏מוצגים שולחנות העבודה הווירטואליים והתבניות ששמרת. צריך להקיש על Tab כדי לנווט.</translation>
 <translation id="7360333718677093875">בורר האמוג'י</translation>
@@ -9943,7 +9946,7 @@
 <translation id="7903984238293908205">קאטקאנה</translation>
 <translation id="7904526211178107182">‏הגדרת יציאות Linux שזמינות למכשירים אחרים ברשת.</translation>
 <translation id="7906440585529721295">הנתונים המקומיים יימחקו</translation>
-<translation id="7907312522152480478">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, צריך לאמת את הזהות שלך ולסנכרן את ההיסטוריה ואת הכרטיסיות. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
+<translation id="7907312522152480478">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, עליך לאמת את הזהות ולסנכרן את ההיסטוריה ואת הכרטיסיות. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7907502219904644296">שינוי הרשאת הגישה</translation>
 <translation id="7907837847548254634">הוספה חטופה של מסגרת סביב אובייקטים שמתמקדים בהם</translation>
 <translation id="7908378463497120834">מצטערים, לא ניתן להעלות לפחות מחיצה אחת במכשיר האחסון החיצוני שלך.</translation>

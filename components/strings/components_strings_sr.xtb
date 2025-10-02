@@ -1253,6 +1253,7 @@
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
 <translation id="3093122472063815077">Екран са напретком за Купите одмах, платите касније отворен је до половине екрана.</translation>
+<translation id="309381737510736393">Када организација ограничи чување на Google налогу, не можете да делите картице нити да сарађујете са другима</translation>
 <translation id="3094051226187213523">Отвори AI режим помоћу овог предлога.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3098513225387949945">Занемарује се јер се на листи онемогућених налази образац који је једнак „*“, а што је еквивалентно онемогућавању смерница.</translation>
@@ -1698,6 +1699,7 @@
 <translation id="3784372983762739446">Bluetooth уређаји</translation>
 <translation id="3785246317262748285">Обично се безбедно повезујете са сајтовима, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Најбоља подударања за „<ph name="SEARCH_QUERY" />“</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />,<ph name="ISSUER_2_NAME" /> или <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3791118028061680614">Плаћајте без мењања апликације</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> in)</translation>
@@ -2679,6 +2681,7 @@
 <translation id="5412040515238827314">Неважећи формат: Очекивана је листа образаца.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />–<ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4. преграда за слагање</translation>
+<translation id="5414306071315087019">Опција Купите одмах, платите касније је доступна уз Google Pay</translation>
 <translation id="5414446060143308245">Потребан је преглед пре преношења</translation>
 <translation id="5414511064953050917">Ипак премести</translation>
 <translation id="5418700249417444482">URL-ови страница које посећујете се шаљу у Google Cloud или трећим странама на анализу и могу да буду видљиви администратору. На пример, можда ћемо их скенирати да бисмо открили небезбедне веб-сајтове или филтрирали веб-сајтове на основу правила која је подесио администратор.</translation>
@@ -2799,6 +2802,7 @@
 <translation id="5595485650161345191">Измена адресе</translation>
 <translation id="5596939519753369075">2×3,5 in</translation>
 <translation id="5597254438174353289">Плава 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> или <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Управљање није подржано</translation>
 <translation id="5605249000617390290">Сазнајте више о праћењу цена</translation>
 <translation id="5605670050355397069">Ledger</translation>

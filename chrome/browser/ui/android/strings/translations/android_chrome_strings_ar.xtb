@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">محو البيانات من هذه المواقع والتطبيقات أيضًا؟</translation>
 <translation id="1034259925032978114">تم فتح نافذة.</translation>
+<translation id="1035113036584565771">تم إغلاق بطاقة العرض الترويجي لإشعارات النصائح</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1045899828449635435">محو البيانات من هذه المواقع أيضًا؟</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1052842760770519282">يتعذّر الوصول إلى بعض كلمات المرور</translation>
 <translation id="1058669287135776095">لا يتوفر اتصال بالإنترنت. يُرجى التأكد من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
+<translation id="1066338698580889414">تم فتح بطاقة العرض الترويجي لإشعارات النصائح بطول الشاشة</translation>
 <translation id="1070689840697074178">‏يمكنك تنزيل ملفات PDF هنا</translation>
 <translation id="107147699690128016">في حال تغيير امتداد الملف، قد يفتح الملف في تطبيق مختلف ومن المحتمل أن يشكّل خطورة على جهازك.</translation>
 <translation id="1087799850623149508">يمكنك النقر مع الاستمرار لنقل شريط العناوين إلى أسفل الشاشة</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973">يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="1702543251015153180">هل تريد تغيير إعدادات المظهر الداكن؟</translation>
 <translation id="1702907158640575240">متصفّح مُدار</translation>
+<translation id="170478069042229393">"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة في "وضع التصفّح المتخفي"</translation>
 <translation id="1718835860248848330">آخر ساعة</translation>
 <translation id="1726477445370128854">‏بإمكانك التصفّح والبحث بسرعة عندما يحمّل Chrome مُسبقًا الصفحات التي يتوقّع أن تنتقل إليها.</translation>
 <translation id="1728803206919861584">هل تريد حفظ مفتاح المرور خارج وضع التصفُّح المتخفي؟</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636">من "<ph name="APP_LABEL" />"</translation>
 <translation id="3029276696788198026">إيقاف التحميل المُسبق</translation>
 <translation id="3029704984691124060">عبارات المرور غير متطابقة</translation>
+<translation id="3029829659829245765">"<ph name="TAB_TITLE" />"، علامة تبويب مثبّتة تم اختيارها</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />الحصول على مساعدة<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">تتبُّع السعر</translation>
 <translation id="3037517125981011456">‏عرض طلبات تسجيل الدخول إلى Chrome</translation>
@@ -627,6 +631,7 @@
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="397583555483684758">توقفت المزامنة</translation>
 <translation id="3976396876660209797">إزالة هذا الاختصار وإعادة إنشائه</translation>
+<translation id="397650873162244514">"<ph name="TAB_TITLE" />"، علامة تبويب مثبّتة</translation>
 <translation id="3985022125189960801">يمكنك إعادة إضافة موقع إلكتروني إذا أردت إدراجه ضمن مجموعة المواقع الإلكترونية التي يمكنها تخمين ما يعجبك.</translation>
 <translation id="3985215325736559418">هل تريد تنزيل <ph name="FILE_NAME" /> مرة أخرى؟</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
@@ -1415,6 +1420,7 @@
 <translation id="7375125077091615385">النوع:</translation>
 <translation id="7376560087009844242">من خلال تضمين المزيد من نص صفحة معيَّنة، يمكنك الحصول على نتائج أفضل عند استخدام ميزة "النقر للبحث". ويمكنك متى شئت الانتقال إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" /> لتغيير هذا الإعداد.</translation>
 <translation id="7379900596734708416">يتوفّر المظهر الداكن للمواقع الإلكترونية</translation>
+<translation id="7384486627147155832">تم فتح بطاقة العرض الترويجي لإشعارات النصائح في نصف الشاشة</translation>
 <translation id="7388615499319468910">يمكن للمواقع الإلكترونية والمعلنين الاطّلاع على أداء إعلاناتهم. هذا الإعداد غير مفعَّل.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{تحتوي القائمة على ملف واحد من إجمالي الملفات الأخرى.}zero{تحتوي القائمة على # ملف من إجمالي الملفات الأخرى.}two{تحتوي القائمة على ملفيَن من إجمالي الملفات الأخرى.}few{تحتوي القائمة على # ملفات من إجمالي الملفات الأخرى.}many{تحتوي القائمة على # ملفًا من إجمالي الملفات الأخرى.}other{تحتوي القائمة على # ملف من إجمالي الملفات الأخرى.}}</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
@@ -1586,6 +1592,7 @@
 <translation id="8090732854597034573">إذا احتجت للمساعدة، يمكنك طلبها من أحد والدَيك.</translation>
 <translation id="8101414242770404289">لم يتم إغلاق أي علامات تبويب خلال <ph name="TIME_PERIOD" />.</translation>
 <translation id="8103578431304235997">علامة تبويب للتصفح المتخفي</translation>
+<translation id="810433609302852">بطاقة سفلية عن العرض الترويجي لميزة إشعارات النصائح وخطوات استخدامها</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">إغلاق خيارات الترتيب</translation>
 <translation id="8110024788458304985">‏المساعدة في تحسين ميزات Chrome وأدائه</translation>
@@ -1712,7 +1719,7 @@
 <translation id="8634050254805484913">هذا الشريط مخفي على الشاشات الضيقة</translation>
 <translation id="8635399646025169806">هل تريد الاحتفاظ بمجموعة علامات التبويب؟</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
-<translation id="8662474268934425487">تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="8662474268934425487">سجّل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
 <translation id="8676276370198826499">الاشتراك في <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">عمليات التحقّق من تسجيل الدخول</translation>
@@ -1828,6 +1835,7 @@
 <translation id="9169507124922466868">سجلّ التنقل مفتوح جزئيًا</translation>
 <translation id="9189607089796819144">هل المطلوب تنزيل "<ph name="FILE_NAME" />" ‏(<ph name="FILE_SIZE" />) على أي حال؟</translation>
 <translation id="9190276265094487094">سيظهر لك سجل التصفّح على جميع الأجهزة التي تتم مزامنة حسابك معها، ما يعني أنه يمكنك مواصلة التصفّح من حيث توقفت.</translation>
+<translation id="9197941237799589838">"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في "وضع التصفّح المتخفي"</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{تمّ إجراء عملية التحقُّق قبل دقيقة واحدة.}zero{تمّ إجراء عملية التحقُّق قبل # دقيقة.}two{تمّ إجراء عملية التحقُّق قبل دقيقتَين.}few{تمّ إجراء عملية التحقُّق قبل # دقائق.}many{تمّ إجراء عملية التحقُّق قبل # دقيقة.}other{تمّ إجراء عملية التحقُّق قبل # دقيقة.}}</translation>
 <translation id="9204836675896933765">ملف واحد متبقٍ</translation>
 <translation id="9205933215779845960">لم نتمكّن من العثور على تلك الصفحة. تحقّق من تهجئة الكلمات أو جرِّب البحث على <ph name="SEARCH_ENGINE" />.</translation>

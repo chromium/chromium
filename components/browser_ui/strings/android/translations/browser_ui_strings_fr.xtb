@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">Masquer la fiche "Baisses de prix dans les onglets"</translation>
 <translation id="1508931164824684991">Les sites peuvent utiliser JavaScript</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
+<translation id="1532175480576580256">Bottom sheet Mes raccourcis ouverte à pleine hauteur</translation>
 <translation id="1538031354170655462">Les sites utilisent généralement la technologie NFC (communication en champ proche) pour fonctionner avec des traceurs ou des appareils à proximité, comme pour scanner des badges ou payer sans contact</translation>
 <translation id="1547123415014299762">Les cookies tiers sont autorisés</translation>
 <translation id="1569054338208717605">Accélérer les sites avec le moteur V8 de Chrome, mais rendre Chrome légèrement moins résistant aux attaques</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">La plupart des sites que vous consultez enregistrent probablement des données sur votre appareil, comme vos préférences ou les informations que vous partagez avec le site, généralement pour améliorer votre expérience. Nous vous recommandons de laisser ce paramètre activé.</translation>
 <translation id="2289270750774289114">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth se trouvant à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection de certificat côté client n'est pas compatible avec le système d'exploitation.</translation>
+<translation id="2347601491101454548">Bottom sheet Mes raccourcis ouverte à mi-hauteur</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2379925928934107488">Si le thème sombre est activé dans Chrome, il sera appliqué aux sites, si possible</translation>
 <translation id="2390272837142897736">Augmenter le zoom</translation>

@@ -32,6 +32,7 @@
 <translation id="1345251407431278948">固定しました。ツールバーの新しいボタンから、画像検索にアクセスできます</translation>
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1383876407941801731">検索</translation>
+<translation id="1397530502368084401">Chromium プロフィールを管理(&amp;M)</translation>
 <translation id="1414495520565016063">Chromium にログインしました</translation>
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
@@ -70,6 +71,7 @@
 <translation id="1896836275755235458">バックグラウンド アクティビティと視覚効果（スムーズ スクロールや動画フレームレートなど）を制限することで、バッテリーを節約します。<ph name="BEGIN_LINK" />省エネモードの詳細<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">このページについて質問する</translation>
 <translation id="1900969832270057921">Chromium Updater サービス</translation>
+<translation id="1911666947158375684">Chromium にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。これは [設定] でいつでも変更できます。</translation>
 <translation id="1911763535808217981">この設定を無効にすると、Chromium にログインすることなく Gmail などの Google サイトにログインできます</translation>
 <translation id="1916451563296275579">Chromium からこのアプリのデータを削除する</translation>
 <translation id="1929939181775079593">Chromium が応答しません。今すぐ再起動しますか？</translation>
@@ -486,6 +488,7 @@
 <translation id="6877155553248388166">検索範囲の右下隅: 右 <ph name="RIGHT" />%、下 <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6901631050894301805">Chromium を既定のブラウザに設定して、タスクバーに固定する</translation>
+<translation id="6909503629704372277">Chromium プロフィールを管理(&amp;M)</translation>
 <translation id="6934579572334859869">画像検索でこの画像について質問する</translation>
 <translation id="6964305034639999644">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="6965382102122355670">OK</translation>

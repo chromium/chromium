@@ -614,6 +614,7 @@ Pour en savoir plus, veuillez consulter https://support.google.com/chrome/a/?p=e
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2) : cette valeur a été abandonnée dans la version M121. Dans M121 et les versions ultérieures, les valeurs seront traitées comme EnabledUnderThreshold.
       </translation>
 <translation id="1434300053894025056">Désactiver le correcteur orthographique</translation>
+<translation id="1434936032334586168">Activer l'impression silencieuse</translation>
 <translation id="1435031247649241006">Depuis l'écran de verrouillage, les utilisateurs peuvent ouvrir une fenêtre de réauthentification en ligne et l'utiliser pour le processus d'authentification permettant de revenir à leur session. Cette règle peut servir à ouvrir automatiquement cette fenêtre si une réauthentification en ligne est requise.
 
 Si cette règle est activée et qu'une réauthentification en ligne est requise, la fenêtre s'ouvre automatiquement.
@@ -1902,6 +1903,7 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la list
 <translation id="2306505001667207184">Inviter l'utilisateur à sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.</translation>
 <translation id="230713790688681130">Activer la disposition de clavier Hindi InScript</translation>
 <translation id="2307496301287881990">Transmettre des états liés aux affichages et aux graphiques</translation>
+<translation id="2308899582897965249">Désactiver l'impression silencieuse</translation>
 <translation id="2309284543927494965">Bloquer les mises à jour</translation>
 <translation id="2309341709647905294">Ne pas signaler les informations sur les périphériques branchés à l'appareil</translation>
 <translation id="2309390639296060546">Paramètre de géolocalisation par défaut</translation>
@@ -2084,6 +2086,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2439733504887695659">Activer la fermeture des alertes de mot de passe compromis pour les identifiants saisis</translation>
 <translation id="2446029789419870019">Autoriser l'utilisation de la fonctionnalité et l'amélioration des modèles d'IA</translation>
 <translation id="2446244536806499267">Ne pas considérer l'utilisateur comme inactif pendant la lecture audio</translation>
+<translation id="2450392422484526374">Si cette règle est définie sur "True", l'impression silencieuse est activée. La fenêtre d'aperçu avant impression se ferme immédiatement lorsqu'elle s'ouvre, et l'impression est lancée sur l'imprimante par défaut avec les options par défaut. Si l'imprimante par défaut est définie sur "Enregistrer au format PDF", le fichier sera enregistré dans le dossier "Téléchargements".
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur "False", l'impression silencieuse est désactivée. La fenêtre d'aperçu avant impression ne se ferme pas automatiquement et l'utilisateur doit sélectionner une option comme d'habitude.</translation>
 <translation id="2452225615952836461">Toujours utiliser des méthodes de requête en majuscules</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
 <translation id="2455033019778127130">Utiliser le comportement par défaut du navigateur, afficher les conditions d'utilisation et attendre que l'utilisateur les accepte.</translation>

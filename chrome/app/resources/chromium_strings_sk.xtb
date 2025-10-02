@@ -72,6 +72,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1896836275755235458">Chromium šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa. <ph name="BEGIN_LINK" />Ďalšie informácie o šetriči energie<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Spýtajte sa na túto stránku</translation>
 <translation id="1900969832270057921">Služba Chromium Updater</translation>
+<translation id="1911666947158375684">Kým máte aktívne prihlásenie, môžete v prehliadači Chromium používať svoje heslá a ďalší obsah zo svojho účtu Google. Túto možnosť môžete kedykoľvek zmeniť v nastaveniach.</translation>
 <translation id="1911763535808217981">Po vypnutí tejto možnosti sa budete môcť prihlásiť do webov Googlu (napríklad do Gmailu) bez prihlásenia do prehliadača Chromium</translation>
 <translation id="1916451563296275579">Odstrániť tieto dáta aplikácií z prehliadača Chromium</translation>
 <translation id="1929939181775079593">Chromium nereaguje. Chcete ho spustiť znova?</translation>
@@ -236,6 +237,9 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="379589255253486813">Ak bude potrebné niečo skontrolovať, Chromium vás upozorní</translation>
 <translation id="3802055581630249637">Chromium prednačítava stránky, ktoré pravdepodobne navštívite, aby sa načítali rýchlejšie, keď na ne prejdete</translation>
 <translation id="3810973564298564668">Spravovať</translation>
+<translation id="3846683726093018685">**Zhrňte:** jednou vetou s menej ako 30 slovami opíšte hlavný objekt a účel obsahu na snímke obrazovky.
+
+          **Navrhnite otázky:** vygenerujte nečíslovaný zoznam troch až piatich otázok na zamyslenie, ktoré by používateľ mohol položiť, aby lepšie porozumel snímke obrazovky. Medzi týmito otázkami by mala byť aspoň jedna, ktorá sa bude týkať konkrétneho vizuálneho objektu, jeho vzhľadu alebo umiestnenia.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="3885770153807205175">Výber jazyka</translation>
 <translation id="388648406173476553">Prispôsobte a ovládajte Chromium. Vyžaduje sa vaša pozornosť. Podrobnosti získate kliknutím.</translation>
@@ -502,6 +506,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="7024536598735240744">Chyba pri rozbalení: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Inštalácia bola zastavená.</translation>
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>
+<translation id="7047386856539490735">Sú tieto výsledky užitočné?</translation>
 <translation id="705851970750939768">Aktualizovať Chromium</translation>
 <translation id="7067091210845072982">Ak obrázok nemá užitočný popis, Chromium sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="7141270731789036260">Prispôsobiť Chrome for Testing</translation>

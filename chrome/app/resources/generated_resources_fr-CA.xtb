@@ -393,6 +393,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="125097549534200450">effacer</translation>
 <translation id="1251366534849411931">Accolade ouvrante attendue : <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Recherche de réseaux de données cellulaires en cours…</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}one{{BOOKMARK_COUNT} favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}other{{BOOKMARK_COUNT} favoris et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}}</translation>
 <translation id="125220115284141797">Par défaut</translation>
 <translation id="1252219782845132919">Masquer le groupe</translation>
 <translation id="1252987234827889034">Une erreur liée au profil est survenue</translation>
@@ -1308,6 +1309,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1880618477732738742">Modifiez et accordez l'accès à des fonctionnalités telles que la géolocalisation, le microphone, la caméra, les témoins, etc., pour tous vos sites Web et vos extensions, y compris cette extension.</translation>
 <translation id="1881445033931614352">Disposition du clavier</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Élément}one{# élément}other{# éléments}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Le paramètre de visibilité actuelle est réglé à quelques contacts</translation>
 <translation id="1884705339276589024">Redimensionner le disque Linux</translation>
 <translation id="1885066963699478692">Fichiers XML qui sont utilisés pour définir les politiques.</translation>
@@ -3257,6 +3259,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3239373508713281971">Limite de temps supprimée pour <ph name="APP_NAME" /></translation>
 <translation id="3240299564104448052">Vous semblez être hors ligne.</translation>
 <translation id="3240426699337459095">Lien copié</translation>
+<translation id="3240718227457961717">Pour obtenir vos onglets à partir de vos autres appareils, synchronisez votre historique et vos onglets avec votre adresse <ph name="ACCOUNT_EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3241638166094654466">Cellules dans chaque ligne :</translation>
 <translation id="3241680850019875542">Sélectionnez le répertoire racine de l'extension à empaqueter. Pour mettre à jour une extension, sélectionnez également le fichier de clé privée à réutiliser.</translation>
 <translation id="3241810535741601486">Cette modification est permanente et irréversible. Les mises à jour étendues s'appliquent à tous les utilisateurs de cet appareil. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
@@ -3996,6 +3999,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3735039640698208086">Lors de la lecture d'un contenu audio…</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3735827758948958091">Impossible d'ouvrir <ph name="FILE_NAMES" /> avec une connexion mesurée</translation>
+<translation id="3736575924150462398">Ajouter des onglets ou plus</translation>
 <translation id="3737058101969549870">Conserver les données de navigation existantes séparément de votre nouveau profil?</translation>
 <translation id="3738632186060045350">Les données du <ph name="DEVICE_TYPE" /> seront supprimées dans 24 heures</translation>
 <translation id="3738924763801731196"><ph name="OID" /> :</translation>
@@ -4124,6 +4128,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="381202950560906753">Ajouter une autre empreinte digitale</translation>
 <translation id="3812525830114410218">Certificat non fiable</translation>
+<translation id="3813275565773644111">Votre organisation a désactivé l'enregistrement de l'historique et des onglets dans votre compte Google.</translation>
 <translation id="3813296892522778813">Accédez à l'<ph name="BEGIN_LINK_CHROMIUM" />aide Google Chrome<ph name="END_LINK_CHROMIUM" /> si vous ne parvenez pas à trouver ce que vous recherchez</translation>
 <translation id="3813358687923336574">Langue utilisée pour la traduction des pages et des réponses rapides</translation>
 <translation id="3813458570141926987">Liste des sujets suggérés par Chrome en fonction de votre historique de navigation récent</translation>
@@ -6188,6 +6193,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5267572070504076962">Activez la Navigation sécurisée pour profiter d'une protection contre les sites dangereux</translation>
 <translation id="5269977353971873915">Échec de l'impression</translation>
 <translation id="5271578170655641944">Retirer l'accès à Google Disque?</translation>
+<translation id="5272198173084686007">Pas d'onglets provenant d'autres appareils</translation>
 <translation id="527335345740023523">Vous avez actuellement <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> et autres. Votre organisation, <ph name="ACCOUNT_MANAGER" />, pourra voir et gérer ces données.</translation>
 <translation id="5273806377963980154">Modifier l'URL du site</translation>
 <translation id="5275084684151588738">Dictionnaires personnels</translation>
@@ -6267,6 +6273,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5327570636534774768">Cet appareil a été inscrit à des fins de gestion par un autre domaine. Supprimez son provisionnement par ce domaine avant de configurer le mode Démo.</translation>
 <translation id="5327912693242073631">Les fonctionnalités qui ont besoin des notifications ne fonctionneront pas</translation>
+<translation id="5328551442597731838">Voir les onglets d'autres appareils</translation>
 <translation id="532943162177641444">Touchez la notification sur votre <ph name="PHONE_NAME" /> afin de configurer le point d'accès mobile que cet appareil peut utiliser.</translation>
 <translation id="5329858601952122676">&amp;Supprimer</translation>
 <translation id="5331568967879689647">Application système de Chrome OS</translation>
@@ -7464,6 +7471,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6184868291074982484">Chrome limite automatiquement les témoins tiers</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
 <translation id="6185151644843671709">Clé d'accès enregistrée et NIP créé</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}one{{PASSWORD_COUNT} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}other{{PASSWORD_COUNT} mots de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}}</translation>
 <translation id="6186177419203903310">Cette action activera les notifications pour tous les nouveaux périphériques USB du système. Voulez-vous vraiment continuer?</translation>
 <translation id="6190953336330058278">Applications de la fonctionnalité Phone Hub</translation>
 <translation id="6192333916571137726">Télécharger le fichier</translation>
@@ -7598,6 +7606,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6274089201566806618">Connexion à <ph name="HOST_DEVICE_NAME" /> en cours…</translation>
 <translation id="6274108044476515407">La personnalisation d'une annonce que vous voyez peut dépendre de nombreux éléments, notamment de ce paramètre, des <ph name="BEGIN_LINK1" />annonces suggérées par les sites<ph name="LINK_END1" />, de vos <ph name="BEGIN_LINK2" />paramètres des témoins<ph name="LINK_END2" /> et du fait que le site que vous consultez personnalise les annonces. Apprenez-en davantage sur la <ph name="BEGIN_LINK3" />gestion de la confidentialité de vos annonces<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Vidéocapture d'écran</translation>
+<translation id="627581157848786026">Voir les onglets d'autres appareils</translation>
 <translation id="6276210637549544171">Le serveur mandataire <ph name="PROXY_SERVER" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="6277105963844135994">Délai d'attente réseau dépassé</translation>
 <translation id="6277518330158259200">Faire une s&amp;aisie d'écran</translation>
@@ -8530,6 +8539,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6922763095098248079">Votre appareil est géré par votre organisation. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="6923633482430812883">Erreur lors de la configuration du partage. Veuillez vérifier que le serveur de fichiers auquel vous tentez de vous connecter prend en charge SMBv2 ou une version ultérieure.</translation>
 <translation id="6924109527536857168">La synchronisation est nécessaire</translation>
+<translation id="6927200998271693557">Pour retrouver rapidement les sites que vous avez visités, synchronisez votre historique et vos onglets avec votre adresse <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Retirer automatiquement les autorisations des sites inutilisés</translation>
 <translation id="6929126689972602640">Les contrôles parentaux ne sont pas pris en charge pour les comptes scolaires. Pour ajouter un compte scolaire afin d'accéder à Google Classroom et à d'autres sites Web permettant de faire des devoirs à la maison, connectez-vous d'abord avec le compte personnel de l'enfant. Vous pouvez ajouter le compte scolaire plus tard dans le menu de configuration.</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Une extension a été refusée}one{# extension a été refusée}other{# extensions ont été refusées}}</translation>
@@ -9114,6 +9124,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7356908624372060336">Journaux réseau</translation>
 <translation id="7357271391997763660">Exécuter la vérification du mot de passe?</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
+<translation id="7359326150089800742">Ajouter un onglet ou un fichier à votre recherche et utiliser également un outil</translation>
 <translation id="7359680654975233185">Impossible de diffuser l'onglet</translation>
 <translation id="7360257054721917104">Affichage des bureaux et des modèles enregistrés. Appuyez sur l'onglet pour naviguer.</translation>
 <translation id="7360333718677093875">sélecteur d'émoji</translation>
@@ -9920,6 +9931,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7903984238293908205">katakana</translation>
 <translation id="7904526211178107182">Rendez les ports Linux accessibles aux autres appareils sur votre réseau.</translation>
 <translation id="7906440585529721295">Les données locales seront supprimées</translation>
+<translation id="7907312522152480478">Pour obtenir vos onglets à partir de vos autres appareils, confirmez qu'il s'agit bien de vous et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7907502219904644296">Modifier l'accès</translation>
 <translation id="7907837847548254634">Mettre brièvement en évidence l'objet à l'écran</translation>
 <translation id="7908378463497120834">Nous sommes désolés, il y a au moins une partition sur votre périphérique externe qui n'est pas installable.</translation>
@@ -10215,6 +10227,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8086610718778464681">Impossible de sauvegarder les applications et les fichiers Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}one{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers sont chiffrés. Demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 favori est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela permettra également de supprimer les doublons.}one{{BOOKMARK_COUNT} favori est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela permettra également de supprimer les doublons.}other{{BOOKMARK_COUNT} favoris sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}}</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous visitez le plus</translation>
 <translation id="8090513782447872344">Vous pouvez revenir à tout moment pour consulter le guide à nouveau</translation>
 <translation id="8090686009202681725">Créer un thème avec l'IA</translation>
@@ -10348,6 +10361,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8184288427634747179">Utiliser <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Renseignements supplémentaires</translation>
 <translation id="8184472985242519288">Uniforme</translation>
+<translation id="8185614942934189676">Adresse courriel vérifiée automatiquement</translation>
 <translation id="8186013737729037962">En savoir plus sur les appareils d'entreprise inscrits</translation>
 <translation id="8186047833733689201">Menu des accents ouvert. Appuyez sur les touches gauche, droite ou numériques pour naviguer et sur Entrée pour insérer.</translation>
 <translation id="8186609076106987817">Le serveur n'a pas trouvé le fichier.</translation>
@@ -10555,6 +10569,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8323167517179506834">Entrer une adresse URL</translation>
 <translation id="8323317289166663449">Lire et modifier l'intégralité de vos données sur votre ordinateur et sur tous les sites Web</translation>
 <translation id="8323518750352551353">Navigation séparée?</translation>
+<translation id="8323744572398547859">Pour obtenir vos onglets à partir de vos autres appareils, connectez-vous et synchronisez votre historique. Vous obtiendrez également vos mots de passe et bien plus encore sur tous vos appareils. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8325413836429495820">Non autorisés à consulter le contenu de votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS n° 7, chaîne de certificats</translation>
@@ -11263,6 +11278,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8809147117840417135">Turquoise clair</translation>
 <translation id="8811862054141704416">Accès au microphone pour Crostini</translation>
 <translation id="8811923271770626905">Cette extension peut s'exécuter en arrière-plan</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela permettra également de supprimer les doublons.}one{{PASSWORD_COUNT} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela permettra également de supprimer les doublons.}other{{PASSWORD_COUNT} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}}</translation>
 <translation id="8813199641941291474">Autorisation du contrôle et de la reprogrammation des appareils MIDI bloquée</translation>
 <translation id="8813698869395535039">Impossible de connecter <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Demande à un parent d'approuver l'extension « <ph name="EXTENSION_NAME" /> »</translation>
@@ -11306,6 +11322,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838841425230629509">Annuler l'épinglage du groupe de la barre de favoris</translation>
 <translation id="883924185304953854">Recherche par image</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela permettra également de supprimer les doublons.}one{{ITEM_COUNT} élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela permettra également de supprimer les doublons.}other{{ITEM_COUNT} éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}}</translation>
 <translation id="8841843049738266382">Consulter et modifier les utilisateurs ajoutés à la liste verte</translation>
 <translation id="8841884135319684422">Terminer la tâche</translation>
 <translation id="8842594465773264717">Supprimer cette empreinte digitale</translation>

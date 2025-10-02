@@ -642,6 +642,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Nilai ini tidak digunakan lagi mulai M121. Mulai M121 dan seterusnya, nilai akan      diperlakukan sebagai EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Nonaktifkan periksa ejaan</translation>
+<translation id="1434936032334586168">Aktifkan Pencetakan Senyap</translation>
 <translation id="1435031247649241006">Di layar kunci, pengguna memiliki opsi untuk membuka jendela autentikasi ulang
 online dan menggunakannya untuk proses autentikasi agar dapat masuk kembali ke sesi mereka. Kebijakan
 ini dapat digunakan untuk membuka jendela secara otomatis jika
@@ -1993,6 +1994,7 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan mengubah daftar aplika
 <translation id="2306505001667207184">Minta pengguna memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.</translation>
 <translation id="230713790688681130">Aktifkan Tata Letak Inscript Hindi</translation>
 <translation id="2307496301287881990">Melaporkan status tampilan dan grafis</translation>
+<translation id="2308899582897965249">Nonaktifkan Pencetakan Senyap</translation>
 <translation id="2309284543927494965">Blokir update</translation>
 <translation id="2309341709647905294">Jangan laporkan informasi tentang periferal yang dicolokkan ke perangkat</translation>
 <translation id="2309390639296060546">Setelan geolokasi default</translation>
@@ -2187,6 +2189,14 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2439733504887695659">Mengaktifkan penutupan notifikasi sandi yang telah dibobol untuk kredensial yang dimasukkan</translation>
 <translation id="2446029789419870019">Izinkan penggunaan fitur dan peningkatan kualitas model AI</translation>
 <translation id="2446244536806499267">Jangan menganggap pengguna sebagai tidak ada aktivitas saat audio diputar</translation>
+<translation id="2450392422484526374">Mengatur kebijakan ini ke benar (true) akan mengaktifkan pencetakan senyap, yang akan langsung menutup
+jendela pratinjau cetak saat dibuka dan mencetak ke printer default dengan
+opsi default. Jika printer default adalah 'Simpan sebagai PDF', file akan
+disimpan ke folder Download.
+
+Jika kebijakan ini tidak disetel atau disetel ke salah (false), pencetakan
+senyap akan dinonaktifkan, yang tidak otomatis menutup jendela pratinjau cetak dan mengharuskan
+pengguna untuk membuat pilihan seperti biasa.</translation>
 <translation id="2452225615952836461">Selalu gunakan huruf kapital untuk metode permintaan</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
 <translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>

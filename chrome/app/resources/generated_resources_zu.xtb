@@ -1316,6 +1316,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1880618477732738742">Shintsha futhi unikeze ukufinyelela ezakhini ezifana ne-geolocation, imakrofoni, ikhamera, amakhukhi, njl., kuwo wonke amawebhusayithi akho nezandiso, okuhlanganisa lesi sandiso.</translation>
 <translation id="1881445033931614352">Isakhiwo sekhibhodi</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Into}one{izinto ezingu-#}other{izinto ezingu-#}}</translation>
+<translation id="188177382966899059">Ukusesha Okunzulu</translation>
 <translation id="1884340228047885921">Isethingi lamanje lokubonakala likwabanye abathintwayo</translation>
 <translation id="1884705339276589024">Shintsha usayizi wediski le-Linux</translation>
 <translation id="1885066963699478692">Amafayela we-XML asetshenziselwa ukusetha izinqubomgomo.</translation>
@@ -3836,6 +3837,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3629664892718440872">Khumbula lokhu kukhetha</translation>
 <translation id="3630132874740063857">Ifoni yakho</translation>
 <translation id="3630995161997703415">Engeza leli sayithi kushelufu lakho ukuze ulisebenzise noma kunini</translation>
+<translation id="3633492436029262388">Ukuze uthole amaphasiwedi akho, amabhukhimakhi, nokunye okwengeziwe kuwo wonke amadivayisi akho, kulondoloze kuGoogle Account yakho</translation>
 <translation id="3633759325857031264">Idivayisi ye-HDMI</translation>
 <translation id="3634652306074934350">Isicelo semvume siphelelwe yisikhathi</translation>
 <translation id="3635199270495525546">I-Trusted Platform Module (i-TPM) itholakele</translation>
@@ -4006,6 +4008,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3735039640698208086">Uma idlala umsindo...</translation>
 <translation id="3735740477244556633">Hlunga nge-</translation>
 <translation id="3735827758948958091">Ayikwazi ukuvula i-<ph name="FILE_NAMES" /> uma usaxhume ku-inthanethi ekala ngamamitha</translation>
+<translation id="3736575924150462398">Faka amathebhu noma okunye</translation>
 <translation id="3737058101969549870">Ugcina idatha ekhona yokubhrawuza ihlukile kule phrofayela entsha?</translation>
 <translation id="3738632186060045350">Idatha ye-<ph name="DEVICE_TYPE" /> izosuswa emahoreni angama-24</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -8007,6 +8010,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6569931898053264308">Ukulondoloza okumaphakathi</translation>
 <translation id="6570622975915850879">Sebenzisa idivayisi ehlukile</translation>
 <translation id="65711204837946324">Idinga imvume yokudawuniloda</translation>
+<translation id="6571178651832779742">Ukuze uhlanze noma yimaphi amabhukhimakhi ayimpinda, walondoloze kuGoogle Account yakho</translation>
 <translation id="6571533309669248172">Ukufometha umbhalo</translation>
 <translation id="6571772921213691236">Hlela idatha yokungena ngemvume</translation>
 <translation id="657229725818377235">Thola isivikelo esengeziwe ngokumelene namawebhusayithi nokudawunilodiwe okuyingozi</translation>
@@ -8645,6 +8649,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7001066449188684145">Kudingeka umazisi ukuze uphrintele ku-<ph name="PRINTER_NAME" />. Sicela uxhumane nomlawuli wakho.</translation>
 <translation id="7001397294201412227">Sebenzisa ifoni, ithebulethi, noma ukhiye wokuqinisekisa ubunikazi</translation>
 <translation id="7001556399332161712">Ukusesha neziphakamiso</translation>
+<translation id="7001809623433867903">Khuculula amabhukhimakhi?</translation>
 <translation id="7003339318920871147">Imininingo egciniwe yewebhu</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{ifayela {COUNT}}one{amafayela {COUNT}}other{amafayela {COUNT}}}</translation>
 <translation id="7003644704445046755">Amafayela e-voice yokuthi <ph name="LANGUAGE" /> yekhwalithi ephezulu adawunilodiwe</translation>
@@ -9124,6 +9129,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7356908624372060336">Amalogi Enethiwekhi</translation>
 <translation id="7357271391997763660">Qalisa ukuhlolwa kwephasiwedi?</translation>
 <translation id="735745346212279324">I-VPN inqanyuliwe</translation>
+<translation id="7359326150089800742">Faka ithebhu noma ifayela lapho usesha, usebenzise nethuluzi</translation>
 <translation id="7359680654975233185">Ayikwazi ukusakaza ithebhu</translation>
 <translation id="7360257054721917104">Ukubuka amadeski nezifanekiso ezilondoloziwe. Cindezela ithebhu ukuze ufune.</translation>
 <translation id="7360333718677093875">i-emoji pciker</translation>
@@ -9930,6 +9936,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7903984238293908205">I-Katakana</translation>
 <translation id="7904526211178107182">Yenza izimbobo ze-Linux zitholakale kwamanye amadivayisi akunethiwekhi yakho.</translation>
 <translation id="7906440585529721295">Idatha yendawo izosulwa</translation>
+<translation id="7907312522152480478">Ukuze uthole amathebhu akho akwamanye amadivayisi akho, qinisekisa ukuthi nguwe bese uvumelanisa umlando wakho namathebhu. Ungakumisa noma nini ukuvumelanisa kumasethingi. IGoogle ingenza Ukusesha namanye amasevisi ngokomuntu siqu kuye ngomlando wakho.</translation>
 <translation id="7907502219904644296">Shintsha ukufinyelela</translation>
 <translation id="7907837847548254634">Bonisa ukugqama okusheshayo entweni okugxilwe kuyo</translation>
 <translation id="7908378463497120834">Uxolo, okungenani ingxenye eyodwa kudivayisi yakho yesitoreji esingaphandle ayikwazanga ukugitshezwa.</translation>
@@ -10565,6 +10572,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8323167517179506834">Thayipha i-URL</translation>
 <translation id="8323317289166663449">Funda futhi ushintshe yonke idatha yakho kukhompyutha yakho nawo wonke amawebhusayithi</translation>
 <translation id="8323518750352551353">Hlukanisa Ukubhrawuza?</translation>
+<translation id="8323744572398547859">Ukuze uthole amathebhu akho akwamanye amadivayisi akho, ngena ngemvume futhi uvumelanise umlando. Uzophinde uthole namaphasiwedi akho nokuningi kuwo wonke amadivayisi akho. Ungakumisa noma nini ukuvumelanisa kumasethingi. IGoogle ingenza Ukusesha namanye amasevisi ngokomuntu siqu kuye ngomlando wakho.</translation>
 <translation id="8324158725704657629">Ungabuzi futhi</translation>
 <translation id="8325413836429495820">Ayivumelekile ukubona ibhodi lakho lokunamathisela</translation>
 <translation id="8326478304147373412">I-PKCS #7, iketangu lesitifiketi</translation>

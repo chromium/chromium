@@ -253,6 +253,9 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="383928141529488001">Google Chrome potrebuje dostop do Bluetootha za raziskovanje 
  naprav Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Povzemi:** V enem stavku z največ 30 besedami opiši glavni predmet in namen vsebine na posnetku zaslona.
+
+          **Predlagaj vprašanja:** Generiraj označen seznam s 3–5 vprašanji, ki spodbujajo razmišljanje in jih lahko uporabnik zastavi za boljše razumevanje posnetka zaslona. Ta vprašanja morajo vključevati vsaj eno, ki se nanaša posebej na vizualni predmet, njegovo obliko ali njegovo umestitev.</translation>
 <translation id="386202838227397562">Zaprite vsa okna brskalnika Google Chrome in poskusite znova.</translation>
 <translation id="3873044882194371212">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
 <translation id="3885770153807205175">Izbirnik jezika</translation>
@@ -528,6 +531,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7024536598735240744">Napaka pri odpakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Namestitev je prekinjena.</translation>
 <translation id="7025800014283535195">Med profili v Chromu lahko preklapljate tukaj</translation>
+<translation id="7047386856539490735">Ali so ti rezultati uporabni?</translation>
 <translation id="7051685429025310665">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Prilagodite si Chrome</translation>
 <translation id="7060643578009939353">Iščite ta videoposnetek z Googlom Lens</translation>

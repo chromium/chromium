@@ -252,6 +252,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3809772425479558446">Google Chrome requiert Windows 10 ou une version ultérieure.</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="383928141529488001">Google Chrome a besoin d'un accès au Bluetooth pour découvrir les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Résumer :** en une seule phrase de moins de 30 mots, décris le sujet principal et l'objectif du contenu de la capture d'écran.
+
+          **Suggérer des questions :** génère une liste à puces de trois à cinq questions stimulantes qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant précisément sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="3885770153807205175">Sélecteur de langue</translation>
@@ -514,6 +517,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6885412569789873916">Applications Chrome bêta</translation>
 <translation id="6893363893008038481">Retirer le compte de Chrome</translation>
 <translation id="6896758677409633944">Copier</translation>
+<translation id="6927941417289800361">Pendant que vous êtes connecté, vous pouvez utiliser vos mots de passe et bien plus encore à partir de votre compte Google dans Chrome. Vous pouvez changer cette option en tout temps dans les paramètres.</translation>
 <translation id="6930294499209825">Maintient votre logiciel Google à jour. Si ce service est désactivé ou arrêté, votre logiciel Google ne sera pas mis à jour, ce qui signifie que les vulnérabilités de sécurité qui pourraient survenir ne pourront pas être corrigées et que les fonctionnalités risquent de ne pas fonctionner. Ce service se désinstalle si aucun logiciel Google ne l'utilise.</translation>
 <translation id="6933858244219479645">Système ChromeOS</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 8.1.</translation>
@@ -526,6 +530,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">L'installation s'est arrêtée.</translation>
 <translation id="7025800014283535195">Vous pouvez basculer entre les profils Chrome ici</translation>
+<translation id="7047386856539490735">Ces résultats sont-ils utiles?</translation>
 <translation id="7051685429025310665">Vous n'avez pas effectué de visite récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
 <translation id="7060643578009939353">Rechercher cette vidéo avec Lentille Google</translation>

@@ -1253,6 +1253,7 @@
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3090667236485488075">Verre</translation>
 <translation id="3093122472063815077">L'écran de progression Acheter maintenant, payer plus tard est ouvert à mi-hauteur.</translation>
+<translation id="309381737510736393">Lorsque votre organisation limite l'enregistrement sur votre compte Google, vous ne pouvez pas partager d'onglets ni collaborer avec d'autres personnes.</translation>
 <translation id="3094051226187213523">Ouvrez le mode IA avec cette suggestion.</translation>
 <translation id="3095940652251934233">Relevé</translation>
 <translation id="3098513225387949945">Ignoré parce que la liste de désactivation contient un motif égal à « * », ce qui équivaut à désactiver la politique.</translation>
@@ -1698,6 +1699,7 @@
 <translation id="3784372983762739446">Appareils Bluetooth</translation>
 <translation id="3785246317262748285">Vous vous connectez généralement aux sites en toute sécurité, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Un pirate peut essayer d'écouter ou de modifier votre connexion réseau. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Meilleurs résultats pour « <ph name="SEARCH_QUERY" /> »</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> ou <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3791118028061680614">Payez sans changer d'appli</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> po x <ph name="HEIGHT" /> po)</translation>
@@ -1786,7 +1788,7 @@
 <translation id="3941630233824954464">Activer la réauthentification obligatoire</translation>
 <translation id="3942048175062210325">Réessayez d'ouvrir vos fichiers</translation>
 <translation id="3943857333388298514">Coller</translation>
-<translation id="3945937463338223066">Contrôlez les appareils d'authentification de type <ph name="READERNAME" /> et les cartes à puce qui leur sont accessibles</translation>
+<translation id="3945937463338223066">Contrôler les appareils d'authentification de type <ph name="READERNAME" /> et les cartes à puce qui leur sont accessibles</translation>
 <translation id="3946209740501886391">Toujours demander sur ce site</translation>
 <translation id="3948588869002647271">Cette application est manquante ou endommagée</translation>
 <translation id="3949297482798028668">Le collage de ce contenu ici est bloqué par votre administrateur.</translation>
@@ -2679,6 +2681,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5412040515238827314">Format incorrect : une liste de schémas était attendue.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> : <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empileur 4</translation>
+<translation id="5414306071315087019">La solution Achetez maintenant, payez plus tard est offerte avec Google Pay</translation>
 <translation id="5414446060143308245">Examen requis avant le transfert</translation>
 <translation id="5414511064953050917">Transférer quand même</translation>
 <translation id="5418700249417444482">Les URL des pages que vous consultez sont envoyées à Google Cloud ou à des tiers pour analyse et elles peuvent être visibles pour votre administrateur. Par exemple, elles peuvent être analysées pour détecter des sites Web dangereux ou filtrer des sites Web en fonction de règles définies par l'administrateur.</translation>
@@ -2799,6 +2802,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5596939519753369075">2 po x 3,5 po</translation>
 <translation id="5597254438174353289">Bleu 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">La gestion n'est pas prise en charge</translation>
 <translation id="5605249000617390290">En savoir plus sur le suivi des prix</translation>
 <translation id="5605670050355397069">Grand livre</translation>

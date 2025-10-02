@@ -3838,6 +3838,7 @@
 <translation id="3629664892718440872">ही निवड लक्षात ठेवा</translation>
 <translation id="3630132874740063857">तुमचा फोन</translation>
 <translation id="3630995161997703415">कधीही वापरण्‍यासाठी ही साइट तुमच्या शेल्‍फवर जोडा</translation>
+<translation id="3633492436029262388">तुमच्या डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी, ते तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="3633759325857031264">HDMI डिव्हाइस</translation>
 <translation id="3634652306074934350">परवानगीची विनंती एक्स्पायर झाली</translation>
 <translation id="3635199270495525546">विश्वासू प्लॅटफॉर्म मॉड्युल (TPM) डिटेक्ट केले</translation>
@@ -8016,6 +8017,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6569931898053264308">मध्यम बचती</translation>
 <translation id="6570622975915850879">वेगळे डिव्हाइस वापरा</translation>
 <translation id="65711204837946324">डाउनलोड करण्यासाठी परवानगी आवश्यक आहे</translation>
+<translation id="6571178651832779742">कोणतेही डुप्लिकेट बुकमार्क क्लीन अप करण्यासाठी, ते तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="6571533309669248172">मजकूर फॉरमॅटिंग</translation>
 <translation id="6571772921213691236">साइन इन डेटा संपादित करा</translation>
 <translation id="657229725818377235">धोकादायक वेबसाइट आणि डाउनलोडपासून अधिक संरक्षण मिळवा</translation>
@@ -8653,6 +8655,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> वर प्रिंट करण्यासाठी ओळखीची पडताळणी करणे आवश्यक आहे. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="7001397294201412227">फोन, टॅबलेट किंवा सिक्युरिटी की वापरा</translation>
 <translation id="7001556399332161712">शोध आणि सूचना</translation>
+<translation id="7001809623433867903">बुकमार्क क्लीन अप करायचे आहेत का?</translation>
 <translation id="7003339318920871147">वेब डेटाबेस</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} फाइल}other{{COUNT} फाइल}}</translation>
 <translation id="7003644704445046755">उच्च गुणवत्तेच्या <ph name="LANGUAGE" /> आवाजामधील फाइल डाउनलोड केल्या आहेत</translation>

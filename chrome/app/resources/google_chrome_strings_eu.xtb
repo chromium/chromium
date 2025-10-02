@@ -252,6 +252,9 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3809772425479558446">Windows 10 edo sistema berriagoa behar da Google Chrome erabiltzeko.</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="383928141529488001">Bluetooth bidezko gailuak arakatzeko, Bluetootha erabiltzeko baimena behar du Google Chrome-k. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Laburbildu:** 30 hitz baino gutxiagoko esaldi bakar batean, azaldu pantaila-argazkiko edukiaren gai nagusia eta xedea.
+
+          **Iradoki galderak:** sortu pentsarazten duten 3-5 galdera dituen zerrenda buletdun bat, erabiltzaile batek pantaila-argazkia hobeki ulertzeko galdetuko lituzkeenak. Galdera horietako batek gutxienez objektu bisual bati buruzkoa izan behar du, edo haren diseinuari edo kokapenari buruzkoa.</translation>
 <translation id="386202838227397562">Itxi Google Chrome leiho guztiak eta saiatu berriro.</translation>
 <translation id="3873044882194371212">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="3885770153807205175">Hizkuntza-hautatzailea</translation>
@@ -527,6 +530,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7024536598735240744">Despaketatze-errorea: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Gelditu da instalazioa.</translation>
 <translation id="7025800014283535195">Aldatu Chrome-ko profila hemen</translation>
+<translation id="7047386856539490735">Erabilgarriak al dira emaitzak?</translation>
 <translation id="7051685429025310665">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimenak kendu dizkio.</translation>
 <translation id="7059914902409643750">Pertsonalizatu Chrome</translation>
 <translation id="7060643578009939353">Egin bilaketak bideo honetan Google Lens-ekin</translation>

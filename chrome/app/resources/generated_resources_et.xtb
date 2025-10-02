@@ -1385,6 +1385,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1931152874660185993">Ühtegi komponenti pole installitud.</translation>
 <translation id="1931410639376954712">Operatsioonisüsteemi <ph name="DEVICE_OS" /> installimine</translation>
 <translation id="1932098463447129402">Mitte enne</translation>
+<translation id="1932125073382155239">Kas varundada teie sisu?</translation>
 <translation id="1933070475689690969">Gemini rakenduste tegevus</translation>
 <translation id="1933489278505808700">On lubatud lugeda ja muuta</translation>
 <translation id="1935303383381416800">Lubatud teie asukohta näha</translation>
@@ -1848,6 +1849,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="225614027745146050">Tere tulemast</translation>
 <translation id="2257053455312861282">Kooli konto lisamine võimaldab veebisaitidele, laiendustesse ja rakendustesse õpilasena hõlpsalt sisse logida, kasutades seadet siiski vanemliku järelevalve all.</translation>
 <translation id="225716114209817872">Maksimaalne</translation>
+<translation id="2259337945538989999">Teistest seadmetest vahelehtede hankimiseks kinnitage oma isik. Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="2261323523305321874">Teie administraator tegi süsteemiülese muudatuse, mis keelab mõned vanad profiilid.</translation>
 <translation id="22614517036276112">See dokument või teie seade ei vasta teie organisatsiooni teatud turvareeglitele. Pöörduge administraatori poole, et teada saada, mida on vaja parandada.</translation>
 <translation id="2262477216570151239">Viivitus enne kordamist</translation>
@@ -2058,6 +2060,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2393313392064891208">Google Chrome OS Flexi tingimuste sisu</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> on peidetud.</translation>
 <translation id="2395616325548404795">Teie seade <ph name="DEVICE_TYPE" /> on ettevõtte halduse jaoks registreeritud, kuid varade ja asukoha teabe saatmine ebaõnnestus. Sisestage teave käsitsi selle seadme administraatorikonsoolil.</translation>
+<translation id="2396593617786425274">Kas sünkroonida ajalugu?</translation>
 <translation id="2396783860772170191">Sisestage 4-kohaline PIN-kood (0000–9999)</translation>
 <translation id="2398546389094871088">Seadmes funktsiooni Powerwash kasutamine ei eemalda teie eSIM-i profiile. Nende profiilide käsitsi eemaldamiseks avage <ph name="LINK_BEGIN" />Mobiiliseaded<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Märguanded on sisse lülitatud</translation>
@@ -3827,6 +3830,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3629664892718440872">Jäta valik meelde</translation>
 <translation id="3630132874740063857">Teie telefon</translation>
 <translation id="3630995161997703415">Lisage sait riiulisse, et see oleks alati käepärast</translation>
+<translation id="3633492436029262388">Selleks et pääseda järjehoidjatele, paroolidele ja muule sisule juurde kõigis oma seadmetes, salvestage need oma Google'i kontole.</translation>
 <translation id="3633759325857031264">HDMI-seade</translation>
 <translation id="3634652306074934350">Loa taotlus aegus</translation>
 <translation id="3635199270495525546">Tuvastati usaldusväärse platvormi moodul (TPM)</translation>
@@ -6730,6 +6734,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
 <translation id="5651308944918885595">Läheduses jagamine – leitavus</translation>
 <translation id="5653154844073528838">Teil on <ph name="PRINTER_COUNT" /> salvestatud printerit.</translation>
+<translation id="565461030474814383">Kas salvestada kontole?</translation>
 <translation id="5654669866168491665">Vaadake lisateavet saitide kohta, mis ei pruugi töötada, kui kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="5654751240928365405">See laiendus lülitati välja, kuna seda ei toetata enam</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Teie privaatsuse kaitsmiseks eemaldati ühelt saidilt load}other{Teie privaatsuse kaitsmiseks eemaldati mõnelt saidilt load}}</translation>
@@ -7034,6 +7039,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5869522115854928033">Salvestatud paroolid</translation>
 <translation id="5870086504539785141">Juurdepääsetavuse menüü sulgemine</translation>
 <translation id="5870155679953074650">Rängad vead</translation>
+<translation id="587234395549708302">Kas eemaldada järjehoidjad?</translation>
 <translation id="5875534259258494936">Ekraani jagamine on lõppenud</translation>
 <translation id="5876851302954717356">Uus vaheleht paremale</translation>
 <translation id="5877064549588274448">Kanal on muutunud. Muudatuste rakendamiseks taaskäivitage oma seade.</translation>
@@ -7999,6 +8005,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6569931898053264308">Keskmine sääst</translation>
 <translation id="6570622975915850879">Kasuta teist seadet</translation>
 <translation id="65711204837946324">Allalaadimiseks on vaja luba</translation>
+<translation id="6571178651832779742">Järjehoidjate duplikaatide eemaldamiseks salvestage need oma Google'i kontole.</translation>
 <translation id="6571533309669248172">Teksti vormindamine</translation>
 <translation id="6571772921213691236">Sisselogimisandmete muutmine</translation>
 <translation id="657229725818377235">Hankige paremat kaitset ohtlike veebisaitide ja allalaadimiste vastu</translation>
@@ -8635,6 +8642,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7001066449188684145">Printeriga <ph name="PRINTER_NAME" /> printimiseks on vaja kasutaja kinnitada. Võtke ühendust administraatoriga.</translation>
 <translation id="7001397294201412227">Kasutage nutitelefoni, tahvelarvutit või turvavõtit</translation>
 <translation id="7001556399332161712">Otsing ja soovitused</translation>
+<translation id="7001809623433867903">Kas eemaldada järjehoidjad?</translation>
 <translation id="7003339318920871147">Veebiandmebaasid</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} faili}}</translation>
 <translation id="7003644704445046755">Kvaliteetsed häälefailid (<ph name="LANGUAGE" />) laaditi alla</translation>

@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Đang gửi đến <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Đồng thời xóa dữ liệu khỏi các trang web và ứng dụng này?</translation>
 <translation id="1034259925032978114">Cửa sổ đang mở</translation>
+<translation id="1035113036584565771">Thông báo quảng cáo kèm mẹo đã đóng</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1045899828449635435">Đồng thời xóa dữ liệu khỏi các trang web này?</translation>
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="1052842760770519282">Không sử dụng được một số mật khẩu của bạn</translation>
 <translation id="1058669287135776095">Bạn không có kết nối mạng. Hãy kiểm tra kết nối Internet rồi thử lại.</translation>
+<translation id="1066338698580889414">Thông báo quảng cáo kèm mẹo đã mở toàn bộ</translation>
 <translation id="1070689840697074178">Bạn có thể tải tệp PDF xuống tại đây</translation>
 <translation id="107147699690128016">Nếu bạn thay đổi đuôi tệp, thì tệp có thể mở trong một ứng dụng khác và tiềm ẩn nguy cơ đối với thiết bị.</translation>
 <translation id="1087799850623149508">Bạn có thể chạm và giữ để di chuyển thanh địa chỉ xuống dưới cùng</translation>
@@ -151,6 +153,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1696555181932908973">Bạn có thể thử những cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Bạn muốn thay đổi các chế độ cài đặt cho giao diện tối?</translation>
 <translation id="1702907158640575240">Trình duyệt được quản lý</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, Thẻ ẩn danh được ghim</translation>
 <translation id="1718835860248848330">Một giờ qua</translation>
 <translation id="1726477445370128854">Bạn có thể duyệt và tìm kiếm nhanh hơn khi Chrome tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập</translation>
 <translation id="1728803206919861584">Lưu khoá truy cập ngoài chế độ Ẩn danh?</translation>
@@ -439,6 +442,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3027950907978057636">Từ <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Không tải trước</translation>
 <translation id="3029704984691124060">Cụm mật khẩu không khớp</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, Thẻ được chọn và ghim</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Nhận trợ giúp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037517125981011456">Hiện lời nhắc đăng nhập vào Chrome</translation>
@@ -626,6 +630,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="397105322502079400">Đang tính...</translation>
 <translation id="397583555483684758">Đồng bộ hóa đã ngừng hoạt động</translation>
 <translation id="3976396876660209797">Xóa và tạo lại lối tắt này</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, Thẻ được ghim</translation>
 <translation id="3985022125189960801">Thêm lại một trang web nếu bạn muốn thêm trang này vào nhóm những trang web có thể đoán sở thích của bạn</translation>
 <translation id="3985215325736559418">Bạn có muốn tải lại <ph name="FILE_NAME" /> xuống không?</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
@@ -1413,6 +1418,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7375125077091615385">Loại:</translation>
 <translation id="7376560087009844242">Bạn có thể thấy kết quả phù hợp hơn khi dùng tính năng Chạm để tìm kiếm bằng cách bao gồm thêm nhiều văn bản của trang. Bạn có thể truy cập phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> để thay đổi lựa chọn này bất cứ lúc nào.</translation>
 <translation id="7379900596734708416">Đã có giao diện tối cho các trang web</translation>
+<translation id="7384486627147155832">Thông báo quảng cáo kèm mẹo đã mở trên một nửa màn hình</translation>
 <translation id="7388615499319468910">Các trang web và nhà quảng cáo có thể nắm được hiệu suất quảng cáo của họ. Chế độ cài đặt này đang tắt.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Khác, 1 tệp trong danh sách}other{Khác, # tệp trong danh sách}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8090732854597034573">Nếu bạn cần trợ giúp, hãy nhờ cha mẹ</translation>
 <translation id="8101414242770404289">Không có thẻ nào trong <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Thẻ ẩn danh</translation>
+<translation id="810433609302852">Bảng thông báo quảng cáo tính năng kèm mẹo và các bước sử dụng ở dưới cùng</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Đóng tuỳ chọn sắp xếp</translation>
 <translation id="8110024788458304985">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
@@ -1825,6 +1832,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
 <translation id="9189607089796819144">Bạn vẫn muốn tải "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) xuống?</translation>
 <translation id="9190276265094487094">Bạn sẽ thấy nhật ký duyệt web trên tất cả những thiết bị đã đồng bộ hoá, nhờ vậy bạn có thể tiếp tục những việc bạn đang làm</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, Thẻ ẩn danh được chọn và ghim</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Đã kiểm tra 1 phút trước}other{Đã kiểm tra # phút trước}}</translation>
 <translation id="9204836675896933765">Còn lại 1 tệp</translation>
 <translation id="9205933215779845960">Không tìm được trang đó. Hãy kiểm tra lỗi chính tả hoặc thử tìm kiếm trên <ph name="SEARCH_ENGINE" />.</translation>
