@@ -171,10 +171,14 @@ void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
-void GlicInstanceImpl::Toggle(EmbedderType type, tabs::TabInterface* tab) {
+void GlicInstanceImpl::Toggle(EmbedderType type,
+                              tabs::TabInterface* tab,
+                              bool prevent_close) {
   EmbedderKey key = GetEmbedderKey(type, tab);
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
-    Close(type, tab);
+    if (!prevent_close) {
+      Close(type, tab);
+    }
   } else {
     Show(type, tab);
   }

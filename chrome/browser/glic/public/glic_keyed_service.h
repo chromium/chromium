@@ -102,6 +102,7 @@ class GlicKeyedService : public KeyedService,
   // Show, summon or activate the panel, or close it if it's already active and
   // prevent_close is false. If glic_button_view is non-null, attach the panel
   // to that view's Browser.
+  // TODO(b:448888544): remove `prevent_close` in favor of a Show method.
   void ToggleUI(BrowserWindowInterface* bwi,
                 bool prevent_close,
                 mojom::InvocationSource source);

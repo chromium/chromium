@@ -136,8 +136,8 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* CreateGlicInstance();
   void CreateWarmedInstance();
 
-  void ToggleFloaty();
-  void ToggleSidePanel(BrowserWindowInterface* browser);
+  void ToggleFloaty(bool prevent_close);
+  void ToggleSidePanel(BrowserWindowInterface* browser, bool prevent_close);
 
   void RemoveInstance(GlicInstance* instance);
   bool HasAttachedInstance(GlicInstance* instance);
