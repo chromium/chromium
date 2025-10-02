@@ -103,6 +103,16 @@ void PreferredAppsImpl::SetSupportedLinksPreference(
       weak_ptr_factory_.GetWeakPtr(), app_id, std::move(all_link_filters)));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void PreferredAppsImpl::SetProtocolLinkPreference(
+    const std::string& app_id,
+    IntentFilterPtr protocol_link_filter) {
+  RunAfterPreferredAppsReady(base::BindOnce(
+      &PreferredAppsImpl::SetProtocolLinkPreferenceImpl,
+      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(protocol_link_filter)));
+}
+#endif
+
 void PreferredAppsImpl::RemoveSupportedLinksPreference(
     const std::string& app_id) {
   RunAfterPreferredAppsReady(
@@ -230,6 +240,7 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
   base::flat_map<std::string, IntentFilters> removed;
 
   for (auto& filter : all_link_filters) {
+    CHECK(apps_util::IsSupportedLinkForApp(app_id, filter));
     auto replaced_apps = preferred_apps_list_.AddPreferredApp(app_id, filter);
 
     // If we removed overlapping supported links when adding the new app, those
@@ -275,6 +286,19 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
                                              /*open_in_app=*/false);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void PreferredAppsImpl::SetProtocolLinkPreferenceImpl(
+    const std::string& app_id,
+    IntentFilterPtr protocol_link_filter) {
+  CHECK(!apps_util::IsSupportedLinkForApp(app_id, protocol_link_filter));
+  preferred_apps_list_.AddPreferredApp(app_id, protocol_link_filter);
+  WriteToJSON(profile_dir_, preferred_apps_list_);
+
+  // We don't dispatch any events to observers as protocol links are not equal
+  // to supported links.
+}
+#endif
 
 void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
     const std::string& app_id) {

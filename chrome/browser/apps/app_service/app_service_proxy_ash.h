@@ -188,6 +188,13 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // indicates system language being chosen.
   void SetAppLocale(const std::string& app_id, const std::string& locale_tag);
 
+  // Set |app_id| as preferred app for this `protocol_scheme` (which is
+  // guaranteed to not be equal to http/https and hence not overlap with
+  // supported links; attempt to pass http/https will CHECK()). This is only
+  // supported for web apps.
+  void SetProtocolLinkPreference(std::string_view app_id,
+                                 std::string_view protocol_scheme);
+
  private:
   // OnAppsRequest is used to save the parameters of the OnApps calling.
   struct OnAppsRequest {

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -48,14 +49,18 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 namespace {
 constexpr int32_t kAppDialogIconSize = 48;
@@ -464,6 +469,37 @@ void AppServiceProxyAsh::SetAppLocale(const std::string& app_id,
   if (publisher) {
     publisher->SetAppLocale(app_id, locale_tag);
   }
+}
+
+void AppServiceProxyAsh::SetProtocolLinkPreference(
+    std::string_view app_id,
+    std::string_view protocol_scheme) {
+  CHECK(!app_id.empty());
+  CHECK(protocol_scheme != url::kHttpScheme &&
+        protocol_scheme != url::kHttpsScheme);
+
+  AppRegistryCache().ForOneApp(app_id, [&](const AppUpdate& app) {
+    if (!apps_util::IsInstalled(app.Readiness()) ||
+        app.AppType() != AppType::kWeb) {
+      return;
+    }
+    CHECK(blink::IsValidCustomHandlerScheme(
+        protocol_scheme,
+        (app.PublisherId().starts_with(webapps::kIsolatedAppScheme)
+             ? blink::ProtocolHandlerSecurityLevel::kIsolatedAppFeatures
+             : blink::ProtocolHandlerSecurityLevel::kStrict)));
+    auto intent = std::make_unique<apps::Intent>(
+        apps_util::kIntentActionView,
+        GURL(base::StrCat({protocol_scheme, url::kStandardSchemeSeparator})));
+    // Web apps are generally supposed to only have one matching filter for the
+    // protocol scheme (scheme + kIntentActionView).
+    for (auto& filter : app.IntentFilters()) {
+      if (intent->MatchFilter(filter)) {
+        preferred_apps_impl_->SetProtocolLinkPreference(app.AppId(),
+                                                        std::move(filter));
+      }
+    }
+  });
 }
 
 void AppServiceProxyAsh::Shutdown() {

@@ -172,7 +172,9 @@ source_set("app_service") {
       "//components/image_fetcher/core",
       "//components/services/app_service/public/cpp:macros",
       "//components/ukm",
+      "//components/webapps/isolated_web_apps:scheme",
       "//services/metrics/public/cpp:ukm_builders",
+      "//third_party/blink/public/common:headers",
       "//ui/native_window_tracker",
 
       # For circular deps.

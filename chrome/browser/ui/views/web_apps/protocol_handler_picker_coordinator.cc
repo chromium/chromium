@@ -135,7 +135,7 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
     const GURL& protocol_url,
     const std::optional<url::Origin>& initiator_origin,
     ProtocolHandlerPickerDialogEntries app_entries) {
-      auto dialog_model = CreateProtocolHandlerPickerDialog(
+  auto dialog_model = CreateProtocolHandlerPickerDialog(
       protocol_url, app_entries, initiator_origin,
       base::BindOnce(&ProtocolHandlerPickerCoordinator::OnPickerClosed,
                      weak_factory_.GetWeakPtr(), protocol_url));
@@ -148,7 +148,7 @@ void ProtocolHandlerPickerCoordinator::OnPickerClosed(
   if (result) {
     const auto& app_id = result->selected_app_id;
     if (result->remember_choice) {
-      // TODO(cbug.com/422422887): Store the user pref in PreferredAppsList.
+      proxy_->SetProtocolLinkPreference(app_id, protocol_url.scheme());
     }
     LaunchApp(protocol_url, app_id);
   }
@@ -167,8 +167,8 @@ void LaunchProtocolUrlInPreferredApp(
   }
 
   auto* picker_coordinator = ProtocolHandlerPickerCoordinator::From(tab);
-  CHECK(picker_coordinator)
-      << " The caller is responsible for making sure that the coordinator exists.";
+  CHECK(picker_coordinator) << " The caller is responsible for making sure "
+                               "that the coordinator exists.";
 
   if (std::optional<std::string> app_id =
           picker_coordinator->FindPreferredApp(protocol_url, app_ids)) {
