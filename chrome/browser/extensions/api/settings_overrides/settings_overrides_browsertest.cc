@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -49,6 +50,8 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/switches.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

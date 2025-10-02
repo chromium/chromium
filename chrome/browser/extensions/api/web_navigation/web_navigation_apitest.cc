@@ -52,6 +52,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -82,6 +83,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::WebContents;
 

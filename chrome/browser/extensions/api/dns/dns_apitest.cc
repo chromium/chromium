@@ -17,6 +17,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/dns/dns_api.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
@@ -29,6 +30,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_dns_util.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {

@@ -18,8 +18,11 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

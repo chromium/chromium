@@ -136,6 +136,8 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using extensions::ExtensionsAPIClient;
 using testing::_;
 using testing::Return;

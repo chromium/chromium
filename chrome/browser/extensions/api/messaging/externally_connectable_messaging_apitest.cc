@@ -37,6 +37,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 // Tests externally_connectable between a web page and an extension.

@@ -63,6 +63,8 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 using ContextType = extensions::browser_test_util::ContextType;

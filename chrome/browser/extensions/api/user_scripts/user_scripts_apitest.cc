@@ -24,6 +24,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/user_scripts_allowed_state.h"
@@ -33,6 +34,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
