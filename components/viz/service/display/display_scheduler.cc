@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -16,6 +17,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/performance_hint/hint_session.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -64,7 +67,11 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
   }
 
   bool OnBeginFrameDerivedImpl(const BeginFrameArgs& args) override {
-    return scheduler_->OnBeginFrame(args);
+    if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+      return true;
+    } else {
+      return scheduler_->OnBeginFrame(args);
+    }
   }
 
  private:
@@ -91,6 +98,9 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
       observing_begin_frame_source_(false),
       hint_session_factory_(hint_session_factory) {
+  if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+    begin_frame_source_->SetSchedulerClient(this);
+  }
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
@@ -102,6 +112,9 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
 }
 
 DisplayScheduler::~DisplayScheduler() {
+  if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+    begin_frame_source_->SetSchedulerClient(nullptr);
+  }
   // It is possible for DisplayScheduler to be destroyed while there's an
   // in-flight swap. So always mark the gpu as not busy during destruction.
   begin_frame_source_->SetIsGpuBusy(false);
@@ -413,6 +426,15 @@ void DisplayScheduler::MaybeStartObservingBeginFrames() {
 void DisplayScheduler::StartObservingBeginFrames() {
   if (!observing_begin_frame_source_) {
     begin_frame_source_->AddObserver(begin_frame_observer_.get());
+    // TODO(crbug.com/40900977): Some tests still have reliance on Missed
+    // begin frames. We should update the test helpers.
+    if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+      auto args = begin_frame_observer_->LastUsedBeginFrameArgs();
+      if (args.IsValid() && args.type == BeginFrameArgs::MISSED &&
+          args.frame_time > current_begin_frame_args_.frame_time) {
+        OnBeginFrame(begin_frame_observer_->LastUsedBeginFrameArgs());
+      }
+    }
     observing_begin_frame_source_ = true;
   }
 }
@@ -626,6 +648,12 @@ void DisplayScheduler::DidReceiveSwapBuffersAck() {
   TRACE_EVENT_END(
       "viz", /* DisplayScheduler:pending_swaps */ perfetto::Track(swap_id));
   ScheduleBeginFrameDeadline();
+}
+
+void DisplayScheduler::OnBeginFrameForScheduling(const BeginFrameArgs& args) {
+  if (observing_begin_frame_source_) {
+    OnBeginFrame(args);
+  }
 }
 
 }  // namespace viz

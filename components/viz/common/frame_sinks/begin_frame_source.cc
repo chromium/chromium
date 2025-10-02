@@ -171,6 +171,10 @@ void BeginFrameSource::SetIsGpuBusy(bool busy) {
   }
 }
 
+void BeginFrameSource::SetSchedulerClient(SchedulerClient* scheduler_client) {
+  scheduler_client_ = scheduler_client;
+}
+
 bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
   if (!is_gpu_busy_) {
     DCHECK_EQ(gpu_busy_response_state_, GpuBusyThrottlingState::kIdle);
@@ -219,6 +223,13 @@ void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
   total_delta_ = base::TimeDelta();
 }
 #endif
+
+void BeginFrameSource::IssueBeginFrameToSchedulerClient(
+    const BeginFrameArgs& args) {
+  if (scheduler_client_) {
+    scheduler_client_->OnBeginFrameForScheduling(args);
+  }
+}
 
 // StubBeginFrameSource ---------------------------------------------------
 StubBeginFrameSource::StubBeginFrameSource()
@@ -311,6 +322,7 @@ void BackToBackBeginFrameSource::OnTimerTick() {
   DCHECK(!pending_observers.empty());
   for (BeginFrameObserver* obs : pending_observers)
     FilterAndIssueBeginFrame(obs, args);
+  IssueBeginFrameToSchedulerClient(args);
 }
 
 // DelayBasedBeginFrameSource ---------------------------------------------
@@ -435,6 +447,7 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
   for (BeginFrameObserver* obs : observers) {
     IssueBeginFrameToObserver(obs, last_begin_frame_args_);
   }
+  IssueBeginFrameToSchedulerClient(last_begin_frame_args_);
   last_vsync_interval_ = time_source_->Interval();
 }
 
@@ -584,6 +597,7 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
       continue;
     FilterAndIssueBeginFrame(obs, args);
   }
+  IssueBeginFrameToSchedulerClient(args);
 }
 
 BeginFrameArgs ExternalBeginFrameSource::GetMissedBeginFrameArgs(
