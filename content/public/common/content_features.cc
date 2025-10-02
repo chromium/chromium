@@ -544,9 +544,6 @@ BASE_FEATURE(kIsolateFencedFrames, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIsolateOrigins, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
-// Enable lazy initialization of the media controls.
-BASE_FEATURE(kLazyInitializeMediaControls, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If this is enabled, LoadingPredictor restricts the number of preconnects for
 // the same destination to one.
 BASE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount,

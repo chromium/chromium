@@ -4417,21 +4417,19 @@ void HTMLMediaElement::UpdateControlsVisibility() {
   if (!isConnected())
     return;
 
+  // TODO(crbug.com/448699375): Try to re-enable lazy initialization of media
+  // controls such that we only call EnsureMediaControls() when
+  // ShouldShowControls() or if the cast overlay button will be shown. Currently
+  // this information is only known in /modules/ that we can't access from
+  // /core/.
+  EnsureMediaControls();
+
+  // TODO(crbug.com/448699375): See if this can be removed in 2025. This doesn't
+  // sound needed but the following tests, on Android fails when removed:
+  // fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html
+  GetMediaControls()->Reset();
+
   bool native_controls = ShouldShowControls();
-
-  // When LazyInitializeMediaControls is enabled, initialize the controls only
-  // if native controls should be used or if using the cast overlay.
-  if (!RuntimeEnabledFeatures::LazyInitializeMediaControlsEnabled() ||
-      RuntimeEnabledFeatures::MediaCastOverlayButtonEnabled() ||
-      native_controls) {
-    EnsureMediaControls();
-
-    // TODO(mlamouri): this doesn't sound needed but the following tests, on
-    // Android fails when removed:
-    // fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html
-    GetMediaControls()->Reset();
-  }
-
   if (native_controls)
     GetMediaControls()->MaybeShow();
   else if (GetMediaControls())

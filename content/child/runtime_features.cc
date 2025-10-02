@@ -250,13 +250,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
           {wf::EnableIntegrityPolicyScript,
            raw_ref(network::features::kIntegrityPolicyScript)},
-          {wf::EnableLazyInitializeMediaControls,
-           raw_ref(features::kLazyInitializeMediaControls)},
 #if BUILDFLAG(IS_CHROMEOS)
           {wf::EnableLockedMode, raw_ref(blink::features::kLockedMode)},
 #endif
-          {wf::EnableMediaCastOverlayButton,
-           raw_ref(media::kMediaCastOverlayButton)},
           {wf::EnableMediaEngagementBypassAutoplayPolicies,
            raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
           {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},

@@ -400,9 +400,6 @@ BASE_FEATURE(kWidevinePersistentLicenseSupport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-// Display the Cast overlay button on the media controls.
-BASE_FEATURE(kMediaCastOverlayButton, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use AndroidOverlay only if required for secure video playback. This requires
 // that |kOverlayFullscreenVideo| is true, else it is ignored.
 BASE_FEATURE(kUseAndroidOverlayForSecureOnly,
