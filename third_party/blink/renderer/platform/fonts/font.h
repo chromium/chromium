@@ -57,9 +57,7 @@ namespace blink {
 
 class FontSelector;
 class ShapeCache;
-class TextRun;
 struct TextFragmentPaintInfo;
-struct TextRunPaintInfo;
 
 class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
  public:
@@ -93,13 +91,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
-  // Deprecated: Use PlainTextPainter.
-  bool DeprecatedDrawBidiText(cc::PaintCanvas*,
-                              const TextRunPaintInfo&,
-                              const gfx::PointF&,
-                              CustomFontNotReadyAction,
-                              const cc::PaintFlags&,
-                              DrawType = DrawType::kGlyphsOnly) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const TextFragmentPaintInfo&,
                          const AtomicString& mark,
@@ -122,18 +113,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;
-
-  // Glyph bounds will be the minimum rect containing all glyph strokes, in
-  // coordinates using (<text run x position>, <baseline position>) as the
-  // origin. If the pointer is not null, glyph_bounds is expected to be
-  // default-initialized.
-  // Deprecated: Use PlainTextPainter.
-  float DeprecatedWidth(const TextRun&,
-                        gfx::RectF* glyph_bounds = nullptr) const;
-  float DeprecatedSubRunWidth(const TextRun&,
-                              unsigned from,
-                              unsigned to,
-                              gfx::RectF* glyph_bounds = nullptr) const;
 
   // Metrics that we query the FontFallbackList for.
   float SpaceWidth() const {
