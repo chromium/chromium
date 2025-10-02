@@ -4866,11 +4866,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "enterprise-file-obfuscation",
-    "owners": ["haihan@google.com", "cbe-cep-eng@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enterprise-reporting-ui",
     "owners": ["cros-reporting-team@google.com"],
     "expiry_milestone": 150
