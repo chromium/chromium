@@ -929,18 +929,38 @@ VisitID VisitDatabase::GetMostRecentVisitForURL(URLID url_id,
   return statement.ColumnInt64(0);
 }
 
-bool VisitDatabase::GetMostRecentVisitsForURL(URLID url_id,
-                                              int max_results,
-                                              VisitVector* visits) {
+bool VisitDatabase::GetMostRecentVisitsForURL(
+    URLID url_id,
+    int max_results,
+    VisitQuery404sPolicy policy_for_404_visits,
+    VisitVector* visits) {
   visits->clear();
 
-  // The visit_time values can be duplicated in a redirect chain, so we sort
-  // by id too, to ensure a consistent ordering just in case.
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
-                     "WHERE url=? "
-                     "ORDER BY visit_time DESC, id DESC "
-                     "LIMIT ?"));
+  sql::Statement statement;
+  switch (policy_for_404_visits) {
+    case VisitQuery404sPolicy::kInclude404s:
+      // The visit_time values can be duplicated in a redirect chain, so we sort
+      // by id too, to ensure a consistent ordering just in case.
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                         "WHERE url=? "
+                         "ORDER BY visit_time DESC, id DESC "
+                         "LIMIT ?"));
+      break;
+    case VisitQuery404sPolicy::kExclude404s:
+      // The visit_time values can be duplicated in a redirect chain, so we sort
+      // by id too, to ensure a consistent ordering just in case.
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT" HISTORY_VISIT_ROW_FIELDS
+          "FROM visits v "
+          "LEFT OUTER JOIN context_annotations ca ON v.id=ca.visit_id "
+          "WHERE v.url=? "
+          "AND (ca.response_code IS NULL OR ca.response_code!=404) "
+          "ORDER BY v.visit_time DESC, v.id DESC "
+          "LIMIT ?"));
+      break;
+  }
   statement.BindInt64(0, url_id);
   statement.BindInt(1, max_results);
 

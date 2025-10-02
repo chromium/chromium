@@ -1236,7 +1236,8 @@ TEST_F(HistoryBackendTest, AddPage404) {
   ASSERT_TRUE(backend_->GetURL(url, &url_row));
   VisitVector visits;
   ASSERT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
-      backend_->db()->GetRowForURL(url, nullptr), kMaxVisitsToQuery, &visits));
+      backend_->db()->GetRowForURL(url, nullptr), kMaxVisitsToQuery,
+      VisitQuery404sPolicy::kInclude404s, &visits));
   ASSERT_EQ(1u, visits.size());
 
   // ...but it should not be tracked by `VisitTracker`.
@@ -2514,7 +2515,8 @@ TEST_F(HistoryBackendTest, GetMostRecentVisits) {
   VisitVector visits;
   URLRow row;
   URLID id = backend_->db()->GetRowForURL(url1, &row);
-  ASSERT_TRUE(backend_->db()->GetMostRecentVisitsForURL(id, 1, &visits));
+  ASSERT_TRUE(backend_->db()->GetMostRecentVisitsForURL(
+      id, 1, VisitQuery404sPolicy::kInclude404s, &visits));
   ASSERT_EQ(1U, visits.size());
   EXPECT_EQ(visits1[2].first, visits[0].visit_time);
 }
@@ -3303,7 +3305,7 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   VisitVector visit_vector;
   EXPECT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(GURL("http://example.com"), nullptr),
-      kMaxVisitsToQuery, &visit_vector));
+      kMaxVisitsToQuery, VisitQuery404sPolicy::kInclude404s, &visit_vector));
   ASSERT_EQ(5u, visit_vector.size());
   EXPECT_EQ(base::Time() + base::Microseconds(8), visit_vector[0].visit_time);
   EXPECT_EQ(base::Time() + base::Microseconds(6), visit_vector[1].visit_time);
@@ -3316,7 +3318,7 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   visit_vector.clear();
   EXPECT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(GURL("http://example.net"), nullptr),
-      kMaxVisitsToQuery, &visit_vector));
+      kMaxVisitsToQuery, VisitQuery404sPolicy::kInclude404s, &visit_vector));
   ASSERT_EQ(2u, visit_vector.size());
   EXPECT_EQ(base::Time() + base::Microseconds(9), visit_vector[0].visit_time);
   EXPECT_EQ(base::Time() + base::Microseconds(1), visit_vector[1].visit_time);
@@ -3655,14 +3657,17 @@ TEST_F(HistoryBackendTest, RedirectWithQualifiers) {
   // Grab the resulting visits.
   VisitVector visits1;
   backend_->db_->GetMostRecentVisitsForURL(url1.id(), kMaxVisitsToQuery,
+                                           VisitQuery404sPolicy::kInclude404s,
                                            &visits1);
   ASSERT_EQ(visits1.size(), 1u);
   VisitVector visits2;
   backend_->db_->GetMostRecentVisitsForURL(url2.id(), kMaxVisitsToQuery,
+                                           VisitQuery404sPolicy::kInclude404s,
                                            &visits2);
   ASSERT_EQ(visits2.size(), 1u);
   VisitVector visits3;
   backend_->db_->GetMostRecentVisitsForURL(url3.id(), kMaxVisitsToQuery,
+                                           VisitQuery404sPolicy::kInclude404s,
                                            &visits3);
   ASSERT_EQ(visits3.size(), 1u);
 
@@ -4203,7 +4208,8 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
 
   VisitVector visits;
   ASSERT_TRUE(backend_->db_->GetMostRecentVisitsForURL(
-      backend_->db_->GetRowForURL(url, nullptr), kMaxVisitsToQuery, &visits));
+      backend_->db_->GetRowForURL(url, nullptr), kMaxVisitsToQuery,
+      VisitQuery404sPolicy::kInclude404s, &visits));
   ASSERT_EQ(1u, visits.size());
 
   const VisitID visit_id = visits[0].visit_id;

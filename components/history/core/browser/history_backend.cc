@@ -1684,6 +1684,9 @@ QueryURLAndVisitsResult HistoryBackend::GetMostRecentVisitsForGurl(
   QueryURLAndVisitsResult result;
   if (db_ && GetURL(url, &result.row) &&
       db_->GetMostRecentVisitsForURL(result.row.id(), max_visits,
+                                     // TODO: crbug.com/441271806 - Take a 404s
+                                     //   policy param and pass it here.
+                                     VisitQuery404sPolicy::kExclude404s,
                                      &result.visits)) {
     result.success = true;
   }

@@ -287,6 +287,89 @@ TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_Tied) {
   EXPECT_EQ(out_visit.visit_time, kNow);
 }
 
+TEST_F(VisitDatabaseTest, GetMostRecentVisitsForURL_NoVisits) {
+  const URLID kUrlId = 1U;
+
+  // Should return an empty vector when there are no visits.
+  VisitVector out_visits;
+  ASSERT_TRUE(GetMostRecentVisitsForURL(
+      kUrlId, 1, VisitQuery404sPolicy::kInclude404s, &out_visits));
+  EXPECT_EQ(out_visits.size(), 0U);
+  ASSERT_TRUE(GetMostRecentVisitsForURL(
+      kUrlId, 1, VisitQuery404sPolicy::kExclude404s, &out_visits));
+  EXPECT_EQ(out_visits.size(), 0U);
+}
+
+TEST_F(VisitDatabaseTest, GetMostRecentVisitsForURL_Simple) {
+  const URLID kUrlId = 1U;
+  const base::Time kNow = Time::Now();
+
+  // Add two visits for the same URL ID with different visit times.
+  for (int visit_number = 1; visit_number <= 2; ++visit_number) {
+    VisitRow visit;
+    visit.url_id = kUrlId;
+    visit.visit_id = visit_number;
+    visit.visit_time = kNow - base::Days(visit_number);
+    ASSERT_TRUE(AddVisit(&visit, SOURCE_BROWSED));
+    ASSERT_EQ(visit_number, visit.visit_id);
+  }
+
+  // Should return both visits in recency order, regardless of
+  // `policy_for_404_visits`.
+  VisitVector out_visits;
+  ASSERT_TRUE(GetMostRecentVisitsForURL(
+      kUrlId, 100, VisitQuery404sPolicy::kInclude404s, &out_visits));
+  ASSERT_EQ(out_visits.size(), 2U);
+  EXPECT_EQ(out_visits.front().visit_id, 1);
+  EXPECT_EQ(out_visits.back().visit_id, 2);
+  ASSERT_TRUE(GetMostRecentVisitsForURL(
+      kUrlId, 100, VisitQuery404sPolicy::kExclude404s, &out_visits));
+  ASSERT_EQ(out_visits.size(), 2U);
+  EXPECT_EQ(out_visits.front().visit_id, 1);
+  EXPECT_EQ(out_visits.back().visit_id, 2);
+}
+
+TEST_F(VisitDatabaseTest, GetMostRecentVisitsForURL_404Policy) {
+  const URLID kUrlId = 1U;
+  const base::Time kNow = Time::Now();
+  VisitContextAnnotations context_annotations_non_404;
+  context_annotations_non_404.on_visit = {.response_code = 500};
+  VisitContextAnnotations context_annotations_404;
+  context_annotations_404.on_visit = {.response_code = 404};
+
+  // Add a non-404 visit for the URL.
+  VisitRow visit_non_404;
+  visit_non_404.url_id = kUrlId;
+  visit_non_404.visit_id = 1;
+  visit_non_404.visit_time = kNow - base::Days(2);
+  ASSERT_TRUE(AddVisit(&visit_non_404, SOURCE_BROWSED));
+  ASSERT_EQ(visit_non_404.visit_id, 1);
+  AddContextAnnotationsForVisit(visit_non_404.visit_id,
+                                context_annotations_non_404);
+
+  // Add a more recent 404 visit for the URL.
+  VisitRow visit_404;
+  visit_404.url_id = kUrlId;
+  visit_404.visit_id = 2;
+  visit_404.visit_time = kNow - base::Days(1);
+  ASSERT_TRUE(AddVisit(&visit_404, SOURCE_BROWSED));
+  ASSERT_EQ(visit_404.visit_id, 2);
+  AddContextAnnotationsForVisit(visit_404.visit_id, context_annotations_404);
+
+  // When including 404 visits, we should get both visits back with the 404
+  // recent first.
+  VisitVector out_visits;
+  ASSERT_TRUE(GetMostRecentVisitsForURL(
+      kUrlId, 100, VisitQuery404sPolicy::kInclude404s, &out_visits));
+  ASSERT_EQ(out_visits.size(), 2U);
+  EXPECT_THAT(out_visits.front(), MatchesVisitInfo(visit_404));
+  EXPECT_THAT(out_visits.back(), MatchesVisitInfo(visit_non_404));
+  ASSERT_TRUE(GetMostRecentVisitsForURL(
+      kUrlId, 100, VisitQuery404sPolicy::kExclude404s, &out_visits));
+  ASSERT_EQ(out_visits.size(), 1U);
+  EXPECT_THAT(out_visits.front(), MatchesVisitInfo(visit_non_404));
+}
+
 TEST_F(VisitDatabaseTest, GetVisibleVisitCountToHost) {
   // Add a primary main frame non-redirect visit to a URL.
   GURL url("http://www.google.com/");

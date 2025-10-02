@@ -181,13 +181,16 @@ class VisitDatabase {
   // the found visit. When no visit is found, the row will be unchanged.
   VisitID GetMostRecentVisitForURL(URLID url_id, VisitRow* visit_row);
 
-  // Returns the `max_results` most recent visit sessions for `url_id`.
+  // Returns the `max_results` most recent visit sessions for `url_id`. Includes
+  // or excludes visits with an HTTP response code of 404 according to
+  // `policy_for_404_visits`.
   //
   // Returns false if there's a failure preparing the statement. True
-  // otherwise. (No results are indicated with an empty `visits`
+  // otherwise. (No matching results is indicated with an empty `visits`
   // vector.)
   bool GetMostRecentVisitsForURL(URLID url_id,
                                  int max_results,
+                                 VisitQuery404sPolicy policy_for_404_visits,
                                  VisitVector* visits);
 
   // Finds a redirect coming from the given `from_visit`. If a redirect is

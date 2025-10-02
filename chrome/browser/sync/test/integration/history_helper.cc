@@ -131,7 +131,9 @@ class GetVisitsTask : public history::HistoryDBTask {
                      history::HistoryDatabase* db) override {
     // Fetch the visits.
     const int kMaxVisitsToQuery = 100;
-    db->GetMostRecentVisitsForURL(id_, kMaxVisitsToQuery, visits_);
+    db->GetMostRecentVisitsForURL(id_, kMaxVisitsToQuery,
+                                  history::VisitQuery404sPolicy::kInclude404s,
+                                  visits_);
     wait_event_->Signal();
     return true;
   }
@@ -158,7 +160,9 @@ class GetAnnotatedVisitsTask : public history::HistoryDBTask {
     const int kMaxVisitsToQuery = 100;
     // Fetch the visits.
     history::VisitVector basic_visits;
-    db->GetMostRecentVisitsForURL(id_, kMaxVisitsToQuery, &basic_visits);
+    db->GetMostRecentVisitsForURL(id_, kMaxVisitsToQuery,
+                                  history::VisitQuery404sPolicy::kInclude404s,
+                                  &basic_visits);
     *annotated_visits_ = backend->ToAnnotatedVisitsFromRows(
         basic_visits, /*compute_redirect_chain_start_properties=*/false);
     wait_event_->Signal();
