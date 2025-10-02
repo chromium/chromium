@@ -20,6 +20,8 @@ source_set("ink") {
     "src/ink/brush/brush_paint.h",
     "src/ink/brush/brush_tip.cc",
     "src/ink/brush/brush_tip.h",
+    "src/ink/brush/color_function.cc",
+    "src/ink/brush/color_function.h",
     "src/ink/brush/easing_function.cc",
     "src/ink/brush/easing_function.h",
     "src/ink/color/color.cc",
