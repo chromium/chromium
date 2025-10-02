@@ -4,11 +4,13 @@
 
 package org.chromium.ui.util;
 
+import android.content.Context;
 import android.content.res.Resources.Theme;
 import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -50,5 +52,23 @@ public final class AttrUtils {
         } else {
             return defaultColor;
         }
+    }
+
+    /**
+     * Resolves a dimension attribute from the theme and returns its value in pixels.
+     *
+     * @param context The context to resolve the theme attribute from.
+     * @param dimenAttr The dimension attribute to resolve.
+     * @return The dimension value in pixels, or -1 if the attribute is not defined in the theme.
+     */
+    public static @Px int getDimensionPixelSize(Context context, @AttrRes int dimenAttr) {
+        var typedValue = new TypedValue();
+
+        if (context.getTheme().resolveAttribute(dimenAttr, typedValue, true)) {
+            return TypedValue.complexToDimensionPixelSize(
+                    typedValue.data, context.getResources().getDisplayMetrics());
+        }
+
+        return -1;
     }
 }

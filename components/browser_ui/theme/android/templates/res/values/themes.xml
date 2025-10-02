@@ -153,6 +153,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
 
         <!-- List item dimensions. -->
         <item name="listItemHeight">?attr/minInteractTargetSize</item>
+        <item name="listItemHeightLarge">@dimen/list_menu_item_min_height_large</item>
         <item name="listItemIconSize">@dimen/list_menu_item_icon_size</item>
         <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding</item>
         <item name="listItemControlPadding">@dimen/list_menu_item_control_padding</item>
@@ -343,6 +344,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_16dp</item>
 
         <!-- List item dimensions. -->
+        <item name="listItemHeightLarge">@dimen/list_menu_item_min_height_large_desktop</item>
         <item name="listItemIconSize">@dimen/list_menu_item_icon_size_desktop</item>
         <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding_desktop</item>
         <item name="listItemControlPadding">@dimen/list_menu_item_control_padding_desktop</item>

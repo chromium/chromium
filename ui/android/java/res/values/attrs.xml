@@ -77,6 +77,7 @@ found in the LICENSE file.
     <attr name="minInteractTargetSize" format="dimension" />
 
     <attr name="listItemHeight" format="dimension" />
+    <attr name="listItemHeightLarge" format="dimension" />
     <attr name="listItemIconSize" format="dimension" />
     <attr name="listItemIconPadding" format="dimension" />
     <!-- For views that contain a control icon, e.g. checkbox, which includes built-in padding. -->

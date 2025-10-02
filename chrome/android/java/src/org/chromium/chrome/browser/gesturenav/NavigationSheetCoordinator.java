@@ -33,6 +33,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AttrUtils;
 
 import java.util.function.Supplier;
 
@@ -151,7 +152,8 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                         context.getResources().getDisplayMetrics().density
                                 * LONG_SWIPE_PEEK_THRESHOLD_DP,
                         parent.getWidth() / 2f);
-        mItemHeight = getSizePx(context, R.dimen.navigation_popup_item_height);
+        mItemHeight = AttrUtils.getDimensionPixelSize(context, R.attr.listItemHeightLarge);
+        assert mItemHeight >= 0;
         mContentPadding =
                 getSizePx(context, R.dimen.navigation_sheet_content_top_padding)
                         + getSizePx(context, R.dimen.navigation_sheet_content_bottom_padding);

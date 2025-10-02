@@ -50,10 +50,12 @@ found in the LICENSE file.
 
     <!-- Navigation history popup dimensions -->
     <dimen name="navigation_popup_width">312dp</dimen>
-    <dimen name="navigation_popup_item_height">56dp</dimen>
-    <dimen name="navigation_popup_default_padding">16dp</dimen>
+    <dimen name="navigation_popup_end_padding">16dp</dimen>
+    <!-- There is extra padding coming from navigation_popup_favicon_padding for the next two. -->
+    <dimen name="navigation_popup_start_padding">10dp</dimen>
+    <dimen name="navigation_popup_icon_text_spacing">6dp</dimen>
     <dimen name="navigation_popup_top_padding">8dp</dimen>
-    <dimen name="navigation_popup_favicon_bg_size">36dp</dimen>
+    <dimen name="navigation_popup_favicon_padding">6dp</dimen>
     <dimen name="navigation_popup_tablet_min_width">200dp</dimen>
     <dimen name="navigation_popup_tablet_max_width">500dp</dimen>
     <dimen name="navigation_popup_tablet_width_margin">48dp</dimen>

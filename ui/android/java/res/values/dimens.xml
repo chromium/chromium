@@ -113,12 +113,14 @@ found in the LICENSE file.
     <dimen name="list_menu_item_horizontal_padding">16dp</dimen>
     <dimen name="list_menu_elevation">3dp</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
+    <dimen name="list_menu_item_min_height_large">56dp</dimen>
 
     <dimen name="list_menu_item_icon_size_desktop">20dp</dimen>
     <dimen name="list_menu_item_icon_padding_desktop">8dp</dimen>
     <dimen name="list_menu_item_control_padding_desktop">5dp</dimen>
     <dimen name="list_menu_item_start_icon_end_margin_desktop">12dp</dimen>
     <dimen name="list_divider_layout_height_desktop">10dp</dimen>
+    <dimen name="list_menu_item_min_height_large_desktop">36dp</dimen>
 
     <dimen name="list_menu_flyout_popup_horizontal_overlap">8dp</dimen>
 
