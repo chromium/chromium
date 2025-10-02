@@ -25,6 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 /** Unit tests for {@link TabCardThemeUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -106,18 +107,18 @@ public class TabCardThemeUtilUnitTest {
 
     @Test
     public void testGetTitleTextColor_isNotSelected() {
-        // This test verifies that the method correctly delegates to SurfaceColorUpdateUtils.
+        // This test verifies that the method correctly delegates to TabGroupColorPickerUtils.
         @TabGroupColorId int testColorId = TabGroupColorId.BLUE;
         @ColorInt
         int expectedColor =
-                SurfaceColorUpdateUtils.getCardViewTextColor(
-                        mContext, /* isIncognito= */ false, testColorId);
+                TabGroupColorPickerUtils.getTabGroupCardTextColor(
+                        mContext, testColorId, /* isIncognito= */ false);
         @ColorInt
         int actualColor =
                 TabCardThemeUtil.getTitleTextColor(
                         mContext, /* isIncognito= */ false, /* isSelected= */ false, testColorId);
         assertEquals(
-                "Unselected title text color should delegate to SurfaceColorUpdateUtils.",
+                "Unselected title text color should be delegated to TabGroupColorPickerUtils.",
                 expectedColor,
                 actualColor);
     }
@@ -202,18 +203,18 @@ public class TabCardThemeUtilUnitTest {
 
     @Test
     public void testGetCardViewBackgroundColor_isNotSelected() {
-        // This test verifies that the method correctly delegates to SurfaceColorUpdateUtils.
+        // This test verifies that the method correctly delegates to TabGroupColorPickerUtils.
         @TabGroupColorId int testColorId = TabGroupColorId.RED;
         @ColorInt
         int expectedColor =
-                SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ false, testColorId);
+                TabGroupColorPickerUtils.getTabGroupCardColor(
+                        mContext, testColorId, /* isIncognito= */ false);
         @ColorInt
         int actualColor =
                 TabCardThemeUtil.getCardViewBackgroundColor(
                         mContext, /* isIncognito= */ false, /* isSelected= */ false, testColorId);
         assertEquals(
-                "Unselected background color should delegate to SurfaceColorUpdateUtils.",
+                "Unselected background color should be delegated to TabGroupColorPickerUtils.",
                 expectedColor,
                 actualColor);
     }
