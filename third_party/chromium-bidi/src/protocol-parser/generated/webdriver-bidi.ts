@@ -1691,7 +1691,7 @@ export namespace Network {
   );
 }
 export namespace Network {
-  export const DataTypeSchema = z.literal('response');
+  export const DataTypeSchema = z.lazy(() => z.enum(['request', 'response']));
 }
 export namespace Network {
   export const FetchTimingInfoSchema = z.lazy(() =>
