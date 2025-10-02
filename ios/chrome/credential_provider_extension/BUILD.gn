@@ -43,6 +43,7 @@ source_set("credential_provider") {
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge",
     "//ios/chrome/common/credential_provider:ui",
+    "//ios/chrome/common/credential_provider/ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/reauthentication",

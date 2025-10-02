@@ -25,11 +25,5 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/multicolor_chrome.symbolset/multicolor.chrome.cr.svg",
     "Assets.xcassets/multicolor_credential.symbolset/Contents.json",
     "Assets.xcassets/multicolor_credential.symbolset/multicolor.credential.cr.svg",
-    "Assets.xcassets/passkey_bootstrapping_banner.imageset/Contents.json",
-    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_dark.pdf",
-    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_light.pdf",
-    "Assets.xcassets/passkey_generic_banner.imageset/Contents.json",
-    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_dark.pdf",
-    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_light.pdf",
   ]
 }

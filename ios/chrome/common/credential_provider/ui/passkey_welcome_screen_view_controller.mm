@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 
 #import "base/notreached.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

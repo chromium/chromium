@@ -21,6 +21,7 @@
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/credential_provider/multi_store_credential_store.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -39,7 +40,6 @@
 #import "ios/chrome/credential_provider_extension/ui/generic_error_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/multi_profile_passkey_creation_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
-#import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 #import "ios/components/credential_provider_extension/password_util.h"
 
