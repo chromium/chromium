@@ -33,9 +33,10 @@ WebInputEvent::Type PointerEventTypeForTouchPointState(
 WebPointerEvent::WebPointerEvent(const WebTouchEvent& touch_event,
                                  const WebTouchPoint& touch_point)
     : WebInputEvent(PointerEventTypeForTouchPointState(touch_point.state),
+                    WebInputEvent::Type::kPointerTypeFirst,
+                    WebInputEvent::Type::kPointerTypeLast,
                     touch_event.GetModifiers(),
                     touch_event.TimeStamp()),
-
       WebPointerProperties(touch_point),
       hovering(touch_event.hovering),
       width(touch_point.radius_x * 2.f),
@@ -62,13 +63,15 @@ WebPointerEvent::WebPointerEvent(const WebTouchEvent& touch_event,
 
 WebPointerEvent::WebPointerEvent(WebInputEvent::Type type,
                                  const WebMouseEvent& mouse_event)
-    : WebInputEvent(type, mouse_event.GetModifiers(), mouse_event.TimeStamp()),
+    : WebInputEvent(type,
+                    WebInputEvent::Type::kPointerTypeFirst,
+                    WebInputEvent::Type::kPointerTypeLast,
+                    mouse_event.GetModifiers(),
+                    mouse_event.TimeStamp()),
       WebPointerProperties(mouse_event),
       hovering(true),
       width(std::numeric_limits<float>::quiet_NaN()),
       height(std::numeric_limits<float>::quiet_NaN()) {
-  DCHECK_GE(type, WebInputEvent::Type::kPointerTypeFirst);
-  DCHECK_LE(type, WebInputEvent::Type::kPointerTypeLast);
   SetFrameScale(mouse_event.FrameScale());
   SetFrameTranslate(mouse_event.FrameTranslate());
   if (mouse_event.GetPreventCountingAsInteraction()) {

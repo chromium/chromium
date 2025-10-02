@@ -210,11 +210,19 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       int modifiers,
       base::TimeTicks time_stamp,
       mojom::GestureDevice device = mojom::GestureDevice::kUninitialized)
-      : WebInputEvent(type, modifiers, time_stamp), source_device_(device) {
+      : WebInputEvent(type,
+                      Type::kGestureTypeFirst,
+                      Type::kGestureTypeLast,
+                      modifiers,
+                      time_stamp),
+        source_device_(device) {
     memset(&data, 0, sizeof(data));
   }
 
-  WebGestureEvent() : WebInputEvent(Type::kUndefined) {
+  WebGestureEvent()
+      : WebInputEvent(Type::kUndefined,
+                      Type::kGestureTypeFirst,
+                      Type::kGestureTypeLast) {
     memset(&data, 0, sizeof(data));
   }
 

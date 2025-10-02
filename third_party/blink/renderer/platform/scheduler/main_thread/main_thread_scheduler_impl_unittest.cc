@@ -132,6 +132,8 @@ class FakeInputEvent : public blink::WebInputEvent {
   explicit FakeInputEvent(blink::WebInputEvent::Type event_type,
                           int modifiers = WebInputEvent::kNoModifiers)
       : WebInputEvent(event_type,
+                      blink::WebInputEvent::Type::kTypeFirst,
+                      blink::WebInputEvent::Type::kTypeLast,
                       modifiers,
                       WebInputEvent::GetStaticTimeStampForTests()) {}
 

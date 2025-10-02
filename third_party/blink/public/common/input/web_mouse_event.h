@@ -36,17 +36,18 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
                 base::TimeTicks time_stamp_param,
                 WebMenuSourceType menu_source_type_param = kMenuSourceNone,
                 PointerId id_param = kMousePointerId)
-      : WebInputEvent(type_param, modifiers_param, time_stamp_param),
+      : WebInputEvent(type_param,
+                      Type::kMouseTypeFirst,
+                      Type::kMouseTypeLast,
+                      modifiers_param,
+                      time_stamp_param),
         WebPointerProperties(id_param,
                              PointerType::kMouse,
                              button_param,
                              position,
                              global_position),
         click_count(click_count_param),
-        menu_source_type(menu_source_type_param) {
-    DCHECK_GE(type_param, Type::kMouseTypeFirst);
-    DCHECK_LE(type_param, Type::kMouseTypeLast);
-  }
+        menu_source_type(menu_source_type_param) {}
 
   WebMouseEvent(Type type_param,
                 const WebGestureEvent&,
@@ -57,11 +58,28 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
                 PointerId id_param = kMousePointerId);
 
   WebMouseEvent(Type type_param,
+                Type type_range_min,
+                Type type_range_max,
                 int modifiers_param,
                 base::TimeTicks time_stamp_param,
                 PointerId id_param = kMousePointerId)
-      : WebInputEvent(type_param, modifiers_param, time_stamp_param),
+      : WebInputEvent(type_param,
+                      type_range_min,
+                      type_range_max,
+                      modifiers_param,
+                      time_stamp_param),
         WebPointerProperties(id_param, PointerType::kMouse) {}
+
+  WebMouseEvent(Type type_param,
+                int modifiers_param,
+                base::TimeTicks time_stamp_param,
+                PointerId id_param = kMousePointerId)
+      : WebMouseEvent(type_param,
+                      Type::kMouseTypeFirst,
+                      Type::kMouseTypeLast,
+                      modifiers_param,
+                      time_stamp_param,
+                      id_param) {}
 
   WebMouseEvent()
       : WebMouseEvent(Type::kUndefined,
