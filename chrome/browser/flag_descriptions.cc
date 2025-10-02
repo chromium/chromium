@@ -2167,6 +2167,13 @@ const char kFileSystemObserverDescription[] =
     "https://github.com/whatwg/fs/blob/main/proposals/FileSystemObserver.md "
     "for more information.";
 
+const char kAckCopyOutputRequestEarlyForViewTransitionName[] =
+    "Ack CopyOutputRequest early for View Transition";
+const char kAckCopyOutputRequestEarlyForViewTransitionDescription[] =
+    "If enabled, send acks for CopyOutputRequest completion immediately to "
+    "unblock navigation for ViewTransitions while CopyOutputRequests are in "
+    "progress. This is a fast-path for ViewTransitions.";
+
 const char kAckOnSurfaceActivationWhenInteractiveName[] =
     "Ack On Surface Activation When Interactive";
 const char kAckOnSurfaceActivationWhenInteractiveDescription[] =

@@ -44,6 +44,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "ack-copy-output-request-early-for-view-transition",
+    "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org", "jonross@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ack-on-surface-activation-when-interactive",
     "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
     "expiry_milestone": 145

@@ -1265,6 +1265,9 @@ extern const char kFileHandlingIconsDescription[];
 extern const char kFileSystemObserverName[];
 extern const char kFileSystemObserverDescription[];
 
+extern const char kAckCopyOutputRequestEarlyForViewTransitionName[];
+extern const char kAckCopyOutputRequestEarlyForViewTransitionDescription[];
+
 extern const char kAckOnSurfaceActivationWhenInteractiveName[];
 extern const char kAckOnSurfaceActivationWhenInteractiveDescription[];
 

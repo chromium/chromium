@@ -3120,6 +3120,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   }
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
+  bool has_view_transition_with_animate = false;
 
   // Don't compute transition directives in TreesInViz mode because
   // the requests will be sent over to viz to compute them.
@@ -3167,6 +3168,14 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       } else {
         metadata.transition_directives.push_back(request->ConstructDirective(
             view_transition_element_map, display_color_spaces));
+        if (request->maybe_cross_frame_sink() &&
+            features::ShouldAckCOREarlyForViewTransition()) {
+          OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
+          if (request->type() ==
+              ViewTransitionRequest::Type::kAnimateRenderer) {
+            has_view_transition_with_animate = true;
+          }
+        }
       }
     }
   } else {
@@ -3178,14 +3187,34 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     if (active_tree_->HasViewTransitionRequests()) {
       active_tree_->set_needs_update_draw_properties();
     }
+    if (features::ShouldAckCOREarlyForViewTransition()) {
+      for (auto& request : active_tree_->view_transition_requests()) {
+        if (request->maybe_cross_frame_sink()) {
+          OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
+          if (request->type() ==
+              ViewTransitionRequest::Type::kAnimateRenderer) {
+            has_view_transition_with_animate = true;
+          }
+        }
+      }
+    }
   }
 
   PopulateMetadataContentColorUsage(frame, &metadata);
   metadata.has_shared_element_resources = frame->has_shared_element_resources;
-  metadata.deadline = viz::FrameDeadline(
-      CurrentBeginFrameArgs().frame_time,
-      frame->deadline_in_frames.value_or(0u), CurrentBeginFrameArgs().interval,
-      frame->use_default_lower_bound_deadline);
+  uint32_t frame_deadline = frame->deadline_in_frames.value_or(0u);
+  // Set a higher frame deadline for ViewTransitions with `kAnimateRenderer` to
+  // wait for animations from old RenderFrame, in case there are issues with old
+  // RenderFrame being stuck, and we send CopyOutputRequest Ack early for
+  // fast-path ViewTransition navigations.
+  if (features::ShouldAckCOREarlyForViewTransition() &&
+      has_view_transition_with_animate) {
+    frame_deadline = 240;
+  }
+  metadata.deadline =
+      viz::FrameDeadline(CurrentBeginFrameArgs().frame_time, frame_deadline,
+                         CurrentBeginFrameArgs().interval,
+                         frame->use_default_lower_bound_deadline);
   metadata.frame_interval_inputs.frame_time =
       CurrentBeginFrameArgs().frame_time;
   metadata.frame_interval_inputs.has_input = has_input_for_frame_interval_;

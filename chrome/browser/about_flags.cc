@@ -10662,6 +10662,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableFpanRiskBasedAuthentication)},
 
+    {"ack-copy-output-request-early-for-view-transition",
+     flag_descriptions::kAckCopyOutputRequestEarlyForViewTransitionName,
+     flag_descriptions::kAckCopyOutputRequestEarlyForViewTransitionDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kAckCopyOutputRequestEarlyForViewTransition)},
+
     {"ack-on-surface-activation-when-interactive",
      flag_descriptions::kAckOnSurfaceActivationWhenInteractiveName,
      flag_descriptions::kAckOnSurfaceActivationWhenInteractiveDescription,

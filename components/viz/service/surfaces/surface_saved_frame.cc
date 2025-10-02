@@ -166,7 +166,10 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
         std::move(shared_image));
   }
 
-  if (copy_request_count_ == 0) {
+  // DispatchCopyDoneCallback early for cross frame sink view transitions.
+  if ((features::ShouldAckCOREarlyForViewTransition() &&
+       directive_.maybe_cross_frame_sink()) ||
+      copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
   }
 }
@@ -260,7 +263,11 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   DCHECK_GT(copy_request_count_, 0u);
   // Even if we early out, we update the count since we are no longer waiting
   // for this result.
-  if (--copy_request_count_ == 0) {
+  --copy_request_count_;
+  // Callback is run already for cross frame view transitions.
+  if (!(features::ShouldAckCOREarlyForViewTransition() &&
+        directive_.maybe_cross_frame_sink()) &&
+      copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
   }
 

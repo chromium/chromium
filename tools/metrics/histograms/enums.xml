@@ -11335,6 +11335,8 @@ from previous Chrome versions.
   <int value="-1019760093" label="PrintWithPostScriptType42Fonts:enabled"/>
   <int value="-1019492310"
       label="OmniboxUIExperimentJogTextfieldOnPopup:enabled"/>
+  <int value="-1019412189"
+      label="AckCopyOutputRequestEarlyForViewTransition:disabled"/>
   <int value="-1018983714" label="FedCm:enabled"/>
   <int value="-1018713194"
       label="SupervisedUserInterstitialWithoutApprovals:disabled"/>
@@ -12886,6 +12888,8 @@ from previous Chrome versions.
   <int value="-458726025" label="WebApkInstallFailureNotification:disabled"/>
   <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
   <int value="-458090289" label="CrOSLateBootMissiveStorage:disabled"/>
+  <int value="-458067613"
+      label="AckCopyOutputRequestEarlyForViewTransition:enabled"/>
   <int value="-457584339" label="TemporaryHoldingSpace:enabled"/>
   <int value="-457246393" label="FloatingWorkspaceV2:enabled"/>
   <int value="-457174225" label="Av1Decoder:enabled"/>

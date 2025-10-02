@@ -218,7 +218,7 @@ BASE_FEATURE(kVSyncAlignedPresent, base::FEATURE_ENABLED_BY_DEFAULT);
 // proceed with navigation. ViewTransition Animate still waits though for
 // CopyOutputRequests to be actually fulfilled.
 BASE_FEATURE(kAckCopyOutputRequestEarlyForViewTransition,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
 #if BUILDFLAG(IS_MAC)
