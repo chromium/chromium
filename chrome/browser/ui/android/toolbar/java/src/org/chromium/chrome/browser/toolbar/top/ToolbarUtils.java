@@ -42,11 +42,17 @@ public class ToolbarUtils {
                 ToolbarComponentId.RELOAD,
                 ToolbarComponentId.FORWARD,
                 ToolbarComponentId.HOME,
+                ToolbarComponentId.OMNIBOX_BOOKMARK,
+                ToolbarComponentId.OMNIBOX_INSTALL,
+                ToolbarComponentId.OMNIBOX_MIC,
+                ToolbarComponentId.OMNIBOX_LENS,
             };
 
     public static final @ToolbarComponentId int[] APP_MENU_ICON_ROW_COMPONENTS =
             new int[] {
-                ToolbarComponentId.RELOAD, ToolbarComponentId.FORWARD,
+                ToolbarComponentId.RELOAD,
+                ToolbarComponentId.FORWARD,
+                ToolbarComponentId.OMNIBOX_BOOKMARK
             };
 
     @IntDef({
@@ -55,6 +61,10 @@ public class ToolbarUtils {
         ToolbarComponentId.FORWARD,
         ToolbarComponentId.RELOAD,
         ToolbarComponentId.LOCATION_BAR_MINIMUM,
+        ToolbarComponentId.OMNIBOX_BOOKMARK,
+        ToolbarComponentId.OMNIBOX_INSTALL,
+        ToolbarComponentId.OMNIBOX_MIC,
+        ToolbarComponentId.OMNIBOX_LENS,
         ToolbarComponentId.ADAPTIVE_BUTTON,
         ToolbarComponentId.INCOGNITO_INDICATOR,
         ToolbarComponentId.TAB_SWITCHER,
@@ -69,12 +79,16 @@ public class ToolbarUtils {
         int FORWARD = 2;
         int RELOAD = 3;
         int LOCATION_BAR_MINIMUM = 4;
-        int ADAPTIVE_BUTTON = 5;
-        int INCOGNITO_INDICATOR = 6;
-        int TAB_SWITCHER = 7;
-        int MENU = 8;
-        int PADDING = 9;
-        int COUNT = 10;
+        int OMNIBOX_BOOKMARK = 5;
+        int OMNIBOX_INSTALL = 6;
+        int OMNIBOX_MIC = 7;
+        int OMNIBOX_LENS = 8;
+        int ADAPTIVE_BUTTON = 9;
+        int INCOGNITO_INDICATOR = 10;
+        int TAB_SWITCHER = 11;
+        int MENU = 12;
+        int PADDING = 13;
+        int COUNT = 14;
     }
 
     /**

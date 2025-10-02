@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -929,5 +930,37 @@ public class LocationBarCoordinator
     public ObservableSupplier<@NavigationFulfillmentType Integer>
             getNavigationFulfillmentTypeSupplier() {
         return mLocationBarMediator.getNavigationFulfillmentTypeSupplier();
+    }
+
+    /**
+     * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
+     * the bookmark button on the omnibox.
+     */
+    public ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumer() {
+        return mLocationBarMediator.getBookmarkButtonToolbarWidthConsumer();
+    }
+
+    /**
+     * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
+     * the install button on the omnibox.
+     */
+    public ToolbarWidthConsumer getInstallButtonToolbarWidthConsumer() {
+        return mLocationBarMediator.getInstallButtonToolbarWidthConsumer();
+    }
+
+    /**
+     * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
+     * the mic button on the omnibox.
+     */
+    public ToolbarWidthConsumer getMicButtonToolbarWidthConsumer() {
+        return mLocationBarMediator.getMicButtonToolbarWidthConsumer();
+    }
+
+    /**
+     * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
+     * the lens button on the omnibox.
+     */
+    public ToolbarWidthConsumer getLensButtonToolbarWidthConsumer() {
+        return mLocationBarMediator.getLensButtonToolbarWidthConsumer();
     }
 }

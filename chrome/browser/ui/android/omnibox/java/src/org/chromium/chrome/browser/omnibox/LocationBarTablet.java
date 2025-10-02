@@ -246,6 +246,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     /* package */ void setBookmarkButtonVisibility(boolean showBookmarkButton) {
+        // The button may be null if this method is called before initialization is finished.
+        if (mBookmarkButton == null) return;
         mBookmarkButton.setVisibility(showBookmarkButton ? View.VISIBLE : View.GONE);
     }
 

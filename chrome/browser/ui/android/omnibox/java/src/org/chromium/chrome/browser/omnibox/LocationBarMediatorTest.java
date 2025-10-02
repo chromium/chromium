@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -228,6 +229,7 @@ public class LocationBarMediatorTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private AppBannerManager mAppBannerManager;
     @Mock private AppBannerManager.Natives mAppBannerManagerJni;
+    @Mock private NewTabPageDelegate mNewTabPageDelegate;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -253,6 +255,7 @@ public class LocationBarMediatorTest {
         SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mTabModelSelector).when(mTabModelSelectorSupplier).get();
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
@@ -1762,5 +1765,112 @@ public class LocationBarMediatorTest {
         doReturn(null).when(mLocationBarDataProvider).getTab();
         mMediator.hintZeroSuggestRefresh();
         verify(mAutocompleteCoordinator).prefetchZeroSuggestResults(null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testMicButtonToolbarWidthConsumer() {
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        assertFalse(mTabletMediator.shouldShowMicButton());
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mTabletMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        mTabletMediator.onFinishNativeInitialization();
+        mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(true);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+        mTabletMediator.onUrlFocusChange(true);
+
+        assertTrue(mTabletMediator.shouldShowMicButton());
+
+        ToolbarWidthConsumer micButtonConsumer = mTabletMediator.getMicButtonToolbarWidthConsumer();
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        micButtonConsumer.updateVisibility(buttonWidth);
+        verify(mLocationBarTablet).setMicButtonVisibility(true);
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        micButtonConsumer.updateVisibility(0);
+        verify(mLocationBarTablet).setMicButtonVisibility(false);
+        Mockito.clearInvocations(mLocationBarTablet);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testLensButtonToolbarWidthConsumer() {
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        assertFalse(mTabletMediator.shouldShowLensButton());
+
+        mTabletMediator.onFinishNativeInitialization();
+        mTabletMediator.resetLastCachedIsLensOnOmniboxEnabledForTesting();
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        mUiOverrides.setLensEntrypointAllowed(true);
+        mTabletMediator.setLensControllerForTesting(mLensController);
+        mTabletMediator.onUrlFocusChange(true);
+
+        assertTrue(mTabletMediator.shouldShowLensButton());
+
+        ToolbarWidthConsumer lensButtonConsumer =
+                mTabletMediator.getLensButtonToolbarWidthConsumer();
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        lensButtonConsumer.updateVisibility(buttonWidth);
+        verify(mLocationBarTablet).setLensButtonVisibility(true);
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        lensButtonConsumer.updateVisibility(0);
+        verify(mLocationBarTablet).setLensButtonVisibility(false);
+        Mockito.clearInvocations(mLocationBarTablet);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testBookmarkButtonToolbarWidthConsumer() {
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.onFinishNativeInitialization();
+        assertTrue(mTabletMediator.shouldShowBookmarkButton());
+
+        ToolbarWidthConsumer bookmarkButtonConsumer =
+                mTabletMediator.getBookmarkButtonToolbarWidthConsumer();
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        bookmarkButtonConsumer.updateVisibility(buttonWidth);
+        assertTrue(mTabletMediator.shouldShowBookmarkButton());
+        verify(mLocationBarTablet).setBookmarkButtonVisibility(true);
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        bookmarkButtonConsumer.updateVisibility(0);
+        verify(mLocationBarTablet).setBookmarkButtonVisibility(false);
+        Mockito.clearInvocations(mLocationBarTablet);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testInstallButtonToolbarWidthConsumer() {
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.onFinishNativeInitialization();
+        assertFalse(mTabletMediator.shouldShowInstallButton());
+
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        assertTrue(mTabletMediator.shouldShowInstallButton());
+
+        ToolbarWidthConsumer installButtonConsumer =
+                mTabletMediator.getInstallButtonToolbarWidthConsumer();
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        installButtonConsumer.updateVisibility(buttonWidth);
+        verify(mLocationBarTablet).setInstallButtonVisibility(true);
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        installButtonConsumer.updateVisibility(0);
+        verify(mLocationBarTablet).setInstallButtonVisibility(false);
+        Mockito.clearInvocations(mLocationBarTablet);
     }
 }
