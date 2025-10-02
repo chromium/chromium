@@ -2967,9 +2967,9 @@ external/wpt/navigation-api/navigation-methods/return-value/navigate-javascript-
 external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
-[ Mac14 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
-[ Win10.20h2 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
+crbug.com/448843863 [ Win11-arm64 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
+crbug.com/448843863 [ Mac14 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
+crbug.com/448843863 [ Win10.20h2 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
 crbug.com/448462500 external/wpt/css/css-align/blocks/align-content-table-cell-002.html [ Failure ]
 crbug.com/448462500 external/wpt/css/css-align/blocks/align-content-table-cell-005.html [ Failure ]
 crbug.com/448472314 external/wpt/css/css-anchor-position/align-dialog-002.html [ Failure ]
