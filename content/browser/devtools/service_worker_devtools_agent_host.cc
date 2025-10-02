@@ -244,7 +244,8 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
-      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
+      GetId(), devtools_worker_token_, GetIOContext(),
+      context_wrapper()->storage_partition(), base::DoNothing(),
       session->GetClient());
 
   session->CreateAndAddHandler<protocol::FetchHandler>(
