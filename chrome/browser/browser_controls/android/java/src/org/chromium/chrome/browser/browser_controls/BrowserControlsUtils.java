@@ -23,6 +23,15 @@ public class BrowserControlsUtils {
     }
 
     /**
+     * Disallow top browser controls from scrolling off by setting min height equal to overall
+     * height. This feature does not check form factors.
+     */
+    public static boolean doSyncMinHeightWithTotalHeightV2() {
+        return ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()
+                && ChromeFeatureList.sTopControlsRefactor.isEnabled();
+    }
+
+    /**
      * @return True if the browser controls are completely off screen.
      */
     public static boolean areBrowserControlsOffScreen(BrowserControlsStateProvider stateProvider) {

@@ -1374,7 +1374,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private boolean doSyncMinHeightWithTotalHeight() {
         // When V2 flag is enabled, this logic is coordinated in TopControlsStacker.
-        if (ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) return false;
+        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) return false;
 
         return BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity);
     }

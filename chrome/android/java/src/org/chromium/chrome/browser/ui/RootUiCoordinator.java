@@ -608,8 +608,7 @@ public class RootUiCoordinator
             mExclusiveAccessManager = null;
         }
 
-        if (ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) {
-
+        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) {
             if (DeviceInfo.isDesktop()
                     || BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity)) {
                 mTopControlsStacker.setScrollingDisabled(true);
