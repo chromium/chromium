@@ -163,7 +163,7 @@ public class OmniboxPedalUnitTest {
     @Test
     public void executePedal_viewChromeHistory() {
         new OmniboxPedal(0, "hint", "", OmniboxPedalId.VIEW_CHROME_HISTORY).execute(mDelegate);
-        verify(mDelegate, times(1)).loadPageInCurrentTab(UrlConstants.HISTORY_URL);
+        verify(mDelegate, times(1)).loadPageInCurrentTab(UrlConstants.NATIVE_HISTORY_URL);
         verifyNoMoreInteractions(mDelegate);
     }
 

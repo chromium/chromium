@@ -219,7 +219,8 @@ public class OmniboxPedalsTest {
                     Tab tab = mActivityTestRule.getActivity().getActivityTab();
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(
-                            tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.HISTORY_URL));
+                            tab.getUrl().getSpec(),
+                            Matchers.startsWith(UrlConstants.NATIVE_HISTORY_URL));
                 });
     }
 
