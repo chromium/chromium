@@ -332,25 +332,11 @@ cr-searchbox-icon {
 }
 
 .dropdownContainer {
-  background-color: var(--color-searchbox-results-background);
-  border-radius: calc(0.5 * var(--cr-searchbox-height));
-  box-shadow: var(--cr-searchbox-shadow);
-  gap: 16px;
   left: 0;
-  margin-bottom: var(--cr-searchbox-results-margin-bottom, 8px);
-  overflow: hidden;
-  padding-bottom: 8px;
-  padding-top: var(--cr-searchbox-height);
   position: absolute;
   right: 0;
   top: 0;
   z-index: 99;
-}
-
-@media (forced-colors: active) {
-  .dropdownContainer {
-    border: 1px solid ActiveBorder;
-  }
 }
 
 .truncate {
@@ -387,10 +373,32 @@ cr-searchbox-icon {
   --text-input-inline-start-spacing: 16px;
 }
 
+:host([realbox-layout-mode='Tall']) cr-searchbox-dropdown::part(dropdown-content) {
+  background-color: unset;
+  border-radius: unset;
+  box-shadow: unset;
+  gap: unset;
+  margin-bottom: unset;
+  overflow: unset;
+  padding-bottom: unset;
+  padding-top: unset;
+}
+
 :host([realbox-layout-mode='Tall']) .dropdownContainer {
+  background-color: var(--color-searchbox-results-background);
   border-radius: var(--cr-searchbox-border-radius);
+  box-shadow: var(--cr-searchbox-shadow);
+  gap: 16px;
+  margin-bottom: var(--cr-searchbox-results-margin-bottom, 8px);
+  overflow: hidden;
   padding-bottom: var(--cr-searchbox-dropdown-padding-bottom);
   padding-top: var(--cr-searchbox-dropdown-padding-top);
+}
+
+@media (forced-colors: active) {
+  :host([realbox-layout-mode='Tall']) .dropdownContainer {
+    border: 1px solid ActiveBorder;
+  }
 }
 
 :host([realbox-layout-mode='Tall']) #inputWrapper {
