@@ -30,7 +30,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   URLLoaderWrapperImpl& operator=(const URLLoaderWrapperImpl&) = delete;
   ~URLLoaderWrapperImpl() override;
 
-  // URLLoaderWrapper overrides:
+  // URLLoaderWrapper:
   int GetContentLength() const override;
   bool IsAcceptRangesBytes() const override;
   bool IsContentEncoded() const override;
@@ -45,7 +45,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
                  uint32_t position,
                  uint32_t size,
                  base::OnceCallback<void(bool)> callback) override;
-  void ReadResponseBody(base::span<char> buffer,
+  void ReadResponseBody(base::span<uint8_t> buffer,
                         base::OnceCallback<void(int)> callback) override;
 
  private:
@@ -66,7 +66,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   std::string multipart_boundary_;
   gfx::Range byte_range_ = gfx::Range::InvalidRange();
   bool is_multipart_ = false;
-  base::raw_span<char, DanglingUntriaged> buffer_;
+  base::raw_span<uint8_t, DanglingUntriaged> buffer_;
   bool multi_part_processed_ = false;
 
   base::OneShotTimer read_starter_;

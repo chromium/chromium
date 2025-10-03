@@ -159,7 +159,7 @@ void URLLoaderWrapperImpl::OpenRange(const std::string& url,
 }
 
 void URLLoaderWrapperImpl::ReadResponseBody(
-    base::span<char> buffer,
+    base::span<uint8_t> buffer,
     base::OnceCallback<void(int)> callback) {
   buffer_ = buffer;
   read_starter_.Start(
@@ -251,7 +251,7 @@ void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,
     return;
   }
 
-  base::span<char> start = buffer_.first(static_cast<size_t>(result));
+  base::span<uint8_t> start = buffer_.first(static_cast<size_t>(result));
   multi_part_processed_ = true;
   for (size_t i = 2; i < static_cast<size_t>(result); ++i) {
     auto buffer = base::as_string_view(buffer_.first(i));

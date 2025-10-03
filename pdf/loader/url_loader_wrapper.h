@@ -57,7 +57,7 @@ class URLLoaderWrapper {
   // Read the response body. The size of the buffer must be large enough to
   // hold the specified number of bytes to read.
   // This function might perform a partial read.
-  virtual void ReadResponseBody(base::span<char> buffer,
+  virtual void ReadResponseBody(base::span<uint8_t> buffer,
                                 base::OnceCallback<void(int)> callback) = 0;
 };
 

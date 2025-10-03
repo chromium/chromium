@@ -131,7 +131,7 @@ class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
 
   // Mimic `pp::URLLoader`:
   void Open(const UrlRequest& request, OpenCallback callback);
-  void ReadResponseBody(base::span<char> buffer,
+  void ReadResponseBody(base::span<uint8_t> buffer,
                         base::OnceCallback<void(int)> callback);
   void Close();
 
@@ -192,10 +192,10 @@ class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
   size_t buffer_lower_threshold_ = 0;
   size_t buffer_upper_threshold_ = 0;
   bool deferring_loading_ = false;
-  base::circular_deque<char> buffer_;
+  base::circular_deque<uint8_t> buffer_;
 
   base::OnceCallback<void(int)> read_callback_;
-  base::raw_span<char> client_buffer_;
+  base::raw_span<uint8_t> client_buffer_;
 };
 
 }  // namespace chrome_pdf

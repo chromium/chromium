@@ -84,7 +84,7 @@ class DocumentLoaderImpl : public DocumentLoader {
   bool partial_loading_enabled_;  // Default determined by `kPdfPartialLoading`.
   bool is_partial_loader_active_ = false;
 
-  std::vector<char> buffer_;
+  std::vector<uint8_t> buffer_;
 
   // The current chunk DocumentLoader is working with.
   Chunk chunk_;

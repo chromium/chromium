@@ -325,7 +325,8 @@ TEST_F(UrlLoaderTest, DidReceiveData) {
   char buffer[kFakeData.size()] = {};
   loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
   EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   loader_->DidReceiveData(kFakeData);
@@ -337,7 +338,8 @@ TEST_F(UrlLoaderTest, DidReceiveDataWithZeroLength) {
   char buffer[kFakeData.size()] = {};
   loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
   EXPECT_CALL(mock_read_callback_, Run).Times(0);
 
   loader_->DidReceiveData(kFakeData.first(0u));
@@ -357,7 +359,8 @@ TEST_F(UrlLoaderTest, DidReceiveDataCrossUpperThreshold) {
   StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
 
   char read_buffer[1];
-  loader_->ReadResponseBody(read_buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(read_buffer),
+                            mock_read_callback_.Get());
   {
     InSequence defer_before_read_callback;
     EXPECT_CALL(*mock_url_loader_, SetDefersLoading(true));
@@ -385,13 +388,15 @@ TEST_F(UrlLoaderTest, ReadResponseBody) {
   EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
 
   // Verify no more data returned on next call.
   EXPECT_CALL(mock_read_callback_, Run).Times(0);
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWithoutData) {
@@ -400,7 +405,8 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithoutData) {
   EXPECT_CALL(mock_read_callback_, Run).Times(0);
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, Each(0));
 }
@@ -410,7 +416,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithEmptyBuffer) {
   loader_->DidReceiveResponse(blink::WebURLResponse());
   EXPECT_CALL(mock_read_callback_, Run(Result::kErrorBadArgument));
 
-  loader_->ReadResponseBody(base::span<char>(), mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::span<uint8_t>(), mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWithSmallerBuffer) {
@@ -423,14 +429,16 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithSmallerBuffer) {
   EXPECT_CALL(mock_read_callback_, Run(kBufferSize));
 
   char buffer[kBufferSize] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData.first(kBufferSize)));
 
   // Verify remaining data returned on next call.
   char tail_buffer[kTailSize];
   EXPECT_CALL(mock_read_callback_, Run(kTailSize));
-  loader_->ReadResponseBody(tail_buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(tail_buffer),
+                            mock_read_callback_.Get());
   EXPECT_THAT(tail_buffer, ElementsAreArray(kFakeData.subspan(kBufferSize)));
 }
 
@@ -441,7 +449,8 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithBiggerBuffer) {
   EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size() + 1] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 
   base::span<char> buffer_span = buffer;
   EXPECT_THAT(buffer_span.first(kFakeData.size()), ElementsAreArray(kFakeData));
@@ -449,7 +458,8 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithBiggerBuffer) {
 
   // Verify no more data returned on next call.
   EXPECT_CALL(mock_read_callback_, Run).Times(0);
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadComplete) {
@@ -460,14 +470,16 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadComplete) {
   EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
 
   // Verify no more data returned on next call.
   char tail_buffer[kFakeData.size()] = {};
   EXPECT_CALL(mock_read_callback_, Run(0));
-  loader_->ReadResponseBody(tail_buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(tail_buffer),
+                            mock_read_callback_.Get());
   EXPECT_THAT(tail_buffer, Each(0));
 }
 
@@ -478,7 +490,8 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithoutData) {
   EXPECT_CALL(mock_read_callback_, Run(0));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, Each(0));
 }
@@ -491,7 +504,8 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithError) {
   EXPECT_CALL(mock_read_callback_, Run(Result::kErrorFailed));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, Each(0));
 }
@@ -504,7 +518,8 @@ TEST_F(UrlLoaderTest, ReadResponseBodyAboveLowerThreshold) {
   EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
 
   char buffer[2] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyCrossLowerThreshold) {
@@ -519,7 +534,8 @@ TEST_F(UrlLoaderTest, ReadResponseBodyCrossLowerThreshold) {
   }
 
   char buffer[3] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyBelowLowerThreshold) {
@@ -529,10 +545,12 @@ TEST_F(UrlLoaderTest, ReadResponseBodyBelowLowerThreshold) {
   loader_->DidReceiveData(write_buffer);
 
   char buffer[3] = {};
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
   EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
 
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, DidFinishLoading) {
@@ -547,7 +565,8 @@ TEST_F(UrlLoaderTest, DidFinishLoadingWithPendingCallback) {
   char buffer[1];
   loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
   EXPECT_CALL(mock_read_callback_, Run(0));  // Result represents read bytes.
 
   loader_->DidFinishLoading();
@@ -564,7 +583,8 @@ TEST_F(UrlLoaderTest, DidFailWhileStreamingData) {
   char buffer[1];
   loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
   EXPECT_CALL(mock_read_callback_, Run(Result::kErrorFailed));
 
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
@@ -619,7 +639,8 @@ TEST_F(UrlLoaderTest, CloseWhileStreamingDataWithPendingCallback) {
   char buffer[1];
   loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  loader_->ReadResponseBody(base::as_writable_byte_span(buffer),
+                            mock_read_callback_.Get());
   EXPECT_CALL(mock_read_callback_, Run(Result::kErrorAborted));
 
   loader_->Close();

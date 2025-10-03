@@ -141,7 +141,7 @@ void UrlLoader::Open(const UrlRequest& request, OpenCallback callback) {
 }
 
 // Modeled on `ppapi::proxy::URLLoaderResource::ReadResponseBody()`.
-void UrlLoader::ReadResponseBody(base::span<char> buffer,
+void UrlLoader::ReadResponseBody(base::span<uint8_t> buffer,
                                  base::OnceCallback<void(int)> callback) {
   // Can be in `kLoadComplete` if still reading after loading finished.
   DCHECK(state_ == LoadingState::kStreamingData ||

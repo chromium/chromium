@@ -176,7 +176,7 @@ class TestURLLoader : public URLLoaderWrapper {
                            gfx::Range(position, position + size));
   }
 
-  void ReadResponseBody(base::span<char> /*buffer*/,
+  void ReadResponseBody(base::span<uint8_t> /*buffer*/,
                         base::OnceCallback<void(int)> callback) override {
     data_->SetReadCallback(std::move(callback));
   }
