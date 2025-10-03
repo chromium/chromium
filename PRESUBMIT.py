@@ -7558,7 +7558,7 @@ a subclass of it), or use "@Rule BaseRobolectricTestRule".
 def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
     """Checks that Java classes/interfaces/annotations are null-annotated."""
 
-    # Temporary, crbug.com/389129271
+    # clank repo is not null-marked
     if input_api.change.RepositoryRoot().endswith('clank'):
         return []
 
@@ -7574,7 +7574,6 @@ def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
                 _EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
                 input_api.DEFAULT_FILES_TO_SKIP + (
                     r'.*Test.*\.java',
-                    r'^android_webview/.*',  # Temporary, crbug.com/389129271
                     r'^build/.*',
                     r'^chromecast/.*',
                     r'^components/cronet/.*',
