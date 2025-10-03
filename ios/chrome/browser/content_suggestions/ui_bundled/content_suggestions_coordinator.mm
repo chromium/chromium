@@ -950,9 +950,7 @@ using segmentation_platform::TipIdentifier;
     (ContentSuggestionsModuleType)type {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
   // modules.
-  // TODO(crbug.com/448954135): Investigate combining `IsSetUpListModuleType()`
-  // and `IsTipsModuleType()`.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 
@@ -960,7 +958,7 @@ using segmentation_platform::TipIdentifier;
     return PushNotificationClientId::kSafetyCheck;
   }
 
-  if (IsSetUpListModuleType(type) || IsTipsModuleType(type)) {
+  if (IsTipsModuleType(type)) {
     return PushNotificationClientId::kTips;
   }
 
@@ -978,16 +976,12 @@ using segmentation_platform::TipIdentifier;
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
   // modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return IDS_IOS_SAFETY_CHECK_TITLE;
-  }
-
-  if (IsSetUpListModuleType(type)) {
-    return content_suggestions::SetUpListTitleStringID();
   }
 
   if (IsTipsModuleType(type)) {
@@ -1026,7 +1020,7 @@ using segmentation_platform::TipIdentifier;
              viaContextMenu:(BOOL)viaContextMenu {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
   // modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 
@@ -1061,7 +1055,7 @@ using segmentation_platform::TipIdentifier;
               viaContextMenu:(BOOL)viaContextMenu {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
   // modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 

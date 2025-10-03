@@ -414,7 +414,7 @@ void TapMagicStackEditButton() {
 
   NSString* setupListHideTitle = l10n_util::GetNSStringF(
       IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
-      l10n_util::GetStringUTF16(IDS_IOS_SET_UP_LIST_TIPS_TITLE));
+      l10n_util::GetStringUTF16(IDS_IOS_MAGIC_STACK_TIP_TITLE));
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabel(

@@ -52,33 +52,13 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
   }
 }
 
-bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
-  switch (type) {
-    case ContentSuggestionsModuleType::kInvalid:
-    case ContentSuggestionsModuleType::kTabResumption:
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kMostVisited:
-    case ContentSuggestionsModuleType::kShortcuts:
-    case ContentSuggestionsModuleType::kPlaceholder:
-    case ContentSuggestionsModuleType::kPriceTrackingPromo:
-    case ContentSuggestionsModuleType::kSendTabPromo:
-    case ContentSuggestionsModuleType::kTipsWithProductImage:
-    case ContentSuggestionsModuleType::kTips:
-    case ContentSuggestionsModuleType::kShopCard:
-    case ContentSuggestionsModuleType::kAppBundlePromo:
-    case ContentSuggestionsModuleType::kDefaultBrowser:
-      return false;
-    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-    case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListNotifications:
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-    case ContentSuggestionsModuleType::kSetUpListAllSet:
-      return true;
-  }
-}
-
 bool IsTipsModuleType(ContentSuggestionsModuleType type) {
   switch (type) {
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
       return true;
@@ -89,12 +69,7 @@ bool IsTipsModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
-    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-    case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListNotifications:
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSendTabPromo:
-    case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kShopCard:
     case ContentSuggestionsModuleType::kAppBundlePromo:
     case ContentSuggestionsModuleType::kDefaultBrowser:

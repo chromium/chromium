@@ -80,7 +80,7 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
 
   UILabel* title = [[UILabel alloc] init];
   title.translatesAutoresizingMaskIntoConstraints = NO;
-  title.text = content_suggestions::SetUpListTitleString();
+  title.text = l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
   title.accessibilityIdentifier = kSetUpListTitleAxId;
   title.font =
       PreferredFontForTextStyle(UIFontTextStyleTitle1, UIFontWeightBold);

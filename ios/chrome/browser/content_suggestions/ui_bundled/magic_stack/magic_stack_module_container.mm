@@ -413,7 +413,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
-      return content_suggestions::SetUpListTitleString();
+      return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:

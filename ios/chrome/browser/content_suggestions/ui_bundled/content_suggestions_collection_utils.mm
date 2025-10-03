@@ -410,19 +410,11 @@ UIColor* SearchHintLabelColor() {
   return [UIColor colorNamed:kGrey800Color];
 }
 
-int SetUpListTitleStringID() {
-  return IDS_IOS_SET_UP_LIST_TIPS_TITLE;
-}
-
 UIColor* DefaultIconTintColorWithAIMAllowed(bool aim_allowed) {
   if (aim_allowed && ShouldEnlargeNTPFakeboxForMIA()) {
     return [UIColor colorNamed:kSolidBlackColor];
   }
   return [UIColor colorNamed:kGrey700Color];
-}
-
-NSString* SetUpListTitleString() {
-  return l10n_util::GetNSString(SetUpListTitleStringID());
 }
 
 }  // namespace content_suggestions

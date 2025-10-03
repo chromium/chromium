@@ -153,7 +153,7 @@
     _tipsNotificationsItem = [self
              switchItemWithType:NotificationsItemIdentifier::ItemIdentifierTips
                            text:l10n_util::GetNSString(
-                                    IDS_IOS_SET_UP_LIST_TIPS_TITLE)
+                                    IDS_IOS_MAGIC_STACK_TIP_TITLE)
                      detailText:l10n_util::GetNSString(
                                     IDS_IOS_TIPS_NOTIFICATION_SETTINGS_FOOTER)
                          symbol:image

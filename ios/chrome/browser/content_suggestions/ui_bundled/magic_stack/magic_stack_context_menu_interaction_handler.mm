@@ -125,8 +125,7 @@ NSString* GetContextMenuHideDescriptionForType(
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       return l10n_util::GetNSStringF(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
-          l10n_util::GetStringUTF16(
-              content_suggestions::SetUpListTitleStringID()));
+          l10n_util::GetStringUTF16(IDS_IOS_MAGIC_STACK_TIP_TITLE));
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_HIDE_CARD);
@@ -184,8 +183,7 @@ NSString* GetContextMenuHideDescriptionForType(
 - (NSArray<UIMenuElement*>*)menuElements {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  BOOL canShowTipsNotificationsOptIn =
-      (IsSetUpListModuleType(self.type) || IsTipsModuleType(self.type));
+  BOOL canShowTipsNotificationsOptIn = IsTipsModuleType(self.type);
 
   BOOL canShowSafetyCheckNotificationsOptIn =
       self.type == ContentSuggestionsModuleType::kSafetyCheck &&
@@ -318,14 +316,14 @@ NSString* GetContextMenuHideDescriptionForType(
 - (PushNotificationClientId)pushNotificationClientId:
     (ContentSuggestionsModuleType)type {
   /// This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return PushNotificationClientId::kSafetyCheck;
   }
 
-  if (IsSetUpListModuleType(type) || IsTipsModuleType(type)) {
+  if (IsTipsModuleType(type)) {
     return PushNotificationClientId::kTips;
   }
 
@@ -338,15 +336,11 @@ NSString* GetContextMenuHideDescriptionForType(
 /// modules.
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
   /// This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return IDS_IOS_SAFETY_CHECK_TITLE;
-  }
-
-  if (IsSetUpListModuleType(type)) {
-    return content_suggestions::SetUpListTitleStringID();
   }
 
   if (IsTipsModuleType(type)) {

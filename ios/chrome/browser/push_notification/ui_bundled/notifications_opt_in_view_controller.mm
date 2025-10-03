@@ -251,7 +251,7 @@ bool TooNarrowForBanner(UIView* view) {
               kNotificationsOptInContentAccessibilityID,
               _contentNotificationsEnabled};
     case kTips:
-      return {IDS_IOS_SET_UP_LIST_TIPS_TITLE,
+      return {IDS_IOS_MAGIC_STACK_TIP_TITLE,
               IDS_IOS_NOTIFICATIONS_OPT_IN_TIPS_SETTINGS_TOGGLE_MESSSAGE,
               kNotificationsOptInTipsAccessibilityID,
               _tipsNotificationsEnabled};

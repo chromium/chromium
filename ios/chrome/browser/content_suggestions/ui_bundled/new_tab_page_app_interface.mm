@@ -86,8 +86,4 @@ using set_up_list_prefs::SetUpListItemState;
       .complete;
 }
 
-+ (NSString*)setUpListTitle {
-  return content_suggestions::SetUpListTitleString();
-}
-
 @end

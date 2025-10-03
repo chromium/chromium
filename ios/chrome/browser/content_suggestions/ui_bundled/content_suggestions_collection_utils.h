@@ -72,12 +72,6 @@ UIView* NearestAncestor(UIView* view, Class of_class);
 // Returns the color of the search hint label in the fakebox.
 UIColor* SearchHintLabelColor();
 
-// Returns the string ID to be used to get the title of the SetUpList.
-int SetUpListTitleStringID();
-
-// Returns the localized title to be used for the SetUpList.
-NSString* SetUpListTitleString();
-
 // Returns the color to use for the Lens and Voice icons in the Fakebox.
 UIColor* DefaultIconTintColorWithAIMAllowed(bool aim_allowed);
 

@@ -46,8 +46,6 @@
 // complete.
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete;
 
-// Returns the title of the Set Up List.
-+ (NSString*)setUpListTitle;
 
 @end
 
