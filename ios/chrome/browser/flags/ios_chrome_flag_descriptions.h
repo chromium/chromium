@@ -218,18 +218,6 @@ extern const char kPhoneNumberDescription[];
 extern const char kMeasurementsName[];
 extern const char kMeasurementsDescription[];
 
-extern const char kEnableExpKitTextClassifierDateName[];
-extern const char kEnableExpKitTextClassifierDateDescription[];
-
-extern const char kEnableExpKitTextClassifierAddressName[];
-extern const char kEnableExpKitTextClassifierAddressDescription[];
-
-extern const char kEnableExpKitTextClassifierPhoneNumberName[];
-extern const char kEnableExpKitTextClassifierPhoneNumberDescription[];
-
-extern const char kEnableExpKitTextClassifierEmailName[];
-extern const char kEnableExpKitTextClassifierEmailDescription[];
-
 extern const char kEnableFamilyLinkControlsName[];
 extern const char kEnableFamilyLinkControlsDescription[];
 

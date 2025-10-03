@@ -3517,32 +3517,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-expkit-text-classifier",
-    // This flags is use for 'confidence_score_threshold' only.
-    "owners": [ "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-expkit-text-classifier-address",
-    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-expkit-text-classifier-date",
-    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-expkit-text-classifier-email",
-    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-expkit-text-classifier-phonenumber",
-    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-extension-ai-data-collection",
     "owners": [ "ryansturm@chromium.org" ],
     "expiry_milestone": 150
