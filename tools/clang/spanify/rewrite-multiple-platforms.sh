@@ -108,6 +108,7 @@ then
     mv third_party/llvm-build third_party/llvm-build-upstream
   else
     echo "*** Build is already saved ***"
+    echo "*** If you don't expect this you might need to delete and resync ***"
   fi
   if [ $INCREMENTAL_CLANG_BUILD = true ]
   then
@@ -235,6 +236,21 @@ pre_process() {
 
     mkdir -p "$OUT_DIR"
     args_for_platform "$PLATFORM" > "$OUT_DIR/args.gn"
+
+    if [ $PLATFORM = "mac" ]; then
+      # You can not build libclang_re.osx.a without mac, luckily we don't need
+      # to change it for the rewrite so just "restore" the version from the
+      # saved build regardless of platform.
+      LIBCLANG="Release+Asserts/lib/clang"
+      DARWIN_RT="lib/darwin"
+      for path in $(ls -d third_party/llvm-build-upstream/${LIBCLANG}/*); do
+        # the basename is the clang version (like "22")
+        DIR=`basename ${path}`
+        mkdir -p "third_party/llvm-build/${LIBCLANG}/${DIR}/${DARWIN_RT}"
+        cp third_party/llvm-build-upstream/${LIBCLANG}/${DIR}/${DARWIN_RT}/* \
+           third_party/llvm-build/${LIBCLANG}/${DIR}/${DARWIN_RT}/
+      done
+    fi
 
     # Build generated files that a successful compilation depends on.
     echo "*** Preparing targets for $PLATFORM ***"
