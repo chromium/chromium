@@ -306,8 +306,6 @@ IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
       IPAddressSpace::kPublic);
 }
 
-namespace {
-
 IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
   if (!endpoint.address().IsValid()) {
     return IPAddressSpace::kUnknown;
@@ -320,8 +318,6 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
 
   return IPAddressToIPAddressSpace(endpoint.address());
 }
-
-}  // namespace
 
 std::string_view IPAddressSpaceToStringPiece(IPAddressSpace space) {
   switch (space) {

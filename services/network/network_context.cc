@@ -1993,7 +1993,10 @@ void NetworkContext::CreateWebTransport(
     std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
     const std::vector<std::string>& application_protocols,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
-        pending_handshake_client) {
+        pending_handshake_client,
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
+    mojom::ClientSecurityStatePtr client_security_state) {
   if (!IsNetworkForNonceAndUrlAllowed(
           key.GetNonce().value_or(base::UnguessableToken::Null()), url)) {
     mojo::Remote<mojom::WebTransportHandshakeClient> remote_handshake_client(
@@ -2004,7 +2007,9 @@ void NetworkContext::CreateWebTransport(
   }
   web_transports_.insert(std::make_unique<WebTransport>(
       url, origin, key, fingerprints, application_protocols, this,
-      std::move(pending_handshake_client)));
+      std::move(pending_handshake_client),
+      std::move(url_loader_network_observer),
+      std::move(client_security_state)));
 }
 
 void NetworkContext::CreateNetLogExporter(

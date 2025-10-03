@@ -416,8 +416,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::NetworkAnonymizationKey& network_anonymization_key,
       std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
       const std::vector<std::string>& application_protocols,
-      mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
-      override;
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
+      mojom::ClientSecurityStatePtr client_security_state) override;
   void CreateNetLogExporter(
       mojo::PendingReceiver<mojom::NetLogExporter> receiver) override;
   void ResolveHost(

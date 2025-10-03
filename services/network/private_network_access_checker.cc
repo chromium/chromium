@@ -90,16 +90,19 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   mojom::IPAddressSpace resource_address_space =
       TransportInfoToIPAddressSpace(transport_info);
 
-  // If we are connecting to a local IP endpoint over HTTP without a target IP
-  // address space, record whether we could have successfully inferred the
-  // target IP address space from the request URL.
-  if (resource_address_space == mojom::IPAddressSpace::kLocal &&
-      is_request_url_scheme_http_ &&
-      target_address_space_ == mojom::IPAddressSpace::kUnknown) {
-    base::UmaHistogramBoolean(
-        "Security.PrivateNetworkAccess.PrivateIpInferrable",
-        request_url_private_ip_.has_value());
-  }
+  auto result = CheckInternal(resource_address_space);
+
+  base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
+                                result);
+
+  response_address_space_ = resource_address_space;
+  return result;
+}
+
+PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
+    const net::IPEndPoint& server_address) {
+  mojom::IPAddressSpace resource_address_space =
+      IPEndPointToIPAddressSpace(server_address);
 
   auto result = CheckInternal(resource_address_space);
 
@@ -162,6 +165,17 @@ bool PrivateNetworkAccessChecker::IsPolicyPreflightWarn() const {
 
 Result PrivateNetworkAccessChecker::CheckInternal(
     mojom::IPAddressSpace resource_address_space) {
+  // If we are connecting to a local IP endpoint over HTTP without a target IP
+  // address space, record whether we could have successfully inferred the
+  // target IP address space from the request URL.
+  if (resource_address_space == mojom::IPAddressSpace::kLocal &&
+      is_request_url_scheme_http_ &&
+      target_address_space_ == mojom::IPAddressSpace::kUnknown) {
+    base::UmaHistogramBoolean(
+        "Security.PrivateNetworkAccess.PrivateIpInferrable",
+        request_url_private_ip_.has_value());
+  }
+
   if (should_block_local_request_ &&
       IsLessPublicAddressSpace(resource_address_space,
                                mojom::IPAddressSpace::kPublic)) {

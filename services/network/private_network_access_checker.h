@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -71,9 +72,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // Checks whether the client should be allowed to use the given transport.
   //
   // Implements the following "Private Network Access check" algorithm:
-  // https://wicg.github.io/private-network-access/#private-network-access-check
+  //
+  // https://wicg.github.io/local-network-access/#fetching
   PrivateNetworkAccessCheckResult Check(
       const net::TransportInfo& transport_info);
+
+  // Same as above, but on an IP EndPoint. Skips proxying checks that the
+  // net::TransportInfo version does.
+  PrivateNetworkAccessCheckResult Check(const net::IPEndPoint& server_address);
 
   // Returns the IP address space derived from the `transport_info` argument
   // passed to the last call to `Check()`, if any.

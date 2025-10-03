@@ -247,6 +247,14 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kLocalNetworkAccessChecksWebSockets,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Local Network Access checks for WebTransport.
+// Blocks local network requests without user permission to prevent exploitation
+// of vulnerable local devices.
+//
+// Spec: https://wicg.github.io/local-network-access/
+BASE_FEATURE(kLocalNetworkAccessChecksWebTransport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

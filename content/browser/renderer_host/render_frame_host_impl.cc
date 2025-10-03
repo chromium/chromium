@@ -14279,7 +14279,8 @@ void RenderFrameHostImpl::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcess()->GetDeprecatedID(), weak_ptr_factory_.GetWeakPtr(),
-          last_committed_origin_, isolation_info_.network_anonymization_key()),
+          last_committed_origin_, isolation_info_.network_anonymization_key(),
+          BuildClientSecurityState()),
       std::move(receiver));
 }
 

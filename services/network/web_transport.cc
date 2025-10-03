@@ -21,6 +21,10 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "services/network/network_context.h"
+#include "services/network/private_network_access_checker.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
 namespace network {
@@ -406,7 +410,10 @@ WebTransport::WebTransport(
         fingerprints,
     const std::vector<std::string>& application_protocols,
     NetworkContext* context,
-    mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
+    mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
+    mojom::ClientSecurityStatePtr client_security_state)
     : transport_(net::CreateWebTransportClient(
           url,
           origin,
@@ -414,9 +421,13 @@ WebTransport::WebTransport(
           key,
           context->url_request_context(),
           CreateParameters(fingerprints, std::move(application_protocols)))),
+      url_(url),
+      origin_(origin),
       context_(context),
       receiver_(this),
-      handshake_client_(std::move(handshake_client)) {
+      handshake_client_(std::move(handshake_client)),
+      url_loader_network_observer_(std::move(url_loader_network_observer)),
+      client_security_state_(std::move(client_security_state)) {
   handshake_client_.set_disconnect_handler(
       base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
 
@@ -576,10 +587,56 @@ void WebTransport::CloseIfNonceMatches(base::UnguessableToken nonce) {
 void WebTransport::OnLocalNetworkAccessCheck(
     const net::IPEndPoint& server_address,
     net::CompletionOnceCallback callback) {
-  // TODO(crbug.com/421216834): Implement actual LNA check, flag-guarded, once
-  // the URL network observer and the client security state are threaded through
-  // to make this check feasible.
-  std::move(callback).Run(net::OK);
+  if (!base::FeatureList::IsEnabled(
+          features::kLocalNetworkAccessChecksWebTransport)) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  // target_ip_address_space is always kUnknown as LNA doesn't do preflights.
+  //
+  // required_ip_address_space is always kUnknown as WebTransport is always
+  // https, so there is no need for mixed content check bypasses.
+  //
+  // WebTransport has no `url_load_options` available for overriding in
+  // content/public/browser/content_browser_client.h.
+  PrivateNetworkAccessChecker checker(
+      url_,
+      /*target_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      origin_,
+      /*required_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      client_security_state_.get(), /*url_load_options=*/0);
+
+  PrivateNetworkAccessCheckResult check_result = checker.Check(server_address);
+  std::optional<mojom::CorsError> cors_error =
+      PrivateNetworkAccessCheckResultToCorsError(check_result);
+  if (!cors_error.has_value()) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  if (url_loader_network_observer_ &&
+      check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+    url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
+        base::BindOnce(
+            [](base::WeakPtr<WebTransport> weak_self,
+               net::CompletionOnceCallback callback, bool permission_granted) {
+              if (!weak_self) {
+                // Checking the weak ptr not to call the `callback` after
+                // `this` is destructed. This is needed because the
+                // observer's pipe may outlive `this` and the owner
+                // `WebTransport`.
+                return;
+              }
+              std::move(callback).Run(
+                  permission_granted
+                      ? net::OK
+                      : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            },
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    std::move(callback).Run(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+  }
 }
 
 void WebTransport::OnBeforeConnect(const net::IPEndPoint& server_address) {

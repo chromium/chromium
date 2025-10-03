@@ -608,7 +608,7 @@ void SharedWorkerHost::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcessHost()->GetDeprecatedID(), /*frame=*/nullptr, origin,
-          GetNetworkAnonymizationKey()),
+          GetNetworkAnonymizationKey(), worker_client_security_state_->Clone()),
       std::move(receiver));
 }
 

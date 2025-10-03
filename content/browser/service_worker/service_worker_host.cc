@@ -90,7 +90,8 @@ void ServiceWorkerHost::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_id_, /*frame=*/nullptr, version_->key().origin(),
-          GetNetworkAnonymizationKey()),
+          GetNetworkAnonymizationKey(),
+          version_->BuildClientSecurityState()->Clone()),
       std::move(receiver));
 }
 
