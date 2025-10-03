@@ -165,21 +165,21 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // gaps in the data are filled with zeros or cause the read to stop.
   // If the backend is deleted during execution, the callback will be called
   // with net::ERR_ABORTED.
-  void ReadEntryData(const CacheEntryKey& key,
-                     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-                     int64_t offset,
-                     scoped_refptr<net::IOBuffer> buffer,
-                     int buf_len,
-                     int64_t body_end,
-                     bool sparse_reading,
-                     CompletionOnceCallback callback);
+  int ReadEntryData(const CacheEntryKey& key,
+                    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+                    int64_t offset,
+                    scoped_refptr<net::IOBuffer> buffer,
+                    int buf_len,
+                    int64_t body_end,
+                    bool sparse_reading,
+                    CompletionOnceCallback callback);
 
   // Finds the available contiguous range of data for a given entry. The
   // operation is scheduled via the `ExclusiveOperationCoordinator` to ensure
   // proper serialization.
   // If the backend is deleted during execution, the callback will be called
   // with net::ERR_ABORTED.
-  void GetEntryAvailableRange(
+  RangeResult GetEntryAvailableRange(
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       int64_t offset,

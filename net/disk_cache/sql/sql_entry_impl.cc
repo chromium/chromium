@@ -131,9 +131,10 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
   if (body_end_ <= offset) {
     return 0;
   }
-  backend_->ReadEntryData(key_, res_id_or_error_, offset, buf, buf_len,
-                          body_end_, sparse_reading, std::move(callback));
-  return net::ERR_IO_PENDING;
+
+  return backend_->ReadEntryData(key_, res_id_or_error_, offset, buf, buf_len,
+                                 body_end_, sparse_reading,
+                                 std::move(callback));
 }
 
 int SqlEntryImpl::WriteData(int index,
@@ -269,9 +270,8 @@ RangeResult SqlEntryImpl::GetAvailableRange(int64_t offset,
     return RangeResult(net::ERR_INVALID_ARGUMENT);
   }
 
-  backend_->GetEntryAvailableRange(key_, res_id_or_error_, offset, len,
-                                   std::move(callback));
-  return RangeResult(net::ERR_IO_PENDING);
+  return backend_->GetEntryAvailableRange(key_, res_id_or_error_, offset, len,
+                                          std::move(callback));
 }
 
 bool SqlEntryImpl::CouldBeSparse() const {

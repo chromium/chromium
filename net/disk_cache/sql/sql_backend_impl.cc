@@ -5,6 +5,7 @@
 #include "net/disk_cache/sql/sql_backend_impl.h"
 
 #include <algorithm>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -115,7 +116,7 @@ base::OnceCallback<void(ResultType)> WrapCallbackWithAbortError(
 // This allows a caller to dispatch an async operation and immediately check if
 // it completed synchronously. If so, the result is returned directly. If not,
 // a provided callback is invoked later.
-template <typename T>
+template <typename T, typename R = std::decay_t<T>>
 class SyncResultReceiver : public base::RefCounted<SyncResultReceiver<T>> {
  public:
   using ResultCallback = base::OnceCallback<void(T)>;
@@ -140,7 +141,7 @@ class SyncResultReceiver : public base::RefCounted<SyncResultReceiver<T>> {
   // Checks for a synchronous result. If the operation already completed,
   // returns the result. Otherwise, returns nullopt and the original callback
   // will be run asynchronously.
-  std::optional<T> FinishSyncCall() {
+  std::optional<R> FinishSyncCall() {
     sync_call_finished_ = true;
     if (result_) {
       callback_.Reset();
@@ -166,7 +167,7 @@ class SyncResultReceiver : public base::RefCounted<SyncResultReceiver<T>> {
   // The original callback, to be run on async completion.
   ResultCallback callback_;
   // Holds the result if it arrives synchronously.
-  std::optional<T> result_;
+  std::optional<R> result_;
   // Set to true when FinishSyncCall is called.
   bool sync_call_finished_ = false;
 };
@@ -558,11 +559,16 @@ net::Error SqlBackendImpl::DoomEntry(const std::string& key,
                                      net::RequestPriority priority,
                                      CompletionOnceCallback callback) {
   const CacheEntryKey entry_key(key);
+
+  auto sync_result_receiver =
+      base::MakeRefCounted<SyncResultReceiver<int>>(std::move(callback));
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       entry_key, base::BindOnce(&SqlBackendImpl::HandleDoomEntryOperation,
                                 weak_factory_.GetWeakPtr(), entry_key, priority,
-                                std::move(callback)));
-  return net::ERR_IO_PENDING;
+                                sync_result_receiver->GetCallback()));
+  auto sync_result = sync_result_receiver->FinishSyncCall();
+  return sync_result ? static_cast<net::Error>(std::move(*sync_result))
+                     : net::ERR_IO_PENDING;
 }
 
 void SqlBackendImpl::HandleDoomEntryOperation(
@@ -1048,26 +1054,28 @@ int SqlBackendImpl::WriteEntryData(
                 key, InFlightEntryModification(res_id_or_error, body_end))));
     return buf_len;
   }
+  auto sync_result_receiver =
+      base::MakeRefCounted<SyncResultReceiver<int>>(std::move(callback));
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key,
-      base::BindOnce(&SqlBackendImpl::HandleWriteEntryDataOperation,
-                     weak_factory_.GetWeakPtr(), key, res_id_or_error,
-                     old_body_end, offset, std::move(buffer), buf_len, truncate,
-                     base::BindOnce(
-                         [](CompletionOnceCallback callback, int buf_len,
-                            SqlPersistentStore::Error result) {
-                           std::move(callback).Run(
-                               result == SqlPersistentStore::Error::kOk
-                                   ? buf_len
-                                   : net::ERR_FAILED);
-                         },
-                         WrapCallbackWithAbortError<int>(std::move(callback),
-                                                         net::ERR_ABORTED),
-                         buf_len),
-                     PushInFlightEntryModification(
-                         key, InFlightEntryModification(res_id_or_error,
-                                                        body_end))));
-  return net::ERR_IO_PENDING;
+      base::BindOnce(
+          &SqlBackendImpl::HandleWriteEntryDataOperation,
+          weak_factory_.GetWeakPtr(), key, res_id_or_error, old_body_end,
+          offset, std::move(buffer), buf_len, truncate,
+          base::BindOnce(
+              [](CompletionOnceCallback callback, int buf_len,
+                 SqlPersistentStore::Error result) {
+                std::move(callback).Run(result == SqlPersistentStore::Error::kOk
+                                            ? buf_len
+                                            : net::ERR_FAILED);
+              },
+              WrapCallbackWithAbortError<int>(
+                  sync_result_receiver->GetCallback(), net::ERR_ABORTED),
+              buf_len),
+          PushInFlightEntryModification(
+              key, InFlightEntryModification(res_id_or_error, body_end))));
+  auto sync_result = sync_result_receiver->FinishSyncCall();
+  return sync_result ? std::move(*sync_result) : net::ERR_IO_PENDING;
 }
 
 void SqlBackendImpl::HandleWriteEntryDataOperation(
@@ -1159,7 +1167,7 @@ void SqlBackendImpl::OnOptimisticWriteFinished(
                             base::DoNothingWithBoundArgs(std::move(handle)));
 }
 
-void SqlBackendImpl::ReadEntryData(
+int SqlBackendImpl::ReadEntryData(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t offset,
@@ -1168,6 +1176,8 @@ void SqlBackendImpl::ReadEntryData(
     int64_t body_end,
     bool sparse_reading,
     CompletionOnceCallback callback) {
+  auto sync_result_receiver =
+      base::MakeRefCounted<SyncResultReceiver<int>>(std::move(callback));
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key, base::BindOnce(&SqlBackendImpl::HandleReadEntryDataOperation,
                           weak_factory_.GetWeakPtr(), res_id_or_error, offset,
@@ -1179,7 +1189,11 @@ void SqlBackendImpl::ReadEntryData(
                                     result.value_or(net::ERR_FAILED));
                               },
                               WrapCallbackWithAbortError<int>(
-                                  std::move(callback), net::ERR_ABORTED))));
+                                  sync_result_receiver->GetCallback(),
+                                  net::ERR_ABORTED))));
+
+  auto sync_result = sync_result_receiver->FinishSyncCall();
+  return sync_result ? std::move(*sync_result) : net::ERR_IO_PENDING;
 }
 
 void SqlBackendImpl::HandleReadEntryDataOperation(
@@ -1205,18 +1219,25 @@ void SqlBackendImpl::HandleReadEntryDataOperation(
       std::move(callback).Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
-void SqlBackendImpl::GetEntryAvailableRange(
+RangeResult SqlBackendImpl::GetEntryAvailableRange(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t offset,
     int len,
     RangeResultCallback callback) {
+  auto sync_result_receiver =
+      base::MakeRefCounted<SyncResultReceiver<const RangeResult&>>(
+          std::move(callback));
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key,
       base::BindOnce(&SqlBackendImpl::HandleGetEntryAvailableRangeOperation,
                      weak_factory_.GetWeakPtr(), res_id_or_error, offset, len,
                      WrapCallbackWithAbortError<const RangeResult&>(
-                         std::move(callback), RangeResult(net::ERR_ABORTED))));
+                         sync_result_receiver->GetCallback(),
+                         RangeResult(net::ERR_ABORTED))));
+  auto sync_result = sync_result_receiver->FinishSyncCall();
+  return sync_result ? std::move(*sync_result)
+                     : RangeResult(net::ERR_IO_PENDING);
 }
 
 void SqlBackendImpl::HandleGetEntryAvailableRangeOperation(
