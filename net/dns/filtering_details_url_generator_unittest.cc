@@ -36,23 +36,20 @@ class FilteringDetailsUrlGeneratorTest : public testing::Test {
 
 TEST_F(FilteringDetailsUrlGeneratorTest, ExpandsTemplate) {
   absl::flat_hash_map<std::string, std::string> reg;
-  reg["exampleResolver"] =
-      "https://resolver.example.com/filtering-incidents/{inc}";
+  reg["example"] = "https://database.example.com/filtering-incidents/{id}";
 
   FilteringDetailsUrlGenerator generator(reg);
-  std::optional<std::string> url =
-      generator.GenerateUrl("exampleResolver", "abc123");
+  std::optional<std::string> url = generator.GenerateUrl("example", "abc123");
 
   ASSERT_TRUE(url);
-  EXPECT_EQ(*url, "https://resolver.example.com/filtering-incidents/abc123");
+  EXPECT_EQ(*url, "https://database.example.com/filtering-incidents/abc123");
 }
 
 TEST_F(FilteringDetailsUrlGeneratorTest, NoRegistryEntryReturnsNullopt) {
   absl::flat_hash_map<std::string, std::string> empty_registry;
   FilteringDetailsUrlGenerator generator(empty_registry);
 
-  std::optional<std::string> url =
-      generator.GenerateUrl("unexist_ro", "inc123");
+  std::optional<std::string> url = generator.GenerateUrl("missing", "abc123");
   EXPECT_FALSE(url);
 }
 

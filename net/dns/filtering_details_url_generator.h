@@ -15,16 +15,16 @@
 namespace net {
 
 // Utility class for generating user-facing URLs for DNS Filtering Details.
-// Based on Version 1 of the Public Resolver Errors draft:
-// https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/01/
+// Based on Version 2 of the Public Resolver Errors draft:
+// https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/02/
 class NET_EXPORT FilteringDetailsUrlGenerator {
  public:
   explicit FilteringDetailsUrlGenerator(
       const absl::flat_hash_map<std::string, std::string>& registry);
   ~FilteringDetailsUrlGenerator();
 
-  std::optional<std::string> GenerateUrl(std::string_view ro,
-                                         std::string_view inc);
+  std::optional<std::string> GenerateUrl(std::string_view db,
+                                         std::string_view id);
 
  private:
   // TODO(crbug.com/396483553): Populate this registry with at least one

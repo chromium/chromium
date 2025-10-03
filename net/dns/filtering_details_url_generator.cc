@@ -30,14 +30,14 @@ FilteringDetailsUrlGenerator::FilteringDetailsUrlGenerator(
 FilteringDetailsUrlGenerator::~FilteringDetailsUrlGenerator() = default;
 
 std::optional<std::string> FilteringDetailsUrlGenerator::GenerateUrl(
-    std::string_view ro,
-    std::string_view inc) {
-  auto it = registry_.find(ro);
+    std::string_view db,
+    std::string_view id) {
+  auto it = registry_.find(db);
   if (it == registry_.end()) {
     return std::nullopt;
   }
   std::unordered_map<std::string, std::string> params = {
-      {"inc", std::string(inc)}};
+      {"id", std::string(id)}};
   std::string url;
   bool success = uri_template::Expand(it->second, params, &url);
   return success ? std::optional<std::string>(url) : std::nullopt;

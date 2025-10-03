@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/big_endian.h"
 #include "base/check_is_test.h"
@@ -19,11 +20,13 @@
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
+#include "base/values.h"
 #include "net/base/features.h"
 #include "net/dns/public/dns_protocol.h"
 
@@ -41,39 +44,48 @@ std::vector<uint8_t> SerializeEdeOpt(uint16_t info_code,
   return buf;
 }
 
-std::optional<std::string> ExtractFilteringDetailsString(
-    base::Value::Dict& dict,
+std::optional<std::string> GetFilteringDetailsString(
+    const base::Value::Dict& dict,
     std::string_view key) {
-  std::optional<base::Value> val = dict.Extract(key);
-  if (!val || !val->is_string()) {
+  const std::string* val = dict.FindString(key);
+  if (!val) {
     return std::nullopt;
   }
-  std::string s = std::move(*val).TakeString();
-  if (!base::IsStringUTF8(s)) {  // TODO(crbug.com/396483553): Add proper I-JSON
-                                 // validation once spec is finalized.
+  if (!base::IsStringUTF8(*val)) {
     return std::nullopt;
   }
-  return s;
+  return *val;
 }
 
-// Parses the Filtering Details (ro/inc) from the EDE extra text.
-std::optional<OptRecordRdata::EdeOpt::FilteringDetails> ParseFilteringDetails(
+// Parses the Filtering Details (db and id from fdbs) from the EDE extra text.
+std::vector<OptRecordRdata::EdeOpt::FilteringDetails> ParseFilteringDetails(
     std::string_view json) {
   std::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
   if (!value || !value->is_dict()) {
-    return std::nullopt;
+    return {};
   }
-  base::Value::Dict& dict = value->GetDict();
-  auto ro = ExtractFilteringDetailsString(dict, "ro");
-  auto inc = ExtractFilteringDetailsString(dict, "inc");
-  if (ro && inc) {
-    OptRecordRdata::EdeOpt::FilteringDetails meta;
-    meta.resolver_operator_id = std::move(*ro);
-    meta.filtering_incident_id = std::move(*inc);
-    return meta;
+  const base::Value::Dict& dict = value->GetDict();
+  const base::ListValue* dbs = dict.FindList("fdbs");
+  if (!dbs) {
+    return {};
   }
-  return std::nullopt;
+  std::vector<OptRecordRdata::EdeOpt::FilteringDetails> filtering_details;
+  for (const auto& fdb : *dbs) {
+    if (!fdb.is_dict()) {
+      continue;
+    }
+    const base::Value::Dict& entry = fdb.GetDict();
+    auto db = GetFilteringDetailsString(entry, "db");
+    auto id = GetFilteringDetailsString(entry, "id");
+    if (db && id) {
+      OptRecordRdata::EdeOpt::FilteringDetails meta;
+      meta.resolver_operator_id = std::move(*db);
+      meta.filtering_incident_id = std::move(*id);
+      filtering_details.push_back(std::move(meta));
+    }
+  }
+  return filtering_details;
 }
 }  // namespace
 

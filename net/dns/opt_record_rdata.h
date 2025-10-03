@@ -123,7 +123,7 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     // Convert a uint16_t to an EdeInfoCode enum.
     static EdeInfoCode GetEnumFromInfoCode(uint16_t info_code);
 
-    const std::optional<FilteringDetails>& filtering_details() const {
+    const std::vector<FilteringDetails>& filtering_details() const {
       return filtering_details_;
     }
 
@@ -132,7 +132,7 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
 
     uint16_t info_code_;
     std::string extra_text_;
-    std::optional<FilteringDetails> filtering_details_;
+    std::vector<FilteringDetails> filtering_details_;
   };
 
   class NET_EXPORT_PRIVATE PaddingOpt : public Opt {

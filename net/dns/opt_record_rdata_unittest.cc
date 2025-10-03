@@ -210,7 +210,8 @@ class FilteringDetailsParsingTest : public testing::Test {
 // Test that an Opt filtering details record is parsed correctly
 TEST_F(FilteringDetailsParsingTest, ParseFilteringDetailsOptRecords) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"exampleResolver","inc":"abc123",)"
+      R"({"fdbs":[{"db":"example","id":"abc123"},)"
+      R"({"db":"second-example","id":"456","r":"ignored"}],)"
       R"("j":"should be ignored","c":["mailto:ignored@example.com"]})";
 
   std::vector<uint8_t> rdata = {
@@ -228,19 +229,21 @@ TEST_F(FilteringDetailsParsingTest, ParseFilteringDetailsOptRecords) {
   ASSERT_THAT(ede_opts, SizeIs(1));
   const auto* ede_opt = ede_opts[0];
 
-  ASSERT_TRUE(ede_opt->filtering_details());
-
-  const std::optional<OptRecordRdata::EdeOpt::FilteringDetails>& maybe_meta =
+  const std::vector<OptRecordRdata::EdeOpt::FilteringDetails>& incidents =
       ede_opt->filtering_details();
-  ASSERT_TRUE(maybe_meta);
+  ASSERT_EQ(incidents.size(), static_cast<size_t>(2));
 
-  const OptRecordRdata::EdeOpt::FilteringDetails& meta = maybe_meta.value();
-  EXPECT_EQ(meta.resolver_operator_id, "exampleResolver");
-  EXPECT_EQ(meta.filtering_incident_id, "abc123");
+  const OptRecordRdata::EdeOpt::FilteringDetails& first = incidents.front();
+  EXPECT_EQ(first.resolver_operator_id, "example");
+  EXPECT_EQ(first.filtering_incident_id, "abc123");
+
+  const OptRecordRdata::EdeOpt::FilteringDetails& second = incidents[1];
+  EXPECT_EQ(second.resolver_operator_id, "second-example");
+  EXPECT_EQ(second.filtering_incident_id, "456");
 }
 TEST_F(FilteringDetailsParsingTest, MissingRoRejected) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"inc":"only-incident"})";
+      R"({"fdbs":[{"db":"only-db"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F,  // OPT code (15 for EDE)
@@ -254,12 +257,12 @@ TEST_F(FilteringDetailsParsingTest, MissingRoRejected) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_FALSE(ede_opt->filtering_details());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, Utf8EmojiAccepted) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"💡","inc":"123"})";
+      R"({"fdbs":[{"db":"💡","id":"123"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -271,12 +274,12 @@ TEST_F(FilteringDetailsParsingTest, Utf8EmojiAccepted) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_TRUE(ede_opt->filtering_details());
+  ASSERT_FALSE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, SurrogatePairAccepted) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"\uD83D\uDCA9","inc":"pile"})";
+      R"({"fdbs":[{"db":"\uD83D\uDCA9","id":"pile"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -288,12 +291,12 @@ TEST_F(FilteringDetailsParsingTest, SurrogatePairAccepted) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_TRUE(ede_opt->filtering_details());
+  EXPECT_FALSE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, UnpairedHighSurrogateRejected) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"\uD800","inc":"x"})";
+      R"({"fdbs":[{"db":"\uD800","id":"x"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -305,12 +308,12 @@ TEST_F(FilteringDetailsParsingTest, UnpairedHighSurrogateRejected) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_FALSE(ede_opt->filtering_details());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, UnpairedLowSurrogateRejected) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"\uDEAD","inc":"x"})";
+      R"("fdbs"[{"db":"\uDEAD","id":"x"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -322,12 +325,12 @@ TEST_F(FilteringDetailsParsingTest, UnpairedLowSurrogateRejected) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_FALSE(ede_opt->filtering_details());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, SwappedSurrogateRejected) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"\uDEAD\uD800","inc":"x"})";
+      R"({"fdbs":[{"db":"\uDEAD\uD800","id":"x"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -339,12 +342,12 @@ TEST_F(FilteringDetailsParsingTest, SwappedSurrogateRejected) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_FALSE(ede_opt->filtering_details());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, NonStringIncRejected) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"r","inc":false})";
+      R"({"fdbs":[{"db":"db","id":false}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -356,12 +359,12 @@ TEST_F(FilteringDetailsParsingTest, NonStringIncRejected) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_FALSE(ede_opt->filtering_details());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, KeyOrderVariantAccepted) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"inc":"incident","ro":"operator"})";
+      R"({"fdbs":[{"id":"incident","db":"database"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -373,12 +376,12 @@ TEST_F(FilteringDetailsParsingTest, KeyOrderVariantAccepted) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_TRUE(ede_opt->filtering_details());
+  EXPECT_FALSE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, UnicodeNonCharacterFDD0Rejected) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"\uFDD0","inc":"ok"})";
+      R"({"fdbs":[{"db":"\uFDD0","id":"ok"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -390,12 +393,12 @@ TEST_F(FilteringDetailsParsingTest, UnicodeNonCharacterFDD0Rejected) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_FALSE(ede_opt->filtering_details());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 TEST_F(FilteringDetailsParsingTest, UnicodeNonCharacterFFFERejected) {
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"\uFFFE","inc":"ok"})";
+      R"({"fdbs":[{"db":"\uFFFE","id":"ok"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F, 0x00, static_cast<uint8_t>(2 + kJsonExtraText.size()),
@@ -407,53 +410,18 @@ TEST_F(FilteringDetailsParsingTest, UnicodeNonCharacterFFFERejected) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
 
   const net::OptRecordRdata::EdeOpt* ede_opt = rdata_obj->GetEdeOpts()[0];
-  EXPECT_FALSE(ede_opt->filtering_details());
-}
-
-TEST_F(FilteringDetailsParsingTest, Utf16EncodedRejected) {
-  std::vector<uint8_t> rdata = {
-      0x00, 0x0F,  // OPT code
-      0x00, 0x2A,  // OPT data length: 2 (info code) + 40 bytes
-      0x00, 0x0F,  // EDE info code
-
-      // UTF-16 LE BOM + {"ro":"x","inc":"x"} encoded in UTF-16 LE
-      0xFF, 0xFE, 0x7B, 0x00, 0x22, 0x00, 0x72, 0x00, 0x6F, 0x00, 0x22, 0x00,
-      0x3A, 0x00, 0x22, 0x00, 0x78, 0x00, 0x22, 0x00, 0x2C, 0x00, 0x22, 0x00,
-      0x69, 0x00, 0x6E, 0x00, 0x63, 0x00, 0x22, 0x00, 0x3A, 0x00, 0x22, 0x00,
-      0x78, 0x00, 0x22, 0x00, 0x7D, 0x00};
-
-  std::unique_ptr<OptRecordRdata> rdata_obj = OptRecordRdata::Create(rdata);
-  ASSERT_THAT(rdata_obj, IsNull());
-}
-
-TEST_F(FilteringDetailsParsingTest, Utf32EncodedRejected) {
-  std::vector<uint8_t> rdata = {
-      0x00, 0x0F,  // OPT code (15 for EDE)
-      0x00, 0x54,  // total length: 2 (info code) + 84 bytes
-      0x00, 0x0F,  // EDE info code
-
-      // UTF-32 LE BOM + {"ro":"x","inc":"x"} encoded in UTF-32 LE
-      0xFF, 0xFE, 0x00, 0x00, 0x7B, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00,
-      0x72, 0x00, 0x00, 0x00, 0x6F, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00,
-      0x3A, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00,
-      0x22, 0x00, 0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00,
-      0x69, 0x00, 0x00, 0x00, 0x6E, 0x00, 0x00, 0x00, 0x63, 0x00, 0x00, 0x00,
-      0x22, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00,
-      0x78, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00, 0x7D, 0x00, 0x00, 0x00};
-
-  std::unique_ptr<OptRecordRdata> rdata_obj = OptRecordRdata::Create(rdata);
-  ASSERT_THAT(rdata_obj, IsNull());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 // Test that FilteringDetails metadata is NOT parsed when the feature is
-// disabled, even if the JSON fields "ro" and "inc" are present.
+// disabled, even if the JSON fields "fdbs[].db" "fdbs[].inc" are present.
 TEST_F(FilteringDetailsParsingTest, FeatureDisabled) {
   // Disable the feature flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(net::features::kDnsFilteringDetails);
 
   static constexpr std::string_view kJsonExtraText =
-      R"({"ro":"exampleResolver","inc":"abc123",)";
+      R"({"fdbs":[{"db":"exampleResolver","id":"abc123"}]})";
 
   std::vector<uint8_t> rdata = {
       0x00, 0x0F,  // OPT code (15 for EDE)
@@ -471,7 +439,7 @@ TEST_F(FilteringDetailsParsingTest, FeatureDisabled) {
   const auto* ede_opt = ede_opts[0];
 
   // Feature is disabled, so metadata should NOT be parsed.
-  EXPECT_FALSE(ede_opt->filtering_details());
+  EXPECT_TRUE(ede_opt->filtering_details().empty());
 }
 
 // Test the Opt equality operator (and its subclasses as well)

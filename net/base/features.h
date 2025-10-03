@@ -936,8 +936,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicHintHostPortPairs);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
                                       kWildcardQuicHintHostPortPairs);
 
-// Enables support for Public Resolver Errors (PRE), based on Version 1 of the
-// https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/01/
+// Enables support for Public Resolver Errors (PRE), based on Version 2 of the
+// https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/02/
 // When enabled, clients will attempt to parse structured error information
 // from the EXTRA-TEXT field of Extended DNS Errors.
 NET_EXPORT BASE_DECLARE_FEATURE(kDnsFilteringDetails);
