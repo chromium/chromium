@@ -5,29 +5,52 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_TRANSPORT_RTC_TRANSPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_TRANSPORT_RTC_TRANSPORT_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_send_packet_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_config.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_received_packet.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/webrtc/api/datagram_connection.h"
 
 namespace blink {
+// Async adapter of webrtc::DatagramConnection to allow mocking out threading in
+// unittests.
+class AsyncDatagramConnection {
+ public:
+  virtual ~AsyncDatagramConnection() = default;
+
+  virtual void Writable(ScriptPromiseResolver<IDLBoolean>* resolver) = 0;
+  virtual void Terminate() = 0;
+};
+
 class MODULES_EXPORT RtcTransport final
     : public EventTarget,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(RtcTransport, Dispose);
 
  public:
   using PassKey = base::PassKey<RtcTransport>;
   static RtcTransport* Create(ExecutionContext* context,
-                              const RtcTransportConfig* config);
+                              const RtcTransportConfig* config,
+                              ExceptionState& exception_state);
+  static RtcTransport* CreateForTests(
+      ExecutionContext* context,
+      const RtcTransportConfig* config,
+      ExceptionState& exception_state,
+      std::unique_ptr<AsyncDatagramConnection> async_datagram_connection);
 
-  RtcTransport(PassKey,
-               ExecutionContext* context,
-               const RtcTransportConfig* config);
+  RtcTransport(PassKey, ExecutionContext* context);
   ~RtcTransport() override;
 
   // ExecutionContextLifecycleObserver implementation
@@ -45,15 +68,34 @@ class MODULES_EXPORT RtcTransport final
   HeapVector<Member<RtcReceivedPacket>> getReceivedPackets();
   void sendPackets(HeapVector<Member<RtcSendPacketParameters>> packets);
 
+  ScriptPromise<IDLBoolean> writable(ScriptState* script_state);
+
   // TODO(crbug.com/443019066): Hook up ICE candidate gathering and fire this
   // event.
   DEFINE_ATTRIBUTE_EVENT_LISTENER(icecandidate, kIcecandidate)
+
+  void OnPacketReceivedOnMainThread(Vector<uint8_t> data);
+  void OnCandidateGatheredOnMainThread(webrtc::Candidate candidate);
 
   // ScriptWrappable implementation
   void Trace(Visitor* visitor) const override;
 
  private:
+  void ContinueInitialization(bool ice_controlling,
+                              webrtc::ServerAddresses stun_servers,
+                              RtcTransportDependencies* dependencies);
+  void OnInitialized(std::unique_ptr<AsyncDatagramConnection>);
+
+  // Pre-finalizer
+  void Dispose();
+
+  bool initialized_ = false;
+  std::unique_ptr<AsyncDatagramConnection> async_datagram_connection_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapVector<Member<RtcReceivedPacket>> received_packets_;
+
+  webrtc::scoped_refptr<webrtc::RTCCertificate> certificate_;
 };
 
 }  // namespace blink

@@ -581,6 +581,7 @@ source_set("unit_tests") {
     "peerconnection/rtc_rtp_sender_impl_test.cc",
     "peerconnection/rtc_rtp_transceiver_impl_test.cc",
     "peerconnection/rtc_sctp_transport_test.cc",
+    "peerconnection/rtc_transport/rtc_transport_test.cc",
     "peerconnection/thermal_resource_test.cc",
     "peerconnection/transceiver_state_surfacer_test.cc",
     "peerconnection/webrtc_audio_renderer_test.cc",
