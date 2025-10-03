@@ -184,7 +184,7 @@ void ProtocolHandlerPickerCoordinator::OnPickerClosed(
   }
   const auto& app_id = result->selected_app_id;
   if (result->remember_choice) {
-    proxy_->SetProtocolLinkPreference(app_id, protocol_url.scheme());
+    proxy_->SetProtocolLinkPreference(app_id, protocol_url.GetScheme());
   }
   LaunchApp(protocol_url, app_id);
 }

@@ -754,7 +754,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   // Since the bottom sheet was dismissed, now suggestions are shown in the
   // keyboard acessory.
   NSString* accessorySuggestionURL =
-      base::SysUTF8ToNSString(loginURL.GetHost() + ":" + loginURL.port());
+      base::SysUTF8ToNSString(loginURL.GetHost() + ":" + loginURL.GetPort());
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityLabel([@"user, "
                           stringByAppendingString:accessorySuggestionURL])];

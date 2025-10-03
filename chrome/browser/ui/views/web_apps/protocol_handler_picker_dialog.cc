@@ -32,7 +32,7 @@ namespace {
 std::u16string GetDialogTitle(
     const GURL& protocol_url,
     const web_app::ProtocolHandlerPickerDialogEntries& apps) {
-  std::u16string protocol_scheme = base::UTF8ToUTF16(protocol_url.scheme()) +
+  std::u16string protocol_scheme = base::UTF8ToUTF16(protocol_url.GetScheme()) +
                                    url::kStandardSchemeSeparator16;
   return apps.size() == 1
              ? l10n_util::GetStringFUTF16(
@@ -74,7 +74,7 @@ std::unique_ptr<ui::DialogModel> CreateProtocolHandlerPickerDialog(
           ui::DialogModelLabel::CreateWithReplacement(
               IDS_PROTOCOL_HANDLER_PICKER_DIALOG_ALWAYS_OPEN_IN_THIS_APP,
               ui::DialogModelLabel::CreatePlainText(
-                  base::UTF8ToUTF16(protocol_url.scheme()) +
+                  base::UTF8ToUTF16(protocol_url.GetScheme()) +
                   url::kStandardSchemeSeparator16)))
       .AddCancelButton(base::DoNothing())
       .AddOkButton(base::DoNothing(),

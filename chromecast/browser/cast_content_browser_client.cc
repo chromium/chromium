@@ -382,7 +382,7 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
       url::kDataScheme,         url::kFileSystemScheme,
   };
 
-  const std::string& scheme = url.scheme();
+  const std::string& scheme = url.GetScheme();
   for (size_t i = 0; i < std::size(kProtocolList); ++i) {
     if (scheme == kProtocolList[i]) {
       return true;
@@ -624,7 +624,7 @@ void CastContentBrowserClient::SelectClientCertificateOnIOThread(
     return;
   } else {
     LOG(ERROR) << "Invalid host for client certificate request: "
-               << requesting_url.host()
+               << requesting_url.GetHost()
                << " with render_process_id: " << render_process_id
                << " and render_frame_id: " << render_frame_id;
   }

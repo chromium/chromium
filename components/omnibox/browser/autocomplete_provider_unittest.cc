@@ -1521,7 +1521,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
     controller_->SetSteadyStateOmniboxPosition(
         metrics::OmniboxEventProto::TOP_POSITION);
     url = GetDestinationURL(match_copy, base::Milliseconds(2456));
-    EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgBIF8&", url.path());
+    EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgBIF8&", url.GetPath());
     // Make sure searchbox_stats is serialized and encoded correctly.
     std::string serialized_proto;
     EXPECT_TRUE(base::Base64UrlDecode(
@@ -1538,7 +1538,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
     controller_->SetSteadyStateOmniboxPosition(
         metrics::OmniboxEventProto::BOTTOM_POSITION);
     url = GetDestinationURL(match_copy, base::Milliseconds(2456));
-    EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgCIF8&", url.path());
+    EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgCIF8&", url.GetPath());
     // Make sure searchbox_stats is serialized and encoded correctly.
     std::string serialized_proto;
     EXPECT_TRUE(base::Base64UrlDecode(
