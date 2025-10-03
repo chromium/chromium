@@ -636,6 +636,81 @@ TEST_F(RenderBlockingResourceManagerTest, ParserBlockingScriptBeforeFont) {
   font_resource.Complete();
 }
 
+TEST_F(RenderBlockingResourceManagerTest, PausedPageBlocksFontLoading) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest font_resource("https://example.com/font.woff2",
+                                      "font/woff2");
+  LoadURL("https://example.com");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url(https://example.com/font.woff2) format("woff2");
+      }
+      #target {
+        font-size: 10px;
+        position:relative;
+      }
+      @media print {
+        #target {
+            font: 25px/1 custom-font, monospace;
+        }
+      }
+    </style>
+    <span id=target style="">0123456789</span>
+  )HTML");
+
+  auto expected_web_font_width = 250;
+
+  Compositor().BeginFrame();
+  auto original_width = GetTarget()->OffsetWidth();
+  EXPECT_GT(expected_web_font_width, original_width);
+  EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+
+  {
+    // The "custom-font" has not loaded yet.
+    // Print and apply "font: 25px/1 custom-font, monospace" to #target.
+    GetDocument().GetFrame()->StartPrinting(
+        WebPrintParams(gfx::SizeF(300, 400)));
+
+    Compositor().BeginFrame();
+    auto fallback_font_width = GetTarget()->OffsetWidth();
+    // The font size is changed from 10px to 25px.
+    EXPECT_GT(fallback_font_width, original_width);
+    // The web font has not applied yet.
+    EXPECT_GT(expected_web_font_width, fallback_font_width);
+    // The font won't load until the page is resumed, it should render with the
+    // fallback font to avoid invisible text.
+    EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+    GetDocument().GetFrame()->EndPrinting();
+  }
+
+  Compositor().BeginFrame();
+  // The font size is changed back to 10px.
+  EXPECT_EQ(original_width, GetTarget()->OffsetWidth());
+  EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+
+  // Simulate the font resource being fully loaded after the page resumes.
+  font_resource.Complete(ReadAhemWoff2());
+  Compositor().BeginFrame();
+  EXPECT_EQ(original_width, GetTarget()->OffsetWidth());
+  EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+
+  {
+    // The "custom-font" has loaded now.
+    // Print and apply again "font: 25px/1 custom-font, monospace" to #target.
+    GetDocument().GetFrame()->StartPrinting(
+        WebPrintParams(gfx::SizeF(300, 400)));
+
+    Compositor().BeginFrame();
+    // Now that the web font has loaded, it should be used.
+    EXPECT_EQ(expected_web_font_width, GetTarget()->OffsetWidth());
+    EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+    GetDocument().GetFrame()->EndPrinting();
+  }
+}
+
 class RenderBlockingFontTest : public RenderBlockingResourceManagerTest {
  public:
   void SetUp() override {

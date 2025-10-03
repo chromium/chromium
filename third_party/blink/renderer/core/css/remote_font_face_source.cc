@@ -65,6 +65,16 @@ RemoteFontFaceSource::ComputeFontDisplayAutoPeriod() const {
     return kSwapPeriod;
   }
 
+  auto* window =
+      DynamicTo<LocalDOMWindow>(font_selector_->GetExecutionContext());
+  if (window && window->document() && window->document()->Printing()) {
+    // If the page is printing, the font won't finish loading until the page is
+    // resumed. There are problems discussed in crbug.com/346799729.
+    // Currently, to avoid printing invisible text, enter the swap period
+    // immediately, and render with a fallback fontface.
+    return kSwapPeriod;
+  }
+
   switch (phase_) {
     case kNoLimitExceeded:
     case kShortLimitExceeded:
