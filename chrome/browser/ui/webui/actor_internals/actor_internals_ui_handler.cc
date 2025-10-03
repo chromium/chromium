@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/actor_internals/actor_internals_ui_handler.h"
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -70,12 +71,14 @@ ActorInternalsUIHandler::~ActorInternalsUIHandler() {
 
 void ActorInternalsUIHandler::WillAddJournalEntry(
     const actor::AggregatedJournal::Entry& entry) {
-  std::stringstream ss;
-  ss << entry.data->details;
+  base::flat_map<std::string, std::string> details;
+  for (const auto& detail : entry.data->details) {
+    details[detail->key] = detail->value;
+  }
 
   remote_->JournalEntryAdded(actor_internals::mojom::JournalEntry::New(
-      entry.url, entry.data->event, ToString(entry.data->type), ss.str(),
-      entry.data->timestamp, entry.data->task_id.value(),
+      entry.url, entry.data->event, ToString(entry.data->type),
+      std::move(details), entry.data->timestamp, entry.data->task_id.value(),
       ToString(entry.data->track), entry.jpg_screenshot));
 }
 

@@ -36,8 +36,13 @@ td {
   --initial-background-color: #cacaca;
 }
 
+.error-cell {
+  background-color: #ffb6b6;
+  font-weight: bold;
+}
+
 .whitespace-pre {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
 @keyframes newly-uncollapsed-fade-out {

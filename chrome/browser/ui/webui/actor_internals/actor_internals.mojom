@@ -19,7 +19,7 @@ struct JournalEntry {
   string type;
 
   // Any additional details.
-  string details;
+  map<string, string> details;
 
   // Timestamp the event occurred at.
   mojo_base.mojom.JSTime timestamp;

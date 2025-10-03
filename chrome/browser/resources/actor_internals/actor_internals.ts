@@ -114,10 +114,17 @@ class ActorEventLog {
     return {row, cells};
   }
 
+ private formatMapDetails(detailsMap: Map<string, string>): string {
+  return [...detailsMap]
+    .filter(([_, value]) => value)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('\n');
+  }
+
   private formatDetailsCell(entry: JournalEntry,
       detailsCell: HTMLTableCellElement ) {
-    if (entry.event === 'GlicPerformActions' && entry.details.startsWith('proto=')) {
-      const protobytes = entry.details.substring('proto='.length);
+    if (entry.event === 'GlicPerformActions' && entry.details['proto']) {
+      const protobytes = entry.details['proto'];
       const link = document.createElement('a');
       link.textContent = 'Actions Proto';
       link.href = `https://protoshop.corp.google.com/embed?tabs=viewer,editor&type=chrome_intelligence_proto_features.Actions&protobytes=${
@@ -144,7 +151,11 @@ class ActorEventLog {
 
       detailsCell.appendChild(img);
     } else {
-      detailsCell.textContent = entry.details;
+      detailsCell.textContent = this.formatMapDetails(new Map(Object.entries(entry.details)));
+    }
+    detailsCell.classList.add('whitespace-pre');
+    if ('error' in entry.details) {
+      detailsCell.classList.add('error-cell');
     }
   }
 
