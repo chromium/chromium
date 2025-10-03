@@ -32,14 +32,18 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
     auto* anchor_object = anchor_element_->GetLayoutObject();
     if (anchored_object && anchor_object) {
       auto* anchored_container = anchored_object->Container();
-      // Use the ancestor just below anchored_container as the intersection
-      // observer root. The clip of anchored_container is not included because
-      // it's not an "intervening box".
+      // Use the clipping ancestor just below anchored_container as the
+      // intersection observer root. The clip of anchored_container itself is
+      // not included because it's not an "intervening box".
       auto* intersection_root = anchor_object;
       for (auto* anchor_container = anchor_object->Container();
            anchor_container && anchor_container != anchored_container;
            anchor_container = anchor_container->Container()) {
-        intersection_root = anchor_container;
+        if (!RuntimeEnabledFeatures::
+                PositionVisibilityIgnoreNonClipAncestorsEnabled() ||
+            anchor_container->ShouldClipOverflowAlongEitherAxis()) {
+          intersection_root = anchor_container;
+        }
       }
 
       // The anchor is always visible if the anchor and the anchored have the
