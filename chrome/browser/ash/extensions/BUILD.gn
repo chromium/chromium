@@ -42,7 +42,6 @@ static_library("extensions") {
     "signin_screen_extensions_external_loader.h",
     "signin_screen_policy_provider.cc",
     "signin_screen_policy_provider.h",
-    "url_constants.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

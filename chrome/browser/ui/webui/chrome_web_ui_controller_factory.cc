@@ -103,7 +103,6 @@
 #include "ash/webui/print_preview_cros/url_constants.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
-#include "chrome/browser/ash/extensions/url_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
