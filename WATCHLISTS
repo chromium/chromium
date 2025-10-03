@@ -84,12 +84,17 @@
     'ai_settings_page_desktop': {
       'filepath': 'chrome/browser/resources/settings/ai_page/',
     },
-    'android_accessibility': {
+    'android_accessibility_ui': {
+      'filepath': 'AccessibilityState' \
+                  'AccessibilitySettings' \
+                  'PageZoom' \
+                  '|components/browser_ui/accessibility/android/' \
+    },
+    'android_accessibility_web': {
       'filepath': 'WebContentsAccessibility' \
                   '|content/browser/accessibility/.*android'
                   '|content/public/android/java/src/org/chromium/content/browser/accessibility' \
                   '|content/public/android/javatests/src/org/chromium/content/browser/accessibility' \
-                  '|components/browser_ui/accessibility/android/'
                   '|ui/accessibility/platform/.*android' \
                   '|ui/accessibility/android/java/src/org/chromium/ui/accessibility/' \
     },
@@ -2530,9 +2535,10 @@
     'agents': ['estaab+watch@chromium.org'],
     'ai_page_content': ['mfoltz+watch-actor@chromium.org'],
     'ai_settings_page_desktop': ['rainhard+watch@chromium.org'],
-    'android_accessibility': ['cambickel+watcha11y@google.com',
-                              'michaelcheco+watcha11y@google.com',
-                              'yongshun+watcha11y@google.com'],
+    'android_accessibility_ui': ['mschillaci@google.com'],
+    'android_accessibility_web': ['cambickel+watcha11y@google.com',
+                                  'michaelcheco+watcha11y@google.com',
+                                  'yongshun+watcha11y@google.com'],
     'android_bookmark_bar': ['eleanorlee@google.com',
                              'mschillaci@google.com'],
     'android_browser_controls': ['peilinwang+watch@google.com'],
