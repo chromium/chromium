@@ -49,6 +49,7 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/service/variations_service_utils.h"
+#include "components/variations/variations_features.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
@@ -339,6 +340,10 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   platform_field_trials->RegisterFeatureOverrides(feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
+
+  if (base::FeatureList::IsEnabled(internal::kPurgeVariationsSeedFromMemory)) {
+    GetSeedStore()->AllowToPurgeSeedsDataFromMemory();
+  }
 
   // For testing Variations Safe Mode, maybe crash here.
   if (base::FeatureList::IsEnabled(kForceFieldTrialSetupCrashForTesting)) {
@@ -691,6 +696,8 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   std::string seed_data;              // Only set if not in safe mode.
   std::string base64_seed_signature;  // Only set if not in safe mode.
   const bool run_in_safe_mode = seed_type_ == SeedType::kSafeSeed;
+  // TODO: crbug.com/445600380 - Check if we can avoid copying the seed data
+  // when loading the seed.
   const bool seed_loaded =
       run_in_safe_mode
           ? GetSeedStore()->LoadSafeSeedSync(&seed, client_state.get())

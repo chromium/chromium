@@ -107,6 +107,10 @@ void VariationsSafeSeedStoreLocalState::ReadSeedData(
   seed_reader_writer_->ReadSeedData(std::move(done_callback));
 }
 
+void VariationsSafeSeedStoreLocalState::AllowToPurgeSeedDataFromMemory() {
+  seed_reader_writer_->AllowToPurgeSeedDataFromMemory();
+}
+
 // static
 void VariationsSafeSeedStoreLocalState::RegisterPrefs(
     PrefRegistrySimple* registry) {

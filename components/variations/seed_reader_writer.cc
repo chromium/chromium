@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/variations_features.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
@@ -427,6 +428,8 @@ bool SeedReaderWriter::IsIdenticalToSafeSeedSentinel() {
 
 void SeedReaderWriter::AllowToPurgeSeedDataFromMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!seed_purgeable_from_memory_)
+      << "AllowToPurgeSeedDataFromMemory() should only be called once.";
   seed_purgeable_from_memory_ = true;
   if (ShouldClearSeedDataFromMemory()) {
     stored_seed_data_ = std::nullopt;

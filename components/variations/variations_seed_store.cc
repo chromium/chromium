@@ -1122,4 +1122,9 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
   return true;
 }
 
+void VariationsSeedStore::AllowToPurgeSeedsDataFromMemory() {
+  seed_reader_writer_->AllowToPurgeSeedDataFromMemory();
+  safe_seed_store_->AllowToPurgeSeedDataFromMemory();
+}
+
 }  // namespace variations

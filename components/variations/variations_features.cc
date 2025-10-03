@@ -4,9 +4,8 @@
 
 #include "components/variations/variations_features.h"
 
-namespace variations {
+namespace variations::internal {
 
-namespace internal {
+BASE_FEATURE(kPurgeVariationsSeedFromMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace internal
-}  // namespace variations
+}  // namespace variations::internal

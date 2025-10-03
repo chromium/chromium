@@ -270,6 +270,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   void SetSafeSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer);
 
+  // Allows to remove the safe and latest seeds from memory after they have been
+  // persisted to disk. This will cause next reads to potentially have to read
+  // from disk.
+  void AllowToPurgeSeedsDataFromMemory();
+
  protected:
   // Stores the serial number of the latest seed.
   void StoreLatestSerialNumber(std::string_view serial_number);
