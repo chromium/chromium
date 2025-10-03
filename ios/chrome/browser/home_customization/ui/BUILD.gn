@@ -58,6 +58,8 @@ source_set("ui") {
     "home_customization_view_controller_protocol.h",
     "home_cutomization_color_palette_cell.h",
     "home_cutomization_color_palette_cell.mm",
+    "rainbow_slider.h",
+    "rainbow_slider.mm",
   ]
   deps = [
     "//base",
