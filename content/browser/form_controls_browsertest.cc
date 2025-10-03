@@ -353,9 +353,11 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Select) {
 // TODO(crbug.com/377986468) : Flaky on Windows. Seems to lose focus of top
 // <select> in some runs which causes the results to be different from
 // expectations.
-// TODO(crbug.com/448656594): The test fails on Android. Either the test is flaky or the
-// baseline is wrong.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/448656594): The test fails on Android. Either the test is
+// flaky or the baseline is wrong.
+// TODO(crbug.com/449053040): Re-enable the test on Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_MultiSelect DISABLED_MultiSelect
 #else
 #define MAYBE_MultiSelect MultiSelect
