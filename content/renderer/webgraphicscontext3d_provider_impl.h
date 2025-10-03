@@ -60,8 +60,6 @@ class WebGraphicsContext3DProviderImpl
   cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   viz::RasterContextProvider* RasterContextProvider() const override;
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override;
 
  private:
   // viz::ContextLostObserver implementation.
