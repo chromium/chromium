@@ -56,24 +56,9 @@ const CGFloat kAnimationHeightPercent = 0.5;
         constraintGreaterThanOrEqualToAnchor:contentStack.heightAnchor],
   ]];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                       withAction:@selector(updateAnimation)];
-  }
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(updateAnimation)];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    [self updateAnimation];
-  }
-}
-#endif
 
 #pragma mark - Private
 

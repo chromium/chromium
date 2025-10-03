@@ -23,75 +23,27 @@ CGFloat kDoodleHeightNoLogo = 0;
 class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
  public:
   UITraitCollection* IPadTraitCollection() {
-    if (@available(iOS 17, *)) {
-      return [UITraitCollection
-          traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
-            mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassRegular;
-            mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassRegular;
-          }];
-    }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-    else {
-      UITraitCollection* horizontalRegular =
-          [UITraitCollection traitCollectionWithHorizontalSizeClass:
-                                 UIUserInterfaceSizeClassRegular];
-      UITraitCollection* verticalRegular = [UITraitCollection
-          traitCollectionWithVerticalSizeClass:UIUserInterfaceSizeClassRegular];
-      return [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        verticalRegular, horizontalRegular
-      ]];
-    }
-#else
-    return UITraitCollection.currentTraitCollection;
-#endif
+    return [UITraitCollection
+        traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+          mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassRegular;
+          mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassRegular;
+        }];
   }
 
   UITraitCollection* IPhoneLandscapeTraitCollection() {
-    if (@available(iOS 17, *)) {
-      return [UITraitCollection
-          traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
-            mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
-            mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassCompact;
-          }];
-    }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-    else {
-      UITraitCollection* horizontalCompact =
-          [UITraitCollection traitCollectionWithHorizontalSizeClass:
-                                 UIUserInterfaceSizeClassCompact];
-      UITraitCollection* verticalCompact = [UITraitCollection
-          traitCollectionWithVerticalSizeClass:UIUserInterfaceSizeClassCompact];
-      return [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        verticalCompact, horizontalCompact
-      ]];
-    }
-#else
-    return UITraitCollection.currentTraitCollection;
-#endif
+    return [UITraitCollection
+        traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+          mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+          mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassCompact;
+        }];
   }
 
   UITraitCollection* IPhonePortraitTraitCollection() {
-    if (@available(iOS 17, *)) {
-      return [UITraitCollection
-          traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
-            mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
-            mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassRegular;
-          }];
-    }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-    else {
-      UITraitCollection* horizontalCompact =
-          [UITraitCollection traitCollectionWithHorizontalSizeClass:
-                                 UIUserInterfaceSizeClassCompact];
-      UITraitCollection* verticalRegular = [UITraitCollection
-          traitCollectionWithVerticalSizeClass:UIUserInterfaceSizeClassRegular];
-      return [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        verticalRegular, horizontalCompact
-      ]];
-    }
-#else
-    return UITraitCollection.currentTraitCollection;
-#endif
+    return [UITraitCollection
+        traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+          mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+          mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassRegular;
+        }];
   }
 
   bool IsIPad() {

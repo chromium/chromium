@@ -1693,11 +1693,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Test switching account from the account menu.
 - (void)testSwitchAccountFromAccountMenu {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1769,11 +1764,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Test signing out from the account menu.
 - (void)testSignOutFromAccountFromAccountMenu {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
