@@ -388,6 +388,8 @@ void SpdyStream::OnHeadersReceived(
           if (io_state_ == STATE_IDLE) {
             const std::string error("Response received before request sent.");
             LogStreamError(ERR_HTTP2_PROTOCOL_ERROR, error);
+            DVLOG(1) << "Response received before request sent, possibly "
+                        "crbug.com/41180906";
             session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR, error);
             return;
           }

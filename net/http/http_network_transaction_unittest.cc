@@ -8310,6 +8310,361 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
   EXPECT_EQ(kRespData, response_data);
 }
 
+// Test that a backup job is not created for an HTTPS (non-SPDY) request through
+// two HTTPS (SPDY) proxies (SPDY -> SPDY -> HTTPS) when the second CONNECT
+// request takes longer than `net::ClientSocketPool::kMaxConnectRetryIntervalMs`
+// to complete.
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxySpdyConnectHttpsNoBackupJob) {
+  bool connect_backup_jobs_enabled =
+      TransportClientSocketPool::connect_backup_jobs_enabled();
+  TransportClientSocketPool::set_connect_backup_jobs_enabled(true);
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.test/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(nested_proxy_chain_);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      base::span<const std::string_view>(), 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      proxy_server_2_.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(base::span<const std::string_view>(),
+                                       1));
+
+  // CONNECT to www.example.test:443 via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // CONNECT is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      base::span<const std::string_view>(), 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.test", 443)));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(base::span<const std::string_view>(),
+                                          1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
+
+  // Fetch https://www.example.test/ via HTTP/1.x.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char kGet[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.test\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      new_spdy_util.ConstructSpdyDataFrame(1, kGet, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get, 1));
+
+  const char kResp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n"
+      "1234567890";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      new_spdy_util.ConstructSpdyDataFrame(1, kResp, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get_resp, 1));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_wrapped_get, 5),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      // Delay this read to simulate a slow connection and trigger the backup
+      // job.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      CreateMockRead(wrapped_wrapped_get_resp, 6, ASYNC),
+      // Note: We leave the socket open here instead of closing it to avoid
+      // request failures possibly related to crbug.com/41180906.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 7),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = NextProto::kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = NextProto::kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+
+  TestCompletionCallback callback1;
+
+  int rv = trans.Start(&request, callback1.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+
+  // Advance the clock to attempt to trigger the backup job. No backup job
+  // should be created since the `ConnectJob::HasEstablishedConnection()` call
+  // in `TransportClientSocketPool::Group::OnBackupJobTimerFired()` will return
+  // true.
+  FastForwardBy(
+      base::Milliseconds(net::ClientSocketPool::kMaxConnectRetryIntervalMs));
+
+  spdy_data.Resume();
+
+  ASSERT_THAT(callback1.GetResult(rv), IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info, CONNECT_TIMING_HAS_SSL_TIMES);
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("1234567890", response_data);
+
+  spdy_data.ExpectAllReadDataConsumed();
+  spdy_data.ExpectAllWriteDataConsumed();
+
+  TransportClientSocketPool::set_connect_backup_jobs_enabled(
+      connect_backup_jobs_enabled);
+}
+
+// Test that a backup job is not created for an HTTPS (non-SPDY) request through
+// two HTTPS (SPDY) proxies (SPDY -> SPDY -> HTTPS) when the second CONNECT
+// request takes longer than `net::ClientSocketPool::kMaxConnectRetryIntervalMs`
+// to complete when using an existing socket to the second proxy. This tests the
+// fix for crbug.com/448445046.
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxySpdyConnectHttpsNoBackupJobUsingExistingSocket) {
+  bool connect_backup_jobs_enabled =
+      TransportClientSocketPool::connect_backup_jobs_enabled();
+  TransportClientSocketPool::set_connect_backup_jobs_enabled(true);
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.test/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(nested_proxy_chain_);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      base::span<const std::string_view>(), 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      proxy_server_2_.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(base::span<const std::string_view>(),
+                                       1));
+
+  // CONNECT to www.example.test:443 via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // CONNECT is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      base::span<const std::string_view>(), 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.test", 443)));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(base::span<const std::string_view>(),
+                                          1));
+
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
+
+  // Fetch https://www.example.test/ via HTTP/1.x.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char kGet[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.test\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      new_spdy_util.ConstructSpdyDataFrame(1, kGet, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get, 1));
+
+  const char kResp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n"
+      "1234567890";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      new_spdy_util.ConstructSpdyDataFrame(1, kResp, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get_resp, 1));
+
+  // CONNECT to www.example2.test:443 via SPDY for the second request.
+  spdy::SpdySerializedFrame second_endpoint_connect(
+      new_spdy_util.ConstructSpdyConnect(
+          base::span<const std::string_view>(), 3,
+          HttpProxyConnectJob::kH2QuicTunnelPriority,
+          HostPortPair("www.example2.test", 443)));
+
+  spdy::SpdySerializedFrame second_wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(second_endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame second_endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(base::span<const std::string_view>(),
+                                          3));
+  spdy::SpdySerializedFrame second_wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(second_endpoint_connect_resp, 1));
+
+  // fetch https://www.example2.test/ via HTTP.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char kGet2[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example2.test\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame second_wrapped_get(
+      new_spdy_util.ConstructSpdyDataFrame(3, kGet2, false));
+  spdy::SpdySerializedFrame second_wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(second_wrapped_get, 1));
+
+  const char kResp2[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n"
+      "0987654321";
+  spdy::SpdySerializedFrame second_wrapped_get_resp(
+      new_spdy_util.ConstructSpdyDataFrame(3, kResp2, false));
+  spdy::SpdySerializedFrame second_wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(second_wrapped_get_resp, 1));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_wrapped_get, 5),
+      CreateMockWrite(second_wrapped_endpoint_connect, 7),
+      CreateMockWrite(second_wrapped_wrapped_get, 10),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      // TODO(crbug.com/41180906): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // causing the stream to be reset with HTTP2_PROTOCOL_ERROR.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      CreateMockRead(wrapped_wrapped_get_resp, 6, ASYNC),
+      // Delay this read to simulate a slow connection and trigger the backup
+      // job.
+      MockRead(ASYNC, ERR_IO_PENDING, 8),
+      CreateMockRead(second_wrapped_endpoint_connect_resp, 9, ASYNC),
+      CreateMockRead(second_wrapped_wrapped_get_resp, 11, ASYNC),
+      // Note: We leave the socket open here instead of closing it to avoid
+      // request failures possibly related to crbug.com/41180906.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 12),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = NextProto::kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = NextProto::kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+  // For the connection to the second endpoint:
+  SSLSocketDataProvider ssl4(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl4);
+
+  TestCompletionCallback callback1;
+
+  int rv = trans.Start(&request, callback1.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  ASSERT_THAT(callback1.GetResult(rv), IsOk());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("1234567890", response_data);
+
+  // Make a second request to a different origin.
+  request.url = GURL("https://www.example2.test/");
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback2;
+  rv = trans2.Start(&request, callback2.callback(),
+                    NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+
+  // Advance the clock to attempt to trigger the backup job. No backup job
+  // should be created since the `ConnectJob::HasEstablishedConnection()` call
+  // in `TransportClientSocketPool::Group::OnBackupJobTimerFired()` will return
+  // true.
+  FastForwardBy(
+      base::Milliseconds(net::ClientSocketPool::kMaxConnectRetryIntervalMs));
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  ASSERT_THAT(callback2.GetResult(rv), IsOk());
+
+  std::string response_data2;
+  ASSERT_THAT(ReadTransaction(&trans2, &response_data2), IsOk());
+  EXPECT_EQ("0987654321", response_data2);
+
+  spdy_data.ExpectAllReadDataConsumed();
+  spdy_data.ExpectAllWriteDataConsumed();
+
+  TransportClientSocketPool::set_connect_backup_jobs_enabled(
+      connect_backup_jobs_enabled);
+}
+
 // Test a SPDY CONNECT through an HTTPS Proxy to a SPDY server (SPDY -> SPDY).
 TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectSpdy) {
   SpdyTestUtil spdy_util_wrapped(/*use_priority_header=*/true);

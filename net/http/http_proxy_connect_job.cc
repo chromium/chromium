@@ -515,6 +515,7 @@ int HttpProxyConnectJob::DoTransportConnect() {
         common_connect_job_params()->spdy_session_pool->FindAvailableSession(
             CreateSpdySessionKey(), /*enable_ip_based_pooling_for_h2=*/false,
             /*is_websocket=*/false, net_log())) {
+      has_established_connection_ = true;
       next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
       return OK;
     }
