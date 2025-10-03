@@ -4782,8 +4782,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
 
     if (RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
-            GetExecutionContext()) &&
-        InterestForElement()) {
+            GetExecutionContext())) {
       UpdatePseudoElement(kPseudoIdInterestHint, child_change,
                           child_recalc_context);
     }
@@ -10082,6 +10081,9 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     if (!is_option_in_appearance_base_select(this) && !checkable_menu_item) {
       return false;
     }
+  }
+  if (pseudo_id == kPseudoIdInterestHint && !InterestForElement()) {
+    return false;
   }
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (IsDocumentElement()) {
