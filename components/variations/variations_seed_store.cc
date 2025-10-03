@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
@@ -292,10 +292,10 @@ void VariationsSeedStore::StoreSeedData(
     bool is_delta_compressed,
     bool is_gzip_compressed,
     bool require_synchronous) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Variations.StoreSeed.Time");
+  base::ScopedUmaHistogramTimer store_seed_timer("Variations.StoreSeed.Time");
 
-  UMA_HISTOGRAM_COUNTS_1000("Variations.StoreSeed.DataSize",
-                            data.length() / 1024);
+  base::UmaHistogramCounts1000("Variations.StoreSeed.DataSize",
+                               data.length() / 1024);
   InstanceManipulations im = {
       .gzip_compressed = is_gzip_compressed,
       .delta_compressed = is_delta_compressed,
@@ -493,7 +493,7 @@ void VariationsSeedStore::LogSeedDayChange(
     result = GetSeedDateChangeState(server_date_fetched, stored_date);
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Variations.SeedDateChange", result);
+  base::UmaHistogramEnumeration("Variations.SeedDateChange", result);
 }
 
 const std::string& VariationsSeedStore::GetLatestSerialNumber() {
@@ -708,10 +708,10 @@ void VariationsSeedStore::VerifyAndParseSeedAndRunCallback(
   if (verify_signature_result.has_value()) {
     VerifySignatureResult signature_result = verify_signature_result.value();
     if (seed_type == SeedType::LATEST) {
-      UMA_HISTOGRAM_ENUMERATION("Variations.LoadSeedSignature",
-                                signature_result);
+      base::UmaHistogramEnumeration("Variations.LoadSeedSignature",
+                                    signature_result);
     } else {
-      UMA_HISTOGRAM_ENUMERATION(
+      base::UmaHistogramEnumeration(
           "Variations.SafeMode.LoadSafeSeed.SignatureValidity",
           signature_result);
     }
@@ -1046,11 +1046,11 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
         VerifySeedSignature(seed_bytes, base64_seed_signature);
     switch (seed_type) {
       case SeedType::LATEST:
-        UMA_HISTOGRAM_ENUMERATION("Variations.StoreSeedSignature",
-                                  verify_result);
+        base::UmaHistogramEnumeration("Variations.StoreSeedSignature",
+                                      verify_result);
         break;
       case SeedType::SAFE:
-        UMA_HISTOGRAM_ENUMERATION(
+        base::UmaHistogramEnumeration(
             "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
             verify_result);
         break;

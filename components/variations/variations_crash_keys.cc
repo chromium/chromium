@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -249,8 +249,8 @@ void VariationsCrashKeys::UpdateCrashKeys() {
   g_num_variations_crash_key.Set(base::NumberToString(info.num_experiments));
 
   const size_t count_of_kbs = info.experiment_list.size() / 1024;
-  UMA_HISTOGRAM_EXACT_LINEAR(kVariationKeySizeHistogram, count_of_kbs,
-                             kVariationsKeySizeNumBuckets);
+  base::UmaHistogramExactLinear(kVariationKeySizeHistogram, count_of_kbs,
+                                kVariationsKeySizeNumBuckets);
   if (info.experiment_list.size() > kVariationsKeySize) {
     // If size exceeded, truncate to the last full entry.
     int comma_index =

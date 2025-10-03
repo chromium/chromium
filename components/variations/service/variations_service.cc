@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -127,21 +126,20 @@ std::string GetRestrictParameterValue(const std::string& restrict_mode_override,
 }
 
 // Reported to UMA, keep in sync with enums.xml and don't renumber entries.
-enum ResourceRequestsAllowedState {
-  RESOURCE_REQUESTS_ALLOWED,
-  RESOURCE_REQUESTS_NOT_ALLOWED,
-  RESOURCE_REQUESTS_ALLOWED_NOTIFIED,
-  RESOURCE_REQUESTS_NOT_ALLOWED_EULA_NOT_ACCEPTED,
-  RESOURCE_REQUESTS_NOT_ALLOWED_NETWORK_DOWN,
-  RESOURCE_REQUESTS_NOT_ALLOWED_COMMAND_LINE_DISABLED,
-  RESOURCE_REQUESTS_NOT_ALLOWED_NETWORK_STATE_NOT_INITIALIZED,
-  RESOURCE_REQUESTS_ALLOWED_ENUM_SIZE,
+enum class ResourceRequestsAllowedState {
+  kAllowed,
+  kNotAllowed,
+  kAllowedNotified,
+  kNotAllowedEulaNotAccepted,
+  kNotAllowedNetworkDown,
+  kNotAllowedCommandLineDisabled,
+  kNotAllowedNetworkStateNotInitialized,
+  kMaxValue = kNotAllowedNetworkStateNotInitialized,
 };
 
 // Records UMA histogram with the current resource requests allowed state.
 void RecordRequestsAllowedHistogram(ResourceRequestsAllowedState state) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.ResourceRequestsAllowed", state,
-                            RESOURCE_REQUESTS_ALLOWED_ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.ResourceRequestsAllowed", state);
 }
 
 // Converts ResourceRequestAllowedNotifier::State to the corresponding
@@ -151,16 +149,17 @@ ResourceRequestsAllowedState ResourceRequestStateToHistogramValue(
   using web_resource::ResourceRequestAllowedNotifier;
   switch (state) {
     case ResourceRequestAllowedNotifier::DISALLOWED_EULA_NOT_ACCEPTED:
-      return RESOURCE_REQUESTS_NOT_ALLOWED_EULA_NOT_ACCEPTED;
+      return ResourceRequestsAllowedState::kNotAllowedEulaNotAccepted;
     case ResourceRequestAllowedNotifier::DISALLOWED_NETWORK_DOWN:
-      return RESOURCE_REQUESTS_NOT_ALLOWED_NETWORK_DOWN;
+      return ResourceRequestsAllowedState::kNotAllowedNetworkDown;
     case ResourceRequestAllowedNotifier::DISALLOWED_COMMAND_LINE_DISABLED:
-      return RESOURCE_REQUESTS_NOT_ALLOWED_COMMAND_LINE_DISABLED;
+      return ResourceRequestsAllowedState::kNotAllowedCommandLineDisabled;
     case ResourceRequestAllowedNotifier::
         DISALLOWED_NETWORK_STATE_NOT_INITIALIZED:
-      return RESOURCE_REQUESTS_NOT_ALLOWED_NETWORK_STATE_NOT_INITIALIZED;
+      return ResourceRequestsAllowedState::
+          kNotAllowedNetworkStateNotInitialized;
     case ResourceRequestAllowedNotifier::ALLOWED:
-      return RESOURCE_REQUESTS_ALLOWED;
+      return ResourceRequestsAllowedState::kAllowed;
   }
   NOTREACHED();
 }
@@ -691,9 +690,9 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   if (!last_request_started_time_.is_null()) {
     time_since_last_fetch = now - last_request_started_time_;
   }
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Variations.TimeSinceLastFetchAttempt",
-                              time_since_last_fetch.InMinutes(), 1,
-                              base::Days(7).InMinutes(), 50);
+  base::UmaHistogramCustomCounts("Variations.TimeSinceLastFetchAttempt",
+                                 time_since_last_fetch.InMinutes(), 1,
+                                 base::Days(7).InMinutes(), 50);
   ++request_count_;
   last_request_started_time_ = now;
   delta_error_since_last_success_ = false;
@@ -921,7 +920,8 @@ void VariationsService::OnResourceRequestsAllowed() {
   // attempt was made earlier that fails (which implies that the period had
   // elapsed). After a successful attempt is made, the notifier will know not
   // to call this method again until another failed attempt occurs.
-  RecordRequestsAllowedHistogram(RESOURCE_REQUESTS_ALLOWED_NOTIFIED);
+  RecordRequestsAllowedHistogram(
+      ResourceRequestsAllowedState::kAllowedNotified);
   DVLOG(1) << "Retrying fetch.";
   DoActualFetch();
 
