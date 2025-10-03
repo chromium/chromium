@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/notimplemented.h"
-#include "base/uuid.h"
+#include "components/data_sharing/migration/public/context_id.h"
 #include "components/data_sharing/migration/public/migratable_bridge_mediator.h"
 #include "components/data_sharing/migration/public/shareable_private_bridge.h"
 #include "components/data_sharing/migration/public/shareable_shared_bridge.h"
@@ -24,13 +24,13 @@ BaseMigratableSyncService::BaseMigratableSyncService(
 
 BaseMigratableSyncService::~BaseMigratableSyncService() = default;
 
-void BaseMigratableSyncService::StageMigration(const base::Uuid& context_id) {
+void BaseMigratableSyncService::StageMigration(const ContextId& context_id) {
   if (mediator_) {
     mediator_->StageMigration(context_id);
   }
 }
 
-void BaseMigratableSyncService::CommitMigration(const base::Uuid& context_id) {
+void BaseMigratableSyncService::CommitMigration(const ContextId& context_id) {
   if (mediator_) {
     mediator_->CommitMigration(context_id);
   }

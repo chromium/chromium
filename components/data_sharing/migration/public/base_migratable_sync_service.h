@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.hh"
+#include "base/memory/weak_ptr.h"
+#include "components/data_sharing/migration/public/context_id.h"
 #include "components/data_sharing/migration/public/migratable_sync_service.h"
 
 namespace data_sharing {
@@ -29,8 +30,8 @@ class COMPONENT_EXPORT(DATA_SHARING_MIGRATION) BaseMigratableSyncService
   ~BaseMigratableSyncService() override;
 
   // MigratableSyncService implementation:
-  void StageMigration(const base::Uuid& context_id) override;
-  void CommitMigration(const base::Uuid& context_id) override;
+  void StageMigration(const ContextId& context_id) override;
+  void CommitMigration(const ContextId& context_id) override;
   bool IsPromotionReady() const override;
 
  private:
