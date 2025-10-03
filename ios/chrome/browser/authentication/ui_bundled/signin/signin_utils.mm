@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -248,8 +249,14 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   }
 
   // Used for testing purposes only.
-  if (signin::ForceStartupSigninPromo() ||
-      experimental_flags::AlwaysDisplayUpgradePromo()) {
+  if (signin::ForceStartupSigninPromo()) {
+    return true;
+  }
+  NSString* forced_promo_name = experimental_flags::GetForcedPromoToDisplay();
+  std::optional<promos_manager::Promo> forced_promo =
+      promos_manager::PromoForName(base::SysNSStringToUTF8(forced_promo_name));
+  if (forced_promo.has_value() &&
+      forced_promo.value() == promos_manager::Promo::SigninFullscreen) {
     return true;
   }
 

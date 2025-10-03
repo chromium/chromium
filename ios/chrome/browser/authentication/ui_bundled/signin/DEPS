@@ -6,4 +6,7 @@ specific_include_rules = {
   "signin_reauth_coordinator\.mm": [
     "+absl/functional/overload.h",
   ],
+  "signin_utils\.mm": [
+    "+ios/chrome/browser/promos_manager/model/constants.h",
+  ],
 }

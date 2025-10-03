@@ -28,9 +28,6 @@ bool AlwaysDisplayFirstRun();
 // the FRE using tests_hook::DisableDefaultFirstRun
 bool NeverDisplayFirstRun();
 
-// Whether the Upgrade Promo UI will always be displayed.
-bool AlwaysDisplayUpgradePromo();
-
 // Returns the host name for an alternative Origin Server host for use by
 // `BrandCode` startup ping. Returns empty string if there is no alternative
 // host specified.

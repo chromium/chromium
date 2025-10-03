@@ -160,16 +160,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Force Upgrade Promo</string>
-			<key>Key</key>
-			<string>UpgradePromoForceEnabled</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Force Promo</string>
@@ -190,6 +180,7 @@
 				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
 				<string>promos_manager::Promo::DockingPromo</string>
 				<string>promos_manager::Promo::BWGPromo</string>
+				<string>promos_manager::Promo::SigninFullscreen</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -197,13 +188,14 @@
 				<string>App Store Rating</string>
 				<string>Default Browser</string>
 				<string>Default Browser Reminder</string>
-				<string>Default Browser "All Tabs" version</string>
-				<string>Default Browser "Made for iOS" version</string>
-				<string>Default Browser "Stay safe" version</string>
+				<string>Default Browser &quot;All Tabs&quot; version</string>
+				<string>Default Browser &quot;Made for iOS&quot; version</string>
+				<string>Default Browser &quot;Stay safe&quot; version</string>
 				<string>Default Browser off-cycle version</string>
 				<string>Post Restore Default Browser Alert</string>
 				<string>Docking Promo</string>
 				<string>BWG Promo</string>
+				<string>Fullscreen sign-in</string>
 			</array>
 		</dict>
 		<dict>
