@@ -98,7 +98,14 @@ std::unique_ptr<ui::DialogModel> AndroidDataControlsDialog::CreateDialogModel(
       break;
   }
 
-  dialog_builder.SetDialogDestroyingCallback(std::move(on_destructed));
+  dialog_builder.SetDialogDestroyingCallback(base::BindOnce(
+      [](AndroidDataControlsDialog* dialog,
+         base::OnceClosure destruct_callback) {
+        std::move(destruct_callback).Run();
+        dialog->OnDialogButtonClicked(/*bypassed=*/false);
+      },
+      base::Unretained(this), std::move(on_destructed)));
+
   return dialog_builder.Build();
 }
 
