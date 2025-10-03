@@ -628,6 +628,10 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     return return_value;
   }
 
+  void PerformStorageCleanup(base::OnceClosure callback) {
+    storage()->PerformStorageCleanup(std::move(callback));
+  }
+
   GetUsageForStorageKeyResult GetUsageForStorageKey(
       const blink::StorageKey& key) {
     GetUsageForStorageKeyResult result;
@@ -1776,6 +1780,43 @@ TEST_F(ServiceWorkerStorageControlImplTest, GetUsageForStorageKey) {
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     ASSERT_EQ(result.usage, 0);
   }
+}
+
+TEST_F(ServiceWorkerStorageControlImplTest, PerformStorageCleanup) {
+  const GURL kScope("https://www.example.com/scope/");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
+  const GURL kScriptUrl("https://www.example.com/scope/sw.js");
+  const GURL kClientUrl("https://www.example.com/scope/document.html");
+  const int64_t kScriptSize = 10;
+
+  LazyInitializeForTest();
+
+  const int64_t kResourceId = GetNewResourceId();
+  const int64_t kVersionId = GetNewVersionId().version_id;
+  const int64_t kRegistrationId = GetNewRegistrationId();
+
+  // Create and store a registration, and a resource.
+  DatabaseStatus status =
+      CreateAndStoreRegistration(kRegistrationId, kVersionId, kResourceId,
+                                  kScope, kKey, kScriptUrl, kScriptSize);
+  ASSERT_EQ(status, DatabaseStatus::kOk);
+
+  // Delete the registration. This should make the resource purgeable.
+  DeleteRegistrationResult delete_result =
+      DeleteRegistration(kRegistrationId, kKey);
+  ASSERT_EQ(delete_result.status, DatabaseStatus::kOk);
+
+  // Call PerformStorageCleanup. This is async.
+  base::RunLoop loop;
+  PerformStorageCleanup(loop.QuitClosure());
+  loop.Run();
+
+  // The resource should be purged.
+  ReadDataResult read_resource_result =
+      ReadResource(kResourceId, kScriptSize);
+  ASSERT_EQ(read_resource_result.status, net::ERR_CACHE_MISS);
+  ASSERT_EQ(read_resource_result.data, "");
 }
 
 // Tests that apply policy updates work.
