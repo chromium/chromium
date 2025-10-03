@@ -230,10 +230,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   [self.downloadControlsRow addArrangedSubview:self.progressView];
   [self.downloadControlsRow addArrangedSubview:self.closeButton];
   [self.view addSubview:self.downloadControlsRow];
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                       withAction:@selector(updateActionButtonLayout)];
-  }
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withAction:@selector(updateActionButtonLayout)];
 
   self.bottomMarginGuide = [[UILayoutGuide alloc] init];
   [self.view addLayoutGuide:self.bottomMarginGuide];
@@ -699,17 +697,6 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
   [self updateActionButtonLayout];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  [self updateActionButtonLayout];
-}
-#endif
 
 // Updates and activates constraints which depend on ui size class.
 - (void)updateConstraintsForTraitCollection:
