@@ -7615,6 +7615,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.SqlDiskCache.Backend.{MethodName}.PostingDelay"
+    units="microseconds" expires_after="2026-03-08">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the time delay from posting a task to its execution for the method
+    of the SQL-based disk cache backend. This metric is recorded immediately
+    before the logic for the method is executed. It helps diagnose potential
+    delays caused by task queueing. The histogram is not reported on Windows
+    machines without high resolution clocks.
+  </summary>
+  <token key="MethodName" variants="SqlPersistentStoreMethodName"/>
+</histogram>
+
 <histogram name="Net.SqlDiskCache.Backend.{MethodName}.Result"
     enum="SqlDiskCacheStoreError" expires_after="2026-02-22">
   <owner>horo@chromium.org</owner>
