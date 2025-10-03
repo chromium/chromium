@@ -20,12 +20,13 @@
 namespace contextual_tasks {
 
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
-    version_info::Channel channel) {
+    version_info::Channel channel,
+    syncer::OnceDataTypeStoreFactory data_type_store_factory) {
   auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::AI_THREAD,
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
-  ai_thread_sync_bridge_ =
-      std::make_unique<AiThreadSyncBridge>(std::move(processor));
+  ai_thread_sync_bridge_ = std::make_unique<AiThreadSyncBridge>(
+      std::move(processor), std::move(data_type_store_factory));
 }
 
 ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
@@ -210,6 +211,8 @@ base::WeakPtr<syncer::DataTypeControllerDelegate>
 ContextualTasksServiceImpl::GetAiThreadControllerDelegate() {
   return ai_thread_sync_bridge_->change_processor()->GetControllerDelegate();
 }
+
+void ContextualTasksServiceImpl::OnThreadDataStoreLoaded() {}
 
 void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
     const std::vector<Thread>& threads) {}

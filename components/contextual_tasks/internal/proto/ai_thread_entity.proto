@@ -1,0 +1,26 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package contextual_tasks.proto;
+
+import "components/sync/protocol/ai_thread_specifics.proto";
+
+// Proto message for storing syncable and local Thread data.
+message AiThreadEntity {
+  // Thread data to be synced.
+  optional sync_pb.AiThreadSpecifics specifics = 1;
+
+  message LocalData {
+    // The last known turn id from the client, which is
+    // stored locally and not synced.
+    optional string last_turn_id = 1;
+  }
+
+  // All data that is local-only.
+  optional LocalData local_data = 2;
+}

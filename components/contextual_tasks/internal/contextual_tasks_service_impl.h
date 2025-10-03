@@ -17,6 +17,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync/model/data_type_store.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -24,7 +25,9 @@ namespace contextual_tasks {
 class ContextualTasksServiceImpl : public ContextualTasksService,
                                    public AiThreadSyncBridge::Observer {
  public:
-  explicit ContextualTasksServiceImpl(version_info::Channel channel);
+  ContextualTasksServiceImpl(
+      version_info::Channel channel,
+      syncer::OnceDataTypeStoreFactory data_type_store_factory);
   ~ContextualTasksServiceImpl() override;
 
   // ContextualTasksService implementation.
@@ -58,6 +61,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   GetAiThreadControllerDelegate() override;
 
   // AiThreadSyncBridge::Observer implementation.
+  void OnThreadDataStoreLoaded() override;
   void OnThreadAddedOrUpdatedRemotely(
       const std::vector<Thread>& threads) override;
   void OnThreadRemovedRemotely(const std::vector<Thread>& threads) override;

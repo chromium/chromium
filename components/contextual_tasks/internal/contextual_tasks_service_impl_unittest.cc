@@ -11,8 +11,9 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
+#include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/contextual_task.h"
-#include "components/sessions/core/session_id.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -42,7 +43,8 @@ class ContextualTasksServiceImplTest : public testing::Test {
  public:
   ContextualTasksServiceImplTest() {
     service_ = std::make_unique<ContextualTasksServiceImpl>(
-        version_info::Channel::UNKNOWN);
+        version_info::Channel::UNKNOWN,
+        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
   }
   ~ContextualTasksServiceImplTest() override = default;
 

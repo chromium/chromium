@@ -9,10 +9,12 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace contextual_tasks {
@@ -36,7 +38,9 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
           "ContextualTasksService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 ContextualTasksServiceFactory::~ContextualTasksServiceFactory() = default;
 
@@ -46,7 +50,10 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(kContextualTasks)) {
     return nullptr;
   }
-  return std::make_unique<ContextualTasksServiceImpl>(chrome::GetChannel());
+  return std::make_unique<ContextualTasksServiceImpl>(
+      chrome::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(
+                                Profile::FromBrowserContext(context))
+                                ->GetStoreFactory());
 }
 
 }  // namespace contextual_tasks

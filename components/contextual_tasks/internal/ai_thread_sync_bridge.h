@@ -9,9 +9,11 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "components/contextual_tasks/internal/proto/ai_thread_entity.pb.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
@@ -31,14 +33,16 @@ class AiThreadSyncBridge : public syncer::DataTypeSyncBridge {
     Observer() = default;
     ~Observer() override = default;
 
+    virtual void OnThreadDataStoreLoaded() = 0;
     virtual void OnThreadAddedOrUpdatedRemotely(
         const std::vector<Thread>& threads) = 0;
     virtual void OnThreadRemovedRemotely(
         const std::vector<Thread>& threads) = 0;
   };
 
-  explicit AiThreadSyncBridge(
-      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
+  AiThreadSyncBridge(
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      syncer::OnceDataTypeStoreFactory store_factory);
 
   AiThreadSyncBridge(const AiThreadSyncBridge&) = delete;
   AiThreadSyncBridge& operator=(const AiThreadSyncBridge&) = delete;
@@ -66,12 +70,36 @@ class AiThreadSyncBridge : public syncer::DataTypeSyncBridge {
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
+  void OnDataTypeStoreCreated(const std::optional<syncer::ModelError>& error,
+                              std::unique_ptr<syncer::DataTypeStore> store);
+
+  void OnReadAllData(
+      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> entries);
+
+  void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
+                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+
+  void OnDataTypeStoreCommit(const std::optional<syncer::ModelError>& error);
+
+  // In charge of actually persisting data to disk, or loading previous data.
+  std::unique_ptr<syncer::DataTypeStore> data_type_store_;
+
+  // Maps `server_id` to AiThreadEntity proto.
+  std::unordered_map<std::string, proto::AiThreadEntity> ai_thread_entities_;
+
+  bool is_data_loaded_ = false;
+
   base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<AiThreadSyncBridge> weak_ptr_factory_{this};
 };
 
 }  // namespace contextual_tasks
