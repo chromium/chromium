@@ -384,6 +384,28 @@ const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
 };
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierAddressOneTap[] = {
+    {kTextClassifierAddressParameterName, "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableExpKitTextClassifierAddressVariations[] = {
+        {"Long-Press and One-Tap", kEnableExpKitTextClassifierAddressOneTap,
+         std::size(kEnableExpKitTextClassifierAddressOneTap), nullptr}};
+
+const FeatureEntry::FeatureParam
+    kEnableExpKitTextClassifierPhoneNumberOneTap[] = {
+        {kTextClassifierPhoneNumberParameterName, "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableExpKitTextClassifierPhoneNumberVariations[] = {
+        {"Long-Press and One-Tap", kEnableExpKitTextClassifierPhoneNumberOneTap,
+         std::size(kEnableExpKitTextClassifierPhoneNumberOneTap), nullptr}};
+
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierEmailOneTap[] = {
+    {kTextClassifierEmailParameterName, "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableExpKitTextClassifierEmailVariations[] = {
+        {"Long-Press and One-Tap", kEnableExpKitTextClassifierEmailOneTap,
+         std::size(kEnableExpKitTextClassifierEmailOneTap), nullptr}};
+
 // Download List UI feature flag parameters.
 // IMPORTANT: These values must match DownloadListUIType enum in features.h
 const FeatureEntry::FeatureParam kDownloadListDefaultUIParam[] = {
@@ -1644,6 +1666,33 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"intents-on-measurements", flag_descriptions::kMeasurementsName,
      flag_descriptions::kMeasurementsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableMeasurements)},
+    {"enable-expkit-text-classifier-date",
+     flag_descriptions::kEnableExpKitTextClassifierDateName,
+     flag_descriptions::kEnableExpKitTextClassifierDateDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableExpKitTextClassifierDate)},
+    {"enable-expkit-text-classifier-address",
+     flag_descriptions::kEnableExpKitTextClassifierAddressName,
+     flag_descriptions::kEnableExpKitTextClassifierAddressDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableExpKitTextClassifierAddress,
+         kEnableExpKitTextClassifierAddressVariations,
+         "ExpKitTextClassifierAddress")},
+    {"enable-expkit-text-classifier-phonenumber",
+     flag_descriptions::kEnableExpKitTextClassifierPhoneNumberName,
+     flag_descriptions::kEnableExpKitTextClassifierPhoneNumberDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableExpKitTextClassifierPhoneNumber,
+         kEnableExpKitTextClassifierPhoneNumberVariations,
+         "ExpKitTextClassifierPhoneNumber")},
+    {"enable-expkit-text-classifier-email",
+     flag_descriptions::kEnableExpKitTextClassifierEmailName,
+     flag_descriptions::kEnableExpKitTextClassifierEmailDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableExpKitTextClassifierEmail,
+                                    kEnableExpKitTextClassifierEmailVariations,
+                                    "ExpKitTextClassifierEmail")},
     {"omnibox-https-upgrades", flag_descriptions::kOmniboxHttpsUpgradesName,
      flag_descriptions::kOmniboxHttpsUpgradesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kDefaultTypedNavigationsToHttps)},
