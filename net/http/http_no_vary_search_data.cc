@@ -9,12 +9,15 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/types/expected.h"
 #include "net/base/features.h"
 #include "net/base/pickle.h"
 #include "net/base/url_search_params.h"
+#include "net/base/url_search_params_view.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -38,6 +41,42 @@ std::optional<std::vector<std::string>> ParseStringList(
   return keys;
 }
 
+template <typename ParamsType>
+void ApplyNoVarySearchRulesToParams(const HttpNoVarySearchData& rules,
+                                    ParamsType& params) {
+  // Ignore all the query search params that the URL is not varying on.
+  if (rules.vary_by_default()) {
+    params.DeleteAllWithNames(rules.no_vary_params());
+  } else {
+    params.DeleteAllExceptWithNames(rules.vary_params());
+  }
+  // Sort the params if the order of the search params in the query
+  // is ignored.
+  if (!rules.vary_on_key_order()) {
+    params.Sort();
+  }
+}
+
+template <typename ParamsType>
+void ApplyNoVarySearchRulesToBothParams(const HttpNoVarySearchData& rules,
+                                        ParamsType& params_a,
+                                        ParamsType& params_b) {
+  ApplyNoVarySearchRulesToParams(rules, params_a);
+  ApplyNoVarySearchRulesToParams(rules, params_b);
+}
+
+// Extracts the "base URL" (everything before the query or fragment) from `url`.
+// It relies on the fact that GURL canonicalizes http(s) URLs to not contain '?'
+// or '#' before the start of the query. It's a lot faster than using
+// GURL::Replacements to do the same thing, as no allocations or copies are
+// needed.
+std::string_view ExtractBaseUrl(const GURL& url) {
+  const std::string_view view(url.possibly_invalid_spec());
+  size_t end_of_base = view.find_first_of("?#");
+  // This returns the whole of `view` if `end_of_base` is std::string::npos.
+  return view.substr(0, end_of_base);
+}
+
 }  // namespace
 
 HttpNoVarySearchData::HttpNoVarySearchData() = default;
@@ -51,36 +90,36 @@ HttpNoVarySearchData& HttpNoVarySearchData::operator=(HttpNoVarySearchData&&) =
     default;
 
 bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
-  // Check urls without query and reference (fragment) for equality first.
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  replacements.ClearQuery();
-  if (a.ReplaceComponents(replacements) != b.ReplaceComponents(replacements)) {
-    return false;
+  CHECK(a.is_valid());
+  CHECK(b.is_valid());
+  if (base::FeatureList::IsEnabled(
+          features::kHttpNoVarySearchDataUseNewAreEquivalent)) {
+    const bool result = AreEquivalentNewImpl(a, b);
+    if (features::kHttpNoVarySearchDataAreEquivalentCheckResult.Get()) {
+      const bool old_result = AreEquivalentOldImpl(a, b);
+      if (old_result != result) {
+        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "old_result", old_result);
+        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "new_result", result);
+        // The full URLs are necessary to debug issues if they occur. This
+        // debugging code will be removed as quickly as possible once the old
+        // and new implementations are proved to have identical behavior.
+        SCOPED_CRASH_KEY_STRING1024("NoVarySearch", "url_a",
+                                    a.possibly_invalid_spec());
+        SCOPED_CRASH_KEY_STRING1024("NoVarySearch", "url_b",
+                                    b.possibly_invalid_spec());
+        SCOPED_CRASH_KEY_STRING256("NoVarySearch", "nv_params",
+                                   base::JoinString(no_vary_params_, ","));
+        SCOPED_CRASH_KEY_STRING256("NoVarySearch", "v_params",
+                                   base::JoinString(vary_params_, ","));
+        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "key_order", vary_on_key_order_);
+        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "by_default", vary_by_default_);
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+    return result;
   }
 
-  // If equal, look at how HttpNoVarySearchData argument affects
-  // search params variance.
-  UrlSearchParams a_search_params(a);
-  UrlSearchParams b_search_params(b);
-  // Ignore all the query search params that the URL is not varying on.
-  if (vary_by_default()) {
-    a_search_params.DeleteAllWithNames(no_vary_params());
-    b_search_params.DeleteAllWithNames(no_vary_params());
-  } else {
-    a_search_params.DeleteAllExceptWithNames(vary_params());
-    b_search_params.DeleteAllExceptWithNames(vary_params());
-  }
-  // Sort the params if the order of the search params in the query
-  // is ignored.
-  if (!vary_on_key_order()) {
-    a_search_params.Sort();
-    b_search_params.Sort();
-  }
-  // Check Search Params for equality
-  // All search params, in order, need to have the same keys and the same
-  // values.
-  return a_search_params.params() == b_search_params.params();
+  return AreEquivalentOldImpl(a, b);
 }
 
 // static
@@ -145,6 +184,16 @@ bool HttpNoVarySearchData::vary_on_key_order() const {
 }
 bool HttpNoVarySearchData::vary_by_default() const {
   return vary_by_default_;
+}
+
+bool HttpNoVarySearchData::AreEquivalentOldImplForTesting(const GURL& a,
+                                                          const GURL& b) const {
+  return AreEquivalentOldImpl(a, b);
+}
+
+bool HttpNoVarySearchData::AreEquivalentNewImplForTesting(const GURL& a,
+                                                          const GURL& b) const {
+  return AreEquivalentNewImpl(a, b);
 }
 
 // static
@@ -237,6 +286,43 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   no_vary_search.vary_by_default_ = vary_by_default;
 
   return base::ok(no_vary_search);
+}
+
+bool HttpNoVarySearchData::AreEquivalentOldImpl(const GURL& a,
+                                                const GURL& b) const {
+  // Check urls without query and reference (fragment) for equality first.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  if (a.ReplaceComponents(replacements) != b.ReplaceComponents(replacements)) {
+    return false;
+  }
+
+  // If equal, look at how HttpNoVarySearchData argument affects
+  // search params variance.
+  UrlSearchParams a_search_params(a);
+  UrlSearchParams b_search_params(b);
+  ApplyNoVarySearchRulesToBothParams(*this, a_search_params, b_search_params);
+
+  // Check Search Params for equality
+  // All search params, in order, need to have the same keys and the same
+  // values.
+  return a_search_params.params() == b_search_params.params();
+}
+
+bool HttpNoVarySearchData::AreEquivalentNewImpl(const GURL& a,
+                                                const GURL& b) const {
+  if (ExtractBaseUrl(a) != ExtractBaseUrl(b)) {
+    return false;
+  }
+
+  // If equal, look at how HttpNoVarySearchData argument affects
+  // search params variance.
+  UrlSearchParamsView a_search_params(a);
+  UrlSearchParamsView b_search_params(b);
+  ApplyNoVarySearchRulesToBothParams(*this, a_search_params, b_search_params);
+
+  return a_search_params == b_search_params;
 }
 
 // LINT.IfChange(Serialization)

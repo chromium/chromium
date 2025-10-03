@@ -710,6 +710,15 @@ BASE_FEATURE_PARAM(bool,
                    "keep_not_suitable",
                    false);
 
+BASE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kHttpNoVarySearchDataAreEquivalentCheckResult,
+                   &kHttpNoVarySearchDataUseNewAreEquivalent,
+                   "check_result",
+                   false);
+
 BASE_FEATURE(kReportingApiCorsOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

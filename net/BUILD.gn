@@ -3133,6 +3133,7 @@ target(_test_target_type, "net_unittests") {
 
   fuzztests = [
     "HpackHeaderTableFuzzTest.CanCallMethodSequence",
+    "HttpNoVarySearchTest.AreEquivalentImplementationsMatch",
     "PickleTest.FuzzRoundTrip",
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
     "TransportParametersFuzzTest.ParseTransportParametersDoesNotCrash",

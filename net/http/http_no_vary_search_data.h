@@ -72,6 +72,11 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
   bool vary_on_key_order() const;
   bool vary_by_default() const;
 
+  // Direct access to the two AreEquivalent() implementations for tests and
+  // benchmarking.
+  bool AreEquivalentOldImplForTesting(const GURL& a, const GURL& b) const;
+  bool AreEquivalentNewImplForTesting(const GURL& a, const GURL& b) const;
+
  private:
   friend struct PickleTraits<HttpNoVarySearchData>;
 
@@ -80,6 +85,13 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
   static base::expected<HttpNoVarySearchData,
                         HttpNoVarySearchData::ParseErrorEnum>
   ParseNoVarySearchDictionary(const structured_headers::Dictionary& dict);
+
+  // The old implementation of AreEquivalent() using UrlSearchParams.
+  // TODO(https://crbug.com/444335347): Remove this.
+  bool AreEquivalentOldImpl(const GURL& a, const GURL& b) const;
+
+  // The new implementation of AreEquivalent() using UrlSearchParamsView.
+  bool AreEquivalentNewImpl(const GURL& a, const GURL& b) const;
 
   // LINT.IfChange(MagicNumber)
 
