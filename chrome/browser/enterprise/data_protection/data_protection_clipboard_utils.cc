@@ -468,6 +468,8 @@ void IsCopyRestrictedByDialog(
     if (factory) {
       factory->ShowDialogIfNeeded(source.web_contents(), block_dialog_type);
     }
+    std::move(callback).Run(metadata.format_type, content::ClipboardPasteData(),
+                            /*replacement_data=*/std::nullopt);
     return;
   }
 
@@ -488,6 +490,10 @@ void IsCopyRestrictedByDialog(
           source.web_contents(), warn_dialog_type,
           base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
                          std::move(verdict), std::move(callback)));
+    } else {
+      std::move(callback).Run(metadata.format_type,
+                              content::ClipboardPasteData(),
+                              /*replacement_data=*/std::nullopt);
     }
     return;
   }
