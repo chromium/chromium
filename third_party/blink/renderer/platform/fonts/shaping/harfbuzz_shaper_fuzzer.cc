@@ -11,11 +11,10 @@
 #include "base/command_line.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -64,25 +63,23 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   bloberizer_ng.Blobs();
 
   // Bloberize
-  CachingWordShaper word_shaper(font);
-  TextRun text_run(string);
   constexpr unsigned word_length = 7;
   unsigned state = 0;
-  for (unsigned from = 0; from < text_run.length(); from += word_length) {
-    unsigned to = std::min(from + word_length, text_run.length());
+  for (unsigned from = 0; from < string.length(); from += word_length) {
+    unsigned to = std::min(from + word_length, string.length());
     bool is_rtl = state & 0x2;
     bool is_override = state & 0x4;
     ++state;
 
-    TextRun subrun(StringView(text_run.ToStringView(), from, to - from),
+    TextRun subrun(StringView(string, from, to - from),
                    is_rtl ? TextDirection::kRtl : TextDirection::kLtr,
                    is_override);
 
-    TextRunPaintInfo subrun_info(subrun);
-    ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(subrun, &buffer);
+    PlainTextNode* node = MakeGarbageCollected<PlainTextNode>(
+        subrun, /* normalize_space */ false, font, /* supports_bidi */ true,
+        nullptr);
     ShapeResultBloberizer::FillGlyphs bloberizer(
-        font.GetFontDescription(), subrun_info, buffer,
+        font.GetFontDescription(), *node,
         ShapeResultBloberizer::Type::kEmitText);
     bloberizer.Blobs();
   }

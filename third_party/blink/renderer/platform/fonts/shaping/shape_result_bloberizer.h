@@ -8,7 +8,6 @@
 #include "cc/paint/node_id.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -26,7 +25,7 @@ namespace blink {
 
 class FontDescription;
 class PlainTextNode;
-struct TextRunPaintInfo;
+class ShapeResultView;
 
 class PLATFORM_EXPORT ShapeResultBloberizer {
   STACK_ALLOCATED();
@@ -123,7 +122,6 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
                       unsigned length,
                       bool has_vertical_offsets);
   bool CanUseFastPath(unsigned from, unsigned to, const ShapeResultView*);
-  float FillFastHorizontalGlyphs(const ShapeResultBuffer&, TextDirection);
   float FillFastHorizontalGlyphs(const ShapeResult*, float advance = 0);
   static void AddFastHorizontalGlyphToBloberizer(void* context,
                                                  unsigned,
@@ -227,10 +225,7 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphsNG
 
 struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
     : public ShapeResultBloberizer {
-  FillGlyphs(const FontDescription&,
-             const TextRunPaintInfo&,
-             const ShapeResultBuffer&,
-             Type);
+  // This doesn't work for RTL. See PlainTextPainter::DrawWithBidiReorder().
   FillGlyphs(const FontDescription& font_description,
              const PlainTextNode& node,
              Type type);
