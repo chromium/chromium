@@ -1566,7 +1566,6 @@ public class JsSandboxServiceTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/448997217")
     public void testUnicodeConsoleMessage() throws Throwable {
         final Context context = ContextUtils.getApplicationContext();
         final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
