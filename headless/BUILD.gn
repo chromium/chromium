@@ -261,6 +261,7 @@ component("headless_non_renderer") {
     "lib/browser/headless_devtools_manager_delegate.h",
     "lib/browser/headless_permission_manager.cc",
     "lib/browser/headless_permission_manager.h",
+    "lib/browser/headless_platform_delegate.h",
     "lib/browser/headless_platform_event_source.cc",
     "lib/browser/headless_platform_event_source.h",
     "lib/browser/headless_request_context_manager.cc",
@@ -313,7 +314,7 @@ component("headless_non_renderer") {
 
   if (is_mac) {
     sources += [
-      "lib/browser/headless_browser_impl_mac.mm",
+      "lib/browser/headless_platform_delegate_mac.mm",
       "lib/browser/headless_screen_mac.h",
       "lib/browser/headless_screen_mac.mm",
       "lib/browser/headless_shell_application_mac.h",
@@ -328,9 +329,9 @@ component("headless_non_renderer") {
 
   if (use_aura) {
     sources += [
-      "lib/browser/headless_browser_impl_aura.cc",
       "lib/browser/headless_focus_client.cc",
       "lib/browser/headless_focus_client.h",
+      "lib/browser/headless_platform_delegate_aura.cc",
       "lib/browser/headless_window_parenting_client.cc",
       "lib/browser/headless_window_parenting_client.h",
       "lib/browser/headless_window_tree_host.cc",

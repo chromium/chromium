@@ -40,6 +40,7 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
+#include "headless/lib/browser/headless_platform_delegate.h"
 #include "headless/public/switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
@@ -409,7 +410,7 @@ void HeadlessWebContentsImpl::InitializeWindow(
   static int window_id = 1;
   window_id_ = window_id++;
 
-  browser()->PlatformInitializeWebContents(this);
+  browser()->InitializeWebContents(this);
   SetVisible(/*visible=*/true);
   SetBounds(bounds);
   SetWindowState(window_state);
@@ -531,7 +532,7 @@ void HeadlessWebContentsImpl::BeginFrame(
       frame_timeticks, deadline, interval, viz::BeginFrameArgs::NORMAL);
   args.animate_only = animate_only;
 
-  ui::Compositor* compositor = browser()->PlatformGetCompositor(this);
+  ui::Compositor* compositor = browser()->GetCompositor(this);
   CHECK(compositor);
   compositor->IssueExternalBeginFrame(
       args, /*force=*/true,
@@ -545,7 +546,7 @@ void HeadlessWebContentsImpl::OnVisibilityChanged() {
 
 void HeadlessWebContentsImpl::OnBoundsChanged(const gfx::Rect& old_bounds) {
   const gfx::Rect bounds = headless_window_->bounds();
-  browser()->PlatformSetWebContentsBounds(this, bounds);
+  browser()->SetWebContentsBounds(this, bounds);
 }
 
 // HeadlessWebContents::Builder ----------------------------------------------

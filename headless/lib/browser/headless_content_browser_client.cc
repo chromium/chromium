@@ -64,6 +64,10 @@
 #include "content/public/browser/network_service_util.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#endif
+
 #if defined(HEADLESS_USE_POLICY)
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
@@ -479,7 +483,7 @@ bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
 device::GeolocationSystemPermissionManager*
 HeadlessContentBrowserClient::GetGeolocationSystemPermissionManager() {
 #if BUILDFLAG(IS_MAC)
-  return browser_->GetGeolocationSystemPermissionManager();
+  return device::GeolocationSystemPermissionManager::GetInstance();
 #else
   return nullptr;
 #endif

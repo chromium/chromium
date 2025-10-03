@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/headless_browser_impl.h"
+#include "headless/lib/browser/headless_platform_delegate.h"
 
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -28,39 +28,46 @@ const NSActivityOptions kActivityOptions =
     ~(NSActivitySuddenTerminationDisabled |
       NSActivityAutomaticTerminationDisabled);
 
+void SetGeolocationSystemPermissionManagerInstance() {
+  // GeolocationSystemPermissionManager instance may be already set in tests.
+  if (!device::GeolocationSystemPermissionManager::GetInstance()) {
+    device::GeolocationSystemPermissionManager::SetInstance(
+        device::SystemGeolocationSourceApple::
+            CreateGeolocationSystemPermissionManager());
+  }
+}
+
 }  // namespace
 
-void HeadlessBrowserImpl::PlatformInitialize() {
-  if (!geolocation_system_permission_manager_) {
-    geolocation_system_permission_manager_ =
-        device::SystemGeolocationSourceApple::
-            CreateGeolocationSystemPermissionManager();
-  }
+void HeadlessPlatformDelegate::Initialize(
+    const HeadlessBrowser::Options& options) {
+  SetGeolocationSystemPermissionManagerInstance();
 
-  HeadlessScreen* screen = HeadlessScreenMac::Create(
-      options()->window_size, options()->screen_info_spec);
+  HeadlessScreen* screen =
+      HeadlessScreenMac::Create(options.window_size, options.screen_info_spec);
   display::Screen::SetScreenInstance(screen);
 
   content::DontShowPopupMenus();
 }
 
-void HeadlessBrowserImpl::PlatformStart() {
+void HeadlessPlatformDelegate::Start() {
   // Disallow headless to be throttled as a background process.
   [NSProcessInfo.processInfo beginActivityWithOptions:kActivityOptions
                                                reason:kActivityReason];
 }
 
-void HeadlessBrowserImpl::PlatformInitializeWebContents(
+void HeadlessPlatformDelegate::InitializeWebContents(
     HeadlessWebContentsImpl* web_contents) {
   NSView* web_view =
       web_contents->web_contents()->GetNativeView().GetNativeNSView();
   [web_view setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+
   // TODO(eseckler): Support enabling BeginFrameControl on Mac. This is tricky
   // because it's a ui::Compositor startup setting and ui::Compositors are
   // recycled on Mac, see browser_compositor_view_mac.mm.
 }
 
-void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
+void HeadlessPlatformDelegate::SetWebContentsBounds(
     HeadlessWebContentsImpl* web_contents,
     const gfx::Rect& bounds) {
   content::WebContents* content_web_contents = web_contents->web_contents();
@@ -89,22 +96,10 @@ void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
           content_web_contents->GetWeakPtr(), bounds));
 }
 
-ui::Compositor* HeadlessBrowserImpl::PlatformGetCompositor(
+ui::Compositor* HeadlessPlatformDelegate::GetCompositor(
     HeadlessWebContentsImpl* web_contents) {
   // TODO(eseckler): Support BeginFrameControl on Mac.
   return nullptr;
-}
-
-device::GeolocationSystemPermissionManager*
-HeadlessBrowserImpl::GetGeolocationSystemPermissionManager() {
-  return geolocation_system_permission_manager_.get();
-}
-
-void HeadlessBrowserImpl::SetGeolocationSystemPermissionManagerForTesting(
-    std::unique_ptr<device::GeolocationSystemPermissionManager>
-        fake_geolocation_system_permission_manager) {
-  geolocation_system_permission_manager_ =
-      std::move(fake_geolocation_system_permission_manager);
 }
 
 }  // namespace headless

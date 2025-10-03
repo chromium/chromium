@@ -17,23 +17,18 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if defined(HEADLESS_USE_POLICY)
 #include "headless/lib/browser/policy/headless_browser_policy_connector.h"
 
 namespace policy {
 class PolicyService;
-}  // namespace policy
+}
 #endif
 
 #if defined(HEADLESS_USE_PREFS)
 class PrefService;
-#endif
-
-#if BUILDFLAG(IS_MAC)
-namespace device {
-class GeolocationSystemPermissionManager;
-}  // namespace device
 #endif
 
 namespace os_crypt_async {
@@ -42,17 +37,14 @@ class OSCryptAsync;
 
 namespace ui {
 class Compositor;
-}  // namespace ui
-
-namespace gfx {
-class Rect;
-}  // namespace gfx
+}
 
 namespace headless {
 
 class HeadlessBrowserContextImpl;
 class HeadlessRequestContextManager;
 class HeadlessWebContentsImpl;
+class HeadlessPlatformDelegate;
 
 extern const base::FilePath::CharType kDefaultProfileName[];
 
@@ -98,15 +90,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   void WillRunMainMessageLoop(base::RunLoop& run_loop);
   void PostMainMessageLoopRun();
 
-  // All the methods that begin with Platform need to be implemented by the
-  // platform specific headless implementation.
-  // Helper for one time initialization of application
-  void PlatformInitialize();
-  void PlatformStart();
-  void PlatformInitializeWebContents(HeadlessWebContentsImpl* web_contents);
-  void PlatformSetWebContentsBounds(HeadlessWebContentsImpl* web_contents,
-                                    const gfx::Rect& bounds);
-  ui::Compositor* PlatformGetCompositor(HeadlessWebContentsImpl* web_contents);
+  void InitializeWebContents(HeadlessWebContentsImpl* web_contents);
+  void SetWebContentsBounds(HeadlessWebContentsImpl* web_contents,
+                            const gfx::Rect& bounds);
+  ui::Compositor* GetCompositor(HeadlessWebContentsImpl* web_contents);
 
   void ShutdownWithExitCode(int exit_code);
 
@@ -125,17 +112,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   policy::PolicyService* GetPolicyService();
 #endif
 
-#if BUILDFLAG(IS_MAC)
-  device::GeolocationSystemPermissionManager*
-  GetGeolocationSystemPermissionManager();
-  void SetGeolocationSystemPermissionManagerForTesting(
-      std::unique_ptr<device::GeolocationSystemPermissionManager>
-          geolocation_system_permission_manager);
-#endif
-
  private:
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   std::optional<HeadlessBrowser::Options> options_;
+  std::unique_ptr<HeadlessPlatformDelegate> platform_delegate_;
 
   int exit_code_ = 0;
 
@@ -149,11 +129,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;
   base::OnceClosure quit_main_message_loop_;
-
-#if BUILDFLAG(IS_MAC)
-  std::unique_ptr<device::GeolocationSystemPermissionManager>
-      geolocation_system_permission_manager_;
-#endif
 
 #if defined(HEADLESS_USE_PREFS)
   std::unique_ptr<PrefService> local_state_;

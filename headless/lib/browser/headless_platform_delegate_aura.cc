@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/headless_browser_impl.h"
+#include "headless/lib/browser/headless_platform_delegate.h"
 
 #include <memory>
 
@@ -20,18 +20,19 @@
 
 namespace headless {
 
-void HeadlessBrowserImpl::PlatformInitialize() {
-  HeadlessScreen* screen = HeadlessScreen::Create(options()->window_size,
-                                                  options()->screen_info_spec);
+void HeadlessPlatformDelegate::Initialize(
+    const HeadlessBrowser::Options& options) {
+  HeadlessScreen* screen =
+      HeadlessScreen::Create(options.window_size, options.screen_info_spec);
   display::Screen::SetScreenInstance(screen);
 }
 
-void HeadlessBrowserImpl::PlatformStart() {
+void HeadlessPlatformDelegate::Start() {
   DCHECK(aura::Env::GetInstance());
   ui::DeviceDataManager::CreateInstance();
 }
 
-void HeadlessBrowserImpl::PlatformInitializeWebContents(
+void HeadlessPlatformDelegate::InitializeWebContents(
     HeadlessWebContentsImpl* web_contents) {
   auto window_tree_host = std::make_unique<HeadlessWindowTreeHost>(
       web_contents->begin_frame_control_enabled());
@@ -47,7 +48,7 @@ void HeadlessBrowserImpl::PlatformInitializeWebContents(
   native_view->Show();
 }
 
-void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
+void HeadlessPlatformDelegate::SetWebContentsBounds(
     HeadlessWebContentsImpl* web_contents,
     const gfx::Rect& bounds) {
   // Aura windows hierarchy in headless shell:
@@ -65,7 +66,7 @@ void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
   web_contents->window_tree_host()->SetBoundsInPixels(bounds);
 }
 
-ui::Compositor* HeadlessBrowserImpl::PlatformGetCompositor(
+ui::Compositor* HeadlessPlatformDelegate::GetCompositor(
     HeadlessWebContentsImpl* web_contents) {
   return web_contents->window_tree_host()->compositor();
 }
