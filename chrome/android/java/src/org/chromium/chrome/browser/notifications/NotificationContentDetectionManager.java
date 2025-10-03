@@ -34,7 +34,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 
 /** Helper utils for replacing suspicious notifications with warnings. */
 @NullMarked
@@ -490,17 +489,17 @@ public class NotificationContentDetectionManager {
                             continue;
                         }
 
-                        Optional<Notification> notificationBackupOptional =
+                        Notification notificationBackup =
                                 NotificationPlatformBridge.getNotificationBackupOrCancel(
                                         proxy.getNotification().extras,
                                         proxy.getTag(),
                                         NotificationConstants
                                                 .EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT);
 
-                        if (notificationBackupOptional.isPresent()) {
+                        if (notificationBackup != null) {
                             Notification.Builder builder =
                                     Notification.Builder.recoverBuilder(
-                                            context, notificationBackupOptional.get());
+                                            context, notificationBackup);
                             appendUnsubscribeButton(
                                     builder,
                                     notificationId,
@@ -573,7 +572,7 @@ public class NotificationContentDetectionManager {
                                     activeNotifications, warningNotificationId);
 
                     // Obtain the backup notification from the extras found above.
-                    Optional<Notification> notificationBackupOptional =
+                    Notification notificationBackup =
                             NotificationPlatformBridge.getNotificationBackupOrCancel(
                                     warningNotificationExtras,
                                     warningNotificationId,
@@ -582,9 +581,7 @@ public class NotificationContentDetectionManager {
 
                     // If a backup is found, use it to display the notification silently using the
                     // other fields stored in the extras.
-                    if (notificationBackupOptional.isPresent()) {
-                        Notification notificationBackup = notificationBackupOptional.get();
-
+                    if (notificationBackup != null) {
                         // Get notification attributes from Bundle.
                         String scopeUrl =
                                 getStringFromBackupBundle(

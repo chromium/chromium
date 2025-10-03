@@ -52,7 +52,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -87,14 +86,9 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private boolean mContactNew;
     private @Nullable AutofillContact mContact;
 
-    @SuppressWarnings("NullableOptional")
-    private @Nullable Optional<PropertyModel> mNameField;
-
-    @SuppressWarnings("NullableOptional")
-    private @Nullable Optional<PropertyModel> mPhoneField;
-
-    @SuppressWarnings("NullableOptional")
-    private @Nullable Optional<PropertyModel> mEmailField;
+    private @Nullable PropertyModel mNameField;
+    private @Nullable PropertyModel mPhoneField;
+    private @Nullable PropertyModel mEmailField;
 
     private @Nullable Callback<AutofillContact> mDoneCallback;
     private @Nullable Callback<@Nullable AutofillContact> mCancelCallback;
@@ -267,7 +261,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                             .with(VALUE, contact.getPayerName())
                             .build();
         }
-        mNameField = Optional.ofNullable(nameField);
+        mNameField = nameField;
 
         PropertyModel phoneField = null;
         if (mRequestPayerPhone) {
@@ -285,7 +279,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                             .with(VALUE, contact.getPayerPhone())
                             .build();
         }
-        mPhoneField = Optional.ofNullable(phoneField);
+        mPhoneField = phoneField;
 
         PropertyModel emailField = null;
         if (mRequestPayerEmail) {
@@ -300,7 +294,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                             .with(VALUE, contact.getPayerEmail())
                             .build();
         }
-        mEmailField = Optional.ofNullable(emailField);
+        mEmailField = emailField;
 
         final String editorTitle =
                 toEdit == null
@@ -308,14 +302,14 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                         : toEdit.getEditTitle();
 
         ListModel<EditorItem> editorFields = new ListModel<>();
-        if (mNameField.isPresent()) {
-            editorFields.add(new EditorItem(TEXT_INPUT, mNameField.get(), /* isFullLine= */ true));
+        if (mNameField != null) {
+            editorFields.add(new EditorItem(TEXT_INPUT, mNameField, /* isFullLine= */ true));
         }
-        if (mPhoneField.isPresent()) {
-            editorFields.add(new EditorItem(TEXT_INPUT, mPhoneField.get(), /* isFullLine= */ true));
+        if (mPhoneField != null) {
+            editorFields.add(new EditorItem(TEXT_INPUT, mPhoneField, /* isFullLine= */ true));
         }
-        if (mEmailField.isPresent()) {
-            editorFields.add(new EditorItem(TEXT_INPUT, mEmailField.get(), /* isFullLine= */ true));
+        if (mEmailField != null) {
+            editorFields.add(new EditorItem(TEXT_INPUT, mEmailField, /* isFullLine= */ true));
         }
         editorFields.add(
                 new EditorItem(
@@ -379,18 +373,18 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         String email = null;
         AutofillProfile profile = mContact.getProfile();
 
-        if (mNameField.isPresent()) {
-            name = mNameField.get().get(VALUE);
+        if (mNameField != null) {
+            name = mNameField.get(VALUE);
             profile.setFullName(name);
         }
 
-        if (mPhoneField.isPresent()) {
-            phone = mPhoneField.get().get(VALUE);
+        if (mPhoneField != null) {
+            phone = mPhoneField.get(VALUE);
             profile.setPhoneNumber(phone);
         }
 
-        if (mEmailField.isPresent()) {
-            email = mEmailField.get().get(VALUE);
+        if (mEmailField != null) {
+            email = mEmailField.get(VALUE);
             profile.setEmailAddress(email);
         }
 

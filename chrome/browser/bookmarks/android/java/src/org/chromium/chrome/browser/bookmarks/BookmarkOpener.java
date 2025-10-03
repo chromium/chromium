@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 
 import java.util.List;
-import java.util.Optional;
 
 /** Consolidates logic about opening bookmarks. */
 @NullMarked
@@ -30,8 +31,7 @@ public interface BookmarkOpener {
      * @return Whether the bookmark ids were successfully opened.
      */
     default boolean openBookmarksInNewTabs(List<BookmarkId> bookmarkIds, boolean incognito) {
-        return openBookmarksInNewTabs(
-                bookmarkIds, incognito, /* tabLaunchType= */ Optional.empty());
+        return openBookmarksInNewTabs(bookmarkIds, incognito, /* tabLaunchType= */ null);
     }
 
     /**
@@ -45,5 +45,5 @@ public interface BookmarkOpener {
     boolean openBookmarksInNewTabs(
             List<BookmarkId> bookmarkIds,
             boolean incognito,
-            Optional<@TabLaunchType Integer> tabLaunchType);
+            @Nullable @TabLaunchType Integer tabLaunchType);
 }

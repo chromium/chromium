@@ -78,7 +78,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -1657,16 +1656,15 @@ public class NotificationPlatformBridge {
                             findNotificationExtras(
                                     activeNotifications, identifyingAttributes.notificationId);
 
-                    Optional<Notification> notificationBackupOptional =
+                    Notification notificationBackup =
                             getNotificationBackupOrCancel(
                                     tappedNotificationExtras,
                                     identifyingAttributes.notificationId,
                                     NotificationConstants.EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL);
 
-                    if (notificationBackupOptional.isPresent()) {
+                    if (notificationBackup != null) {
                         Notification.Builder builder =
-                                Notification.Builder.recoverBuilder(
-                                        context, notificationBackupOptional.get());
+                                Notification.Builder.recoverBuilder(context, notificationBackup);
                         builder.setTimeoutAfter(/* ms= */ 1000 * 3600 * 24 * 7);
 
                         displayNotificationSilently(builder, identifyingAttributes.notificationId);
@@ -1807,18 +1805,16 @@ public class NotificationPlatformBridge {
      * `extraNotificationBackupType` if present. If there is a backup key without a backup
      * notification, cancel the tapped notification.
      */
-    static Optional<Notification> getNotificationBackupOrCancel(
+    static @Nullable Notification getNotificationBackupOrCancel(
             @Nullable Bundle notificationExtras,
             String notificationId,
             String extraNotificationBackupType) {
-        var notificationManager = BaseNotificationManagerProxyFactory.create();
-
         // If the tapped notification does not have a backup key in the metadata, it is
         // not a provisionally unsubscribed notification. Likely, the user clicked
         // "Undo" twice in quick succession, and we are already done. Bail out.
         if (notificationExtras == null
                 || !notificationExtras.containsKey(extraNotificationBackupType)) {
-            return Optional.empty();
+            return null;
         }
 
         var originalNotificationBackup =
@@ -1828,11 +1824,11 @@ public class NotificationPlatformBridge {
         // user clicked "Unsubscribe". In this case we still want to cancel the
         // provisionally unsubscribed notification.
         if (originalNotificationBackup == null) {
+            var notificationManager = BaseNotificationManagerProxyFactory.create();
             notificationManager.cancel(notificationId, PLATFORM_ID);
-            return Optional.empty();
         }
 
-        return Optional.of(originalNotificationBackup);
+        return originalNotificationBackup;
     }
 
     /** Displays a notification with group alert behavior set to `GROUP_ALERT_SUMMARY`. */

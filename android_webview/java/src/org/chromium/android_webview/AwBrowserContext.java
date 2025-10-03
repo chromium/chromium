@@ -36,7 +36,6 @@ import org.chromium.url.Origin;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -307,29 +306,27 @@ public class AwBrowserContext implements BrowserContextHandle {
      * @param headers Map of HTTP header name-value pairs.
      * @return An exception if validation fails. Otherwise, an empty Optional.
      */
-    public static Optional<IllegalArgumentException> validateAdditionalHeaders(
+    public static @Nullable IllegalArgumentException validateAdditionalHeaders(
             Map<String, String> headers) {
-        if (headers == null) return Optional.empty();
+        if (headers == null) return null;
         for (Map.Entry<String, String> header : headers.entrySet()) {
             String headerName = header.getKey();
             String headerValue = header.getValue();
             if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
-                return Optional.of(
-                        new IllegalArgumentException(
-                                BAD_HEADER_MSG + "Invalid header name '" + headerName + "'."));
+                return new IllegalArgumentException(
+                        BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
             }
             if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
-                return Optional.of(
-                        new IllegalArgumentException(
-                                BAD_HEADER_MSG
-                                        + "Header '"
-                                        + headerName
-                                        + "' has invalid value '"
-                                        + headerValue
-                                        + "'"));
+                return new IllegalArgumentException(
+                        BAD_HEADER_MSG
+                                + "Header '"
+                                + headerName
+                                + "' has invalid value '"
+                                + headerValue
+                                + "'");
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     @NonNull

@@ -25,7 +25,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
-import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
@@ -74,11 +73,11 @@ public class AwPrefetchManager {
         if (!UrlUtilities.isHttps(url)) {
             error = new IllegalArgumentException("URL must have HTTPS scheme for prefetch.");
         } else if (prefetchParameters != null) {
-            Optional<IllegalArgumentException> exception =
+            IllegalArgumentException exception =
                     AwBrowserContext.validateAdditionalHeaders(
                             prefetchParameters.getAdditionalHeaders());
-            if (exception.isPresent()) {
-                error = exception.get();
+            if (exception != null) {
+                error = exception;
             } else {
                 error = null;
             }

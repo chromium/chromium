@@ -28,7 +28,6 @@ import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Implementation of {@link BookmarkOpener} which relies on intents. */
@@ -71,7 +70,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     public boolean openBookmarksInNewTabs(
             List<BookmarkId> bookmarkIds,
             boolean incognito,
-            Optional<@TabLaunchType Integer> tabLaunchType) {
+            @Nullable @TabLaunchType Integer tabLaunchType) {
         if (bookmarkIds.size() == 0) return false;
 
         BookmarkItem firstItem = null;
@@ -99,7 +98,9 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
-        tabLaunchType.ifPresent(v -> IntentHandler.setTabLaunchType(intent, v));
+        if (tabLaunchType != null) {
+            IntentHandler.setTabLaunchType(intent, tabLaunchType);
+        }
         IntentHandler.startActivityForTrustedIntent(intent);
 
         return true;

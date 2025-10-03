@@ -72,7 +72,6 @@ import org.chromium.ui.widget.ViewRectUpdater;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -324,7 +323,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             mBookmarkOpener.openBookmarksInNewTabs(
                     List.of(item.getId()),
                     profile.isOffTheRecord(),
-                    Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+                    TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
             return;
         }
 
@@ -740,7 +739,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                             mBookmarkOpener.openBookmarksInNewTabs(
                                     List.of(bookmarkItem.getId()),
                                     mProfileSupplier.get().isOffTheRecord(),
-                                    Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+                                    TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
                         } else {
                             // Default behavior (open in current tab).
                             mBookmarkOpener.openBookmarkInCurrentTab(
@@ -909,7 +908,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     mBookmarkOpener.openBookmarksInNewTabs(
                             List.of(bookmarkItem.getId()),
                             mProfileSupplier.get().isOffTheRecord(),
-                            Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+                            TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
                 } else {
                     mBookmarkOpener.openBookmarkInCurrentTab(
                             bookmarkItem.getId(), mProfileSupplier.get().isOffTheRecord());

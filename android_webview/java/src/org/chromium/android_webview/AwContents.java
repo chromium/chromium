@@ -156,7 +156,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -1854,11 +1853,11 @@ public class AwContents implements SmartClipProvider {
             @NonNull Callback<Throwable> errorCallback) {
         if (isDestroyed(NO_WARN)) return;
         if (prefetchParameters != null) {
-            Optional<IllegalArgumentException> exception =
+            IllegalArgumentException exception =
                     AwBrowserContext.validateAdditionalHeaders(
                             prefetchParameters.getAdditionalHeaders());
-            if (exception.isPresent()) {
-                throw exception.get();
+            if (exception != null) {
+                throw exception;
             }
         }
         // `errorCallback` support is still under development. Ideally, an error message should be
@@ -2228,10 +2227,10 @@ public class AwContents implements SmartClipProvider {
 
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
         if (additionalHttpHeaders != null) {
-            Optional<IllegalArgumentException> exception =
+            IllegalArgumentException exception =
                     AwBrowserContext.validateAdditionalHeaders(additionalHttpHeaders);
-            if (exception.isPresent()) {
-                throw exception.get();
+            if (exception != null) {
+                throw exception;
             }
             params.setExtraHeaders(new HashMap<String, String>(additionalHttpHeaders));
         }
