@@ -510,6 +510,12 @@ void FocusFakebox() {
 }
 
 - (void)testCopyPaste {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/449210011): Re-enable the test on iPad device.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+#endif
   [self openPage1];
 
   // Long pressing should allow copying.
