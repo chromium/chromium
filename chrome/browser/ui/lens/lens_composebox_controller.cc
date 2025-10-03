@@ -73,6 +73,8 @@ void LensComposeboxController::IssueComposeboxQuery(
   // Can only issue a query if the remote UI supports the DEFAULT feature.
   if (remote_ui_capabilities_.empty() ||
       !remote_ui_capabilities_.contains(lens::FeatureCapability::DEFAULT)) {
+    // Store the query and issue it again once the handshake completes.
+    pending_query_text_ = query_text;
     return;
   }
 
@@ -150,6 +152,13 @@ void LensComposeboxController::OnAimMessage(
     lens_search_controller_->lens_overlay_side_panel_coordinator()
         ->AimHandshakeReceived();
     GetSessionMetricsLogger()->OnAimHandshakeCompleted();
+
+    // If there was a pending query, issue it now that the handshake is
+    // complete.
+    if (pending_query_text_.has_value()) {
+      IssueComposeboxQuery(pending_query_text_.value());
+      pending_query_text_.reset();
+    }
   }
 }
 
