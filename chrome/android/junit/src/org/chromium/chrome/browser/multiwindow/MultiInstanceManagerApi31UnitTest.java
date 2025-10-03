@@ -18,6 +18,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -38,6 +39,8 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -250,6 +253,7 @@ public class MultiInstanceManagerApi31UnitTest {
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
                     desktopWindowStateManagerSupplier);
+            setAppTaskIdsForTesting(mAppTaskIds);
         }
 
         private void createInstance(int instanceId, Activity activity) {
@@ -298,11 +302,6 @@ public class MultiInstanceManagerApi31UnitTest {
         protected boolean isRunningInAdjacentWindow(
                 SparseBooleanArray visibleTasks, Activity activity) {
             return activity == mAdjacentInstance;
-        }
-
-        @Override
-        protected Set<Integer> getAllAppTaskIds(List<AppTask> allTasks) {
-            return mAppTaskIds;
         }
 
         @Override
@@ -714,9 +713,6 @@ public class MultiInstanceManagerApi31UnitTest {
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testGetInstanceInfo_closesInstancesOlderThanSixMonths() {
         MultiWindowTestUtils.enableMultiInstance();
-        // Setting up two additional Multi-instance managers; mMultiInstanceManager already exists.
-        createMultiInstanceManager(mActivityTask57);
-        createMultiInstanceManager(mActivityTask58);
 
         // Current activity is mActivityTask56, managed by mMultiInstanceManager.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
@@ -1999,6 +1995,9 @@ public class MultiInstanceManagerApi31UnitTest {
             when(appTask.getTaskInfo()).thenReturn(appTaskInfo);
             appTasks.add(appTask);
         }
+        Context spyContext = spy(ApplicationProvider.getApplicationContext());
+        when(spyContext.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
+        ContextUtils.initApplicationContextForTests(spyContext);
         when(mActivityManager.getAppTasks()).thenReturn(appTasks);
         return appTasks;
     }

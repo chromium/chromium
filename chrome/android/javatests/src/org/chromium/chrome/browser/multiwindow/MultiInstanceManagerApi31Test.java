@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-import android.app.ActivityManager;
-import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
@@ -32,6 +30,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -141,15 +140,7 @@ public class MultiInstanceManagerApi31Test {
         verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
 
         // Make an instance inactive by killing its task.
-        List<AppTask> appTasks =
-                ((ActivityManager) firstActivity.getSystemService(Context.ACTIVITY_SERVICE))
-                        .getAppTasks();
-        for (AppTask appTask : appTasks) {
-            if (appTask.getTaskInfo().taskId == otherActivities[1].getTaskId()) {
-                appTask.finishAndRemoveTask();
-                break;
-            }
-        }
+        otherActivities[1].finishAndRemoveTask();
 
         // Check state of instances after one instance is made inactive.
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
@@ -158,8 +149,7 @@ public class MultiInstanceManagerApi31Test {
         MultiWindowUtils.setMaxInstancesForTesting(2);
 
         // Simulate relaunch of an active instance after the instance limit downgrade.
-        ApplicationTestUtils.waitForActivityWithClass(
-                ChromeTabbedActivity.class, Stage.DESTROYED, otherActivities[0]::finish);
+        otherActivities[0].finishAndRemoveTask();
         var newActivity =
                 createNewWindow(otherActivities[0], otherActivities[0].getWindowIdForTesting());
         mActivityTestRule.getActivityTestRule().setActivity(newActivity);
@@ -222,7 +212,7 @@ public class MultiInstanceManagerApi31Test {
                     Criteria.checkThat(
                             "Active instance count is incorrect.",
                             MultiInstanceManagerApi31.getPersistedInstanceIds(
-                                            MultiInstanceManager.PersistedInstanceType.ACTIVE)
+                                            PersistedInstanceType.ACTIVE)
                                     .size(),
                             is(expectedActiveInstances));
                     Criteria.checkThat(
