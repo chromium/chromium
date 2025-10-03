@@ -31,17 +31,6 @@ class BrowserAppLauncher {
   BrowserAppLauncher(const BrowserAppLauncher&) = delete;
   BrowserAppLauncher& operator=(const BrowserAppLauncher&) = delete;
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Launches an app for the given `app_id` in a way specified by `params`.
-  //
-  // This interface is deprecated, please use
-  // AppServiceProxy::LaunchAppWithParams() in the future.
-  // TODO(crbug.com/40787924): Remove this interface in non-chrome OS platform.
-  void LaunchAppWithParams(
-      AppLaunchParams params,
-      base::OnceCallback<void(content::WebContents*)> callback);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
   // Launches an app for the given `app_id` in a way specified by `params`. This
   // interface should only be used in testing code where reqired a sync launch
   // for browser apps. Please try to use AppServiceProxy::LaunchAppWithParams()

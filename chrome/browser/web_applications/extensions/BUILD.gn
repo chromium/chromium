@@ -18,6 +18,12 @@ source_set("extensions") {
   if (is_mac) {
     sources += [ "web_app_extension_shortcut_mac.mm" ]
   }
+  if (!is_chromeos) {
+    sources += [
+      "launch.cc",
+      "launch.h",
+    ]
+  }
 
   # Enable the "exit_time_destructors" warning here to avoid accidentally
   # adding exit time destructors and because the flag is not enabled by default.
@@ -42,6 +48,13 @@ source_set("extensions") {
     "//extensions/browser",
     "//skia",
   ]
+
+  if (!is_chromeos) {
+    deps += [
+      "//chrome/browser/apps/app_service:constants",
+      "//chrome/browser/ui/extensions",
+    ]
+  }
 }
 
 source_set("unit_tests") {

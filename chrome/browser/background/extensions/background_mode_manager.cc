@@ -26,9 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
 #include "chrome/browser/background/extensions/background_mode_optimizer.h"
 #include "chrome/browser/background/startup_launch_manager.h"
@@ -54,6 +51,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/web_applications/extensions/launch.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -76,6 +74,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/app_icon.h"
@@ -412,13 +411,12 @@ void BackgroundModeManager::LaunchBackgroundApplication(
     Profile* profile,
     const Extension* extension) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(
-          CreateAppLaunchParamsUserContainer(
-              profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-              apps::LaunchSource::kFromBackgroundMode),
-          base::DoNothing());
+  web_app::LaunchExtensionOrWebApp(
+      profile,
+      CreateAppLaunchParamsUserContainer(
+          profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          apps::LaunchSource::kFromBackgroundMode),
+      base::DoNothing());
 #else
   // background mode is not used in Chrome OS platform.
   // TODO(crbug.com/40212901): Remove the background mode manager from Chrome OS

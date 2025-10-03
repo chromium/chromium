@@ -55,7 +55,7 @@ source_set("impl") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/background",
     "//chrome/browser/extensions",
     "//chrome/browser/lifetime:termination_notification",
@@ -78,6 +78,10 @@ source_set("impl") {
 
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
+  }
+
+  if (!is_chromeos) {
+    deps += [ "//chrome/browser/web_applications/extensions" ]
   }
 }
 

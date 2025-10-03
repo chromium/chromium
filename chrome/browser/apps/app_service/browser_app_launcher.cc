@@ -140,14 +140,6 @@ BrowserAppLauncher::BrowserAppLauncher(Profile* profile) : profile_(profile) {}
 
 BrowserAppLauncher::~BrowserAppLauncher() = default;
 
-#if !BUILDFLAG(IS_CHROMEOS)
-void BrowserAppLauncher::LaunchAppWithParams(
-    AppLaunchParams params,
-    base::OnceCallback<void(content::WebContents*)> callback) {
-  LaunchAppWithParamsImpl(std::move(params), profile_, std::move(callback));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 content::WebContents* BrowserAppLauncher::LaunchAppWithParamsForTesting(
     AppLaunchParams params) {
   // For some ChromeOS tests (and specifically ones that use SpeechMonitor),

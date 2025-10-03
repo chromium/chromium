@@ -17,9 +17,6 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -36,6 +33,7 @@
 #include "chrome/browser/ui/webui/app_home/app_home.mojom-shared.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/extensions/launch.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -224,9 +222,8 @@ void AppHomePageHandler::LaunchAppInternal(
             : apps::LaunchContainer::kLaunchContainerTab,
         disposition, apps::LaunchSource::kFromAppHomePage);
     params.override_url = override_url;
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params), base::DoNothing());
+    web_app::LaunchExtensionOrWebApp(profile_, std::move(params),
+                                     base::DoNothing());
   } else {
     // To give a more "launchy" experience when using the NTP launcher, we close
     // it automatically. However, if the chrome://apps page is the LAST page in
@@ -247,27 +244,25 @@ void AppHomePageHandler::LaunchAppInternal(
                      : WindowOpenDisposition::NEW_FOREGROUND_TAB,
         apps::LaunchSource::kFromAppHomePage);
     params.override_url = override_url;
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParams(
-            std::move(params),
-            base::BindOnce(
-                [](base::WeakPtr<Browser> apps_page_browser,
-                   base::WeakPtr<content::WebContents> old_contents,
-                   content::WebContents* new_web_contents) {
-                  if (!apps_page_browser || !old_contents) {
-                    return;
-                  }
-                  if (new_web_contents != old_contents.get() &&
-                      apps_page_browser->tab_strip_model()->count() > 1) {
-                    // This will also destroy the handler, so do not perform
-                    // any actions after.
-                    chrome::CloseWebContents(apps_page_browser.get(),
-                                             old_contents.get(),
-                                             /*add_to_history=*/true);
-                  }
-                },
-                browser_ptr, old_contents_ptr));
+    web_app::LaunchExtensionOrWebApp(
+        profile_, std::move(params),
+        base::BindOnce(
+            [](base::WeakPtr<Browser> apps_page_browser,
+               base::WeakPtr<content::WebContents> old_contents,
+               content::WebContents* new_web_contents) {
+              if (!apps_page_browser || !old_contents) {
+                return;
+              }
+              if (new_web_contents != old_contents.get() &&
+                  apps_page_browser->tab_strip_model()->count() > 1) {
+                // This will also destroy the handler, so do not perform
+                // any actions after.
+                chrome::CloseWebContents(apps_page_browser.get(),
+                                         old_contents.get(),
+                                         /*add_to_history=*/true);
+              }
+            },
+            browser_ptr, old_contents_ptr));
   }
 }
 

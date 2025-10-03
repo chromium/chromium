@@ -18,9 +18,6 @@
 #include "base/test/bind.h"
 #include "base/win/scoped_propvariant.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +31,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/extensions/launch.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/common/chrome_switches.h"
@@ -205,14 +203,13 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
   EXPECT_TRUE(extension);
 
   base::RunLoop done;
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(
-          apps::AppLaunchParams(extension->id(),
-                                apps::LaunchContainer::kLaunchContainerWindow,
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                apps::LaunchSource::kFromTest),
-          base::IgnoreArgs<content::WebContents*>(done.QuitClosure()));
+  web_app::LaunchExtensionOrWebApp(
+      browser()->profile(),
+      apps::AppLaunchParams(extension->id(),
+                            apps::LaunchContainer::kLaunchContainerWindow,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            apps::LaunchSource::kFromTest),
+      base::IgnoreArgs<content::WebContents*>(done.QuitClosure()));
   done.Run();
 
   // Check that the new browser has an app name.
