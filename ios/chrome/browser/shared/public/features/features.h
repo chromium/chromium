@@ -420,9 +420,6 @@ BASE_DECLARE_FEATURE(kBottomOmniboxEvolution);
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
-// Feature flag to try using the page theme color in the top toolbar
-BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
-
 // Whether the Safety Check Manager can automatically trigger Safety Checks.
 bool IsSafetyCheckAutorunByManagerEnabled();
 

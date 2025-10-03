@@ -99,14 +99,6 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 - (void)updateBackgroundColor {
   UIColor* backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
-  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) &&
-      !self.hasOmnibox) {
-    if (self.pageThemeColor) {
-      backgroundColor = self.pageThemeColor;
-    } else if (self.underPageBackgroundColor) {
-      backgroundColor = self.underPageBackgroundColor;
-    }
-  }
   self.view.backgroundColor = backgroundColor;
 }
 

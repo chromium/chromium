@@ -9967,14 +9967,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "top-toolbar-theme-color",
-    "owners": [
-      "bling-flags@google.com",
-      "christianxu@chromium.org"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "touch-selection-strategy",
     "owners": [ "dovizu@google.com" ],
     "expiry_milestone": 99

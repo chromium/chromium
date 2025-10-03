@@ -434,12 +434,6 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
   [self updateShareMenuForWebState:self.webState];
-  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar)) {
-    [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
-    [self.consumer
-        setUnderPageBackgroundColor:self.webState
-                                        ->GetUnderPageBackgroundColor()];
-  }
 }
 
 /// Updates the consumer with the new forward and back states.

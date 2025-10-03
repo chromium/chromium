@@ -951,9 +951,6 @@ extern const char kTaiyakiDescription[];
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 
-extern const char kThemeColorInTopToolbarName[];
-extern const char kThemeColorInTopToolbarDescription[];
-
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 

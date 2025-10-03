@@ -1613,11 +1613,6 @@ const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";
 
-const char kThemeColorInTopToolbarName[] = "Top toolbar use page's theme color";
-const char kThemeColorInTopToolbarDescription[] =
-    "When enabled with bottom omnibox, the top toolbar background color is the "
-    "page's theme color. Disabled when a dynamic color flag is enabled.";
-
 const char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 const char kEnableLensInOmniboxCopiedImageDescription[] =

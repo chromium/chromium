@@ -324,8 +324,6 @@ BASE_FEATURE(kBottomOmniboxEvolution, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOnlyAccessClipboardAsync, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThemeColorInTopToolbar, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsSafetyCheckAutorunByManagerEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckAutorunByManagerKillswitch);
 }
