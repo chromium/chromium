@@ -153,4 +153,8 @@ PreviewServerProxy* EmptyDataSharingService::GetPreviewServerProxyForTesting() {
 void EmptyDataSharingService::OnCollaborationGroupRemoved(
     const GroupId& group_id) {}
 
+bool EmptyDataSharingService::IsContextIdShared(const ContextId& context_id) {
+  return false;
+}
+
 }  // namespace data_sharing

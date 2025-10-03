@@ -95,6 +95,7 @@ class EmptyDataSharingService : public DataSharingService {
       std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;
   PreviewServerProxy* GetPreviewServerProxyForTesting() override;
   void OnCollaborationGroupRemoved(const GroupId& group_id) override;
+  bool IsContextIdShared(const ContextId& context_id) override;
 };
 
 }  // namespace data_sharing

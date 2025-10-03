@@ -146,6 +146,7 @@ class DataSharingServiceImpl : public DataSharingService,
       std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;
   PreviewServerProxy* GetPreviewServerProxyForTesting() override;
   void OnCollaborationGroupRemoved(const GroupId& group_id) override;
+  bool IsContextIdShared(const ContextId& context_id) override;
 
   // GroupDataModel::Observer implementation.
   void OnModelLoaded() override;

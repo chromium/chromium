@@ -736,6 +736,12 @@ void DataSharingServiceImpl::OnCollaborationGroupRemoved(
   }
 }
 
+bool DataSharingServiceImpl::IsContextIdShared(const ContextId& context_id) {
+  // TODO(crbug.com/446976556): Implement this.
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void DataSharingServiceImpl::OnAccessTokenAdded(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&
