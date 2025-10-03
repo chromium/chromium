@@ -4,26 +4,65 @@
 
 #include "components/persistent_cache/persistent_cache_collection.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "base/containers/span.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/persistent_cache/backend_params_manager.h"
+#include "base/test/gtest_util.h"
+#include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace persistent_cache {
-namespace {
 
-// Default value large enough to no interfere with functioning of tests.
-constexpr size_t kTargetFootprint = 1024 * 1024 * 100;
+class PersistentCacheCollectionTest : public testing::Test {
+ protected:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
-TEST(PersistentCacheCollection, Retrieval) {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  PersistentCacheCollection collection(
-      std::make_unique<BackendParamsManager>(temp_dir.GetPath()),
-      kTargetFootprint);
+  static constexpr int64_t kTargetFootprint = 20000;
+  base::ScopedTempDir temp_dir_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+// Two operations with the same cache_id operate on the same database.
+TEST_F(PersistentCacheCollectionTest, CreateAndUse) {
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kTargetFootprint);
+
+  std::string cache_id("cache_id");
+  std::string key("key");
+  collection.Insert(cache_id, key, base::as_byte_span(key));
+  auto entry = collection.Find(cache_id, key);
+  ASSERT_NE(entry, nullptr);
+  ASSERT_EQ(entry->GetContentSpan(), base::as_byte_span(key));
+}
+
+TEST_F(PersistentCacheCollectionTest, DeleteAllFiles) {
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kTargetFootprint);
+
+  std::string cache_id("cache_id");
+  std::string key("key");
+  collection.Insert(cache_id, key, base::as_byte_span(key));
+
+  // Inserting an entry should have created at least one file.
+  EXPECT_FALSE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
+
+  collection.DeleteAllFiles();
+  EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
+}
+
+static constexpr int64_t kOneHundredMiB = 100 * 1024 * 1024;
+
+TEST_F(PersistentCacheCollectionTest, Retrieval) {
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB);
 
   constexpr char first_cache_id[] = "first_cache_id";
   constexpr char second_cache_id[] = "second_cache_id";
@@ -50,12 +89,8 @@ TEST(PersistentCacheCollection, Retrieval) {
   EXPECT_EQ(collection.Find(second_cache_id, first_key), nullptr);
 }
 
-TEST(PersistentCacheCollection, RetrievalAfterClear) {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  PersistentCacheCollection collection(
-      std::make_unique<BackendParamsManager>(temp_dir.GetPath()),
-      kTargetFootprint);
+TEST_F(PersistentCacheCollectionTest, RetrievalAfterClear) {
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB);
 
   std::string first_cache_id = "first_cache_id";
   std::string first_key = "first_key";
@@ -73,36 +108,10 @@ TEST(PersistentCacheCollection, RetrievalAfterClear) {
   EXPECT_NE(collection.Find(first_cache_id, first_key), nullptr);
 }
 
-TEST(PersistentCacheCollection, DeleteAllFiles) {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  PersistentCacheCollection collection(
-      std::make_unique<BackendParamsManager>(temp_dir.GetPath()),
-      kTargetFootprint);
-
-  std::string first_cache_id = "first_cache_id";
-  std::string first_key = "first_key";
-  constexpr const char first_content[] = "first_content";
-
-  // Inserting an entry makes it available.
-  collection.Insert(first_cache_id, first_key,
-                    base::byte_span_from_cstring(first_content));
-  EXPECT_NE(collection.Find(first_cache_id, first_key), nullptr);
-
-  collection.DeleteAllFiles();
-
-  // After deletion the content is not available anymore.
-  EXPECT_EQ(collection.Find(first_cache_id, first_key), nullptr);
-}
-
-TEST(PersistentCacheCollection, ContinuousFootPrintReduction) {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
+TEST_F(PersistentCacheCollectionTest, ContinuousFootPrintReduction) {
   constexpr int64_t kSmallFootprint = 128;
 
-  PersistentCacheCollection collection(
-      std::make_unique<BackendParamsManager>(temp_dir.GetPath()),
-      kSmallFootprint);
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kSmallFootprint);
 
   int i = 0;
   int64_t added_footprint = 0;
@@ -112,16 +121,16 @@ TEST(PersistentCacheCollection, ContinuousFootPrintReduction) {
     std::string number = base::NumberToString(i);
 
     // Account for size of key and value.
-    int64_t footprint_after_insertion = added_footprint + number.length() * 2;
+    int64_t footprint_after_insertion = added_footprint + (number.length() * 2);
 
     if (footprint_after_insertion < kSmallFootprint) {
       int64_t directory_size_before =
-          base::ComputeDirectorySize(temp_dir.GetPath());
+          base::ComputeDirectorySize(temp_dir_.GetPath());
 
       collection.Insert(number, number, base::as_byte_span(number));
 
       int64_t directory_size_after =
-          base::ComputeDirectorySize(temp_dir.GetPath());
+          base::ComputeDirectorySize(temp_dir_.GetPath());
 
       // If there's no footprint reduction and the new values are being stored
       // then directory size is just going up.
@@ -137,7 +146,7 @@ TEST(PersistentCacheCollection, ContinuousFootPrintReduction) {
   ASSERT_GT(i, 2);
 
   int64_t directory_size_before =
-      base::ComputeDirectorySize(temp_dir.GetPath());
+      base::ComputeDirectorySize(temp_dir_.GetPath());
 
   // Since no footprint reduction should have been triggered all values added
   // should still be available.
@@ -150,7 +159,8 @@ TEST(PersistentCacheCollection, ContinuousFootPrintReduction) {
   std::string number = base::NumberToString(i + 1);
   collection.Insert(number, number, base::as_byte_span(number));
 
-  int64_t directory_size_after = base::ComputeDirectorySize(temp_dir.GetPath());
+  int64_t directory_size_after =
+      base::ComputeDirectorySize(temp_dir_.GetPath());
 
   // Footprint reduction happened automatically. Note that's it's not possible
   // to specifically know what the current footprint is since the last insert
@@ -158,5 +168,45 @@ TEST(PersistentCacheCollection, ContinuousFootPrintReduction) {
   EXPECT_LT(directory_size_after, directory_size_before);
 }
 
-}  // namespace
+TEST_F(PersistentCacheCollectionTest, BaseNameFromCacheId) {
+  // Invalid tokens results in empty string and not a crash.
+  EXPECT_EQ(PersistentCacheCollection::BaseNameFromCacheId("`"),
+            base::FilePath());
+  EXPECT_EQ(PersistentCacheCollection::BaseNameFromCacheId("``"),
+            base::FilePath());
+
+  // Verify file name is obfuscated.
+  std::string cache_id("devs_first_db");
+  base::FilePath base_name(
+      PersistentCacheCollection::BaseNameFromCacheId(cache_id));
+  EXPECT_EQ(base_name.value().find(base::FilePath::FromASCII(cache_id).value()),
+            std::string::npos);
+  EXPECT_EQ(base_name.value().find(FILE_PATH_LITERAL("devs")),
+            std::string::npos);
+  EXPECT_EQ(base_name.value().find(FILE_PATH_LITERAL("first")),
+            std::string::npos);
+}
+
+TEST_F(PersistentCacheCollectionTest, FullAllowedCharacterSetHandled) {
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB);
+
+  std::string all_chars_key =
+      PersistentCacheCollection::GetAllAllowedCharactersInCacheIds();
+  std::string number("number");
+  collection.Insert(all_chars_key, number, base::as_byte_span(number));
+  ASSERT_NE(collection.Find(all_chars_key, number), nullptr);
+}
+
+using PersistentCacheCollectionDeathTest = PersistentCacheCollectionTest;
+
+// Tests that trying to operate on a cache in a collection crashes if an
+// invalid cache_id is used.
+TEST_F(PersistentCacheCollectionDeathTest, BadKeysCrash) {
+  EXPECT_CHECK_DEATH({
+    PersistentCacheCollection(temp_dir_.GetPath(), kOneHundredMiB)
+        .Insert(std::string("BADKEY"), "key",
+                base::byte_span_from_cstring("value"));
+  });
+}
+
 }  // namespace persistent_cache

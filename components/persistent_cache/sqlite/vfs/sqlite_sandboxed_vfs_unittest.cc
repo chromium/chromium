@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gmock_expected_support.h"
 #include "components/persistent_cache/sqlite/test_utils.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "sql/database.h"
@@ -28,7 +29,7 @@ const base::FilePath kNonExistentVirtualFilePath =
 
 class SqliteSandboxedVfsTest : public testing::Test {
  public:
-  SqliteVfsFileSet CreateFilesAndBuildVfsFileSet() {
+  std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet() {
     return temporary_vfs_file_set_provider_.CreateFilesAndBuildVfsFileSet();
   }
 
@@ -37,14 +38,16 @@ class SqliteSandboxedVfsTest : public testing::Test {
 };
 
 TEST_F(SqliteSandboxedVfsTest, NoAccessWithoutRegistering) {
-  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
+                       CreateFilesAndBuildVfsFileSet());
   EXPECT_FALSE(SqliteSandboxedVfsDelegate::GetInstance()
                    ->OpenFile(kNonExistentVirtualFilePath, 0)
                    .IsValid());
 }
 
 TEST_F(SqliteSandboxedVfsTest, AccessAfterRegistering) {
-  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
+                       CreateFilesAndBuildVfsFileSet());
 
   SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner =
       SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
@@ -58,7 +61,8 @@ TEST_F(SqliteSandboxedVfsTest, AccessAfterRegistering) {
 }
 
 TEST_F(SqliteSandboxedVfsTest, NoAccessAfterUnregistering) {
-  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
+                       CreateFilesAndBuildVfsFileSet());
 
   // Register and immediately unregister.
   {
@@ -75,7 +79,8 @@ TEST_F(SqliteSandboxedVfsTest, NoAccessAfterUnregistering) {
 }
 
 TEST_F(SqliteSandboxedVfsTest, AccessAfterReRegistering) {
-  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
+                       CreateFilesAndBuildVfsFileSet());
 
   // Register and immediately unregister.
   {
@@ -97,7 +102,8 @@ TEST_F(SqliteSandboxedVfsTest, AccessAfterReRegistering) {
 }
 
 TEST_F(SqliteSandboxedVfsTest, DeleteFileAlwaysImpossible) {
-  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
+                       CreateFilesAndBuildVfsFileSet());
 
   // Impossible to delete non-registered files.
   for (const auto& virtual_file_path_to_file : vfs_file_set.GetFiles()) {
@@ -119,7 +125,8 @@ TEST_F(SqliteSandboxedVfsTest, DeleteFileAlwaysImpossible) {
 }
 
 TEST_F(SqliteSandboxedVfsTest, OpenFile) {
-  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
+                       CreateFilesAndBuildVfsFileSet());
 
   int64_t length = 0;
   for (auto& virtual_file_path_to_file : vfs_file_set.GetFiles()) {
@@ -156,7 +163,8 @@ TEST_F(SqliteSandboxedVfsTest, OpenFile) {
 }
 
 TEST_F(SqliteSandboxedVfsTest, SqliteIntegration) {
-  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
+                       CreateFilesAndBuildVfsFileSet());
   SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner =
       SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
           vfs_file_set);

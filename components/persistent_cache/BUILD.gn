@@ -3,19 +3,22 @@
 # found in the LICENSE file.
 
 component("persistent_cache") {
-  sources = [
-    "backend.cc",
+  public = [
     "backend.h",
-    "backend_params.cc",
     "backend_params.h",
-    "backend_params_manager.cc",
-    "backend_params_manager.h",
-    "entry.cc",
+    "backend_storage.h",
     "entry.h",
     "entry_metadata.h",
     "persistent_cache.h",
-    "persistent_cache_collection.cc",
     "persistent_cache_collection.h",
+  ]
+
+  sources = [
+    "backend.cc",
+    "backend_params.cc",
+    "backend_storage.cc",
+    "entry.cc",
+    "persistent_cache_collection.cc",
     "sqlite/sqlite_entry_impl.cc",
     "sqlite/sqlite_entry_impl.h",
   ]
@@ -26,8 +29,13 @@ component("persistent_cache") {
 
   # Cross-process file locks are not available on Fuchsia.
   if (!is_fuchsia) {
+    public += [ "sqlite/vfs/sandboxed_file.h" ]
+
     sources += [
       "persistent_cache.cc",
+      "sqlite/backend_storage_delegate.cc",
+      "sqlite/backend_storage_delegate.h",
+      "sqlite/constants.h",
       "sqlite/sqlite_backend_impl.cc",
       "sqlite/sqlite_backend_impl.h",
       "sqlite/vfs/sandboxed_file.cc",
@@ -37,15 +45,21 @@ component("persistent_cache") {
       "sqlite/vfs/sqlite_sandboxed_vfs.cc",
       "sqlite/vfs/sqlite_sandboxed_vfs.h",
     ]
+
+    deps = [
+      "//sql",
+      "//third_party/sqlite",
+    ]
   }
 
   # See base/component_export.h
   defines = [ "IS_PERSISTENT_CACHE_IMPL" ]
 
-  deps = [
-    "//base",
-    "//sql",
-    "//third_party/sqlite",
+  public_deps = [ "//base" ]
+
+  friend = [
+    ":test_support",
+    ":unit_tests",
   ]
 }
 
@@ -76,7 +90,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "backend_params_manager_unittest.cc",
+    "backend_storage_unittest.cc",
     "entry_unittest.cc",
     "sqlite/sqlite_entry_unittest.cc",
   ]
@@ -86,7 +100,9 @@ source_set("unit_tests") {
     sources += [
       "persistent_cache_collection_unittest.cc",
       "persistent_cache_unittest.cc",
+      "sqlite/backend_storage_delegate_unittest.cc",
       "sqlite/vfs/sandboxed_file_unittest.cc",
+      "sqlite/vfs/sqlite_database_vfs_file_set_unittest.cc",
       "sqlite/vfs/sqlite_sandboxed_vfs_unittest.cc",
     ]
   }

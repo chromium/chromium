@@ -4,18 +4,20 @@
 
 #include "components/persistent_cache/persistent_cache.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/mock/mock_backend_impl.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
@@ -94,10 +96,12 @@ class PersistentCacheTest : public testing::Test,
  protected:
   // Used to creates a new cache independent from any other.
   std::unique_ptr<PersistentCache> OpenCache() {
-    auto cache = PersistentCache::Open(
-        (params_provider_.CreateBackendFilesAndBuildParams(GetParam())));
-    CHECK(cache->GetBackendForTesting());
-    return cache;
+    auto backend = params_provider_.CreateBackendWithFiles(GetParam());
+    if (!backend) {
+      ADD_FAILURE() << "Failed to create backend";
+      return nullptr;
+    }
+    return std::make_unique<PersistentCache>(std::move(backend));
   }
 
   // Used to create a new cache with provided params. Use with params copied
@@ -225,10 +229,12 @@ TEST_P(PersistentCacheTest, MultipleLiveCachesAreIndependent) {
 }
 
 TEST_P(PersistentCacheTest, EphemeralCachesSharingParamsShareData) {
-  BackendParams backend_params =
-      params_provider_.CreateBackendFilesAndBuildParams(GetParam());
+  std::unique_ptr<Backend> backend =
+      params_provider_.CreateBackendWithFiles(GetParam());
+  ASSERT_TRUE(backend);
   for (int i = 0; i < 3; ++i) {
-    auto cache = OpenCache(backend_params.Copy());
+    ASSERT_OK_AND_ASSIGN(auto params, backend->ExportReadWriteParams());
+    auto cache = OpenCache(std::move(params));
 
     // First run, setup.
     if (i == 0) {
@@ -245,12 +251,13 @@ TEST_P(PersistentCacheTest, EphemeralCachesSharingParamsShareData) {
 }
 
 TEST_P(PersistentCacheTest, LiveCachesSharingParamsShareData) {
-  BackendParams backend_params =
-      params_provider_.CreateBackendFilesAndBuildParams(GetParam());
+  std::unique_ptr<Backend> backend =
+      params_provider_.CreateBackendWithFiles(GetParam());
   std::vector<std::unique_ptr<PersistentCache>> caches;
 
   for (int i = 0; i < 3; ++i) {
-    caches.push_back(OpenCache(backend_params.Copy()));
+    ASSERT_OK_AND_ASSIGN(auto params, backend->ExportReadWriteParams());
+    caches.push_back(OpenCache(std::move(params)));
     std::unique_ptr<PersistentCache>& cache = caches.back();
 
     // First run, setup.
@@ -343,26 +350,25 @@ TEST_P(PersistentCacheTest, MultipleInstancesCanWriteData) {
 TEST_P(PersistentCacheTest, ThreadSafeAccess) {
   base::test::TaskEnvironment env;
 
-  BackendParams backend_params =
-      params_provider_.CreateBackendFilesAndBuildParams(GetParam());
-
   // Create the cache and insert on this sequence.
   auto value = base::byte_span_from_cstring("1");
-  auto cache = OpenCache(backend_params.Copy());
+  auto cache = OpenCache();
   cache->Insert(kKey, value);
 
   // Find() on ThreadPool. Result should be expected and there are no sequence
   // checkers tripped.
-  base::WaitableEvent event;
-  std::unique_ptr<Entry> entry;
-  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                             base::BindLambdaForTesting([&]() {
-                               entry = cache->Find(kKey);
-                               event.Signal();
-                             }));
+  base::test::TestFuture<std::unique_ptr<Entry>> future_entry;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](PersistentCache* cache,
+             base::OnceCallback<void(std::unique_ptr<Entry>)> on_entry) {
+            std::move(on_entry).Run(cache->Find(kKey));
+          },
+          cache.get(), future_entry.GetSequenceBoundCallback()));
 
   // Wait for result availability and check.
-  event.Wait();
+  auto entry = future_entry.Take();
   ASSERT_NE(entry, nullptr);
   EXPECT_EQ(entry->GetContentSpan(), value);
 }

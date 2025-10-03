@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/buildflag.h"
+#include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/sqlite/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,22 +21,22 @@ using PersistentCachePerftest = testing::Test;
 
 TEST_F(PersistentCachePerftest, OpenClose) {
   test_utils::TestHelper provider;
-  BackendParams backend_params =
-      provider.CreateBackendFilesAndBuildParams(BackendType::kSqlite);
-  auto persistent_cache = PersistentCache::Open(backend_params.Copy());
-  ASSERT_TRUE(persistent_cache);
+  std::unique_ptr<Backend> backend =
+      provider.CreateBackendWithFiles(BackendType::kSqlite);
+  ASSERT_TRUE(backend);
+  PersistentCache persistent_cache(std::move(backend));
 
   // Ensures there are entries in the cache.
   const char* kKey = "foo";
-  persistent_cache->Insert(kKey, base::byte_span_from_cstring("1"));
-  auto entry = persistent_cache->Find(kKey);
+  persistent_cache.Insert(kKey, base::byte_span_from_cstring("1"));
+  auto entry = persistent_cache.Find(kKey);
   ASSERT_TRUE(entry);
 
   base::ElapsedTimer timer;
   const int kAmountOfIteration = 16 * 1024;
   for (size_t i = 0; i < kAmountOfIteration; ++i) {
     auto persistent_cache_under_test =
-        PersistentCache::Open(backend_params.Copy());
+        PersistentCache::Open(*persistent_cache.ExportReadWriteBackendParams());
   }
 
   perf_test::PerfResultReporter reporter("PersistentCache", "OpenClose");

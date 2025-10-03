@@ -28,8 +28,6 @@ struct COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParams {
   BackendParams& operator=(BackendParams&& other);
   ~BackendParams();
 
-  BackendParams Copy() const;
-
   // TODO(crbug.com/377475540): Currently this class is deeply tied to the
   // sqlite implementation. Once the conversion to and from mojo types is
   // implemented this class should become an abstract class specialized for each

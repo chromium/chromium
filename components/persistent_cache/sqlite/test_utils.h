@@ -5,16 +5,20 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_UTILS_H_
 #define COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_UTILS_H_
 
+#include <memory>
+#include <optional>
 #include <vector>
 
-#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 
-namespace persistent_cache::test_utils {
+namespace persistent_cache {
+
+class Backend;
+
+namespace test_utils {
 
 // Use TestHelper from tests to generate valid initialization
 // structures for backends and PersistentCache. This class takes care of owning
@@ -41,14 +45,17 @@ class TestHelper {
   TestHelper& operator=(const TestHelper&) = delete;
   TestHelper& operator=(TestHelper&&) = delete;
 
-  SqliteVfsFileSet CreateFilesAndBuildVfsFileSet();
-  BackendParams CreateBackendFilesAndBuildParams(BackendType type);
+  std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet();
+  std::unique_ptr<Backend> CreateBackendWithFiles(BackendType type);
 
  private:
   base::FilePath CreateTemporaryDir();
+
   std::vector<base::ScopedTempDir> scoped_temp_dirs_;
 };
 
-}  // namespace persistent_cache::test_utils
+}  // namespace test_utils
+
+}  // namespace persistent_cache
 
 #endif  // COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_UTILS_H_

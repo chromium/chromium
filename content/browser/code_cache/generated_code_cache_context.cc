@@ -131,12 +131,10 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
         base::SysInfo::AmountOfFreeDiskSpace(path),
         net::GENERATED_BYTE_CODE_CACHE);
 
+    // Use a short name for the root directory due to max path length limits.
     persistent_cache_collection_ = {
-        new persistent_cache::PersistentCacheCollection(
-            std::make_unique<persistent_cache::BackendParamsManager>(
-                path.AppendASCII("pc")),  // Name as short as possible to avoid
-                                          // maximum path problems.
-            disk_cache_max_size),
+        new persistent_cache::PersistentCacheCollection(path.AppendASCII("pc"),
+                                                        disk_cache_max_size),
         base::OnTaskRunnerDeleter(task_runner_)};
   }
 }
