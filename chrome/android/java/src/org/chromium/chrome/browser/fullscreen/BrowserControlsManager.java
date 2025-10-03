@@ -21,6 +21,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -222,7 +223,25 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mBrowserVisibilityDelegate.addObserver(
                 (constraints) -> {
                     if (constraints == BrowserControlsState.SHOWN) {
-                        setPositionsForTabToNonFullscreen();
+                        // When compositor can drive the animation to show controls, do not call
+                        // setPositionsForTabToNonFullscreen to avoid control offset being forced
+                        // set to 0 before the render-driven animation kicks in.
+                        boolean allowRenderDrivenShowConstraint =
+                                ChromeFeatureList.sBrowserControlsRenderDrivenShowConstraint
+                                        .isEnabled();
+                        boolean renderDrivenShowConstraint =
+                                allowRenderDrivenShowConstraint
+                                        && canAnimateNativeBrowserControls();
+                        if (!renderDrivenShowConstraint) {
+                            setPositionsForTabToNonFullscreen();
+                        }
+
+                        // TODO(https://crbug.com/449011189): Maybe cleanup
+                        if (allowRenderDrivenShowConstraint) {
+                            RecordHistogram.recordBooleanHistogram(
+                                    "Android.BrowserControls.RenderDrivenShowConstraint",
+                                    renderDrivenShowConstraint);
+                        }
 
                         // If controls become locked, it's possible we've previously delayed
                         // actually setting visibility until a touch event is over. In this case, we
