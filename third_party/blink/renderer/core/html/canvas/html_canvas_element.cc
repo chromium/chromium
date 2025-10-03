@@ -788,20 +788,18 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   // checks whether the `desynchronized` attribute is set on the context, but
   // only WebGL and Canvas2D have specific flows for low latency (for other
   // context types, setting the attribute is a no-op).
-  if (LowLatencyEnabled() && (IsWebGL() || IsRenderingContext2D())) {
-    if (frame_dispatcher_ && !dirty_rect_.IsEmpty()) {
-      if (scoped_refptr<CanvasResource> canvas_resource =
-              context_->PaintRenderingResultsToResource(kBackBuffer, reason)) {
-        const gfx::Rect src_rect(Size());
-        dirty_rect_.Intersect(src_rect);
-        const gfx::Rect int_dirty = dirty_rect_;
-        const SkIRect damage_rect =
-            SkIRect::MakeXYWH(int_dirty.x(), int_dirty.y(), int_dirty.width(),
-                              int_dirty.height());
-        frame_dispatcher_->DispatchFrame(std::move(canvas_resource),
-                                         damage_rect, IsOpaque());
-        dirty_rect_ = gfx::Rect();
-      }
+  if (LowLatencyEnabled() && (IsWebGL() || IsRenderingContext2D()) &&
+      frame_dispatcher_ && !dirty_rect_.IsEmpty()) {
+    if (scoped_refptr<CanvasResource> canvas_resource =
+            context_->PaintRenderingResultsToResource(kBackBuffer, reason)) {
+      const gfx::Rect src_rect(Size());
+      dirty_rect_.Intersect(src_rect);
+      const gfx::Rect int_dirty = dirty_rect_;
+      const SkIRect damage_rect = SkIRect::MakeXYWH(
+          int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
+      frame_dispatcher_->DispatchFrame(std::move(canvas_resource), damage_rect,
+                                       IsOpaque());
+      dirty_rect_ = gfx::Rect();
     }
   }
 
