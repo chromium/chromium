@@ -9,7 +9,6 @@
 export interface SettingsContext {
   isPhysicalKeyboardAutocorrectAllowed: boolean;
   isPhysicalKeyboardPredictiveWritingAllowed: boolean;
-  isJapaneseSettingsAllowed: boolean;
   isVietnameseFirstPartyInputSettingsAllowed: boolean;
 }
 
@@ -97,6 +96,10 @@ export function getInputMethodSettings(context: SettingsContext): SettingsMap {
     // ZHUYIN_SETTINGS
     'zh-hant-t-i0-und': [SettingsType.ZHUYIN_SETTINGS],
 
+    // JAPANESE SETTINGS
+    'nacl_mozc_jp': [SettingsType.JAPANESE_SETTINGS],
+    'nacl_mozc_us': [SettingsType.JAPANESE_SETTINGS],
+
     // KOREAN_SETTINGS
     'ko-t-i0-und': [SettingsType.KOREAN_SETTINGS],
 
@@ -150,12 +153,6 @@ export function getInputMethodSettings(context: SettingsContext): SettingsMap {
     'xkb:za:gb:eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
 
   };
-
-  // MOZC settings
-  if (context.isJapaneseSettingsAllowed) {
-    settingsMap['nacl_mozc_jp'] = [SettingsType.JAPANESE_SETTINGS];
-    settingsMap['nacl_mozc_us'] = [SettingsType.JAPANESE_SETTINGS];
-  }
 
   // Vietnamese first party input
   if (context.isVietnameseFirstPartyInputSettingsAllowed) {

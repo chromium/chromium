@@ -100,13 +100,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         value: false,
       },
 
-      languageSettingsJapaneseEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('systemJapanesePhysicalTyping');
-        },
-      },
-
       /**
        * Whether the shortcut reminder for the last used IME is currently
        * showing.
@@ -200,7 +193,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // loadTimeData flags.
   private onDeviceGrammarCheckEnabled_: boolean;
-  private languageSettingsJapaneseEnabled_: boolean;
   private languagePacksInSettingsEnabled_ =
       loadTimeData.getBoolean('languagePacksInSettingsEnabled');
   private readonly allowEmojiSuggestion_: boolean =
@@ -384,8 +376,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
           loadTimeData.getBoolean('isPhysicalKeyboardAutocorrectAllowed'),
       isPhysicalKeyboardPredictiveWritingAllowed:
           loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
-      isJapaneseSettingsAllowed:
-          loadTimeData.getBoolean('systemJapanesePhysicalTyping'),
       isVietnameseFirstPartyInputSettingsAllowed:
           loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });
