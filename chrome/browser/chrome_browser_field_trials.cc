@@ -230,6 +230,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/433879656): Remove when this feature on LFF device is
   // stable.
   feature_overrides.EnableFeature(features::kFluidResize);
+
+  // Three flags are required for the bookmarks bar feature.
+  // TODO(crbug.com/430059235): Remove once feature is launched to 100% on all
+  // form factors.
+  feature_overrides.EnableFeature(chrome::android::kAndroidBookmarkBar);
+  feature_overrides.EnableFeature(chrome::android::kAndroidAppearanceSettings);
+  feature_overrides.EnableFeature(chrome::android::kTopControlsRefactor);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
