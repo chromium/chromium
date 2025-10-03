@@ -86,6 +86,14 @@ net::ProxyChain GetIpProtectionProxyChain2() {
 
 // A wrapper around SocketDataProvider that owns the reads and writes.
 struct SocketDataWrapper {
+  SocketDataWrapper() = default;
+  SocketDataWrapper(SocketDataWrapper&& other) = default;
+  ~SocketDataWrapper() {
+    CHECK(socket_data_provider);
+    socket_data_provider->ExpectAllReadDataConsumed();
+    socket_data_provider->ExpectAllWriteDataConsumed();
+  }
+
   std::unique_ptr<net::StaticSocketDataProvider> socket_data_provider;
   // For successful requests that use SSL.
   std::vector<net::SSLSocketDataProvider> ssl_data_providers;
@@ -109,7 +117,6 @@ SocketDataWrapper CreateDirectRequestSucceedsSocketData() {
 
   wrapper.reads.emplace_back(kResponseHeaders);
   wrapper.reads.emplace_back(kResponseBody);
-  wrapper.reads.emplace_back(net::ASYNC, net::OK);
 
   wrapper.socket_data_provider =
       std::make_unique<net::StaticSocketDataProvider>(wrapper.reads,
@@ -527,11 +534,6 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, OneBadProxyChain) {
   EXPECT_THAT(delegate.request_status(),
               net::test::IsError(net::ERR_CONNECTION_RESET));
   EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
-
-  connect_data.socket_data_provider->ExpectAllReadDataConsumed();
-  connect_data.socket_data_provider->ExpectAllWriteDataConsumed();
-  direct_data.socket_data_provider->ExpectAllReadDataConsumed();
-  direct_data.socket_data_provider->ExpectAllWriteDataConsumed();
 }
 
 }  // namespace ip_protection
