@@ -226,9 +226,8 @@ GURL GURL::ReplaceComponents(const Replacements& replacements) const {
     return GURL();
 
   url::StdStringCanonOutput output(&result.spec_);
-  result.is_valid_ = url::ReplaceComponents(
-      spec_.data(), static_cast<int>(spec_.length()), parsed_, replacements,
-      NULL, &output, &result.parsed_);
+  result.is_valid_ = url::ReplaceComponents(spec_, parsed_, replacements,
+                                            nullptr, &output, &result.parsed_);
 
   output.Complete();
 
@@ -245,9 +244,8 @@ GURL GURL::ReplaceComponents(const ReplacementsW& replacements) const {
     return GURL();
 
   url::StdStringCanonOutput output(&result.spec_);
-  result.is_valid_ = url::ReplaceComponents(
-      spec_.data(), static_cast<int>(spec_.length()), parsed_, replacements,
-      NULL, &output, &result.parsed_);
+  result.is_valid_ = url::ReplaceComponents(spec_, parsed_, replacements,
+                                            nullptr, &output, &result.parsed_);
 
   output.Complete();
 

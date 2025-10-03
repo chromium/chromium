@@ -1044,7 +1044,7 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
   {
     StringUtf8Adaptor utf8(string_);
     replacements_valid =
-        url::ReplaceComponents(utf8.data(), utf8.size(), parsed_, replacements,
+        url::ReplaceComponents(utf8.AsStringView(), parsed_, replacements,
                                nullptr, &output, &new_parsed);
     // `utf8` should be destructed before replacing `string_`.
   }

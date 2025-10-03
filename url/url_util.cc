@@ -423,9 +423,8 @@ bool DoResolveRelative(std::string_view base_spec,
                         output_parsed);
 }
 
-template<typename CHAR>
-bool DoReplaceComponents(const char* spec,
-                         int spec_len,
+template <typename CHAR>
+bool DoReplaceComponents(std::string_view spec,
                          const Parsed& parsed,
                          const Replacements<CHAR>& replacements,
                          CharsetConverter* charset_converter,
@@ -455,11 +454,11 @@ bool DoReplaceComponents(const char* spec,
 
     // We can assume that the input is canonicalized, which means it always has
     // a colon after the scheme (or where the scheme would be).
-    int spec_after_colon = parsed.scheme.is_valid() ? parsed.scheme.end() + 1
-                                                    : 1;
-    if (spec_len - spec_after_colon > 0) {
+    size_t spec_after_colon =
+        parsed.scheme.is_valid() ? parsed.scheme.end() + 1 : 1;
+    if (spec.length() > spec_after_colon) {
       scheme_replaced.Append(&spec[spec_after_colon],
-                             spec_len - spec_after_colon);
+                             spec.length() - spec_after_colon);
     }
 
     // We now need to completely re-parse the resulting string since its meaning
@@ -492,38 +491,42 @@ bool DoReplaceComponents(const char* spec,
     if (parsed.potentially_dangling_markup) {
       out_parsed->potentially_dangling_markup = true;
     }
-    return DoReplaceComponents(recanonicalized.data(), recanonicalized.length(),
-                               recanonicalized_parsed, replacements_no_scheme,
-                               charset_converter, output, out_parsed);
+    return DoReplaceComponents(recanonicalized.view(), recanonicalized_parsed,
+                               replacements_no_scheme, charset_converter,
+                               output, out_parsed);
   }
 
   // TODO(csharrison): We could be smarter about size to reserve if this is done
   // in callers below, and the code checks to see which components are being
   // replaced, and with what length. If this ends up being a hot spot it should
   // be changed.
-  output->ReserveSizeIfNeeded(spec_len);
+  output->ReserveSizeIfNeeded(spec.length());
 
+  // TODO(crbug.com/350788890): We should not use spec.data().
+  const char* spec_ptr = spec.data();
   // If we get here, then we know the scheme doesn't need to be replaced, so can
   // just key off the scheme in the spec to know how to do the replacements.
-  if (DoCompareSchemeComponent(spec, parsed.scheme, url::kFileScheme)) {
-    return ReplaceFileURL(spec, parsed, replacements, charset_converter, output,
-                          out_parsed);
+  if (DoCompareSchemeComponent(spec_ptr, parsed.scheme, url::kFileScheme)) {
+    return ReplaceFileURL(spec_ptr, parsed, replacements, charset_converter,
+                          output, out_parsed);
   }
-  if (DoCompareSchemeComponent(spec, parsed.scheme, url::kFileSystemScheme)) {
-    return ReplaceFileSystemURL(spec, parsed, replacements, charset_converter,
-                                output, out_parsed);
+  if (DoCompareSchemeComponent(spec_ptr, parsed.scheme,
+                               url::kFileSystemScheme)) {
+    return ReplaceFileSystemURL(spec_ptr, parsed, replacements,
+                                charset_converter, output, out_parsed);
   }
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  if (DoIsStandard(parsed.scheme.maybe_as_string_view_on(spec), &scheme_type)) {
-    return ReplaceStandardURL(spec, parsed, replacements, scheme_type,
+  if (DoIsStandard(parsed.scheme.maybe_as_string_view_on(spec_ptr),
+                   &scheme_type)) {
+    return ReplaceStandardURL(spec_ptr, parsed, replacements, scheme_type,
                               charset_converter, output, out_parsed);
   }
 
-  if (!DoIsOpaqueNonSpecial(spec, parsed.scheme)) {
-    return ReplaceNonSpecialURL(spec, parsed, replacements, charset_converter,
-                                *output, *out_parsed);
+  if (!DoIsOpaqueNonSpecial(spec_ptr, parsed.scheme)) {
+    return ReplaceNonSpecialURL(spec_ptr, parsed, replacements,
+                                charset_converter, *output, *out_parsed);
   }
-  return ReplacePathURL(spec, parsed, replacements, output, out_parsed);
+  return ReplacePathURL(spec_ptr, parsed, replacements, output, out_parsed);
 }
 
 void DoSchemeModificationPreamble() {
@@ -859,26 +862,24 @@ bool ResolveRelative(std::string_view base_spec,
                            output, output_parsed);
 }
 
-bool ReplaceComponents(const char* spec,
-                       int spec_len,
+bool ReplaceComponents(std::string_view spec,
                        const Parsed& parsed,
                        const Replacements<char>& replacements,
                        CharsetConverter* charset_converter,
                        CanonOutput* output,
                        Parsed* out_parsed) {
-  return DoReplaceComponents(spec, spec_len, parsed, replacements,
-                             charset_converter, output, out_parsed);
+  return DoReplaceComponents(spec, parsed, replacements, charset_converter,
+                             output, out_parsed);
 }
 
-bool ReplaceComponents(const char* spec,
-                       int spec_len,
+bool ReplaceComponents(std::string_view spec,
                        const Parsed& parsed,
                        const Replacements<char16_t>& replacements,
                        CharsetConverter* charset_converter,
                        CanonOutput* output,
                        Parsed* out_parsed) {
-  return DoReplaceComponents(spec, spec_len, parsed, replacements,
-                             charset_converter, output, out_parsed);
+  return DoReplaceComponents(spec, parsed, replacements, charset_converter,
+                             output, out_parsed);
 }
 
 void DecodeURLEscapeSequences(std::string_view input,

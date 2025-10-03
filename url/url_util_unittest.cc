@@ -210,22 +210,22 @@ TEST_F(URLUtilTest, ReplaceComponents) {
   // Check that the following calls do not cause crash
   Replacements<char> replacements;
   replacements.SetRef("test", Component(0, 4));
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
   replacements.ClearRef();
   replacements.SetHost("test", Component(0, 4));
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
 
   replacements.ClearHost();
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
-  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
 }
 
 static std::string CheckReplaceScheme(const char* base_url,
@@ -242,8 +242,8 @@ static std::string CheckReplaceScheme(const char* base_url,
   std::string output_string;
   StdStringCanonOutput output(&output_string);
   Parsed output_parsed;
-  ReplaceComponents(original.data(), original.length(), original_parsed,
-                    replacements, nullptr, &output, &output_parsed);
+  ReplaceComponents(original.view(), original_parsed, replacements, nullptr,
+                    &output, &output_parsed);
 
   output.Complete();
   return output_string;
@@ -458,8 +458,8 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterReplacement) {
   replacements.ClearRef();
   Parsed replaced_parsed;
   RawCanonOutput<32> replaced;
-  ReplaceComponents(original.data(), original.length(), original_parsed,
-                    replacements, nullptr, &replaced, &replaced_parsed);
+  ReplaceComponents(original.view(), original_parsed, replacements, nullptr,
+                    &replaced, &replaced_parsed);
   EXPECT_TRUE(replaced_parsed.potentially_dangling_markup);
 }
 
@@ -478,8 +478,8 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterSchemeOnlyReplacement) {
   replacements.SetScheme(new_scheme, Component(0, strlen(new_scheme)));
   Parsed replaced_parsed;
   RawCanonOutput<32> replaced;
-  ReplaceComponents(original.data(), original.length(), original_parsed,
-                    replacements, nullptr, &replaced, &replaced_parsed);
+  ReplaceComponents(original.view(), original_parsed, replacements, nullptr,
+                    &replaced, &replaced_parsed);
   EXPECT_TRUE(replaced_parsed.potentially_dangling_markup);
 }
 

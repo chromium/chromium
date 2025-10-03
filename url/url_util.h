@@ -264,16 +264,14 @@ bool ResolveRelative(std::string_view base_spec,
 //
 // Returns true if the resulting URL is valid.
 COMPONENT_EXPORT(URL)
-bool ReplaceComponents(const char* spec,
-                       int spec_len,
+bool ReplaceComponents(std::string_view spec,
                        const Parsed& parsed,
                        const Replacements<char>& replacements,
                        CharsetConverter* charset_converter,
                        CanonOutput* output,
                        Parsed* out_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceComponents(const char* spec,
-                       int spec_len,
+bool ReplaceComponents(std::string_view spec,
                        const Parsed& parsed,
                        const Replacements<char16_t>& replacements,
                        CharsetConverter* charset_converter,
