@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <memory>
 #include <optional>
@@ -22,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_util.h"
 #include "pdf/loader/result_codes.h"
@@ -34,6 +34,8 @@ namespace {
 
 // We should read with delay to prevent block UI thread, and reduce CPU usage.
 constexpr base::TimeDelta kReadDelayMs = base::Milliseconds(2);
+
+constexpr std::string_view kBytes = "bytes";
 
 UrlRequest MakeRangeRequest(const std::string& url,
                             const std::string& referrer_url,
@@ -56,17 +58,18 @@ UrlRequest MakeRangeRequest(const std::string& url,
 }
 
 std::optional<gfx::Range> GetByteRangeFromStr(
-    const std::string& content_range_str) {
-  std::string range = content_range_str;
-  if (!base::StartsWith(range, "bytes", base::CompareCase::INSENSITIVE_ASCII)) {
+    std::string_view content_range_str) {
+  if (!base::StartsWith(content_range_str, kBytes,
+                        base::CompareCase::INSENSITIVE_ASCII)) {
     return std::nullopt;
   }
 
-  range = range.substr(strlen("bytes"));
+  std::string range(content_range_str.substr(kBytes.size()));
   std::string::size_type pos = range.find('-');
   std::string range_end;
-  if (pos != std::string::npos)
+  if (pos != std::string::npos) {
     range_end = range.substr(pos + 1);
+  }
   base::TrimWhitespaceASCII(range, base::TRIM_LEADING, &range);
   base::TrimWhitespaceASCII(range_end, base::TRIM_LEADING, &range_end);
   return gfx::Range(atoi(range.c_str()), atoi(range_end.c_str()));
@@ -90,24 +93,8 @@ std::optional<gfx::Range> GetByteRangeFromHeaders(std::string_view headers) {
   return std::nullopt;
 }
 
-bool IsDoubleEndLineAtEnd(const char* buffer, int size) {
-  if (size < 2)
-    return false;
-
-  UNSAFE_TODO({
-    if (buffer[size - 1] == '\n' && buffer[size - 2] == '\n') {
-      return true;
-    }
-  });
-
-  if (size < 4) {
-    return false;
-  }
-
-  UNSAFE_TODO({
-    return buffer[size - 1] == '\n' && buffer[size - 2] == '\r' &&
-           buffer[size - 3] == '\n' && buffer[size - 4] == '\r';
-  });
+bool IsDoubleEndLineAtEnd(std::string_view buffer) {
+  return buffer.ends_with("\n\n") || buffer.ends_with("\r\n\r\n");
 }
 
 }  // namespace
@@ -208,7 +195,7 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
       content_length_ = atoi(it.values().c_str());
     } else if (base::EqualsCaseInsensitiveASCII(name, "accept-ranges")) {
       accept_ranges_bytes_ =
-          base::EqualsCaseInsensitiveASCII(it.values(), "bytes");
+          base::EqualsCaseInsensitiveASCII(it.values(), kBytes);
     } else if (base::EqualsCaseInsensitiveASCII(name, "content-encoding")) {
       content_encoded_ = true;
     } else if (base::EqualsCaseInsensitiveASCII(name, "content-type")) {
@@ -221,14 +208,12 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
       // multipart boundary.
       std::string type = base::ToLowerASCII(it.values_piece());
       if (base::StartsWith(type, "multipart/", base::CompareCase::SENSITIVE)) {
-        UNSAFE_TODO({
-          const char* boundary = strstr(type.c_str(), "boundary=");
-          DCHECK(boundary);
-          if (boundary) {
-            multipart_boundary_ = std::string(boundary + 9);
-            is_multipart_ = !multipart_boundary_.empty();
-          }
-        });
+        static constexpr std::string_view kBoundary = "boundary=";
+        size_t boundary = type.find(kBoundary);
+        if (boundary != std::string::npos) {
+          multipart_boundary_ = type.substr(boundary + kBoundary.size());
+          is_multipart_ = !multipart_boundary_.empty();
+        }
       }
     } else if (base::EqualsCaseInsensitiveASCII(name, "content-disposition")) {
       content_disposition_ = it.values();
@@ -266,30 +251,29 @@ void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,
     return;
   }
 
-  base::span<char> start = buffer_.subspan(0u, static_cast<size_t>(result));
+  base::span<char> start = buffer_.first(static_cast<size_t>(result));
   multi_part_processed_ = true;
   for (size_t i = 2; i < static_cast<size_t>(result); ++i) {
-    if (!IsDoubleEndLineAtEnd(buffer_.data(), i)) {
+    auto buffer = base::as_string_view(buffer_.first(i));
+    if (!IsDoubleEndLineAtEnd(buffer)) {
       continue;
     }
 
-    std::optional<gfx::Range> range =
-        GetByteRangeFromHeaders(std::string(buffer_.data(), i));
+    std::optional<gfx::Range> range = GetByteRangeFromHeaders(buffer);
     if (range.has_value()) {
       byte_range_ = range.value();
       start = start.subspan(i);
     }
     break;
   }
-  result = start.size();
-  if (result == 0) {
+
+  if (start.empty()) {
     // Continue receiving.
     return ReadResponseBodyImpl(std::move(callback));
   }
-  DCHECK_GT(result, 0);
-  UNSAFE_TODO(memmove(buffer_.data(), start.data(), result));
 
-  std::move(callback).Run(result);
+  base::span(buffer_).copy_prefix_from(start);
+  std::move(callback).Run(base::checked_cast<int32_t>(start.size()));
 }
 
 void URLLoaderWrapperImpl::SetHeadersFromLoader() {
