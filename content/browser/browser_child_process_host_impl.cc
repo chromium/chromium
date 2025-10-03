@@ -223,12 +223,10 @@ void BrowserChildProcessHostImpl::TerminateAll() {
 
 void BrowserChildProcessHostImpl::Launch(
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
-    std::unique_ptr<base::CommandLine> cmd_line,
-    bool terminate_on_shutdown) {
+    std::unique_ptr<base::CommandLine> cmd_line) {
   LaunchWithFileData(
       std::move(delegate), std::move(cmd_line),
-      /*file_data=*/std::make_unique<ChildProcessLauncherFileData>(),
-      terminate_on_shutdown);
+      /*file_data=*/std::make_unique<ChildProcessLauncherFileData>());
 }
 
 const ChildProcessData& BrowserChildProcessHostImpl::GetData() {
@@ -271,20 +269,17 @@ void BrowserChildProcessHostImpl::ForceShutdown() {
 void BrowserChildProcessHostImpl::LaunchWithFileData(
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     std::unique_ptr<base::CommandLine> cmd_line,
-    std::unique_ptr<ChildProcessLauncherFileData> file_data,
-    bool terminate_on_shutdown) {
+    std::unique_ptr<ChildProcessLauncherFileData> file_data) {
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(cmd_line.get(),
                                                                 data_.id);
   LaunchWithoutExtraCommandLineSwitches(
-      std::move(delegate), std::move(cmd_line), std::move(file_data),
-      terminate_on_shutdown);
+      std::move(delegate), std::move(cmd_line), std::move(file_data));
 }
 
 void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     std::unique_ptr<base::CommandLine> cmd_line,
-    std::unique_ptr<ChildProcessLauncherFileData> file_data,
-    bool terminate_on_shutdown) {
+    std::unique_ptr<ChildProcessLauncherFileData> file_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!in_process_);
 
@@ -338,8 +333,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
           data_.process_type)
           ? metrics_shared_region_
           : nullptr,
-      tracing_config_memory_region_, tracing_output_memory_region_,
-      terminate_on_shutdown);
+      tracing_config_memory_region_, tracing_output_memory_region_);
   ShareMetricsAllocatorToProcess();
 
   if (!has_legacy_ipc_channel_)

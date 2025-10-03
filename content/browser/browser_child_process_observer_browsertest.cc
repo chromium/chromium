@@ -243,10 +243,9 @@ class TestProcessHost final : public BrowserChildProcessHostDelegate {
     process_->SetName(u"Test utility process");
 
     auto command_line = GetChildCommandLine();
-    bool terminate_on_shutdown = true;
 
     process_->Launch(std::move(sandboxed_process_launcher_delegate),
-                     std::move(command_line), terminate_on_shutdown);
+                     std::move(command_line));
 
     test_service_ = BindTestService();
   }

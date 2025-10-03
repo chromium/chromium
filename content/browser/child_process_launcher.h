@@ -267,8 +267,7 @@ class CONTENT_EXPORT ChildProcessLauncher
       scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
           trace_config_memory_region = nullptr,
       scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
-          trace_output_memory_region = nullptr,
-      bool terminate_on_shutdown = true);
+          trace_output_memory_region = nullptr);
 
   ChildProcessLauncher(const ChildProcessLauncher&) = delete;
   ChildProcessLauncher& operator=(const ChildProcessLauncher&) = delete;

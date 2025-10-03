@@ -548,7 +548,7 @@ bool UtilityProcessHost::StartProcess() {
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
   process_->LaunchWithFileData(std::move(delegate), std::move(cmd_line),
-                               std::move(options_.file_data_), true);
+                               std::move(options_.file_data_));
 
   return true;
 }

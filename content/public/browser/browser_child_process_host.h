@@ -55,8 +55,7 @@ class CONTENT_EXPORT BrowserChildProcessHost {
   // Derived classes call this to launch the child process asynchronously.
   virtual void Launch(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
-      std::unique_ptr<base::CommandLine> cmd_line,
-      bool terminate_on_shutdown) = 0;
+      std::unique_ptr<base::CommandLine> cmd_line) = 0;
 
   virtual const ChildProcessData& GetData() = 0;
 

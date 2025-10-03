@@ -1382,7 +1382,7 @@ bool GpuProcessHost::LaunchGpuProcess() {
   process_->LaunchWithoutExtraCommandLineSwitches(
       std::move(delegate), std::move(cmd_line),
       /*file_data=*/
-      std::make_unique<ChildProcessLauncherFileData>(), true);
+      std::make_unique<ChildProcessLauncherFileData>());
   process_launched_ = true;
 
   if (kind_ == GPU_PROCESS_KIND_SANDBOXED) {

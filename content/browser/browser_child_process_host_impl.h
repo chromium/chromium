@@ -78,8 +78,7 @@ class BrowserChildProcessHostImpl
 
   // BrowserChildProcessHost implementation:
   void Launch(std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
-              std::unique_ptr<base::CommandLine> cmd_line,
-              bool terminate_on_shutdown) override;
+              std::unique_ptr<base::CommandLine> cmd_line) override;
   const ChildProcessData& GetData() override;
   ChildProcessHost* GetHost() override;
   ChildProcessTerminationInfo GetTerminationInfo(bool known_dead) override;
@@ -113,8 +112,7 @@ class BrowserChildProcessHostImpl
   void LaunchWithFileData(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       std::unique_ptr<base::CommandLine> cmd_line,
-      std::unique_ptr<ChildProcessLauncherFileData> file_data,
-      bool terminate_on_shutdown);
+      std::unique_ptr<ChildProcessLauncherFileData> file_data);
 
   // Unlike Launch(), AppendExtraCommandLineSwitches will not be called
   // in this function. If AppendExtraCommandLineSwitches has been called before
@@ -123,8 +121,7 @@ class BrowserChildProcessHostImpl
   void LaunchWithoutExtraCommandLineSwitches(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       std::unique_ptr<base::CommandLine> cmd_line,
-      std::unique_ptr<ChildProcessLauncherFileData> file_data,
-      bool terminate_on_shutdown);
+      std::unique_ptr<ChildProcessLauncherFileData> file_data);
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetProcessPriority(base::Process::Priority priority);
