@@ -378,10 +378,8 @@ std::string SignedInStateToString(SignedInState state) {
 }
 
 bool IsSyncingUserSelectableTypesAllowedByPolicy(
-    Profile& profile,
+    const syncer::SyncService* sync_service,
     const syncer::UserSelectableTypeSet& types) {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(&profile);
   if (!sync_service) {
     return false;
   }
@@ -411,7 +409,9 @@ bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
   syncer::UserSelectableTypeSet required_types(
       {syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
        syncer::UserSelectableType::kSavedTabGroups});
-  if (!IsSyncingUserSelectableTypesAllowedByPolicy(profile, required_types)) {
+
+  if (!IsSyncingUserSelectableTypesAllowedByPolicy(
+          SyncServiceFactory::GetForProfile(&profile), required_types)) {
     return false;
   }
 

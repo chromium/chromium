@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -234,7 +235,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
         // If the required data types can be enabled, there is no need to
         // display an error.
         if (signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-                *profile, required_types) ||
+                SyncServiceFactory::GetForProfile(profile), required_types) ||
             signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
                 profile)) != signin_util::SignedInState::kSignedIn) {
           return;

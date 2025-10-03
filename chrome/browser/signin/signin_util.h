@@ -182,7 +182,7 @@ std::string SignedInStateToString(SignedInState state);
 // rather than the device. This method does not take into account the feature
 // flag `ReplaceSyncPromosWithSignInPromos`.
 bool IsSyncingUserSelectableTypesAllowedByPolicy(
-    Profile& profile,
+    const syncer::SyncService* sync_service,
     const syncer::UserSelectableTypeSet& types);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

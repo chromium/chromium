@@ -443,11 +443,11 @@ TEST_F(SigninUtilHistorySyncOptinTest, HistorySyncOptinDisallowedByPolicy) {
 
   DisableAllSyncedDataTypes();
   ASSERT_TRUE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      *profile(), types));
+      test_sync_service(), types));
 
   test_sync_service()->SetAllowedByEnterprisePolicy(false);
   EXPECT_FALSE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      *profile(), types));
+      test_sync_service(), types));
 }
 
 TEST_F(SigninUtilHistorySyncOptinTest,
@@ -459,17 +459,17 @@ TEST_F(SigninUtilHistorySyncOptinTest,
 
   DisableAllSyncedDataTypes();
   ASSERT_TRUE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      *profile(), types));
+      test_sync_service(), types));
 
   test_sync_service()->GetUserSettings()->SetTypeIsManagedByPolicy(
       syncer::UserSelectableType::kHistory, /*managed=*/true);
 
   EXPECT_FALSE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      *profile(), types));
+      test_sync_service(), types));
   EXPECT_FALSE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      *profile(), {syncer::UserSelectableType::kHistory}));
+      test_sync_service(), {syncer::UserSelectableType::kHistory}));
   EXPECT_TRUE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      *profile(), {syncer::UserSelectableType::kTabs}));
+      test_sync_service(), {syncer::UserSelectableType::kTabs}));
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

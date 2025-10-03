@@ -32,6 +32,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
@@ -433,7 +434,8 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos) &&
       !signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-          *browser_->profile(), {syncer::UserSelectableType::kTabs})) {
+          SyncServiceFactory::GetForProfile(browser_->profile()),
+          {syncer::UserSelectableType::kTabs})) {
     return;
   }
 
