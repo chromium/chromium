@@ -10,49 +10,53 @@
 suite('ImageClassifier', function() {
   let testContainer;
 
-  // A solid red 1x1 pixel is used so that test images are visible, which
-  // aids in visual debugging of the test harness.
-  const RED_1X1_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIABAP8AAP///' +
-                        'yH5BAEAAAEALAAAAAABAAEAAAICRAEAOw==';
-
   /**
-   * Helper to create an image, append it to the container, and return a promise
-   * that resolves when the image is ready for classification.
+   * Helper to create an image with specific natural dimensions, append it to
+   * the container, and return a promise that resolves when the image is ready
+   * for classification.
    * @param {string} id A unique ID for the image.
-   * @param {number} widthDp The width of the image in DP.
-   * @param {number} heightDp The height of the image in DP.
+   * @param {number} naturalWidth The desired natural width of the image in CSS
+   *     pixels.
+   * @param {number} naturalHeight The desired natural height of the image in
+   *     CSS pixels.
    * @param {string} parentTag The tag of the parent element (e.g., 'p', 'div').
    * @param {string} parentContent The innerHTML of the parent element, with
    *     '<img>' as a placeholder for the image.
    * @param {Object} attributes An object of attributes to set on the image.
    * @return {Promise<HTMLImageElement>}
    */
-  function createImageTest(id, widthDp, heightDp, parentTag, parentContent,
-                           attributes = {}) {
+  function createImageTest(
+      id, naturalWidth, naturalHeight, parentTag, parentContent,
+      attributes = {}) {
     return new Promise((resolve) => {
-      const density = window.devicePixelRatio || 1;
       const parent = document.createElement(parentTag);
-      const img = document.createElement('img');
-      img.id = id;
-      // Scale the density-independent dimensions to CSS pixels.
-      img.width = widthDp * density;
-      img.height = heightDp * density;
+      // Create a placeholder for replacement.
+      parent.innerHTML = parentContent.replace('<img>', `<img id="${id}">`);
+      testContainer.appendChild(parent);
 
-      for (const [key, value] of Object.entries(attributes)) {
-        img.setAttribute(key, value);
-      }
+      const img = document.getElementById(id);
 
       // The promise resolves when the image is loaded or has failed to load.
       img.onload = () => resolve(img);
       img.onerror = () => resolve(img);
 
-      parent.innerHTML = parentContent.replace('<img>', img.outerHTML);
-      testContainer.appendChild(parent);
+      // Apply all attributes *except* `src` to avoid triggering a network
+      // request before the load/error handlers are attached.
+      const imgSrc = attributes.src;
+      for (const [key, value] of Object.entries(attributes)) {
+        if (key !== 'src') {
+          img.setAttribute(key, value);
+        }
+      }
 
-      // Set src last to ensure handlers are attached. Use the data URI only if
-      // no src was provided in the test attributes.
-      if (!img.hasAttribute('src')) {
-        img.src = RED_1X1_PIXEL;
+      // Set `src` last to ensure handlers are ready.
+      if (imgSrc) {
+        img.src = imgSrc;
+      } else {
+        // Generate an SVG `src` to control dimensions if one wasn't provided.
+        const svg = `<svg width="${naturalWidth}" height="${naturalHeight}"
+                          xmlns="http://www.w3.org/2000/svg"></svg>`;
+        img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
       }
     });
   }
@@ -72,21 +76,40 @@ suite('ImageClassifier', function() {
     // Define all test dimensions in density-independent units (DP).
     const INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP = 300;
 
-    const imagePromises = [
-      // Definitely Inline.
-      createImageTest('small_icon', 50, 50, 'p', '<img>'),
-      createImageTest('math_class', 100, 100, 'p', '<img>', {class: 'tex'}),
-      createImageTest('math_filename', 100, 100, 'p', '<img>',
-                      {src: '/foo/icon.svg'}),
-      createImageTest('math_alt', 100, 100, 'p', '<img>', {alt: 'E=mc^2'}),
+    // For metadata tests, use a width that is large but guaranteed to not
+    // trigger the dominant image guardrail.
+    const safeNonDominantWidth = Math.floor(window.innerWidth * 0.7);
 
-      // Definitely Full-width.
+    const imagePromises = [
+      // New Guardrail Test: A visually dominant "hero" image.
+      createImageTest(
+          'hero_image', 200, 100, 'p', '<img>', {
+            style: 'width: 90vw;',
+            // Add a misleading keyword to prove the guardrail overrides it.
+            class: 'icon-class',
+          }),
+
+      // Definitely Inline (based on intrinsic properties).
+      createImageTest('small_area', 50, 50, 'p', '<img>'),
+      // These should be inline due to metadata, using a width that is
+      // guaranteed to not be visually dominant.
+      createImageTest(
+          'math_class', safeNonDominantWidth, 100, 'p', '<img>',
+          {class: 'tex'}),
+      createImageTest(
+          'math_filename', safeNonDominantWidth, 100, 'p', '<img>',
+          {src: '/foo/icon.svg'}),
+      createImageTest(
+          'math_alt', safeNonDominantWidth, 100, 'p', '<img>',
+          {alt: 'E=mc^2'}),
+
+      // Definitely Full-width (based on structure).
       createImageTest('figure_with_caption', 400, 300, 'figure',
                       '<img><figcaption>Test</figcaption>'),
       createImageTest('sole_content_in_p', 400, 300, 'p', '<img>'),
       createImageTest('sole_content_with_br', 400, 300, 'p', '<img><br>'),
 
-      // Fallback.
+      // Fallback (based on intrinsic width).
       createImageTest(
           'fallback_wide', INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP + 50, 200, 'p',
           'Some text <img>'),
@@ -98,12 +121,14 @@ suite('ImageClassifier', function() {
     // Wait for all images to be created and loaded into the DOM.
     await Promise.all(imagePromises);
 
-    // Run the classifier on the container. This may attach new onload handlers.
-    ImageClassifier.processImagesIn(testContainer);
-
-    // Wait one more event loop turn for the classifier's onload handlers to
-    // fire.
+    // Yield to the browser's event loop with a `setTimeout` to ensure a layout
+    // pass occurs before the classifier runs. This is critical for
+    // getBoundingClientRect() to return a non-zero width.
     await new Promise(resolve => setTimeout(resolve, 0));
+
+    // Run the classifier on the container. For cached images, this will
+    // synchronously apply the classification classes.
+    ImageClassifier.processImagesIn(testContainer);
 
     // Run the assertions.
     const assertHasClass = (id, expectedClass) => {
@@ -112,7 +137,9 @@ suite('ImageClassifier', function() {
           `Image #${id} should have class ${expectedClass}`);
     };
 
-    assertHasClass('small_icon', ImageClassifier.INLINE_CLASS);
+    assertHasClass('hero_image', ImageClassifier.FULL_WIDTH_CLASS);
+
+    assertHasClass('small_area', ImageClassifier.INLINE_CLASS);
     assertHasClass('math_class', ImageClassifier.INLINE_CLASS);
     assertHasClass('math_filename', ImageClassifier.INLINE_CLASS);
     assertHasClass('math_alt', ImageClassifier.INLINE_CLASS);
