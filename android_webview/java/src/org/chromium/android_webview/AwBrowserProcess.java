@@ -383,16 +383,39 @@ public final class AwBrowserProcess {
     }
 
     public static void initializeApkType(ApplicationInfo info) {
-        if (info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0) {
-            // Only Trichrome uses shared library files.
-            sApkType = ApkType.TRICHROME;
-        } else if (info.className.toLowerCase(Locale.ROOT).contains("monochrome")) {
-            // Only Monochrome has "monochrome" in the application class name.
-            sApkType = ApkType.MONOCHROME;
-        } else {
-            // Everything else must be standalone.
-            sApkType = ApkType.STANDALONE;
+        if (info == null || info.metaData == null) {
+            sApkType = ApkType.UNKNOWN;
+            return;
         }
+
+        String libraryName = info.metaData.getString("com.android.webview.WebViewLibrary");
+        if (libraryName == null) {
+            sApkType = ApkType.UNKNOWN;
+            return;
+        }
+
+        if (libraryName.contains("libwebviewchromium")) {
+            // The library name for standalone should be "libwebviewchromium.so".
+            sApkType = ApkType.STANDALONE;
+            return;
+        }
+
+        if (libraryName.contains("libmonochrome")) {
+            // The library name for monochrome and trichrome is "libmonochrome.so"
+            // or "libmonochrome_64.so".
+            if (info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0) {
+                // Only Trichrome uses shared library files.
+                sApkType = ApkType.TRICHROME;
+            } else if (info.className.toLowerCase(Locale.ROOT).contains("monochrome")) {
+                // Only Monochrome has "monochrome" in the application class name.
+                sApkType = ApkType.MONOCHROME;
+            } else {
+                sApkType = ApkType.UNKNOWN;
+            }
+            return;
+        }
+
+        sApkType = ApkType.UNKNOWN;
     }
 
     /** Returns the WebView APK type. */
