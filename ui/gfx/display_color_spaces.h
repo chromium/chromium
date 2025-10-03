@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/buffer_types.h"
@@ -20,10 +21,6 @@ namespace mojo {
 template <class T, class U>
 struct StructTraits;
 }  // namespace mojo
-
-namespace viz {
-class SharedImageFormat;
-}  // namespace viz
 
 namespace gfx {
 
