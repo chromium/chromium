@@ -18,7 +18,7 @@
 <translation id="5527082711130173040">Chrome 需要拥有位置信息使用权才能扫描设备。请<ph name="BEGIN_LINK1" />更新权限<ph name="END_LINK1" />。<ph name="BEGIN_LINK2" />此设备的位置信息使用权也已被停用<ph name="END_LINK2" />。</translation>
 <translation id="5817918615728894473">配对</translation>
 <translation id="5858741533101922242">Chrome 无法开启蓝牙适配器</translation>
-<translation id="5860491529813859533">启用</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="6049776452963514597">“<ph name="APP_NAME" />”需要获得相应权限，才能允许此网站使用您的摄像头和麦克风。</translation>
 <translation id="6092062101542170135">要继续，请在 Android 设置中开启 NFC</translation>
 <translation id="6656545060687952787">Chrome 需要拥有位置信息权限才能扫描设备。<ph name="BEGIN_LINK" />更新权限<ph name="END_LINK" /></translation>

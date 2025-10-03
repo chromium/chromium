@@ -3917,7 +3917,7 @@ Ek ayrıntılar:
 <translation id="7470854469646445678">Kopyalama nedenini belirtin (zorunlu)</translation>
 <translation id="7471007961486718967">Aktarım nedenini belirtin (zorunlu)</translation>
 <translation id="7473033553872550521">Ayrıca, site sahibiyle iletişime geçip HTTPS'ye yükseltmesini de önerebilirsiniz. <ph name="LEARN_MORE" /></translation>
-<translation id="7473891865547856676">Hayır, Teşekkürler</translation>
+<translation id="7473891865547856676">Hayır, teşekkürler</translation>
 <translation id="7481312909269577407">İleri</translation>
 <translation id="7481603210197454575">Zarf Italian</translation>
 <translation id="7483482939016730822">Okul Malzemeleri ve Sınıf Gereçleri</translation>
@@ -4054,7 +4054,7 @@ Ek ayrıntılar:
 <translation id="7669907849388166732">{COUNT,plural, =1{Gizli olarak işaretlenmiş verilerle yapılan işlemler (girişten itibaren 1 işlem). <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" />}other{Gizli olarak işaretlenmiş verilerle yapılan işlemler (girişten itibaren # işlem). <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" />}}</translation>
 <translation id="7672684333490246092">Google Hesabınızdaki (<ph name="USER_EMAIL" />) bilgiler, Chrome'daki formları daha hızlı doldurmanıza yardımcı olabilir</translation>
 <translation id="7673278391011283842">Posta kutusu 6</translation>
-<translation id="7675325315208090829">Ödeme Yöntemlerini yönet...</translation>
+<translation id="7675325315208090829">Ödeme yöntemlerini yönetin</translation>
 <translation id="767550629621587224">Önceden Kesilmiş Tablar</translation>
 <translation id="7675756033024037212">Kaydırma ve yakınlaştırmaya izin verilmiyor</translation>
 <translation id="7676643023259824263">Panoda metni (<ph name="TEXT" />) ara</translation>

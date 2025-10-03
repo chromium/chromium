@@ -170,7 +170,7 @@
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{نشان دادن تنظیمات اعلان. اعلان‌های یک برنامه خاموش است}one{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}other{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}}</translation>
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
 <translation id="1523032696246003">باتری <ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> مانده تا شارژ کامل</translation>
-<translation id="1525508553941733066">رد کردن</translation>
+<translation id="1525508553941733066">بستن</translation>
 <translation id="1526448108126799339">باز کردن زبانه جدید در پنجره جدید</translation>
 <translation id="1528259147807435347">هفته گذشته ویرایش شده است</translation>
 <translation id="1536604384701784949">برای استفاده از <ph name="USER_EMAIL_ADDRESS" />، باید ابتدا از سیستم همه حساب‌ها خارج شوید. برای خروج از سیستم، «لغو» را انتخاب کنید تا به عقب برگردید. سپس زمان را انتخاب کنید تا ناحیه نشانگر وضعیت باز شود و سپس «خروج از سیستم»را انتخاب کنید. سپس دوباره به سیستم <ph name="USER_EMAIL_ADDRESS_2" /> وارد شوید.</translation>
@@ -1300,7 +1300,7 @@
 <translation id="5229343007215035173">روشن/ خاموش کردن صفحه حریم خصوصی</translation>
 <translation id="5229860525743792999">حذف <ph name="ITEM_LABEL" /> از گروه پیشنهادی</translation>
 <translation id="5230516054153933099">پنجره</translation>
-<translation id="5234764350956374838">رد کردن</translation>
+<translation id="5234764350956374838">بستن</translation>
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
 <translation id="5238719049014159442">باز کردن/ بستن «راه‌انداز»</translation>
 <translation id="5240725217819182328">دسترسی سریع به صفحه‌ها یا کنش‌های به‌خصوص در برنامه‌های نصب‌شده</translation>
