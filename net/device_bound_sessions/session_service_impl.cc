@@ -451,9 +451,21 @@ void SessionServiceImpl::UnblockDeferredRequests(const SessionKey& session_key,
   auto requests = std::move(it->second);
   deferred_requests_.erase(it);
 
+  base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferredCount",
+                              requests.size());
+
   for (auto& request : requests) {
     base::UmaHistogramTimes("Net.DeviceBoundSessions.RequestDeferredDuration",
                             request.timer.Elapsed());
+    base::UmaHistogramEnumeration("Net.DeviceBoundSessions.DeferralResult",
+                                  result);
+    if (request.timer.Elapsed() <= base::Milliseconds(1)) {
+      base::UmaHistogramEnumeration(
+          "Net.DeviceBoundSessions.DeferralResult.Instant", result);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Net.DeviceBoundSessions.DeferralResult.Slow", result);
+    }
     std::move(request.callback).Run(result);
   }
 }

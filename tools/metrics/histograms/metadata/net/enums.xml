@@ -271,6 +271,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
 
+<!-- LINT.IfChange(DeviceBoundSessionRefreshResult) -->
+
+<enum name="DeviceBoundSessionRefreshResult">
+  <int value="0" label="Refreshed"/>
+  <int value="1" label="Service initialized"/>
+  <int value="2" label="Endpoint unreachable"/>
+  <int value="3" label="Endpoint transient error"/>
+  <int value="4" label="Quota exceeded"/>
+  <int value="5" label="Fatal error"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_service.h:DeviceBoundSessionRefreshResult) -->
+
 <!-- LINT.IfChange(DeviceBoundSessionUsage) -->
 
 <enum name="DeviceBoundSessionUsage">
