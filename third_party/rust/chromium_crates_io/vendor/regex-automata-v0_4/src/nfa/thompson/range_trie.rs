@@ -869,7 +869,7 @@ impl fmt::Debug for RangeTrie {
         writeln!(f)?;
         for (i, state) in self.states.iter().enumerate() {
             let status = if i == FINAL.as_usize() { '*' } else { ' ' };
-            writeln!(f, "{}{:06}: {:?}", status, i, state)?;
+            writeln!(f, "{status}{i:06}: {state:?}")?;
         }
         Ok(())
     }
@@ -880,10 +880,10 @@ impl fmt::Debug for State {
         let rs = self
             .transitions
             .iter()
-            .map(|t| format!("{:?}", t))
+            .map(|t| format!("{t:?}"))
             .collect::<Vec<String>>()
             .join(", ");
-        write!(f, "{}", rs)
+        write!(f, "{rs}")
     }
 }
 

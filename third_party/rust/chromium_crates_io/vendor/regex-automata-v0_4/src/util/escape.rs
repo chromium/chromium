@@ -57,7 +57,7 @@ impl<'a> core::fmt::Debug for DebugHaystack<'a> {
             let ch = match result {
                 Ok(ch) => ch,
                 Err(byte) => {
-                    write!(f, r"\x{:02x}", byte)?;
+                    write!(f, r"\x{byte:02x}")?;
                     bytes = &bytes[1..];
                     continue;
                 }

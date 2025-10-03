@@ -1902,10 +1902,10 @@ impl core::fmt::Display for MatchError {
                 offset,
             ),
             MatchErrorKind::GaveUp { offset } => {
-                write!(f, "gave up searching at offset {}", offset)
+                write!(f, "gave up searching at offset {offset}")
             }
             MatchErrorKind::HaystackTooLong { len } => {
-                write!(f, "haystack of length {} is too long", len)
+                write!(f, "haystack of length {len} is too long")
             }
             MatchErrorKind::UnsupportedAnchored { mode: Anchored::Yes } => {
                 write!(f, "anchored searches are not supported or enabled")

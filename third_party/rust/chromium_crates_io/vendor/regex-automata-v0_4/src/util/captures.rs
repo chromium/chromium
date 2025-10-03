@@ -1227,7 +1227,7 @@ impl<'a> core::fmt::Debug for CapturesDebugMap<'a> {
             fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
                 write!(f, "{}", self.0)?;
                 if let Some(name) = self.1 {
-                    write!(f, "/{:?}", name)?;
+                    write!(f, "/{name:?}")?;
                 }
                 Ok(())
             }
@@ -1606,6 +1606,9 @@ impl GroupInfo {
             }
         }
         group_info.fixup_slot_ranges()?;
+        group_info.slot_ranges.shrink_to_fit();
+        group_info.name_to_index.shrink_to_fit();
+        group_info.index_to_name.shrink_to_fit();
         Ok(GroupInfo(Arc::new(group_info)))
     }
 
@@ -2433,7 +2436,7 @@ impl core::fmt::Display for GroupInfoError {
 
         match self.kind {
             TooManyPatterns { ref err } => {
-                write!(f, "too many patterns to build capture info: {}", err)
+                write!(f, "too many patterns to build capture info: {err}")
             }
             TooManyGroups { pattern, minimum } => {
                 write!(

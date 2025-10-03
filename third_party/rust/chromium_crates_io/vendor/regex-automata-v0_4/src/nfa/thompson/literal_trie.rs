@@ -419,7 +419,7 @@ impl core::fmt::Debug for State {
         let mut spacing = " ";
         for (i, chunk) in self.chunks().enumerate() {
             if i > 0 {
-                write!(f, "{}MATCH", spacing)?;
+                write!(f, "{spacing}MATCH")?;
             }
             spacing = "";
             for (j, t) in chunk.iter().enumerate() {
@@ -429,7 +429,7 @@ impl core::fmt::Debug for State {
                 } else if j > 0 {
                     write!(f, ", ")?;
                 }
-                write!(f, "{:?}", t)?;
+                write!(f, "{t:?}")?;
             }
         }
         Ok(())

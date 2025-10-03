@@ -265,9 +265,8 @@ impl<'h> Searcher<'h> {
         match self.try_advance_half(finder) {
             Ok(m) => m,
             Err(err) => panic!(
-                "unexpected regex half find error: {}\n\
+                "unexpected regex half find error: {err}\n\
                  to handle find errors, use 'try' or 'search' methods",
-                err,
             ),
         }
     }
@@ -380,9 +379,8 @@ impl<'h> Searcher<'h> {
         match self.try_advance(finder) {
             Ok(m) => m,
             Err(err) => panic!(
-                "unexpected regex find error: {}\n\
+                "unexpected regex find error: {err}\n\
                  to handle find errors, use 'try' or 'search' methods",
-                err,
             ),
         }
     }
@@ -788,9 +786,8 @@ where
         match self.0.next()? {
             Ok(m) => Some(m),
             Err(err) => panic!(
-                "unexpected regex half find error: {}\n\
+                "unexpected regex half find error: {err}\n\
                  to handle find errors, use 'try' or 'search' methods",
-                err,
             ),
         }
     }
@@ -903,9 +900,8 @@ where
         match self.0.next()? {
             Ok(m) => Some(m),
             Err(err) => panic!(
-                "unexpected regex find error: {}\n\
+                "unexpected regex find error: {err}\n\
                  to handle find errors, use 'try' or 'search' methods",
-                err,
             ),
         }
     }
@@ -1018,9 +1014,8 @@ where
         match self.0.next()? {
             Ok(m) => Some(m),
             Err(err) => panic!(
-                "unexpected regex captures error: {}\n\
+                "unexpected regex captures error: {err}\n\
                  to handle find errors, use 'try' or 'search' methods",
-                err,
             ),
         }
     }

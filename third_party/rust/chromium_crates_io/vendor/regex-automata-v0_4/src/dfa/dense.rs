@@ -1274,6 +1274,10 @@ impl Builder {
         }
         // Look for and set the universal starting states.
         dfa.set_universal_starts();
+        dfa.tt.table.shrink_to_fit();
+        dfa.st.table.shrink_to_fit();
+        dfa.ms.slices.shrink_to_fit();
+        dfa.ms.pattern_ids.shrink_to_fit();
         Ok(dfa)
     }
 
@@ -2837,8 +2841,8 @@ impl OwnedDFA {
             }
             assert!(
                 !matches.contains_key(&start_id),
-                "{:?} is both a start and a match state, which is not allowed",
-                start_id,
+                "{start_id:?} is both a start and a match state, \
+                 which is not allowed",
             );
             is_start.insert(start_id);
         }
@@ -3098,7 +3102,7 @@ impl<T: AsRef<[u32]>> fmt::Debug for DFA<T> {
             } else {
                 self.to_index(state.id())
             };
-            write!(f, "{:06?}: ", id)?;
+            write!(f, "{id:06?}: ")?;
             state.fmt(f)?;
             write!(f, "\n")?;
         }
@@ -3114,11 +3118,11 @@ impl<T: AsRef<[u32]>> fmt::Debug for DFA<T> {
                     Anchored::No => writeln!(f, "START-GROUP(unanchored)")?,
                     Anchored::Yes => writeln!(f, "START-GROUP(anchored)")?,
                     Anchored::Pattern(pid) => {
-                        writeln!(f, "START_GROUP(pattern: {:?})", pid)?
+                        writeln!(f, "START_GROUP(pattern: {pid:?})")?
                     }
                 }
             }
-            writeln!(f, "  {:?} => {:06?}", sty, id)?;
+            writeln!(f, "  {sty:?} => {id:06?}")?;
         }
         if self.pattern_len() > 1 {
             writeln!(f, "")?;
@@ -3129,13 +3133,13 @@ impl<T: AsRef<[u32]>> fmt::Debug for DFA<T> {
                 } else {
                     self.to_index(id)
                 };
-                write!(f, "MATCH({:06?}): ", id)?;
+                write!(f, "MATCH({id:06?}): ")?;
                 for (i, &pid) in self.ms.pattern_id_slice(i).iter().enumerate()
                 {
                     if i > 0 {
                         write!(f, ", ")?;
                     }
-                    write!(f, "{:?}", pid)?;
+                    write!(f, "{pid:?}")?;
                 }
                 writeln!(f, "")?;
             }
@@ -3525,8 +3529,8 @@ impl TransitionTable<Vec<u32>> {
     ///
     /// Both id1 and id2 must point to valid states, otherwise this panics.
     fn swap(&mut self, id1: StateID, id2: StateID) {
-        assert!(self.is_valid(id1), "invalid 'id1' state: {:?}", id1);
-        assert!(self.is_valid(id2), "invalid 'id2' state: {:?}", id2);
+        assert!(self.is_valid(id1), "invalid 'id1' state: {id1:?}");
+        assert!(self.is_valid(id2), "invalid 'id2' state: {id2:?}");
         // We only need to swap the parts of the state that are used. So if the
         // stride is 64, but the alphabet length is only 33, then we save a lot
         // of work.
@@ -4277,7 +4281,7 @@ impl<T: AsMut<[u32]>> StartTable<T> {
                 let len = self
                     .pattern_len
                     .expect("start states for each pattern enabled");
-                assert!(pid < len, "invalid pattern ID {:?}", pid);
+                assert!(pid < len, "invalid pattern ID {pid:?}");
                 self.stride
                     .checked_mul(pid)
                     .unwrap()
@@ -4868,9 +4872,9 @@ impl<'a> fmt::Debug for State<'a> {
                 write!(f, ", ")?;
             }
             if start == end {
-                write!(f, "{:?} => {:?}", start, id)?;
+                write!(f, "{start:?} => {id:?}")?;
             } else {
-                write!(f, "{:?}-{:?} => {:?}", start, end, id)?;
+                write!(f, "{start:?}-{end:?} => {id:?}")?;
             }
         }
         Ok(())
@@ -5135,7 +5139,7 @@ impl core::fmt::Display for BuildError {
         match self.kind() {
             BuildErrorKind::NFA(_) => write!(f, "error building NFA"),
             BuildErrorKind::Unsupported(ref msg) => {
-                write!(f, "unsupported regex feature for DFAs: {}", msg)
+                write!(f, "unsupported regex feature for DFAs: {msg}")
             }
             BuildErrorKind::TooManyStates => write!(
                 f,
@@ -5167,11 +5171,10 @@ impl core::fmt::Display for BuildError {
             ),
             BuildErrorKind::DFAExceededSizeLimit { limit } => write!(
                 f,
-                "DFA exceeded size limit of {:?} during determinization",
-                limit,
+                "DFA exceeded size limit of {limit:?} during determinization",
             ),
             BuildErrorKind::DeterminizeExceededSizeLimit { limit } => {
-                write!(f, "determinization exceeded size limit of {:?}", limit)
+                write!(f, "determinization exceeded size limit of {limit:?}")
             }
         }
     }

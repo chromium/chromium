@@ -408,7 +408,7 @@ impl OnePassEngine {
             let engine = match result {
                 Ok(engine) => engine,
                 Err(_err) => {
-                    debug!("OnePass failed to build: {}", _err);
+                    debug!("OnePass failed to build: {_err}");
                     return None;
                 }
             };
@@ -606,7 +606,7 @@ impl HybridEngine {
             let fwd = match result {
                 Ok(fwd) => fwd,
                 Err(_err) => {
-                    debug!("forward lazy DFA failed to build: {}", _err);
+                    debug!("forward lazy DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -622,7 +622,7 @@ impl HybridEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("reverse lazy DFA failed to build: {}", _err);
+                    debug!("reverse lazy DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -900,7 +900,7 @@ impl DFAEngine {
             let fwd = match result {
                 Ok(fwd) => fwd,
                 Err(_err) => {
-                    debug!("forward full DFA failed to build: {}", _err);
+                    debug!("forward full DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -924,7 +924,7 @@ impl DFAEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("reverse full DFA failed to build: {}", _err);
+                    debug!("reverse full DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -1132,7 +1132,7 @@ impl ReverseHybridEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("lazy reverse DFA failed to build: {}", _err);
+                    debug!("lazy reverse DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -1299,7 +1299,7 @@ impl ReverseDFAEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("full reverse DFA failed to build: {}", _err);
+                    debug!("full reverse DFA failed to build: {_err}");
                     return None;
                 }
             };

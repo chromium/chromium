@@ -120,7 +120,7 @@ fn run_test(
                 TestResult::skip()
             }
         },
-        name => TestResult::fail(&format!("unrecognized test name: {}", name)),
+        name => TestResult::fail(&format!("unrecognized test name: {name}")),
     }
 }
 

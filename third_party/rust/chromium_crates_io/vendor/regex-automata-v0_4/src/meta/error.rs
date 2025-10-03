@@ -234,7 +234,7 @@ impl From<MatchError> for RetryFailError {
             // backtracker's wrapper will never hand out a backtracker engine
             // when the haystack would be too long.
             HaystackTooLong { .. } | UnsupportedAnchored { .. } => {
-                unreachable!("found impossible error in meta engine: {}", merr)
+                unreachable!("found impossible error in meta engine: {merr}")
             }
         }
     }

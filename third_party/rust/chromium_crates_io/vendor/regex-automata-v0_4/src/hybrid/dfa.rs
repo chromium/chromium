@@ -2598,8 +2598,8 @@ impl<'i, 'c> Lazy<'i, 'c> {
         unit: alphabet::Unit,
         to: LazyStateID,
     ) {
-        assert!(self.as_ref().is_valid(from), "invalid 'from' id: {:?}", from);
-        assert!(self.as_ref().is_valid(to), "invalid 'to' id: {:?}", to);
+        assert!(self.as_ref().is_valid(from), "invalid 'from' id: {from:?}");
+        assert!(self.as_ref().is_valid(to), "invalid 'to' id: {to:?}");
         let offset =
             from.as_usize_untagged() + self.dfa.classes.get_by_unit(unit);
         self.cache.trans[offset] = to;
@@ -4080,10 +4080,9 @@ impl Builder {
             // and mush on.
             if self.config.get_skip_cache_capacity_check() {
                 debug!(
-                    "given capacity ({}) is too small, \
+                    "given capacity ({cache_capacity}) is too small, \
                      since skip_cache_capacity_check is enabled, \
-                     setting cache capacity to minimum ({})",
-                    cache_capacity, min_cache,
+                     setting cache capacity to minimum ({min_cache})",
                 );
                 cache_capacity = min_cache;
             } else {

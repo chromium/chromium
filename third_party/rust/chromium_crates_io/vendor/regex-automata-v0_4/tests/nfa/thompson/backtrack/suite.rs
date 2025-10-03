@@ -153,7 +153,7 @@ fn run_test(
                     .map(|caps| testify_captures(&caps)),
             ),
         },
-        name => TestResult::fail(&format!("unrecognized test name: {}", name)),
+        name => TestResult::fail(&format!("unrecognized test name: {name}")),
     }
 }
 

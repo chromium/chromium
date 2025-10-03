@@ -3413,9 +3413,9 @@ impl Builder {
                     .last()
                     .unwrap_or(0);
                 if maxoff < p.len() {
-                    debug!("{:?}: {}[... snip ...]", pid, &p[..maxoff]);
+                    debug!("{pid:?}: {}[... snip ...]", &p[..maxoff]);
                 } else {
-                    debug!("{:?}: {}", pid, p);
+                    debug!("{pid:?}: {p}");
                 }
             }
         }

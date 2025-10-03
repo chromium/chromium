@@ -70,7 +70,7 @@ impl AhoCorasick {
             let ac = match result {
                 Ok(ac) => ac,
                 Err(_err) => {
-                    debug!("aho-corasick prefilter failed to build: {}", _err);
+                    debug!("aho-corasick prefilter failed to build: {_err}");
                     return None;
                 }
             };

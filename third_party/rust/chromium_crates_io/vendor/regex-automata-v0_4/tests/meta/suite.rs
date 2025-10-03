@@ -164,7 +164,7 @@ fn run_test(re: &Regex, test: &RegexTest) -> TestResult {
                 TestResult::skip()
             }
         },
-        name => TestResult::fail(&format!("unrecognized test name: {}", name)),
+        name => TestResult::fail(&format!("unrecognized test name: {name}")),
     }
 }
 

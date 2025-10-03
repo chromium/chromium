@@ -179,7 +179,7 @@ dependencies = [
 
 [[package]]
 name = "regex-automata"
-version = "0.4.10"
+version = "0.4.11"
 dependencies = [
  "aho-corasick",
  "anyhow",

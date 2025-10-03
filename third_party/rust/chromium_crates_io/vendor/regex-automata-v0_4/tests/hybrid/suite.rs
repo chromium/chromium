@@ -232,7 +232,7 @@ fn run_test(
                 TestResult::which(patset.iter().map(|p| p.as_usize()))
             }
         },
-        name => TestResult::fail(&format!("unrecognized test name: {}", name)),
+        name => TestResult::fail(&format!("unrecognized test name: {name}")),
     }
 }
 
