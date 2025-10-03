@@ -254,8 +254,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   // For kWebSignin access point, wait for sign-in cookies before reporting
   // success.
   if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-    CoreAccountId accountId = CoreAccountId::FromGaiaId(
-        GaiaId(base::SysNSStringToUTF8(_signingIdentity.gaiaID)));
+    CoreAccountId accountId =
+        CoreAccountId::FromGaiaId(_signingIdentity.gaiaId);
     __weak __typeof(self) weakSelf = self;
     base::RepeatingCallback<void(signin::WebSigninTracker::Result)> callback =
         base::BindRepeating(

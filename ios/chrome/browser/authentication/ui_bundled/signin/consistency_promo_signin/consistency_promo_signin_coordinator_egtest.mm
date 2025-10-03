@@ -197,9 +197,8 @@
 - (void)testFromSettingsWithAuthError {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey
-      setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
-                                           GaiaId(fakeIdentity.gaiaID))];
+  [SigninEarlGrey setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                                       fakeIdentity.gaiaId)];
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI

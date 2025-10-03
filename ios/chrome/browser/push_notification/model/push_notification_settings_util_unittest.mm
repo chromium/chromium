@@ -50,7 +50,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         {/*enabled=*/kContentNotificationExperiment, kSafetyCheckNotifications},
         {/*disabled=*/});
     AddTestCasesToManager(manager_, profile_attributes_storage(),
-                          GaiaId(fake_id_.gaiaID), profile_name);
+                          fake_id_.gaiaId, profile_name);
   }
   ProfileAttributesStorageIOS* profile_attributes_storage() const {
     return GetApplicationContext()
@@ -112,56 +112,44 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
 TEST_F(PushNotificationSettingsUtilTest, DISABLED_TestPermissionState) {
   // Enable Notifications in random order.
   ClientPermissionState state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+      GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnNotificationForKey(YES, kCommerceNotificationKey, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnEmailNotifications(YES, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnAppLevelNotificationForKey(YES, kSafetyCheckNotificationKey);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(YES, kContentNotificationKey, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(YES, kSportsNotificationKey, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
   // Start disabling in a different order.
   TurnAppLevelNotificationForKey(NO, kTipsNotificationKey);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(NO, kContentNotificationKey, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnAppLevelNotificationForKey(NO, kSafetyCheckNotificationKey);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(NO, kCommerceNotificationKey, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnEmailNotifications(NO, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(NO, kSportsNotificationKey, pref_service_);
-  state =
-      GetNotificationPermissionState(GaiaId(fake_id_.gaiaID), pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
 }
 
@@ -169,28 +157,27 @@ TEST_F(PushNotificationSettingsUtilTest, DISABLED_TestPermissionState) {
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestMobileNotificationsEnabledForCommerce) {
-  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  BOOL isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_FALSE(isMobileNotificationsEnabled);
   TurnNotificationForKey(YES, kCommerceNotificationKey, pref_service_);
-  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_TRUE(isMobileNotificationsEnabled);
 }
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestGetClientPermissionStateForCommerce) {
-  ClientPermissionState state =
-      GetClientPermissionState(PushNotificationClientId::kCommerce,
-                               GaiaId(fake_id_.gaiaID), pref_service_);
+  ClientPermissionState state = GetClientPermissionState(
+      PushNotificationClientId::kCommerce, fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnNotificationForKey(YES, kCommerceNotificationKey, pref_service_);
   state = GetClientPermissionState(PushNotificationClientId::kCommerce,
-                                   GaiaId(fake_id_.gaiaID), pref_service_);
+                                   fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnEmailNotifications(YES, pref_service_);
   state = GetClientPermissionState(PushNotificationClientId::kCommerce,
-                                   GaiaId(fake_id_.gaiaID), pref_service_);
+                                   fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
 }
 
@@ -198,47 +185,45 @@ TEST_F(PushNotificationSettingsUtilTest,
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestMobileNotificationsEnabledForContent) {
-  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  BOOL isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_FALSE(isMobileNotificationsEnabled);
   TurnNotificationForKey(YES, kContentNotificationKey, pref_service_);
-  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_TRUE(isMobileNotificationsEnabled);
 }
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestGetClientPermissionStateForContent) {
-  ClientPermissionState state =
-      GetClientPermissionState(PushNotificationClientId::kContent,
-                               GaiaId(fake_id_.gaiaID), pref_service_);
+  ClientPermissionState state = GetClientPermissionState(
+      PushNotificationClientId::kContent, fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnNotificationForKey(YES, kContentNotificationKey, pref_service_);
   state = GetClientPermissionState(PushNotificationClientId::kContent,
-                                   GaiaId(fake_id_.gaiaID), pref_service_);
+                                   fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
 }
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestMobileNotificationsEnabledForSports) {
-  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  BOOL isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_FALSE(isMobileNotificationsEnabled);
   TurnNotificationForKey(YES, kSportsNotificationKey, pref_service_);
-  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_TRUE(isMobileNotificationsEnabled);
 }
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestGetClientPermissionStateForSports) {
-  ClientPermissionState state =
-      GetClientPermissionState(PushNotificationClientId::kSports,
-                               GaiaId(fake_id_.gaiaID), pref_service_);
+  ClientPermissionState state = GetClientPermissionState(
+      PushNotificationClientId::kSports, fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnNotificationForKey(YES, kSportsNotificationKey, pref_service_);
   state = GetClientPermissionState(PushNotificationClientId::kSports,
-                                   GaiaId(fake_id_.gaiaID), pref_service_);
+                                   fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
 }
 
@@ -246,22 +231,22 @@ TEST_F(PushNotificationSettingsUtilTest,
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestMobileNotificationsEnabledForTips) {
-  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  BOOL isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_FALSE(isMobileNotificationsEnabled);
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
-  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_TRUE(isMobileNotificationsEnabled);
 }
 
 TEST_F(PushNotificationSettingsUtilTest, TestGetClientPermissionStateForTips) {
   ClientPermissionState state = GetClientPermissionState(
-      PushNotificationClientId::kTips, GaiaId(fake_id_.gaiaID), pref_service_);
+      PushNotificationClientId::kTips, fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
   state = GetClientPermissionState(PushNotificationClientId::kTips,
-                                   GaiaId(fake_id_.gaiaID), pref_service_);
+                                   fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
 }
 
@@ -269,24 +254,23 @@ TEST_F(PushNotificationSettingsUtilTest, TestGetClientPermissionStateForTips) {
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestMobileNotificationsEnabledForSafetyCheck) {
-  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  BOOL isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_FALSE(isMobileNotificationsEnabled);
   TurnAppLevelNotificationForKey(YES, kSafetyCheckNotificationKey);
-  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(fake_id_.gaiaID), pref_service_);
+  isMobileNotificationsEnabled =
+      IsMobileNotificationsEnabledForAnyClient(fake_id_.gaiaId, pref_service_);
   EXPECT_TRUE(isMobileNotificationsEnabled);
 }
 
 TEST_F(PushNotificationSettingsUtilTest,
        TestGetClientPermissionStateForSafetyCheck) {
-  ClientPermissionState state =
-      GetClientPermissionState(PushNotificationClientId::kSafetyCheck,
-                               GaiaId(fake_id_.gaiaID), pref_service_);
+  ClientPermissionState state = GetClientPermissionState(
+      PushNotificationClientId::kSafetyCheck, fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnAppLevelNotificationForKey(YES, kSafetyCheckNotificationKey);
   state = GetClientPermissionState(PushNotificationClientId::kSafetyCheck,
-                                   GaiaId(fake_id_.gaiaID), pref_service_);
+                                   fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
 }
 

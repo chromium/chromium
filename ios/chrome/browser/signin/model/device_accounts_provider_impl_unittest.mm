@@ -133,6 +133,6 @@ TEST_F(DeviceAccountsProviderImplTest, TestOnAccountOnDeviceUpdated) {
 
   EXPECT_CALL(observer, OnAccountOnDeviceUpdated(Property(
                             &DeviceAccountsProvider::AccountInfo::GetGaiaId,
-                            Eq(GaiaId(fake_identity.gaiaID)))));
+                            Eq(fake_identity.gaiaId))));
   fake_system_identity_manager_->FireIdentityUpdatedNotification(fake_identity);
 }

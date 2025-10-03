@@ -131,7 +131,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         kSettingsTrackingPriceMobileNotificationsCellId;
     _mobileNotificationItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
-            PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
+            PushNotificationClientId::kCommerce, _identity.gaiaId);
     _mobileNotificationItem.target = self;
     _mobileNotificationItem.selector =
         @selector(mobileNotificationSwitchToggled:);
@@ -196,7 +196,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   self.mobileNotificationItem.on = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
+          PushNotificationClientId::kCommerce, _identity.gaiaId);
   [self.consumer setMobileNotificationItem:self.mobileNotificationItem];
 }
 

@@ -104,13 +104,13 @@ class AuthenticationFlowTest : public PlatformTest,
       managed_profile1_ = CreateProfile(
           *GetApplicationContext()
                ->GetAccountProfileMapper()
-               ->FindProfileNameForGaiaID(GaiaId(managed_identity1_.gaiaID)));
+               ->FindProfileNameForGaiaID(managed_identity1_.gaiaId));
       managed_browser1_ =
           std::make_unique<TestBrowser>(managed_profile1_.get());
       managed_profile2_ = CreateProfile(
           *GetApplicationContext()
                ->GetAccountProfileMapper()
-               ->FindProfileNameForGaiaID(GaiaId(managed_identity2_.gaiaID)));
+               ->FindProfileNameForGaiaID(managed_identity2_.gaiaId));
       managed_browser2_ =
           std::make_unique<TestBrowser>(managed_profile2_.get());
     }

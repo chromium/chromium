@@ -70,7 +70,7 @@ class SigninReauthCoordinatorTest : public PlatformTest {
     return signin::MakeAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile_.get()),
         signin::AccountAvailabilityOptionsBuilder()
-            .WithGaiaId(GaiaId(identity.gaiaID))
+            .WithGaiaId(identity.gaiaId)
             .Build(base::SysNSStringToUTF8(identity.userEmail)));
   }
 

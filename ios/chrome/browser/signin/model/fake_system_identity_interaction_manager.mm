@@ -234,7 +234,7 @@ BOOL gUsingUnknownCapabilities;
     if (manager) {
       if (manager->ContainsIdentity(identity)) {
         manager->ClearPersistentAuthErrorForAccount(
-            CoreAccountId::FromGaiaId(GaiaId(identity.gaiaID)));
+            CoreAccountId::FromGaiaId(identity.gaiaId));
       } else if (gUsingUnknownCapabilities) {
         manager->AddIdentityWithUnknownCapabilities(identity);
       } else {
