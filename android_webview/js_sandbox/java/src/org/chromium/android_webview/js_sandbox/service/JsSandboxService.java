@@ -13,13 +13,11 @@ import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** Service that creates a Isolate for Javascript execution. */
-@NullMarked
 public class JsSandboxService extends Service {
     private static final String TAG = "JsSandboxService";
 

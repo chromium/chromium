@@ -20,8 +20,6 @@ import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateSyncCallback;
 import org.chromium.base.Log;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,20 +28,19 @@ import javax.annotation.concurrent.GuardedBy;
 
 /** Service that provides methods for Javascript execution. */
 @JNINamespace("android_webview")
-@NullMarked
 public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     private static final String TAG = "JsSandboxIsolate";
     // mLock must never be held whilst (synchronously) calling back into the client/embedding
     // application, otherwise it's entirely possible for the embedder to then call back into service
     // code (on another thread) and then try to take mLock again and therefore deadlock.
     private final Object mLock = new Object();
-    private final AtomicReference<@Nullable IJsSandboxConsoleCallback> mConsoleCallback =
-            new AtomicReference<@Nullable IJsSandboxConsoleCallback>();
+    private final AtomicReference<IJsSandboxConsoleCallback> mConsoleCallback =
+            new AtomicReference<IJsSandboxConsoleCallback>();
 
     @GuardedBy("mLock")
     private long mJsSandboxIsolate;
 
-    @Nullable private final IJsSandboxIsolateClient mIsolateClient;
+    private final IJsSandboxIsolateClient mIsolateClient;
 
     JsSandboxIsolate() {
         this(0);
@@ -53,7 +50,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         this(maxHeapSizeBytes, null);
     }
 
-    JsSandboxIsolate(long maxHeapSizeBytes, @Nullable IJsSandboxIsolateClient isolateClient) {
+    JsSandboxIsolate(long maxHeapSizeBytes, IJsSandboxIsolateClient isolateClient) {
         mIsolateClient = isolateClient;
         mJsSandboxIsolate =
                 JsSandboxIsolateJni.get()
@@ -139,7 +136,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     //
     // maxCodePoints must be > 0.
     private static String truncateUnicodeString(String original, int maxLength) {
-        if (original.length() <= maxLength) {
+        if (original == null || original.length() <= maxLength) {
             return original;
         }
         if (Character.isHighSurrogate(original.charAt(maxLength - 1))) {
@@ -193,7 +190,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
 
     // Checks for errors thrown by client side while reading the stream and closes the Pfd.
     @CalledByNative
-    private static @Nullable String checkStreamingErrorAndClosePfd(ParcelFileDescriptor pfd) {
+    private static String checkStreamingErrorAndClosePfd(ParcelFileDescriptor pfd) {
         try {
             if (pfd.canDetectErrors()) {
                 try {
@@ -215,7 +212,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     }
 
     @Override
-    public void setConsoleCallback(@Nullable IJsSandboxConsoleCallback callback) {
+    public void setConsoleCallback(IJsSandboxConsoleCallback callback) {
         synchronized (mLock) {
             if (mJsSandboxIsolate == 0) {
                 throw new IllegalStateException("setConsoleCallback() called after close()");
