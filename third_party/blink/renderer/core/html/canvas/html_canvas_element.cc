@@ -789,11 +789,7 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   // only WebGL and Canvas2D have specific flows for low latency (for other
   // context types, setting the attribute is a no-op).
   if (LowLatencyEnabled() && (IsWebGL() || IsRenderingContext2D())) {
-    bool resource_is_paintable =
-        IsRenderingContext2D()
-            ? RenderingContext()->IsCanvas2DResourceProviderValid()
-            : true;
-    if (frame_dispatcher_ && !dirty_rect_.IsEmpty() && resource_is_paintable) {
+    if (frame_dispatcher_ && !dirty_rect_.IsEmpty()) {
       if (scoped_refptr<CanvasResource> canvas_resource =
               context_->PaintRenderingResultsToResource(kBackBuffer, reason)) {
         const gfx::Rect src_rect(Size());
