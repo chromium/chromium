@@ -6,8 +6,8 @@
 
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "ios/chrome/browser/enterprise/data_controls/ios_rules_service.h"
-#import "ios/chrome/browser/enterprise/data_controls/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"

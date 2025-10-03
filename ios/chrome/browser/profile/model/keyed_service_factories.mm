@@ -57,7 +57,7 @@
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
-#import "ios/chrome/browser/enterprise/data_controls/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"

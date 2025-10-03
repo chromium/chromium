@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/ios_rules_service.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 
 #import "components/enterprise/data_controls/core/browser/action_context.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/enterprise/data_controls/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"

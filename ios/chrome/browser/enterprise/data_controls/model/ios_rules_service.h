@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_IOS_RULES_SERVICE_H_
-#define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_IOS_RULES_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_IOS_RULES_SERVICE_H_
+#define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_IOS_RULES_SERVICE_H_
 
 #import "components/enterprise/data_controls/core/browser/action_context.h"
 #import "components/enterprise/data_controls/core/browser/rules_service_base.h"
@@ -48,4 +48,4 @@ class IOSRulesService : public RulesServiceBase {
 
 }  // namespace data_controls
 
-#endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_IOS_RULES_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_IOS_RULES_SERVICE_H_

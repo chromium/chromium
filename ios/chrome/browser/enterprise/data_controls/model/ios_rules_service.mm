@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/ios_rules_service.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 
 #import "components/enterprise/data_controls/core/browser/rule.h"
 #import "components/prefs/pref_service.h"
