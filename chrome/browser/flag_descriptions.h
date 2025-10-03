@@ -3712,8 +3712,6 @@ extern const char kAlwaysEnableHdcpType1[];
 extern const char kApnRevampName[];
 extern const char kApnRevampDescription[];
 
-extern const char kArcCustomTabsExperimentName[];
-extern const char kArcCustomTabsExperimentDescription[];
 
 extern const char kArcEnableAttestationName[];
 extern const char kArcEnableAttestationDescription[];

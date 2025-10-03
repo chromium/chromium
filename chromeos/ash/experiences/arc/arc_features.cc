@@ -56,11 +56,6 @@ BASE_FEATURE(kBootCompletedBroadcastFeature,
              "ArcBootCompletedBroadcast",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls experimental Custom Tabs feature for ARC.
-BASE_FEATURE(kCustomTabsExperimentFeature,
-             "ArcCustomTabsExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Defers the ARC actvation until the user session start up tasks
 // are completed to give more resources to critical tasks for user session
 // starting.

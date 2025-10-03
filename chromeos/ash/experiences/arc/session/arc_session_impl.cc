@@ -421,12 +421,7 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   StartParams params;
   params.native_bridge_experiment =
       base::FeatureList::IsEnabled(arc::kNativeBridgeToggleFeature);
-  // Enable Custom Tabs only on Dev and Canary.
-  const bool is_custom_tab_enabled =
-      base::FeatureList::IsEnabled(arc::kCustomTabsExperimentFeature) &&
-      delegate_->GetChannel() != version_info::Channel::STABLE &&
-      delegate_->GetChannel() != version_info::Channel::BETA;
-  params.arc_custom_tabs_experiment = is_custom_tab_enabled;
+  params.arc_custom_tabs_experiment = false;
   params.lcd_density = lcd_density_;
   params.num_cores_disabled = num_cores_disabled;
   params.enable_tts_caching = true;

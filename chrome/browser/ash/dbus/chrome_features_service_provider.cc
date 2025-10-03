@@ -197,7 +197,6 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
     dbus::ExportedObject::ResponseSender response_sender) {
   static const base::Feature constexpr* kFeatureLookup[] = {
       &arc::kBootCompletedBroadcastFeature,
-      &arc::kCustomTabsExperimentFeature,
       &arc::kNativeBridgeToggleFeature,
       &features::kSessionManagerLongKillTimeout,
       &features::kSessionManagerLivenessCheck,

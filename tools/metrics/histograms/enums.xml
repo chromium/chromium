@@ -9077,7 +9077,6 @@ from previous Chrome versions.
   <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
   <int value="-1827136280" label="AndroidComposeplate:disabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
-  <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
   <int value="-1825184776" label="TangibleSync:disabled"/>
   <int value="-1824647193" label="HelpAppOnboardingRevamp:disabled"/>
   <int value="-1824540307" label="NotificationWidthIncrease:enabled"/>
@@ -13618,7 +13617,6 @@ from previous Chrome versions.
   <int value="-189740492"
       label="PolicyIndicationForManagedDefaultSearch:disabled"/>
   <int value="-189543840" label="PageActionsMigration:disabled"/>
-  <int value="-189478545" label="ArcCustomTabsExperiment:enabled"/>
   <int value="-188439713" label="disable-video-capture-use-gpu-memory-buffer"/>
   <int value="-187536302" label="TabstripComboButton:enabled"/>
   <int value="-187506528" label="(Obsolete) CrOSSuspendToDisk:enabled"/>

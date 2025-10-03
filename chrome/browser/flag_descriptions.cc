@@ -6426,12 +6426,6 @@ const char kApnRevampDescription[] =
     "Enables the ChromeOS APN Revamp, which updates cellular network APN "
     "system UI and related infrastructure.";
 
-const char kArcCustomTabsExperimentName[] =
-    "Enable Custom Tabs experiment for ARC";
-const char kArcCustomTabsExperimentDescription[] =
-    "Allow Android apps to use Custom Tabs."
-    "This feature only works on the Canary and Dev channels.";
-
 const char kArcEnableAttestationName[] = "Enable ARC attestation";
 const char kArcEnableAttestationDescription[] =
     "Allow key and ID attestation to run for keymint";
