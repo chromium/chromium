@@ -10,8 +10,6 @@
 // Configuration parameters for LottieAnimation.
 @interface LottieAnimationConfiguration : NSObject
 
-// Path to the json animation file.
-@property(nonatomic, copy) NSString* path;
 // Name of the animation file.
 @property(nonatomic, copy) NSString* animationName;
 // Subdirectory to the json animation file.
@@ -20,6 +18,8 @@
 @property(nonatomic, strong) NSBundle* bundle;
 // The loop behavior of the animation.
 @property(nonatomic, assign) CGFloat loopAnimationCount;
+// Whether the animation should loop or not. Default is NO.
+@property(nonatomic, assign,readonly) BOOL shouldLoop;
 
 @end
 
