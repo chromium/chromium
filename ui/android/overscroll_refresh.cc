@@ -103,13 +103,14 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
     } else if (scrolled_to_bottom_) {  // ydelta < 0
       type = OverscrollAction::kPullFromBottomEdge;
     }
-  } else if (in_x_direction &&
-             (scroll_begin_x_ < edge_width_ ||
-              viewport_width_ - scroll_begin_x_ < edge_width_)) {
+  } else if (in_x_direction) {
     DCHECK(source_device == blink::WebGestureDevice::kTouchpad ||
            source_device == blink::WebGestureDevice::kTouchscreen);
-    // Swipe-to-navigate. Check overscroll-behavior-x
-    if (behavior.x != cc::OverscrollBehavior::Type::kAuto) {
+    bool scroll_from_edge = scroll_begin_x_ < edge_width_ ||
+                            viewport_width_ - scroll_begin_x_ < edge_width_;
+    // Swipe-to-navigate. Check overscroll-behavior-x and scroll start position.
+    if (behavior.x != cc::OverscrollBehavior::Type::kAuto ||
+        !scroll_from_edge) {
       Reset();
       return;
     }

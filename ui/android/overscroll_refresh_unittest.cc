@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "ui/android/overscroll_refresh.h"
+
 #include "base/android/scoped_java_ref.h"
 #include "cc/input/overscroll_behavior.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/overscroll_refresh_handler.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 
@@ -479,6 +481,11 @@ TEST_F(OverscrollRefreshTest, OverscrollBehaviorYNonePreventsTriggerStart) {
 TEST_F(OverscrollRefreshTest, TriggerSwipeToNavigate) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
 
+  // Make sure viewport width is larger than edge width * 2.
+  gfx::SizeF viewport(100, 100);
+  gfx::SizeF content_size(100, 10000);
+  effect.OnFrameUpdated(viewport, gfx::PointF(), content_size, true);
+
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
 
@@ -517,6 +524,31 @@ TEST_F(OverscrollRefreshTest, TriggerSwipeToNavigate) {
   EXPECT_FALSE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullReleased());
   EXPECT_TRUE(GetAndResetRefreshAllowed());
+}
+
+TEST_F(OverscrollRefreshTest, NavigateNotTriggeredIfStartAwayFromEdge) {
+  OverscrollRefresh effect(this, kDefaultEdgeWidth);
+
+  // Make sure viewport width is larger than edge width * 2.
+  gfx::SizeF viewport(100, 100);
+  gfx::SizeF content_size(100, 10000);
+  effect.OnFrameUpdated(viewport, gfx::PointF(), content_size, true);
+
+  // Start from position with x-coordinate towards center by edge width.
+  auto startPos = kStartPos + gfx::Vector2dF(kDefaultEdgeWidth, 0);
+  effect.OnScrollBegin(startPos);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+
+  gfx::Vector2dF scroll_right = gfx::Vector2dF(10, 0);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), scroll_right,
+                        blink::WebGestureDevice::kTouchscreen);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(500, 0)));
+  effect.OnScrollEnd(gfx::Vector2dF());
+  EXPECT_FALSE(GetAndResetPullStarted());
+  EXPECT_FALSE(GetAndResetPullReleased());
 }
 
 TEST_F(OverscrollRefreshTest, OverscrollBehaviorXAutoTriggersStart) {
