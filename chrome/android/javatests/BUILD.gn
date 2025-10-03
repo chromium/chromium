@@ -1370,6 +1370,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
     ":chrome_test_java_helper",
     "//chrome/browser/ui/browser_window/public/android:factory_java",
     "//chrome/browser/ui/browser_window/public/android:java",
+    "//components/tabs/public/android:java",
   ]
 }
 

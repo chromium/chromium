@@ -9,11 +9,11 @@
 #include <optional>
 #include <utility>
 
-#include "base/check.h"
-#include "base/logging.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_android.h"
@@ -22,6 +22,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/android/jni_conversion.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -457,6 +458,11 @@ TabAndroid* TabCollectionTabModelImpl::GetLastShownTabForGroup(
 
 int TabCollectionTabModelImpl::GetIndexOfFirstNonPinnedTab(JNIEnv* env) {
   return tab_strip_collection_->IndexOfFirstNonPinnedTab();
+}
+
+TabStripCollection* TabCollectionTabModelImpl::GetTabStripCollection(
+    JNIEnv* env) {
+  return tab_strip_collection_.get();
 }
 
 // Private methods:

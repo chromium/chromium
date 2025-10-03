@@ -107,6 +107,13 @@ public class TabCollectionTabModelImplTest {
     @Test
     @MediumTest
     @UiThreadTest
+    public void testTabStripCollection() {
+        assertNotNull(mCollectionModel.getTabStripCollection());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
     public void testInitialState() {
         assertTrue(mCollectionModel.isActiveModel());
         assertTrue(mCollectionModel.isInitializationComplete());

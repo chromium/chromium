@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -783,6 +784,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (mNativeTabCollectionTabModelImplPtr == 0) return 0;
         return TabCollectionTabModelImplJni.get()
                 .getIndexOfFirstNonPinnedTab(mNativeTabCollectionTabModelImplPtr);
+    }
+
+    @Override
+    public @Nullable TabStripCollection getTabStripCollection() {
+        if (mNativeTabCollectionTabModelImplPtr == 0) return null;
+        return TabCollectionTabModelImplJni.get()
+                .getTabStripCollection(mNativeTabCollectionTabModelImplPtr);
     }
 
     // TabCloser overrides.
@@ -2344,5 +2352,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
 
         int getIndexOfFirstNonPinnedTab(long nativeTabCollectionTabModelImpl);
+
+        @JniType("tabs::TabStripCollection*")
+        TabStripCollection getTabStripCollection(long nativeTabCollectionTabModelImpl);
     }
 }

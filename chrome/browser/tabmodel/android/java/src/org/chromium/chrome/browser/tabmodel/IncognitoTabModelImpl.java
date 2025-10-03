@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Iterator;
 import java.util.List;
@@ -437,5 +438,10 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public boolean isMuted(Tab tab) {
         return mDelegateModel.isMuted(tab);
+    }
+
+    @Override
+    public @Nullable TabStripCollection getTabStripCollection() {
+        return mDelegateModel.getTabStripCollection();
     }
 }

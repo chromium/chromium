@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -116,7 +117,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @param i The index of the tab to select.
      * @param type The type of selection.
      */
-    void setIndex(int i, final @TabSelectionType int type);
+    void setIndex(int i, @TabSelectionType int type);
 
     /**
      * @return Whether this tab model is currently selected in the correspond {@link
@@ -262,4 +263,10 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
             sTabPinTimestampMap.remove(tab.getId());
         }
     }
+
+    /**
+     * Returns the {@link TabStripCollection} associated with this {@link TabModel} if tab
+     * collections are enabled. Otherwise, returns null.
+     */
+    @Nullable TabStripCollection getTabStripCollection();
 }

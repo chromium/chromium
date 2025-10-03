@@ -151,6 +151,9 @@ class TabCollectionTabModelImpl {
   // Returns the index of the first non-pinned tab.
   int GetIndexOfFirstNonPinnedTab(JNIEnv* env);
 
+  // Returns the TabStripCollection associated with this TabModel.
+  tabs::TabStripCollection* GetTabStripCollection(JNIEnv* env);
+
  private:
   // Returns a safe index for adding or moving a tab or tab group.
   // `is_tab_group` is used to indicate if we are working with a tab or a tab

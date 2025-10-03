@@ -387,6 +387,7 @@ if (_is_default_toolchain) {
       "//components/credential_management/android:java",
       "//components/enterprise/client_certificates/android:browser_binding_java",
       "//components/sync_preferences/cross_device_pref_tracker/android:java",
+      "//components/tabs/public/android:java",
       "//components/visited_url_ranking/public:public_java",
       "//google_apis/gaia/android:java",
 
@@ -3293,6 +3294,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/bookmarks/android:jni_headers",
       "//chrome/browser/partnerbookmarks:jni_headers",
       "//chrome/browser/webid:jni_headers",
+      "//components/tabs/public/android:jni_headers",
     ]
   }
 

@@ -28,6 +28,7 @@ source_set("tab_model") {
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//components/tabs/public/android",
     "//ui/base/unowned_user_data",
     "//url",
   ]
