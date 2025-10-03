@@ -11,6 +11,9 @@
 "cr-upload" = ["util", "exec", "tools/jj/upload.py", "--"]
 "upload" = ["cr-upload"]
 
+"cr-bug" = ["util", "exec", "tools/jj/bug.py", "--"]
+"bug" = ["cr-bug"]
+
 [revset-aliases]
 "trunk()" = "main@origin"
 "immutable_heads()" = "remote_bookmarks() | tags()"

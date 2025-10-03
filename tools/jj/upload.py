@@ -12,15 +12,11 @@ import tempfile
 from util import jj_log
 from util import run_command
 from util import run_jj
+from util import join_revsets
 from util import split_description
 
 _IMMUTABLE_PARENTS = 'parents.filter(|p| p.immutable()).map(|p| p.commit_id())'
 _MUTABLE_PARENTS = 'parents.filter(|p| !p.immutable()).map(|p| p.commit_id())'
-_NAME = '''change_id.short() ++
-if(current_working_copy, " (@)") ++
-" " ++
-description.first_line()
-'''
 
 
 def fatal(*args, **kwargs):
@@ -76,10 +72,8 @@ def main(args):
   if len(revs) == 0:
     rev = '@'
     implicit_revs = True
-  elif len(revs) == 1:
-    rev = revs[0]
   else:
-    rev = '|'.join(f'({r})' for r in revs)
+    rev = join_revsets(revs)
 
   snapshot_taken = False
 
@@ -91,7 +85,6 @@ def main(args):
   to_upload = jj_log(
       revisions=f'mutable()::({rev})',
       templates={
-          'name': _NAME,
           'commit_id': 'commit_id',
           'empty': 'empty',
           'desc': 'description',
@@ -124,14 +117,13 @@ def main(args):
     if 'Bug' not in trailers and 'Fixed' not in trailers:
       logging.warning(
           'Change %s has no associated Bug. If this change has an associated ' +
-          'bug, add Bug: [bug number] or Fixed: [bug number].', name)
+          'bug, run `jj bug add [--inherit]`', name)
 
   if not args.bypass_hooks:
     # Find the commits that `git cl presubmit` will actually run on
     got_presubmits = jj_log(
         revisions=f'mutable()::@',
         templates={
-            'name': _NAME,
             'empty': 'empty',
             'immutable_parents': _IMMUTABLE_PARENTS
         },
