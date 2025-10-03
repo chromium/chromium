@@ -1,0 +1,16 @@
+<style include="settings-shared">
+  :host {
+    display: block;
+  }
+</style>
+<settings-toggle-button id="toggleButton" pref="{{pref}}" label="[[label]]"
+    sub-label="[[subLabel]]"
+    numeric-unchecked-values="[[numericUncheckedValues]]">
+  <div slot="more-actions-after">
+    <cr-expand-button id="expandButton" expanded="{{expanded}}">
+    </cr-expand-button>
+  </div>
+</settings-toggle-button>
+<cr-collapse opened="[[expanded]]">
+  <slot name="collapse"></slot>
+</cr-collapse>

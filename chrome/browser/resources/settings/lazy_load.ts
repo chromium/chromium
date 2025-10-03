@@ -244,6 +244,7 @@ export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './priva
 export {SecurityKeysSubpageElement} from './privacy_page/security_keys_subpage.js';
 export {HttpsFirstModeSetting, SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
 export {SecuritySettingsBundleSetting, SettingsSecurityPageV2Element} from './privacy_page/security_page_v2.js';
+export {SecurityPageFeatureRowElement} from './privacy_page/security_page_feature_row.js';
 export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
 export {PrivacySandboxInterestItemElement} from './privacy_sandbox/privacy_sandbox_interest_item.js';

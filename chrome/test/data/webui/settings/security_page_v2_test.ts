@@ -54,15 +54,16 @@ suite('Main', function() {
   test('SafeBrowsingRowClickExpandsRowAndShowsSafeBrowsingSettings', async function() {
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup'));
 
-    // Click on the row, expands content and we can see the radio group.
-    page.$.safeBrowsingRow.click();
+    // Click on the expand button, expands content and we can see the radio
+    // group.
+    page.$.safeBrowsingRow.$.expandButton.click();
     await microtasksFinished();
     assertTrue(isChildVisible(page, '#safeBrowsingRadioGroup'));
 
-    // Click on the row, collapses content and we can't see the radio group.
-    page.$.safeBrowsingRow.click();
+    // Click on the expand button, collapses content and we can't see the radio
+    // group.
+    page.$.safeBrowsingRow.$.expandButton.click();
     await microtasksFinished();
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup'));
   });
-
 });

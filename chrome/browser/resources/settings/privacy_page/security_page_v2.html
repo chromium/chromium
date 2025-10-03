@@ -55,12 +55,11 @@
     border-top-right-radius: var(--cr-card-border-radius);
   }
 
-  #safeBrowsingRow {
-    flex-direction: column;
-    align-items: flex-start;
+  #safeBrowsingRadioGroup {
+    padding-inline-start: 40px;
   }
 
-  settings-toggle-button:last-of-type {
+  security-page-feature-row {
     border-bottom-left-radius: var(--cr-card-border-radius);
     border-bottom-right-radius: var(--cr-card-border-radius);
   }
@@ -90,37 +89,27 @@
         class="card box">
     </controlled-radio-button>
   </settings-radio-group>
-  <settings-toggle-button
+  <security-page-feature-row id="safeBrowsingRow"
       pref="{{prefs.generated.safe_browsing}}"
       label="$i18n{securitySafeBrowsingTitle}"
       sub-label="$i18n{securitySafeBrowsingDesc}"
-      id="safeBrowsingRow"
       class="box"
-      numeric-unchecked-values="[[safeBrowsingOff_]]"
-      numeric-checked-value="[[safeBrowsingSettingEnum_.STANDARD]]"
-      no-toggle-on-host-click on-click="onSafeBrowsingRowExpanded_">
-    <div id="safeBrowsingRowMoreActions"
-        slot="more-actions">
-      <cr-expand-button id="safeBrowsingRowExpandButton" no-hover
-          expanded="{{safeBrowsingRowExpanded_}}">
-      </cr-expand-button>
+      numeric-unchecked-values="[[safeBrowsingOff_]]">
+    <div slot="collapse">
+      <settings-radio-group id="safeBrowsingRadioGroup"
+          pref="{{prefs.generated.safe_browsing}}"
+          selectable-elements="controlled-radio-button">
+        <controlled-radio-button
+            label="$i18n{securitySafeBrowsingStandardTitle}"
+            name="[[safeBrowsingSettingEnum_.STANDARD]]"
+            pref="[[prefs.generated.safe_browsing]]">
+        </controlled-radio-button>
+        <controlled-radio-button id="enhancedProtectionButton"
+            label="$i18n{securitySafeBrowsingEnhancedTitle}"
+            name="[[safeBrowsingSettingEnum_.ENHANCED]]"
+            pref="[[prefs.generated.safe_browsing]]">
+        </controlled-radio-button>
+      </settings-radio-group>
     </div>
-  </settings-toggle-button>
-  <cr-collapse id="safeBrowsingCollapse"
-      opened="[[safeBrowsingRowExpanded_]]">
-    <settings-radio-group id="safeBrowsingRadioGroup"
-        pref="{{prefs.generated.safe_browsing}}"
-        selectable-elements="controlled-radio-button">
-      <controlled-radio-button
-          label="$i18n{securitySafeBrowsingStandardTitle}"
-          name="[[safeBrowsingSettingEnum_.STANDARD]]"
-          pref="[[prefs.generated.safe_browsing]]">
-      </controlled-radio-button>
-      <controlled-radio-button id="enhancedProtectionButton"
-          label="$i18n{securitySafeBrowsingEnhancedTitle}"
-          name="[[safeBrowsingSettingEnum_.ENHANCED]]"
-          pref="[[prefs.generated.safe_browsing]]">
-      </controlled-radio-button>
-    </settings-radio-group>
-  </cr-collapse>
+  </security-page-feature-row>
 </settings-subpage>

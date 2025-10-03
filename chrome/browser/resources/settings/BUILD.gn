@@ -155,6 +155,7 @@ build_webui("build") {
     "privacy_page/security_keys_subpage.ts",
     "privacy_page/security_page_v2.ts",
     "privacy_page/security_page.ts",
+    "privacy_page/security_page_feature_row.ts",
     "privacy_sandbox/privacy_sandbox_ad_measurement_subpage.ts",
     "privacy_sandbox/privacy_sandbox_fledge_subpage.ts",
     "privacy_sandbox/privacy_sandbox_interest_item.ts",

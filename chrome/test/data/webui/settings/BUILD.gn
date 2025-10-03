@@ -121,6 +121,7 @@ build_webui_tests("build") {
     "security_page_test.ts",
     "security_page_v2_test.ts",
     "settings_category_default_radio_group_test.ts",
+    "security_page_feature_row_test.ts",
     "settings_main_test.ts",
     "settings_main_plugins_test.ts",
     "settings_menu_interactive_ui_test.ts",
