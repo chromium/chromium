@@ -1766,16 +1766,6 @@ class PersonalizedHintsFetcherBrowserTest : public HintsFetcherBrowserTest {
             browser()->profile());
   }
 
-  void PopulateEnabledFeatures(
-      std::vector<base::test::FeatureRefAndParams>* enabled_features) override {
-    base::FieldTrialParams personalized_fetching_params = {
-        {"allowed_contexts", "CONTEXT_BOOKMARKS"},
-    };
-    enabled_features->emplace_back(
-        optimization_guide::features::kOptimizationGuidePersonalizedFetching,
-        personalized_fetching_params);
-  }
-
   void EnableSignin() {
     identity_test_env_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable("user@gmail.com",
@@ -1828,9 +1818,10 @@ IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, NoUserSignIn) {
   SetExpectedBearerAccessToken(std::string());
   CanApplyOptimizationOnDemand(
       optimization_guide::proto::OptimizationType::NOSCRIPT,
-      optimization_guide::proto::CONTEXT_BOOKMARKS);
+      optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.Bookmarks",
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "PageInsightsHub",
       optimization_guide::FetcherRequestStatus::kSuccess, 1);
 }
 
@@ -1843,9 +1834,10 @@ IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, UserSignedIn) {
   SetExpectedBearerAccessToken("Bearer access_token");
   CanApplyOptimizationOnDemand(
       optimization_guide::proto::OptimizationType::NOSCRIPT,
-      optimization_guide::proto::CONTEXT_BOOKMARKS);
+      optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.Bookmarks",
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "PageInsightsHub",
       optimization_guide::FetcherRequestStatus::kSuccess, 1);
 
   // Only the enabled RequestContext will have access token enabled.

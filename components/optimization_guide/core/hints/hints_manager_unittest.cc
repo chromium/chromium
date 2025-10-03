@@ -3598,11 +3598,7 @@ TEST_F(HintsManagerComponentSkipProcessingTest, ProcessHintsWithExistingPref) {
 
 class HintsManagerPersonalizedFetchingTest : public HintsManagerFetchingTest {
  public:
-  HintsManagerPersonalizedFetchingTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOptimizationGuidePersonalizedFetching,
-        {{"allowed_contexts", "CONTEXT_BOOKMARKS"}});
-  }
+  HintsManagerPersonalizedFetchingTest() = default;
 
   HintsManagerPersonalizedFetchingTest(
       const HintsManagerPersonalizedFetchingTest&) = delete;
@@ -3649,7 +3645,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest,
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
              const base::flat_map<proto::OptimizationType,
@@ -3690,7 +3686,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest, TokenFailure) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
              const base::flat_map<proto::OptimizationType,
@@ -3730,7 +3726,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest, NoUserSignIn) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
              const base::flat_map<proto::OptimizationType,

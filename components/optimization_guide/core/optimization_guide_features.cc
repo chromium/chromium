@@ -84,12 +84,6 @@ BASE_FEATURE(kOptimizationGuideFetchingForSRP,
 // Kill switch for disabling model quality logging.
 BASE_FEATURE(kModelQualityLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables fetching personalized metadata from the Optimization Guide Service
-// (on-demand fetching).
-BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
-             "OptimizationPersonalizedHintsFetching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // An emergency kill switch feature to stop serving certain model versions per
 // optimization target. This is useful in exceptional situations when a bad
 // model version got served that lead to crashes or critical failures, and an
@@ -259,25 +253,7 @@ bool ShouldPersistHintsToDisk() {
 
 RequestContextSet GetAllowedContextsForPersonalizedMetadata() {
   RequestContextSet allowed_contexts;
-  if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
-    return allowed_contexts;
-  }
-  base::FieldTrialParams params;
-  if (base::GetFieldTrialParamsByFeature(kOptimizationGuidePersonalizedFetching,
-                                         &params) &&
-      params.contains("allowed_contexts")) {
-    for (const auto& context_str : base::SplitString(
-             base::GetFieldTrialParamValueByFeature(
-                 kOptimizationGuidePersonalizedFetching, "allowed_contexts"),
-             ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-      proto::RequestContext context;
-      if (proto::RequestContext_Parse(context_str, &context)) {
-        allowed_contexts.Put(context);
-      }
-    }
-  } else {
-    allowed_contexts.Put(proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB);
-  }
+  allowed_contexts.Put(proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB);
   return allowed_contexts;
 }
 

@@ -1857,9 +1857,6 @@ extern const char kOptimizationGuideOnDeviceModelDescription[];
 extern const char kOptimizationGuideOnDeviceModelAndroidName[];
 extern const char kOptimizationGuideOnDeviceModelAndroidDescription[];
 
-extern const char kOptimizationGuidePersonalizedFetchingName[];
-extern const char kOptimizationGuidePersonalizedFetchingDescription[];
-
 extern const char kOptimizationGuidePushNotificationName[];
 extern const char kOptimizationGuidePushNotificationDescription[];
 
