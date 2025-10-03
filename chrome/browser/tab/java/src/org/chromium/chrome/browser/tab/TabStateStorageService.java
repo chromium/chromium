@@ -37,7 +37,7 @@ public class TabStateStorageService {
      * @param tab The tab to save to storage.
      */
     public void saveTabData(Tab tab) {
-        TabStateStorageServiceJni.get().saveTab(mNativeTabStateStorageService, tab);
+        TabStateStorageServiceJni.get().save(mNativeTabStateStorageService, tab);
     }
 
     /**
@@ -93,7 +93,7 @@ public class TabStateStorageService {
 
     @NativeMethods
     interface Natives {
-        void saveTab(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
+        void save(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
 
         void loadAllTabs(long nativeTabStateStorageServiceAndroid, Callback<TabState[]> callback);
     }

@@ -36,8 +36,8 @@ class TabStateStorageService : public KeyedService,
       std::unique_ptr<TabStoragePackager>);
   ~TabStateStorageService() override;
 
-  void SaveTab(const TabInterface* tab);
-  void SaveCollection(const tabs::TabCollection* collection);
+  void Save(const TabInterface* tab);
+  void Save(const TabCollection* collection);
 
   void LoadAllTabs(LoadAllTabsCallback callback);
 

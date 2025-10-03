@@ -88,8 +88,8 @@ TabStateStorageServiceAndroid::TabStateStorageServiceAndroid(
 
 TabStateStorageServiceAndroid::~TabStateStorageServiceAndroid() = default;
 
-void TabStateStorageServiceAndroid::SaveTab(JNIEnv* env, TabAndroid* tab) {
-  tab_state_storage_service_->SaveTab(tab);
+void TabStateStorageServiceAndroid::Save(JNIEnv* env, TabAndroid* tab) {
+  tab_state_storage_service_->Save(tab);
 }
 
 void TabStateStorageServiceAndroid::LoadAllTabs(

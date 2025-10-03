@@ -23,7 +23,7 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
       TabStateStorageService* tab_state_storage_service);
   ~TabStateStorageServiceAndroid() override;
 
-  void SaveTab(JNIEnv* env, TabAndroid* tab);
+  void Save(JNIEnv* env, TabAndroid* tab);
 
   void LoadAllTabs(JNIEnv* env,
                    const jni_zero::JavaParamRef<jobject>& j_callback);

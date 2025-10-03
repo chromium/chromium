@@ -23,7 +23,7 @@ TabStateStorageService::TabStateStorageService(
 
 TabStateStorageService::~TabStateStorageService() = default;
 
-void TabStateStorageService::SaveTab(const TabInterface* tab) {
+void TabStateStorageService::Save(const TabInterface* tab) {
   if (!packager_) {
     return;
   }
@@ -34,8 +34,7 @@ void TabStateStorageService::SaveTab(const TabInterface* tab) {
   // TODO(https://crbug.com/448875689): Save through backend when we have an id.
 }
 
-void TabStateStorageService::SaveCollection(
-    const tabs::TabCollection* collection) {
+void TabStateStorageService::Save(const TabCollection* collection) {
   if (!packager_) {
     return;
   }
