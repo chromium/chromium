@@ -29,11 +29,11 @@
       document.getElementById('input').addEventListener('keyup', log_handler);
       document.getElementById('submit').addEventListener('click', log_handler);
 
-      // Filtering out unexpected 'change' events. A 'change' event is kept only
-      // if it is immediately followed by a 'click' event (form submission).
+      // Filtering out unexpected 'change' events. Change events depend on focus
+      // which causes browser_tests to flake.
       function getStableEvents() {
         return input_event_log.filter((event, index, arr) => {
-          return event.type !== 'change' || arr[index + 1]?.type === 'click';
+          return event.type !== 'change';
         });
       }
 

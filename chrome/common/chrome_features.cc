@@ -389,6 +389,11 @@ const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration{
     &kGlicActorIncrementalTyping,
     "glic-actor-incremental-typing-key-up-duration", base::Milliseconds(5)};
 
+// If the TypeTool is invoked with followed_by_enter, the enter key is
+// dispatched with this delay.
+const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{
+    &kGlicActor, "glic-actor-type-tool-enter-delay", base::Milliseconds(600)};
+
 const base::FeatureParam<bool> kGlicActorScrollTargetIntoView{
     &kGlicActor, "scroll-target-into-view", true};
 

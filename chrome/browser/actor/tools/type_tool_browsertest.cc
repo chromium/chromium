@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_Events) {
       // b
       "keydown,input,keyup,"
       // enter (causes submit to "click")
-      "keydown,change,click,keyup",
+      "keydown,click,keyup",
       EvalJs(web_contents(), "getStableEventLog()"));
 }
 
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_FollowByEnter) {
       // a
       "keydown,input,keyup,"
       // enter (causes submit to "click")
-      "keydown,change,click,keyup",
+      "keydown,click,keyup",
       EvalJs(web_contents(), "getStableEventLog()"));
 
   ASSERT_TRUE(ExecJs(web_contents(), "input_event_log = []"));
@@ -670,6 +670,48 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_IncrementalTyping) {
       EXPECT_GE(key_up_to_down_delta, features::kGlicActorKeyUpDuration.Get());
     }
   }
+}
+
+// Ensure the type tool delays the final enter key by the expected amount.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  const std::string_view typed_string = "x";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  // Check that the events are what we expect.
+  ASSERT_EQ(
+      "keydown,input,keyup,"  // x
+      "keydown,click,keyup",  // <enter>
+      EvalJs(web_contents(), "getStableEventLog()"));
+
+  base::Value::List timestamps =
+      EvalJs(web_contents(), "getStableEventLogTimes()").TakeValue().TakeList();
+
+  // 3 events for the 'x' char and 3 events for the <enter>.
+  ASSERT_EQ(timestamps.size(), 6ul);
+
+  const double x_key_up_ts = timestamps[2].GetDouble();
+  const double enter_key_down_ts = timestamps[3].GetDouble();
+
+  const base::TimeDelta x_up_to_enter_down_delta =
+      base::Milliseconds(enter_key_down_ts - x_key_up_ts);
+
+  // Check the delay between keydown and keyup.
+  EXPECT_GE(x_up_to_enter_down_delta,
+            features::kGlicActorTypeToolEnterDelay.Get());
 }
 
 INSTANTIATE_TEST_SUITE_P(

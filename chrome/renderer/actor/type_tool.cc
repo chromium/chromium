@@ -414,13 +414,31 @@ void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
   if (current_key_ >= target_and_keys_->key_sequence.size()) {
     std::move(callback).Run(MakeOkResult());
   } else {
+    bool is_final_enter_key_down =
+        action_->follow_by_enter &&
+        current_key_ == target_and_keys_->key_sequence.size() - 1 &&
+        !is_key_down_;
+    DCHECK(!is_final_enter_key_down ||
+           target_and_keys_->key_sequence[current_key_].dom_code ==
+               GetEnterKeyParams().dom_code);
+
+    base::TimeDelta delay = (is_key_down_ ? features::kGlicActorKeyDownDuration
+                                          : features::kGlicActorKeyUpDuration)
+                                .Get();
+
+    // If the next key is the final enter key, it has a specific delay to ensure
+    // a user-like input and to allow the page to process the typed text. Only
+    // down is delayed to avoid doubling this longer delay and since most inputs
+    // take action on the down event.
+    if (is_final_enter_key_down) {
+      delay = features::kGlicActorTypeToolEnterDelay.Get();
+    }
+
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TypeTool::ContinueIncrementalTyping,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        (is_key_down_ ? features::kGlicActorKeyDownDuration
-                      : features::kGlicActorKeyUpDuration)
-            .Get());
+        delay);
   }
 }
 
