@@ -5619,6 +5619,9 @@ crbug.com/895257 [ Mac ] external/wpt/css/css-fonts/variations/at-font-face-font
 # Test is flaky under load
 crbug.com/904389 http/tests/preload/delaying_onload_link_preload_after_discovery.html [ Failure Pass ]
 
+# Test is flaky on mac
+crbug.com/448699369 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-self.https.html [ Pass Timeout ]
+
 # Sheriff 2018-11-26
 crbug.com/908347 media/autoplay/webaudio-audio-context-resume.html [ Failure Pass ]
 
