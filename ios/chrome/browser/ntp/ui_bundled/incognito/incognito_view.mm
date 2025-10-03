@@ -268,13 +268,10 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     ];
     ApplyVisualConstraints(constraints, viewsDictionary);
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
-      ]);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(updateToolbarMargins)];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateToolbarMargins)];
   }
   return self;
 }
@@ -313,17 +310,6 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   [self.superview removeLayoutGuide:_bottomUnsafeAreaGuideInSuperview];
   [super willMoveToSuperview:newSuperview];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateToolbarMargins];
-}
-#endif
 
 - (void)safeAreaInsetsDidChange {
   [super safeAreaInsetsDidChange];
