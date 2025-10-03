@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * @fileoverview Installs suggestion management functions on the
@@ -129,7 +129,7 @@ function getPreviousElementInTabOrder(
 
 /**
  * Given an element `elementToCompare`, such as
- * `__gCrWeb.suggestion.isSequentiallyReachable(elementToCompare)`, and a list
+ * `isSequentiallyReachable(elementToCompare)`, and a list
  * of `elements` which are sorted in DOM tree order and contains
  * `elementToCompare`, this method returns the next element in `elements` after
  * `elementToCompare` in the order defined by `comparator`, where an element is
@@ -267,8 +267,8 @@ function isSequentiallyReachable(element: Element): boolean {
  * should be placed before any focusable element whose tabIndex is equal to
  * zero in sequential focus navigation order. Here a value adjusted from
  * tabIndex that reflects this order is returned. That is, given `element1`
- * and `element2`, if `__gCrWeb.suggestion.getTabOrder(element1) >
- * __gCrWeb.suggestion.getTabOrder(element2)`, then `element1` is after
+ * and `element2`, if `getTabOrder(element1) >
+ * getTabOrder(element2)`, then `element1` is after
  * `element2` in sequential navigation.
  *
  * @param element The element of which the sequential navigation order
@@ -387,12 +387,14 @@ function hasPreviousNextElements(
   };
 }
 
-gCrWebLegacy.suggestion = {
-  getNextElementInTabOrder,
-  getPreviousElementInTabOrder,
-  selectNextElement,
-  selectPreviousElement,
-  hasNextElement,
-  hasPreviousElement,
-  hasPreviousNextElements,
-};
+const suggestionApi = new CrWebApi();
+
+suggestionApi.addFunction('getNextElementInTabOrder', getNextElementInTabOrder);
+suggestionApi.addFunction('getPreviousElementInTabOrder', getPreviousElementInTabOrder);
+suggestionApi.addFunction('selectNextElement', selectNextElement);
+suggestionApi.addFunction('selectPreviousElement', selectPreviousElement);
+suggestionApi.addFunction('hasNextElement', hasNextElement);
+suggestionApi.addFunction('hasPreviousElement', hasPreviousElement);
+suggestionApi.addFunction('hasPreviousNextElements', hasPreviousNextElements);
+
+gCrWeb.registerApi('suggestion', suggestionApi);

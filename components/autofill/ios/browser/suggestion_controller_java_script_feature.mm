@@ -30,7 +30,7 @@ void ProcessPreviousAndNextElementsPresenceResult(
   // 1) When there is an exception running the JS
   // 2) There is a race when the page is changing due to which
   // SuggestionControllerJavaScriptFeature has not yet injected the
-  // __gCrWeb.suggestion object.
+  // gCrWeb suggestion API.
   // Handle this case gracefully.
   if (!res || !res->is_dict() || res->GetDict().size() != 2) {
     std::move(completion_handler).Run(false, false);

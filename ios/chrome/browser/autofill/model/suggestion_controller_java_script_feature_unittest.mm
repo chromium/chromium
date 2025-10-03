@@ -81,7 +81,7 @@ web::WebFrame* SuggestionControllerJavaScriptFeatureTest::GetMainFrame() {
 
 TEST_F(SuggestionControllerJavaScriptFeatureTest, InitAndInject) {
   web::test::LoadHtml(@"<html></html>", web_state());
-  EXPECT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb.suggestion"));
+  EXPECT_NSEQ(@1, ExecuteJavaScript(@"__gCrWeb.hasRegisteredApi('suggestion')"));
 }
 
 TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
@@ -123,23 +123,21 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
   for (NSString* element_id : next_expected_ids) {
     NSString* expected_id = [next_expected_ids objectForKey:element_id];
     NSString* script = [NSString
-        stringWithFormat:
-            @"var elements=document.getElementsByTagName('input');"
-             "var element=document.getElementById('%@');"
-             "var next = __gCrWeb.suggestion.getNextElementInTabOrder("
-             "    element, elements);"
-             "next ? next.id : 'null';",
-            element_id];
+        stringWithFormat:@"var elements=document.getElementsByTagName('input');"
+                          "var element=document.getElementById('%@');"
+                          "var next = __gCrWeb.getRegisteredApi('suggestion')."
+                          "getFunction('getNextElementInTabOrder')(element, elements);"
+                          "next ? next.id : 'null';",
+                         element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting next element of element with element id "
         << base::SysNSStringToUTF8(element_id);
   }
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScript(
-                  @"var elements=document.getElementsByTagName('input');"
-                   "var element=document.getElementsByTagName('a')[0];"
-                   "var next = __gCrWeb.suggestion.getNextElementInTabOrder("
-                   "    element, elements); next===null"))
+  EXPECT_NSEQ(@YES, ExecuteJavaScript(
+                        @"var elements=document.getElementsByTagName('input');"
+                         "var element=document.getElementsByTagName('a')[0];"
+                         "var next = __gCrWeb.getRegisteredApi('suggestion')."
+                         "getFunction('getNextElementInTabOrder')(element, elements); next===null"))
       << "Wrong when selecting the next element of an element not in the "
       << "element list.";
 
@@ -151,7 +149,8 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
     }
     NSString* script =
         [NSString stringWithFormat:@"document.getElementById('%@').focus();"
-                                    "__gCrWeb.suggestion.selectNextElement();"
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('selectNextElement')();"
                                     "document.activeElement.id",
                                    element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
@@ -164,7 +163,8 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
     BOOL expected = ![next_expected_ids[element_id] isEqualToString:@"null"];
     NSString* script =
         [NSString stringWithFormat:@"document.getElementById('%@').focus();"
-                                    "__gCrWeb.suggestion.hasNextElement()",
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('hasNextElement')()",
                                    element_id];
     EXPECT_NSEQ(@(expected), ExecuteJavaScript(script))
         << "Wrong when checking hasNextElement() for "
@@ -191,23 +191,23 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
   for (NSString* element_id : prev_expected_ids) {
     NSString* expected_id = [prev_expected_ids objectForKey:element_id];
     NSString* script = [NSString
-        stringWithFormat:
-            @"var elements=document.getElementsByTagName('input');"
-             "var element=document.getElementById('%@');"
-             "var prev = __gCrWeb.suggestion.getPreviousElementInTabOrder("
-             "    element, elements);"
-             "prev ? prev.id : 'null';",
-            element_id];
+        stringWithFormat:@"var elements=document.getElementsByTagName('input');"
+                          "var element=document.getElementById('%@');"
+                          "var prev = "
+                          "__gCrWeb.getRegisteredApi('suggestion')."
+                          "getFunction('getPreviousElementInTabOrder')(element, elements);"
+                          "prev ? prev.id : 'null';",
+                         element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting prev element of element with element id "
         << base::SysNSStringToUTF8(element_id);
   }
-  EXPECT_NSEQ(
-      @YES, ExecuteJavaScript(
-                @"var elements=document.getElementsByTagName('input');"
-                 "var element=document.getElementsByTagName('a')[0];"
-                 "var prev = __gCrWeb.suggestion.getPreviousElementInTabOrder("
-                 "    element, elements); prev===null"))
+  EXPECT_NSEQ(@YES, ExecuteJavaScript(
+                        @"var elements=document.getElementsByTagName('input');"
+                         "var element=document.getElementsByTagName('a')[0];"
+                         "var prev = "
+                         "__gCrWeb.getRegisteredApi('suggestion')."
+                         "getFunction('getPreviousElementInTabOrder')(element, elements); prev===null"))
       << "Wrong when selecting the previous element of an element not in the "
       << "element list";
 
@@ -217,11 +217,12 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
       // If the expected previous element is null, the focus is not moved.
       expected_id = element_id;
     }
-    NSString* script = [NSString
-        stringWithFormat:@"document.getElementById('%@').focus();"
-                          "__gCrWeb.suggestion.selectPreviousElement();"
-                          "document.activeElement.id",
-                         element_id];
+    NSString* script =
+        [NSString stringWithFormat:@"document.getElementById('%@').focus();"
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('selectPreviousElement')();"
+                                    "document.activeElement.id",
+                                   element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting previous element with active element "
         << base::SysNSStringToUTF8(element_id);
@@ -232,7 +233,8 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
     BOOL expected = ![prev_expected_ids[element_id] isEqualToString:@"null"];
     NSString* script =
         [NSString stringWithFormat:@"document.getElementById('%@').focus();"
-                                    "__gCrWeb.suggestion.hasPreviousElement()",
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('hasPreviousElement')()",
                                    element_id];
     EXPECT_NSEQ(@(expected), ExecuteJavaScript(script))
         << "Wrong when checking hasPreviousElement() for "
