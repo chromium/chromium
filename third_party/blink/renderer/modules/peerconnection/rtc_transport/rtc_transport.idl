@@ -26,7 +26,7 @@ dictionary RtcSendPacketParameters {
     SecureContext,
     RuntimeEnabled=RTCRtpTransport
 ] interface RtcTransport {
-  [CallWith=ExecutionContext, RaisesException] constructor(RtcTransportConfig name);
+  [CallWith=ExecutionContext] constructor(RtcTransportConfig name);
 
   void sendPackets(sequence<RtcSendPacketParameters> packets);
   sequence<RtcReceivedPacket> getReceivedPackets();

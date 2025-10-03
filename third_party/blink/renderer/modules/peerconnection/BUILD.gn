@@ -146,8 +146,6 @@ blink_modules_sources("peerconnection") {
     "rtc_transport/rtc_received_packet.h",
     "rtc_transport/rtc_transport.cc",
     "rtc_transport/rtc_transport.h",
-    "rtc_transport/rtc_transport_dependencies.cc",
-    "rtc_transport/rtc_transport_dependencies.h",
     "rtc_void_request_impl.cc",
     "rtc_void_request_impl.h",
     "rtc_void_request_promise_impl.cc",
