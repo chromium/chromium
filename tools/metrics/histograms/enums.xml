@@ -9857,6 +9857,8 @@ from previous Chrome versions.
   <int value="-1538752676" label="IncognitoBrandConsistencyForAndroid:enabled"/>
   <int value="-1538734579"
       label="AutofillEnableSendingBcnInGetUploadDetails:disabled"/>
+  <int value="-1538553397"
+      label="AutofillEnabledKeyboardAccessoryChipRedesign:disabled"/>
   <int value="-1538492024" label="OmniboxReverseAnswers:enabled"/>
   <int value="-1538476948"
       label="VisitedURLRankingHistoryVisibilityScoreFilter:disabled"/>
@@ -12239,6 +12241,8 @@ from previous Chrome versions.
   <int value="-695687521" label="double-buffer-compositing"/>
   <int value="-694943768" label="ContextualSearchSuppressShortView:disabled"/>
   <int value="-694783082" label="MostVisitedTilesSelectExistingTab:enabled"/>
+  <int value="-694727287"
+      label="AutofillEnabledKeyboardAccessoryChipRedesign:enabled"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694601891" label="ToastRefinements:enabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
@@ -14754,6 +14758,8 @@ from previous Chrome versions.
   <int value="218317796" label="CastStreamingVp9:enabled"/>
   <int value="218890378" label="ManualSaving:disabled"/>
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
+  <int value="219129954"
+      label="AutofillEnableKeyboardAccessoryChipRedesign:disabled"/>
   <int value="219162425" label="TabClosureMethodRefactor:disabled"/>
   <int value="219384037" label="ESimPolicy:disabled"/>
   <int value="220654375" label="SearchResultInlineIcon:disabled"/>
@@ -19648,6 +19654,8 @@ from previous Chrome versions.
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937435913"
       label="CryptAuthV2DedupDeviceLastActivityTime:disabled"/>
+  <int value="1937531194"
+      label="AutofillEnableKeyboardAccessoryChipRedesign:enabled"/>
   <int value="1937660673" label="PrivacySandboxEqualizedPromptButtons:enabled"/>
   <int value="1937905990" label="AutofillCenterAlignedSuggestions:enabled"/>
   <int value="1938279796" label="PromosOnLocalNtp:disabled"/>

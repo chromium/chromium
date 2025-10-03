@@ -839,6 +839,12 @@ const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
     "When enabled, flat rate card benefits sourced from Curinos will be shown "
     "in Autofill suggestions.";
 
+const char kAutofillEnableKeyboardAccessoryChipRedesignName[] =
+    "Enable 2 line chips in the Chrome Keyboard Accessory";
+const char kAutofillEnableKeyboardAccessoryChipRedesignDescription[] =
+    "When enabled, Autofill information is displayed on 2 lines in the Chrome "
+    "KeyboardAccessory";
+
 const char kAutofillEnableLoyaltyCardsFillingName[] =
     "Enable Autofill support for filling loyalty cards";
 const char kAutofillEnableLoyaltyCardsFillingDescription[] =

@@ -519,6 +519,9 @@ extern const char kAutofillEnableEmailOrLoyaltyCardsFillingDescription[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[];
 
+extern const char kAutofillEnableKeyboardAccessoryChipRedesignName[];
+extern const char kAutofillEnableKeyboardAccessoryChipRedesignDescription[];
+
 extern const char kAutofillEnableLoyaltyCardsFillingName[];
 extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
 
