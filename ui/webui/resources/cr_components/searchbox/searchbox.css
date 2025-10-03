@@ -455,3 +455,7 @@ cr-searchbox-icon {
 :host-context([realbox-layout-mode='Tall']) #composeButton {
   --cr-button-height: 36px;
 }
+
+:host-context([realbox-layout-mode='Tall']) #errorScrim {
+  border-radius: inherit;
+}

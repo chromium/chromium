@@ -9,6 +9,8 @@ import type {SearchboxElement} from './searchbox.js';
 export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+${this.realboxLayoutMode === 'Tall' ? html`
+<ntp-error-scrim id="errorScrim"></ntp-error-scrim>` : ''}
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}">
   <input id="input" class="truncate" type="search" autocomplete="off"
@@ -84,6 +86,7 @@ export function getHtml(this: SearchboxElement) {
           @delete-context="${this.deleteContext_}"
           @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
           @on-context-files-changed="${this.onContextFilesChanged_}"
+          @on-file-validation-error="${this.onFileValidationError_}"
           ?show-dropdown="${this.dropdownIsVisible}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"

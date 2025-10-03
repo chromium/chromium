@@ -36,6 +36,8 @@ build_webui("build") {
     "context_menu_entrypoint.ts",
     "contextual_entrypoint_and_carousel.html.ts",
     "contextual_entrypoint_and_carousel.ts",
+    "error_scrim.html.ts",
+    "error_scrim.ts",
     "file_carousel.html.ts",
     "file_carousel.ts",
     "file_thumbnail.ts",
@@ -50,6 +52,7 @@ build_webui("build") {
     "composebox_tab_favicon.css",
     "context_menu_entrypoint.css",
     "contextual_entrypoint_and_carousel.css",
+    "error_scrim.css",
     "file_carousel.css",
     "file_thumbnail.css",
   ]

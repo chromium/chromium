@@ -14,18 +14,8 @@ export function getHtml(this: ComposeboxElement) {
   <div class="gradient gradient-outer-glow"></div>
   <div class="gradient"></div>
   <div class="background"></div>
-  ${this.showErrorScrim_ ? html`
-    <div id="errorScrim">
-      <p>${this.errorMessage_}</p>
-      <cr-button id="dismissErrorButton"
-          @click="${this.onDismissErrorButtonClick_}">
-        <cr-icon icon="cr:close" slot="prefix-icon"></cr-icon>
-        <div>${this.i18n('dismissButton')}</div>
-      </cr-button>
-    </div>
-  `: ''}
+  <ntp-error-scrim id="errorScrim"></ntp-error-scrim>
   <div id="composebox" @keydown="${this.onKeydown_}"
-      ?inert=${this.showErrorScrim_}
       @focusin=${this.handleComposeboxFocusIn_}
       @focusout=${this.handleComposeboxFocusOut_}>
     <div id="inputContainer">
