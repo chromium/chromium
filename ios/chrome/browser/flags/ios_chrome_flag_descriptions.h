@@ -342,9 +342,6 @@ extern const char kEnableReadingListAccountStorageDescription[];
 extern const char kEnableReadingListSignInPromoName[];
 extern const char kEnableReadingListSignInPromoDescription[];
 
-extern const char kEnableSignedOutViewDemotionName[];
-extern const char kEnableSignedOutViewDemotionDescription[];
-
 extern const char kEnableIdentityInAuthErrorName[];
 extern const char kEnableIdentityInAuthErrorDescription[];
 

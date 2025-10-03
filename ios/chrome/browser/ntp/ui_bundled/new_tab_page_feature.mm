@@ -44,8 +44,6 @@ BASE_FEATURE(kOverrideFeedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedFeedbackReroute, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableSignedOutViewDemotion, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableiPadFeedGhostCards, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -99,7 +97,7 @@ bool IsWebFeedFeedbackRerouteEnabled() {
 }
 
 bool IsSignedOutViewDemotionEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSignedOutViewDemotion);
+  return NO;
 }
 
 bool IsiPadFeedGhostCardsEnabled() {

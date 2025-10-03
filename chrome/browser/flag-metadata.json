@@ -4381,11 +4381,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-signed-out-view-demotion",
-    "owners": [ "sczs@chromium.org", "tinazwang@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-site-isolation-for-password-sites",
     "owners": [ "site-isolation-dev@chromium.org", "alexmos@chromium.org", "lukasza@chromium.org" ],
     // Note: while password-triggered site isolation launched in M77, it only

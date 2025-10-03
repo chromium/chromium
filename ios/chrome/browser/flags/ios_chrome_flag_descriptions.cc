@@ -597,12 +597,6 @@ const char kEnableReadingListSignInPromoName[] =
 const char kEnableReadingListSignInPromoDescription[] =
     "Enable the sign-in promo view in the reading list screen.";
 
-const char kEnableSignedOutViewDemotionName[] =
-    "Enable signed out user view demotion";
-const char kEnableSignedOutViewDemotionDescription[] =
-    "Enable signed out user view demotion to avoid repeated content for signed "
-    "out users.";
-
 const char kEnableIdentityInAuthErrorName[] = "Enable Identities in Auth Error";
 const char kEnableIdentityInAuthErrorDescription[] =
     "Enable identities in auth error state.";
