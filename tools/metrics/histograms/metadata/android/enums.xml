@@ -1930,6 +1930,14 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
 </enum>
 
+<!-- LINT.IfChange(VizSequenceDroppedReason) -->
+
+<enum name="VizSequenceDroppedReason">
+  <int value="0" label="OlderSequenceInQueue"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/viz/service/input/android_state_transfer_handler.cc:VizSequenceDroppedReason) -->
+
 <enum name="WebChromeClientMethod">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="void onProgressChanged(WebView, int)"/>

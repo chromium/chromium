@@ -2683,6 +2683,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.InputOnViz.Viz.SequenceDroppedReason"
+    enum="VizSequenceDroppedReason" expires_after="2026-02-22">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Viz side variant of `Android.InputOnViz.Browser.SequenceDroppedReason2`
+    histogram.
+
+    The metric records whenever a touch sequence is dropped on Viz side.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.Viz.StateProcessingResult3"
     enum="InputOnVizStateProcessingResult" expires_after="2026-01-25">
   <owner>kartarsingh@google.com</owner>
