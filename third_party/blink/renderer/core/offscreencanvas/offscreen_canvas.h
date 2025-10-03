@@ -29,7 +29,6 @@
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
-class CanvasResourceProvider;
 class ImageBitmap;
 class ImageEncodeOptions;
 class
