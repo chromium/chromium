@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.61"
 name = "serde_derive"
-version = "1.0.225"
+version = "1.0.228"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -46,6 +46,7 @@ repository = "https://github.com/serde-rs/serde"
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",

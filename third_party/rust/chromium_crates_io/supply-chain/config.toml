@@ -341,13 +341,13 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."scratch:1.0.9"]
 criteria = []
 
-[policy."serde:1.0.225"]
+[policy."serde:1.0.228"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_core:1.0.225"]
+[policy."serde_core:1.0.228"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_derive:1.0.225"]
+[policy."serde_derive:1.0.228"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_json:1.0.145"]

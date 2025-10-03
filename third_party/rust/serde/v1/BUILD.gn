@@ -15,6 +15,25 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/crate_root.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/de/ignored_any.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/de/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/de/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/de/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/private/content.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/private/doc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/private/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/private/seed.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/private/size_hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/private/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/ser/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/ser/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/ser/impossible.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/ser/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/core/std_error.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/integer128.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/private/de.rs",
@@ -29,7 +48,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "serde"
   cargo_pkg_description = "A generic serialization/deserialization framework"
   cargo_pkg_repository = "https://github.com/serde-rs/serde"
-  cargo_pkg_version = "1.0.225"
+  cargo_pkg_version = "1.0.228"
 
   allow_unsafe = false
 

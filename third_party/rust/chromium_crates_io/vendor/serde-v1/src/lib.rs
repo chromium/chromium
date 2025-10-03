@@ -95,7 +95,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Serde types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/serde/1.0.225")]
+#![doc(html_root_url = "https://docs.rs/serde/1.0.228")]
 // Support using Serde without the standard library!
 #![cfg_attr(not(feature = "std"), no_std)]
 // Show which crate feature enables conditionally compiled APIs in documentation.
@@ -168,80 +168,102 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-/// A facade around all the types we need from the `std`, `core`, and `alloc`
-/// crates. This avoids elaborate import wrangling having to happen in every
-/// module.
-mod lib {
-    mod core {
-        #[cfg(not(feature = "std"))]
-        pub use core::*;
-        #[cfg(feature = "std")]
-        pub use std::*;
-    }
+// Rustdoc has a lot of shortcomings related to cross-crate re-exports that make
+// the rendered documentation of serde_core traits in serde more challenging to
+// understand than the equivalent documentation of the same items in serde_core.
+// https://github.com/rust-lang/rust/labels/A-cross-crate-reexports
+// So, just for the purpose of docs.rs documentation, we inline the contents of
+// serde_core into serde. This sidesteps all the cross-crate rustdoc bugs.
+#[cfg(docsrs)]
+#[macro_use]
+#[path = "core/crate_root.rs"]
+mod crate_root;
 
-    pub use self::core::{f32, f64};
-    pub use self::core::{ptr, str};
+#[cfg(docsrs)]
+#[macro_use]
+#[path = "core/macros.rs"]
+mod macros;
 
-    #[cfg(any(feature = "std", feature = "alloc"))]
-    pub use self::core::slice;
+#[cfg(not(docsrs))]
+macro_rules! crate_root {
+    () => {
+        /// A facade around all the types we need from the `std`, `core`, and `alloc`
+        /// crates. This avoids elaborate import wrangling having to happen in every
+        /// module.
+        mod lib {
+            mod core {
+                #[cfg(not(feature = "std"))]
+                pub use core::*;
+                #[cfg(feature = "std")]
+                pub use std::*;
+            }
 
-    pub use self::core::clone;
-    pub use self::core::convert;
-    pub use self::core::default;
-    pub use self::core::fmt::{self, Debug, Display, Write as FmtWrite};
-    pub use self::core::marker::{self, PhantomData};
-    pub use self::core::option;
-    pub use self::core::result;
+            pub use self::core::{f32, f64};
+            pub use self::core::{ptr, str};
 
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
-    pub use alloc::borrow::{Cow, ToOwned};
-    #[cfg(feature = "std")]
-    pub use std::borrow::{Cow, ToOwned};
+            #[cfg(any(feature = "std", feature = "alloc"))]
+            pub use self::core::slice;
 
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
-    pub use alloc::string::{String, ToString};
-    #[cfg(feature = "std")]
-    pub use std::string::{String, ToString};
+            pub use self::core::clone;
+            pub use self::core::convert;
+            pub use self::core::default;
+            pub use self::core::fmt::{self, Debug, Display, Write as FmtWrite};
+            pub use self::core::marker::{self, PhantomData};
+            pub use self::core::option;
+            pub use self::core::result;
 
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
-    pub use alloc::vec::Vec;
-    #[cfg(feature = "std")]
-    pub use std::vec::Vec;
+            #[cfg(all(feature = "alloc", not(feature = "std")))]
+            pub use alloc::borrow::{Cow, ToOwned};
+            #[cfg(feature = "std")]
+            pub use std::borrow::{Cow, ToOwned};
 
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
-    pub use alloc::boxed::Box;
-    #[cfg(feature = "std")]
-    pub use std::boxed::Box;
-}
+            #[cfg(all(feature = "alloc", not(feature = "std")))]
+            pub use alloc::string::{String, ToString};
+            #[cfg(feature = "std")]
+            pub use std::string::{String, ToString};
 
-// None of this crate's error handling needs the `From::from` error conversion
-// performed implicitly by the `?` operator or the standard library's `try!`
-// macro. This simplified macro gives a 5.5% improvement in compile time
-// compared to standard `try!`, and 9% improvement compared to `?`.
-#[cfg(not(no_serde_derive))]
-macro_rules! tri {
-    ($expr:expr) => {
-        match $expr {
-            Ok(val) => val,
-            Err(err) => return Err(err),
+            #[cfg(all(feature = "alloc", not(feature = "std")))]
+            pub use alloc::vec::Vec;
+            #[cfg(feature = "std")]
+            pub use std::vec::Vec;
+
+            #[cfg(all(feature = "alloc", not(feature = "std")))]
+            pub use alloc::boxed::Box;
+            #[cfg(feature = "std")]
+            pub use std::boxed::Box;
         }
+
+        // None of this crate's error handling needs the `From::from` error conversion
+        // performed implicitly by the `?` operator or the standard library's `try!`
+        // macro. This simplified macro gives a 5.5% improvement in compile time
+        // compared to standard `try!`, and 9% improvement compared to `?`.
+        #[cfg(not(no_serde_derive))]
+        macro_rules! tri {
+            ($expr:expr) => {
+                match $expr {
+                    Ok(val) => val,
+                    Err(err) => return Err(err),
+                }
+            };
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+
+        pub use serde_core::{
+            de, forward_to_deserialize_any, ser, Deserialize, Deserializer, Serialize, Serializer,
+        };
+
+        // Used by generated code and doc tests. Not public API.
+        #[doc(hidden)]
+        mod private;
+
+        include!(concat!(env!("OUT_DIR"), "/private.rs"));
     };
 }
 
-////////////////////////////////////////////////////////////////////////////////
+crate_root!();
 
-pub use serde_core::{
-    de, forward_to_deserialize_any, ser, Deserialize, Deserializer, Serialize, Serializer,
-};
-
-#[macro_use]
 mod integer128;
-
-// Used by generated code and doc tests. Not public API.
-#[doc(hidden)]
-mod private;
-
-include!(concat!(env!("OUT_DIR"), "/private.rs"));
 
 // Re-export #[derive(Serialize, Deserialize)].
 //

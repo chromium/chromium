@@ -29,6 +29,7 @@ fn main() {
     };
 
     if minor >= 77 {
+        println!("cargo:rustc-check-cfg=cfg(if_docsrs_then_no_serde_core)");
         println!("cargo:rustc-check-cfg=cfg(no_core_cstr)");
         println!("cargo:rustc-check-cfg=cfg(no_core_error)");
         println!("cargo:rustc-check-cfg=cfg(no_core_net)");
