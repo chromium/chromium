@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -34,6 +36,10 @@ namespace searchbox_internal {
 // subclasses.
 extern const char* kSearchIconResourceName;
 }  // namespace searchbox_internal
+
+namespace lens {
+struct ImageEncodingOptions;
+}  // namespace lens
 
 // Base class for browser-side handlers that handle bi-directional communication
 // with WebUI search boxes.
@@ -106,6 +112,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
   FRIEND_TEST_ALL_PREFIXES(LensSearchboxHandlerTest,
                            Lens_AutocompleteController_Start);
+  FRIEND_TEST_ALL_PREFIXES(SearchboxHandlerBrowserTest,
+                           CreateTabPreviewEncodingOptions_NotScaled);
+  FRIEND_TEST_ALL_PREFIXES(SearchboxHandlerBrowserTestDSF2,
+                           CreateTabPreviewEncodingOptions_Scaled);
 
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
@@ -168,6 +178,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                           const TemplateURLService* turl_service) const;
 
  private:
+  std::optional<lens::ImageEncodingOptions> CreateTabPreviewEncodingOptions(
+     content::WebContents* web_contents);
+
   base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
 };
 

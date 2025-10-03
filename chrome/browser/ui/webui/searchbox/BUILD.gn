@@ -81,3 +81,42 @@ source_set("searchbox") {
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
   ]
 }
+
+source_set("searchbox_test_utils") {
+  testonly = true
+  sources = [
+    "searchbox_test_utils.cc",
+    "searchbox_test_utils.h",
+  ]
+  public_deps = [
+    ":searchbox",
+    "//base",
+    "//chrome/browser/ui/omnibox:test_support",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  deps = [
+    "//components/omnibox/browser:vector_icons",
+    "//components/search",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "searchbox_handler_browsertest.cc" ]
+  deps = [
+    ":searchbox",
+    ":searchbox_test_utils",
+    "//chrome/browser/ui",
+    "//components/lens:lens",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/test:test_support_ui",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//ui/display",
+  ]
+}
