@@ -27,7 +27,15 @@ namespace ash::boca {
 
 class InvalidationServiceDelegate;
 
-class InvalidationServiceImpl : public InvalidationsListener,
+class InvalidationService {
+ public:
+  virtual ~InvalidationService() = default;
+
+  virtual void ShutDown() = 0;
+};
+
+class InvalidationServiceImpl : public InvalidationService,
+                                public InvalidationsListener,
                                 public FCMRegistrationTokenObserver {
  public:
   inline static constexpr char kSenderId[] = "947897361853";
@@ -48,7 +56,7 @@ class InvalidationServiceImpl : public InvalidationsListener,
   void UploadToken();
   void OnTokenUploaded(bool success);
 
-  virtual void ShutDown();
+  void ShutDown() override;
 
   FCMHandler* fcm_handler() { return fcm_handler_.get(); }
 

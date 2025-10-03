@@ -232,6 +232,7 @@ TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndNotActOnSameToken) {
 
 TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   base::HistogramTester histogram_tester;
+  std::optional<std::string> token_on_change_event;
   // Check that the handler gets the token through GetToken.
   EXPECT_CALL(mock_instance_id_, GetToken)
       .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
@@ -243,9 +244,12 @@ TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   EXPECT_CALL(mock_instance_id_driver_, ExistsInstanceID(kInvalidationsAppId))
       .WillOnce(Return(true));
   // Token should be cleared when StopListeningPermanently() is called.
-  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged());
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged)
+      .WillOnce([this, &token_on_change_event]() {
+        token_on_change_event = fcm_handler_.GetFCMRegistrationToken();
+      });
   fcm_handler_.StopListeningPermanently();
-  EXPECT_EQ(std::nullopt, fcm_handler_.GetFCMRegistrationToken());
+  EXPECT_EQ(std::nullopt, token_on_change_event);
 
   fcm_handler_.RemoveTokenObserver(&mock_token_observer);
   histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 1);

@@ -25,7 +25,7 @@
 class SkBitmap;
 
 namespace ash::boca {
-class InvalidationServiceImpl;
+class InvalidationService;
 class SpotlightRemotingClientManager;
 enum class CrdConnectionState;
 }  // namespace ash::boca
@@ -109,7 +109,7 @@ class BocaReceiverUntrustedPageHandler
   mojo::Remote<mojom::UntrustedPage> page_;
   const raw_ptr<ReceiverHandlerDelegate> delegate_;
   std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_;
-  std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_;
+  std::unique_ptr<boca::InvalidationService> invalidation_service_;
   std::unique_ptr<google_apis::RequestSender> registration_request_sender_;
   std::optional<std::string> receiver_id_;
   std::unique_ptr<ConnectionInfoRequestSender>

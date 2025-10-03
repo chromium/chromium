@@ -133,7 +133,7 @@ class MockReceiverHandlerDelegate : public ReceiverHandlerDelegate {
   MockReceiverHandlerDelegate() = default;
   ~MockReceiverHandlerDelegate() override = default;
 
-  MOCK_METHOD(std::unique_ptr<boca::InvalidationServiceImpl>,
+  MOCK_METHOD(std::unique_ptr<boca::InvalidationService>,
               CreateInvalidationService,
               (boca::InvalidationServiceDelegate*),
               (const, override));
@@ -171,6 +171,14 @@ class MockSpotlightRemotingClientManager
   MOCK_METHOD(std::string, GetDeviceRobotEmail, (), (override));
 };
 
+class MockInvalidationService : public boca::InvalidationService {
+ public:
+  MockInvalidationService() = default;
+  ~MockInvalidationService() override = default;
+
+  MOCK_METHOD(void, ShutDown, (), (override));
+};
+
 class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -187,7 +195,10 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
     ON_CALL(handler_delegate_, CreateInvalidationService)
         .WillByDefault([this](boca::InvalidationServiceDelegate* delegate) {
           invalidation_service_delegate_ = delegate;
-          return nullptr;
+          auto invalidation_service =
+              std::make_unique<NiceMock<MockInvalidationService>>();
+          invalidation_service_ = invalidation_service.get();
+          return invalidation_service;
         });
     ON_CALL(handler_delegate_, IsAppEnabled).WillByDefault(Return(true));
 
@@ -228,11 +239,18 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
         .AsStringPiece();
   }
 
+  void ResetBocaReceiverPageHandler() {
+    invalidation_service_ = nullptr;
+    invalidation_service_delegate_ = nullptr;
+    handler_.reset();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<BocaReceiverUntrustedPageHandler> handler_;
   network::TestURLLoaderFactory url_loader_factory_;
   NiceMock<MockReceiverHandlerDelegate> handler_delegate_;
   NiceMock<MockUntrustedPage> page_;
+  raw_ptr<NiceMock<MockInvalidationService>> invalidation_service_;
   raw_ptr<boca::InvalidationServiceDelegate> invalidation_service_delegate_;
   const GURL register_url_ =
       GURL(boca::GetSchoolToolsUrl()).Resolve(RegisterReceiverRequest::kUrl);
@@ -283,6 +301,10 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, RegisterSuccess) {
   // `GetReceiverConnectionInfoRequest` should be invoked on registration
   // success.
   url_loader_factory_.WaitForRequest(get_connection_url_);
+
+  // ShutDown should be called on dtor.
+  EXPECT_CALL(*invalidation_service_, ShutDown).Times(1);
+  ResetBocaReceiverPageHandler();
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest, RegisterFailure) {
