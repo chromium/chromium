@@ -30,6 +30,8 @@
 namespace sandbox {
 namespace {
 
+using ScopedUnicodeString = std::unique_ptr<UNICODE_STRING, NtAllocDeleter>;
+
 TEST(SandboxNtUtil, IsSameProcessPseudoHandle) {
   HANDLE current_process_pseudo = GetCurrentProcess();
   EXPECT_TRUE(IsSameProcess(current_process_pseudo));
@@ -256,30 +258,45 @@ TEST(SandboxNtUtil, GetNtExports) {
 
 TEST(SandboxNtUtil, ExtractModuleName) {
   {
-    std::wstring_view module_path = L"no-path-sep";
-    std::wstring_view result = ExtractModuleName(module_path);
-    EXPECT_FALSE(result.empty());
-    EXPECT_EQ(module_path, result);
+    UNICODE_STRING module_path = {};
+    ::RtlInitUnicodeString(&module_path, L"no-path-sep");
+    ScopedUnicodeString result(ExtractModuleName(&module_path));
+    EXPECT_TRUE(result);
+    EXPECT_EQ(result->Length, module_path.Length);
+    EXPECT_EQ(std::wstring(module_path.Buffer), std::wstring(result->Buffer));
   }
   {
-    std::wstring_view result =
-        ExtractModuleName(L"c:\\has a\\path\\module.dll");
-    EXPECT_FALSE(result.empty());
-    EXPECT_EQ(L"module.dll", result);
+    UNICODE_STRING module_path = {};
+    ::RtlInitUnicodeString(&module_path, L"c:\\has a\\path\\module.dll");
+    ScopedUnicodeString result(ExtractModuleName(&module_path));
+
+    EXPECT_TRUE(result);
+    EXPECT_EQ(result->Length, 10 * sizeof(wchar_t));
+    EXPECT_EQ(std::wstring(L"module.dll"), std::wstring(result->Buffer));
   }
   {
-    std::wstring_view result = ExtractModuleName(L"c:\\only a\\path\\");
-    EXPECT_TRUE(result.empty());
+    UNICODE_STRING module_path = {};
+    ::RtlInitUnicodeString(&module_path, L"c:\\only a\\path\\");
+    ScopedUnicodeString result(ExtractModuleName(&module_path));
+
+    EXPECT_FALSE(result);
   }
   {
-    std::wstring_view module_path = L"A";
-    std::wstring_view result = ExtractModuleName(module_path);
-    EXPECT_FALSE(result.empty());
-    EXPECT_EQ(module_path, result);
+    UNICODE_STRING module_path = {};
+    ::RtlInitUnicodeString(&module_path, L"A");
+    ScopedUnicodeString result(ExtractModuleName(&module_path));
+
+    EXPECT_TRUE(result);
+    EXPECT_EQ(result->Length, module_path.Length);
+    EXPECT_EQ(std::wstring(module_path.Buffer), std::wstring(result->Buffer));
   }
   {
-    std::wstring_view result = ExtractModuleName(L"");
-    EXPECT_TRUE(result.empty());
+    UNICODE_STRING module_path = {};
+    ::RtlInitUnicodeString(&module_path, L"");
+    ScopedUnicodeString result(ExtractModuleName(&module_path));
+
+    EXPECT_TRUE(result);
+    EXPECT_EQ(result->Length, 0);
   }
 }
 

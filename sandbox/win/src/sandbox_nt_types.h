@@ -35,13 +35,14 @@ struct NtExports {
   NtWaitForSingleObjectFunction          WaitForSingleObject;
   RtlAllocateHeapFunction                RtlAllocateHeap;
   RtlAnsiStringToUnicodeStringFunction   RtlAnsiStringToUnicodeString;
-  RtlInitAnsiStringFunction              RtlInitAnsiString;
   RtlCompareUnicodeStringFunction        RtlCompareUnicodeString;
   RtlCreateHeapFunction                  RtlCreateHeap;
   RtlDestroyHeapFunction                 RtlDestroyHeap;
   RtlFreeHeapFunction                    RtlFreeHeap;
   RtlNtStatusToDosErrorFunction          RtlNtStatusToDosError;
   UNSAFE_BUFFER_USAGE _strnicmpFunction  _strnicmp;
+  UNSAFE_BUFFER_USAGE strlenFunction     strlen;
+  UNSAFE_BUFFER_USAGE wcslenFunction     wcslen;
   UNSAFE_BUFFER_USAGE memcpyFunction     memcpy;
 };
 // clang-format on
