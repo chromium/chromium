@@ -10,7 +10,12 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/task_environment.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/mock/mock_backend_impl.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
@@ -333,6 +338,33 @@ TEST_P(PersistentCacheTest, MultipleInstancesCanWriteData) {
     EXPECT_NE(main_cache->Find(this_key), nullptr);
     EXPECT_NE(rw_cache->Find(this_key), nullptr);
   }
+}
+
+TEST_P(PersistentCacheTest, ThreadSafeAccess) {
+  base::test::TaskEnvironment env;
+
+  BackendParams backend_params =
+      params_provider_.CreateBackendFilesAndBuildParams(GetParam());
+
+  // Create the cache and insert on this sequence.
+  auto value = base::byte_span_from_cstring("1");
+  auto cache = OpenCache(backend_params.Copy());
+  cache->Insert(kKey, value);
+
+  // Find() on ThreadPool. Result should be expected and there are no sequence
+  // checkers tripped.
+  base::WaitableEvent event;
+  std::unique_ptr<Entry> entry;
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             base::BindLambdaForTesting([&]() {
+                               entry = cache->Find(kKey);
+                               event.Signal();
+                             }));
+
+  // Wait for result availability and check.
+  event.Wait();
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(entry->GetContentSpan(), value);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

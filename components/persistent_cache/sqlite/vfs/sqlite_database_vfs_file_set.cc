@@ -46,7 +46,8 @@ base::FilePath SqliteVfsFileSet::GetDbVirtualFilePath() const {
       base::StrCat({virtual_fs_path_, kPathSeperator, kDbFileName}));
 }
 
-std::array<base::File, 2> SqliteVfsFileSet::DuplicateFiles(bool read_write) {
+std::array<base::File, 2> SqliteVfsFileSet::DuplicateFiles(
+    bool read_write) const {
   // Can't upgrade from read-only to read-write.
   CHECK(!read_write || !read_only_);
   const auto access_rights = read_write
@@ -56,7 +57,7 @@ std::array<base::File, 2> SqliteVfsFileSet::DuplicateFiles(bool read_write) {
           journal_file_->DuplicateFile(access_rights)};
 }
 
-base::UnsafeSharedMemoryRegion SqliteVfsFileSet::DuplicateLock() {
+base::UnsafeSharedMemoryRegion SqliteVfsFileSet::DuplicateLock() const {
   return shared_lock_.Duplicate();
 }
 
