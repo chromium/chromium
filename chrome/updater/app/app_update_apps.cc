@@ -88,15 +88,17 @@ void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
   }
 }
 
-void OnUpdateComplete(base::OnceCallback<void(int)> cb,
+void OnUpdateComplete(const std::string& app_id,
+                      base::OnceClosure cb,
                       UpdateService::Result result) {
   if (result == UpdateService::Result::kSuccess) {
-    std::cout << "Update apps completed successfully." << std::endl;
-    std::move(cb).Run(0);
+    std::cout << std::quoted(app_id) << ": update completed successfully"
+              << std::endl;
   } else {
-    std::cout << "Update apps failed, result: " << result << std::endl;
-    std::move(cb).Run(-1);
+    std::cout << std::quoted(app_id) << ": update failed, result = " << result
+              << std::endl;
   }
+  std::move(cb).Run();
 }
 
 }  // namespace
@@ -106,6 +108,10 @@ class AppUpdateApps : public App {
   ~AppUpdateApps() override = default;
   [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
+  void DoUpdateApps(
+      const std::vector<updater::UpdateService::AppState>& states);
+
+  scoped_refptr<UpdateService> service_proxy_;
 };
 
 int AppUpdateApps::Initialize() {
@@ -129,21 +135,41 @@ int AppUpdateApps::Initialize() {
   return kErrorOk;
 }
 
+void AppUpdateApps::DoUpdateApps(
+    const std::vector<updater::UpdateService::AppState>& states) {
+  if (states.empty()) {
+    std::cout << "Done running `--update-apps`" << std::endl;
+    Shutdown(kErrorOk);
+    return;
+  }
+
+  const std::string app_id = states.front().app_id;
+  service_proxy_->Update(
+      app_id, /*install_data_index=*/"", UpdateService::Priority::kForeground,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      /*language=*/{}, base::BindRepeating(OnAppStateChanged),
+      base::BindOnce(
+          [](const std::string& app_id, base::OnceClosure cb,
+             UpdateService::Result result) {
+            OnUpdateComplete(app_id, std::move(cb), result);
+          },
+          app_id,
+          base::BindOnce(&AppUpdateApps::DoUpdateApps, this,
+                         std::vector<updater::UpdateService::AppState>(
+                             states.begin() + 1, states.end()))));
+}
+
 void AppUpdateApps::FirstTaskRun() {
   if (!IsSystemInstall(updater_scope()) && WrongUser(updater_scope())) {
-    std::cout << "The current user is not compatible with the current scope.";
+    std::cout << "The current user is not compatible with the current scope."
+              << std::endl;
     Shutdown(kErrorWrongUser);
     return;
   }
 
-  CreateUpdateServiceProxy(updater_scope())
-      ->UpdateAll(base::BindRepeating(OnAppStateChanged),
-                  base::BindOnce(
-                      [](base::OnceCallback<void(int)> cb,
-                         UpdateService::Result result) {
-                        OnUpdateComplete(std::move(cb), result);
-                      },
-                      base::BindOnce(&AppUpdateApps::Shutdown, this)));
+  service_proxy_ = CreateUpdateServiceProxy(updater_scope());
+  service_proxy_->GetAppStates(
+      base::BindOnce(&AppUpdateApps::DoUpdateApps, this));
 }
 
 scoped_refptr<App> MakeAppUpdateApps() {

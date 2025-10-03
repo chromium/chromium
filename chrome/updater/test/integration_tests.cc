@@ -1610,14 +1610,16 @@ TEST_F(IntegrationTest, UpdateApps) {
   base::Version v1("1");
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.1"), v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(&test_server, kUpdaterAppId));
   ASSERT_NO_FATAL_FAILURE(RunUpdateApps(0));
 
   base::Version v2("2");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kBackground, v1, v2,
+      &test_server, kAppId, "", UpdateService::Priority::kForeground, v1, v2,
       false, true));
+  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(&test_server, kUpdaterAppId));
   ASSERT_NO_FATAL_FAILURE(RunUpdateApps(0));
 
   ASSERT_TRUE(WaitForUpdaterExit());
