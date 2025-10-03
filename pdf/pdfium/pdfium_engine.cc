@@ -1319,6 +1319,10 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
 }
 
 void PDFiumEngine::KillFormFocus() {
+  if (focus_field_type_ == FocusFieldType::kNoFocus) {
+    return;
+  }
+
   FORM_ForceToKillFocus(form());
   SetFieldFocus(FocusFieldType::kNoFocus);
 }
@@ -4232,6 +4236,10 @@ void PDFiumEngine::EnteredEditMode() {
 }
 
 void PDFiumEngine::SetFieldFocus(PDFiumEngineClient::FocusFieldType type) {
+  if (focus_field_type_ == type) {
+    return;
+  }
+
   // If focus was previously in form text area, clear form text selection.
   // Clearing needs to be done before changing focus to ensure the correct
   // observer is notified of the change in selection. When `focus_field_type_`

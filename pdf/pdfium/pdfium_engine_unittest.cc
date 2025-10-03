@@ -2257,12 +2257,10 @@ TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
   EXPECT_CALL(client, FormFieldFocusChange(
                           PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->SetReadOnly(true);
-
-  // Attempting to focus during read-only mode should once more trigger a
-  // killing of form focus.
   EXPECT_TRUE(engine->IsReadOnly());
-  EXPECT_CALL(client, FormFieldFocusChange(
-                          PDFiumEngineClient::FocusFieldType::kNoFocus));
+
+  // Attempting to focus during read-only mode should do nothing since there is
+  // no form focus change.
   engine->UpdateFocus(true);
 }
 
