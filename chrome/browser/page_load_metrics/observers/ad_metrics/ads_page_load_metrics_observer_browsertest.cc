@@ -391,9 +391,17 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
 // Test that viewport ad density does not accumulate for ads that are injected
 // while the tab is in the background.
+// TODO(crbug.com/448982399): Re-enable this test
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+#define MAYBE_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground \
+  DISABLED_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground
+#else
+#define MAYBE_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground \
+  AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground
+#endif
 IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverBrowserTest,
-    AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground) {
+    MAYBE_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
 
