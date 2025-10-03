@@ -705,16 +705,21 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
       // padding to balance it.
       UIImage* shareImage =
           DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
-      // TODO(crbug.com/411039614): Replace
-      // UIGraphicsBeginImageContextWithOptions with UIGraphicsImageRenderer.
-      UIGraphicsBeginImageContextWithOptions(
-          CGSizeMake(shareImage.size.width,
-                     shareImage.size.height + kShareIconBalancingHeightPadding),
-          NO, 0.0);
-      [shareImage drawInRect:CGRectMake(0, 0, shareImage.size.width,
-                                        shareImage.size.height)];
-      UIImage* paddedShareImage = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
+
+      UIGraphicsImageRendererFormat* format =
+          [UIGraphicsImageRendererFormat preferredFormat];
+      format.scale = 0.0;
+      format.opaque = NO;
+      UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
+          initWithSize:CGSizeMake(shareImage.size.width,
+                                  shareImage.size.height +
+                                      kShareIconBalancingHeightPadding)
+                format:format];
+      UIImage* paddedShareImage = [renderer
+          imageWithActions:^(UIGraphicsImageRendererContext* context) {
+            [shareImage drawInRect:CGRectMake(0, 0, shareImage.size.width,
+                                              shareImage.size.height)];
+          }];
 
       [self.locationBarSteadyView.trailingButton setImage:paddedShareImage
                                                  forState:UIControlStateNormal];
