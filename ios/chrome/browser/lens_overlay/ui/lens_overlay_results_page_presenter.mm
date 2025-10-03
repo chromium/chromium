@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
@@ -83,10 +84,12 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   // The navigation controller orchestrating the change between the results page
   // and the informational messages.
   UINavigationController* _presentationNavigationController;
+
+  // Stores the height of the presented results page.
+  CGFloat _presentedResultsPageHeight;
 }
 
 @synthesize delegate = _delegate;
-@synthesize presentedResultsPageHeight = _presentedResultsPageHeight;
 
 - (instancetype)initWithBaseViewController:
                     (LensOverlayContainerViewController*)baseViewController
@@ -133,6 +136,14 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 - (UIWindow*)presentationWindow {
   return _baseViewController.view.window;
+}
+
+- (CGFloat)presentedResultsPageHeight {
+  if (UseCustomLensOverlayBottomSheet()) {
+    return _baseViewController.bottomSheet.bottomSheetHeight;
+  } else {
+    return _presentedResultsPageHeight;
+  }
 }
 
 - (void)setDelegate:(id<LensOverlayResultsPagePresenterDelegate>)delegate {
@@ -214,20 +225,12 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
                      maximizeSheet:(BOOL)maximizeSheet
                   startInTranslate:(BOOL)startInTranslate
                         completion:(void (^)(void))completion {
-  UISheetPresentationController* sheet =
-      _presentationNavigationController.sheetPresentationController;
-  sheet.prefersEdgeAttachedInCompactHeight = YES;
-  sheet.preferredCornerRadius = kPreferredCornerRadius;
-
-  [self setupGestureTrackers];
-
   SheetDetentPresentationStategy strategy =
       startInTranslate ? SheetDetentPresentationStategyTranslate
                        : SheetDetentPresentationStategySelection;
-  [self setupDetentsManagerForBottomSheet:sheet
-                                 strategy:strategy
-                            maximizeSheet:maximizeSheet
-                                 animated:animated];
+  [self setupDetentsManagerWithStrategy:strategy
+                          maximizeSheet:maximizeSheet
+                               animated:animated];
   // Adjust the occlusion insets so that selections in the bottom half of the
   // screen are repositioned, to avoid being hidden by the bottom sheet.
   //
@@ -237,42 +240,43 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   // independent way of adjusting the insets for the coachmark alone.
   [self adjustSelectionOcclusionInsets];
 
-  // Presenting the bottom sheet adds a gesture recognizer on the main window
-  // which in turn causes the touches on Lens Overlay to get canceled.
-  // To prevent such a behavior, extract the recognizers added as a consequence
-  // of presenting and allow touches to be delivered to views.
-  __block NSSet<UIGestureRecognizer*>* panRecognizersBeforePresenting =
-      UseCustomLensOverlayBottomSheet() ? [[NSSet alloc] init]
-                                        : [self panGestureRecognizersOnWindow];
-
-  [self setUpVisibleAreaLayoutGuideIfNeeded];
-  [self monitorResultsBottomSheetPosition];
-
-  __weak __typeof(self) weakSelf = self;
-
   // If there is already a view controller presented (e.g. the overflow menu)
   // dismiss it before presenting.
   if (_baseViewController.presentedViewController) {
     [_baseViewController dismissViewControllerAnimated:NO completion:nil];
   }
 
-  ProceduralBlock afterPresentation = ^{
-    [weakSelf resultsPagePresentationDidAppear];
-    if (!UseCustomLensOverlayBottomSheet()) {
-      [weakSelf handlePanRecognizersAddedAfter:panRecognizersBeforePresenting];
-    }
-
-    if (completion) {
-      completion();
-    }
-  };
-
+  __weak __typeof(self) weakSelf = self;
   if (UseCustomLensOverlayBottomSheet()) {
     [_baseViewController
         presentViewControllerInBottomSheet:_presentationNavigationController
                                   animated:animated
-                                completion:afterPresentation];
+                                completion:^{
+                                  [weakSelf resultsPagePresentationDidAppear];
+                                  if (completion) {
+                                    completion();
+                                  }
+                                }];
   } else {
+    [self setupGestureTrackers];
+    [self setUpVisibleAreaLayoutGuideIfNeeded];
+    [self monitorResultsBottomSheetPosition];
+
+    // Presenting the bottom sheet adds a gesture recognizer on the main window
+    // which in turn causes the touches on Lens Overlay to get canceled.
+    // To prevent such a behavior, extract the recognizers added as a
+    // consequence of presenting and allow touches to be delivered to views.
+    __block NSSet<UIGestureRecognizer*>* panRecognizersBeforePresenting =
+        [self panGestureRecognizersOnWindow];
+
+    ProceduralBlock afterPresentation = ^{
+      [weakSelf resultsPagePresentationDidAppear];
+      [weakSelf handlePanRecognizersAddedAfter:panRecognizersBeforePresenting];
+      if (completion) {
+        completion();
+      }
+    };
+
     [_baseViewController presentViewController:_presentationNavigationController
                                       animated:animated
                                     completion:afterPresentation];
@@ -490,10 +494,12 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 // Called before the results page is dismissed.
 - (void)resultsPagePresentationWillDismiss {
-  [_displayLink invalidate];
-  [self sheetPresentationHeightChanged:0];
-  [_windowPanTracker stopTracking];
-  [_basePanTracker stopTracking];
+  if (!UseCustomLensOverlayBottomSheet()) {
+    [_displayLink invalidate];
+    [self sheetPresentationHeightChanged:0];
+    [_windowPanTracker stopTracking];
+    [_basePanTracker stopTracking];
+  }
   _detentsManager = nil;
 }
 
@@ -510,17 +516,19 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 }
 
 // Sets up the detents manager for the bottom sheet presentation.
-- (void)setupDetentsManagerForBottomSheet:(UISheetPresentationController*)sheet
-                                 strategy:
-                                     (SheetDetentPresentationStategy)strategy
-                            maximizeSheet:(BOOL)maximizeSheet
-                                 animated:(BOOL)animated {
+- (void)setupDetentsManagerWithStrategy:(SheetDetentPresentationStategy)strategy
+                          maximizeSheet:(BOOL)maximizeSheet
+                               animated:(BOOL)animated {
   if (UseCustomLensOverlayBottomSheet()) {
     _detentsManager = [[LensOverlayDetentsManager alloc]
         initWithLensOverlayBottomSheet:_baseViewController.bottomSheet
                                 window:self.presentationWindow
                   presentationStrategy:strategy];
   } else {
+    UISheetPresentationController* sheet =
+        _presentationNavigationController.sheetPresentationController;
+    sheet.prefersEdgeAttachedInCompactHeight = YES;
+    sheet.preferredCornerRadius = kPreferredCornerRadius;
     _detentsManager = [[LensOverlayDetentsManager alloc]
          initWithBottomSheet:sheet
                       window:self.presentationWindow
@@ -622,15 +630,76 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 #pragma mark - LensOverlayBottomSheetPresenterDelegate
 
-- (void)lensOverlayBottomSheetWillDismiss:
+- (void)lensOverlayBottomSheetWillPresent:
     (id<LensOverlayBottomSheet>)bottomSheet {
+  if ([_baseViewController.view.layoutGuides
+          containsObject:_visibleAreaLayoutGuide]) {
+    return;
+  }
+
+  [_baseViewController.view addLayoutGuide:_visibleAreaLayoutGuide];
+
+  AddSameConstraintsToSides(
+      _visibleAreaLayoutGuide,
+      _baseViewController.bottomSheet.visibleAreaLayoutGuide,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+
+  CGFloat estimatedMediumDetentHeight =
+      _detentsManager.estimatedMediumDetentHeight;
+  CGFloat maximumOffset =
+      estimatedMediumDetentHeight + kVisibleAreaMediumDetentThreshold;
+
+  // Track the bottom sheet until it reaches a target height, then pin the
+  // visible area to prevent further scrolling while the sheet continues to move
+  // over other elements.
+  NSLayoutConstraint* anchoredToSheetBottom =
+      [_visibleAreaLayoutGuide.bottomAnchor
+          constraintEqualToAnchor:_baseViewController.bottomSheet
+                                      .visibleAreaLayoutGuide.bottomAnchor];
+  NSLayoutConstraint* maximumMovement = [_visibleAreaLayoutGuide.bottomAnchor
+      constraintGreaterThanOrEqualToAnchor:_baseViewController.view.bottomAnchor
+                                  constant:-maximumOffset];
+  maximumMovement.priority = UILayoutPriorityRequired;
+  anchoredToSheetBottom.priority = UILayoutPriorityRequired - 1;
+
+  [NSLayoutConstraint
+      activateConstraints:@[ anchoredToSheetBottom, maximumMovement ]];
+
+  [_delegate lensOverlayResultsPagePresenter:self
+             didAdjustVisibleAreaLayoutGuide:_visibleAreaLayoutGuide];
+}
+
+- (void)lensOverlayBottomSheetWillDismiss:
+            (id<LensOverlayBottomSheet>)bottomSheet
+                            gestureDriven:(BOOL)gestureDriven {
   [_resultViewController setOmniboxEnabled:NO];
 }
 
-- (void)lensOverlayBottomSheetDidDismiss:
+- (void)lensOverlayBottomSheetDidDismiss:(id<LensOverlayBottomSheet>)bottomSheet
+                           gestureDriven:(BOOL)userInitiated {
+  if (userInitiated) {
+    [_delegate lensOverlayResultsPagePresenter:self
+                       didUpdateDimensionState:SheetDimensionState::kHidden];
+  }
+}
+
+- (NSArray<UIView*>*)lensOverlayBottomSheetAttachedViews:
     (id<LensOverlayBottomSheet>)bottomSheet {
-  [_delegate lensOverlayResultsPagePresenter:self
-                     didUpdateDimensionState:SheetDimensionState::kHidden];
+  // The base view controller contains internal elements that are dependent of
+  // the position of the bottom sheet
+  return @[ _baseViewController.view ];
+}
+
+- (void)lensOverlayBottomSheet:(id<LensOverlayBottomSheet>)bottomSheet
+    animateAttachedUIDismissWithCompletion:(ProceduralBlock)completion {
+  if (!self.delegate) {
+    if (completion) {
+      completion();
+      return;
+    }
+  }
+  [self.delegate lensOverlayResultsPagePresenter:self
+          animateAttachedUIDismissWithCompletion:completion];
 }
 
 #pragma mark - LensOverlayBottomSheetPresentationCommands

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_bottom_sheet_detent.h"
 
 @protocol LensOverlayBottomSheetDetentsDelegate;
@@ -33,6 +34,12 @@
 @property(nonatomic, readonly, getter=isBottomSheetPresented)
     BOOL bottomSheetPresented;
 
+// The layout guide tracking the unobstructed area.
+@property(nonatomic, readonly) UILayoutGuide* visibleAreaLayoutGuide;
+
+// The height of the bottom sheet in points.
+@property(nonatomic, readonly) CGFloat bottomSheetHeight;
+
 // Sets the selected detent identifier, optionally animated.
 - (void)setSelectedDetentIdentifier:(NSString*)selectedDetentIdentifier
                            animated:(BOOL)animated;
@@ -58,13 +65,29 @@
 // `LensOverlayBottomSheetPresenter`.
 @protocol LensOverlayBottomSheetPresenterDelegate
 
-// Called before the bottom sheet was dismissed.
-- (void)lensOverlayBottomSheetWillDismiss:
+// Called before the bottom sheet is presented.
+- (void)lensOverlayBottomSheetWillPresent:
     (id<LensOverlayBottomSheet>)bottomSheet;
 
+// Called before the bottom sheet was dismissed.
+- (void)lensOverlayBottomSheetWillDismiss:
+            (id<LensOverlayBottomSheet>)bottomSheet
+                            gestureDriven:(BOOL)gestureDriven;
+
 // Called after the bottom sheet was dismissed.
-- (void)lensOverlayBottomSheetDidDismiss:
+- (void)lensOverlayBottomSheetDidDismiss:(id<LensOverlayBottomSheet>)bottomSheet
+                           gestureDriven:(BOOL)gestureDriven;
+
+// Returns the list of views that are attached visually to the bottom sheet.
+// (though the layout guide)
+- (NSArray<UIView*>*)lensOverlayBottomSheetAttachedViews:
     (id<LensOverlayBottomSheet>)bottomSheet;
+
+// Offers the dependent UI a chance to gracefully exit before the bottom sheet
+// dismisses completely. The bottom sheet will finalize closing only after
+// completion is called.
+- (void)lensOverlayBottomSheet:(id<LensOverlayBottomSheet>)bottomSheet
+    animateAttachedUIDismissWithCompletion:(ProceduralBlock)completion;
 
 @end
 

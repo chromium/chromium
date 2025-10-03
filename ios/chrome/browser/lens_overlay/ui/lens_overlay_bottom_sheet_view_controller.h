@@ -14,10 +14,6 @@
 @interface LensOverlayBottomSheetViewController
     : UIViewController <LensOverlayBottomSheet>
 
-// Whether the sheet is presented.
-@property(nonatomic, readonly, getter=isBottomSheetPresented)
-    BOOL bottomSheetPresented;
-
 // Sets the given content to be presented in the bottom sheet.
 - (void)setContent:(UIViewController*)contentViewController;
 

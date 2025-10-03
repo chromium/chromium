@@ -856,6 +856,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+    animateAttachedUIDismissWithCompletion:(ProceduralBlock)completion {
+  [self animateSelectionUIExitWithCompletion:completion];
+}
+
+- (void)lensOverlayResultsPagePresenter:
             (LensOverlayResultsPagePresenter*)presenter
                 didUpdateDimensionState:(SheetDimensionState)state {
   if (_associatedTabHelper) {

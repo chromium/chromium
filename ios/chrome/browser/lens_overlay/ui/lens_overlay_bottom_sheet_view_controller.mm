@@ -92,12 +92,16 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
 
   // The default detent to be used if the list of detents was not overridden.
   LensOverlayBottomSheetDetent* _defaultDetent;
+
+  // The bottom constraint of the layout guide tracking the unobstructed area.
+  NSLayoutConstraint* _visibleAreaBottomConstraint;
 }
 
 @synthesize selectedDetentIdentifier = _selectedDetentIdentifier;
 @synthesize detentsDelegate = _detentsDelegate;
 @synthesize sheetDelegate = _sheetDelegate;
 @synthesize detents = _detents;
+@synthesize visibleAreaLayoutGuide = _visibleAreaLayoutGuide;
 
 - (instancetype)init {
   self = [super init];
@@ -108,6 +112,8 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
     _disabledScrollViews = [[NSMutableArray alloc] init];
 
     __weak __typeof(self) weakSelf = self;
+    _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
+
     _defaultDetent = [[LensOverlayBottomSheetDetent alloc]
         initWithIdentifier:kDefaultDetentIdentifier
              valueResolver:^{
@@ -118,6 +124,25 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
   }
 
   return self;
+}
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  [self setupVisibleAreaLayoutGuideIfNeeded];
+}
+
+- (void)setupVisibleAreaLayoutGuideIfNeeded {
+  BOOL alreadyAdded =
+      [self.view.layoutGuides containsObject:_visibleAreaLayoutGuide];
+  if (alreadyAdded) {
+    return;
+  }
+  [self.view addLayoutGuide:_visibleAreaLayoutGuide];
+  AddSameConstraintsToSides(
+      _visibleAreaLayoutGuide, self.view,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+
+  [self constraintVisibleAreaBottomSheetTo:self.view.bottomAnchor];
 }
 
 - (void)setDetents:(NSArray<LensOverlayBottomSheetDetent*>*)detents {
@@ -132,7 +157,7 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
     return;
   }
 
-  [self setSelectedDetentIdentifier:currentDetent.identifier animated:YES];
+  [self setSelectedDetentIdentifier:nextClosestDetent.identifier animated:YES];
 }
 
 - (void)setContent:(UIViewController*)contentViewController {
@@ -145,9 +170,12 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
 }
 
 - (void)presentAnimated:(BOOL)animated completion:(ProceduralBlock)completion {
+  [self setupVisibleAreaLayoutGuideIfNeeded];
+  [_bottomSheet willMoveToParentViewController:self];
   _bottomSheet.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_bottomSheet];
   [self.view addSubview:_bottomSheet.view];
+  [_bottomSheet didMoveToParentViewController:self];
 
   AddSameConstraintsToSides(_bottomSheet.view, self.view,
                             (LayoutSides::kLeading | LayoutSides::kTrailing));
@@ -162,13 +190,16 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
     self.bottomSheetBottomConstraint,
   ]];
 
-  _panTracker = [[LensOverlayPanTracker alloc] initWithView:_bottomSheet.view];
-  _panTracker.delegate = self;
+  [self constraintVisibleAreaBottomSheetTo:_bottomSheet.view.topAnchor];
 
   [self.view layoutIfNeeded];
 
+  _panTracker = [[LensOverlayPanTracker alloc] initWithView:_bottomSheet.view];
+  _panTracker.delegate = self;
+
   CGFloat restHeight = [self bottomSheetRestHeight];
 
+  [self.sheetDelegate lensOverlayBottomSheetWillPresent:self];
   if (!animated) {
     [self.panTracker startTracking];
     self.bottomSheetHeightConstraint.constant = restHeight;
@@ -188,21 +219,56 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
 }
 
 - (void)dismissAnimated:(BOOL)animated completion:(ProceduralBlock)completion {
+  [self dismissAnimated:animated gestureDriven:NO completion:completion];
+}
+
+- (void)dismissAnimated:(BOOL)animated
+          gestureDriven:(BOOL)gestureDriven
+             completion:(ProceduralBlock)completion {
   [_panTracker stopTracking];
 
+  [self.sheetDelegate lensOverlayBottomSheetWillDismiss:self
+                                          gestureDriven:gestureDriven];
+
+  __weak __typeof(self) weakSelf = self;
+
   if (!animated) {
-    if (completion) {
-      completion();
-    }
+    weakSelf.bottomSheetHeight = 0;
+    [weakSelf bottomSheetDidDismissWithCompletion:completion
+                                    gestureDriven:gestureDriven];
     return;
   }
 
-  [self animateBottomSheetHeight:0
-                      completion:^{
-                        if (completion) {
-                          completion();
-                        }
-                      }];
+  __block int completionCallCount = self.sheetDelegate ? 2 : 1;
+  __block int completionCount = 0;
+  void (^postDismiss)() = ^{
+    completionCount++;
+    if (completionCount == completionCallCount) {
+      [weakSelf bottomSheetDidDismissWithCompletion:completion
+                                      gestureDriven:gestureDriven];
+    }
+  };
+
+  [self.sheetDelegate lensOverlayBottomSheet:self
+      animateAttachedUIDismissWithCompletion:postDismiss];
+  [self animateBottomSheetHeight:0 completion:postDismiss];
+}
+
+- (void)bottomSheetDidDismissWithCompletion:(ProceduralBlock)completion
+                              gestureDriven:(BOOL)gestureDriven {
+  [_bottomSheet willMoveToParentViewController:nil];
+  [_bottomSheet.view removeFromSuperview];
+  [_bottomSheet removeFromParentViewController];
+  [_bottomSheet didMoveToParentViewController:nil];
+
+  [self constraintVisibleAreaBottomSheetTo:self.view.bottomAnchor];
+
+  [self.sheetDelegate lensOverlayBottomSheetDidDismiss:self
+                                         gestureDriven:gestureDriven];
+
+  if (completion) {
+    completion();
+  }
 }
 
 - (void)setSelectedDetentIdentifier:(NSString*)selectedDetentIdentifier
@@ -229,8 +295,13 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
       initialSpringVelocity:5
       options:UIViewAnimationOptionCurveEaseInOut
       animations:^{
-        self.bottomSheetHeightConstraint.constant = height;
+        self.bottomSheetHeight = height;
         [self.view layoutIfNeeded];
+        NSArray<UIView*>* attachedViews =
+            [self.sheetDelegate lensOverlayBottomSheetAttachedViews:self];
+        for (UIView* attachedView in attachedViews) {
+          [attachedView layoutIfNeeded];
+        }
       }
       completion:^(BOOL) {
         completion();
@@ -358,6 +429,15 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
   return YES;
 }
 
+- (void)constraintVisibleAreaBottomSheetTo:(NSLayoutAnchor*)anchor {
+  if (_visibleAreaBottomConstraint) {
+    [self.view removeConstraint:_visibleAreaBottomConstraint];
+  }
+  _visibleAreaBottomConstraint =
+      [_visibleAreaLayoutGuide.bottomAnchor constraintEqualToAnchor:anchor];
+  _visibleAreaBottomConstraint.active = YES;
+}
+
 // The maximum height the bottom sheet can move within the view.
 - (CGFloat)bottomSheetContainerHeight {
   return self.view.frame.size.height;
@@ -383,24 +463,28 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
   CGFloat futureHeight = restDetent.value;
   _selectedDetentIdentifier = restDetent.identifier;
 
+  __weak __typeof(self) weakSelf = self;
   BOOL exitingBottomSheet = futureHeight == 0;
-  if (exitingBottomSheet) {
-    [self.sheetDelegate lensOverlayBottomSheetWillDismiss:self];
+  if (!exitingBottomSheet) {
+    [self
+        animateBottomSheetHeight:futureHeight
+                      completion:^{
+                        [weakSelf.detentsDelegate
+                            lensOverlayBottomSheetDidChangeSelectedDetentIdentifier:
+                                weakSelf];
+                        [weakSelf.panTracker startTracking];
+                      }];
+
+    return;
   }
 
-  [self
-      animateBottomSheetHeight:futureHeight
-                    completion:^{
-                      [self.detentsDelegate
-                          lensOverlayBottomSheetDidChangeSelectedDetentIdentifier:
-                              self];
-                      if (exitingBottomSheet) {
-                        [self.sheetDelegate
-                            lensOverlayBottomSheetDidDismiss:self];
-                      } else {
-                        [self.panTracker startTracking];
-                      }
-                    }];
+  [self dismissAnimated:YES
+          gestureDriven:YES
+             completion:^{
+               [weakSelf.detentsDelegate
+                   lensOverlayBottomSheetDidChangeSelectedDetentIdentifier:
+                       weakSelf];
+             }];
 }
 
 - (void)lensOverlayPanTracker:(LensOverlayPanTracker*)panTracker

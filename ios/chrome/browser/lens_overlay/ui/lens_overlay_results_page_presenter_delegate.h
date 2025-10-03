@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 
 @protocol LensOverlayResultsPagePresenting;
@@ -40,6 +41,12 @@
 - (void)lensOverlayResultsPagePresenter:
             (id<LensOverlayResultsPagePresenting>)presenter
         didAdjustVisibleAreaLayoutGuide:(UILayoutGuide*)visibleAreaLayoutGuide;
+
+// Offers the dependent UI a chance to gracefully exit before the bottom sheet
+// dismisses completely.
+- (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+    animateAttachedUIDismissWithCompletion:(ProceduralBlock)completion;
 
 @end
 
