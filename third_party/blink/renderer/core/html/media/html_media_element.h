@@ -708,7 +708,6 @@ class CORE_EXPORT HTMLMediaElement
   void SetOfficialPlaybackPosition(double) const;
   void RequireOfficialPlaybackPositionUpdate() const;
 
-  void EnsureMediaControls();
   void UpdateControlsVisibility();
 
   TextTrackContainer& EnsureTextTrackContainer();
