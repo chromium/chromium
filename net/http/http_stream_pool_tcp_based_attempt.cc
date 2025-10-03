@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -76,14 +75,12 @@ std::string_view GetHistogramSuffixForTcpBasedAttemptCancel(
 }  // namespace
 
 HttpStreamPool::TcpBasedAttempt::TcpBasedAttempt(AttemptManager* manager,
-                                                 TcpBasedAttemptSlot* slot,
                                                  bool using_tls,
                                                  IPEndPoint ip_endpoint)
     : manager_(manager),
       track_(base::trace_event::GetNextGlobalTraceId()),
       flow_(perfetto::Flow::ProcessScoped(
-          base::trace_event::GetNextGlobalTraceId())),
-      slot_(slot) {
+          base::trace_event::GetNextGlobalTraceId())) {
   TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptStart", manager_->track(),
                       flow_);
   TRACE_EVENT_BEGIN("net.stream", "TcpBasedAttempt::TcpBasedAttempt", track_,
@@ -273,128 +270,6 @@ void HttpStreamPool::TcpBasedAttempt::OnAttemptComplete(int rv) {
   result_ = rv;
   slow_timer_.Stop();
   manager_->OnTcpBasedAttemptComplete(this, rv);
-}
-
-// TcpBasedAttemptSlot
-
-HttpStreamPool::TcpBasedAttemptSlot::TcpBasedAttemptSlot() = default;
-
-HttpStreamPool::TcpBasedAttemptSlot::~TcpBasedAttemptSlot() = default;
-
-HttpStreamPool::TcpBasedAttemptSlot::TcpBasedAttemptSlot(
-    TcpBasedAttemptSlot&&) = default;
-
-HttpStreamPool::TcpBasedAttemptSlot&
-HttpStreamPool::TcpBasedAttemptSlot::operator=(TcpBasedAttemptSlot&&) = default;
-
-void HttpStreamPool::TcpBasedAttemptSlot::AllocateAttempt(
-    std::unique_ptr<TcpBasedAttempt> attempt) {
-  if (attempt->ip_endpoint().address().IsIPv4()) {
-    CHECK(!ipv4_attempt_);
-    ipv4_attempt_ = std::move(attempt);
-  } else {
-    CHECK(attempt->ip_endpoint().address().IsIPv6());
-    CHECK(!ipv6_attempt_);
-    ipv6_attempt_ = std::move(attempt);
-  }
-}
-
-std::unique_ptr<HttpStreamPool::TcpBasedAttempt>
-HttpStreamPool::TcpBasedAttemptSlot::TakeAttempt(TcpBasedAttempt* raw_attempt) {
-  auto take_attempt = [&]() {
-    if (ipv4_attempt_.get() == raw_attempt) {
-      return std::move(ipv4_attempt_);
-    }
-    if (ipv6_attempt_.get() == raw_attempt) {
-      return std::move(ipv6_attempt_);
-    }
-    NOTREACHED();
-  };
-
-  std::unique_ptr<TcpBasedAttempt> attempt = take_attempt();
-  // Reset slot to avoid dangling pointer.
-  attempt->ResetSlot();
-  return attempt;
-}
-
-LoadState HttpStreamPool::TcpBasedAttemptSlot::GetLoadState() const {
-  if (ipv4_attempt_ && ipv6_attempt_) {
-    CHECK(ipv4_attempt_->attempt());
-    CHECK(ipv6_attempt_->attempt());
-    return std::max(ipv4_attempt_->attempt()->GetLoadState(),
-                    ipv6_attempt_->attempt()->GetLoadState());
-  }
-  if (ipv4_attempt_) {
-    CHECK(ipv4_attempt_->attempt());
-    return ipv4_attempt_->attempt()->GetLoadState();
-  }
-  if (ipv6_attempt_) {
-    CHECK(ipv6_attempt_->attempt());
-    return ipv6_attempt_->attempt()->GetLoadState();
-  }
-  NOTREACHED();
-}
-
-void HttpStreamPool::TcpBasedAttemptSlot::MaybeTakeSSLConfigWaitingCallbacks(
-    std::vector<CompletionOnceCallback>& callbacks) {
-  auto take_callback = [&](TcpBasedAttempt* attempt) {
-    auto callback = attempt->MaybeTakeSSLConfigWaitingCallback();
-    if (callback.has_value()) {
-      callbacks.emplace_back(std::move(*callback));
-    }
-  };
-
-  if (ipv4_attempt_) {
-    take_callback(ipv4_attempt_.get());
-  }
-  if (ipv6_attempt_) {
-    take_callback(ipv6_attempt_.get());
-  }
-}
-
-bool HttpStreamPool::TcpBasedAttemptSlot::IsSlow() const {
-  if (ipv4_attempt_ && ipv6_attempt_) {
-    return ipv4_attempt_->is_slow() && ipv6_attempt_->is_slow();
-  }
-  if (ipv4_attempt_) {
-    return ipv4_attempt_->is_slow();
-  }
-  if (ipv6_attempt_) {
-    return ipv6_attempt_->is_slow();
-  }
-  NOTREACHED();
-}
-
-bool HttpStreamPool::TcpBasedAttemptSlot::HasIPEndPoint(
-    const IPEndPoint& ip_endpoint) const {
-  if (ipv4_attempt_ && ipv4_attempt_->ip_endpoint() == ip_endpoint) {
-    return true;
-  }
-  if (ipv6_attempt_ && ipv6_attempt_->ip_endpoint() == ip_endpoint) {
-    return true;
-  }
-  return false;
-}
-
-void HttpStreamPool::TcpBasedAttemptSlot::SetCancelReason(
-    StreamSocketCloseReason reason) {
-  if (ipv4_attempt_) {
-    ipv4_attempt_->SetCancelReason(reason);
-  }
-  if (ipv6_attempt_) {
-    ipv6_attempt_->SetCancelReason(reason);
-  }
-}
-
-base::Value::Dict HttpStreamPool::TcpBasedAttemptSlot::GetInfoAsValue() const {
-  base::Value::Dict dict;
-  if (ipv4_attempt_) {
-    dict.Set("ipv4_attempt", ipv4_attempt_->GetInfoAsValue());
-  }
-  if (ipv6_attempt_) {
-    dict.Set("ipv6_attempt", ipv6_attempt_->GetInfoAsValue());
-  }
-  return dict;
 }
 
 }  // namespace net

@@ -264,7 +264,7 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
 }
 
 size_t HttpStreamPool::Group::ConnectingStreamSocketCount() const {
-  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptSlotCount() : 0;
+  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptCount() : 0;
 }
 
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
