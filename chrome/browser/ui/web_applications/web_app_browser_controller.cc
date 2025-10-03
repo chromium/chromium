@@ -742,9 +742,12 @@ void WebAppBrowserController::OnMetadataObtainedTriggerUpdateDialog(
 
   // TODO(crbug.com/436868803): Pipe calling of the final update command to this
   // function.
-  web_app::ShowWebAppReviewUpdateDialog(app_id(), *identity_update, browser(),
-                                        start_time,
-                                        base::DoNothingWithBoundArgs());
+  web_app::ShowWebAppReviewUpdateDialog(
+      app_id(), *identity_update, browser(), start_time,
+      base::BindOnce([](WebAppIdentityUpdateResult result) {
+        base::UmaHistogramEnumeration("WebApp.PredictableUpdateDialog.Result",
+                                      result);
+      }));
 }
 
 std::optional<SkColor>

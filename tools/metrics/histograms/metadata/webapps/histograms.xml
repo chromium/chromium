@@ -2185,6 +2185,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.PredictableUpdateDialog.Result"
+    enum="WebAppIdentityUpdateResult" expires_after="2026-09-25">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of the predictable app update dialog closing, either as
+    an explicit user action on the dialog itself, or through other behavior of
+    the system, like the browser window closing or the app being uninstalled.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Preinstalled.AppToReplaceStillDefaultInstalledCount"
     units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>

@@ -8,6 +8,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
@@ -343,6 +345,8 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
 
   base::UmaHistogramTimes("WebApp.UpdateReviewDialog.TriggerToShowTime",
                           base::TimeTicks::Now() - start_time);
+  base::RecordAction(
+      base::UserMetricsAction("PredictableAppUpdateDialogShown"));
 }
 
 }  // namespace web_app

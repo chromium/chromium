@@ -435,6 +435,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="AbortedDueToFailure"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppIdentityUpdateResult) -->
+
+<enum name="WebAppIdentityUpdateResult">
+  <int value="0" label="User accepted the update from dialog"/>
+  <int value="1" label="User chose to uninstall the app from the dialog"/>
+  <int value="2" label="User chose to ignore this app's update"/>
+  <int value="3" label="App was uninstalled while the dialog is being shown"/>
+  <int value="4" label="Dialog terminated unexpectedly"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/ui_manager/update_dialog_types.h:WebAppIdentityUpdateResult) -->
+
 <enum name="WebAppLauncherLaunchResult">
   <int value="0" label="Success"/>
   <int value="1" label="Started">

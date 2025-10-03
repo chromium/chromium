@@ -35149,6 +35149,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PredictableAppUpdateDialogShown">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    User clicks on the menu option to trigger the predictable app update dialog
+    from the three dot menu in an app window, provided there is a pending
+    security update stored for the web app.
+  </description>
+</action>
+
 <action name="PrintNow">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

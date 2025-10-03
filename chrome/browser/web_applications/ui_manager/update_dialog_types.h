@@ -49,20 +49,28 @@ struct WebAppIdentityUpdate {
   std::optional<GURL> new_start_url = std::nullopt;
 };
 
+// The result of the predictable app updating dialog closing, either from an
+// explicit user action or a system behavior.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WebAppIdentityUpdateResult)
 enum class WebAppIdentityUpdateResult {
   // The user accepted the update.
-  kAccept,
+  kAccept = 0,
   // The user wants to uninstall the app instead of update it.
-  kUninstallApp,
+  kUninstallApp = 1,
   // The user wants to ignore this update.
-  kIgnore,
+  kIgnore = 2,
   // The app was uninstalled while the dialog was open, as so it was
   // automatically closed.
-  kAppUninstalledDuringDialog,
+  kAppUninstalledDuringDialog = 3,
   // The dialog was closed without user action, likely due to another dialog
   // being present, shutdown, or other factors.
-  kUnexpectedError
+  kUnexpectedError = 4,
+  kMaxValue = kUnexpectedError
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppIdentityUpdateResult)
 
 using UpdateReviewDialogCallback =
     base::OnceCallback<void(WebAppIdentityUpdateResult)>;
