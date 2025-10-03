@@ -27,7 +27,7 @@ BASE_FEATURE_ENUM_PARAM(ActorPaintStabilityMode,
                         kActorPaintStabilityMode,
                         &kGlicActor,
                         "actor-paint-stability-mode",
-                        ActorPaintStabilityMode::kLogOnly,
+                        ActorPaintStabilityMode::kEnabled,
                         &kActorPaintStabilityModeOptions);
 // Timeout controlling how long the paint stability monitor waits after the
 // initial contentful paint before considering the UI to have stabilized.
