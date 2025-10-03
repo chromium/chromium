@@ -1538,7 +1538,8 @@
       status: "experimental",
     },
     {
-      name: "CSSScrollDirectionContainerQueries",
+      // https://drafts.csswg.org/css-conditional-5/#scrolled
+      name: "CSSScrolledContainerQueries",
       status: "test",
     },
     {

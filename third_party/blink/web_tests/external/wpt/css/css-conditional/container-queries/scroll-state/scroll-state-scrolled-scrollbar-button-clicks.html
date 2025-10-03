@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) scrollbar track click scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) user mouse drag scroll</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -22,10 +22,10 @@
   #target {
     --none: no;
     --y: no;
-    @container scroll-state(direction: none) {
+    @container scroll-state(scrolled: none) {
       --none: yes;
     }
-    @container scroll-state(direction: y) {
+    @container scroll-state(scrolled: y) {
       --y: yes;
     }
   }
@@ -52,8 +52,8 @@
 
     let scrollEndPromise = waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
 
-    /* Scrollbar should be located on top right side */
-    const track_position = { x: 200, y: 150 };
+    /* Scrollbar down button should be located on bottom right side */
+    const track_position = { x: 200, y: 200 };
     await scrollbar_track_click(track_position);
 
     await scrollEndPromise;
@@ -62,6 +62,6 @@
     assert_not_equals(scroller.scrollTop, 0);
     assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
 
-  }, "Scrollbar track click scroll");
+  }, "Scrollbar button clicks scroll");
 
 </script>

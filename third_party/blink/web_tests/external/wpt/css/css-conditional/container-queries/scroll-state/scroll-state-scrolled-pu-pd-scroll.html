@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) PageUp/PageDown keys press scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) PageUp/PageDown keys press scroll</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -21,10 +21,10 @@
   #target {
     --none: no;
     --top: no;
-    @container scroll-state(direction: none) {
+    @container scroll-state(scrolled: none) {
       --none: yes;
     }
-    @container scroll-state(direction: top) {
+    @container scroll-state(scrolled: top) {
       --top: yes;
     }
   }

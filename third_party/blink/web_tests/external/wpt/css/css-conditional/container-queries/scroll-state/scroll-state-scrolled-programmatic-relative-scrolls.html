@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) changed after scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) changed after scroll</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
@@ -25,25 +25,25 @@
     --right: no;
     --x: no;
     --none: no;
-    @container scroll-state(direction: top) {
+    @container scroll-state(scrolled: top) {
       --top: yes;
     }
-    @container scroll-state(direction: bottom) {
+    @container scroll-state(scrolled: bottom) {
       --bottom: yes;
     }
-    @container scroll-state(direction: y) {
+    @container scroll-state(scrolled: y) {
       --y: yes;
     }
-    @container scroll-state(direction: left) {
+    @container scroll-state(scrolled: left) {
       --left: yes;
     }
-    @container scroll-state(direction: right) {
+    @container scroll-state(scrolled: right) {
       --right: yes;
     }
-    @container scroll-state(direction: x) {
+    @container scroll-state(scrolled: x) {
       --x: yes;
     }
-    @container scroll-state(direction: none) {
+    @container scroll-state(scrolled: none) {
       --none: yes;
     }
   }
@@ -67,7 +67,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--left"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--x"), "no");
-  }, "Check that scroll-state(direction) state before scrolling");
+  }, "Check that scroll-state(scrolled) state before scrolling");
 
   promise_test(async t => {
     scroller.scrollBy(0, -100);
@@ -81,7 +81,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--left"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--x"), "no");
-  }, "Scrolling up when scrollbar is on the top should not change  scroll-state(direction)");
+  }, "Scrolling up when scrollbar is on the top should not change  scroll-state(scrolled)");
 
   promise_test(async t => {
     scroller.scrollTop = 200;
@@ -94,7 +94,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--top"), "yes");
     assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
     assert_equals(getComputedStyle(target).getPropertyValue("--x"), "no");
-  }, "Relative scroll followed by absolute scroll should change scroll direction");
+  }, "Relative scroll followed by absolute scroll should change scroll scrolled");
 
   promise_test(async t => {
     scroller.scrollBy(0, 300);
@@ -103,7 +103,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
     assert_equals(scroller.scrollTop, 300);
-  }, "scroll-state(direction) after scrolling bottom");
+  }, "scroll-state(scrolled) after scrolling bottom");
 
   promise_test(async t => {
     scroller.scrollBy(0, -200);
@@ -112,7 +112,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
     assert_equals(scroller.scrollTop, 100);
-  }, "scroll-state(direction) after scrolling top");
+  }, "scroll-state(scrolled) after scrolling top");
 
   promise_test(async t => {
     scroller.scrollBy(300, 0);
@@ -121,7 +121,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "yes");
     assert_equals(getComputedStyle(target).getPropertyValue("--x"), "yes");
     assert_equals(scroller.scrollLeft, 300);
-  }, "scroll-state(direction) after scrolling right");
+  }, "scroll-state(scrolled) after scrolling right");
 
   promise_test(async t => {
     scroller.scrollBy(-200, 0);
@@ -130,6 +130,6 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--x"), "yes");
     assert_equals(scroller.scrollLeft, 100);
-  }, "scroll-state(direction) after scrolling left");
+  }, "scroll-state(scrolled) after scrolling left");
 
 </script>

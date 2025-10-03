@@ -438,7 +438,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   LocalFrameView* frame_view = GetLayoutBox()->GetFrameView();
   CHECK(frame_view);
 
-  UpdateLastScrollDirection(scroll_offset_, new_offset, source_type);
+  UpdateLastScrolled(scroll_offset_, new_offset, source_type);
 
   // The ScrollOffsetTranslation paint property depends on the scroll offset.
   // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
@@ -541,7 +541,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
     cache->HandleScrollPositionChanged(GetLayoutBox());
 }
 
-void PaintLayerScrollableArea::UpdateLastScrollDirection(
+void PaintLayerScrollableArea::UpdateLastScrolled(
     const ScrollOffset& previous_offset,
     const ScrollOffset& new_offset,
     cc::ScrollSourceType source_type) {
@@ -549,16 +549,16 @@ void PaintLayerScrollableArea::UpdateLastScrollDirection(
     return;
   }
   if (previous_offset.x() > new_offset.x()) {
-    last_scroll_direction_horizontal_ = ContainerScrollDirection::kStart;
+    last_scrolled_horizontal_ = ContainerScrolled::kStart;
   }
   if (previous_offset.x() < new_offset.x()) {
-    last_scroll_direction_horizontal_ = ContainerScrollDirection::kEnd;
+    last_scrolled_horizontal_ = ContainerScrolled::kEnd;
   }
   if (previous_offset.y() > new_offset.y()) {
-    last_scroll_direction_vertical_ = ContainerScrollDirection::kStart;
+    last_scrolled_vertical_ = ContainerScrolled::kStart;
   }
   if (previous_offset.y() < new_offset.y()) {
-    last_scroll_direction_vertical_ = ContainerScrollDirection::kEnd;
+    last_scrolled_vertical_ = ContainerScrolled::kEnd;
   }
 }
 

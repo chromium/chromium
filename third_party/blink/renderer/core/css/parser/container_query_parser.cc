@@ -101,9 +101,8 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
     return feature == media_feature_names::kStuckMediaFeature ||
            feature == media_feature_names::kSnappedMediaFeature ||
            feature == media_feature_names::kScrollableMediaFeature ||
-           (RuntimeEnabledFeatures::
-                CSSScrollDirectionContainerQueriesEnabled() &&
-            feature == media_feature_names::kDirectionMediaFeature);
+           (RuntimeEnabledFeatures::CSSScrolledContainerQueriesEnabled() &&
+            feature == media_feature_names::kScrolledMediaFeature);
   }
   bool IsAllowedWithoutValue(const AtomicString& feature,
                              const ExecutionContext*) const override {
@@ -228,7 +227,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     // scroll-state(scrollable: [ none | top | right | bottom | left |
     // block-start | inline-start | block-end | inline-end | x | y | block |
     // inline ] )
-    // scroll-state(direction: [ none | top | right | bottom | left
+    // scroll-state(scrolled: [ none | top | right | bottom | left
     // | block-start | inline-start | block-end | inline-end | x | y | block |
     // inline ] )
     CSSParserTokenStream::RestoringBlockGuard guard(stream);

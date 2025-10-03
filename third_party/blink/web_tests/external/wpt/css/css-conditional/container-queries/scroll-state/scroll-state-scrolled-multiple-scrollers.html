@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) multiple scrollers</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) multiple scrollers</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -26,18 +26,18 @@
     --bottom2: no;
   }
   #target1 {
-    @container scroll-state(direction: top) {
+    @container scroll-state(scrolled: top) {
       --top1: yes;
     }
-    @container scroll-state(direction: bottom) {
+    @container scroll-state(scrolled: bottom) {
       --bottom1: yes;
     }
   }
   #target2 {
-    @container scroll-state(direction: top) {
+    @container scroll-state(scrolled: top) {
       --top2: yes;
     }
-    @container scroll-state(direction: bottom) {
+    @container scroll-state(scrolled: bottom) {
       --bottom2: yes;
     }
   }

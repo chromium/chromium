@@ -679,11 +679,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void RemoveScrollMarkerGroupContainerData(
       ScrollMarkerGroupData* scroll_marker_group_data);
 
-  ContainerScrollDirection LastScrollDirectionHorizontal() const {
-    return last_scroll_direction_horizontal_;
+  ContainerScrolled LastScrolledHorizontal() const {
+    return last_scrolled_horizontal_;
   }
-  ContainerScrollDirection LastScrollDirectionVertical() const {
-    return last_scroll_direction_vertical_;
+  ContainerScrolled LastScrolledVertical() const {
+    return last_scrolled_vertical_;
   }
 
  private:
@@ -711,9 +711,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Only relative scrolls [0] should affect scroll-state() query last direction
   // feature. This function is used to update `ScrollStateQuerySnapshot` last
   // direction. [0] https://drafts.csswg.org/css-scroll-snap-1/#relative-scroll
-  void UpdateLastScrollDirection(const ScrollOffset& previous_offset,
-                                 const ScrollOffset& new_offset,
-                                 cc::ScrollSourceType);
+  void UpdateLastScrolled(const ScrollOffset& previous_offset,
+                          const ScrollOffset& new_offset,
+                          cc::ScrollSourceType);
 
   int VerticalScrollbarStart() const;
   int HorizontalScrollbarStart() const;
@@ -877,10 +877,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   gfx::PointF last_cull_rect_update_scroll_position_;
 
-  ContainerScrollDirection last_scroll_direction_horizontal_ =
-      ContainerScrollDirection::kNone;
-  ContainerScrollDirection last_scroll_direction_vertical_ =
-      ContainerScrollDirection::kNone;
+  ContainerScrolled last_scrolled_horizontal_ = ContainerScrolled::kNone;
+  ContainerScrolled last_scrolled_vertical_ = ContainerScrolled::kNone;
 
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,

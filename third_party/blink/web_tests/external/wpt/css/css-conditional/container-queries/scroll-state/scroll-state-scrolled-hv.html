@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) state is persisted across horizontal and vertical scrolling</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) state is persisted across horizontal and vertical scrolling</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
@@ -22,19 +22,19 @@
     --left: no;
     --right: no;
     --none: no;
-    @container scroll-state(direction: top) {
+    @container scroll-state(scrolled: top) {
       --top: yes;
     }
-    @container scroll-state(direction: bottom) {
+    @container scroll-state(scrolled: bottom) {
       --bottom: yes;
     }
-    @container scroll-state(direction: left) {
+    @container scroll-state(scrolled: left) {
       --left: yes;
     }
-    @container scroll-state(direction: right) {
+    @container scroll-state(scrolled: right) {
       --right: yes;
     }
-    @container scroll-state(direction: none) {
+    @container scroll-state(scrolled: none) {
       --none: yes;
     }
   }
@@ -55,7 +55,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
-  }, "Check that scroll-state(direction) state before scrolling");
+  }, "Check that scroll-state(scrolled) state before scrolling");
 
   promise_test(async t => {
     scroller.scrollBy(300, 0);
@@ -66,7 +66,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--right"), "yes");
     assert_equals(scroller.scrollLeft, 300);
     assert_equals(scroller.scrollTop, 100);
-  }, "Check that scroll-state(direction) horizontal state is persisted across vertical scroll event");
+  }, "Check that scroll-state(scrolled) horizontal state is persisted across vertical scroll event");
 
   promise_test(async t => {
     scroller.scrollBy(0, 100);
@@ -79,6 +79,6 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
     assert_equals(scroller.scrollLeft, 100);
     assert_equals(scroller.scrollTop, 100);
-  }, "Check that scroll-state(direction) vertical state is persisted across horizontal scroll event");
+  }, "Check that scroll-state(scrolled) vertical state is persisted across horizontal scroll event");
 
 </script>

@@ -25,8 +25,8 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
       ContainerSnappedFlags snapped,
       ContainerScrollableFlags scrollable_horizontal,
       ContainerScrollableFlags scrollable_vertical,
-      ContainerScrollDirection scroll_direction_horizontal,
-      ContainerScrollDirection scroll_direction_vertical,
+      ContainerScrolled scrolled_horizontal,
+      ContainerScrolled scrolled_vertical,
       WritingDirectionMode abs_container_writing_direction,
       const PositionTryFallback& fallback);
 
@@ -79,14 +79,14 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   }
   ContainerScrollableFlags ScrollableInline() const override;
   ContainerScrollableFlags ScrollableBlock() const override;
-  ContainerScrollDirection ScrollDirectionHorizontal() const override {
-    return scroll_direction_horizontal_;
+  ContainerScrolled ScrolledHorizontal() const override {
+    return scrolled_horizontal_;
   }
-  ContainerScrollDirection ScrollDirectionVertical() const override {
-    return scroll_direction_vertical_;
+  ContainerScrolled ScrolledVertical() const override {
+    return scrolled_vertical_;
   }
-  ContainerScrollDirection ScrollDirectionInline() const override;
-  ContainerScrollDirection ScrollDirectionBlock() const override;
+  ContainerScrolled ScrolledInline() const override;
+  ContainerScrolled ScrolledBlock() const override;
 
   WritingDirectionMode AbsContainerWritingDirection() const override {
     return abs_container_writing_direction_;
@@ -122,10 +122,8 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   // Whether a scroll-state container has vertically scrollable overflow.
   ContainerScrollableFlags scrollable_vertical_ =
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
-  ContainerScrollDirection scroll_direction_horizontal_ =
-      ContainerScrollDirection::kNone;
-  ContainerScrollDirection scroll_direction_vertical_ =
-      ContainerScrollDirection::kNone;
+  ContainerScrolled scrolled_horizontal_ = ContainerScrolled::kNone;
+  ContainerScrolled scrolled_vertical_ = ContainerScrolled::kNone;
   // The option from position-try-fallbacks applied to anchored() container.
   // If no fallback is applied, PositionTryFallback::IsNone() returns true.
   PositionTryFallback anchored_fallback_;

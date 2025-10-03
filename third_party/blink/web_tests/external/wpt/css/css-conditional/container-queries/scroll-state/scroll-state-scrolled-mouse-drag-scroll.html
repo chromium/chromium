@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) user mouse drag scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) user mouse drag scroll</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -24,13 +24,13 @@
     --none: no;
     --x: no;
     --y: no;
-    @container scroll-state(direction: none) {
+    @container scroll-state(scrolled: none) {
       --none: yes;
     }
-    @container scroll-state(direction: y) {
+    @container scroll-state(scrolled: y) {
       --y: yes;
     }
-    @container scroll-state(direction: x) {
+    @container scroll-state(scrolled: x) {
       --x: yes;
     }
   }

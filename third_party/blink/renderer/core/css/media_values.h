@@ -166,25 +166,25 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
                                        ContainerScrollable::kNone);
   }
   // For evaluating scroll-state(scroll-direction: left/right)
-  virtual ContainerScrollDirection ScrollDirectionHorizontal() const {
-    return ContainerScrollDirection::kNone;
+  virtual ContainerScrolled ScrolledHorizontal() const {
+    return ContainerScrolled::kNone;
   }
   // For evaluating scroll-state(scroll-direction: up/down)
-  virtual ContainerScrollDirection ScrollDirectionVertical() const {
-    return ContainerScrollDirection::kNone;
+  virtual ContainerScrolled ScrolledVertical() const {
+    return ContainerScrolled::kNone;
   }
   // For evaluating scroll-state(scroll-direction: inline-start/inline-end)
-  virtual ContainerScrollDirection ScrollDirectionInline() const {
-    return ContainerScrollDirection::kNone;
+  virtual ContainerScrolled ScrolledInline() const {
+    return ContainerScrolled::kNone;
   }
   // For evaluating scroll-state(scroll-direction: block-start/block-end)
-  virtual ContainerScrollDirection ScrollDirectionBlock() const {
-    return ContainerScrollDirection::kNone;
+  virtual ContainerScrolled ScrolledBlock() const {
+    return ContainerScrolled::kNone;
   }
   // For boolean context evaluation
-  bool ScrollDirection() const {
-    return ScrollDirectionHorizontal() != ContainerScrollDirection::kNone ||
-           ScrollDirectionVertical() != ContainerScrollDirection::kNone;
+  bool Scrolled() const {
+    return ScrolledHorizontal() != ContainerScrolled::kNone ||
+           ScrolledVertical() != ContainerScrolled::kNone;
   }
   // The writing-mode/direction of a container. Used for anchored(fallback).
   virtual WritingDirectionMode GetWritingDirection() const { NOTREACHED(); }

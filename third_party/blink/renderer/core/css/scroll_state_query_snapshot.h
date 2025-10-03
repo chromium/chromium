@@ -37,12 +37,8 @@ class ScrollStateQuerySnapshot
   ContainerScrollableFlags ScrollableVertical() const {
     return scrollable_vertical_;
   }
-  ContainerScrollDirection ScrollDirectionHorizontal() const {
-    return scroll_direction_horizontal_;
-  }
-  ContainerScrollDirection ScrollDirectionVertical() const {
-    return scroll_direction_vertical_;
-  }
+  ContainerScrolled ScrolledHorizontal() const { return scrolled_horizontal_; }
+  ContainerScrolled ScrolledVertical() const { return scrolled_vertical_; }
 
   // ScrollSnapshotClient:
   bool UpdateSnapshot() override;
@@ -58,10 +54,8 @@ class ScrollStateQuerySnapshot
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   ContainerScrollableFlags scrollable_vertical_ =
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
-  ContainerScrollDirection scroll_direction_horizontal_ =
-      ContainerScrollDirection::kNone;
-  ContainerScrollDirection scroll_direction_vertical_ =
-      ContainerScrollDirection::kNone;
+  ContainerScrolled scrolled_horizontal_ = ContainerScrolled::kNone;
+  ContainerScrolled scrolled_vertical_ = ContainerScrolled::kNone;
 };
 
 }  // namespace blink

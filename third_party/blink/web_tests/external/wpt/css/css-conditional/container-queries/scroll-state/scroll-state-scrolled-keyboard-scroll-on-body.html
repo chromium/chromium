@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) keyboard scroll on body</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) keyboard scroll on body</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -27,7 +27,7 @@ div {
   --y: no;
 }
 
-@container scroll-state(direction: y) {
+@container scroll-state(scrolled: y) {
   div {
     --y: yes;
   }

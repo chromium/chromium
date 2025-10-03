@@ -23,8 +23,8 @@ CSSContainerValues::CSSContainerValues(
     ContainerSnappedFlags snapped,
     ContainerScrollableFlags scrollable_horizontal,
     ContainerScrollableFlags scrollable_vertical,
-    ContainerScrollDirection scroll_direction_horizontal,
-    ContainerScrollDirection scroll_direction_vertical,
+    ContainerScrolled scrolled_horizontal,
+    ContainerScrolled scrolled_vertical,
     WritingDirectionMode abs_container_writing_direction,
     const PositionTryFallback& anchored_fallback)
     : MediaValuesDynamic(document.GetFrame()),
@@ -38,8 +38,8 @@ CSSContainerValues::CSSContainerValues(
       snapped_(snapped),
       scrollable_horizontal_(scrollable_horizontal),
       scrollable_vertical_(scrollable_vertical),
-      scroll_direction_horizontal_(scroll_direction_horizontal),
-      scroll_direction_vertical_(scroll_direction_vertical),
+      scrolled_horizontal_(scrolled_horizontal),
+      scrolled_vertical_(scrolled_vertical),
       anchored_fallback_(anchored_fallback),
       font_sizes_(CSSToLengthConversionData::FontSizes(
           container.ComputedStyleRef().GetFontSizeStyle(),
@@ -164,20 +164,19 @@ ContainerScrollableFlags CSSContainerValues::ScrollableBlock() const {
                                               : scrollable_block;
 }
 
-ContainerScrollDirection CSSContainerValues::ScrollDirectionInline() const {
-  ContainerScrollDirection scroll_direction_inline =
-      writing_direction_.IsHorizontal() ? ScrollDirectionHorizontal()
-                                        : ScrollDirectionVertical();
-  return writing_direction_.IsRtl() ? Flip(scroll_direction_inline)
-                                    : scroll_direction_inline;
+ContainerScrolled CSSContainerValues::ScrolledInline() const {
+  ContainerScrolled scrolled_inline = writing_direction_.IsHorizontal()
+                                          ? ScrolledHorizontal()
+                                          : ScrolledVertical();
+  return writing_direction_.IsRtl() ? Flip(scrolled_inline) : scrolled_inline;
 }
 
-ContainerScrollDirection CSSContainerValues::ScrollDirectionBlock() const {
-  ContainerScrollDirection scroll_direction_block =
-      writing_direction_.IsHorizontal() ? ScrollDirectionVertical()
-                                        : ScrollDirectionHorizontal();
-  return writing_direction_.IsFlippedBlocks() ? Flip(scroll_direction_block)
-                                              : scroll_direction_block;
+ContainerScrolled CSSContainerValues::ScrolledBlock() const {
+  ContainerScrolled scrolled_block = writing_direction_.IsHorizontal()
+                                         ? ScrolledVertical()
+                                         : ScrolledHorizontal();
+  return writing_direction_.IsFlippedBlocks() ? Flip(scrolled_block)
+                                              : scrolled_block;
 }
 
 }  // namespace blink

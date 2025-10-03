@@ -39,7 +39,7 @@ class CSSContainerValuesTest : public PageTestBase {
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-        ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
+        ContainerScrolled::kNone, ContainerScrolled::kNone,
         WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
         PositionTryFallback());
   }
@@ -50,7 +50,7 @@ class CSSContainerValuesTest : public PageTestBase {
         ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped,
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-        ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
+        ContainerScrolled::kNone, ContainerScrolled::kNone,
         WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
         PositionTryFallback());
   }
@@ -62,15 +62,13 @@ class CSSContainerValuesTest : public PageTestBase {
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
         ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone), horizontal,
-        vertical, ContainerScrollDirection::kNone,
-        ContainerScrollDirection::kNone,
+        vertical, ContainerScrolled::kNone, ContainerScrolled::kNone,
         WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
         PositionTryFallback());
   }
 
-  CSSContainerValues* CreateScrollDirectionValues(
-      ContainerScrollDirection horizontal,
-      ContainerScrollDirection vertical) {
+  CSSContainerValues* CreateScrolledValues(ContainerScrolled horizontal,
+                                           ContainerScrolled vertical) {
     return MakeGarbageCollected<CSSContainerValues>(
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
         ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
@@ -257,76 +255,74 @@ TEST_F(CSSContainerValuesTest, ScrollableVerticalRlRtl) {
             static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionHorizontal) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledHorizontal) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kRtl);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionHorizontal(),
-            ContainerScrollDirection::kEnd);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledHorizontal(), ContainerScrolled::kEnd);
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionVertical) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledVertical) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kRtl);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionVertical(),
-            ContainerScrollDirection::kStart);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledVertical(), ContainerScrolled::kStart);
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionHorizontalTbLtr) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledHorizontalTbLtr) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionInline(), ContainerScrollDirection::kEnd);
-  EXPECT_EQ(values->ScrollDirectionBlock(), ContainerScrollDirection::kStart);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledInline(), ContainerScrolled::kEnd);
+  EXPECT_EQ(values->ScrolledBlock(), ContainerScrolled::kStart);
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionHorizontalTbRtl) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledHorizontalTbRtl) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kRtl);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionInline(), ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionBlock(), ContainerScrollDirection::kStart);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledInline(), ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledBlock(), ContainerScrolled::kStart);
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionVerticalLrLtr) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledVerticalLrLtr) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kLtr);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionInline(), ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionBlock(), ContainerScrollDirection::kEnd);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledInline(), ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledBlock(), ContainerScrolled::kEnd);
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionVerticalLrRtl) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledVerticalLrRtl) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kRtl);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionInline(), ContainerScrollDirection::kEnd);
-  EXPECT_EQ(values->ScrollDirectionBlock(), ContainerScrollDirection::kEnd);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledInline(), ContainerScrolled::kEnd);
+  EXPECT_EQ(values->ScrolledBlock(), ContainerScrolled::kEnd);
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionVerticalRlLtr) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledVerticalRlLtr) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kVerticalRl, TextDirection::kLtr);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionInline(), ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionBlock(), ContainerScrollDirection::kStart);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledInline(), ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledBlock(), ContainerScrolled::kStart);
 }
 
-TEST_F(CSSContainerValuesTest, ScrollDirectionVerticalRlRtl) {
-  ScopedCSSScrollDirectionContainerQueriesForTest scoped(true);
+TEST_F(CSSContainerValuesTest, ScrolledVerticalRlRtl) {
+  ScopedCSSScrolledContainerQueriesForTest scoped(true);
   SetContainerWritingDirection(WritingMode::kVerticalRl, TextDirection::kRtl);
-  MediaValues* values = CreateScrollDirectionValues(
-      ContainerScrollDirection::kEnd, ContainerScrollDirection::kStart);
-  EXPECT_EQ(values->ScrollDirectionInline(), ContainerScrollDirection::kEnd);
-  EXPECT_EQ(values->ScrollDirectionBlock(), ContainerScrollDirection::kStart);
+  MediaValues* values =
+      CreateScrolledValues(ContainerScrolled::kEnd, ContainerScrolled::kStart);
+  EXPECT_EQ(values->ScrolledInline(), ContainerScrolled::kEnd);
+  EXPECT_EQ(values->ScrolledBlock(), ContainerScrolled::kStart);
 }
 
 }  // namespace blink

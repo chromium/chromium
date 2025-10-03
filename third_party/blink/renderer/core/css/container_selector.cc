@@ -38,8 +38,8 @@ ContainerSelector::ContainerSelector(AtomicString name,
   if (feature_flags & MediaQueryExpNode::kFeatureScrollable) {
     has_scrollable_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureScrollDirection) {
-    has_scroll_direction_query_ = true;
+  if (feature_flags & MediaQueryExpNode::kFeatureScrolled) {
+    has_scrolled_query_ = true;
   }
   if (feature_flags & MediaQueryExpNode::kFeatureAnchored) {
     has_anchored_query_ = true;
@@ -57,7 +57,7 @@ unsigned ContainerSelector::GetHash() const {
   AddIntToHash(hash, has_sticky_query_);
   AddIntToHash(hash, has_snap_query_);
   AddIntToHash(hash, has_scrollable_query_);
-  AddIntToHash(hash, has_scroll_direction_query_);
+  AddIntToHash(hash, has_scrolled_query_);
   AddIntToHash(hash, has_anchored_query_);
   return hash;
 }

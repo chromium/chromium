@@ -229,8 +229,8 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
-    if (media_feature == media_feature_names::kDirectionMediaFeature) {
+  if (RuntimeEnabledFeatures::CSSScrolledContainerQueriesEnabled()) {
+    if (media_feature == media_feature_names::kScrolledMediaFeature) {
       switch (ident) {
         case CSSValueID::kNone:
         case CSSValueID::kTop:
@@ -862,8 +862,8 @@ MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
                media_feature_names::kScrollableMediaFeature) {
       return kFeatureScrollable;
     } else if (exp_.MediaFeature() ==
-               media_feature_names::kDirectionMediaFeature) {
-      return kFeatureScrollDirection;
+               media_feature_names::kScrolledMediaFeature) {
+      return kFeatureScrolled;
     } else if (exp_.MediaFeature() ==
                media_feature_names::kFallbackMediaFeature) {
       return kFeatureAnchored;

@@ -78,21 +78,20 @@ inline ContainerScrollableFlags Flip(ContainerScrollableFlags scrollable) {
   return flipped;
 }
 
-enum class ContainerScrollDirection {
+enum class ContainerScrolled {
   kNone = 0,
   kStart = 1 << 0,
   kEnd = 1 << 1,
 };
 
-inline ContainerScrollDirection Flip(
-    ContainerScrollDirection scroll_direction) {
+inline ContainerScrolled Flip(ContainerScrolled scroll_direction) {
   switch (scroll_direction) {
-    case ContainerScrollDirection::kNone:
-      return ContainerScrollDirection::kNone;
-    case ContainerScrollDirection::kStart:
-      return ContainerScrollDirection::kEnd;
-    case ContainerScrollDirection::kEnd:
-      return ContainerScrollDirection::kStart;
+    case ContainerScrolled::kNone:
+      return ContainerScrolled::kNone;
+    case ContainerScrolled::kStart:
+      return ContainerScrolled::kEnd;
+    case ContainerScrolled::kEnd:
+      return ContainerScrolled::kStart;
   }
 }
 

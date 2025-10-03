@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) Home/End keys press scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
+<title>@container: scroll-state(scrolled) Home/End keys press scroll</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrolled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -22,13 +22,13 @@
     --none: no;
     --top: no;
     --bottom: no;
-    @container scroll-state(direction: none) {
+    @container scroll-state(scrolled: none) {
       --none: yes;
     }
-    @container scroll-state(direction: top) {
+    @container scroll-state(scrolled: top) {
       --top: yes;
     }
-    @container scroll-state(direction: bottom) {
+    @container scroll-state(scrolled: bottom) {
       --bottom: yes;
     }
   }
