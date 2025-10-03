@@ -2791,6 +2791,29 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_ClearMakingChromeYoursOnSignout \
+  DISABLED_ClearMakingChromeYoursOnSignout
+#else
+#define MAYBE_ClearMakingChromeYoursOnSignout ClearMakingChromeYoursOnSignout
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ClearMakingChromeYoursOnSignout) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  SigninWithImage(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+
+  Signout();
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ShowMakingChromeYoursOnSigninThenClick \
   DISABLED_ShowMakingChromeYoursOnSigninThenClick
 #else

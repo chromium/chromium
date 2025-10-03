@@ -455,13 +455,17 @@ class OnSigninCoordinator : public signin::IdentityManager::Observer,
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-        signin::PrimaryAccountChangeEvent::Type::kSet) {
-      return;
+    switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+      case signin::PrimaryAccountChangeEvent::Type::kNone:
+        return;
+      case signin::PrimaryAccountChangeEvent::Type::kSet:
+        has_signed_in_in_current_session_ = true;
+        Trigger();
+        return;
+      case signin::PrimaryAccountChangeEvent::Type::kCleared:
+        Collapse();
+        return;
     }
-
-    has_signed_in_in_current_session_ = true;
-    Trigger();
   }
 
   void OnIdentityManagerShutdown(signin::IdentityManager*) override {
