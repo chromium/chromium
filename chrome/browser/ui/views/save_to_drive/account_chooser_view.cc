@@ -66,25 +66,31 @@ std::unique_ptr<views::View> AccountChooserView::CreateBodyMultiAccount(
 
 std::unique_ptr<views::View> AccountChooserView::CreateBodySingleAccount(
     const AccountInfo& account) {
-  return views::Builder<views::FlexLayoutView>()
-      .SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                   views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kUnbounded))
-      .SetOrientation(views::LayoutOrientation::kVertical)
-      .AddChildren(
-          views::Builder<views::Separator>(),
-          views::Builder<views::FlexLayoutView>()
-              .SetOrientation(views::LayoutOrientation::kVertical)
-              .SetInteriorMargin(gfx::Insets::VH(
-                  /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                      DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN),
-                  /*horizontal=*/0))
-              .AddChildren(
-                  views::Builder<views::View>(CreateAccountRow(account))),
-          views::Builder<views::Separator>())
-      .Build();
+  auto single_account_row =
+      views::Builder<views::FlexLayoutView>()
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                       views::MinimumFlexSizeRule::kPreferred,
+                                       views::MaximumFlexSizeRule::kUnbounded))
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetFocusBehavior(views::BoxLayoutView::FocusBehavior::ALWAYS)
+          .AddChildren(views::Builder<views::Separator>(),
+                       views::Builder<views::FlexLayoutView>()
+                           .SetOrientation(views::LayoutOrientation::kVertical)
+                           .SetInteriorMargin(gfx::Insets::VH(
+                               /*vertical=*/ChromeLayoutProvider::Get()
+                                   ->GetDistanceMetric(
+                                       DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN),
+                               /*horizontal=*/0))
+                           .AddChildren(views::Builder<views::View>(
+                               CreateAccountRow(account))),
+                       views::Builder<views::Separator>())
+          .Build();
+  single_account_row->GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
+  single_account_row->GetViewAccessibility().SetName(
+      base::StrCat({account.full_name, " ", account.email}));
+  return single_account_row;
 }
 
 std::unique_ptr<views::View> AccountChooserView::CreateBodyView(
@@ -155,6 +161,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
                                         kAddAccountButtonId);
   use_other_account_button->SetStyle(ui::ButtonStyle::kDefault);
   use_other_account_button->SetAppearDisabledInInactiveWidget(true);
+  use_other_account_button->SetFocusBehavior(FocusBehavior::ALWAYS);
   add_account_button_container->AddChildView(
       std::move(use_other_account_button));
   // Ensure the button is left-aligned.
@@ -172,6 +179,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
   cancel_button->SetProperty(views::kElementIdentifierKey, kCancelButtonId);
   cancel_button->SetStyle(ui::ButtonStyle::kTonal);
   cancel_button->SetAppearDisabledInInactiveWidget(true);
+  cancel_button->SetFocusBehavior(FocusBehavior::ALWAYS);
   footer->AddChildView(std::move(cancel_button));
 
   // Add the "Save" button.
@@ -183,6 +191,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
   save_button->SetProperty(views::kElementIdentifierKey, kSaveButtonId);
   save_button->SetStyle(ui::ButtonStyle::kProminent);
   save_button->SetAppearDisabledInInactiveWidget(true);
+  save_button->SetFocusBehavior(FocusBehavior::ALWAYS);
   footer->AddChildView(std::move(save_button));
 
   return footer;
