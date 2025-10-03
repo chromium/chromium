@@ -132,7 +132,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetPinned) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
 
-  shell_surface->SetPinned(chromeos::WindowPinType::kTrustedPinned);
+  shell_surface->SetPinned(chromeos::WindowPinType::kLockedFullscreen);
   EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
   shell_surface->root_surface()->Commit();
   EXPECT_TRUE(IsWidgetPinned(shell_surface->GetWidget()));

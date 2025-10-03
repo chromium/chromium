@@ -403,7 +403,7 @@ void StatusAreaWidget::OnPinnedStateChanged(aura::Window* pinned_window) {
   // Close all tray bubbles when in locked fullscreen mode to prevent users from
   // exiting this mode.
   if (GetWindowPinType(pinned_window) ==
-      chromeos::WindowPinType::kTrustedPinned) {
+      chromeos::WindowPinType::kLockedFullscreen) {
     for (ash::TrayBackgroundView* const tray_button : tray_buttons_) {
       tray_button->CloseBubble(
           TrayBackgroundView::CloseReason::kWindowActivation);

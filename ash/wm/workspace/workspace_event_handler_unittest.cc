@@ -639,7 +639,7 @@ TEST_F(WorkspaceEventHandlerTest,
   // Lock window.
   window_util::PinWindow(window.get(), /*trusted=*/true);
   WindowState* const window_state = WindowState::Get(window.get());
-  ASSERT_TRUE(window_state->IsTrustedPinned());
+  ASSERT_TRUE(window_state->IsLockedFullscreen());
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      window.get());
@@ -647,7 +647,7 @@ TEST_F(WorkspaceEventHandlerTest,
   const gfx::Point tap_target = window->bounds().top_center();
   generator.GestureTapAt(tap_target);
   generator.GestureTapAt(tap_target);
-  EXPECT_TRUE(window_state->IsTrustedPinned());
+  EXPECT_TRUE(window_state->IsLockedFullscreen());
 }
 
 // Verifies deleting the window while dragging doesn't crash.

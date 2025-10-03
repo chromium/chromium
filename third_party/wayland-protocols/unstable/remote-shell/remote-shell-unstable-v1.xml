@@ -63,7 +63,9 @@
       <entry name="maximized" value="3" summary="maximized window state"/>
       <entry name="fullscreen" value="4" summary="fullscreen window state"/>
       <entry name="pinned" value="5" summary="pinned window state"/>
-      <entry name="trusted_pinned" value="6" summary="trusted pinned window state"/>
+      <entry name="trusted_pinned" value="6" summary="trusted pinned window state">
+        <!-- TODO(crbug.com/429215055): Rename to a more appropriate name. -->
+      </entry>
       <entry name="moving" value="7" summary="moving window state"/>
       <entry name="resizing" value="8" summary="resizing window state"/>
       <entry name="left_snapped" value="9" summary="left snapped window state"/>

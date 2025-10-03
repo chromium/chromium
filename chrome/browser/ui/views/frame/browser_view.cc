@@ -2360,10 +2360,10 @@ void BrowserView::OnLockedForOnTaskUpdated() {
   SetShowCloseButton(!locked_for_on_task);
 }
 
-bool BrowserView::IsTrustedPinned() const {
+bool BrowserView::IsLockedFullscreen() const {
   const auto* frame_view =
       static_cast<const BrowserFrameViewChromeOS*>(GetFrameView());
-  return frame_view->IsTrustedPinned();
+  return frame_view->IsLockedFullscreen();
 }
 
 #endif

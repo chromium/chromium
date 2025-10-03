@@ -49,7 +49,7 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     return;
 
   const WMEventType event_type = event->type();
-  bool pin_transition = window_state->IsTrustedPinned() ||
+  bool pin_transition = window_state->IsLockedFullscreen() ||
                         window_state->IsPinned() || event->IsPinEvent();
   // Pinned State transition is handled on server side.
   if (pin_transition) {

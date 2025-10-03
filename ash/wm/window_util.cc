@@ -304,7 +304,7 @@ bool IsWindowUserPositionable(aura::Window* window) {
 }
 
 void PinWindow(aura::Window* window, bool trusted) {
-  WMEvent event(trusted ? WM_EVENT_TRUSTED_PIN : WM_EVENT_PIN);
+  WMEvent event(trusted ? WM_EVENT_LOCKED_FULLSCREEN : WM_EVENT_PIN);
   WindowState::Get(window)->OnWMEvent(&event);
 }
 

@@ -182,7 +182,7 @@ void ClientControlledStateUtil::ApplyWindowStateRequest(
       return;
     case chromeos::WindowStateType::kInactive:
     case chromeos::WindowStateType::kPinned:
-    case chromeos::WindowStateType::kTrustedPinned:
+    case chromeos::WindowStateType::kLockedFullscreen:
     case chromeos::WindowStateType::kPip:
       // Not supported;
       return;

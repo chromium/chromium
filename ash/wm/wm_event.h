@@ -108,7 +108,7 @@ enum WMEventType {
 
   // A user requested to pin a window for a trusted application. This is similar
   // WM_EVENT_PIN but does not allow user to exit the mode by shortcut key.
-  WM_EVENT_TRUSTED_PIN,
+  WM_EVENT_LOCKED_FULLSCREEN,
 
   // A user requested to float a window.
   WM_EVENT_FLOAT,
@@ -144,7 +144,7 @@ class ASH_EXPORT WMEvent {
   // depending on the current state.
   bool IsCompoundEvent() const;
 
-  // WM_EVENT_PIN or WM_EVENT_TRUSTD_PIN.
+  // WM_EVENT_PIN or WM_EVENT_LOCKED_FULLSCREEN.
   bool IsPinEvent() const;
 
   // True If the event requurests bounds change, e.g. SET_BOUNDS

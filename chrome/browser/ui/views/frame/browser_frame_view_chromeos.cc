@@ -900,7 +900,7 @@ bool BrowserFrameViewChromeOS::ShouldEnableImmersiveModeController() const {
     return false;
   }
 
-  if (IsTrustedPinned() &&
+  if (IsLockedFullscreen() &&
       !GetFrameWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
     return false;
   }
@@ -929,9 +929,9 @@ bool BrowserFrameViewChromeOS::ShouldShowAvatarForTesting(
   return ShouldShowAvatar(window);
 }
 
-bool BrowserFrameViewChromeOS::IsTrustedPinned() const {
+bool BrowserFrameViewChromeOS::IsLockedFullscreen() const {
   return ash::WindowState::Get(browser_widget()->GetNativeWindow())
-      ->IsTrustedPinned();
+      ->IsLockedFullscreen();
 }
 
 void BrowserFrameViewChromeOS::PaintAsActiveChanged() {
@@ -975,7 +975,7 @@ bool BrowserFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview() const {
   // state. This is to show the three dot menu which is a part of caption button
   // container, rather than showing buttons. Only relevant for non-web browser
   // scenarios.
-  if (IsTrustedPinned() &&
+  if (IsLockedFullscreen() &&
       GetFrameWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
     return true;
   }

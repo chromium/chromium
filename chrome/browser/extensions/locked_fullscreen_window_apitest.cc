@@ -145,9 +145,9 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
                                {.custom_arg = "openLockedFullscreenWindow"}))
       << message_;
 
-  // Make sure the newly created window is "trusted pinned" (which means that
-  // it's in locked fullscreen mode).
-  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
+  // Make sure the newly created window is locked fullscreen mode.
+  EXPECT_EQ(chromeos::WindowPinType::kLockedFullscreen,
+            GetCurrentWindowPinType());
 }
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
@@ -179,8 +179,9 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
       << message_;
 
-  // Make sure the current window is put into the "trusted pinned" state.
-  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
+  // Make sure the current window is put into the "locked fullscreen" state.
+  EXPECT_EQ(chromeos::WindowPinType::kLockedFullscreen,
+            GetCurrentWindowPinType());
 }
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
@@ -211,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
 
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
-  SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
+  SetCurrentWindowPinType(chromeos::WindowPinType::kLockedFullscreen);
   current_browser->command_controller()->LockedFullscreenStateChanged();
 
   ASSERT_TRUE(
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
 
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
-  SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
+  SetCurrentWindowPinType(chromeos::WindowPinType::kLockedFullscreen);
   browser()->command_controller()->LockedFullscreenStateChanged();
 
   ASSERT_TRUE(RunExtensionTest(
@@ -242,7 +243,8 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
 
   // chrome.windows.update call fails since the new SWA-based migration does not
   // support set locked fullscreen on regular browser window.
-  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
+  EXPECT_EQ(chromeos::WindowPinType::kLockedFullscreen,
+            GetCurrentWindowPinType());
 }
 
 // Make sure that commands disabling code works in locked fullscreen mode.
@@ -322,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
 
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
-  SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
+  SetCurrentWindowPinType(chromeos::WindowPinType::kLockedFullscreen);
   current_browser->command_controller()->LockedFullscreenStateChanged();
 
   ASSERT_TRUE(
@@ -331,7 +333,8 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
       << message_;
 
   // The current window is still locked-fullscreen.
-  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
+  EXPECT_EQ(chromeos::WindowPinType::kLockedFullscreen,
+            GetCurrentWindowPinType());
 }
 
 INSTANTIATE_TEST_SUITE_P(LockedFullscreenWindowApiChromeOSTests,

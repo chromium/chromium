@@ -464,7 +464,7 @@ bool BackGestureEventHandler::CanStartGoingBack(
       shell->screen_pinning_controller();
   if (screen_pinning_controller->IsPinned() &&
       GetWindowPinType(screen_pinning_controller->pinned_window()) ==
-          chromeos::WindowPinType::kTrustedPinned) {
+          chromeos::WindowPinType::kLockedFullscreen) {
     return false;
   }
 

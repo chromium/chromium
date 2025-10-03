@@ -102,7 +102,7 @@ void WorkspaceEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   aura::Window* const target = static_cast<aura::Window*>(event->target());
-  if (GetWindowPinType(target) == chromeos::WindowPinType::kTrustedPinned) {
+  if (GetWindowPinType(target) == chromeos::WindowPinType::kLockedFullscreen) {
     // Do not attempt to resize or update locked fullscreen windows.
     return;
   }

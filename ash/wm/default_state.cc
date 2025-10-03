@@ -682,7 +682,7 @@ void DefaultState::UpdateBoundsFromState(
 
     case WindowStateType::kFullscreen:
     case WindowStateType::kPinned:
-    case WindowStateType::kTrustedPinned:
+    case WindowStateType::kLockedFullscreen:
       MoveWindowToDisplayAsNeeded(window_state->window(),
                                   window_state->GetFullscreenTargetDisplayId());
       bounds_in_parent = screen_util::GetFullscreenWindowBoundsInParent(window);

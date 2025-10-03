@@ -29,8 +29,8 @@ chromeos::WindowPinType GetWindowPinType(const aura::Window* window) {
     return chromeos::WindowPinType::kNone;
   }
 
-  if (window_state->IsTrustedPinned()) {
-    return chromeos::WindowPinType::kTrustedPinned;
+  if (window_state->IsLockedFullscreen()) {
+    return chromeos::WindowPinType::kLockedFullscreen;
   }
 
   if (window_state->IsPinned()) {

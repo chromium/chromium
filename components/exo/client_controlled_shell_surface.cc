@@ -227,7 +227,7 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
 };
 
 bool IsPinned(const ash::WindowState* window_state) {
-  return window_state->IsPinned() || window_state->IsTrustedPinned();
+  return window_state->IsPinned() || window_state->IsLockedFullscreen();
 }
 
 class CaptionButtonModel : public chromeos::CaptionButtonModel {
@@ -483,9 +483,10 @@ void ClientControlledShellSurface::SetPinned(chromeos::WindowPinType type) {
     // Set other window state mode will automatically cancelled pin mode.
     // TODO: Add NOTREACH() here after ARC side integration fully landed.
   } else {
-    bool trusted = type == chromeos::WindowPinType::kTrustedPinned;
-    pending_window_state_ = trusted ? chromeos::WindowStateType::kTrustedPinned
-                                    : chromeos::WindowStateType::kPinned;
+    bool trusted = type == chromeos::WindowPinType::kLockedFullscreen;
+    pending_window_state_ = trusted
+                                ? chromeos::WindowStateType::kLockedFullscreen
+                                : chromeos::WindowStateType::kPinned;
   }
 }
 
@@ -1260,7 +1261,7 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
 
   if (IsPinned(window_state) &&
       (pending_window_state_ == chromeos::WindowStateType::kPinned ||
-       pending_window_state_ == chromeos::WindowStateType::kTrustedPinned)) {
+       pending_window_state_ == chromeos::WindowStateType::kLockedFullscreen)) {
     VLOG(1) << "Pinned was requested while pinned";
     return true;
   }

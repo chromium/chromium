@@ -304,9 +304,9 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       // window is in tablet mode. PIP window uses DefaultState instead, not
       // TabletModeWindowState.
       NOTREACHED();
-    case WM_EVENT_TRUSTED_PIN:
+    case WM_EVENT_LOCKED_FULLSCREEN:
       if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
-        UpdateWindow(window_state, WindowStateType::kTrustedPinned,
+        UpdateWindow(window_state, WindowStateType::kLockedFullscreen,
                      /*animate=*/true);
       }
       break;
@@ -381,7 +381,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       } else if (current_state_type_ != WindowStateType::kMinimized &&
                  current_state_type_ != WindowStateType::kFullscreen &&
                  current_state_type_ != WindowStateType::kPinned &&
-                 current_state_type_ != WindowStateType::kTrustedPinned &&
+                 current_state_type_ != WindowStateType::kLockedFullscreen &&
                  current_state_type_ != WindowStateType::kPrimarySnapped &&
                  current_state_type_ != WindowStateType::kSecondarySnapped &&
                  current_state_type_ != WindowStateType::kFloated) {
@@ -450,7 +450,7 @@ void TabletModeWindowState::AttachState(WindowState* window_state,
       // It will get updated later in `FloatController::OnTabletModeStarted`.
       current_state_type_ != WindowStateType::kFloated &&
       current_state_type_ != WindowStateType::kPinned &&
-      current_state_type_ != WindowStateType::kTrustedPinned) {
+      current_state_type_ != WindowStateType::kLockedFullscreen) {
     UpdateWindow(window_state, state_type_on_attach_,
                  animate_bounds_on_attach_);
   }
@@ -470,7 +470,7 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
   DCHECK(target_state == WindowStateType::kMinimized ||
          target_state == WindowStateType::kMaximized ||
          target_state == WindowStateType::kPinned ||
-         target_state == WindowStateType::kTrustedPinned ||
+         target_state == WindowStateType::kLockedFullscreen ||
          (target_state == WindowStateType::kNormal &&
           (!window_state->CanMaximize() || !!wm::GetTransientParent(window))) ||
          target_state == WindowStateType::kFullscreen ||

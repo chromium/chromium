@@ -20,7 +20,7 @@ enum class WindowPinType {
 
   // The window is pinned on top of other windows. It is similar to
   // kPinned but does not allow user to exit the mode by shortcut key.
-  kTrustedPinned,
+  kLockedFullscreen,
 };
 
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

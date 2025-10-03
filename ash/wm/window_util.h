@@ -88,6 +88,7 @@ ASH_EXPORT void GetBlockingContainersForRoot(
 ASH_EXPORT bool IsWindowUserPositionable(aura::Window* window);
 
 // Pins the window on top of other windows.
+// TODO(crbug.com/429215055): Rename 'trusted' to a more appropriate name.
 ASH_EXPORT void PinWindow(aura::Window* window, bool trusted);
 
 // Indicates that the window should autohide the shelf when it is the active

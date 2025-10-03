@@ -868,7 +868,7 @@ void WaylandRemoteShell::OnRemoteSurfaceStateChanged(
     case WindowStateType::kPinned:
       state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_PINNED;
       break;
-    case WindowStateType::kTrustedPinned:
+    case WindowStateType::kLockedFullscreen:
       state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_TRUSTED_PINNED;
       break;
     case WindowStateType::kPrimarySnapped:
@@ -1147,7 +1147,7 @@ void remote_surface_pin(wl_client* client,
                         wl_resource* resource,
                         int32_t trusted) {
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetPinned(
-      trusted ? chromeos::WindowPinType::kTrustedPinned
+      trusted ? chromeos::WindowPinType::kLockedFullscreen
               : chromeos::WindowPinType::kPinned);
 }
 

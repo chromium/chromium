@@ -135,10 +135,8 @@ class BrowserFrameViewChromeOS
     return caption_button_container_;
   }
 
-  // Returns whether the associated window is in TrustedPinned state.
-  // TODO(crbug.com/429215055): Rename `IsTrustedPinned` to
-  // `IsLockedFullscreen()` under /c/b/ui.
-  bool IsTrustedPinned() const;
+  // Returns whether the associated window is in a locked fullscreen state.
+  bool IsLockedFullscreen() const;
 
  protected:
   // BrowserFrameView:

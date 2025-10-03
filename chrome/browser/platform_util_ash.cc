@@ -144,7 +144,7 @@ bool IsBrowserLockedFullscreen(const Browser* browser) {
   if (!window)
     return false;
   return ash::GetWindowPinType(window) ==
-         chromeos::WindowPinType::kTrustedPinned;
+         chromeos::WindowPinType::kLockedFullscreen;
 }
 
 }  // namespace platform_util

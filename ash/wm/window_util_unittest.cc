@@ -312,18 +312,18 @@ TEST_F(WindowUtilTest, PinWindow) {
   window_state->SetDelegate(std::move(window_state_delegate));
   window_util::PinWindow(window.get(), /* trusted */ false);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 1);
 
   WindowState::Get(window.get())->Restore();
 
   EXPECT_FALSE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 2);
 
   window_util::PinWindow(window.get(), /* trusted */ true);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_TRUE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 3);
 }
 
@@ -339,18 +339,18 @@ TEST_F(WindowUtilTest, PinWindow_TabletMode) {
   window_state->SetDelegate(std::move(window_state_delegate));
   window_util::PinWindow(window.get(), /* trusted */ false);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 1);
 
   WindowState::Get(window.get())->Restore();
 
   EXPECT_FALSE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 2);
 
   window_util::PinWindow(window.get(), /* trusted */ true);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_TRUE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 3);
 }
 

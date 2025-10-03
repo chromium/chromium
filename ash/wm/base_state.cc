@@ -40,7 +40,7 @@ void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
     }
     return;
   }
-  if ((window_state->IsTrustedPinned() || window_state->IsPinned()) &&
+  if ((window_state->IsLockedFullscreen() || window_state->IsPinned()) &&
       (event->type() != WM_EVENT_NORMAL && event->type() != WM_EVENT_RESTORE &&
        event->IsTransitionEvent())) {
     // PIN state can be exited only by normal event or restore event.
@@ -92,8 +92,8 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
       return WindowStateType::kPip;
     case WM_EVENT_FLOAT:
       return WindowStateType::kFloated;
-    case WM_EVENT_TRUSTED_PIN:
-      return WindowStateType::kTrustedPinned;
+    case WM_EVENT_LOCKED_FULLSCREEN:
+      return WindowStateType::kLockedFullscreen;
     default:
       break;
   }

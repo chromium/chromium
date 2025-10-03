@@ -876,7 +876,7 @@ class BrowserView : public BrowserWindow,
   // This is used only for SWA/PWA scenario.
   void OnLockedForOnTaskUpdated();
 
-  bool IsTrustedPinned() const;
+  bool IsLockedFullscreen() const;
 #endif
 
  protected:

@@ -57,7 +57,7 @@ SnapGroupExitPoint GetWindowStateChangeExitPoint(WindowState* window_state) {
       return SnapGroupExitPoint::kWindowStateChangedSecondarySnapped;
     case WindowStateType::kPinned:
       return SnapGroupExitPoint::kWindowStateChangedPinned;
-    case WindowStateType::kTrustedPinned:
+    case WindowStateType::kLockedFullscreen:
       return SnapGroupExitPoint::kWindowStateChangedTrustedPinned;
     case WindowStateType::kPip:
       return SnapGroupExitPoint::kWindowStateChangedPip;

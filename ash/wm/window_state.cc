@@ -440,12 +440,13 @@ bool WindowState::IsSnapped() const {
 }
 
 bool WindowState::IsPinned() const {
+  // Locked fullscreen is considered a pinned state.
   return GetStateType() == WindowStateType::kPinned ||
-         GetStateType() == WindowStateType::kTrustedPinned;
+         GetStateType() == WindowStateType::kLockedFullscreen;
 }
 
-bool WindowState::IsTrustedPinned() const {
-  return GetStateType() == WindowStateType::kTrustedPinned;
+bool WindowState::IsLockedFullscreen() const {
+  return GetStateType() == WindowStateType::kLockedFullscreen;
 }
 
 bool WindowState::IsPip() const {

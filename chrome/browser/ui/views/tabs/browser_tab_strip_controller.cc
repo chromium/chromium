@@ -443,7 +443,7 @@ void BrowserTabStripController::OnCloseTab(
 #if BUILDFLAG(IS_CHROMEOS)
   // Tabs cannot be closed when the app is in locked fullscreen, which is
   // available only on ChromeOS.
-  if (browser_view_->IsTrustedPinned()) {
+  if (browser_view_->IsLockedFullscreen()) {
     return;
   }
 #endif
