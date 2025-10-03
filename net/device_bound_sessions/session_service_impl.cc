@@ -95,9 +95,8 @@ class DebugHeaderBuilder {
 }  // namespace
 
 DeferredURLRequest::DeferredURLRequest(
-    base::WeakPtr<const URLRequest> request,
     SessionService::RefreshCompleteCallback callback)
-    : request(std::move(request)), callback(std::move(callback)) {}
+    : callback(std::move(callback)) {}
 
 DeferredURLRequest::DeferredURLRequest(DeferredURLRequest&& other) noexcept =
     default;
@@ -367,8 +366,8 @@ void SessionServiceImpl::DeferRequestForRefresh(
   SessionKey session_key{SchemefulSite(request->url()), *deferral.session_id};
   // For the first deferring request, create a new vector and add the request.
   auto [it, inserted] = deferred_requests_.try_emplace(session_key.id);
-  // Add the request to the deferred list.
-  it->second.emplace_back(request->GetWeakPtr(), std::move(callback));
+  // Add the request callback to the deferred list.
+  it->second.emplace_back(std::move(callback));
 
   auto* session = GetSession(session_key);
   CHECK(session, base::NotFatalUntil::M147);

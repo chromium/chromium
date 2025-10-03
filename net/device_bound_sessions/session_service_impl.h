@@ -39,15 +39,13 @@ namespace net::device_bound_sessions {
 class SessionStore;
 
 struct DeferredURLRequest {
-  DeferredURLRequest(base::WeakPtr<const URLRequest> request,
-                     SessionService::RefreshCompleteCallback callback);
+  explicit DeferredURLRequest(SessionService::RefreshCompleteCallback callback);
   DeferredURLRequest(DeferredURLRequest&& other) noexcept;
 
   DeferredURLRequest& operator=(DeferredURLRequest&& other) noexcept;
 
   ~DeferredURLRequest();
 
-  base::WeakPtr<const URLRequest> request;
   base::ElapsedTimer timer;
   SessionService::RefreshCompleteCallback callback;
 };
