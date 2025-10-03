@@ -1988,10 +1988,9 @@ struct EnhancedSafeBrowsingActivePromoData
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   PrefService* prefService = _profile->GetPrefs();
-  const GaiaId gaiaID(identity.gaiaID);
   push_notification_settings::ClientPermissionState permission_state =
-      push_notification_settings::GetNotificationPermissionState(gaiaID,
-                                                                 prefService);
+      push_notification_settings::GetNotificationPermissionState(
+          identity.gaiaId, prefService);
   if (permission_state ==
       push_notification_settings::ClientPermissionState::ENABLED) {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);

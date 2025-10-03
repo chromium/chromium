@@ -86,7 +86,7 @@ class AuthenticationFlowInProfileTest
       GetApplicationContext()
           ->GetAccountProfileMapper()
           ->MoveManagedAccountToPersonalProfileForTesting(
-              GaiaId(managed_identity_.gaiaID));
+              managed_identity_.gaiaId);
     }
     CHECK_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 3UL);
   }

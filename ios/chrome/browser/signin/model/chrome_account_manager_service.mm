@@ -231,7 +231,7 @@ bool ChromeAccountManagerService::HasIdentities() const {
 
 bool ChromeAccountManagerService::IsValidIdentity(
     id<SystemIdentity> identity) const {
-  return GetIdentityWithGaiaID(GaiaId(identity.gaiaID)) != nil;
+  return GetIdentityWithGaiaID(identity.gaiaId) != nil;
 }
 
 bool ChromeAccountManagerService::IsEmailRestricted(

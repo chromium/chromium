@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "google_apis/gaia/gaia_id.h"
 
 namespace {
 NSString* const kCoderUserEmailKey = @"UserEmail";
@@ -123,6 +124,10 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
 
 - (NSString*)gaiaID {
   return _gaiaID;
+}
+
+- (GaiaId)gaiaId {
+  return GaiaId(_gaiaID);
 }
 
 - (NSString*)hashedGaiaID {

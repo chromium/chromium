@@ -174,8 +174,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
     // it into the personal profile so that signin becomes possible.
     GetApplicationContext()
         ->GetAccountProfileMapper()
-        ->MoveManagedAccountToPersonalProfileForTesting(
-            GaiaId(identity.gaiaID));
+        ->MoveManagedAccountToPersonalProfileForTesting(identity.gaiaId);
   }
   authentication_service->SignIn(identity,
                                  signin_metrics::AccessPoint::kUnknown);

@@ -108,7 +108,7 @@ class ConsistencyPromoSigninMediatorTest
   void SimulateCookieFetchSuccess(id<SystemIdentity> identity) {
     CHECK(!ShouldEnableIdentityInAuthErrorFlag());
     gaia::ListedAccount account;
-    account.id = CoreAccountId::FromGaiaId(GaiaId(identity.gaiaID));
+    account.id = CoreAccountId::FromGaiaId(identity.gaiaId);
     signin::AccountsInCookieJarInfo cookie_jar_info(
         /*accounts_are_fresh=*/true,
         /*accounts=*/{account});

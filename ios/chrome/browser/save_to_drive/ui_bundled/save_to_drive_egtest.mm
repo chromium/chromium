@@ -225,9 +225,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // Sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey
-      setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
-                                           GaiaId(fakeIdentity.gaiaID))];
+  [SigninEarlGrey setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                                       fakeIdentity.gaiaId)];
   // Load a page with a download button and tap the download button.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];

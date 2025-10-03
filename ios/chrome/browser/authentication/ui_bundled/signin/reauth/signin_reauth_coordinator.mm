@@ -119,7 +119,7 @@
 
   ReauthResult result;
   if (!error) {
-    GaiaId id = GaiaId(identity.gaiaID);
+    GaiaId id = identity.gaiaId;
     if (id == _account.gaia) {
       result = ReauthResult::kSuccess;
       [self recordReauthFlowEvent:signin_metrics::ReauthFlowEvent::kCompleted];

@@ -944,7 +944,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
-            GaiaId(google_identity.gaiaID),
+            google_identity.gaiaId,
             base::SysNSStringToUTF8(google_identity.userFullName));
       }));
 
@@ -958,7 +958,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(kPersonalProfileName)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
+              UnorderedElementsAre(google_identity.gaiaId));
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 }
 
@@ -977,10 +977,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
-            GaiaId(google_identity.gaiaID),
+            google_identity.gaiaId,
             base::SysNSStringToUTF8(google_identity.userFullName));
         attr.SetAttachedGaiaIds(
-            {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
+            {gmail_identity1.gaiaId, google_identity.gaiaId});
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
@@ -995,11 +995,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest,
       GetApplicationContext()->GetLocalState());
 
   // Both identities should stay attached to the personal profile.
-  EXPECT_THAT(profile_attributes_storage()
-                  ->GetAttributesForProfileWithName(kPersonalProfileName)
-                  .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(google_identity.gaiaID),
-                                   GaiaId(gmail_identity1.gaiaID)));
+  EXPECT_THAT(
+      profile_attributes_storage()
+          ->GetAttributesForProfileWithName(kPersonalProfileName)
+          .GetAttachedGaiaIds(),
+      UnorderedElementsAre(google_identity.gaiaId, gmail_identity1.gaiaId));
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 }
 
@@ -1019,10 +1019,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
-            GaiaId(google_identity.gaiaID),
+            google_identity.gaiaId,
             base::SysNSStringToUTF8(google_identity.userFullName));
         attr.SetAttachedGaiaIds(
-            {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
+            {gmail_identity1.gaiaId, google_identity.gaiaId});
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
@@ -1041,7 +1041,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest,
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(kPersonalProfileName)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
+              UnorderedElementsAre(google_identity.gaiaId));
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 }
 
@@ -1065,10 +1065,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
-            GaiaId(google_identity.gaiaID),
+            google_identity.gaiaId,
             base::SysNSStringToUTF8(google_identity.userFullName));
         attr.SetAttachedGaiaIds(
-            {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
+            {gmail_identity1.gaiaId, google_identity.gaiaId});
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
@@ -1077,11 +1077,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       GetApplicationContext()->GetLocalState());
 
   // Both identities should still be attached to the personal profile.
-  EXPECT_THAT(profile_attributes_storage()
-                  ->GetAttributesForProfileWithName(kPersonalProfileName)
-                  .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID),
-                                   GaiaId(google_identity.gaiaID)));
+  EXPECT_THAT(
+      profile_attributes_storage()
+          ->GetAttributesForProfileWithName(kPersonalProfileName)
+          .GetAttachedGaiaIds(),
+      UnorderedElementsAre(gmail_identity1.gaiaId, google_identity.gaiaId));
 
   // No additional profile should've been registered.
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
@@ -1102,10 +1102,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
-            GaiaId(google_identity.gaiaID),
+            google_identity.gaiaId,
             base::SysNSStringToUTF8(google_identity.userFullName));
         attr.SetAttachedGaiaIds(
-            {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
+            {gmail_identity1.gaiaId, google_identity.gaiaId});
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
@@ -1114,11 +1114,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       GetApplicationContext()->GetLocalState());
 
   // Both identities are attached to the personal profile.
-  ASSERT_THAT(profile_attributes_storage()
-                  ->GetAttributesForProfileWithName(kPersonalProfileName)
-                  .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID),
-                                   GaiaId(google_identity.gaiaID)));
+  ASSERT_THAT(
+      profile_attributes_storage()
+          ->GetAttributesForProfileWithName(kPersonalProfileName)
+          .GetAttachedGaiaIds(),
+      UnorderedElementsAre(gmail_identity1.gaiaId, google_identity.gaiaId));
   // Verify the force-migration pref is recorded.
   EXPECT_NE(GetApplicationContext()->GetLocalState()->GetTime(
                 prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
@@ -1145,11 +1145,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(kPersonalProfileName)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID)));
+              UnorderedElementsAre(gmail_identity1.gaiaId));
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(managed_profile_name)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
+              UnorderedElementsAre(google_identity.gaiaId));
 }
 
 // Tests that if a managed account is assigned to the personal profile, but is
@@ -1174,7 +1174,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
         // Note: No `attr.SetAuthenticationInfo(...)` call, so no primary
         // account.
         attr.SetAttachedGaiaIds(
-            {GaiaId(gmail_identity1.gaiaID), GaiaId(google_identity.gaiaID)});
+            {gmail_identity1.gaiaId, google_identity.gaiaId});
       }));
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
@@ -1193,11 +1193,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(kPersonalProfileName)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID)));
+              UnorderedElementsAre(gmail_identity1.gaiaId));
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(managed_profile_name)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
+              UnorderedElementsAre(google_identity.gaiaId));
 }
 
 // Tests that the personal profile gets correctly converted into a managed
@@ -1248,7 +1248,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // take existing local data along, i.e. convert the personal profile into a
   // managed profile.
   account_profile_mapper_->MakePersonalProfileManagedWithGaiaID(
-      GaiaId(google_identity.gaiaID));
+      google_identity.gaiaId);
 
   // What should have happened:
   // * The original personal profile should have become managed.
@@ -1331,7 +1331,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // take existing local data along, i.e. convert the personal profile into a
   // managed profile.
   account_profile_mapper_->MakePersonalProfileManagedWithGaiaID(
-      GaiaId(google_identity.gaiaID));
+      google_identity.gaiaId);
 
   // What should have happened:
   // * The original personal profile should have become managed.
@@ -1503,9 +1503,9 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
-            GaiaId(google_identity.gaiaID),
+            google_identity.gaiaId,
             base::SysNSStringToUTF8(google_identity.userFullName));
-        attr.SetAttachedGaiaIds({GaiaId(google_identity.gaiaID)});
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
       }));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
@@ -1518,7 +1518,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(kPersonalProfileName)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
+              UnorderedElementsAre(google_identity.gaiaId));
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   // Verify the force-migration pref is set.
@@ -1542,9 +1542,9 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
         attr.SetAuthenticationInfo(
-            GaiaId(gmail_identity1.gaiaID),
+            gmail_identity1.gaiaId,
             base::SysNSStringToUTF8(gmail_identity1.userFullName));
-        attr.SetAttachedGaiaIds({GaiaId(gmail_identity1.gaiaID)});
+        attr.SetAttachedGaiaIds({gmail_identity1.gaiaId});
       }));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
@@ -1554,7 +1554,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_THAT(profile_attributes_storage()
                   ->GetAttributesForProfileWithName(kPersonalProfileName)
                   .GetAttachedGaiaIds(),
-              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID)));
+              UnorderedElementsAre(gmail_identity1.gaiaId));
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   // Verify the force-migration pref is not set.
