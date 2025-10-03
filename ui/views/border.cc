@@ -55,7 +55,7 @@ void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
   gfx::RectF scaled_bounds;
   gfx::InsetsF insets_in_pixels;
 
-  if (!features::IsPixelCanvasRecordingEnabled()) {
+  if (view.GetPaintScaleType() == PaintInfo::ScaleType::kUniformScaling) {
     // Undo DSF so that we can be sure to draw an integral number of pixels for
     // the border. Integral scale factors should be unaffected by this, but for
     // fractional scale factors this ensures sharp lines.
