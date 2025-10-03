@@ -50,7 +50,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      OutputSurfaceOverlayPlane* output_surface_plane,
+      std::optional<OverlayCandidate>& primary_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final;
@@ -62,14 +62,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      std::optional<OverlayCandidate>& output_surface_plane) override;
 
   gfx::RectF GetUnassignedDamage() const override;
 
  private:
   gfx::RectF GetPrimaryPlaneDisplayRect(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane*
-          primary_plane);
+      const std::optional<OverlayCandidate>& primary_plane);
   // Iterate through a list of strategies and attempt to overlay with each.
   // Returns true if one of the attempts is successful. Has to be called after
   // InitializeStrategies(). A |primary_plane| represents the output surface's
@@ -85,7 +84,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds);
 

@@ -54,7 +54,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   void SetIsPageFullscreen(bool enabled) override;
 
   void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      std::optional<OverlayCandidate>& output_surface_plane) override;
 
   // Attempt to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list_in_root_space,
-      OutputSurfaceOverlayPlane* output_surface_plane,
+      std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* overlay_candidates,
       gfx::Rect* root_damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
@@ -113,7 +113,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
-      OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* candidates,
       gfx::Rect* root_damage_rect);
 

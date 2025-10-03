@@ -35,7 +35,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const PrimaryPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       std::vector<OverlayProposedCandidate>* candidates,
       std::vector<gfx::Rect>* content_bounds) override;
 
@@ -47,7 +47,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const PrimaryPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds,
       const OverlayProposedCandidate& proposed_candidate) override;
@@ -59,7 +59,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
 
  private:
   bool TryOverlay(AggregatedRenderPass* render_pass,
-                  const PrimaryPlane* primary_plane,
+                  const std::optional<OverlayCandidate>& primary_plane,
                   OverlayCandidateList* candidate_list,
                   const OverlayProposedCandidate& proposed_candidate);
 

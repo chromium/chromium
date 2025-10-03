@@ -70,7 +70,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+    std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   DCHECK(candidates->empty());
@@ -152,7 +152,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   }
 
   // Check for support.
-  this->CheckOverlaySupport(nullptr, candidates);
+  this->CheckOverlaySupport(std::nullopt, candidates);
 
   for (auto&& each : *candidates) {
     if (!each.overlay_handled) {
@@ -175,7 +175,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
 }
 
 gfx::RectF OverlayProcessorDelegated::GetPrimaryPlaneDisplayRect(
-    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane) {
+    const std::optional<OverlayCandidate>& primary_plane) {
   return primary_plane ? primary_plane->display_rect : gfx::RectF();
 }
 
@@ -187,7 +187,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    OutputSurfaceOverlayPlane* output_surface_plane,
+    std::optional<OverlayCandidate>& primary_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
@@ -199,7 +199,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   success = AttemptWithStrategies(
       output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
       resource_provider, render_passes, &surface_damage_rect_list,
-      output_surface_plane, candidates, content_bounds);
+      primary_plane, candidates, content_bounds);
 
   DCHECK(candidates->empty() || success);
 
@@ -222,16 +222,18 @@ void OverlayProcessorDelegated::ProcessForOverlays(
 }
 
 void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
-    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
-  if (!output_surface_plane->has_value())
+    std::optional<OverlayCandidate>& output_surface_plane) {
+  if (!output_surface_plane) {
     return;
+  }
 
   // TODO(crbug.com/40775556) : Damage propagation will allow us to
   // remove the primary plan entirely in the case of full delegation.
   // In that case we will do "output_surface_plane->reset()" like the existing
   // fullscreen overlay code.
-  if (delegated_status_ == DelegationStatus::kFullDelegation)
-    output_surface_plane->reset();
+  if (delegated_status_ == DelegationStatus::kFullDelegation) {
+    output_surface_plane.reset();
+  }
 }
 
 gfx::RectF OverlayProcessorDelegated::GetUnassignedDamage() const {

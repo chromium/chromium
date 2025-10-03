@@ -743,8 +743,7 @@ OverlayProcessorWebView::TakeSurfaceTransactionOnRT() {
 }
 
 void OverlayProcessorWebView::CheckOverlaySupportImpl(
-    const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*
-        primary_plane,
+    const std::optional<viz::OverlayCandidate>& primary_plane,
     viz::OverlayCandidateList* candidates) {
   // If HWUI doesn't want us to overlay, we shouldn't.
   if (!overlays_enabled_by_hwui_)

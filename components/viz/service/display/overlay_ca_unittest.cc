@@ -198,6 +198,7 @@ class CALayerOverlayTest : public testing::Test {
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<CATestOverlayProcessor> overlay_processor_;
+  std::optional<OverlayCandidate> null_primary_plane_;
   gfx::Rect damage_rect_ = kOverlayDamageRect;
   std::vector<gfx::Rect> content_bounds_;
 };
@@ -220,7 +221,7 @@ TEST_F(CALayerOverlayTest, AllowNonAxisAlignedTransform) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+      std::move(surface_damage_rect_list), null_primary_plane_, &ca_layer_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect_);
   EXPECT_EQ(1U, ca_layer_list.size());
@@ -246,7 +247,7 @@ TEST_F(CALayerOverlayTest, ThreeDTransform) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+      std::move(surface_damage_rect_list), null_primary_plane_, &ca_layer_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(1U, ca_layer_list.size());
   gfx::Rect overlay_damage = overlay_processor_->GetAndResetOverlayDamage();
@@ -275,7 +276,7 @@ TEST_F(CALayerOverlayTest, AllowContainingClip) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+      std::move(surface_damage_rect_list), null_primary_plane_, &ca_layer_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect_);
   EXPECT_EQ(1U, ca_layer_list.size());
@@ -298,7 +299,7 @@ TEST_F(CALayerOverlayTest, NontrivialClip) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+      std::move(surface_damage_rect_list), null_primary_plane_, &ca_layer_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect_);
   EXPECT_EQ(1U, ca_layer_list.size());
@@ -323,7 +324,7 @@ TEST_F(CALayerOverlayTest, SkipTransparent) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+      std::move(surface_damage_rect_list), null_primary_plane_, &ca_layer_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect_);
   EXPECT_EQ(0U, ca_layer_list.size());
@@ -346,7 +347,7 @@ TEST_F(CALayerOverlayTest, SkipNonVisible) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+      std::move(surface_damage_rect_list), null_primary_plane_, &ca_layer_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect_);
   EXPECT_EQ(0U, ca_layer_list.size());
@@ -382,8 +383,8 @@ TEST_F(CALayerOverlayTest, TextureDrawQuadVideoOverlay) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
-        &damage_rect_, &content_bounds_);
+        std::move(surface_damage_rect_list), null_primary_plane_,
+        &ca_layer_list, &damage_rect_, &content_bounds_);
     EXPECT_EQ(gfx::Rect(), damage_rect_);
     EXPECT_EQ(1U, ca_layer_list.size());
   }
@@ -408,8 +409,8 @@ TEST_F(CALayerOverlayTest, OverlayErrorCode) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
-        &damage_rect_, &content_bounds_);
+        std::move(surface_damage_rect_list), null_primary_plane_,
+        &ca_layer_list, &damage_rect_, &content_bounds_);
 
     // There should be no error.
     gfx::CALayerResult error_code = overlay_processor_->GetCALayerErrorCode();
@@ -436,8 +437,8 @@ TEST_F(CALayerOverlayTest, OverlayErrorCode) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
-        &damage_rect_, &content_bounds_);
+        std::move(surface_damage_rect_list), null_primary_plane_,
+        &ca_layer_list, &damage_rect_, &content_bounds_);
 
     // Overlay should fail when there is a copy request.
     EXPECT_EQ(0U, ca_layer_list.size());
@@ -462,8 +463,8 @@ class CALayerOverlayRPDQTest : public CALayerOverlayTest {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list_, GetIdentityColorMatrix(),
         render_pass_filters_, render_pass_backdrop_filters_,
-        std::move(surface_damage_rect_list_), nullptr, &ca_layer_list_,
-        &damage_rect_, &content_bounds_);
+        std::move(surface_damage_rect_list_), null_primary_plane_,
+        &ca_layer_list_, &damage_rect_, &content_bounds_);
   }
   AggregatedRenderPassList pass_list_;
   raw_ptr<AggregatedRenderPass> pass_;

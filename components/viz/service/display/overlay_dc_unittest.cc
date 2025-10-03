@@ -2682,8 +2682,7 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
 
     EXPECT_TRUE(overlay_processor_->IsOverlaySupported());
 
-    output_surface_plane_ =
-        OverlayProcessorInterface::OutputSurfaceOverlayPlane();
+    output_surface_plane_ = OverlayCandidate();
   }
 
   void TearDown() override {
@@ -2691,14 +2690,11 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
     OverlayProcessorTestBase::TearDown();
   }
 
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane*
-  GetOutputSurfacePlane() {
-    EXPECT_TRUE(output_surface_plane_.has_value());
-    return &output_surface_plane_.value();
+  std::optional<OverlayCandidate>& GetOutputSurfacePlane() {
+    return output_surface_plane_;
   }
 
-  std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
-      output_surface_plane_;
+  std::optional<OverlayCandidate> output_surface_plane_;
   std::unique_ptr<OverlayProcessorWin> overlay_processor_;
   gfx::Rect damage_rect_;
   std::vector<gfx::Rect> content_bounds_;
@@ -2846,15 +2842,13 @@ class OverlayProcessorWinSurfacePlaneTest
                                                      &damage_rect_);
     }
 
-    output_surface_plane_ =
-        OverlayProcessorInterface::OutputSurfaceOverlayPlane();
+    output_surface_plane_ = OverlayCandidate();
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), render_passes, SkM44(), render_pass_filters,
         render_pass_backdrop_filters,
         std::move(surface_damage_rect_list_in_root_space),
-        &output_surface_plane_.value(), candidates, &damage_rect_,
-        &content_bounds_);
-    overlay_processor_->AdjustOutputSurfaceOverlay(&output_surface_plane_);
+        output_surface_plane_, candidates, &damage_rect_, &content_bounds_);
+    overlay_processor_->AdjustOutputSurfaceOverlay(output_surface_plane_);
 
     // Sort candidates front-to-back so tests can assume they appear in the same
     // order as the input draw quads.
@@ -2971,8 +2965,8 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
     EXPECT_TRUE(pass_list.back()->has_transparent_background);
     if (GetParam() == SurfaceTestMode::RootSurface) {
       EXPECT_TRUE(output_surface_plane_);
-      EXPECT_EQ(output_surface_plane_->enable_blending,
-                pass_list.back()->has_transparent_background);
+      EXPECT_EQ(output_surface_plane_->is_opaque,
+                !pass_list.back()->has_transparent_background);
     } else {
       // Delegated compositing removes the output surface plane.
     }
@@ -3031,8 +3025,8 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
               in_dc_layer_hysteresis);
     if (GetParam() == SurfaceTestMode::RootSurface) {
       EXPECT_TRUE(output_surface_plane_);
-      EXPECT_EQ(output_surface_plane_->enable_blending,
-                pass_list.back()->has_transparent_background);
+      EXPECT_EQ(output_surface_plane_->is_opaque,
+                !pass_list.back()->has_transparent_background);
     } else {
       // Delegated compositing removes the output surface plane.
     }
@@ -3270,8 +3264,7 @@ class OverlayProcessorWinDelegatedCompositingTest
     if (!output_surface_plane_) {
       // Reset the output surface plane in case we're calling
       // |TryProcessForDelegatedOverlays| multiple times.
-      output_surface_plane_ =
-          OverlayProcessorInterface::OutputSurfaceOverlayPlane();
+      output_surface_plane_ = OverlayCandidate();
     }
 
     const gfx::Rect original_root_surface_damage =
@@ -3297,7 +3290,7 @@ class OverlayProcessorWinDelegatedCompositingTest
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &candidates, &damage_rect_, &content_bounds_);
 
-    overlay_processor_->AdjustOutputSurfaceOverlay(&output_surface_plane_);
+    overlay_processor_->AdjustOutputSurfaceOverlay(output_surface_plane_);
     const bool delegation_succeeded = !output_surface_plane_.has_value();
 
     return DelegationResult(candidates, delegation_succeeded,

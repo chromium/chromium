@@ -101,8 +101,8 @@ class MockPixmapProvider : public OverlayProcessorOzone::PixmapProvider {
 TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   // Set up the primary plane.
   gfx::Size size(128, 128);
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
-  primary_plane.resource_size = size;
+  OverlayCandidate primary_plane;
+  primary_plane.resource_size_in_pixels = size;
   primary_plane.format = SinglePlaneFormat::kBGRA_8888;
   primary_plane.mailbox = gpu::Mailbox::Generate();
 
@@ -131,7 +131,7 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
       std::make_unique<FakeOverlayCandidatesOzone>(), {},
       std::move(pixmap_provider));
 
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
 
   // Since the |OutputSurfaceOverlayPlane|'s size and format match those of
   // primary plane's NativePixmap, the overlay candidate is promoted.
@@ -141,8 +141,8 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
 TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   // Set up the primary plane.
   gfx::Size size(128, 128);
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
-  primary_plane.resource_size = size;
+  OverlayCandidate primary_plane;
+  primary_plane.resource_size_in_pixels = size;
   primary_plane.format = SinglePlaneFormat::kBGRA_8888;
   primary_plane.mailbox = gpu::Mailbox::Generate();
 
@@ -166,7 +166,7 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
       std::make_unique<FakeOverlayCandidatesOzone>(), {},
       std::move(pixmap_provider));
 
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
 
   // Since the |OutputSurfaceOverlayPlane|'s format doesn't match that of the
   // primary plane's NativePixmap, the overlay candidate is NOT promoted.
@@ -176,8 +176,8 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
 TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   // Set up the primary plane.
   gfx::Size size(128, 128);
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
-  primary_plane.resource_size = size;
+  OverlayCandidate primary_plane;
+  primary_plane.resource_size_in_pixels = size;
   primary_plane.format = SinglePlaneFormat::kBGRA_8888;
   primary_plane.mailbox = gpu::Mailbox::Generate();
 
@@ -212,7 +212,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   // In other platforms, this is not a restriction.
   primary_plane.color_space = gfx::ColorSpace::CreateSRGB();
   candidates[0].color_space = gfx::ColorSpace::CreateHDR10();
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(candidates.at(0).overlay_handled);
 #else
@@ -223,7 +223,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
 
   primary_plane.color_space = gfx::ColorSpace::CreateHDR10();
   candidates[0].color_space = gfx::ColorSpace::CreateHLG();
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
 
   candidates[0] = candidate;
@@ -233,7 +233,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   primary_plane.color_space = gfx::ColorSpace::CreateSRGB();
   candidates[0].color_space = gfx::ColorSpace::CreateHDR10();
   candidates[0].requires_overlay = true;
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
 
   candidates[0] = candidate;
@@ -243,7 +243,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   primary_plane.color_space = gfx::ColorSpace::CreateHDR10();
   candidates[0].color_space = gfx::ColorSpace();
   EXPECT_FALSE(candidates[0].color_space.IsValid());
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
 }
 
@@ -274,7 +274,7 @@ TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
   // No receive_callback yet.
   EXPECT_TRUE(fake_candidates->receive_callback().is_null());
 
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
 
   // Receive callback is set.
   EXPECT_FALSE(fake_candidates->receive_callback().is_null());
