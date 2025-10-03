@@ -124,7 +124,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       std::unique_ptr<ScopedSequence> sequence,
       scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
-      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner)
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager)
       : WebNNContextImpl(std::move(receiver),
                          context_provider,
                          GetContextPropertiesForTesting(),
@@ -135,7 +136,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                          std::move(sequence),
                          std::move(scheduler_task_runner),
                          std::move(memory_tracker),
-                         std::move(owning_task_runner)) {}
+                         std::move(owning_task_runner),
+                         shared_image_manager) {}
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override {
@@ -191,6 +193,7 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
       scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager,
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
       override {
     mojo::PendingRemote<mojom::WebNNContext> remote;
@@ -198,7 +201,7 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
         remote.InitWithNewPipeAndPassReceiver(), context_provider_impl,
         command_buffer_id, std::move(sequence),
         std::move(scheduler_task_runner), std::move(memory_tracker),
-        std::move(owning_task_runner));
+        std::move(owning_task_runner), shared_image_manager);
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
     auto success = mojom::CreateContextSuccess::New(

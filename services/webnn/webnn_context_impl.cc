@@ -48,7 +48,8 @@ WebNNContextImpl::WebNNContextImpl(
     std::unique_ptr<ScopedSequence> sequence,
     scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
-    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    gpu::SharedImageManager* shared_image_manager)
     : WebNNObjectImpl<mojom::WebNNContext,
                       blink::WebNNContextToken,
                       mojo::Receiver<mojom::WebNNContext>>(
@@ -63,7 +64,8 @@ WebNNContextImpl::WebNNContextImpl(
       scheduler_task_runner_(std::move(scheduler_task_runner)),
       write_tensor_consumer_(std::move(write_tensor_consumer)),
       read_tensor_producer_(std::move(read_tensor_producer)),
-      memory_type_tracker_(std::move(memory_tracker)) {
+      memory_type_tracker_(std::move(memory_tracker)),
+      shared_image_manager_(shared_image_manager) {
   CHECK(context_provider_);
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
@@ -284,15 +286,13 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
               return;
             }
 
-            gpu::SharedImageManager* shared_image_manager =
-                self->context_provider()->shared_image_manager();
-            CHECK(shared_image_manager);
+            CHECK(self->shared_image_manager_);
 
             constexpr char kWebNNCreateTensorErrorMessage[] =
                 "Failed to create tensor.";
 
             std::unique_ptr<gpu::WebNNTensorRepresentation> representation =
-                shared_image_manager->ProduceWebNNTensor(
+                self->shared_image_manager_->ProduceWebNNTensor(
                     mailbox, &self->memory_type_tracker_);
             if (!representation) {
               std::move(callback).Run(ToError<mojom::CreateTensorResult>(

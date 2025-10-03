@@ -23,19 +23,19 @@ namespace ort {
 // for creating a `GraphImplOrt` which uses ONNX Runtime for inference.
 class ContextImplOrt final : public WebNNContextImpl {
  public:
-  ContextImplOrt(
-      mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      WebNNContextProviderImpl* context_provider,
-      const EpWorkarounds& ep_workarounds,
-      mojom::CreateContextOptionsPtr options,
-      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
-      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-      scoped_refptr<Environment> env,
-      gpu::CommandBufferId command_buffer_id,
-      std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
-      scoped_refptr<gpu::MemoryTracker> memory_tracker,
-      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner);
+  ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                 WebNNContextProviderImpl* context_provider,
+                 const EpWorkarounds& ep_workarounds,
+                 mojom::CreateContextOptionsPtr options,
+                 mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+                 mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+                 scoped_refptr<Environment> env,
+                 gpu::CommandBufferId command_buffer_id,
+                 std::unique_ptr<ScopedSequence> sequence,
+                 scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+                 scoped_refptr<gpu::MemoryTracker> memory_tracker,
+                 scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+                 gpu::SharedImageManager* shared_image_manager);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;

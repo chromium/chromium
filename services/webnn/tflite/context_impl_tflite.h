@@ -30,7 +30,8 @@ class ContextImplTflite final : public WebNNContextImpl {
       std::unique_ptr<ScopedSequence> sequence,
       scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
-      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager);
 
   ContextImplTflite(const WebNNContextImpl&) = delete;
   ContextImplTflite& operator=(const ContextImplTflite&) = delete;

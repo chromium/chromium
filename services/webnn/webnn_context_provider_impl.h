@@ -100,6 +100,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
         scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
         scoped_refptr<gpu::MemoryTracker> memory_tracker,
         scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+        gpu::SharedImageManager* shared_image_manager,
         CreateWebNNContextCallback callback) = 0;
   };
 
@@ -114,10 +115,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   scoped_refptr<gpu::SharedContextState> shared_context_state() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return shared_context_state_;
-  }
-
-  gpu::SharedImageManager* shared_image_manager() const {
-    return shared_image_manager_;
   }
 
   // For tests: ensure that all WebNNContextImpls have been destroyed on their

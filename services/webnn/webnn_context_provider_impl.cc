@@ -198,7 +198,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     context_impls_.emplace(g_backend_for_testing->CreateWebNNContext(
         this, std::move(options), command_buffer_id, std::move(sequence),
         std::move(scheduler_task_runner), memory_tracker_,
-        main_thread_task_runner_, std::move(callback)));
+        main_thread_task_runner_, shared_image_manager_, std::move(callback)));
     return;
   }
 
@@ -241,7 +241,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
           std::move(read_tensor_producer),
           std::move(env_creation_results.value()), command_buffer_id,
           std::move(sequence), std::move(scheduler_task_runner),
-          memory_tracker_, main_thread_task_runner_);
+          memory_tracker_, main_thread_task_runner_, shared_image_manager_);
     }
   } else if (dml::ShouldCreateDmlContext(*options)) {
     base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
@@ -251,7 +251,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
             shared_context_state_.get(), std::move(receiver), this,
             command_buffer_id, std::move(sequence),
             std::move(scheduler_task_runner), memory_tracker_,
-            main_thread_task_runner_);
+            main_thread_task_runner_, shared_image_manager_);
     if (!context_creation_results.has_value()) {
       std::move(callback).Run(mojom::CreateContextResult::NewError(
           std::move(context_creation_results.error())));
@@ -276,7 +276,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       context_impl = base::MakeRefCounted<coreml::ContextImplCoreml>(
           std::move(receiver), this, std::move(options), command_buffer_id,
           std::move(sequence), std::move(scheduler_task_runner),
-          memory_tracker_, main_thread_task_runner_);
+          memory_tracker_, main_thread_task_runner_, shared_image_manager_);
     }
   }
 #endif  // BUILDFLAG(IS_APPLE)
@@ -288,7 +288,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(write_tensor_consumer), std::move(read_tensor_producer),
         command_buffer_id, std::move(sequence),
         std::move(scheduler_task_runner), memory_tracker_,
-        main_thread_task_runner_);
+        main_thread_task_runner_, shared_image_manager_);
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
