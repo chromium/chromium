@@ -1185,46 +1185,29 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrderInTabsMode) {
   Element* after_first_scroll_marker =
       after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  std::array<Element*, 15> forward_order = {pre_input,
-                                            before_first_scroll_marker,
-                                            before_first_child,
-                                            before_block_start_button,
-                                            before_inline_start_button,
-                                            before_inline_end_button,
-                                            before_block_end_button,
-                                            before_scroller,
-                                            after_first_scroll_marker,
-                                            after_block_start_button,
-                                            after_inline_start_button,
-                                            after_inline_end_button,
-                                            after_block_end_button,
-                                            after_scroller,
-                                            post_input};
+  std::array<Element*, 15> order = {pre_input,
+                                    before_first_scroll_marker,
+                                    before_first_child,
+                                    before_block_start_button,
+                                    before_inline_start_button,
+                                    before_inline_end_button,
+                                    before_block_end_button,
+                                    before_scroller,
+                                    after_first_scroll_marker,
+                                    after_block_start_button,
+                                    after_inline_start_button,
+                                    after_inline_end_button,
+                                    after_block_end_button,
+                                    after_scroller,
+                                    post_input};
 
-  std::array<Element*, 14> backward_order = {pre_input,
-                                             before_first_scroll_marker,
-                                             before_block_start_button,
-                                             before_inline_start_button,
-                                             before_inline_end_button,
-                                             before_block_end_button,
-                                             before_scroller,
-                                             after_first_scroll_marker,
-                                             after_block_start_button,
-                                             after_inline_start_button,
-                                             after_inline_end_button,
-                                             after_block_end_button,
-                                             after_scroller,
-                                             post_input};
-
-  for (std::size_t i = 0u; i < forward_order.size() - 1; ++i) {
-    EXPECT_EQ(forward_order[i + 1],
-              FindFocusableElementAfter(*forward_order[i],
-                                        mojom::blink::FocusType::kForward));
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
+                                *order[i], mojom::blink::FocusType::kForward));
   }
-  for (std::size_t i = 0u; i < backward_order.size() - 1; ++i) {
-    EXPECT_EQ(backward_order[i],
-              FindFocusableElementAfter(*backward_order[i + 1],
-                                        mojom::blink::FocusType::kBackward));
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i], FindFocusableElementAfter(
+                            *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 
   GetFocusController().SetActive(true);
