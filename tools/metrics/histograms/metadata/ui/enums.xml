@@ -41,6 +41,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="User selected the Customize Chrome Side Panel lab"/>
 </enum>
 
+<!-- LINT.IfChange(ContextMenuOptionDesktop -->
+
 <enum name="ContextMenuOptionDesktop">
   <summary>The item selected from a context menu on Desktop.</summary>
   <int value="0" label="Open in new tab"/>
@@ -76,7 +78,10 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Search web for... in new tab"/>
   <int value="30" label="Open link in preview"/>
   <int value="31" label="Open link in split view"/>
+  <int value="32" label="Create image with Gemini in Chrome"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:ContextMenuOptionDesktop) -->
 
 <enum name="DefaultBrowserInfoBarUserInteraction">
   <int value="0" label="Accept">
@@ -118,6 +123,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h:PinInfoBarUserInteraction) -->
+
+<!-- LINT.IfChange(RenderViewContextMenuItem) -->
 
 <enum name="RenderViewContextMenuItem">
   <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
@@ -301,7 +308,10 @@ chromium-metrics-reviews@google.com.
   <int value="154" label="IDC_CONTENT_CONTEXT_RELOAD_GLIC"/>
   <int value="155" label="IDC_CONTENT_CONTEXT_CLOSE_GLIC"/>
   <int value="156" label="IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW"/>
+  <int value="157" label="IDC_CONTENT_CONTEXT_GLICSHAREIMAGE"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->
 
 <enum name="ShapeRunFallback">
   <int value="0" label="FAILED">Finding a fallback font failed.</int>

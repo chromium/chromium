@@ -152,8 +152,8 @@ export interface PageElementTypes {
   viewChangedCurrentView: HTMLSelectElement;
   viewChangedAutomaticallyAccept: HTMLInputElement;
   mqlsClientIdBtn: HTMLButtonElement;
-  listenAdditionalContext: HTMLButtonElement;
   additionalContextResult: HTMLTextAreaElement;
+  additionalContextImages: HTMLDivElement;
   multiTabFetchScreenshot: HTMLInputElement;
   conversationIdInput: HTMLInputElement;
   conversationTitleInput: HTMLInputElement;

@@ -283,6 +283,8 @@
   E(kActionContentContextLoadImage, IDC_CONTENT_CONTEXT_LOAD_IMAGE) \
   E(kActionContentContextSearchLensForImage, \
     IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE) \
+  E(kActionContentContextGlicShareImage, \
+    IDC_CONTENT_CONTEXT_GLICSHAREIMAGE) \
   E(kActionContentContextTranslateImageWithWeb, \
     IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB) \
   E(kActionContentContextTranslateImageWithLens, \

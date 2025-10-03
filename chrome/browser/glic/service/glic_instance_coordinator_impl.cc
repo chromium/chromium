@@ -230,14 +230,16 @@ const mojom::PanelState& GlicInstanceCoordinatorImpl::GetPanelState() const {
 }
 
 void GlicInstanceCoordinatorImpl::AddStateObserver(StateObserver* observer) {
-  // The StateObserver needs to be split into two: one for if the floating
-  // window is showing and one for the state of an individual panel.
+  // TODO(b:448604727): The StateObserver needs to be split into two: one for if
+  // the floating window is showing and one for the state of an individual
+  // panel.
   NOTIMPLEMENTED();
 }
 
 void GlicInstanceCoordinatorImpl::RemoveStateObserver(StateObserver* observer) {
-  // The StateObserver needs to be split into two: one for if the floating
-  // window is showing and one for the state of an individual panel.
+  // TODO(b:448604727): The StateObserver needs to be split into two: one for if
+  // the floating window is showing and one for the state of an individual
+  // panel.
   NOTIMPLEMENTED();
 }
 

@@ -35,6 +35,7 @@
 #include "chrome/browser/glic/host/context/glic_active_browser_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
+#include "chrome/browser/glic/host/context/glic_share_image_handler.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_source_observer.h"
@@ -164,6 +165,9 @@ GlicKeyedService::GlicKeyedService(
       FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService,
       base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
                           weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kGlicShareImage)) {
+    share_image_handler_ = std::make_unique<GlicShareImageHandler>(*this);
+  }
 
   // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
   // is shown for testing convenience.
@@ -691,6 +695,14 @@ void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(
       window_controller().GetHostNativeWindow(), std::move(callback));
+}
+
+void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,
+                                         content::RenderFrameHost* frame,
+                                         const ::GURL& src_url) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicShareImage));
+  CHECK(share_image_handler_);
+  share_image_handler_->ShareContextImage(tab, frame, src_url);
 }
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(

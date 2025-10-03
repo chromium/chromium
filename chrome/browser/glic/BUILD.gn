@@ -137,6 +137,8 @@ source_set("impl") {
     "host/context/glic_pinned_tab_manager.h",
     "host/context/glic_screenshot_capturer.cc",
     "host/context/glic_screenshot_capturer.h",
+    "host/context/glic_share_image_handler.cc",
+    "host/context/glic_share_image_handler.h",
     "host/context/glic_sharing_manager_impl.cc",
     "host/context/glic_sharing_manager_impl.h",
     "host/context/glic_sharing_utils.cc",

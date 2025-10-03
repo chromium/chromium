@@ -1263,6 +1263,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.TabContext.ShareImageDuration" units="ms"
+    expires_after="2026-09-30">
+  <owner>carlosk@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Recorded when an attempt to send context to glic completes. Precisely, this
+    records the time from the start of a request to the time that data was sent
+    to glic via glic.mojom, but does not capture any subsequent processing time
+    by the web client. This is not recorded if sharing fails.
+  </summary>
+</histogram>
+
+<histogram name="Glic.TabContext.ShareImageResult" enum="ShareImageResult"
+    expires_after="2026-09-30">
+  <owner>carlosk@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Recorded after an attempt is made to share an image with glic.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TabContext.UploadTime" units="ms"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

@@ -163,6 +163,17 @@ found in the LICENSE file.
     width: 300px;
     margin-left: 4px;
   }
+
+  #additionalContextResult {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  #additionalContextResult > img {
+    max-width: 100%;
+    height: auto;
+  }
 </style>
 <div id="pageHeader">
   <h1>Test Web Client</h1>
@@ -578,9 +589,8 @@ found in the LICENSE file.
   </div>
   <div class="section">
     <h1>Additional Context</h1>
-    <button id="listenAdditionalContext">Listen for Additional Context</button>
-    <br />
-    <textarea id="additionalContextResult" rows="10" cols="80" readonly></textarea>
+    <div id="additionalContextResult">
+    </div>
   </div>
   <div class="section">
     <h1>Conversations</h1>
