@@ -98,6 +98,10 @@ class ScriptsSmokeTest(unittest.TestCase):
   @decorators.Disabled('chromeos')  # crbug.com/754913
   def testRunPerformanceTestsTelemetry_end2end(self):
     tempdir = tempfile.mkdtemp()
+    # Stop the command run by this test case from uploading its own test
+    # results to ResultSink by removing LUCI_CONTEXT. A pass/fail result for
+    # the overall test case will still be reported.
+    os.environ.pop('LUCI_CONTEXT', None)
     benchmarks = ['dummy_benchmark.stable_benchmark_1',
                   'dummy_benchmark.noisy_benchmark_1']
     cmdline = ('../../testing/scripts/run_performance_tests.py '
@@ -303,12 +307,20 @@ class ScriptsSmokeTest(unittest.TestCase):
   # ChromeOS: crbug.com/754913.
   @decorators.Disabled('win', 'chromeos')
   def testRunPerformanceTestsGtest_end2end(self):
+    # Stop the command run by this test case from uploading its own test
+    # results to ResultSink by removing LUCI_CONTEXT. A pass/fail result for
+    # the overall test case will still be reported.
+    os.environ.pop('LUCI_CONTEXT', None)
     self.RunGtest(generate_trace=False)
 
   # Windows: ".exe" is auto-added which breaks Windows.
   # ChromeOS: crbug.com/754913.
   @decorators.Disabled('win', 'chromeos')
   def testRunPerformanceTestsGtestTrace_end2end(self):
+    # Stop the command run by this test case from uploading its own test
+    # results to ResultSink by removing LUCI_CONTEXT. A pass/fail result for
+    # the overall test case will still be reported.
+    os.environ.pop('LUCI_CONTEXT', None)
     self.RunGtest(generate_trace=True)
 
   def testRunPerformanceTestsShardedArgsParser(self):
