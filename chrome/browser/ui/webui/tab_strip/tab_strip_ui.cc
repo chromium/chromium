@@ -39,7 +39,7 @@
 #include "ui/webui/webui_util.h"
 
 TabStripUI::TabStripUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /* enable_chrome_send */ true),
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send*/ false),
       webui_load_timer_(web_ui->GetWebContents(),
                         "WebUITabStrip.LoadDocumentTime",
                         "WebUITabStrip.LoadCompletedTime") {
