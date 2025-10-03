@@ -203,7 +203,8 @@ class DictationTestBase : public AccessibilityFeatureBrowserTest,
   void TearDownOnMainThread() override {
     // Ignore browser-shutting-down error for MV3 because service workers
     // are not killed during fast shutdown phase.
-    if (manifest_version() == ManifestVersion::kThree) {
+    if (manifest_version() == ManifestVersion::kThree ||
+        ::features::IsAccessibilityManifestV3EnabledForChromeVox()) {
       utils()->AddAllowedExtensionError(
           ExtensionConsoleErrorObserver::kErrorBrowserIsShuttingDown);
     }
