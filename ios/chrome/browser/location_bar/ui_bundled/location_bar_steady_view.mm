@@ -359,17 +359,15 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 }
 
 - (void)setUpTraitChangeHandler {
-  if (@available(iOS 17, *)) {
-    __weak __typeof(self) weakSelf = self;
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    UITraitChangeHandler traitChangeHandler =
-        ^(id<UITraitEnvironment> traitEnvironment,
-          UITraitCollection* previousCollection) {
-          [weakSelf updateFontOnTraitChange:previousCollection];
-        };
-    [self registerForTraitChanges:traits withHandler:traitChangeHandler];
-  }
+  __weak __typeof(self) weakSelf = self;
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  UITraitChangeHandler traitChangeHandler =
+      ^(id<UITraitEnvironment> traitEnvironment,
+        UITraitCollection* previousCollection) {
+        [weakSelf updateFontOnTraitChange:previousCollection];
+      };
+  [self registerForTraitChanges:traits withHandler:traitChangeHandler];
 }
 
 - (void)setUpAccessibility {
@@ -592,19 +590,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 - (BOOL)canBecomeFirstResponder {
   return true;
 }
-
-#pragma mark - UIView
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateFontOnTraitChange:previousTraitCollection];
-}
-#endif
 
 #pragma mark - UIAccessibilityContainer
 
