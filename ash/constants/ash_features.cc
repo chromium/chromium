@@ -1246,9 +1246,6 @@ BASE_FEATURE(kIppClientInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 // Used in finch experiment.
 BASE_FEATURE(kIppFirstSetupForUsbPrinters, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables OS Settings page for japanese.
-BASE_FEATURE(kJapaneseOSSettings, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Romaji/Kana mode switch for Japanese VK.
 BASE_FEATURE(kJapaneseInputModeSwitchInVK, base::FEATURE_DISABLED_BY_DEFAULT);
 

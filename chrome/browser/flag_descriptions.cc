@@ -2521,10 +2521,6 @@ const char kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[] =
     "different device will not be considered valid, leading to the choice "
     "screen potentially retriggering.";
 
-const char kJapaneseOSSettingsName[] = "Japanese OS Settings Page";
-const char kJapaneseOSSettingsDescription[] =
-    "Enable OS Settings Page for Japanese input methods";
-
 const char kJavascriptHarmonyName[] = "Experimental JavaScript";
 const char kJavascriptHarmonyDescription[] =
     "Enable web pages to use experimental JavaScript features.";
