@@ -1271,7 +1271,7 @@ void TabDragController::StartDrag() {
 void TabDragController::AttachToNewContext(
     TabDragContext* attached_context,
     std::unique_ptr<TabDragController> controller,
-    std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+    std::vector<std::variant<std::unique_ptr<DetachedTab>,
                              std::unique_ptr<DetachedTabCollection>>>
         owned_tabs_and_collections) {
   // We should already have detached by the time we get here.
@@ -1309,14 +1309,14 @@ void TabDragController::AttachToNewContext(
 
   for (auto& tab_or_collection : owned_tabs_and_collections) {
     if (auto* tab =
-            std::get_if<std::unique_ptr<tabs::TabModel>>(&tab_or_collection)) {
-      const tabs::TabInterface* tab_ptr = tab->get();
+            std::get_if<std::unique_ptr<DetachedTab>>(&tab_or_collection)) {
+      const WebContents* web_contents = tab->get()->tab->GetContents();
       // If it's a tab - we add it to the tabstrip.
       int add_types = AddTabTypes::ADD_NONE;
       TabDragData& tab_data = *std::find_if(
           drag_data_.tab_drag_data_.begin(), drag_data_.tab_drag_data_.end(),
-          [tab_ptr](TabDragData& tab_data) {
-            return tab_ptr->GetContents() == tab_data.contents;
+          [web_contents](TabDragData& tab_data) {
+            return web_contents == tab_data.contents;
           });
       if (tab_data.pinned) {
         add_types |= AddTabTypes::ADD_PINNED;
@@ -1324,7 +1324,7 @@ void TabDragController::AttachToNewContext(
 
       const size_t inserted_index =
           attached_context_->GetTabStripModel()->InsertDetachedTabAt(
-              index, std::move(*tab), add_types);
+              index, std::move(tab->get()->tab), add_types);
       CHECK_EQ(inserted_index, index);
       update_sad_tab.Run(index);
       index++;
@@ -1391,7 +1391,7 @@ void TabDragController::AttachImpl() {
 }
 
 std::tuple<std::unique_ptr<TabDragController>,
-           std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+           std::vector<std::variant<std::unique_ptr<DetachedTab>,
                                     std::unique_ptr<DetachedTabCollection>>>>
 TabDragController::Detach(ReleaseCapture release_capture) {
   TRACE_EVENT1("views", "TabDragController::Detach", "release_capture",
@@ -1438,7 +1438,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   const std::vector<tab_groups::TabGroupId> groups_to_move =
       attached_model->GetGroupsDestroyedFromRemovingIndices(dragged_indices);
 
-  std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+  std::vector<std::variant<std::unique_ptr<DetachedTab>,
                            std::unique_ptr<DetachedTabCollection>>>
       owned_tabs_and_collections =
           attached_model->DetachTabsAndCollectionsForInsertion(dragged_indices);

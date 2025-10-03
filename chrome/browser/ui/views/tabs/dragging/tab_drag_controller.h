@@ -65,6 +65,7 @@ class TabStripScrollSession;
 class WindowFinder;
 class TabStripScrollSession;
 struct DetachedTabCollection;
+struct DetachedTab;
 
 // `TabDragDelegate` is an interface that may be implemented to facilitate
 // custom behavior beyond the tabstrip.
@@ -423,7 +424,7 @@ class TabDragController : public views::WidgetObserver,
   void AttachToNewContext(
       TabDragContext* attached_context,
       std::unique_ptr<TabDragController> controller,
-      std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+      std::vector<std::variant<std::unique_ptr<DetachedTab>,
                                std::unique_ptr<DetachedTabCollection>>>
           owned_tabs_and_collections);
 
@@ -436,7 +437,7 @@ class TabDragController : public views::WidgetObserver,
   // `attached_context_` currently owns a controller. Otherwise returns
   // nullptr.
   std::tuple<std::unique_ptr<TabDragController>,
-             std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+             std::vector<std::variant<std::unique_ptr<DetachedTab>,
                                       std::unique_ptr<DetachedTabCollection>>>>
   Detach(ReleaseCapture release_capture);
 

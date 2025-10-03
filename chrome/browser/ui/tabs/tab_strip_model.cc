@@ -395,7 +395,7 @@ void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
                         tabs::TabInterface::DetachReason::kDelete);
 }
 
-std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+std::vector<std::variant<std::unique_ptr<DetachedTab>,
                          std::unique_ptr<DetachedTabCollection>>>
 TabStripModel::DetachTabsAndCollectionsForInsertion(
     const std::vector<int>& tab_indices) {
@@ -407,7 +407,7 @@ TabStripModel::DetachTabsAndCollectionsForInsertion(
     tab_interfaces.push_back(GetTabAtIndex(index));
   }
 
-  std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+  std::vector<std::variant<std::unique_ptr<DetachedTab>,
                            std::unique_ptr<DetachedTabCollection>>>
       owned_tabs_and_collections;
 
@@ -429,7 +429,9 @@ TabStripModel::DetachTabsAndCollectionsForInsertion(
       owned_tabs_and_collections.emplace_back(
           DetachSplitTabForInsertion(tab_interface->GetSplit().value()));
     } else {
-      owned_tabs_and_collections.emplace_back(DetachTabAtForInsertion(index));
+      owned_tabs_and_collections.emplace_back(DetachTabWithReasonAt(
+          index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+          tabs::TabInterface::DetachReason::kInsertIntoOtherWindow));
     }
   }
 

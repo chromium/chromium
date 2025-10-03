@@ -350,7 +350,7 @@ class TabStripModel {
   // Detaches the WebContents at the specified index and immediately deletes it.
   void DetachAndDeleteWebContentsAt(int index);
 
-  std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+  std::vector<std::variant<std::unique_ptr<DetachedTab>,
                            std::unique_ptr<DetachedTabCollection>>>
   DetachTabsAndCollectionsForInsertion(const std::vector<int>& tab_indices);
 
