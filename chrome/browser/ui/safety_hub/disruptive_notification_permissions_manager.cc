@@ -927,6 +927,22 @@ bool DisruptiveNotificationPermissionsManager::
          revocation_entry->revocation_state == RevocationState::kRevoked;
 }
 
+// static
+bool DisruptiveNotificationPermissionsManager::
+    IsUrlIgnoredForRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
+                                                 const GURL& url) {
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm).GetRevocationEntry(url);
+
+  if (!revocation_entry) {
+    return false;
+  }
+  return revocation_entry->revocation_state ==
+             RevocationState::kIgnoreInsideSH ||
+         revocation_entry->revocation_state ==
+             RevocationState::kIgnoreOutsideSH;
+}
+
 void DisruptiveNotificationPermissionsManager::UpdateNotificationPermission(
     const GURL& url,
     ContentSetting setting_value) {

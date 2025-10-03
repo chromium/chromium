@@ -177,6 +177,12 @@ class DisruptiveNotificationPermissionsManager
   static bool IsUrlRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
                                                  const GURL& url);
 
+  // Returns true if notification permission should not be revoked for the URL
+  // since the user already regranted a previously revoked permission.
+  static bool IsUrlIgnoredForRevokedDisruptiveNotification(
+      HostContentSettingsMap* hcsm,
+      const GURL& url);
+
   // content_settings::Observer implementation.
   void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,

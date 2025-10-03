@@ -1462,6 +1462,11 @@ TEST_P(RevokedPermissionsServiceTest, PermissionsRevocationType) {
   SetupRevokedUnusedPermissionSite(url5);
   SetupRevokedDisruptiveNotificationSite(url5);
 
+  // Sixth site: abusive and disruptive notifications.
+  SetupAbusiveNotificationSite(url6, ContentSetting::CONTENT_SETTING_ASK);
+  SetupRevokedAbusiveNotificationSite(url6);
+  SetupRevokedDisruptiveNotificationSite(url6);
+
   auto new_service = std::make_unique<RevokedPermissionsService>(
       profile(), profile()->GetPrefs());
   std::optional<std::unique_ptr<SafetyHubResult>> opt_result =
@@ -1471,7 +1476,7 @@ TEST_P(RevokedPermissionsServiceTest, PermissionsRevocationType) {
       static_cast<RevokedPermissionsResult*>(opt_result.value().get());
   auto revoked_permissions = result->GetRevokedPermissions();
 
-  EXPECT_EQ(5U, revoked_permissions.size());
+  EXPECT_EQ(6U, revoked_permissions.size());
   // Verify the revocation types are correct.
   auto permission_1 = GetPermissionsDataByUrl(revoked_permissions, url1);
   EXPECT_EQ(permission_1.revocation_type,
@@ -1494,6 +1499,10 @@ TEST_P(RevokedPermissionsServiceTest, PermissionsRevocationType) {
   EXPECT_EQ(
       permission_5.revocation_type,
       PermissionsRevocationType::kUnusedPermissionsAndDisruptiveNotifications);
+
+  auto permission_6 = GetPermissionsDataByUrl(revoked_permissions, url6);
+  EXPECT_EQ(permission_6.revocation_type,
+            PermissionsRevocationType::kAbusiveNotificationPermissions);
 }
 
 TEST_P(RevokedPermissionsServiceTest, AutoRevocationSetting) {

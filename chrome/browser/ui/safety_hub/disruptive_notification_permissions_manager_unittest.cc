@@ -1545,3 +1545,42 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "SafetyHub.DisruptiveNotificationRevocations.FalsePositiveRevocation");
   EXPECT_EQ(0u, revocation_entries.size());
 }
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       IsUrlIgnoredForRevokedDisruptiveNotification) {
+  GURL ignored_inside_sh_url("https://www.example1.com");
+  GURL ignored_outside_sh_url("https://www.example2.com");
+  GURL revoked_url("https://www.example3.com");
+  GURL non_existent_url("https://www.example4.com");
+
+  // Set up ignored entries.
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      ignored_inside_sh_url,
+      RevocationEntry(/*revocation_state=*/RevocationState::kIgnoreInsideSH,
+                      /*site_engagement=*/0.0,
+                      /*daily_notification_count=*/3));
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      ignored_outside_sh_url,
+      RevocationEntry(/*revocation_state=*/RevocationState::kIgnoreOutsideSH,
+                      /*site_engagement=*/0.0,
+                      /*daily_notification_count=*/3));
+  // Set up a revoked entry.
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      revoked_url,
+      RevocationEntry(/*revocation_state=*/RevocationState::kRevoked,
+                      /*site_engagement=*/0.0,
+                      /*daily_notification_count=*/3));
+
+  EXPECT_TRUE(DisruptiveNotificationPermissionsManager::
+                  IsUrlIgnoredForRevokedDisruptiveNotification(
+                      hcsm(), ignored_inside_sh_url));
+  EXPECT_TRUE(DisruptiveNotificationPermissionsManager::
+                  IsUrlIgnoredForRevokedDisruptiveNotification(
+                      hcsm(), ignored_outside_sh_url));
+  EXPECT_FALSE(
+      DisruptiveNotificationPermissionsManager::
+          IsUrlIgnoredForRevokedDisruptiveNotification(hcsm(), revoked_url));
+  EXPECT_FALSE(DisruptiveNotificationPermissionsManager::
+                   IsUrlIgnoredForRevokedDisruptiveNotification(
+                       hcsm(), non_existent_url));
+}
