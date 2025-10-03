@@ -59,24 +59,28 @@ def _add_handler(args, revs: str):
     exit(1)
 
   for rev in reversed(ancestors):
+    if rev['change_id'] not in direct:
+      # Suppose you have A <- B <- C:
+      # When running `jj bug add --inherit -r C`, C should inherit from B
+      # When running `jj bug add --inherit -r B|C`, C should inherit from B,
+      # which should have already inherited from A.
+      continue
     bugs_to_add = set(bugs)
-    transitive_bugs = set()
     if args.inherit:
       # This doesn't need to be done recursively because of the toposort
       # guaruntee of `jj log`
       if rev['parents']:
         for change_id in rev['parents'].split(','):
-          transitive_bugs.update(revs[change_id]['bugs'])
-      bugs_to_add.update(transitive_bugs)
+          bugs_to_add.update(revs[change_id]['bugs'])
 
     bugs_to_add -= rev['bugs']
     bugs_to_add -= rev['fixed']
-    rev['bugs'].update(transitive_bugs)
+    (rev['fixed'] if args.fixed else rev['bugs']).update(bugs_to_add)
 
     # Skip the ones we already have
     tag = 'Fixed' if args.fixed else 'Bug'
     # We may not need to add bugs, especially in the case of inherit.
-    if rev['change_id'] in direct and bugs_to_add:
+    if bugs_to_add:
       util.add_trailers(
           rev=rev,
           trailers={tag: [','.join(bugs_to_add)]},
@@ -120,7 +124,8 @@ if __name__ == '__main__':
   parser_add.add_argument(
       '-i',
       '--inherit',
-      help='Inherit the bug from parent commits',
+      help='Inherit the bug from parent commits. Bugs are not transitively ' +
+      'inherited unless the parent is also part of -r',
       action='store_true',
   )
   parser_add.add_argument(
