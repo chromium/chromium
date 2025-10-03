@@ -150,8 +150,8 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
       }
     }
   }
-  gfx::DisplayColorSpaces display_color_spaces(icc_profile.GetColorSpace(),
-                                               gfx::BufferFormat::BGRA_8888);
+  gfx::DisplayColorSpaces display_color_spaces(
+      icc_profile.GetColorSpace(), viz::SinglePlaneFormat::kBGRA_8888);
   if (HasForceDisplayColorProfile()) {
     if (Display::HasEnsureForcedColorProfile()) {
       if (display_color_spaces != display.GetColorSpaces()) {
