@@ -82,25 +82,25 @@ VerifySignatureResult VerifySeedSignature(
     const std::string& seed_bytes,
     const std::string& base64_seed_signature) {
   if (base64_seed_signature.empty()) {
-    return VerifySignatureResult::MISSING_SIGNATURE;
+    return VerifySignatureResult::kMissingSignature;
   }
 
   std::string signature;
   if (!base::Base64Decode(base64_seed_signature, &signature))
-    return VerifySignatureResult::DECODE_FAILED;
+    return VerifySignatureResult::kDecodeFailed;
 
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256,
                            base::as_byte_span(signature), kPublicKey)) {
-    return VerifySignatureResult::INVALID_SIGNATURE;
+    return VerifySignatureResult::kInvalidSignature;
   }
 
   verifier.VerifyUpdate(base::as_byte_span(seed_bytes));
   if (!verifier.VerifyFinal()) {
-    return VerifySignatureResult::INVALID_SEED;
+    return VerifySignatureResult::kInvalidSeed;
   }
 
-  return VerifySignatureResult::VALID_SIGNATURE;
+  return VerifySignatureResult::kValidSignature;
 }
 
 // Truncates a time to the start of the day in UTC. If given a time representing
@@ -124,16 +124,16 @@ UpdateSeedDateResult GetSeedDateChangeState(
     base::Time server_seed_date,
     base::Time stored_seed_date) {
   if (server_seed_date < stored_seed_date) {
-    return UpdateSeedDateResult::NEW_DATE_IS_OLDER;
+    return UpdateSeedDateResult::kNewDateIsOlder;
   }
 
   if (TruncateToUTCDay(server_seed_date) !=
       TruncateToUTCDay(stored_seed_date)) {
     // The server date is later than the stored date, and they are from
     // different UTC days, so |server_seed_date| is a valid new day.
-    return UpdateSeedDateResult::NEW_DAY;
+    return UpdateSeedDateResult::kNewDay;
   }
-  return UpdateSeedDateResult::SAME_DAY;
+  return UpdateSeedDateResult::kSameDay;
 }
 
 // Remove gzip compression from |data|.
@@ -487,14 +487,13 @@ void VariationsSeedStore::UpdateSeedDateAndLogDayChange(
 
 void VariationsSeedStore::LogSeedDayChange(
     base::Time server_date_fetched) {
-  UpdateSeedDateResult result = UpdateSeedDateResult::NO_OLD_DATE;
+  UpdateSeedDateResult result = UpdateSeedDateResult::kNoOldDate;
   const base::Time stored_date = seed_reader_writer_->GetSeedInfo().seed_date;
   if (!stored_date.is_null()) {
     result = GetSeedDateChangeState(server_date_fetched, stored_date);
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Variations.SeedDateChange", result,
-                            UpdateSeedDateResult::ENUM_SIZE);
+  UMA_HISTOGRAM_ENUMERATION("Variations.SeedDateChange", result);
 }
 
 const std::string& VariationsSeedStore::GetLatestSerialNumber() {
@@ -676,7 +675,7 @@ LoadSeedResult VariationsSeedStore::VerifyAndParseSeedImpl(
       !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
     *verify_signature_result =
         VerifySeedSignature(seed_data, base64_seed_signature);
-    if (*verify_signature_result != VerifySignatureResult::VALID_SIGNATURE) {
+    if (*verify_signature_result != VerifySignatureResult::kValidSignature) {
       return LoadSeedResult::kInvalidSignature;
     }
   }
@@ -710,14 +709,13 @@ void VariationsSeedStore::VerifyAndParseSeedAndRunCallback(
     VerifySignatureResult signature_result = verify_signature_result.value();
     if (seed_type == SeedType::LATEST) {
       UMA_HISTOGRAM_ENUMERATION("Variations.LoadSeedSignature",
-                                signature_result,
-                                VerifySignatureResult::ENUM_SIZE);
+                                signature_result);
     } else {
       UMA_HISTOGRAM_ENUMERATION(
           "Variations.SafeMode.LoadSafeSeed.SignatureValidity",
-          signature_result, VerifySignatureResult::ENUM_SIZE);
+          signature_result);
     }
-    if (signature_result != VerifySignatureResult::VALID_SIGNATURE) {
+    if (signature_result != VerifySignatureResult::kValidSignature) {
       ClearPrefs(seed_type);
     }
   }
@@ -1049,18 +1047,18 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
     switch (seed_type) {
       case SeedType::LATEST:
         UMA_HISTOGRAM_ENUMERATION("Variations.StoreSeedSignature",
-                                  verify_result,
-                                  VerifySignatureResult::ENUM_SIZE);
+                                  verify_result);
         break;
       case SeedType::SAFE:
         UMA_HISTOGRAM_ENUMERATION(
             "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
-            verify_result, VerifySignatureResult::ENUM_SIZE);
+            verify_result);
         break;
     }
 
-    if (verify_result != VerifySignatureResult::VALID_SIGNATURE)
+    if (verify_result != VerifySignatureResult::kValidSignature) {
       return StoreSeedResult::kFailedSignature;
+    }
   }
 
   result->seed_data = seed_bytes;

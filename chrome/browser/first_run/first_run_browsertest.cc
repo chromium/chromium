@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
       "Variations.SeedLoadResult", variations::StoreSeedResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "Variations.LoadSeedSignature",
-      variations::VerifySignatureResult::VALID_SIGNATURE, 1);
+      variations::VerifySignatureResult::kValidSignature, 1);
 }
 
 // The following tests are only enabled on Windows, since it is the only

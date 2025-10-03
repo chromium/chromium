@@ -1645,7 +1645,7 @@ INSTANTIATE_TEST_SUITE_P(
                 .signature = kTestSeedData.base64_signature,
                 .store_seed_result = StoreSeedResult::kFailedSignature,
                 .verify_signature_result =
-                    VerifySignatureResult::INVALID_SEED}),
+                    VerifySignatureResult::kInvalidSeed}),
         ::testing::Values(kSeedFilesGroup,
                           kControlGroup,
                           kDefaultGroup,
@@ -1856,7 +1856,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest, StoreSafeSeed_ValidSignature) {
       "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
-      VerifySignatureResult::VALID_SIGNATURE, 1);
+      VerifySignatureResult::kValidSignature, 1);
 }
 
 TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
@@ -2032,7 +2032,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
       "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
-      VerifySignatureResult::VALID_SIGNATURE, 1);
+      VerifySignatureResult::kValidSignature, 1);
 }
 
 TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
@@ -2234,7 +2234,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureIsValid) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(MakeSeedStoreLoadStoredSeed(seed_store));
   histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
-                                      VerifySignatureResult::VALID_SIGNATURE,
+                                      VerifySignatureResult::kValidSignature,
                                       1);
 }
 
@@ -2248,7 +2248,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureIsMissing) {
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
   histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
-                                      VerifySignatureResult::MISSING_SIGNATURE,
+                                      VerifySignatureResult::kMissingSignature,
                                       1);
 }
 
@@ -2264,7 +2264,7 @@ TEST_P(LoadSeedDataAllGroupsTest,
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
   histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
-                                      VerifySignatureResult::DECODE_FAILED, 1);
+                                      VerifySignatureResult::kDecodeFailed, 1);
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureDoesNotMatch) {
@@ -2283,7 +2283,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureDoesNotMatch) {
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
   histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
-                                      VerifySignatureResult::INVALID_SEED, 1);
+                                      VerifySignatureResult::kInvalidSeed, 1);
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSeedDoesNotMatch) {
@@ -2303,7 +2303,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSeedDoesNotMatch) {
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
   histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
-                                      VerifySignatureResult::INVALID_SEED, 1);
+                                      VerifySignatureResult::kInvalidSeed, 1);
 }
 
 class VariationsSeedStoreTestAllGroups
@@ -2518,22 +2518,22 @@ INSTANTIATE_TEST_SUITE_P(
                 DatesTestParams{
                     .old_seed_date = base::Time(),
                     .new_seed_date = base::Time::Now(),
-                    .expected_result = UpdateSeedDateResult::NO_OLD_DATE,
+                    .expected_result = UpdateSeedDateResult::kNoOldDate,
                 },
                 DatesTestParams{
                     .old_seed_date = base::Time::Now() - base::Days(1),
                     .new_seed_date = base::Time::Now(),
-                    .expected_result = UpdateSeedDateResult::NEW_DAY,
+                    .expected_result = UpdateSeedDateResult::kNewDay,
                 },
                 DatesTestParams{
                     .old_seed_date = base::Time::FromSecondsSinceUnixEpoch(5),
                     .new_seed_date = base::Time::FromSecondsSinceUnixEpoch(10),
-                    .expected_result = UpdateSeedDateResult::SAME_DAY,
+                    .expected_result = UpdateSeedDateResult::kSameDay,
                 },
                 DatesTestParams{
                     .old_seed_date = base::Time::Now(),
                     .new_seed_date = base::Time::Now() - base::Days(1),
-                    .expected_result = UpdateSeedDateResult::NEW_DATE_IS_OLDER,
+                    .expected_result = UpdateSeedDateResult::kNewDateIsOlder,
                 }))));
 
 // UpdateSeedDateAndLogDayChange() updates the seed date and logs the result.
