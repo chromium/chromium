@@ -1323,10 +1323,17 @@ void RecordMissedReuseOpportunityMetric(
     return;
   }
 
-  CHECK(allocation_context.navigation_context);
-  auto context = allocation_context.navigation_context->is_outermost_main_frame
-                     ? RecentlyDestroyedHosts::Context::kMainFrame
-                     : RecentlyDestroyedHosts::Context::kSubframe;
+  // IsForNavigation() is true for all navigation-related allocations, but
+  // navigation_context is not guaranteed to be populated. This can happen when
+  // initializing a process for a newly created tab, which is treated as
+  // IsForNavigation() if the kTreatRFHInitRootAsForNavigation feature is
+  // turned on. In this case, we are creating a process for a main frame.
+  auto context =
+      (!allocation_context.navigation_context ||
+       allocation_context.navigation_context->is_outermost_main_frame)
+          ? RecentlyDestroyedHosts::Context::kMainFrame
+          : RecentlyDestroyedHosts::Context::kSubframe;
+
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
       context, base::TimeTicks::Now(),
       ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
