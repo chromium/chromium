@@ -369,6 +369,8 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
 
   // The PageTransition for the navigation may be updated on commit.
   page_transition_ = navigation_handle->GetPageTransition();
+  UMA_HISTOGRAM_BOOLEAN("Actor.MayOriginGatePageTransition",
+                        PageLoadMayOriginGate(navigation_handle));
   was_cached_ = navigation_handle->WasResponseCached();
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
   prerender::NoStatePrefetchManager* const no_state_prefetch_manager =
@@ -391,6 +393,22 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
                                    ->GetLastProcessAssignmentOutcome();
 
   return CONTINUE_OBSERVING;
+}
+
+bool UkmPageLoadMetricsObserver::PageLoadMayOriginGate(
+    content::NavigationHandle* navigation_handle) const {
+  // Actor only uses origin gating for cross-origin navigations.
+  if (navigation_handle->IsSameOrigin()) {
+    return false;
+  }
+  // Cross-origin client redirects would trigger origin gating.
+  if (page_transition_ & ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT) {
+    return true;
+  }
+  // Otherwise, only if it's the last chain in a redirect.
+  return (page_transition_ &
+          ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT) &&
+         (page_transition_ & ui::PageTransition::PAGE_TRANSITION_CHAIN_END);
 }
 
 UkmPageLoadMetricsObserver::ObservePolicy
