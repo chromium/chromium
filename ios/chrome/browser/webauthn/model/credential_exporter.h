@@ -8,17 +8,25 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+namespace password_manager {
+class SavedPasswordsPresenter;
+}  // namespace password_manager
+
 // Handles exporting credentials using the Credential Exchange format
 // (https://fidoalliance.org/specifications-credential-exchange-specifications).
 @interface CredentialExporter : NSObject
 
 // `window` is a presentantion anchor that will be used by the OS views.
-- (instancetype)initWithWindow:(UIWindow*)window NS_DESIGNATED_INITIALIZER;
+// `savedPasswordsPresenter` must not be null and must outlive this object.
+- (instancetype)initWithWindow:(UIWindow*)window
+       savedPasswordsPresenter:
+           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Called when the user confirms the export flow.
-- (void)startExport;
+- (void)startExport API_AVAILABLE(ios(26.0));
 
 @end
 

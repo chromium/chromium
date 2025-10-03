@@ -14,7 +14,7 @@
 @interface CredentialExchangePassword : NSObject
 
 // Url of the website where the credential can be used.
-@property(nonatomic, copy) NSURL* url;
+@property(nonatomic, strong) NSURL* URL;
 
 // Username associated with the credential.
 @property(nonatomic, copy) NSString* username;
@@ -25,7 +25,7 @@
 // Note associated with the credential.
 @property(nonatomic, copy) NSString* note;
 
-- (instancetype)initWithUrl:(NSURL*)url
+- (instancetype)initWithURL:(NSURL*)URL
                    username:(NSString*)username
                    password:(NSString*)password
                        note:(NSString*)note NS_DESIGNATED_INITIALIZER;

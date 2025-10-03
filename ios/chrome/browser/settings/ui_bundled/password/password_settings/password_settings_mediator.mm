@@ -231,11 +231,18 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 }
 
 - (void)userDidStartExportFlow:(UIWindow*)window {
-  if (CredentialExchangeEnabled()) {
-    CredentialExporter* credentialExporter =
-        [[CredentialExporter alloc] initWithWindow:window];
-    [credentialExporter startExport];
-  } else {
+  BOOL didRunCredentialExchange = NO;
+
+  if (@available(iOS 26, *)) {
+    if (CredentialExchangeEnabled()) {
+      CredentialExporter* credentialExporter =
+          [[CredentialExporter alloc] initWithWindow:window
+                             savedPasswordsPresenter:_savedPasswordsPresenter];
+      [credentialExporter startExport];
+      didRunCredentialExchange = YES;
+    }
+  }
+  if (!didRunCredentialExchange) {
     std::vector<CredentialUIEntry> passwords =
         _savedPasswordsPresenter->GetSavedPasswords();
     [_passwordExporter startExportFlow:passwords];

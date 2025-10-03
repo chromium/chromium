@@ -5,7 +5,12 @@
 #import "ios/chrome/browser/webauthn/model/credential_exporter.h"
 
 #import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "ios/chrome/browser/webauthn/model/credential_exchange_password.h"
 #import "ios/chrome/browser/webauthn/model/credential_export_manager_swift.h"
+#import "net/base/apple/url_conversions.h"
 
 @implementation CredentialExporter {
   // Used as a presentation anchor for OS views. Must not be nil.
@@ -13,21 +18,50 @@
 
   // Exports credentials through the OS ASCredentialExportManager API.
   CredentialExportManager* _credentialExportManager;
+
+  // Used to fetch the user's saved passwords for export.
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 }
 
-- (instancetype)initWithWindow:(UIWindow*)window {
+- (instancetype)initWithWindow:(UIWindow*)window
+       savedPasswordsPresenter:
+           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter {
   CHECK(window);
+  CHECK(savedPasswordsPresenter);
 
   self = [super init];
   if (self) {
     _window = window;
     _credentialExportManager = [[CredentialExportManager alloc] init];
+    _savedPasswordsPresenter = savedPasswordsPresenter;
   }
   return self;
 }
 
-- (void)startExport {
-  [_credentialExportManager startExport:_window];
+- (void)startExport API_AVAILABLE(ios(26.0)) {
+  std::vector<password_manager::CredentialUIEntry> credentials =
+      _savedPasswordsPresenter->GetSavedPasswords();
+
+  NSMutableArray<CredentialExchangePassword*>* exportedPasswords =
+      [NSMutableArray arrayWithCapacity:credentials.size()];
+
+  for (const password_manager::CredentialUIEntry& credential : credentials) {
+    NSString* username = base::SysUTF16ToNSString(credential.username) ?: @"";
+    NSString* password = base::SysUTF16ToNSString(credential.password) ?: @"";
+    NSString* note = base::SysUTF16ToNSString(credential.note) ?: @"";
+    NSURL* URL =
+        net::NSURLWithGURL(credential.GetURL()) ?: [NSURL URLWithString:@""];
+
+    CredentialExchangePassword* exportedPassword =
+        [[CredentialExchangePassword alloc] initWithURL:URL
+                                               username:username
+                                               password:password
+                                                   note:note];
+    [exportedPasswords addObject:exportedPassword];
+  }
+
+  [_credentialExportManager startExportWithCredentials:exportedPasswords
+                                                window:_window];
 }
 
 @end

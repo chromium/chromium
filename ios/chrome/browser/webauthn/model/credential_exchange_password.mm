@@ -6,13 +6,13 @@
 
 @implementation CredentialExchangePassword
 
-- (instancetype)initWithUrl:(NSURL*)url
+- (instancetype)initWithURL:(NSURL*)URL
                    username:(NSString*)username
                    password:(NSString*)password
                        note:(NSString*)note {
   self = [super init];
   if (self) {
-    _url = url;
+    _URL = URL;
     _username = username;
     _password = password;
     _note = note;

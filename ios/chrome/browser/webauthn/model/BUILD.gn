@@ -20,6 +20,8 @@ source_set("model") {
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/sync/model",
     "//components/webauthn/core/browser",
     "//ios/chrome/browser/affiliations/model",
@@ -40,7 +42,9 @@ source_set("credential_exchange_types") {
 }
 
 swift_source_set("credential_export_manager_swift") {
+  bridge_header = "credential_import_manager_swift_bridge.h"
   sources = [ "credential_export_manager.swift" ]
+  deps = [ ":credential_exchange_types" ]
   frameworks = [
     "AuthenticationServices.framework",
     "Foundation.framework",
