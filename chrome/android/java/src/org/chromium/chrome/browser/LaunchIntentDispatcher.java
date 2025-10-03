@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -431,7 +430,6 @@ public class LaunchIntentDispatcher {
 
     private boolean maybeStartNavigation() {
         if (!ProfileManager.isInitialized()) return false;
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) return false;
         if (IntentHandler.willLaunchIncognitoCustomTab(mIntent)) return false;
         if (clearTopIntentsForCustomTabsEnabled(mIntent)
                 && SessionDataHolder.getInstance()

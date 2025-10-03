@@ -1349,7 +1349,6 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.CCT_EARLY_NAV})
     public void testPrecreatedRenderer() throws Exception {
         var histograms =
                 HistogramWatcher.newBuilder()
@@ -1391,7 +1390,6 @@ public class CustomTabActivityTest {
     /** Tests that we don't leak the tab when finishing early. */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.CCT_EARLY_NAV})
     public void testEarlyFinish() throws Exception {
         CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(

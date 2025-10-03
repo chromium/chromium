@@ -394,22 +394,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             tabModel.addTab(tab, 0, tab.getLaunchType(), TabCreationState.LIVE_IN_FOREGROUND);
         }
 
-        // This cannot be done before because we want to do the reparenting only
-        // when we have compositor related controllers.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)
-                && mode == TabCreationMode.HIDDEN) {
-            TabReparentingParams params =
-                    (TabReparentingParams)
-                            AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
-            ReparentingTask.from(tab)
-                    .finish(
-                            ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                    mCompositorViewHolder.get(),
-                                    mWindowAndroid,
-                                    mCustomTabDelegateFactory),
-                            (params == null ? null : params.getFinalizeCallback()));
-        }
-
         if (tab != earlyCreatedTab) {
             mTabProvider.setInitialTab(tab, mode);
         } // else we've already set the initial tab.
@@ -595,7 +579,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             observer.onContentChanged(tab);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV) && isHiddenTab) {
+        if (isHiddenTab) {
             TabReparentingParams params =
                     (TabReparentingParams)
                             AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());

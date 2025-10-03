@@ -46,10 +46,7 @@ import java.util.Objects;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({
-    ChromeFeatureList.CCT_EARLY_NAV,
-    ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER
-})
+@Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
 public class CustomTabActivityLaunchHandlerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

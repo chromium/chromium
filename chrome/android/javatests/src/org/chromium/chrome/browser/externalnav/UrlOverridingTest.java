@@ -40,7 +40,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,6 +68,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -1803,7 +1803,6 @@ public class UrlOverridingTest {
     @Test
     @LargeTest
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @EnableFeatures({ChromeFeatureList.CCT_EARLY_NAV})
     public void testRedirectFromCctEarlyNav() throws Exception {
         final String url = mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE);
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();

@@ -37,13 +37,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
@@ -57,7 +55,6 @@ import org.chromium.net.NetId;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class})
-@Features.EnableFeatures({ChromeFeatureList.CCT_EARLY_NAV})
 public class CustomTabActivityTabControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
