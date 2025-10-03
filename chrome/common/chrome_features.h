@@ -299,6 +299,12 @@ extern const base::FeatureParam<base::TimeDelta> kGlicActorKeyDownDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
+    kGlicActorIncrementalTypingLongMultiplier;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<size_t>
+    kGlicActorIncrementalTypingLongTextThreshold;
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

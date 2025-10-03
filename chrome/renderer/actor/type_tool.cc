@@ -438,16 +438,24 @@ void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
            target_and_keys_->key_sequence[current_key_].dom_code ==
                GetEnterKeyParams().dom_code);
 
-    base::TimeDelta delay = (is_key_down_ ? features::kGlicActorKeyDownDuration
-                                          : features::kGlicActorKeyUpDuration)
-                                .Get();
+    base::TimeDelta delay;
 
-    // If the next key is the final enter key, it has a specific delay to ensure
-    // a user-like input and to allow the page to process the typed text. Only
-    // down is delayed to avoid doubling this longer delay and since most inputs
-    // take action on the down event.
     if (is_final_enter_key_down) {
+      // If the next key is the final enter key, it has a specific delay to
+      // ensure a user-like input and to allow the page to process the typed
+      // text. Only down is delayed to avoid doubling this longer delay and
+      // since most inputs take action on the down event.
       delay = features::kGlicActorTypeToolEnterDelay.Get();
+    } else {
+      delay = (is_key_down_ ? features::kGlicActorKeyDownDuration
+                            : features::kGlicActorKeyUpDuration)
+                  .Get();
+
+      // Apply a speed boost when typing a long string.
+      if (action_->text.length() >
+          features::kGlicActorIncrementalTypingLongTextThreshold.Get()) {
+        delay *= features::kGlicActorIncrementalTypingLongMultiplier.Get();
+      }
     }
 
     task_runner_->PostDelayedTask(

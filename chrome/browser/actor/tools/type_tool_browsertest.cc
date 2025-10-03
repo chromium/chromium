@@ -672,6 +672,34 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_IncrementalTyping) {
   }
 }
 
+// Ensure the type tool functions when typing long string. It should boost the
+// typing speed but testing the speed is going to be flaky. Ensure we at least
+// have coverage that it works.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
+                       TypeTool_IncrementalTypingLong) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
+    GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
+  }
+
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string typed_string(
+      features::kGlicActorIncrementalTypingLongTextThreshold.Get() + 1ul, 'a');
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/false);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
 // Ensure the type tool delays the final enter key by the expected amount.
 IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");

@@ -389,6 +389,18 @@ const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration{
     &kGlicActorIncrementalTyping,
     "glic-actor-incremental-typing-key-up-duration", base::Milliseconds(25)};
 
+// For long text (as defined by the threshold below), this multiplier will be
+// applied to the delays above to change typing speed.
+const base::FeatureParam<double> kGlicActorIncrementalTypingLongMultiplier{
+    &kGlicActorIncrementalTyping,
+    "glic-actor-incremental-typing-long-multiplier", 0.2};
+
+// When incremental typing is enabled, controls the number of characters at
+// which a string to type is considered long (and thus speed boosted).
+const base::FeatureParam<size_t> kGlicActorIncrementalTypingLongTextThreshold{
+    &kGlicActorIncrementalTyping,
+    "glic-actor-incremental-typing-long-text-threshold", 45};
+
 // If the TypeTool is invoked with followed_by_enter, the enter key is
 // dispatched with this delay.
 const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{
