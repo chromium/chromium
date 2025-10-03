@@ -435,11 +435,9 @@ ClientSharedImage::~ClientSharedImage() {
 
 size_t ClientSharedImage::GetStrideForVideoFrame(uint32_t plane_index) const {
   if (async_map_invoked_callback_for_testing_) {
-    return gfx::RowSizeForBufferFormat(
-        size().width(),
-        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-            format()),
-        plane_index);
+    return viz::SharedMemoryRowSizeForSharedImageFormat(format(), plane_index,
+                                                        size().width())
+        .value();
   }
   CHECK(mappable_buffer_);
   return mappable_buffer_->stride(plane_index);

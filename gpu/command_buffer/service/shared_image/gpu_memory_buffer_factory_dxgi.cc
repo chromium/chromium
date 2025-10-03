@@ -10,6 +10,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -160,9 +161,8 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle(
     return handle;
   }
 
-  size_t buffer_size;
-  if (!BufferSizeForBufferFormatChecked(size, ToBufferFormat(format),
-                                        &buffer_size)) {
+  auto buffer_size = viz::SharedMemorySizeForSharedImageFormat(format, size);
+  if (!buffer_size) {
     return handle;
   }
 

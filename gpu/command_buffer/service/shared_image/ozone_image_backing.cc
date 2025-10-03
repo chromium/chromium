@@ -17,6 +17,7 @@
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -62,8 +63,8 @@ namespace gpu {
 namespace {
 
 size_t GetPixmapSizeInBytes(const gfx::NativePixmap& pixmap) {
-  return gfx::BufferSizeForBufferFormat(pixmap.GetBufferSize(),
-                                        pixmap.GetBufferFormat());
+  auto si_format = viz::GetSharedImageFormat(pixmap.GetBufferFormat());
+  return si_format.EstimatedSizeInBytes(pixmap.GetBufferSize());
 }
 
 bool IsExoTexture(std::string_view label) {

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -149,17 +150,16 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
     int buffers_need_alpha_initialization_count)
-    : ClearTrackingSharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          std::move(debug_label),
-          gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
-          /*is_thread_safe=*/false),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      std::move(debug_label),
+                                      format.EstimatedSizeInBytes(size),
+                                      /*is_thread_safe=*/false),
       d3d11_device_(std::move(d3d11_device)),
       dxgi_swap_chain_(std::move(dxgi_swap_chain)),
       buffers_need_alpha_initialization_count_(
