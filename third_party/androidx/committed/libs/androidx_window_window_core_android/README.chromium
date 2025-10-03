@@ -1,7 +1,7 @@
 Name: WindowManager Core
 Short Name: window-core-android
-URL: https://dl.google.com/dl/android/maven2/androidx/window/window-core-android/1.5.0/window-core-android-1.5.0.aar
-Version: 1.5.0
+URL: https://androidx.dev/snapshots/builds/14207395/artifacts/repository/androidx/window/window-core-android/1.6.0-SNAPSHOT/window-core-android-1.6.0-20251002.212601-1.aar
+Version: 1.6.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 WindowManager Core Library.
 
-See also: https://developer.android.com/jetpack/androidx/releases/window#1.5.0
+See also: https://developer.android.com/jetpack/androidx/releases/window#1.6.0-SNAPSHOT
 
 
 Local Modifications:
