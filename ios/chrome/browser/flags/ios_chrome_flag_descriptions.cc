@@ -714,6 +714,11 @@ const char kIOSCustomFileUploadMenuName[] = "Custom file upload menu";
 const char kIOSCustomFileUploadMenuDescription[] =
     "Enables the custom file upload menu implementation.";
 
+const char kCacheIdentityListInChromeName[] = "Cache identity list in chrome.";
+const char kCacheIdentityListInChromeDescription[] =
+    "Changes the implementation of the cache of the list of identities on "
+    "device.";
+
 const char kIOSDockingPromoName[] = "Docking Promo";
 const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "

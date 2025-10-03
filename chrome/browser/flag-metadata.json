@@ -1494,6 +1494,11 @@
       "expiry_milestone": 140
   },
   {
+    "name": "cache-identity-list-in-chrome",
+    "owners": [ "arthurmilchior@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "calculate-native-win-occlusion",
     "owners": [ "davidbienvenu@chromium.org", "fdoray@chromium.org" ],
     "expiry_milestone": 130

@@ -2842,6 +2842,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabSwitcherOverflowMenuName,
      flag_descriptions::kTabSwitcherOverflowMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabSwitcherOverflowMenu)},
+    {"cache-identity-list-in-chrome",
+     flag_descriptions::kCacheIdentityListInChromeName,
+     flag_descriptions::kCacheIdentityListInChromeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(switches::kCacheIdentityListInChrome)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
