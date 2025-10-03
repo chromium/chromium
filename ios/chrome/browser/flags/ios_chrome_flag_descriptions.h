@@ -568,9 +568,6 @@ extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
 extern const char kLensOverlayEnableLVFEscapeHatchName[];
 extern const char kLensOverlayEnableLVFEscapeHatchDescription[];
 
-extern const char kLensOverlayEnableLocationBarEntrypointOnSRPName[];
-extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[];
-
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];
 

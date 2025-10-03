@@ -971,12 +971,6 @@ extern const char kLensOverlayEnableLVFEscapeHatchName[] =
 extern const char kLensOverlayEnableLVFEscapeHatchDescription[] =
     "When enabled, the escape hatch to LVF is presented in the overflow menu";
 
-extern const char kLensOverlayEnableLocationBarEntrypointOnSRPName[] =
-    "Enable Lens overlay location bar entrypoint on SRP.";
-extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[] =
-    "When enabled, the location bar entrypoint is available on SRP. Enabled by "
-    "default.";
-
 extern const char kLensOverlayEnableSameTabNavigationName[] =
     "Lens overlay same tab navigation";
 extern const char kLensOverlayEnableSameTabNavigationDescription[] =

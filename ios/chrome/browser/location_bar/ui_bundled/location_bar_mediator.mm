@@ -309,10 +309,8 @@ const CGFloat kIconPointSize = 16.0;
     }
   }
 
-  if (!base::FeatureList::IsEnabled(
-          kLensOverlayEnableLocationBarEntrypointOnSRP) &&
-      (google_util::IsGoogleSearchUrl(visibleURL) ||
-       google_util::IsGoogleHomePageUrl(visibleURL))) {
+  if (google_util::IsGoogleSearchUrl(visibleURL) ||
+      google_util::IsGoogleHomePageUrl(visibleURL)) {
     return NO;
   }
 

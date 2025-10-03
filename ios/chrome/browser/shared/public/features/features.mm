@@ -183,8 +183,6 @@ BASE_FEATURE(kLensOverlayEnableLandscapeCompatibility,
 BASE_FEATURE(kLensOverlayEnableLVFEscapeHatch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayEnableLocationBarEntrypointOnSRP,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayEnableSameTabNavigation,
              "EnableLensOverlaySameTabNavigation",
