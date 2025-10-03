@@ -2235,10 +2235,6 @@ extern const char kSideBySideDescription[];
 extern const char kSideBySideSessionRestoreName[];
 extern const char kSideBySideSessionRestoreDescription[];
 
-extern const char kSidePanelResizingFlagId[];
-extern const char kSidePanelResizingName[];
-extern const char kSidePanelResizingDescription[];
-
 extern const char kDefaultSiteInstanceGroupsName[];
 extern const char kDefaultSiteInstanceGroupsDescription[];
 

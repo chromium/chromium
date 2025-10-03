@@ -90,9 +90,7 @@ std::unique_ptr<SidePanelEntry> CreateEntry(const SidePanelEntry::Key& key) {
 
 class SidePanelCoordinatorTest : public InProcessBrowserTest {
  public:
-  SidePanelCoordinatorTest() {
-    scoped_feature_list_.InitWithFeatures({features::kSidePanelResizing}, {});
-  }
+  SidePanelCoordinatorTest() = default;
   virtual void Init() {
     AddTabToBrowser(GURL("http://foo1.com"));
     AddTabToBrowser(GURL("http://foo2.com"));
@@ -282,14 +280,12 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
       contextual_registries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SidePanelCoordinatorWithSideBySideTest : public SidePanelCoordinatorTest {
  public:
   SidePanelCoordinatorWithSideBySideTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelResizing, features::kSideBySide}, {});
+    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
   }
 
  private:
@@ -2343,9 +2339,11 @@ class SidePanelCoordinatorLensOverlayTest : public SidePanelCoordinatorTest {
  public:
   SidePanelCoordinatorLensOverlayTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelResizing, lens::features::kLensOverlay}, {});
+    scoped_feature_list_.InitWithFeatures({lens::features::kLensOverlay}, {});
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLensOverlayTest,

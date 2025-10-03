@@ -587,16 +587,13 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
   }
 
   if (width() != proposed_width) {
-    if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-      if (SidePanelUI* side_panel_ui =
-              browser_view_->browser()->GetFeatures().side_panel_ui()) {
-        if (std::optional<SidePanelEntry::Id> entry =
-                side_panel_ui->GetCurrentEntryId()) {
-          std::string current_panel_id =
-              SidePanelEntryIdToString(entry.value());
-          // Update the pref with the new width.
-          UpdateSidePanelWidthPref(current_panel_id, proposed_width);
-        }
+    if (SidePanelUI* side_panel_ui =
+            browser_view_->browser()->GetFeatures().side_panel_ui()) {
+      if (std::optional<SidePanelEntry::Id> entry =
+              side_panel_ui->GetCurrentEntryId()) {
+        std::string current_panel_id = SidePanelEntryIdToString(entry.value());
+        // Update the pref with the new width.
+        UpdateSidePanelWidthPref(current_panel_id, proposed_width);
       }
     }
 

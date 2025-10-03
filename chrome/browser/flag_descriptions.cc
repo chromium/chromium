@@ -3921,12 +3921,6 @@ const char kSideBySideSessionRestoreDescription[] =
     "Allows users to restore tabs in split view "
     "from previous session when the browser restarts.";
 
-const char kSidePanelResizingFlagId[] = "side-panel-resizing";
-const char kSidePanelResizingName[] = "Side Panel Resizing";
-const char kSidePanelResizingDescription[] =
-    "Allows users to resize the side panel and persist the width across "
-    "browser sessions.";
-
 const char kDefaultSiteInstanceGroupsName[] = "Default SiteInstanceGroups";
 const char kDefaultSiteInstanceGroupsDescription[] =
     "Put sites that don't need isolation in their own SiteInstance in a default"

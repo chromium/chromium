@@ -263,8 +263,6 @@ bool IsSideBySideKeyboardShortcutEnabled() {
          base::FeatureList::IsEnabled(features::kSideBySideKeyboardShortcut);
 }
 
-BASE_FEATURE(kSidePanelResizing, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables buttons when scrolling the tabstrip https://crbug.com/951078

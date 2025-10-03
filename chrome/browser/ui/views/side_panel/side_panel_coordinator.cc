@@ -549,9 +549,7 @@ void SidePanelCoordinator::PopulateSidePanel(
     browser_view_->contents_height_side_panel()->SetHeaderVisibility(false);
   }
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-    browser_view_->contents_height_side_panel()->UpdateWidthOnEntryChanged();
-  }
+  browser_view_->contents_height_side_panel()->UpdateWidthOnEntryChanged();
 
   shown_callback_list_.Notify();
 }

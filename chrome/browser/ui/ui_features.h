@@ -224,7 +224,6 @@ BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
 inline constexpr char kTabScrollingButtonPositionParameterName[] =
     "buttonPosition";
 
-BASE_DECLARE_FEATURE(kSidePanelResizing);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
