@@ -56,76 +56,6 @@ namespace gpu {
 
 namespace {
 
-class ScopedMappingMappableBuffer : public ClientSharedImage::ScopedMapping {
- public:
-  ScopedMappingMappableBuffer(const gfx::Size& size,
-                              viz::SharedImageFormat format)
-      : size_(size), format_(format) {}
-  ~ScopedMappingMappableBuffer() override {
-    if (buffer_) {
-      buffer_->Unmap();
-    }
-  }
-
-  // ClientSharedImage::ScopedMapping:
-  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
-    CHECK(buffer_);
-
-    size_t height_in_pixels =
-        format_.GetPlaneSize(plane_index, Size()).height();
-    size_t row_size_in_bytes = viz::SharedMemoryRowSizeForSharedImageFormat(
-                                   format_, plane_index, Size().width())
-                                   .value();
-
-    CHECK(height_in_pixels);
-    CHECK(row_size_in_bytes);
-
-    // Note that the stride might be larger than the row size due to padding.
-    // For all rows other than the last, this is legal data for the client to
-    // access as it's part of the buffer.  However, the final row is not
-    // guaranteed to have padding (it's a system-dependent internal detail).
-    // Thus, the data that is legal for the client to access should *not*
-    // include any bytes beyond the actual end of the final row.
-    size_t span_length =
-        Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
-
-    // SAFETY: The underlying platform-specific buffer generation mechanisms
-    // guarantee that the buffer contains at least `span_length` bytes following
-    // the start of the plane, as that region is by definition the memory
-    // storing the data of the plane.
-    return UNSAFE_BUFFERS(base::span<uint8_t>(
-        reinterpret_cast<uint8_t*>(buffer_->memory(plane_index)), span_length));
-  }
-  size_t Stride(const uint32_t plane_index) override {
-    CHECK(buffer_);
-    return buffer_->stride(plane_index);
-  }
-  gfx::Size Size() override { return size_; }
-  bool IsSharedMemory() override {
-    CHECK(buffer_);
-    return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
-  }
-  bool Init(MappableBuffer* mappable_buffer, bool is_already_mapped) {
-    if (!mappable_buffer) {
-      LOG(ERROR) << "No MappableBuffer.";
-      return false;
-    }
-
-    if (!is_already_mapped && !mappable_buffer->Map()) {
-      LOG(ERROR) << "Failed to map the buffer.";
-      return false;
-    }
-    buffer_ = mappable_buffer;
-    return true;
-  }
-
- private:
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION MappableBuffer* buffer_ = nullptr;
-  gfx::Size size_;
-  viz::SharedImageFormat format_;
-};
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
   return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
@@ -192,6 +122,74 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
+ClientSharedImage::ScopedMapping::ScopedMapping(const gfx::Size& size,
+                                                viz::SharedImageFormat format)
+    : size_(size), format_(format) {}
+
+ClientSharedImage::ScopedMapping::~ScopedMapping() {
+  if (buffer_) {
+    buffer_->Unmap();
+  }
+}
+
+base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
+    const uint32_t plane_index) {
+  CHECK(buffer_);
+
+  size_t height_in_pixels = format_.GetPlaneSize(plane_index, Size()).height();
+  size_t row_size_in_bytes = viz::SharedMemoryRowSizeForSharedImageFormat(
+                                 format_, plane_index, Size().width())
+                                 .value();
+
+  CHECK(height_in_pixels);
+  CHECK(row_size_in_bytes);
+
+  // Note that the stride might be larger than the row size due to padding.
+  // For all rows other than the last, this is legal data for the client to
+  // access as it's part of the buffer.  However, the final row is not
+  // guaranteed to have padding (it's a system-dependent internal detail).
+  // Thus, the data that is legal for the client to access should *not*
+  // include any bytes beyond the actual end of the final row.
+  size_t span_length =
+      Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
+
+  // SAFETY: The underlying platform-specific buffer generation mechanisms
+  // guarantee that the buffer contains at least `span_length` bytes following
+  // the start of the plane, as that region is by definition the memory
+  // storing the data of the plane.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(
+      reinterpret_cast<uint8_t*>(buffer_->memory(plane_index)), span_length));
+}
+
+size_t ClientSharedImage::ScopedMapping::Stride(const uint32_t plane_index) {
+  CHECK(buffer_);
+  return buffer_->stride(plane_index);
+}
+
+gfx::Size ClientSharedImage::ScopedMapping::Size() {
+  return size_;
+}
+
+bool ClientSharedImage::ScopedMapping::IsSharedMemory() {
+  CHECK(buffer_);
+  return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
+}
+
+bool ClientSharedImage::ScopedMapping::Init(MappableBuffer* mappable_buffer,
+                                            bool is_already_mapped) {
+  if (!mappable_buffer) {
+    LOG(ERROR) << "No MappableBuffer.";
+    return false;
+  }
+
+  if (!is_already_mapped && !mappable_buffer->Map()) {
+    LOG(ERROR) << "Failed to map the buffer.";
+    return false;
+  }
+  buffer_ = mappable_buffer;
+  return true;
+}
+
 // static
 std::unique_ptr<MappableBuffer>
 ClientSharedImage::CreateMappableBufferFromHandle(
@@ -248,8 +246,8 @@ std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
                                          MappableBuffer* mappable_buffer,
                                          bool is_already_mapped) {
-  auto scoped_mapping = base::WrapUnique(
-      new ScopedMappingMappableBuffer(metadata.size, metadata.format));
+  auto scoped_mapping =
+      base::WrapUnique(new ScopedMapping(metadata.size, metadata.format));
   if (!scoped_mapping->Init(mappable_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
