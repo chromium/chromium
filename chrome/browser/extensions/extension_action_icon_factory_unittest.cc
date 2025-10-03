@@ -129,10 +129,11 @@ class ExtensionActionIconFactoryTest
     if (!valid_value || !valid_value->is_dict())
       return nullptr;
 
+    std::u16string utf16_error;
     scoped_refptr<Extension> extension =
         Extension::Create(test_file, location, valid_value->GetDict(),
-                          Extension::NO_FLAGS, &error);
-    EXPECT_TRUE(extension.get()) << error;
+                          Extension::NO_FLAGS, &utf16_error);
+    EXPECT_TRUE(extension.get()) << utf16_error;
     if (extension) {
       ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
     }

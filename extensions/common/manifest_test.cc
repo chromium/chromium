@@ -122,6 +122,8 @@ std::optional<base::Value::Dict> ManifestTest::LoadManifest(
   return LoadManifestFile(manifest_path, error);
 }
 
+// TODO(crbug.com/41317803): Continue removing std::string error and
+// replacing with std::u16string.
 scoped_refptr<Extension> ManifestTest::LoadExtension(
     const ManifestData& manifest,
     std::string* error,
@@ -133,8 +135,12 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
   if (!dict) {
     return nullptr;
   }
-  return Extension::Create(test_data_dir.DirName(), location, *dict, flags,
-                           GetTestExtensionID(), error);
+  std::u16string utf16_error;
+  scoped_refptr<Extension> extension =
+      Extension::Create(test_data_dir.DirName(), location, *dict, flags,
+                        GetTestExtensionID(), &utf16_error);
+  *error = base::UTF16ToUTF8(utf16_error);
+  return extension;
 }
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(

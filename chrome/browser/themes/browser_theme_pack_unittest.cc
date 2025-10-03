@@ -331,11 +331,12 @@ void BrowserThemePackTest::BuildFromUnpackedExtension(
       deserializer.Deserialize(nullptr, &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(valid_value.get() && valid_value->is_dict());
+  std::u16string utf16_error;
   scoped_refptr<Extension> extension(Extension::Create(
       extension_path, extensions::mojom::ManifestLocation::kInvalidLocation,
-      valid_value->GetDict(), Extension::NO_FLAGS, &error));
+      valid_value->GetDict(), Extension::NO_FLAGS, &utf16_error));
   ASSERT_TRUE(extension.get());
-  ASSERT_EQ("", error);
+  ASSERT_EQ(u"", utf16_error);
   BrowserThemePack::BuildFromExtension(extension.get(), pack);
 }
 

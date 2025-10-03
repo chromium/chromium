@@ -104,7 +104,7 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension(
         Extension::Create(path, mojom::ManifestLocation::kInternal,
                           manifest_builder, Extension::NO_FLAGS, &error));

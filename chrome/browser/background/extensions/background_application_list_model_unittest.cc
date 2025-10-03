@@ -95,7 +95,7 @@ static scoped_refptr<Extension> CreateExtension(const std::string& name,
   }
   manifest.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension = Extension::Create(
       bogus_file_pathname(name), extensions::mojom::ManifestLocation::kInternal,
       manifest, Extension::NO_FLAGS, &error);

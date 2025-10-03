@@ -466,7 +466,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     manifest.Set(manifest_keys::kManifestVersion, 2);
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII(base::NumberToString(num));
-    std::string errors;
+    std::u16string errors;
     scoped_refptr<Extension> extension =
         Extension::Create(path, ManifestLocation::kInternal, manifest,
                           Extension::NO_FLAGS, id, &errors);
@@ -590,7 +590,7 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
                              std::move(scripts));
     base::FilePath path = prefs_.extensions_dir().AppendASCII("test_0.2");
-    std::string errors;
+    std::u16string errors;
     scoped_refptr<Extension> new_extension =
         Extension::Create(path, ManifestLocation::kInternal, manifest,
                           Extension::NO_FLAGS, id_, &errors);
@@ -816,7 +816,7 @@ TEST_F(ExtensionPrefsFlags, ExtensionPrefsFlags) {}
 
 PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase() {
   base::Value::Dict simple_dict;
-  std::string error;
+  std::u16string error;
 
   simple_dict.Set(manifest_keys::kVersion, "1.0.0.0");
   simple_dict.Set(manifest_keys::kManifestVersion, 2);

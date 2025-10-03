@@ -101,11 +101,11 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
                           required_platform_version);
   }
 
-  std::string err;
+  std::u16string err;
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
-  EXPECT_EQ(err, "");
+  EXPECT_EQ(err, u"");
   return app;
 }
 

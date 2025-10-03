@@ -1370,7 +1370,7 @@ class ArcPlayStoreAppTest : public ArcDefaultAppTest {
     manifest.Set(extensions::manifest_keys::kDescription,
                  "Play Store for testing");
 
-    std::string error;
+    std::u16string error;
     arc_support_host_ = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
         manifest, extensions::Extension::NO_FLAGS, arc::kPlayStoreAppId,

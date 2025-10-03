@@ -241,7 +241,7 @@ base::LazyInstance<WorkerScriptContextSet>::DestructorAtExit
 scoped_refptr<Extension> ConvertToExtension(
     mojom::ExtensionLoadedParamsPtr params,
     int context_id,
-    std::string* error) {
+    std::u16string* error) {
   // We pass in the |id| to the create call because it will save work in the
   // normal case, and because in tests, extensions may not have paths or keys,
   // but it's important to retain the same id.
@@ -1088,7 +1088,7 @@ void Dispatcher::ActivateExtension(const ExtensionId& extension_id) {
 void Dispatcher::LoadExtensions(
     std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) {
   for (auto& param : loaded_extensions) {
-    std::string error;
+    std::u16string error;
     ExtensionId id = param->id;
     std::optional<base::UnguessableToken> worker_activation_token =
         param->worker_activation_token;

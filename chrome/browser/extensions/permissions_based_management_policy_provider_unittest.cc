@@ -79,7 +79,7 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
       manifest_dict.Set(manifest_keys::kOptionalPermissions,
                         optional_permissions->Clone());
     }
-    std::string error;
+    std::u16string error;
     scoped_refptr<const Extension> extension = Extension::Create(
         base::FilePath(), location, manifest_dict, Extension::NO_FLAGS, &error);
     CHECK(extension.get()) << error;

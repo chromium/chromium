@@ -66,7 +66,7 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
     const std::string& version,
     const std::string& url,
     const std::string& id) {
-  std::string err;
+  std::u16string err;
   base::Value::Dict value;
   value.Set("name", name);
   value.Set("version", version);
@@ -76,7 +76,7 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
-  EXPECT_EQ(err, "");
+  EXPECT_EQ(err, u"");
   return app;
 }
 

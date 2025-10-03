@@ -59,7 +59,7 @@ void DelayedInstallManager::FinishInstallationsDelayedByShutdown() {
   for (const auto& info : delayed_info) {
     scoped_refptr<const Extension> extension;
     if (info.extension_manifest) {
-      std::string error;
+      std::u16string error;
       extension = Extension::Create(
           info.extension_path, info.extension_location,
           *info.extension_manifest,

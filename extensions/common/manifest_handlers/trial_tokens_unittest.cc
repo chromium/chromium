@@ -48,7 +48,7 @@ class TrialTokensManifestTest : public ManifestTest {
 
   scoped_refptr<Extension> LoadExtension(
       const std::string& manifest_trial_tokens) {
-    std::string error;
+    std::u16string error;
     base::FilePath test_data_dir = GetTestDataDir();
     scoped_refptr<Extension> extension = Extension::Create(
         test_data_dir.DirName(), mojom::ManifestLocation::kInternal,

@@ -39,7 +39,7 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
   }
 
   scoped_refptr<Extension> CreateExtension(const std::string& schema) {
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension = Extension::Create(
         temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_,
         Extension::NO_FLAGS, "", &error);

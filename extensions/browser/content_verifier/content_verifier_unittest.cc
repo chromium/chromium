@@ -241,7 +241,7 @@ class ContentVerifierTest : public ExtensionsTest {
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension(
         Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
                           Extension::NO_FLAGS, &error));

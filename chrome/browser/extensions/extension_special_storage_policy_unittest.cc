@@ -113,7 +113,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     list.Append("http://explicit/protected");
     list.Append("*://*.wildcards/protected");
     manifest.SetByDottedPath(keys::kWebURLs, std::move(list));
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> protected_app =
         Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
                           Extension::NO_FLAGS, &error);
@@ -139,7 +139,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     list2.Append("http://explicit/unlimited");
     list2.Append("*://*.wildcards/unlimited");
     manifest.SetByDottedPath(keys::kWebURLs, std::move(list2));
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> unlimited_app =
         Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
                           Extension::NO_FLAGS, &error);
@@ -158,7 +158,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     manifest.Set(keys::kVersion, "1");
     manifest.SetByDottedPath(keys::kPlatformAppBackgroundPage,
                              "background.html");
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> app =
         Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
                           Extension::NO_FLAGS, &error);

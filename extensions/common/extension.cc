@@ -240,32 +240,25 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
                                            const base::Value::Dict& value,
                                            int flags,
-                                           std::string* utf8_error) {
-  return Extension::Create(path,
-                           location,
-                           value,
-                           flags,
+                                           std::u16string* error) {
+  return Extension::Create(path, location, value, flags,
                            std::string(),  // ID is ignored if empty.
-                           utf8_error);
+                           error);
 }
 
-// TODO(crbug.com/41317803): Continue removing std::string errors and replacing
-// with std::u16string.
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
                                            const base::Value::Dict& value,
                                            int flags,
                                            const ExtensionId& explicit_id,
-                                           std::string* utf8_error) {
+                                           std::u16string* error) {
   base::ElapsedTimer timer;
-  DCHECK(utf8_error);
-  std::u16string error;
+  DCHECK(error);
 
   ExtensionId extension_id;
   if (!explicit_id.empty()) {
     extension_id = explicit_id;
-  } else if (!ComputeExtensionID(value, path, flags, &error, &extension_id)) {
-    *utf8_error = base::UTF16ToUTF8(error);
+  } else if (!ComputeExtensionID(value, path, flags, error, &extension_id)) {
     return nullptr;
   }
 
@@ -290,8 +283,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   extension->dynamic_url_ = Extension::GetBaseURLFromExtensionId(
       extension->guid_.AsLowercaseString());
 
-  if (!extension->InitFromValue(flags, &error)) {
-    *utf8_error = base::UTF16ToUTF8(error);
+  if (!extension->InitFromValue(flags, error)) {
     return nullptr;
   }
 

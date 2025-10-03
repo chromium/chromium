@@ -388,7 +388,7 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
       return Error(keys::kManifestParseError);
     }
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension =
         Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
                           *parsed_manifest, Extension::NO_FLAGS, &error);

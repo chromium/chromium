@@ -60,7 +60,7 @@ const char kFileSystemId[] = "camera/pictures/id .!@#$%^&*()_+";
 scoped_refptr<extensions::Extension> CreateFakeExtension(
     const extensions::ExtensionId& extension_id) {
   base::Value::Dict manifest;
-  std::string error;
+  std::u16string error;
   manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
   manifest.Set(extensions::manifest_keys::kName, "unused");

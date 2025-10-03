@@ -517,7 +517,7 @@ class ExtensionLocalizationThrottleTestWithRendererThread
   // Return an extension when provided with a valid json manifest.
   scoped_refptr<const Extension> GetExtension(
       const std::string& manifest_json) {
-    std::string error;
+    std::u16string error;
     base::Value::Dict manifest_dict;
     auto manifest_value =
         base::JSONReader::ReadDict(manifest_json, base::JSON_PARSE_RFC);

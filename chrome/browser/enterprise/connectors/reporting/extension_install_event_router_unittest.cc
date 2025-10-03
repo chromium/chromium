@@ -107,7 +107,7 @@ class ExtensionInstallEventRouterTest
     int flags = is_from_webstore() ? extensions::Extension::FROM_WEBSTORE
                                    : extensions::Extension::NO_FLAGS;
 
-    std::string error;
+    std::u16string error;
     extension_chrome_ = extensions::Extension::Create(
         base::FilePath(), location, manifest, flags, kFakeExtensionId, &error);
   }

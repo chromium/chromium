@@ -57,7 +57,7 @@ scoped_refptr<extensions::Extension> AddChromeApp(const std::string& app_id) {
   manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
                            kLaunchURL);
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
           base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,

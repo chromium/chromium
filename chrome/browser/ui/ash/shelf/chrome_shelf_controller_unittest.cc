@@ -588,7 +588,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         app_list::AppListSyncableServiceFactory::GetForProfile(profile());
     StartAppSyncService(app_list_syncable_service_->GetAllSyncDataForTesting());
 
-    std::string error;
+    std::u16string error;
     extension_chrome_ = Extension::Create(
         base::FilePath(), ManifestLocation::kUnpacked, manifest,
         Extension::NO_FLAGS, app_constants::kChromeAppId, &error);

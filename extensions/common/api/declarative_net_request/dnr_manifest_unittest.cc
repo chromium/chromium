@@ -337,7 +337,7 @@ TEST_F(DNRManifestTest, ReservedRulesetID) {
 TEST_F(DNRManifestTest, EmptyExtensionRootPath) {
   TestRulesetInfo ruleset("foo", "1.json", base::Value::List());
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension = Extension::Create(
       base::FilePath(), mojom::ManifestLocation::kInternal,
       CreateManifest({ruleset}), Extension::FROM_WEBSTORE, &error);

@@ -64,9 +64,10 @@ TEST_F(ChromeComponentExtensionResourceManagerTest,
   resources_path = resources_path.AppendASCII("file_manager");
 
   // Create a simulated component extension.
+  std::u16string utf16_error;
   scoped_refptr<Extension> extension =
       Extension::Create(resources_path, mojom::ManifestLocation::kComponent,
-                        *manifest, Extension::NO_FLAGS, &error);
+                        *manifest, Extension::NO_FLAGS, &utf16_error);
   ASSERT_TRUE(extension.get());
 
   // Load one of the icons.

@@ -284,7 +284,7 @@ class AppContextMenuTest : public AppListTestBase {
         deserializer.Deserialize(nullptr, nullptr));
 
     DCHECK(manifest.is_dict());
-    std::string error;
+    std::u16string error;
     return extensions::Extension::Create(
         path.DirName(), extensions::mojom::ManifestLocation::kInternal,
         manifest.GetDict(), extensions::Extension::NO_FLAGS, app_id, &error);
@@ -329,7 +329,7 @@ class AppContextMenuTest : public AppListTestBase {
   }
 
   scoped_refptr<extensions::Extension> MakeChromeApp() {
-    std::string err;
+    std::u16string err;
     base::Value::Dict value;
     value.Set("name", "Chrome App");
     value.Set("version", "0.0");
@@ -338,7 +338,7 @@ class AppContextMenuTest : public AppListTestBase {
         base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
         extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
         app_constants::kChromeAppId, &err);
-    EXPECT_EQ(err, "");
+    EXPECT_EQ(err, u"");
     return app;
   }
 

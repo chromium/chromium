@@ -221,7 +221,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
         extensions::manifest_keys::kPlatformAppBackgroundPage,
         "background.html");
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<extensions::Extension> extension =
         extensions::Extension::Create(
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
@@ -238,7 +238,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
                                      .Set(keys::kVersion, "1.0")
                                      .Set(keys::kManifestVersion, 2);
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<extensions::Extension> extension =
         extensions::Extension::Create(
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,

@@ -92,7 +92,7 @@ scoped_refptr<extensions::Extension> MakeApp(
     const std::string& name,
     const std::string& id,
     extensions::Extension::InitFromValueFlags flags) {
-  std::string err;
+  std::u16string err;
   base::Value::Dict value;
   value.Set("name", name);
   value.Set("version", "0.0");
@@ -100,7 +100,7 @@ scoped_refptr<extensions::Extension> MakeApp(
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       flags, id, &err);
-  EXPECT_EQ(err, "");
+  EXPECT_EQ(err, u"");
   return app;
 }
 

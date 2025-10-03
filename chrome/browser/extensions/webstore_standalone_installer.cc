@@ -152,7 +152,7 @@ WebstoreStandaloneInstaller::GetLocalizedExtensionForDisplay() {
     if (!manifest_.has_value())
       return nullptr;
 
-    std::string error;
+    std::u16string error;
     localized_extension_for_display_ =
         ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
             *manifest_, Extension::REQUIRE_KEY | Extension::FROM_WEBSTORE, id_,

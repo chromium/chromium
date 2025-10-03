@@ -136,7 +136,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
                                          mojom::ManifestLocation location,
                                          const base::Value::Dict& value,
                                          int flags,
-                                         std::string* error);
+                                         std::u16string* error);
 
   // In a few special circumstances, we want to create an Extension and give it
   // an explicit id. Most consumers should just use the other Create() method.
@@ -145,7 +145,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
                                          const base::Value::Dict& value,
                                          int flags,
                                          const ExtensionId& explicit_id,
-                                         std::string* error);
+                                         std::u16string* error);
 
   // Valid schemes for web extent URLPatterns.
   static const int kValidWebExtentSchemes;

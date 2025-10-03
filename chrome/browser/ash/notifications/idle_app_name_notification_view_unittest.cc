@@ -49,7 +49,7 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
     manifest.Set(extensions::manifest_keys::kDescription, "Test app");
     manifest.SetByDottedPath("author.email", "Someone");
 
-    std::string error;
+    std::u16string error;
     correct_extension_ = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
         manifest, extensions::Extension::NO_FLAGS, kTestAppName, &error);

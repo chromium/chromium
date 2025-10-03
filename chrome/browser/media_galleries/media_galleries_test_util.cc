@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -67,12 +68,12 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile);
   base::FilePath path = extension_prefs->install_directory().AppendASCII(name);
-  std::string errors;
+  std::u16string utf16_error;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
           path, extensions::mojom::ManifestLocation::kInternal, manifest,
-          extensions::Extension::NO_FLAGS, &errors);
-  EXPECT_TRUE(extension.get() != nullptr) << errors;
+          extensions::Extension::NO_FLAGS, std::string(), &utf16_error);
+  EXPECT_TRUE(extension.get() != nullptr) << utf16_error;
   EXPECT_TRUE(crx_file::id_util::IdIsValid(extension->id()));
   if (!extension.get() || !crx_file::id_util::IdIsValid(extension->id()))
     return nullptr;

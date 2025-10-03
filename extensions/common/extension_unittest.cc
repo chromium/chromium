@@ -36,7 +36,7 @@ testing::AssertionResult RunManifestVersionSuccess(
     std::string_view expected_warning = "",
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS,
     ManifestLocation manifest_location = ManifestLocation::kInternal) {
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension = Extension::Create(
       base::FilePath(), manifest_location, manifest, custom_flag, &error);
   if (!extension) {
@@ -74,7 +74,7 @@ testing::AssertionResult RunManifestVersionSuccess(
 testing::AssertionResult RunManifestVersionFailure(
     base::Value::Dict manifest,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension =
       Extension::Create(base::FilePath(), ManifestLocation::kInternal, manifest,
                         custom_flag, &error);
@@ -89,7 +89,7 @@ testing::AssertionResult RunCreationWithFlags(
     mojom::ManifestLocation location,
     Manifest::Type expected_type,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension = Extension::Create(
       base::FilePath(), location, manifest, custom_flag, &error);
   if (!extension) {

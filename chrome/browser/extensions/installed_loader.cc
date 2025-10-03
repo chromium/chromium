@@ -288,14 +288,19 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
       invalid_extensions_.end())
     return;
 
-  std::string error;
   scoped_refptr<const Extension> extension;
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
+  std::string error_utf8;
+
   if (info.extension_manifest) {
+    std::u16string error_utf16;
     extension = Extension::Create(info.extension_path, info.extension_location,
                                   *info.extension_manifest,
-                                  GetCreationFlags(&info), &error);
+                                  GetCreationFlags(&info), &error_utf16);
+    error_utf8 = base::UTF16ToUTF8(error_utf16);
   } else {
-    error = manifest_errors::kManifestUnreadable;
+    error_utf8 = manifest_errors::kManifestUnreadable;
   }
 
   // Once installed, non-unpacked extensions cannot change their IDs (e.g., by
@@ -303,13 +308,13 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
   // TODO(jstritar): migrate preferences when unpacked extensions change IDs.
   if (extension.get() && !Manifest::IsUnpackedLocation(extension->location()) &&
       info.extension_id != extension->id()) {
-    error = manifest_errors::kCannotChangeExtensionID;
+    error_utf8 = manifest_errors::kCannotChangeExtensionID;
     extension = nullptr;
   }
 
   if (!extension.get()) {
     LoadErrorReporter::GetInstance()->ReportLoadError(info.extension_path,
-                                                      error, profile_,
+                                                      error_utf8, profile_,
                                                       false);  // Be quiet.
     return;
   }

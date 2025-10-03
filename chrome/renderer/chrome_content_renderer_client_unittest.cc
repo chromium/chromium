@@ -75,7 +75,7 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
                              std::move(url_list));
     manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL, app_url);
   }
-  std::string error;
+  std::u16string error;
   return extensions::Extension::Create(base::FilePath(), location, manifest,
                                        flags, &error);
 }

@@ -24,6 +24,8 @@ class ThemeExtensionsTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
+  // TODO(crbug.com/41317803): Continue removing std::string error and
+  // replacing with std::u16string.
   scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
                                            std::string* error) {
     base::Value::Dict manifest_base;
@@ -31,9 +33,12 @@ class ThemeExtensionsTest : public testing::Test {
     manifest_base.Set("version", "1.0");
     manifest_base.Set("manifest_version", 3);
     manifest_base.Merge(manifest.Clone());
-    return Extension::Create(temp_dir_.GetPath(),
-                             mojom::ManifestLocation::kUnpacked, manifest_base,
-                             Extension::NO_FLAGS, "", error);
+    std::u16string utf16_error;
+    scoped_refptr<Extension> extension = Extension::Create(
+        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_base,
+        Extension::NO_FLAGS, "", &utf16_error);
+    *error = base::UTF16ToUTF8(utf16_error);
+    return extension;
   }
 
  private:

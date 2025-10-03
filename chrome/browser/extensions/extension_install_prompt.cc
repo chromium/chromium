@@ -419,7 +419,7 @@ ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
     const std::string& id,
     const std::string& localized_name,
     const std::string& localized_description,
-    std::string* error) {
+    std::u16string* error) {
   std::optional<base::Value::Dict> localized_manifest;
   if (!localized_name.empty() || !localized_description.empty()) {
     localized_manifest = manifest.Clone();

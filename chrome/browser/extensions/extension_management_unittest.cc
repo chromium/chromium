@@ -309,7 +309,7 @@ class ExtensionManagementServiceTest : public testing::Test {
     manifest_dict.Set(manifest_keys::kVersion, version);
     manifest_dict.Set(manifest_keys::kManifestVersion, 2);
     manifest_dict.Set(manifest_keys::kUpdateURL, update_url);
-    std::string error;
+    std::u16string error;
     scoped_refptr<const Extension> extension =
         Extension::Create(base::FilePath(), location, std::move(manifest_dict),
                           flags, id, &error);
@@ -434,7 +434,7 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
     values->Set(manifest_keys::kName, "test");
     values->Set(manifest_keys::kVersion, "0.1");
     values->Set(manifest_keys::kManifestVersion, 2);
-    std::string error;
+    std::u16string error;
     extension_ = Extension::Create(base::FilePath(), location, *values,
                                    Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension_.get());

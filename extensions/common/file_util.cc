@@ -243,6 +243,8 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
                        error);
 }
 
+// TODO(crbug.com/41317803): Continue removing std::string errors and replacing
+// with std::u16string.
 scoped_refptr<Extension> LoadExtension(
     const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_file,
@@ -268,9 +270,11 @@ scoped_refptr<Extension> LoadExtension(
     return nullptr;
   }
 
+  std::u16string utf16_error;
   scoped_refptr<Extension> extension(Extension::Create(
-      extension_path, location, *manifest, flags, extension_id, error));
+      extension_path, location, *manifest, flags, extension_id, &utf16_error));
   if (!extension.get()) {
+    *error = base::UTF16ToUTF8(utf16_error);
     return nullptr;
   }
 

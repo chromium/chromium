@@ -55,7 +55,7 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
                             const std::string& devtools_page,
                             const std::string& parsed_devtools_page) {
     base::ScopedTempDir dir;
-    std::string error;
+    std::u16string error;
     base::Value::Dict manifest = CreateManifest(devtools_page);
     ASSERT_TRUE(dir.CreateUniqueTempDir());
     scoped_refptr<Extension> extension =
@@ -76,14 +76,14 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
                           const std::string& devtools_page,
                           const std::u16string& expected_error) {
     base::ScopedTempDir dir;
-    std::string error;
+    std::u16string error;
     base::Value::Dict manifest = CreateManifest(devtools_page);
     ASSERT_TRUE(dir.CreateUniqueTempDir());
     scoped_refptr<Extension> extension =
         Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,
                           manifest, Extension::NO_FLAGS, id, &error);
     ASSERT_FALSE(extension);
-    ASSERT_EQ(base::UTF16ToUTF8(expected_error), error);
+    ASSERT_EQ(expected_error, error);
   }
 
   void LoadAndExpectError(const std::string& devtools_page,
@@ -96,12 +96,13 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
                                 const std::string& expected_warning) {
     base::ScopedTempDir dir;
     std::string error;
+    std::u16string utf16_error;
     std::vector<InstallWarning> warnings;
     base::Value::Dict manifest = CreateManifest(devtools_page);
     ASSERT_TRUE(dir.CreateUniqueTempDir());
     scoped_refptr<Extension> extension =
         Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,
-                          manifest, Extension::NO_FLAGS, id, &error);
+                          manifest, Extension::NO_FLAGS, id, &utf16_error);
     ASSERT_TRUE(extension);
     EXPECT_TRUE(
         ManifestHandler::ValidateExtension(extension.get(), &error, &warnings));

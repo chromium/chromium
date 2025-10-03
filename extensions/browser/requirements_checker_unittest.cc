@@ -50,7 +50,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
     manifest_dict_.Set("version", "1");
     manifest_dict_.Set("manifest_version", 2);
 
-    std::string error;
+    std::u16string error;
     extension_ =
         Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
                           manifest_dict_, Extension::NO_FLAGS, &error);

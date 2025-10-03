@@ -353,11 +353,11 @@ TEST_F(SimpleFeatureTest, Context) {
                       .Set("manifest_version", 21);
   manifest.SetByDottedPath("app.launch.local_path", "foo.html");
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension(
       Extension::Create(base::FilePath(), ManifestLocation::kInternal, manifest,
                         Extension::NO_FLAGS, &error));
-  EXPECT_EQ("", error);
+  EXPECT_EQ(u"", error);
   ASSERT_TRUE(extension.get());
 
   feature.set_allowlist({"monkey"});
@@ -456,11 +456,11 @@ TEST_F(SimpleFeatureTest, SessionType) {
                       .Set("manifest_version", 2);
   manifest.SetByDottedPath("app.launch.local_path", "foo.html");
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension(
       Extension::Create(base::FilePath(), ManifestLocation::kInternal, manifest,
                         Extension::NO_FLAGS, &error));
-  EXPECT_EQ("", error);
+  EXPECT_EQ(u"", error);
   ASSERT_TRUE(extension.get());
 
   const auto kTestData = std::to_array<FeatureSessionTypeTestData>({

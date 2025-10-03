@@ -158,13 +158,9 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
     return nullptr;
   }
 
-  // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
-  // with std::u16string
-  std::string utf8_error;
   scoped_refptr<Extension> extension =
       Extension::Create(temp_dir.GetPath(), mojom::ManifestLocation::kInternal,
-                        root, Extension::NO_FLAGS, &utf8_error);
-  *error = base::UTF8ToUTF16(utf8_error);
+                        root, Extension::NO_FLAGS, error);
   if (!extension.get()) {
     NOTREACHED() << "Could not init extension " << *error;
   }

@@ -272,7 +272,7 @@ class ExtensionInstallPrompt {
       const std::string& id,
       const std::string& localized_name,
       const std::string& localized_description,
-      std::string* error);
+      std::u16string* error);
 
   // Creates a prompt with a parent web content.
   explicit ExtensionInstallPrompt(content::WebContents* contents);

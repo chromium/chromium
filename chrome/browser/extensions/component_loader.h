@@ -241,7 +241,8 @@ class ComponentLoader : public KeyedService {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<const Extension> CreateExtension(
-      const ComponentExtensionInfo& info, std::string* utf8_error);
+      const ComponentExtensionInfo& info,
+      std::u16string* error);
 
   // Unloads `component` from the memory.
   void UnloadComponent(ComponentExtensionInfo* component);

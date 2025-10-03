@@ -99,7 +99,7 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
       NOTREACHED();
   }
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
                         manifest, Extension::NO_FLAGS, id, &error));

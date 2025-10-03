@@ -191,7 +191,7 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
   if (id_.empty() && manifest_data_)
     id_ = crx_file::id_util::GenerateId(manifest_data_->name);
 
-  std::string error;
+  std::u16string error;
 
   // This allows `*manifest_value` to be passed as a reference instead of
   // needing to be cloned.
