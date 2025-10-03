@@ -59,7 +59,6 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
   // Caches masonry placement data for DevTools inspector highlighting.
   // This avoids recomputing during inspector queries.
   std::optional<GridPlacementData> cached_placement_data_;
-  GridTrackSizingDirection masonry_track_sizing_direction_;
 };
 
 // wtf/casting.h helper.
