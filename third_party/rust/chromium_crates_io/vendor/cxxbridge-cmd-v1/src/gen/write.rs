@@ -513,50 +513,34 @@ fn write_discriminant(out: &mut OutFile, repr: Atom, discriminant: Discriminant)
     }
 }
 
+fn write_binary_bitwise_op(out: &mut OutFile, op: &str, enm: &Enum) {
+    let enum_name = &enm.name.cxx;
+    writeln!(
+        out,
+        "inline {enum_name} operator{op}({enum_name} lhs, {enum_name} rhs) {{",
+    );
+    write!(out, "  return static_cast<{enum_name}>(static_cast<");
+    write_atom(out, enm.repr.atom);
+    write!(out, ">(lhs) {op} static_cast<");
+    write_atom(out, enm.repr.atom);
+    writeln!(out, ">(rhs));");
+    writeln!(out, "}}");
+}
+
 fn write_enum_operators(out: &mut OutFile, enm: &Enum) {
     if derive::contains(&enm.derives, Trait::BitAnd) {
         out.next_section();
-        writeln!(
-            out,
-            "inline {} operator&({} lhs, {} rhs) {{",
-            enm.name.cxx, enm.name.cxx, enm.name.cxx,
-        );
-        write!(out, "  return static_cast<{}>(static_cast<", enm.name.cxx);
-        write_atom(out, enm.repr.atom);
-        write!(out, ">(lhs) & static_cast<");
-        write_atom(out, enm.repr.atom);
-        writeln!(out, ">(rhs));");
-        writeln!(out, "}}");
+        write_binary_bitwise_op(out, "&", enm);
     }
 
     if derive::contains(&enm.derives, Trait::BitOr) {
         out.next_section();
-        writeln!(
-            out,
-            "inline {} operator|({} lhs, {} rhs) {{",
-            enm.name.cxx, enm.name.cxx, enm.name.cxx,
-        );
-        write!(out, "  return static_cast<{}>(static_cast<", enm.name.cxx);
-        write_atom(out, enm.repr.atom);
-        write!(out, ">(lhs) | static_cast<");
-        write_atom(out, enm.repr.atom);
-        writeln!(out, ">(rhs));");
-        writeln!(out, "}}");
+        write_binary_bitwise_op(out, "|", enm);
     }
 
     if derive::contains(&enm.derives, Trait::BitXor) {
         out.next_section();
-        writeln!(
-            out,
-            "inline {} operator^({} lhs, {} rhs) {{",
-            enm.name.cxx, enm.name.cxx, enm.name.cxx,
-        );
-        write!(out, "  return static_cast<{}>(static_cast<", enm.name.cxx);
-        write_atom(out, enm.repr.atom);
-        write!(out, ">(lhs) ^ static_cast<");
-        write_atom(out, enm.repr.atom);
-        writeln!(out, ">(rhs));");
-        writeln!(out, "}}");
+        write_binary_bitwise_op(out, "^", enm);
     }
 }
 

@@ -13,6 +13,7 @@
     clippy::nonminimal_bool,
     clippy::redundant_else,
     clippy::ref_option,
+    clippy::similar_names,
     clippy::single_match_else,
     clippy::struct_field_names,
     clippy::too_many_arguments,

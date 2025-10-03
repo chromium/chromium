@@ -50,6 +50,14 @@ mod ordered {
             self.iter()
         }
     }
+
+    impl<'a, T> IntoIterator for OrderedSet<&'a T> {
+        type Item = &'a T;
+        type IntoIter = <Vec<&'a T> as IntoIterator>::IntoIter;
+        fn into_iter(self) -> Self::IntoIter {
+            self.vec.into_iter()
+        }
+    }
 }
 
 mod unordered {

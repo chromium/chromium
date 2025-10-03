@@ -104,19 +104,19 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx-build:1.0.185"]
+[policy."cxx-build:1.0.186"]
 criteria = []
 
-[policy."cxx:1.0.185"]
+[policy."cxx:1.0.186"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.185"]
+[policy."cxxbridge-cmd:1.0.186"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.185"]
+[policy."cxxbridge-flags:1.0.186"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.185"]
+[policy."cxxbridge-macro:1.0.186"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."derive_arbitrary:1.4.2"]

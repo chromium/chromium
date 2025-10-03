@@ -11,7 +11,7 @@ use crate::syntax::trivial::{self, TrivialReason};
 use crate::syntax::unpin::{self, UnpinReason};
 use crate::syntax::visit::{self, Visit};
 use crate::syntax::{
-    toposort, Api, Atom, Enum, ExternType, Impl, Lifetimes, Pair, Struct, Type, TypeAlias,
+    toposort, Api, Atom, Enum, ExternFn, ExternType, Impl, Lifetimes, Pair, Struct, Type, TypeAlias,
 };
 use indexmap::map::Entry;
 use proc_macro2::Ident;
@@ -30,6 +30,8 @@ pub(crate) struct Types<'a> {
     pub required_unpin: UnorderedMap<&'a Ident, UnpinReason<'a>>,
     pub impls: OrderedMap<ImplKey<'a>, ConditionalImpl<'a>>,
     pub resolutions: UnorderedMap<&'a Ident, Resolution<'a>>,
+    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    pub associated_fn: UnorderedMap<&'a Ident, Vec<&'a ExternFn>>,
     pub struct_improper_ctypes: UnorderedSet<&'a Ident>,
     pub toposorted_structs: Vec<&'a Struct>,
 }
@@ -53,6 +55,7 @@ impl<'a> Types<'a> {
         let mut untrusted = UnorderedMap::new();
         let mut impls = OrderedMap::new();
         let mut resolutions = UnorderedMap::new();
+        let mut associated_fn = UnorderedMap::new();
         let struct_improper_ctypes = UnorderedSet::new();
         let toposorted_structs = Vec::new();
 
@@ -177,6 +180,12 @@ impl<'a> Types<'a> {
                     // Note: duplication of the C++ name is fine because C++ has
                     // function overloading.
                     let self_type = efn.self_type();
+                    if let Some(self_type) = self_type {
+                        associated_fn
+                            .entry(self_type)
+                            .or_insert_with(Vec::new)
+                            .push(efn);
+                    }
                     if !self_type.is_some_and(|self_type| self_type == "Self")
                         && !function_names.insert((self_type, &efn.name.rust))
                     {
@@ -253,6 +262,7 @@ impl<'a> Types<'a> {
             required_unpin,
             impls,
             resolutions,
+            associated_fn,
             struct_improper_ctypes,
             toposorted_structs,
         };

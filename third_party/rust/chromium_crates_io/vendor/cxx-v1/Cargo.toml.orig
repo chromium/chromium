@@ -1,6 +1,6 @@
 [package]
 name = "cxx"
-version = "1.0.185"
+version = "1.0.186"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi", "api-bindings", "no-std"]
 description = "Safe interop between Rust and C++"
@@ -23,13 +23,13 @@ alloc = []
 std = ["alloc", "foldhash/std"]
 
 [dependencies]
-cxxbridge-macro = { version = "=1.0.185", path = "macro" }
+cxxbridge-macro = { version = "=1.0.186", path = "macro" }
 foldhash = { version = "0.2", default-features = false }
 link-cplusplus = "1.0.11"
 
 [build-dependencies]
 cc = "1.0.101"
-cxxbridge-flags = { version = "=1.0.185", path = "flags", default-features = false }
+cxxbridge-flags = { version = "=1.0.186", path = "flags", default-features = false }
 
 [dev-dependencies]
 cc = "1.0.101"
@@ -47,8 +47,8 @@ trybuild = { version = "1.0.108", features = ["diff"] }
 
 # Disallow incompatible version appearing in the same lockfile.
 [target.'cfg(any())'.build-dependencies]
-cxx-build = { version = "=1.0.185", path = "gen/build" }
-cxxbridge-cmd = { version = "=1.0.185", path = "gen/cmd" }
+cxx-build = { version = "=1.0.186", path = "gen/build" }
+cxxbridge-cmd = { version = "=1.0.186", path = "gen/cmd" }
 
 [workspace]
 members = ["demo", "flags", "gen/build", "gen/cmd", "gen/lib", "macro", "tests/ffi"]

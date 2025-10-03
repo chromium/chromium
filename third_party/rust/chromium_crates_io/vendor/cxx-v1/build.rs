@@ -40,6 +40,16 @@ fn main() {
             );
         }
     }
+
+    if let (Some(manifest_links), Some(pkg_version_major)) = (
+        env::var_os("CARGO_MANIFEST_LINKS"),
+        env::var_os("CARGO_PKG_VERSION_MAJOR"),
+    ) {
+        assert_eq!(
+            manifest_links,
+            *format!("cxxbridge{}", pkg_version_major.to_str().unwrap()),
+        );
+    }
 }
 
 struct RustVersion {
