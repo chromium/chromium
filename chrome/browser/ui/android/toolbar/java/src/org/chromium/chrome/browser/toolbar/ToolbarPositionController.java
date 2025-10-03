@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -583,7 +582,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean allowBottomAnchoredFocusedOmnibox =
                 ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled();
         boolean forceBottomForFocusedOmnibox =
-                OmniboxFeatures.sOmniboxMultimodalInput.isEnabled() && isOmniboxFocused;
+                ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.getValue()
+                        && isOmniboxFocused;
         @ControlsPosition int newControlsPosition;
         if (!forceBottomForFocusedOmnibox
                 && (ntpShowing
