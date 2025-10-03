@@ -173,10 +173,8 @@ void ArcAppTest::SetUp(Profile* profile) {
           arc_service_manager_->arc_bridge_service()->intent_helper());
     }
 
-    if (start_app_service_publisher_) {
-      // Ensure that the singleton apps::ArcApps is constructed.
-      apps::ArcAppsFactory::GetForProfile(profile_);
-    }
+    // Ensure that the singleton apps::ArcApps is constructed.
+    apps::ArcAppsFactory::GetForProfile(profile_);
 
     arc_session_manager_->Initialize();
 
@@ -359,9 +357,7 @@ void ArcAppTest::TearDown() {
   CHECK(arc_session_manager_);
   arc_session_manager_->Shutdown();
 
-  if (start_app_service_publisher_) {
-    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
-  }
+  apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
 
   if (initialize_real_intent_helper_bridge_) {
     arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
