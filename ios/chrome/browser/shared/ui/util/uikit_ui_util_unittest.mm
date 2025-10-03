@@ -83,28 +83,22 @@ TEST_F(UIKitUIUtilTest, ViewHierarchyRootForView) {
 // is not the returned value when the `kTraitCollectionDidChangeRefactor`
 // feature flag is disabled.
 TEST_F(UIKitUIUtilTest, UITraitArrayIsReturnedWhenKillswitchIsEnabled) {
-  if (@available(iOS 17, *)) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        kEnableTraitCollectionRegistration);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableTraitCollectionRegistration);
 
-    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.class ];
-    EXPECT_NE([TraitCollectionSetForTraits(traits) count], [traits count]);
-  }
+  NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.class ];
+  EXPECT_NE([TraitCollectionSetForTraits(traits) count], [traits count]);
 }
 
 // Tests that the NSArray of UITraits passed into `TraitCollectionSetForTraits`
 // is the returned value when the `kTraitCollectionDidChangeRefactor` feature
 // flag is enabled.
 TEST_F(UIKitUIUtilTest, UITraitArrayIsReturnedWhenKillswitchIsDisabled) {
-  if (@available(iOS 17, *)) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        kEnableTraitCollectionRegistration);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableTraitCollectionRegistration);
 
-    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.class ];
-    EXPECT_EQ([TraitCollectionSetForTraits(traits) count], [traits count]);
-  }
+  NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.class ];
+  EXPECT_EQ([TraitCollectionSetForTraits(traits) count], [traits count]);
 }
 
 }  // namespace
