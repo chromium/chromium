@@ -11,6 +11,8 @@
 #import "ios/web/public/web_state_user_data.h"
 
 class ChooseFileController;
+@class WKOpenPanelParameters;
+@class WKFrameInfo;
 
 class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
                             public web::WebStateObserver {
@@ -34,6 +36,14 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
   void StopChoosingFiles(NSArray<NSURL*>* file_urls = @[],
                          NSString* display_string = nil,
                          UIImage* icon_image = nil);
+
+  // Displays a file upload panel and calls `completion` with file URLs selected
+  // by the user. `parameters` describe the file upload control which initiated
+  // the call from `frame`.
+  void RunOpenPanel(WKOpenPanelParameters* parameters,
+                    WKFrameInfo* frame,
+                    base::OnceCallback<void(NSArray<NSURL*>*)> completion)
+      API_AVAILABLE(ios(18.4));
 
   // Adds `file_url` to the set of file URLs ready to be passed to
   // `StopChoosingFiles`. `version_identifier` is used to represent the version

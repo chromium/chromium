@@ -54,6 +54,16 @@ void ChooseFileTabHelper::StopChoosingFiles(NSArray<NSURL*>* file_urls,
   controller_.reset();
 }
 
+void ChooseFileTabHelper::RunOpenPanel(
+    WKOpenPanelParameters* parameters,
+    WKFrameInfo* frame,
+    base::OnceCallback<void(NSArray<NSURL*>*)> completion)
+    API_AVAILABLE(ios(18.4)) {
+  // TODO(crbug.com/441659098): Show the open panel and let the user select
+  // files.
+  std::move(completion).Run(nil);
+}
+
 void ChooseFileTabHelper::AbortSelection() {
   if (IsChoosingFiles()) {
     controller_->Abort();
