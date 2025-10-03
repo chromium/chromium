@@ -41,6 +41,7 @@ void WindowManagementTool::Validate(ValidateCallback callback) {
       if (!browser) {
         std::move(callback).Run(
             MakeResult(mojom::ActionResultCode::kWindowWentAway,
+                       /*requires_page_stabilization=*/false,
                        "The target window could not be found."));
         return;
       }
@@ -69,6 +70,7 @@ void WindowManagementTool::Invoke(InvokeCallback callback) {
       if (!web_contents) {
         OnInvokeFinished(
             MakeResult(mojom::ActionResultCode::kNewTabCreationFailed,
+                       /*requires_page_stabilization=*/false,
                        "Failed to create a new tab in new window."));
         return;
       }
@@ -83,6 +85,7 @@ void WindowManagementTool::Invoke(InvokeCallback callback) {
           SessionID::FromSerializedValue(*window_id_));
       if (!browser || !browser->GetWindow()) {
         OnInvokeFinished(MakeResult(mojom::ActionResultCode::kWindowWentAway,
+                                    /*requires_page_stabilization=*/false,
                                     "The target window could not be found."));
         return;
       }
@@ -94,6 +97,7 @@ void WindowManagementTool::Invoke(InvokeCallback callback) {
           SessionID::FromSerializedValue(*window_id_));
       if (!browser || !browser->GetWindow()) {
         OnInvokeFinished(MakeResult(mojom::ActionResultCode::kWindowWentAway,
+                                    /*requires_page_stabilization=*/false,
                                     "The target window could not be found."));
         return;
       }

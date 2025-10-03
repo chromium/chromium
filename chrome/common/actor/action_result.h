@@ -32,6 +32,8 @@ bool IsOk(const mojom::ActionResult& result);
 
 bool IsOk(mojom::ActionResultCode code);
 
+bool RequiresPageStabilization(const mojom::ActionResult& result);
+
 mojom::ActionResultPtr MakeOkResult();
 
 // TODO(crbug.com/409558980): Replace generic errors with tool-specific ones,
@@ -39,6 +41,7 @@ mojom::ActionResultPtr MakeOkResult();
 mojom::ActionResultPtr MakeErrorResult();
 
 mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
+                                  bool requires_page_stabilization = false,
                                   std::string_view msg = std::string_view());
 
 std::string ToDebugString(const mojom::ActionResult& result);

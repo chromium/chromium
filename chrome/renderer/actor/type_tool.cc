@@ -276,6 +276,7 @@ mojom::ActionResultPtr TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
   // event but this is expected and common.
   if (down_result == WebInputEventResult::kHandledSuppressed) {
     return MakeResult(mojom::ActionResultCode::kTypeKeyDownSuppressed,
+                      /*requires_page_stabilization=*/false,
                       absl::StrFormat("Suppressed char[%s]", params.dom_key));
   }
 
@@ -359,6 +360,9 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     for (const auto& param : validated_result->key_sequence) {
       mojom::ActionResultPtr result = SimulateKeyPress(param);
       if (!IsOk(*result)) {
+        // The initial click may have changed the page.
+        result->requires_page_stabilization = true;
+
         std::move(callback).Run(std::move(result));
         return;
       }
@@ -398,15 +402,27 @@ void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
     if (down_result == WebInputEventResult::kHandledSuppressed) {
       std::move(callback).Run(
           MakeResult(mojom::ActionResultCode::kTypeKeyDownSuppressed,
+                     /*requires_page_stabilization=*/true,
                      absl::StrFormat("Suppressed char[%s]", params.dom_key)));
       return;
     }
 
-    CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
+    WebInputEventResult char_result =
+        CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
+    if (char_result == WebInputEventResult::kHandledSuppressed) {
+      ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
+                  << " suppressed.";
+    }
 
     is_key_down_ = true;
   } else {
-    CreateAndDispatchKeyEvent(WebInputEvent::Type::kKeyUp, params);
+    WebInputEventResult up_result =
+        CreateAndDispatchKeyEvent(WebInputEvent::Type::kKeyUp, params);
+    if (up_result == WebInputEventResult::kHandledSuppressed) {
+      ACTOR_LOG() << "Warning: KeyUp event for key " << params.dom_key
+                  << " suppressed.";
+    }
+
     is_key_down_ = false;
     current_key_++;
   }
@@ -503,6 +519,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
                     JournalDetailsBuilder().Add("char", c).Build());
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kTypeFailedMappingCharToKey,
+                     /*requires_page_stabilization=*/false,
                      absl::StrFormat("Failed on char[%c]", c)));
     }
     key_sequence.push_back(params.value());

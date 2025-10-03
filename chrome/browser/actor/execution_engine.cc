@@ -265,6 +265,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
             .Build());
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
+                                      /*requires_page_stabilization=*/false,
                                       "Task already has action in progress"),
                            std::nullopt, {});
     return;
@@ -330,6 +331,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
                       .AddError("The tab is no longer present")
                       .Build());
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               /*requires_page_stabilization=*/false,
                                "The tab is no longer present."),
                     next_action_index_);
     return;
@@ -359,6 +361,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
                       .Build());
 
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               /*requires_page_stabilization=*/false,
                                "The tab is no longer present."),
                     next_action_index_);
     return;
@@ -378,6 +381,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
                       .Build());
     FailedOnTabBeforeToolCreation();
     CompleteActions(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
+                               /*requires_page_stabilization=*/false,
                                "Acting after cross-origin navigation occurred"),
                     next_action_index_);
     return;
@@ -390,6 +394,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
     FailedOnTabBeforeToolCreation();
     CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
+                               /*requires_page_stabilization=*/false,
                                "URL blocked for actions"),
                     next_action_index_);
     return;

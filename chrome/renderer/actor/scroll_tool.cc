@@ -88,8 +88,9 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
 
   // The scroll distance should always be positive.
   if (action_->distance <= 0.0) {
-    return base::unexpected(MakeResult(
-        mojom::ActionResultCode::kArgumentsInvalid, "Negative Distance"));
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+                   /*requires_page_stabilization=*/false, "Negative Distance"));
   }
 
   if (target_->is_coordinate()) {
@@ -137,6 +138,7 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
       (offset_physical.y() && !scrolling_element.IsUserScrollableY())) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
+                   /*requires_page_stabilization=*/false,
                    absl::StrFormat("ScrollingElement [%s]",
                                    base::ToString(scrolling_element))));
   }

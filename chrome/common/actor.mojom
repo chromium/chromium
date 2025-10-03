@@ -410,6 +410,10 @@ struct ActionResult {
   // A code with the outcome of the tool invocation.
   ActionResultCode code;
 
+  // Whether any action was taken on the page. This is used to know if we need
+  // to wait for the page to settle.
+  bool requires_page_stabilization;
+
   // If the code is not kOk, an English language message describing the error.
   string message;
 

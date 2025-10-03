@@ -220,7 +220,7 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
     result->execution_end_time = base::TimeTicks::Now();
   }
 
-  if (!IsOk(*result) || !observation_delayer_) {
+  if (!RequiresPageStabilization(*result) || !observation_delayer_) {
     PostInvokeTool(std::move(result));
     return;
   }

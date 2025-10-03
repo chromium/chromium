@@ -120,6 +120,7 @@ ClickTool::ValidatedResult ClickTool::Validate() const {
     if (!form_element.IsNull() && !form_element.IsEnabled()) {
       return base::unexpected(MakeResult(
           mojom::ActionResultCode::kElementDisabled,
+          /*requires_page_stabilization=*/false,
           absl::StrFormat("[Element %s]", base::ToString(form_element))));
     }
   }

@@ -42,6 +42,7 @@ ToolExecutor::~ToolExecutor() {
   if (completion_callback_) {
     std::move(completion_callback_)
         .Run(MakeResult(mojom::ActionResultCode::kExecutorDestroyed,
+                        /*requires_page_stabilization=*/false,
                         "The tool executor was destroyed before invocation "
                         "could complete."));
   }
@@ -52,6 +53,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   if (tool_) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kExecutorBusy,
+                   /*requires_page_stabilization=*/false,
                    "Another tool invocation is still running."));
     return;
   }
@@ -169,7 +171,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
   execute_journal_entry_.reset();
   result->execution_end_time = base::TimeTicks::Now();
-  if (page_stability_monitor_) {
+  if (page_stability_monitor_ && RequiresPageStabilization(*result)) {
     page_stability_monitor_->NotifyWhenStable(
         tool_->ExecutionObservationDelay(),
         base::BindOnce(&ToolExecutor::OnCompletion,

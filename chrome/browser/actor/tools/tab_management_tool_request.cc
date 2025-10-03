@@ -51,6 +51,7 @@ ToolRequest::CreateToolResult ActivateTabToolRequest::CreateTool(
   TabInterface* tab = GetTabHandle().Get();
   if (!tab) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
+                                         /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
   return {
@@ -78,6 +79,7 @@ ToolRequest::CreateToolResult CloseTabToolRequest::CreateTool(
   TabInterface* tab = GetTabHandle().Get();
   if (!tab) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
+                                         /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
   return {

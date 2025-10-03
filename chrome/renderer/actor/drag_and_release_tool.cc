@@ -68,7 +68,8 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   if (!InjectMouseEvent(EventType::kMouseDown, from_point,
                         WebMouseEvent::Button::kLeft)) {
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseDownSuppressed));
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseDownSuppressed,
+                   /*requires_page_stabilization=*/true));
     return;
   }
 
@@ -76,14 +77,16 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   if (!InjectMouseEvent(EventType::kMouseMove, to_point,
                         WebMouseEvent::Button::kLeft)) {
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed));
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed,
+                   /*requires_page_stabilization=*/true));
     return;
   }
 
   if (!InjectMouseEvent(EventType::kMouseUp, to_point,
                         WebMouseEvent::Button::kLeft)) {
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed));
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed,
+                   /*requires_page_stabilization=*/true));
     return;
   }
 
@@ -104,7 +107,7 @@ DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
 
   if (target_->is_dom_node_id() || to_target->is_dom_node_id()) {
     return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+        MakeResult(mojom::ActionResultCode::kArgumentsInvalid, false,
                    "DomNodeId target not supported"));
   }
 
@@ -113,13 +116,13 @@ DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
 
   if (!IsPointWithinViewport(from_point, frame_.get())) {
     return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseFromOffscreen,
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseFromOffscreen, false,
                    absl::StrFormat("Point [%s]", from_point.ToString())));
   }
 
   if (!IsPointWithinViewport(to_point, frame_.get())) {
     return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseToOffscreen,
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseToOffscreen, false,
                    absl::StrFormat("Point [%s]", to_point.ToString())));
   }
 

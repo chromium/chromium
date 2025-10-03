@@ -31,6 +31,9 @@ class ScriptToolRequest : public PageToolRequest {
       content::RenderFrameHost& frame) const override;
   std::unique_ptr<PageToolRequest> Clone() const override;
 
+  std::optional<ObservationDelayController::PageStabilityConfig>
+  GetObservationPageStabilityConfig() const override;
+
  private:
   std::string name_;
   std::string input_arguments_;

@@ -87,6 +87,7 @@ ToolBase::ValidateAndResolveTarget() const {
     if (!IsPointWithinViewport(coordinate_point, frame_.get())) {
       return base::unexpected(MakeResult(
           mojom::ActionResultCode::kCoordinatesOutOfBounds,
+          /*requires_page_stabilization=*/false,
           absl::StrFormat("Point [%s]", coordinate_point.ToString())));
     }
     resolved_target.point = coordinate_point;
@@ -109,6 +110,7 @@ ToolBase::ValidateAndResolveTarget() const {
     if (!node_interaction_point.has_value()) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kElementOffscreen,
+                     /*requires_page_stabilization=*/false,
                      absl::StrFormat("[Element %s]",
                                      base::ToString(resolved_target.node))));
     }
@@ -173,6 +175,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
         return base::unexpected(MakeResult(
             mojom::ActionResultCode::kObservedTargetElementDestroyed,
+            /*requires_page_stabilization=*/false,
             "The observed element at the target location is destroyed"));
       }
     }
@@ -195,6 +198,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
         return base::unexpected(
             MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
+                       /*requires_page_stabilization=*/false,
                        "The element at the target location is not the same as "
                        "the one observed."));
       } else {
@@ -225,6 +229,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
           TimeOfUseResult::kTargetNodeInteractionPointObscured);
       return base::unexpected(MakeResult(
           mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
+          /*requires_page_stabilization=*/false,
           "The element's interaction point is obscured by other elements."));
     }
 

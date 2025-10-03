@@ -64,6 +64,7 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
   if (select.Value() != value) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kSelectUnexpectedValue,
+                   /*requires_page_stabilization=*/false,
                    absl::StrFormat("ValueAfter [%s]", select.Value().Utf8())));
     return;
   }
@@ -96,12 +97,14 @@ SelectTool::ValidatedResult SelectTool::Validate() const {
   if (!select) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kSelectInvalidElement,
+                   /*requires_page_stabilization=*/false,
                    absl::StrFormat("Element [%s]", base::ToString(node))));
   }
 
   if (!select.IsEnabled()) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kElementDisabled,
+                   /*requires_page_stabilization=*/false,
                    absl::StrFormat("Element [%s]", base::ToString(select))));
   }
 
@@ -112,6 +115,7 @@ SelectTool::ValidatedResult SelectTool::Validate() const {
       if (!option.IsEnabled()) {
         return base::unexpected(MakeResult(
             mojom::ActionResultCode::kSelectOptionDisabled,
+            /*requires_page_stabilization=*/false,
             absl::StrFormat("SelectElement[%s] OptionElement [%s]",
                             base::ToString(select), base::ToString(option))));
       }
@@ -121,6 +125,7 @@ SelectTool::ValidatedResult SelectTool::Validate() const {
 
   return base::unexpected(
       MakeResult(mojom::ActionResultCode::kSelectNoSuchOption,
+                 /*requires_page_stabilization=*/false,
                  absl::StrFormat("SelectElement[%s]", base::ToString(select))));
 }
 

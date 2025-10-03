@@ -137,7 +137,8 @@ mojom::ActionResultPtr CreateAndDispatchClick(WebMouseEvent::Button button,
       WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
 
   if (result == WebInputEventResult::kHandledSuppressed) {
-    return MakeResult(mojom::ActionResultCode::kClickSuppressed);
+    return MakeResult(mojom::ActionResultCode::kClickSuppressed,
+                      /*requires_page_stabilization=*/false);
   }
 
   mouse_up.SetType(WebInputEvent::Type::kMouseUp);
@@ -150,7 +151,8 @@ mojom::ActionResultPtr CreateAndDispatchClick(WebMouseEvent::Button button,
       WebCoalescedInputEvent(std::move(mouse_up), ui::LatencyInfo()));
 
   if (result == WebInputEventResult::kHandledSuppressed) {
-    return MakeResult(mojom::ActionResultCode::kClickSuppressed);
+    return MakeResult(mojom::ActionResultCode::kClickSuppressed,
+                      /*requires_page_stabilization=*/true);
   }
 
   return MakeOkResult();

@@ -175,9 +175,11 @@ void HistoryTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
     if (!navigation_handle->HasCommitted()) {
       result = MakeResult(mojom::ActionResultCode::kHistoryFailedBeforeCommit,
+                          /*requires_page_stabilization=*/false,
                           details_msg(navigation_handle));
     } else if (navigation_handle->IsErrorPage()) {
       result = MakeResult(mojom::ActionResultCode::kHistoryErrorPage,
+                          /*requires_page_stabilization=*/false,
                           details_msg(navigation_handle));
     } else {
       result = MakeOkResult();

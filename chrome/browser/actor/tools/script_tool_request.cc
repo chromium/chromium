@@ -44,4 +44,9 @@ std::unique_ptr<PageToolRequest> ScriptToolRequest::Clone() const {
   return std::make_unique<ScriptToolRequest>(*this);
 }
 
+std::optional<ObservationDelayController::PageStabilityConfig>
+ScriptToolRequest::GetObservationPageStabilityConfig() const {
+  return std::nullopt;
+}
+
 }  // namespace actor
