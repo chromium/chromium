@@ -55,7 +55,7 @@ config("tflite_config") {
     "TF_MAJOR_VERSION=" + tf_version_major,
     "TF_MINOR_VERSION=" + tf_version_minor,
     "TF_PATCH_VERSION=" + tf_version_patch,
-    "TF_VERSION_SUFFIX",
+    "TF_VERSION_SUFFIX=",
   ]
   if (is_android) {
     libs = [ "log" ]
@@ -184,6 +184,16 @@ static_library("tflite_builtin_op_resolver_internals") {
 
 tflite_static_library("tflite_builtin_op_resolver") {
   sources = [
+    "src/tensorflow/lite/c/c_api_opaque_internal.cc",
+    "src/tensorflow/lite/c/c_api_opaque_internal.h",
+    "src/tensorflow/lite/core/c/c_api.cc",
+    "src/tensorflow/lite/core/c/c_api.h",
+    "src/tensorflow/lite/core/c/c_api_opaque.cc",
+    "src/tensorflow/lite/core/c/c_api_opaque.h",
+    "src/tensorflow/lite/core/c/operator.cc",
+    "src/tensorflow/lite/core/c/operator.h",
+    "src/tensorflow/lite/core/create_op_resolver.h",
+    "src/tensorflow/lite/core/create_op_resolver_with_builtin_ops.cc",
     "src/tensorflow/lite/core/kernels/register.cc",
     "src/tensorflow/lite/core/kernels/register.h",
     "src/tensorflow/lite/kernels/atan2.cc",
@@ -350,44 +360,27 @@ source_set("tflite_kernel_common_headers") {
   visibility = [ ":*" ]
 }
 
-tflite_litert_sources = [
-  "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
-  "src/tensorflow/lite/experimental/genai/genai_ops.cc",
-  "src/tensorflow/lite/experimental/genai/genai_ops.h",
-  "src/tensorflow/lite/experimental/genai/kvcache.cc",
-  "src/tensorflow/lite/experimental/genai/sdpa.cc",
-  "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
-  "src/tensorflow/lite/experimental/resource/cache_buffer.h",
-]
+tflite_source_set("tflite_litert") {
+  sources = [
+    "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
+    "src/tensorflow/lite/experimental/genai/genai_ops.cc",
+    "src/tensorflow/lite/experimental/genai/genai_ops.h",
+    "src/tensorflow/lite/experimental/genai/kvcache.cc",
+    "src/tensorflow/lite/experimental/genai/sdpa.cc",
+    "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
+    "src/tensorflow/lite/experimental/resource/cache_buffer.h",
+  ]
 
-tflite_litert_deps = [
-  ":tflite_kernel_common_headers",
-  ":tflite_kernel_internals",
-  ":tflite_public_headers",
-  "//third_party/flatbuffers",
-]
+  deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_public_headers",
+    "//third_party/flatbuffers",
+  ]
 
-if (build_with_chromium) {
-  source_set("tflite_litert") {
-    sources = tflite_litert_sources
+  conditional_deps = [ ":tflite_logging" ]
 
-    deps = tflite_litert_deps
-    deps += [ ":tflite_logging" ]
-
-    configs += [
-      ":tflite_config",
-      ":tflite_flags",
-    ]
-  }
-}
-
-source_set("tflite_litert_standalone") {
-  sources = tflite_litert_sources
-
-  deps = tflite_litert_deps
-  deps += [ ":tflite_logging_standalone" ]
-
-  configs += [
+  configs_to_add = [
     ":tflite_config",
     ":tflite_flags",
   ]
