@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
@@ -22,6 +23,7 @@ class WebNNCommandQueueTest : public TestBase {
 
  protected:
   ComPtr<ID3D12Device> d3d12_device_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 void WebNNCommandQueueTest::SetUp() {

@@ -52,13 +52,8 @@ struct InitGlobals {
     TestTimeouts::Initialize();
 
     base::test::AllowCheckIsTestForTesting();
-
-    task_environment = std::make_unique<base::test::TaskEnvironment>(
-        base::test::TaskEnvironment::MainThreadType::DEFAULT,
-        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   }
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -71,7 +66,16 @@ class WebnnGraphLPMFuzzer {
       : testcase_(testcase) {
     input_generator_.ReseedForTesting(testcase_->seed_for_input_data());
 
-    webnn_test_environment_.BindWebNNContextProvider(
+    auto task_environment = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::MainThreadType::DEFAULT,
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+    webnn_test_environment_ =
+        std::make_unique<webnn::test::WebNNTestEnvironment>(
+            webnn::WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
+            base::DoNothing(), std::move(task_environment));
+
+    webnn_test_environment_->BindWebNNContextProvider(
         provider_remote_.BindNewPipeAndPassReceiver());
 
     base::test::TestFuture<webnn::mojom::CreateContextResultPtr>
@@ -100,6 +104,8 @@ class WebnnGraphLPMFuzzer {
     return action_index_ > 100 || action_index_ >= testcase_->actions_size();
   }
 
+  void RunUntilIdle() { webnn_test_environment_->RunUntilIdle(); }
+
  private:
   mojo_base::BigBuffer GenerateBytes(size_t byte_size) {
     mojo_base::BigBuffer buffer(byte_size);
@@ -125,7 +131,7 @@ class WebnnGraphLPMFuzzer {
         webnn_graph_builder_remote;
     mojo::AssociatedRemote<webnn::mojom::WebNNGraph> webnn_graph_remote;
 
-    webnn_test_environment_.BindWebNNContextProvider(
+    webnn_test_environment_->BindWebNNContextProvider(
         webnn_provider_remote.BindNewPipeAndPassReceiver());
 
     // Create the ContextImpl through context provider.
@@ -290,7 +296,7 @@ class WebnnGraphLPMFuzzer {
   int action_index_ = 0;
   base::test::InsecureRandomGenerator input_generator_;
 
-  webnn::test::WebNNTestEnvironment webnn_test_environment_;
+  std::unique_ptr<webnn::test::WebNNTestEnvironment> webnn_test_environment_;
   mojo::Remote<webnn::mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<webnn::mojom::WebNNContext> webnn_context_;
 };
@@ -303,7 +309,7 @@ DEFINE_BINARY_PROTO_FUZZER(
   }
   // Ensure that any tasks scheduled by `webnn_graph_fuzzer_instance` are
   // executed before it is freed. See https://crbug.com/441020155.
-  init_globals->task_environment->RunUntilIdle();
+  webnn_graph_fuzzer_instance.RunUntilIdle();
 }
 
 }  // namespace
