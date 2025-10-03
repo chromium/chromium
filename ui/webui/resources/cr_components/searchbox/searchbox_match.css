@@ -147,7 +147,7 @@
   flex-grow: 0;
   overflow: hidden;
   padding-inline-end: 8px;
-  padding-inline-start: 8px;
+  padding-inline-start: var(--cr-searchbox-match-text-padding-inline-start, 8px);
   white-space: nowrap;
 }
 
