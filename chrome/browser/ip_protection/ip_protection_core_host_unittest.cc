@@ -9,17 +9,20 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
@@ -29,6 +32,7 @@
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -355,6 +359,42 @@ class IpProtectionCoreHostTest : public testing::Test {
 // IpProtectionTokenDirectFetcher, but both make sense. In the fetcher, they
 // serve as unit tests with a fake delegate. Here, they incorporate
 // IpProtectionCoreHost as a delegate.
+
+TEST_F(IpProtectionCoreHostTest, CanIpProtectionBeEnabled) {
+  // Ensure feature is enabled so we only test the switches.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  // Base case: Feature enabled, no switches.
+  EXPECT_TRUE(IpProtectionCoreHost::CanIpProtectionBeEnabled());
+
+  {
+    // Case: Disable IP Protection switch.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableIpProtectionProxy);
+    EXPECT_FALSE(IpProtectionCoreHost::CanIpProtectionBeEnabled());
+  }
+
+  {
+    // Case: Disable HTTP/2 switch.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableHttp2);
+    EXPECT_FALSE(IpProtectionCoreHost::CanIpProtectionBeEnabled());
+  }
+
+  {
+    // Case: Both switches.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableIpProtectionProxy);
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableHttp2);
+    EXPECT_FALSE(IpProtectionCoreHost::CanIpProtectionBeEnabled());
+  }
+}
 
 // The success case: a primary account is available, and BSA gets a token for
 // it.

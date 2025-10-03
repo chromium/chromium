@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/features.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -123,6 +124,23 @@ class IpProtectionCoreHostFactoryOptOutEnabled
 
 TEST_F(IpProtectionCoreHostFactoryOptOutEnabled,
        ServiceCreationFailsWhenUserOptedOut) {
+  IpProtectionCoreHost* service =
+      IpProtectionCoreHostFactory::GetForProfile(profile());
+  ASSERT_FALSE(service);
+}
+
+class IpProtectionCoreHostFactoryHttp2DisabledTest
+    : public IpProtectionCoreHostFactoryTest {
+ public:
+  IpProtectionCoreHostFactoryHttp2DisabledTest()
+      : IpProtectionCoreHostFactoryTest(
+            /*feature_enabled=*/true,
+            /*command_line_switch=*/switches::kDisableHttp2) {}
+};
+
+TEST_F(IpProtectionCoreHostFactoryHttp2DisabledTest,
+       ServiceCreationFailsWhenHttp2Disabled) {
+  // IP Protection requires HTTP/2.
   IpProtectionCoreHost* service =
       IpProtectionCoreHostFactory::GetForProfile(profile());
   ASSERT_FALSE(service);

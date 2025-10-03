@@ -35,6 +35,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/variations/service/variations_service.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/common/api_key_request_util.h"
@@ -455,10 +456,12 @@ bool IpProtectionCoreHost::CanRequestOAuthToken() {
 
 // static
 bool IpProtectionCoreHost::CanIpProtectionBeEnabled() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
   return base::FeatureList::IsEnabled(
              net::features::kEnableIpProtectionProxy) &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableIpProtectionProxy);
+         !command_line.HasSwitch(switches::kDisableIpProtectionProxy) &&
+         !command_line.HasSwitch(switches::kDisableHttp2);
 }
 
 bool IpProtectionCoreHost::ShouldDisableIpProtectionForEnterpriseForTesting() {
