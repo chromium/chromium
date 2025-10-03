@@ -69,7 +69,6 @@ class VideoFrame;
 
 namespace blink {
 
-class CanvasResourceProvider;
 class CanvasElementHitTestRegion;
 class ComputedStyle;
 class Document;
