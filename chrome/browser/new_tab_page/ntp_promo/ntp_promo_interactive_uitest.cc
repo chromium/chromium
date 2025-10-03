@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
 #else
 #define MAYBE_SigninPromoAppearsAndIsClickable SigninPromoAppearsAndIsClickable
 #endif
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
+IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, MAYBE_SigninPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpSignInPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
