@@ -15,8 +15,8 @@ For Android Q+, WebView and Chrome are separately installed APKs. However,
 Google began building a separate package of WebView for each of the four Chrome
 channels: Stable, Beta, Dev, and Canary. Users can find each of these four
 channels of WebView on the Play Store and install them simultaneously on a
-single device. Also like Monochrome, users can use the "WebView implementation"
-menu to choose which installed WebView the system should use.
+single device. Users can use the "WebView implementation" menu to choose which
+installed WebView the system should use.
 
 Trichrome WebView APKs (of all channels) have a `versionCode` value with a final
 digit of 3 ([to match Trichrome Chrome's

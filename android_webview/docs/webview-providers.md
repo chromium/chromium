@@ -156,6 +156,6 @@ more details if you're curious how this process works.
 
 You generally should not hit this issue unless you're trying to install a target
 which is not WebView-capable (ex. `chrome_public_apk` instead of
-`monochrome_public_apk`).
+`system_webview_apk`).
 
 [aosp]: aosp-system-integration.md#Configuring-the-Android-framework

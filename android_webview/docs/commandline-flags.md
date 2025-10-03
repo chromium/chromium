@@ -89,14 +89,6 @@ out/Default/bin/system_webview_apk argv --args=''
 out/Default/bin/system_webview_apk argv
 ```
 
-*** note
-**Note:** this method is only supported for `system_webview_*` and
-`trichrome_webview_*` targets. Be careful when using a `monochrome_*` target, as
-this will write to Chrome browser's flags file, and WebView **will not pick up
-these flags**. If using Monochrome, you should instead use the python script
-mentioned above.
-***
-
 ### Manual
 
 Or, you can use the `adb` in your `$PATH` like so:
