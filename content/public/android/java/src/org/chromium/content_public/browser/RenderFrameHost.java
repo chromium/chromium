@@ -247,4 +247,7 @@ public interface RenderFrameHost {
      * @return whether hit test data is available for this Frame.
      */
     boolean hasHitTestDataForTesting();
+
+    /** Opens view-source tab for the document last committed in this RenderFrameHost. */
+    void viewSource();
 }

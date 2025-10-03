@@ -131,4 +131,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
     public boolean hasHitTestDataForTesting() {
         return true;
     }
+
+    @Override
+    public void viewSource() {}
 }

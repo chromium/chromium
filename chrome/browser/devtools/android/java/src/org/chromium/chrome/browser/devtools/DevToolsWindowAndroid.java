@@ -24,6 +24,12 @@ public class DevToolsWindowAndroid {
                 && DevToolsWindowAndroidJni.get().isDevToolsAllowedFor(profile, webContents);
     }
 
+    public static boolean canViewSource(Profile profile, WebContents webContents) {
+        // Disallow ViewSource if DevTools are disabled.
+        return isDevToolsAllowedFor(profile, webContents)
+                && webContents.getNavigationController().canViewSource();
+    }
+
     /**
      * Opens a DevTools window for the given WebContents.
      *

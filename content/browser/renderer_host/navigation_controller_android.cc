@@ -485,6 +485,10 @@ jint NavigationControllerAndroid::GetLastCommittedEntryIndex(JNIEnv* env) {
   return navigation_controller_->GetLastCommittedEntryIndex();
 }
 
+jboolean NavigationControllerAndroid::CanViewSource(JNIEnv* env) {
+  return navigation_controller_->CanViewSource();
+}
+
 jboolean NavigationControllerAndroid::RemoveEntryAtIndex(JNIEnv* env,
                                                          jint index) {
   return navigation_controller_->RemoveEntryAtIndex(index);

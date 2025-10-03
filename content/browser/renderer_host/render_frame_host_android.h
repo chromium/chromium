@@ -106,6 +106,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
 
   bool HasHitTestDataForTesting(JNIEnv* env);
 
+  void ViewSource(JNIEnv* env);
+
   RenderFrameHostImpl* render_frame_host() const { return render_frame_host_; }
 
  private:

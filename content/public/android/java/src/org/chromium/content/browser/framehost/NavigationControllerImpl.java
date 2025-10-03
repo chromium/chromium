@@ -321,6 +321,15 @@ import org.chromium.url.Origin;
     }
 
     @Override
+    public boolean canViewSource() {
+        if (mNativeNavigationControllerAndroid != 0) {
+            return NavigationControllerImplJni.get()
+                    .canViewSource(mNativeNavigationControllerAndroid);
+        }
+        return false;
+    }
+
+    @Override
     public boolean removeEntryAtIndex(int index) {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
@@ -472,6 +481,8 @@ import org.chromium.url.Origin;
         NavigationEntry getPendingEntry(long nativeNavigationControllerAndroid);
 
         int getLastCommittedEntryIndex(long nativeNavigationControllerAndroid);
+
+        boolean canViewSource(long nativeNavigationControllerAndroid);
 
         boolean removeEntryAtIndex(long nativeNavigationControllerAndroid, int index);
 

@@ -101,6 +101,7 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jint max_entries);
   void ClearHistory(JNIEnv* env);
   int GetLastCommittedEntryIndex(JNIEnv* env);
+  jboolean CanViewSource(JNIEnv* env);
   jboolean RemoveEntryAtIndex(JNIEnv* env,
                               jint index);
   void PruneForwardEntries(JNIEnv* env);

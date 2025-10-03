@@ -1727,7 +1727,7 @@ Unknown properties are collapsed to zero. -->
   <int value="39"
       label="Open developer tools element inspection (not implemented)"/>
   <int value="40" label="Toggle showing developer tools (not implemented)"/>
-  <int value="41" label="View page source (not implemented)"/>
+  <int value="41" label="View page source"/>
   <int value="42" label="Open task manager"/>
   <int value="43" label="Save page"/>
   <int value="44" label="Show downloads"/>

@@ -151,6 +151,11 @@ public interface NavigationController {
     int getLastCommittedEntryIndex();
 
     /**
+     * @return true, if the source for the current entry can be viewed.
+     */
+    boolean canViewSource();
+
+    /**
      * Removes the entry at the specified |index|.
      *
      * @return false, if the index is the last committed index or the pending entry. Otherwise this

@@ -45,6 +45,7 @@ found in the LICENSE file.
     <item type="id" name="task_manager" />
     <item type="id" name="esc_key" />
     <item type="id" name="feedback_form" />
+    <item type="id" name="view_source" />
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />

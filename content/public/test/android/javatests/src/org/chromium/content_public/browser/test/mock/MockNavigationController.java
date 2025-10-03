@@ -117,6 +117,11 @@ public class MockNavigationController implements NavigationController {
     }
 
     @Override
+    public boolean canViewSource() {
+        return false;
+    }
+
+    @Override
     public boolean removeEntryAtIndex(int index) {
         return false;
     }

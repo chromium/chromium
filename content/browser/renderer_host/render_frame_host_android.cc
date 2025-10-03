@@ -332,4 +332,8 @@ bool RenderFrameHostAndroid::HasHitTestDataForTesting(JNIEnv* env) {
   return false;
 }
 
+void RenderFrameHostAndroid::ViewSource(JNIEnv* env) {
+  render_frame_host()->ViewSource();
+}
+
 }  // namespace content
