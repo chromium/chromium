@@ -276,8 +276,21 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"));
 }
 
+// TODO(crbug.com/375959961): For X11, the menu is always closed on drag
+// completion because the native widget's state is not properly updated.
+// TODO(crbug.com/388531778): DND tests are fail on Windows and Wayland. This
+// should be re-enabled once fix.
+// TODO(crbug.com/448993919): Re-enable this test on Mac.
+#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
+#define MAYBE_BookmarksDragAndDropToNestedFolder \
+  DISABLED_BookmarksDragAndDropToNestedFolder
+#else
+#define MAYBE_BookmarksDragAndDropToNestedFolder \
+  BookmarksDragAndDropToNestedFolder
+#endif
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
-                       MAYBE_DISABLED(BookmarksDragAndDropToNestedFolder)) {
+                       MAYBE_BookmarksDragAndDropToNestedFolder) {
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
