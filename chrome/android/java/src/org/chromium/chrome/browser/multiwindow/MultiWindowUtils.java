@@ -936,17 +936,41 @@ public class MultiWindowUtils implements ActivityStateListener {
         int maxInstances = MultiWindowUtils.getMaxInstances();
         if (preferNew && MultiWindowUtils.getInstanceCount() < maxInstances) return windowId;
 
-        SparseIntArray windowIdsOfRunningTabbedActivities =
-                MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();
-        for (int i : MultiInstanceManagerApi31.getAllPersistedInstanceIds()) {
-            // Exclude instance IDs of non-running activities.
-            if (windowIdsOfRunningTabbedActivities.indexOfValue(i) < 0) continue;
-            if (MultiWindowUtils.readLastAccessedTime(i)
-                    > MultiWindowUtils.readLastAccessedTime(windowId)) {
-                windowId = i;
+        return getLastAccessedWindowIdInternal(/* includeRunningActivitiesOnly= */ true);
+    }
+
+    /**
+     * @return The instance ID of the Chrome window that was last accessed. This will return {@code
+     *     INVALID_WINDOW_ID} if no persisted instance state is found.
+     */
+    public static int getLastAccessedWindowId() {
+        return getLastAccessedWindowIdInternal(/* includeRunningActivitiesOnly= */ false);
+    }
+
+    private static int getLastAccessedWindowIdInternal(boolean includeRunningActivitiesOnly) {
+        int lastAccessedWindowId = INVALID_WINDOW_ID;
+        long maxAccessedTime = 0;
+
+        SparseIntArray windowIdsOfRunningTabbedActivities = null;
+        if (includeRunningActivitiesOnly) {
+            windowIdsOfRunningTabbedActivities =
+                    MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();
+        }
+
+        Set<Integer> persistedIds = MultiInstanceManagerApi31.getAllPersistedInstanceIds();
+
+        for (int id : persistedIds) {
+            if (includeRunningActivitiesOnly && windowIdsOfRunningTabbedActivities != null) {
+                if (windowIdsOfRunningTabbedActivities.indexOfValue(id) < 0) continue;
+            }
+
+            long accessedTime = readLastAccessedTime(id);
+            if (accessedTime > maxAccessedTime) {
+                maxAccessedTime = accessedTime;
+                lastAccessedWindowId = id;
             }
         }
-        return windowId;
+        return lastAccessedWindowId;
     }
 
     /**

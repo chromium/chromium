@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_DESKTOP_WINDOW_COUNT_NEW_INSTANCE_SUFFIX;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 
 import android.app.Activity;
 import android.content.Context;
@@ -848,6 +849,24 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testRecordTabCountForRelaunchWhenActivityPaused_MultiInstanceApi31Disabled() {
         testRecordTabCountForRelaunchWhenActivityPausedImpl(/* windowId= */ 0);
+    }
+
+    @Test
+    public void testGetLastAccessedWindowId() {
+        MultiWindowTestUtils.enableMultiInstance();
+
+        final int oldestId = 10;
+        final int midId = 20;
+        final int newestId = 30;
+
+        writeInstanceInfo(oldestId, URL_1, 3, 0, TASK_ID_5);
+        writeInstanceInfo(midId, URL_3, 1, 0, TASK_ID_6);
+        writeInstanceInfo(newestId, null, 0, 0, INVALID_TASK_ID);
+
+        Assert.assertEquals(
+                "The last accessed window ID should be returned.",
+                newestId,
+                MultiWindowUtils.getLastAccessedWindowId());
     }
 
     @Test
