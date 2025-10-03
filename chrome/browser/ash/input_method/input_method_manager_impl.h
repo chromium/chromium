@@ -26,6 +26,7 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace ash {
@@ -192,7 +193,9 @@ class InputMethodManagerImpl : public InputMethodManager,
   // state.
   //
   // `local_state` must be non-null, and must outlive `this`.
+  // `application_locale_storage` must be non-null, and must outlive `this`.
   InputMethodManagerImpl(PrefService* local_state,
+                         ApplicationLocaleStorage* application_locale_manager,
                          std::unique_ptr<InputMethodDelegate> delegate,
                          std::unique_ptr<ComponentExtensionIMEManagerDelegate>
                              component_extension_ime_manager_delegate,
@@ -298,6 +301,7 @@ class InputMethodManagerImpl : public InputMethodManager,
   void ReloadKeyboard();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::unique_ptr<InputMethodDelegate> delegate_;
 

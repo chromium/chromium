@@ -172,6 +172,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
@@ -951,7 +952,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       *g_browser_process->local_state());
 
   // AccessibilityManager and SystemKeyEventListener use InputMethodManager.
-  input_method::Initialize(g_browser_process->local_state());
+  input_method::Initialize(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
 
   // keyboard::KeyboardController initializes ChromeKeyboardUI which depends
   // on ChromeKeyboardControllerClient.

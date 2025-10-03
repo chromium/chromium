@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
@@ -23,7 +24,10 @@ TEST(InputMethodConfigurationTest, TestInitialize) {
   InputMethodManager* manager = InputMethodManager::Get();
   EXPECT_FALSE(manager);
 
-  Initialize(TestingBrowserProcess::GetGlobal()->local_state());
+  Initialize(TestingBrowserProcess::GetGlobal()->local_state(),
+             TestingBrowserProcess::GetGlobal()
+                 ->GetFeatures()
+                 ->application_locale_storage());
   manager = InputMethodManager::Get();
   EXPECT_TRUE(manager);
   Shutdown();

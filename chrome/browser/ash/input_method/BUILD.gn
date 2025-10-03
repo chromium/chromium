@@ -222,6 +222,7 @@ static_library("input_method") {
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/strings",
     "//components/account_id",
+    "//components/application_locale_storage",
     "//components/exo",
     "//components/feedback",
     "//components/feedback/redaction_tool",

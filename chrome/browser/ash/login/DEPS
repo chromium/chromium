@@ -125,5 +125,8 @@ specific_include_rules = {
   "chrome/browser/ash/login/existing_user_controller\\.cc": [
     "+ash/shell.h",
     "+ash/metrics/login_unlock_throughput_recorder.h",
+  ],
+  "wizard_controller_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
   ]
 }

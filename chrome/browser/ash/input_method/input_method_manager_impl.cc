@@ -47,6 +47,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
@@ -807,7 +808,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault(
     bool is_in_oobe_context) {
   // Set up keyboards. For example, when |locale| is "en-US", enable US qwerty
   // and US dvorak keyboard layouts.
-  const std::string locale = g_browser_process->GetApplicationLocale();
+  const std::string locale = manager_->application_locale_storage_->Get();
   std::vector<std::string> input_method_ids_to_be_enabled;
   if (!GetAllowedInputMethodIds().empty()) {
     // Prefer policy-set input methods.
@@ -1064,12 +1065,14 @@ InputMethodManagerImpl::GetActiveIMEState() {
 
 InputMethodManagerImpl::InputMethodManagerImpl(
     PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
     std::unique_ptr<InputMethodDelegate> delegate,
     std::unique_ptr<ComponentExtensionIMEManagerDelegate>
         component_extension_ime_manager_delegate,
     bool enable_extension_loading,
     std::unique_ptr<ImeKeyboard> ime_keyboard)
     : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       delegate_(std::move(delegate)),
       util_(delegate_.get()),
       keyboard_(std::move(ime_keyboard)),

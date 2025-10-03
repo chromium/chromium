@@ -63,6 +63,7 @@ include_rules = [
   "+chrome/browser/defaults.h",
   "+chrome/browser/device_identity",
   "+chrome/browser/first_run",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/memory",
   "+chrome/browser/metrics",

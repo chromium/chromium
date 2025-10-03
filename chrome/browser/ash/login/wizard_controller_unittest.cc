@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
@@ -202,7 +203,10 @@ class WizardControllerTestBase : public ::testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    input_method::Initialize(TestingBrowserProcess::GetGlobal()->local_state());
+    input_method::Initialize(TestingBrowserProcess::GetGlobal()->local_state(),
+                             TestingBrowserProcess::GetGlobal()
+                                 ->GetFeatures()
+                                 ->application_locale_storage());
     AshTestHelper::InitParams params;
     params.start_session = false;
     params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
