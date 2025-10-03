@@ -81,7 +81,7 @@ public final class TouchTrackingListView extends ListView implements ListViewTou
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         mGestureDetector.onTouchEvent(ev);
-        return false;
+        return super.onInterceptTouchEvent(ev);
     }
 
     @Override

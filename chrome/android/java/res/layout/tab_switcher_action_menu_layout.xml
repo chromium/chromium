@@ -14,4 +14,4 @@ found in the LICENSE file.
     android:listSelector="?attr/listChoiceBackgroundIndicator"
     android:divider="@android:color/transparent"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="match_parent" />
