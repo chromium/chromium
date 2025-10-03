@@ -228,7 +228,6 @@ source_set("webnn_test_support") {
   deps = [
     ":webnn_service",
     "//base",
-    "//base/test:test_support",
     "//gpu/command_buffer/service",
     "//gpu/config",
     "//mojo/public/cpp/bindings",

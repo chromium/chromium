@@ -11,9 +11,7 @@ namespace webnn::test {
 WebNNTestEnvironment::WebNNTestEnvironment(
     WebNNContextProviderImpl::WebNNStatus status,
     WebNNContextProviderImpl::LoseAllContextsCallback
-        lose_all_contexts_callback,
-    std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)) {
+        lose_all_contexts_callback) {
   gpu::GpuFeatureInfo gpu_feature_info;
   gpu::GPUInfo gpu_info;
 
@@ -41,7 +39,7 @@ WebNNTestEnvironment::WebNNTestEnvironment(
       /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
       std::move(gpu_info), /*shared_image_manager=*/nullptr,
       std::move(lose_all_contexts_callback),
-      task_environment_->GetMainThreadTaskRunner(), &scheduler_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &scheduler_,
       kFakeClientIdForTesting);
 }
 
