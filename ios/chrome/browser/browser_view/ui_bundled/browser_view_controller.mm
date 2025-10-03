@@ -243,9 +243,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   // view.
   BOOL _lensOverlayVisible;
 
-  // Whether the find bar is currently visible.
-  BOOL _findBarVisible;
-
   // TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
   ToolbarType _diamondToolbarType;
   NSArray<NSLayoutConstraint*>* _diamondToolbarTopConstraints;
@@ -465,7 +462,7 @@ const CGFloat kTopDynamicIslandInset = 24;
              BrowserViewVisibilityState::kCoveredByOmniboxPopup ||
          _visibilityState ==
              BrowserViewVisibilityState::kCoveredByVoiceSearch ||
-         _lensOverlayVisible || _findBarVisible;
+         _lensOverlayVisible;
 }
 
 - (void)setVisibilityState:(BrowserViewVisibilityState)state {
