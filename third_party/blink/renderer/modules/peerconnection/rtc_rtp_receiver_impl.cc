@@ -20,9 +20,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kRTCAlignReceivedEncodedVideoTransforms,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 RtpReceiverState::RtpReceiverState(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
@@ -162,10 +159,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
       CHECK(webrtc_receiver_->media_type() == webrtc::MediaType::VIDEO);
       encoded_video_transformer_ =
           std::make_unique<RTCEncodedVideoStreamTransformer>(
-              main_task_runner_, base::FeatureList::IsEnabled(
-                                     kRTCAlignReceivedEncodedVideoTransforms)
-                                     ? std::move(decode_metronome)
-                                     : nullptr);
+              main_task_runner_, std::move(decode_metronome));
       webrtc_receiver_->SetFrameTransformer(
           encoded_video_transformer_->Delegate());
     }

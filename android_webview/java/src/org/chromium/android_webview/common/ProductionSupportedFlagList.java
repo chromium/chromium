@@ -478,10 +478,6 @@ public final class ProductionSupportedFlagList {
                 "WebRtcEncodedTransformDirectCallback",
                 "Directly invoke WebRTC Encoded Transform callbacks in a worker."),
         Flag.baseFeature(
-                "RTCAlignReceivedEncodedVideoTransforms",
-                "Aligns the JS calls by WebRTC Encoded Transforms on Video Frames with a Metronome"
-                        + " to save power."),
-        Flag.baseFeature(
                 "WebRtcAudioSinkUseTimestampAligner",
                 "Align WebRTC and Chrome clocks using a timestamp aligner for absolute capture"
                         + " times in Audio RTP packets."),
