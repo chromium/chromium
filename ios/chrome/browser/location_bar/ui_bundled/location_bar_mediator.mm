@@ -297,7 +297,6 @@ const CGFloat kIconPointSize = 16.0;
 /// Whether the lens overlay entrypoint should be available.
 - (BOOL)isLensOverlayEntrypointAvailable {
   if (![self isLensOverlayAvailable] ||
-      !base::FeatureList::IsEnabled(kLensOverlayEnableLocationBarEntrypoint) ||
       _isIncognito ||
       !search_engines::SupportsSearchImageWithLens(self.templateURLService)) {
     return NO;

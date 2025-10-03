@@ -260,10 +260,6 @@ BASE_DECLARE_FEATURE(kEnableLensViewFinderUnifiedExperience);
 // Whether to enable loading AIM in the lens result page.
 BASE_DECLARE_FEATURE(kLensLoadAIMInLensResultPage);
 
-// Feature flag to enable the Lens overlay location bar entrypoint. Enabled by
-// default.
-BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypoint);
-
 // Feature flag to enable the Lens overlay location bar entrypoint on SRP.
 // Enabled by default.
 BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypointOnSRP);

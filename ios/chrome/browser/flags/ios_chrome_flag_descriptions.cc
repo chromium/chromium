@@ -971,13 +971,6 @@ extern const char kLensOverlayEnableLVFEscapeHatchName[] =
 extern const char kLensOverlayEnableLVFEscapeHatchDescription[] =
     "When enabled, the escape hatch to LVF is presented in the overflow menu";
 
-extern const char kLensOverlayEnableLocationBarEntrypointName[] =
-    "Enable Lens overlay location bar entrypoint.";
-extern const char kLensOverlayEnableLocationBarEntrypointDescription[] =
-    "When enabled, shows the Lens overlay entrypoint in the location bar when "
-    "no other buttons are shown (price insight or messages). Enabled by "
-    "default. ";
-
 extern const char kLensOverlayEnableLocationBarEntrypointOnSRPName[] =
     "Enable Lens overlay location bar entrypoint on SRP.";
 extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[] =
