@@ -28,7 +28,6 @@ import {getHtml} from './searchbox.html.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
-import {decodeString16, mojoString16} from './utils.js';
 import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
 import type {FileUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {FileUploadStatus} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -452,7 +451,7 @@ export class SearchboxElement extends SearchboxElementBase {
 
     if (loadTimeData.getBoolean('searchboxCyclingPlaceholders')) {
       const {config} = await this.pageHandler_.getPlaceholderConfig();
-      const texts = config.texts.map(text => decodeString16(text));
+      const texts = config.texts;
       assert(texts[0]);
       this.placeholderText = texts[0];
       this.placeholderCycler_ = new PlaceholderTextCycler(
@@ -556,7 +555,7 @@ export class SearchboxElement extends SearchboxElementBase {
 
   private async onAutocompleteResultChanged_(result: AutocompleteResult) {
     if (this.lastQueriedInput_ === null ||
-        this.lastQueriedInput_.trimStart() !== decodeString16(result.input)) {
+        this.lastQueriedInput_.trimStart() !== result.input) {
       return;  // Stale result; ignore.
     }
 
@@ -576,7 +575,7 @@ export class SearchboxElement extends SearchboxElementBase {
       this.$.matches.selectFirst();
       this.updateInput_({
         text: this.lastQueriedInput_,
-        inline: decodeString16(firstMatch.inlineAutocompletion) || '',
+        inline: firstMatch.inlineAutocompletion,
       });
 
       // Navigate to the default up-to-date match if the user typed and pressed
@@ -594,7 +593,7 @@ export class SearchboxElement extends SearchboxElementBase {
       // empty input will change to the value of the first result.
       await this.$.matches.selectIndex(this.selectedMatchIndex_);
       this.updateInput_({
-        text: decodeString16(this.selectedMatch_!.fillIntoEdit),
+        text: this.selectedMatch_!.fillIntoEdit,
         inline: '',
         moveCursorToEnd: true,
       });
@@ -909,8 +908,7 @@ export class SearchboxElement extends SearchboxElementBase {
       const array: HTMLElement[] = [this.$.matches, this.$.input];
       if (array.includes(e.target as HTMLElement)) {
         if (this.lastQueriedInput_ !== null &&
-            this.lastQueriedInput_.trimStart() ===
-                decodeString16(this.result_.input)) {
+            this.lastQueriedInput_.trimStart() === this.result_.input) {
           if (this.selectedMatch_) {
             this.navigateToMatch_(this.selectedMatchIndex_, e);
           }
@@ -963,10 +961,10 @@ export class SearchboxElement extends SearchboxElementBase {
     }
 
     // Update the input.
-    const newFill = decodeString16(this.selectedMatch_!.fillIntoEdit);
+    const newFill = this.selectedMatch_!.fillIntoEdit;
     const newInline = this.selectedMatchIndex_ === 0 &&
             this.selectedMatch_!.allowedToBeDefaultMatch ?
-        decodeString16(this.selectedMatch_!.inlineAutocompletion) :
+        this.selectedMatch_!.inlineAutocompletion :
         '';
     const newFillEnd = newFill.length - newInline.length;
     const text = newFill.substr(0, newFillEnd);
@@ -987,7 +985,7 @@ export class SearchboxElement extends SearchboxElementBase {
     // Input selection (if any) likely drops due to focus change. Simply fill
     // the input with the match and move the cursor to the end.
     this.updateInput_({
-      text: decodeString16(this.selectedMatch_!.fillIntoEdit),
+      text: this.selectedMatch_!.fillIntoEdit,
       inline: '',
       moveCursorToEnd: true,
     });
@@ -1162,7 +1160,7 @@ export class SearchboxElement extends SearchboxElementBase {
         (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
         e.shiftKey);
     this.updateInput_({
-      text: decodeString16(this.selectedMatch_!.fillIntoEdit),
+      text: this.selectedMatch_!.fillIntoEdit,
       inline: '',
       moveCursorToEnd: true,
     });
@@ -1177,8 +1175,7 @@ export class SearchboxElement extends SearchboxElementBase {
     const caretNotAtEnd = this.$.input.selectionStart !== input.length;
     preventInlineAutocomplete = preventInlineAutocomplete ||
         this.isDeletingInput_ || this.pastedInInput_ || caretNotAtEnd;
-    this.pageHandler_.queryAutocomplete(
-        mojoString16(input), preventInlineAutocomplete);
+    this.pageHandler_.queryAutocomplete(input, preventInlineAutocomplete);
 
     this.dispatchEvent(new CustomEvent('query-autocomplete', {
       bubbles: true,

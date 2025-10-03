@@ -5,7 +5,6 @@ import 'chrome://personalization/strings.m.js';
 
 import type {GooglePhotosPhoto, GooglePhotosPhotosSection, SetErrorAction, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, getNumberOfGridItemsPerRow, GooglePhotosPhotosElement, PersonalizationActionName, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
-import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -51,7 +50,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     const sections: GooglePhotosPhotosSection[] = [];
 
     photos.forEach((photo, i) => {
-      const date = mojoString16ToString(photo.date);
+      const date = photo.date;
 
       // Find/create the appropriate |section| in which to insert |photo|.
       let section = sections[sections.length - 1];
@@ -103,7 +102,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '1',
         dedupKey: '1',
         name: '1',
-        date: stringToMojoString16('First row'),
+        date: 'First row',
         url: {url: createSvgDataUrl('1')},
         location: '1',
       },
@@ -112,7 +111,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '2',
         dedupKey: '2',
         name: '2',
-        date: stringToMojoString16('Second row'),
+        date: 'Second row',
         url: {url: createSvgDataUrl('2')},
         location: '2',
       },
@@ -120,7 +119,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '3',
         dedupKey: '3',
         name: '3',
-        date: stringToMojoString16('Second row'),
+        date: 'Second row',
         url: {url: createSvgDataUrl('3')},
         location: '3',
       },
@@ -129,7 +128,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '4',
         dedupKey: '4',
         name: '4',
-        date: stringToMojoString16('Third row'),
+        date: 'Third row',
         url: {url: createSvgDataUrl('4')},
         location: '4',
       },
@@ -275,7 +274,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
         dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
         name: 'foo',
-        date: stringToMojoString16('Wednesday, February 16, 2022'),
+        date: 'Wednesday, February 16, 2022',
         url: {url: createSvgDataUrl('svg-0')},
         location: null,
       },
@@ -284,7 +283,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
         dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
         name: 'bar',
-        date: stringToMojoString16('Friday, November 12, 2021'),
+        date: 'Friday, November 12, 2021',
         url: {url: createSvgDataUrl('svg-1')},
         location: 'home1',
       },
@@ -292,7 +291,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
         dedupKey: 'd99eedfa-43e5-4bca-8882-b881222b8db9',
         name: 'baz',
-        date: stringToMojoString16('Friday, November 12, 2021'),
+        date: 'Friday, November 12, 2021',
         url: {url: createSvgDataUrl('svg-2')},
         location: 'home1',
       },
@@ -301,7 +300,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '0a5231as-97a2-42e1-bdbf-3e75870ca042',
         dedupKey: 'ef8795ae-e6c8-4580-8184-0bcad20fd013',
         name: 'bare',
-        date: stringToMojoString16('Friday, July 16, 2021'),
+        date: 'Friday, July 16, 2021',
         url: {url: createSvgDataUrl('svg-3')},
         location: 'home2',
       },
@@ -309,7 +308,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: '0a268a11-877a-4936-81d4-38cc8s9dn396',
         dedupKey: 'c8817402-822f-4ee8-9716-1f4b36c3263f',
         name: 'baze',
-        date: stringToMojoString16('Friday, July 16, 2021'),
+        date: 'Friday, July 16, 2021',
         url: {url: createSvgDataUrl('svg-4')},
         location: 'home3',
       },
@@ -395,7 +394,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
-      date: {data: []},
+      date: '',
       url: {url: 'foo.com'},
       location: 'home1',
     };
@@ -404,7 +403,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
       dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
       name: 'bar',
-      date: {data: []},
+      date: '',
       url: {url: 'bar.com'},
       location: 'home2',
     };
@@ -413,7 +412,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       id: '0a268a37-877a-4936-81d4-38cc84b0f596',
       dedupKey: anotherPhoto.dedupKey,
       name: 'baz',
-      date: {data: []},
+      date: '',
       url: {url: 'baz.com'},
       location: 'home3',
     };
@@ -539,7 +538,7 @@ suite('GooglePhotosPhotosElementTest', function() {
                                  id: `id-${i}`,
                                  dedupKey: `dedupKey-${i}`,
                                  name: `name-${i}`,
-                                 date: {data: []},
+                                 date: '',
                                  url: {url: createSvgDataUrl(`url-${i}`)},
                                  location: `location-${i}`,
                                }));
@@ -617,7 +616,7 @@ suite('GooglePhotosPhotosElementTest', function() {
             id: `id-${nextPhotoId}`,
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
-            date: {data: []},
+            date: '',
             url: {url: createSvgDataUrl(`url-${nextPhotoId}`)},
             location: `location-${nextPhotoId++}`,
           };
@@ -645,7 +644,7 @@ suite('GooglePhotosPhotosElementTest', function() {
             id: `id-${nextPhotoId}`,
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
-            date: {data: []},
+            date: '',
             url: {url: `url-${nextPhotoId}`},
             location: `location-${nextPhotoId++}`,
           };
@@ -767,7 +766,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
-      date: {data: []},
+      date: '',
       url: {url: 'foo.com'},
       location: 'home',
     };
@@ -823,7 +822,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: 'id0',
         dedupKey: 'ef8795ae-e6c8-4580-8184-0bcad20fd013',
         name: 'bare',
-        date: stringToMojoString16('Friday, July 16, 2021'),
+        date: 'Friday, July 16, 2021',
         url: {url: createSvgDataUrl('svg-3')},
         location: 'home2',
       },
@@ -831,7 +830,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         id: 'id1',
         dedupKey: 'c8817402-822f-4ee8-9716-1f4b36c3263f',
         name: 'baze',
-        date: stringToMojoString16('Friday, July 16, 2021'),
+        date: 'Friday, July 16, 2021',
         url: {url: createSvgDataUrl('svg-4')},
         location: 'home3',
       },

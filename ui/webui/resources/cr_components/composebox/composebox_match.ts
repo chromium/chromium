@@ -5,7 +5,6 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -70,11 +69,11 @@ export class ComposeboxMatchElement extends CrLitElement {
   }
 
   protected computeContents_(): string {
-    return mojoString16ToString(this.match.contents);
+    return this.match.contents;
   }
 
   protected computeRemoveButtonAriaLabel_(): string {
-    return mojoString16ToString(this.match.removeButtonA11yLabel);
+    return this.match.removeButtonA11yLabel;
   }
 
   protected iconPath_(): string {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {AutoTabGroupsPageElement, AutoTabGroupsResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -63,7 +62,7 @@ suite('AutoTabGroupsPageTest', () => {
       organizations.push(
           {
             organizationId: i,
-            name: stringToMojoString16('Organization ' + i),
+            name: 'Organization ' + i,
             tabs: [
               createTab({
                 title: 'Tab 1 Organization ' + i,
@@ -387,7 +386,7 @@ suite('AutoTabGroupsPageTest', () => {
       activeTabId: 4,
       organizations: [{
         organizationId: 1,
-        name: stringToMojoString16('foo'),
+        name: 'foo',
         firstNewTabIndex: 0,
         tabs: [
           createTab(
@@ -421,7 +420,7 @@ suite('AutoTabGroupsPageTest', () => {
       activeTabId: 2,
       organizations: [{
         organizationId: 1,
-        name: stringToMojoString16('foo'),
+        name: 'foo',
         firstNewTabIndex: 0,
         tabs: [
           createTab(

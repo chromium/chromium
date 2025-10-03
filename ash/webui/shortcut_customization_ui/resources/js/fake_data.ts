@@ -1,8 +1,6 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import type {Accelerator, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult} from './shortcut_types.js';
@@ -21,7 +19,7 @@ const newTabAcceleratorInfo: MojoAcceleratorInfo = {
   layoutProperties: {
     standardAccelerator: {
       originalAccelerator: null,
-      keyDisplay: stringToMojoString16('t'),
+      keyDisplay: 't',
       accelerator: {
         modifiers: Modifier.CONTROL,
         keyCode: 84,
@@ -43,23 +41,23 @@ const cycleTabsAcceleratorInfo: MojoAcceleratorInfo = {
     textAccelerator: {
       parts: [
         {
-          text: stringToMojoString16('ctrl'),
+          text: 'ctrl',
           type: TextAcceleratorPartType.kModifier,
         },
         {
-          text: stringToMojoString16(' + '),
+          text: ' + ',
           type: TextAcceleratorPartType.kDelimiter,
         },
         {
-          text: stringToMojoString16('1 '),
+          text: '1 ',
           type: TextAcceleratorPartType.kKey,
         },
         {
-          text: stringToMojoString16('through '),
+          text: 'through ',
           type: TextAcceleratorPartType.kPlainText,
         },
         {
-          text: stringToMojoString16('8'),
+          text: '8',
           type: TextAcceleratorPartType.kKey,
         },
       ],
@@ -79,7 +77,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('['),
+          keyDisplay: '[',
           accelerator: {
             modifiers: Modifier.ALT,
             keyCode: 219,
@@ -99,7 +97,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16(']'),
+          keyDisplay: ']',
           accelerator: {
             modifiers: Modifier.ALT,
             keyCode: 221,
@@ -119,7 +117,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('+'),
+          keyDisplay: '+',
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             keyCode: 187,
@@ -139,7 +137,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('-'),
+          keyDisplay: '-',
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             keyCode: 189,
@@ -159,7 +157,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('LaunchApplication2'),
+          keyDisplay: 'LaunchApplication2',
           accelerator: {
             modifiers: Modifier.NONE,
             keyCode: 183,
@@ -179,7 +177,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('esc'),
+          keyDisplay: 'esc',
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.CONTROL,
             keyCode: 27,
@@ -200,7 +198,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
         layoutProperties: {
           standardAccelerator: {
             originalAccelerator: null,
-            keyDisplay: stringToMojoString16('a'),
+            keyDisplay: 'a',
             accelerator: {
               modifiers: Modifier.COMMAND,
               keyCode: 65,
@@ -219,7 +217,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
         layoutProperties: {
           standardAccelerator: {
             originalAccelerator: null,
-            keyDisplay: stringToMojoString16('LaunchAssistant'),
+            keyDisplay: 'LaunchAssistant',
             accelerator: {
               modifiers: Modifier.NONE,
               keyCode: 153,
@@ -251,7 +249,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kWindowsAndDesks,
     subCategory: AcceleratorSubcategory.kWindows,
-    description: stringToMojoString16('Snap Window Left'),
+    description: 'Snap Window Left',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 0,
@@ -259,7 +257,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kWindowsAndDesks,
     subCategory: AcceleratorSubcategory.kWindows,
-    description: stringToMojoString16('Snap Window Right'),
+    description: 'Snap Window Right',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 1,
@@ -267,7 +265,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kWindowsAndDesks,
     subCategory: AcceleratorSubcategory.kDesks,
-    description: stringToMojoString16('Create Desk'),
+    description: 'Create Desk',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 2,
@@ -275,7 +273,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kWindowsAndDesks,
     subCategory: AcceleratorSubcategory.kDesks,
-    description: stringToMojoString16('Remove Desk'),
+    description: 'Remove Desk',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 3,
@@ -283,7 +281,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kBrowser,
     subCategory: AcceleratorSubcategory.kTabs,
-    description: stringToMojoString16('New Tab'),
+    description: 'New Tab',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAmbient,
     action: 0,
@@ -291,7 +289,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kWindowsAndDesks,
     subCategory: AcceleratorSubcategory.kWindows,
-    description: stringToMojoString16('Go to windows 1 through 8'),
+    description: 'Go to windows 1 through 8',
     style: LayoutStyle.kText,
     source: AcceleratorSource.kAmbient,
     action: 1,
@@ -299,7 +297,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kGeneral,
     subCategory: AcceleratorSubcategory.kApps,
-    description: stringToMojoString16('Open Calculator app'),
+    description: 'Open Calculator app',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 4,
@@ -307,7 +305,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kGeneral,
     subCategory: AcceleratorSubcategory.kApps,
-    description: stringToMojoString16('Open Diagnostic app'),
+    description: 'Open Diagnostic app',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 5,
@@ -315,7 +313,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: AcceleratorCategory.kGeneral,
     subCategory: AcceleratorSubcategory.kGeneralControls,
-    description: stringToMojoString16('Open/close Google assistant'),
+    description: 'Open/close Google assistant',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 6,
@@ -327,7 +325,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
     acceleratorLayoutInfo: {
       category: AcceleratorCategory.kWindowsAndDesks,
       subCategory: AcceleratorSubcategory.kWindows,
-      description: stringToMojoString16('Snap Window Left'),
+      description: 'Snap Window Left',
       style: LayoutStyle.kDefault,
       source: AcceleratorSource.kAsh,
       action: 0,
@@ -340,7 +338,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('['),
+          keyDisplay: '[',
           accelerator: {
             modifiers: Modifier.ALT,
             keyCode: 219,
@@ -357,7 +355,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
     acceleratorLayoutInfo: {
       category: AcceleratorCategory.kWindowsAndDesks,
       subCategory: AcceleratorSubcategory.kWindows,
-      description: stringToMojoString16('Snap Window Right'),
+      description: 'Snap Window Right',
       style: LayoutStyle.kDefault,
       source: AcceleratorSource.kAsh,
       action: 1,
@@ -370,7 +368,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16(']'),
+          keyDisplay: ']',
           accelerator: {
             modifiers: Modifier.ALT,
             keyCode: 221,
@@ -387,7 +385,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
     acceleratorLayoutInfo: {
       category: AcceleratorCategory.kWindowsAndDesks,
       subCategory: AcceleratorSubcategory.kDesks,
-      description: stringToMojoString16('Create Desk'),
+      description: 'Create Desk',
       style: LayoutStyle.kDefault,
       source: AcceleratorSource.kAsh,
       action: 2,
@@ -400,7 +398,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('+'),
+          keyDisplay: '+',
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             keyCode: 187,
@@ -422,8 +420,7 @@ export const TakeScreenshotSearchResult: MojoSearchResult = {
   acceleratorLayoutInfo: {
     category: AcceleratorCategory.kWindowsAndDesks,
     subCategory: AcceleratorSubcategory.kDesks,
-    description:
-        stringToMojoString16('Take full screenshot or screen recording'),
+    description: 'Take full screenshot or screen recording',
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 2,
@@ -437,7 +434,7 @@ export const TakeScreenshotSearchResult: MojoSearchResult = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('LaunchApplication1'),  // overview
+          keyDisplay: 'LaunchApplication1',  // overview
           accelerator: {
             modifiers: Modifier.CONTROL,
             keyCode: 0,
@@ -456,7 +453,7 @@ export const TakeScreenshotSearchResult: MojoSearchResult = {
       layoutProperties: {
         standardAccelerator: {
           originalAccelerator: null,
-          keyDisplay: stringToMojoString16('PrintScreen'),  // screenshot
+          keyDisplay: 'PrintScreen',  // screenshot
           accelerator: {
             modifiers: 0,
             keyCode: 0,
@@ -475,7 +472,7 @@ export const CycleTabsTextSearchResult: MojoSearchResult = {
   acceleratorLayoutInfo: {
     category: AcceleratorCategory.kGeneral,
     subCategory: AcceleratorSubcategory.kApps,
-    description: stringToMojoString16('Click or tap shelf icons 1-8'),
+    description: 'Click or tap shelf icons 1-8',
     style: LayoutStyle.kText,
     source: AcceleratorSource.kAsh,
     action: 1,
@@ -507,7 +504,7 @@ export const createFakeMojoAccelInfo =
         layoutProperties: {
           standardAccelerator: {
             originalAccelerator: null,
-            keyDisplay: stringToMojoString16(keyDisplay),
+            keyDisplay: keyDisplay,
             accelerator: {
               modifiers: 0,
               keyCode: 0,
@@ -528,7 +525,7 @@ export const createFakeMojoLayoutInfo =
           return {
             category,
             subCategory: AcceleratorSubcategory.kTabs,
-            description: stringToMojoString16(description),
+            description: description,
             style: LayoutStyle.kDefault,
             source,
             action,

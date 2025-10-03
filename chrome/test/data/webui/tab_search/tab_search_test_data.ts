@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabOrganizationSession, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabAlertState, TabOrganizationError, TabOrganizationState} from 'chrome://tab-search.top-chrome/tab_search.js';
@@ -247,7 +246,7 @@ export function createTabOrganizationSession(
         state: TabOrganizationState.kNotStarted,
         organizations: [{
           organizationId: 1,
-          name: stringToMojoString16('foo'),
+          name: 'foo',
           tabs: [
             createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
             createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),

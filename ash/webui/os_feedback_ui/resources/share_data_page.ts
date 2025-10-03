@@ -298,7 +298,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         email: '',
         extraDiagnostics: '',
       },
-      description: {data: []},
+      description: '',
       attachedFile: null,
       sendBluetoothLogs: false,
       sendWifiDebugLogs: false,

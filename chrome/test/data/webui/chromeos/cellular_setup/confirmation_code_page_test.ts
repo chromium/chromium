@@ -6,7 +6,6 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/confirmation_code_page.js';
 
 import type {ConfirmationCodePageElement} from 'chrome://resources/ash/common/cellular_setup/confirmation_code_page.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -53,9 +52,9 @@ suite('CrComponentsConfirmationCodePageTest', function() {
     confirmationCodePage.profileProperties = {
       eid: 'eid',
       iccid: '1',
-      name: stringToMojoString16('test profile name'),
-      nickname: stringToMojoString16('test profile nickname'),
-      serviceProvider: stringToMojoString16('test profile provider'),
+      name: 'test profile name',
+      nickname: 'test profile nickname',
+      serviceProvider: 'test profile provider',
       state: ProfileState.kActive,
       activationCode: 'test activation code',
     };

@@ -5,7 +5,6 @@
 import './transaction_table.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import type {BucketClientInfo} from './bucket_client_info.mojom-webui.js';
@@ -34,7 +33,7 @@ export class IndexedDbDatabase extends CustomElement {
     const activeConnectionElement = this.$a('.connection-count.active');
     const pendingConnectionElement = this.$a('.connection-count.pending');
 
-    openDatabasesElement.textContent = mojoString16ToString(metadata.name);
+    openDatabasesElement.textContent = metadata.name;
 
     openConnectionElement.hidden = metadata.connectionCount === 0n;
     openConnectionElement.querySelector('.value')!.textContent =

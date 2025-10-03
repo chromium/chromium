@@ -14,7 +14,6 @@ import {
 } from
   'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {NoArgStringName} from '../../core/i18n.js';
@@ -116,7 +115,7 @@ export class PlatformHandler extends PlatformHandlerBase {
     }
     return {
       languageCode: languageCode,
-      displayName: mojoString16ToString(langPack.displayName),
+      displayName: langPack.displayName,
       isGenAiSupported: langPack.isGenAiSupported,
       isSpeakerLabelSupported: langPack.isSpeakerLabelSupported,
     };

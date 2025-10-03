@@ -12,7 +12,7 @@ export class TestUserProvider extends TestBrowserProxy implements
   defaultUserImages: DefaultUserImage[] = [
     {
       index: 8,
-      title: {data: 'Test title'.split('').map(ch => ch.charCodeAt(0))},
+      title: 'Test title',
       url: {url: 'data://test_url'},
       sourceInfo: null,
     },

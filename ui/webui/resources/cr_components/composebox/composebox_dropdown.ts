@@ -5,7 +5,6 @@
 import './composebox_match.js';
 
 import {assert} from '//resources/js/assert.js';
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -143,14 +142,14 @@ export class ComposeboxDropdownElement extends CrLitElement {
    */
   protected hideVerbatimMatch_(index: number): boolean {
     assert(this.result);
-    if (!mojoString16ToString(this.result.input)) {
+    if (!this.result.input) {
       return false;
     }
     return index === 0;
   }
 
   protected computeAriaLabel_(match: AutocompleteMatch): string {
-    return mojoString16ToString(match.a11yLabel);
+    return match.a11yLabel;
   }
 }
 

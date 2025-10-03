@@ -17,7 +17,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -221,9 +220,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       return null;
     }
 
-    return this.i18n(
-        'seaPenAboutDialogDate',
-        mojoString16ToString(data.imageInfo.creationTime));
+    return this.i18n('seaPenAboutDialogDate', data.imageInfo.creationTime);
   }
 
   private getAboutDialogTitle_(): string {

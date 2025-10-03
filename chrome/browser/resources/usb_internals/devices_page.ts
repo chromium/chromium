@@ -13,7 +13,6 @@ import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 import type {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {DescriptorPanel, renderClassCodeWithDescription} from './descriptor_panel.js';
 import type {UsbAlternateInterfaceInfo, UsbConfigurationInfo, UsbDeviceInfo, UsbEndpointInfo, UsbInterfaceInfo} from './usb_device.mojom-webui.js';
@@ -60,13 +59,13 @@ export class DevicesPage {
       td[2]!.textContent = toHex(device.vendorId);
       td[3]!.textContent = toHex(device.productId);
       if (device.manufacturerName) {
-        td[4]!.textContent = decodeString16(device.manufacturerName);
+        td[4]!.textContent = device.manufacturerName;
       }
       if (device.productName) {
-        td[5]!.textContent = decodeString16(device.productName);
+        td[5]!.textContent = device.productName;
       }
       if (device.serialNumber) {
-        td[6]!.textContent = decodeString16(device.serialNumber);
+        td[6]!.textContent = device.serialNumber;
       }
 
       const inspectButton = clone.querySelector('button');
@@ -130,8 +129,8 @@ class DevicePage {
 
     const tab = tabClone.querySelector<HTMLElement>('div[slot=\'tab\']');
     assert(tab);
-    if (device.productName && device.productName.data.length > 0) {
-      tab.textContent = decodeString16(device.productName);
+    if (device.productName && device.productName.length > 0) {
+      tab.textContent = device.productName;
     } else {
       const vendorId = toHex(device.vendorId).slice(2);
       const productId = toHex(device.productId).slice(2);
@@ -222,18 +221,15 @@ function renderDeviceTree(device: UsbDeviceInfo, root: CrTreeElement) {
       device.deviceVersionMinor}.${device.deviceVersionSubminor}`));
 
   if (device.manufacturerName) {
-    root.add(customTreeItem(
-        `Manufacturer Name: ${decodeString16(device.manufacturerName)}`));
+    root.add(customTreeItem(`Manufacturer Name: ${device.manufacturerName}`));
   }
 
   if (device.productName) {
-    root.add(
-        customTreeItem(`Product Name: ${decodeString16(device.productName)}`));
+    root.add(customTreeItem(`Product Name: ${device.productName}`));
   }
 
   if (device.serialNumber) {
-    root.add(customTreeItem(
-        `Serial Number: ${decodeString16(device.serialNumber)}`));
+    root.add(customTreeItem(`Serial Number: ${device.serialNumber}`));
   }
 
   if (device.webusbLandingPage) {
@@ -262,8 +258,8 @@ function renderConfigurationTreeItem(
         customTreeItem(`Configuration ${configuration.configurationValue}`);
 
     if (configuration.configurationName) {
-      configurationItem.add(customTreeItem(`Configuration Name: ${
-          decodeString16(configuration.configurationName)}`));
+      configurationItem.add(customTreeItem(
+          `Configuration Name: ${configuration.configurationName}`));
     }
 
     const interfacesArray = configuration.interfaces;
@@ -309,8 +305,8 @@ function renderAlternatesTreeItem(
         customTreeItem(`Protocol Code: ${alternate.protocolCode}`));
 
     if (alternate.interfaceName) {
-      alternateItem.add(customTreeItem(
-          `Interface Name: ${decodeString16(alternate.interfaceName)}`));
+      alternateItem.add(
+          customTreeItem(`Interface Name: ${alternate.interfaceName}`));
     }
 
     const endpointsArray = alternate.endpoints;
@@ -409,13 +405,6 @@ function initialInspectorPanel(
     }
   });
   return descriptorPanel;
-}
-
-/**
- * Parses utf16 coded string.
- */
-function decodeString16(arr: String16): string {
-  return arr.data.map(ch => String.fromCodePoint(ch)).join('');
 }
 
 /**

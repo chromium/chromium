@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {BluetoothDeviceProperties, BluetoothDeviceStatusObserverInterface, BluetoothDiscoveryDelegateInterface, BluetoothSystemProperties, CrosBluetoothConfigInterface, DiscoverySessionStatusObserverInterface, PairedBluetoothDeviceProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {AudioOutputCapability, BluetoothModificationState, BluetoothSystemState, DeviceConnectionState, DevicePairingHandlerReceiver, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
@@ -24,7 +23,7 @@ export function createDefaultBluetoothDevice(
     deviceProperties: {
       id: id,
       address: id,
-      publicName: stringToMojoString16(publicName),
+      publicName: publicName,
       deviceType: deviceType,
       audioCapability: audioCapability,
       connectionState: connectionState,

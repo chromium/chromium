@@ -13,9 +13,8 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import './cellular_setup_icons.html.js';
 
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+import './cellular_setup_icons.html.js';
 import type {ESimProfileProperties} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -58,7 +57,7 @@ export class ProfileDiscoveryListItemElement extends PolymerElement {
     if (!this.profileProperties) {
       return '';
     }
-    return mojoString16ToString(this.profileProperties.name);
+    return this.profileProperties.name;
   }
 }
 

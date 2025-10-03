@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import type {ColorScheme} from '../../color_scheme.mojom-webui.js';
@@ -81,7 +80,7 @@ export class ThemeObserver implements ThemeObserverInterface {
 
   onDaylightTimeChanged(sunriseTime: String16, sunsetTime: String16): void {
     const store = PersonalizationStore.getInstance();
-    store.dispatch(setSunriseTimeAction(mojoString16ToString(sunriseTime)));
-    store.dispatch(setSunsetTimeAction(mojoString16ToString(sunsetTime)));
+    store.dispatch(setSunriseTimeAction(sunriseTime));
+    store.dispatch(setSunsetTimeAction(sunsetTime));
   }
 }

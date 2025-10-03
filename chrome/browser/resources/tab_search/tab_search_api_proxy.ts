@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabSearchSection, UnusedTabInfo, UserFeedback} from './tab_search.mojom-webui.js';
@@ -126,8 +125,7 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   renameTabOrganization(
       sessionId: number, organizationId: number, name: string) {
-    this.handler.renameTabOrganization(
-        sessionId, organizationId, stringToMojoString16(name));
+    this.handler.renameTabOrganization(sessionId, organizationId, name);
   }
 
   excludeFromStaleTabs(tabId: number) {

@@ -19,7 +19,6 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -325,14 +324,9 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
 
     this.spinnerActive = true;
 
-    // The C++ layer uses std::u16string, which use 16 bit characters. JS
-    // strings support either 8 or 16 bit characters, and must be converted to
-    // an array of 16 bit character codes that match std::u16string.
-    const queryMojoString16 = stringToMojoString16(query);
     const timeOfSearchRequest = Date.now();
     combinedSearch(
-        queryMojoString16, MAX_NUM_SEARCH_RESULTS,
-        ParentResultBehavior.kAllowParentResults)
+        query, MAX_NUM_SEARCH_RESULTS, ParentResultBehavior.kAllowParentResults)
         .then(response => {
           const latencyMs = Date.now() - timeOfSearchRequest;
           chrome.metricsPrivate.recordTime(

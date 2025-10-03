@@ -13,7 +13,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from '//resources/ash/common/typescript_utils/strict_query.js';
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SearchResult} from './feedback_types.js';
@@ -139,7 +139,7 @@ export class HelpContentElement extends HelpContentElementBase {
 
   /** Extract the title as JS string from help content. */
   private getTitle(helpContent: HelpContent): string {
-    return mojoString16ToString(helpContent.title);
+    return helpContent.title;
   }
 
   private handleHelpContentClicked(e: Event): void {

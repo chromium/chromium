@@ -11,7 +11,6 @@ import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_
 import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 import type {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
@@ -290,7 +289,7 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(0, provider.getRestoreDefaultCallCount());
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
-      shortcutName: stringToMojoString16('TestDescription'),
+      shortcutName: 'TestDescription',
     };
 
     provider.setFakeRestoreDefaultResult(fakeResult);
@@ -309,7 +308,7 @@ suite('acceleratorEditDialogTest', function() {
     // the error message.
     const fakeConflictResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: stringToMojoString16('TestConflictDescription'),
+      shortcutName: 'TestConflictDescription',
     };
     provider.setFakeGetConflictAccelerator(fakeConflictResult);
 
@@ -360,7 +359,7 @@ suite('acceleratorEditDialogTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
-      shortcutName: stringToMojoString16('TestDescription'),
+      shortcutName: 'TestDescription',
     };
 
     provider.setFakeRestoreDefaultResult(fakeResult);
@@ -376,7 +375,7 @@ suite('acceleratorEditDialogTest', function() {
     // the error message.
     const fakeConflictResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: stringToMojoString16('TestConflictDescription'),
+      shortcutName: 'TestConflictDescription',
     };
     provider.setFakeGetConflictAccelerator(fakeConflictResult);
 
@@ -443,7 +442,7 @@ suite('acceleratorEditDialogTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
-      shortcutName: stringToMojoString16('TestDescription'),
+      shortcutName: 'TestDescription',
     };
 
     provider.setFakeRestoreDefaultResult(fakeResult);
@@ -459,7 +458,7 @@ suite('acceleratorEditDialogTest', function() {
     // the error message.
     const fakeConflictResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: stringToMojoString16('TestConflictDescription'),
+      shortcutName: 'TestConflictDescription',
     };
     provider.setFakeGetConflictAccelerator(fakeConflictResult);
 
@@ -537,7 +536,7 @@ suite('acceleratorEditDialogTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
-      shortcutName: stringToMojoString16('TestDescription'),
+      shortcutName: 'TestDescription',
     };
 
     provider.setFakeRestoreDefaultResult(fakeResult);
@@ -551,7 +550,7 @@ suite('acceleratorEditDialogTest', function() {
     // the error message.
     const fakeConflictResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: stringToMojoString16('TestConflictDescription'),
+      shortcutName: 'TestConflictDescription',
     };
     provider.setFakeGetConflictAccelerator(fakeConflictResult);
 

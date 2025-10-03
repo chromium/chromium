@@ -5,7 +5,6 @@
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import type {Accelerator, StandardAcceleratorInfo, TextAcceleratorPart} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorCategory, AcceleratorKeyState, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
@@ -54,7 +53,7 @@ suite('shortcutUtilsTest', function() {
 
   test('isTextAcceleratorInfo', () => {
     const textAcceleratorParts: TextAcceleratorPart[] =
-        [{text: stringToMojoString16('a'), type: TextAcceleratorPartType.kKey}];
+        [{text: 'a', type: TextAcceleratorPartType.kKey}];
     const textAccelerator = createTextAcceleratorInfo(textAcceleratorParts);
     assertTrue(isTextAcceleratorInfo(textAccelerator));
     assertFalse(isStandardAcceleratorInfo(textAccelerator));

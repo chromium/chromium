@@ -9,7 +9,6 @@ import 'chrome://personalization/strings.m.js';
 import type {CurrentWallpaper, DisplayableImage, GooglePhotosPhoto, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
 import {DailyRefreshType, FullscreenPreviewState, OnlineImageType, setFullscreenStateAction, setShouldWaitForFullscreenOpacityTransitionsForTesting, WallpaperActionName, WallpaperFullscreenElement, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -244,7 +243,7 @@ suite('WallpaperFullscreenElementTest', function() {
      pendingSelectedImage: {
        id: 'test_id',
        name: 'asdf',
-       date: stringToMojoString16('February'),
+       date: 'February',
        url: {url: ''},
      } as GooglePhotosPhoto,
      shouldShow: true,

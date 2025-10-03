@@ -23,7 +23,6 @@ import {CrPolicyIndicatorType} from '//resources/ash/common/cr_policy_indicator_
 import {FocusRowBehavior, FocusRowBehaviorInterface} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {ActivationStateType, SecurityType, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -393,9 +392,7 @@ class NetworkListItemElement extends NetworkListItemElementBase {
       return;
     }
 
-    // Service provider from mojo API is a string16 value represented as an
-    // array of characters. Convert to string for display.
-    this.subtitle_ = mojoString16ToString(properties.serviceProvider);
+    this.subtitle_ = properties.serviceProvider;
   }
 
   /** @private */

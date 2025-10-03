@@ -16,7 +16,6 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {mojoString16ToString, stringToMojoString16} from '//resources/js/mojo_type_util.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -202,7 +201,7 @@ export class ComposeboxElement extends I18nMixinLit
                 this.clearAutocompleteMatches_();
                 this.lastQueriedInput_ = this.$.input.value;
                 this.searchboxHandler_.queryAutocomplete(
-                    stringToMojoString16(this.$.input.value), false);
+                    this.$.input.value, false);
               }
               if (file.type.includes('image') &&
                   !this.enableImageContextualSuggestions_) {
@@ -227,8 +226,7 @@ export class ComposeboxElement extends I18nMixinLit
         });
     this.$.input.focus();
     if (this.showZps) {
-      this.searchboxHandler_.queryAutocomplete(
-          stringToMojoString16(this.$.input.value), false);
+      this.searchboxHandler_.queryAutocomplete(this.$.input.value, false);
     }
 
     this.searchboxHandler_.notifySessionStarted();
@@ -281,7 +279,7 @@ export class ComposeboxElement extends I18nMixinLit
         if (!(this.selectedMatchIndex_ === 0 &&
             this.selectedMatch_.allowedToBeDefaultMatch)) {
           // Update the input.
-          const text = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
+          const text = this.selectedMatch_.fillIntoEdit;
           assert(text);
           this.$.input.value = text;
           this.input_ = text;
@@ -364,8 +362,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.focus();
     this.clearAutocompleteMatches_();
     this.lastQueriedInput_ = this.$.input.value;
-    this.searchboxHandler_.queryAutocomplete(
-        stringToMojoString16(this.$.input.value), false);
+    this.searchboxHandler_.queryAutocomplete(this.$.input.value, false);
   }
 
   protected onDismissErrorButtonClick_() {
@@ -440,8 +437,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.$.input.focus();
       this.$.matches.unselect();
       this.clearAutocompleteMatches_();
-      this.searchboxHandler_.queryAutocomplete(
-          stringToMojoString16(this.$.input.value), false);
+      this.searchboxHandler_.queryAutocomplete(this.$.input.value, false);
     } else {
       this.closeComposebox_();
     }
@@ -476,8 +472,7 @@ export class ComposeboxElement extends I18nMixinLit
         this.$.context.hasImageFiles()) {
       return;
     }
-    this.searchboxHandler_.queryAutocomplete(
-        stringToMojoString16(this.$.input.value), false);
+    this.searchboxHandler_.queryAutocomplete(this.$.input.value, false);
   }
 
   protected onKeydown_(e: KeyboardEvent) {
@@ -683,8 +678,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
     if (this.lastQueriedInput_ === null ||
-        this.lastQueriedInput_.trimStart() !==
-            mojoString16ToString(result.input)) {
+        this.lastQueriedInput_.trimStart() !== result.input) {
       return;
     }
     this.result_ = result;
@@ -707,7 +701,7 @@ export class ComposeboxElement extends I18nMixinLit
       // (and therefore `selectedMatch_` does not get updated since
       // `onSelectedMatchIndexChanged_` is not called).
       this.selectedMatch_ = this.result_.matches[this.selectedMatchIndex_]!;
-      this.input_ = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
+      this.input_ = this.selectedMatch_.fillIntoEdit;
       this.$.input.value = this.input_;
     } else {
       this.$.matches.unselect();
@@ -715,7 +709,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     // Populate the smart compose suggestion.
     this.smartComposeInlineHint_ = this.result_.smartComposeInlineHint ?
-        mojoString16ToString(this.result_.smartComposeInlineHint) :
+        this.result_.smartComposeInlineHint :
         '';
   }
 

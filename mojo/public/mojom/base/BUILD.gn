@@ -687,6 +687,16 @@ mojom_component("base") {
       ]
     },
     {
+      source = "string16_converter.ts"
+      types = [
+        {
+          converter = "String16Converter"
+          mojom = "mojo_base.mojom.String16"
+          ts = "string"
+        },
+      ]
+    },
+    {
       source = "unguessable_token_converter.ts"
       types = [
         {

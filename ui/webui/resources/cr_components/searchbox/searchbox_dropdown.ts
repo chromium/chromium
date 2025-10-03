@@ -15,7 +15,7 @@ import {RenderType, SideType} from '//resources/mojo/components/omnibox/browser/
 import {getCss} from './searchbox_dropdown.css.js';
 import {getHtml} from './searchbox_dropdown.html.js';
 import type {SearchboxMatchElement} from './searchbox_match.js';
-import {decodeString16, renderTypeToClass, sideTypeToClass} from './utils.js';
+import {renderTypeToClass, sideTypeToClass} from './utils.js';
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.
 const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
@@ -273,7 +273,7 @@ export class SearchboxDropdownElement extends CrLitElement {
   }
 
   private computeHasEmptyInput_(): boolean {
-    return !!this.result && decodeString16(this.result.input) === '';
+    return !!this.result && this.result.input === '';
   }
 
   protected isSelected_(match: AutocompleteMatch): boolean {
@@ -302,7 +302,7 @@ export class SearchboxDropdownElement extends CrLitElement {
    */
   protected headerForGroup_(groupId: number): string {
     return this.result?.suggestionGroupsMap[groupId] ?
-        decodeString16(this.result.suggestionGroupsMap[groupId].header) :
+        this.result.suggestionGroupsMap[groupId].header :
         '';
   }
 

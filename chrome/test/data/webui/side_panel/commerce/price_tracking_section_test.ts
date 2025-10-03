@@ -12,7 +12,6 @@ import type {PriceInsightsInfo} from 'chrome://resources/cr_components/commerce/
 import {PriceInsightsInfo_PriceBucket} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -108,7 +107,7 @@ suite('PriceTrackingSectionTest', () => {
     priceTrackingProxy.setResultFor('getCallbackRouter', callbackRouter);
     priceTrackingProxy.setResultFor(
         'getParentBookmarkFolderNameForCurrentUrl',
-        Promise.resolve({name: stringToMojoString16('Parent folder')}));
+        Promise.resolve({name: 'Parent folder'}));
     callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
     PriceTrackingBrowserProxyImpl.setInstance(priceTrackingProxy);
 
@@ -274,7 +273,7 @@ suite('PriceTrackingSectionTest', () => {
 
     priceTrackingProxy.setResultFor(
         'getParentBookmarkFolderNameForCurrentUrl',
-        Promise.resolve({name: stringToMojoString16('New folder')}));
+        Promise.resolve({name: 'New folder'}));
     callbackRouterRemote.onProductBookmarkMoved(bookmarkProductInfo);
     await flushTasks();
 

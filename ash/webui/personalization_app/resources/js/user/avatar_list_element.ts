@@ -11,7 +11,6 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';
@@ -215,7 +214,7 @@ export class AvatarListElement extends WithPersonalizationStore {
           class: 'image-container',
           imgSrc: defaultImage.url.url,
           icon: 'personalization-shared:circle-checkmark',
-          title: mojoString16ToString(defaultImage.title),
+          title: defaultImage.title,
           defaultImageIndex: defaultImage.index,
         });
       });

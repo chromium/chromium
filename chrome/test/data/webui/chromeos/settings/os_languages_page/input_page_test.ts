@@ -13,7 +13,6 @@ import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_
 import {FakeAcceleratorFetcher} from 'chrome://resources/ash/common/shortcut_input_ui/fake_accelerator_fetcher.js';
 import {Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -605,7 +604,7 @@ suite('<os-settings-input-page>', () => {
 
     test('dismissing shortcut reminder with accelerator provider', async () => {
       const expectedLastUsedImeAccelerator: StandardAcceleratorProperties = {
-        keyDisplay: stringToMojoString16('m'),
+        keyDisplay: 'm',
         accelerator: {
           modifiers: Modifier.CONTROL,
           keyCode: VKey.kKeyM,
@@ -642,7 +641,7 @@ suite('<os-settings-input-page>', () => {
           expectedLastUsedImeAccelerator.keyDisplay);
 
       const updatedLastUsedImeAccelerator: StandardAcceleratorProperties = {
-        keyDisplay: stringToMojoString16('k'),
+        keyDisplay: 'k',
         accelerator: {
           modifiers: Modifier.CONTROL + Modifier.SHIFT,
           keyCode: VKey.kKeyK,

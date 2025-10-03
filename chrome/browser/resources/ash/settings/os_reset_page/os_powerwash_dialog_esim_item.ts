@@ -10,7 +10,6 @@
 import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import type {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -62,8 +61,8 @@ class OsSettingsPowerwashDialogEsimItemElement extends
       return window.trustedTypes!.emptyHTML;
     }
     const profileName = this.getProfileName_(this.profileProperties_);
-    const providerName = this.escapeHtml_(
-        mojoString16ToString(this.profileProperties_.serviceProvider));
+    const providerName =
+        this.escapeHtml_(this.profileProperties_.serviceProvider);
     if (!providerName) {
       return sanitizeInnerHtml(profileName);
     }
@@ -73,11 +72,10 @@ class OsSettingsPowerwashDialogEsimItemElement extends
   }
 
   private getProfileName_(profileProperties: ESimProfileProperties): string {
-    if (!profileProperties.nickname.data ||
-        !profileProperties.nickname.data.length) {
-      return this.escapeHtml_(mojoString16ToString(profileProperties.name));
+    if (!profileProperties.nickname) {
+      return this.escapeHtml_(profileProperties.name);
     }
-    return this.escapeHtml_(mojoString16ToString(profileProperties.nickname));
+    return this.escapeHtml_(profileProperties.nickname);
   }
 
   private escapeHtml_(string: string): string {

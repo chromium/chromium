@@ -6,7 +6,6 @@ import 'chrome://personalization/strings.m.js';
 
 import type {DefaultUserImage, UserImage} from 'chrome://personalization/js/personalization_app.js';
 import {Paths, UserPreviewElement} from 'chrome://personalization/js/personalization_app.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -128,7 +127,7 @@ suite('UserPreviewElementTest', function() {
         url: {
           url: 'https://www.gstatic.com/',
         },
-        title: stringToMojoString16('the remains of the day'),
+        title: 'the remains of the day',
         index: 1,
         sourceInfo: null,
       },
@@ -208,10 +207,10 @@ suite('UserPreviewElementTest', function() {
 
     const deprecatedDefaultImage: DefaultUserImage = {
       index: 2,
-      title: stringToMojoString16('title'),
+      title: 'title',
       url: {url: 'data://test_url'},
       sourceInfo: {
-        author: stringToMojoString16('author example'),
+        author: 'author example',
         website: {url: 'website example'},
       },
     };

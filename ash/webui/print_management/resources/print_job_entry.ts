@@ -17,7 +17,6 @@ import {FocusRowMixin} from 'chrome://resources/ash/common/cr_elements/focus_row
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -170,12 +169,12 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
 
       jobTitle: {
         type: String,
-        computed: 'decodeString16(jobEntry.title)',
+        computed: 'computeJobTitle(jobEntry.title)',
       },
 
       printerName: {
         type: String,
-        computed: 'decodeString16(jobEntry.printerName)',
+        computed: 'computePrinterName(jobEntry.printerName)',
       },
 
       creationTime: {
@@ -348,8 +347,12 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
         {bubbles: true, composed: true, detail: this.jobEntry.id}));
   }
 
-  private decodeString16(arr: String16): string {
-    return arr.data.map(ch => String.fromCodePoint(ch)).join('');
+  private computeJobTitle(title: string): string {
+    return title;
+  }
+
+  private computePrinterName(printerName: string): string {
+    return printerName;
   }
 
   /**

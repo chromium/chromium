@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {File} from 'chrome://resources/mojo/mojo/public/mojom/base/file.mojom-webui.js';
 import type {ReadOnlyBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/read_only_buffer.mojom-webui.js';
@@ -265,7 +264,7 @@ function fakeDeviceInfo(num: number): UsbDeviceInfo {
     deviceVersionMajor: 3,
     deviceVersionMinor: 2,
     deviceVersionSubminor: 1,
-    manufacturerName: stringToMojoString16('test'),
+    manufacturerName: 'test',
     productName: null,
     serialNumber: null,
     webusbLandingPage: {url: 'http://google.com'},

@@ -8,7 +8,6 @@ import type {CrInputElement, EsimRenameDialogElement} from 'chrome://os-settings
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {ESimOperationResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
@@ -114,9 +113,7 @@ suite('<esim-rename-dialog>', () => {
     const profile = (await euicc.getProfileList()).profiles[0];
     assertTrue(!!profile);
     const profileProperties = (await profile.getProperties()).properties;
-    assertEquals(
-        'new profile nickname',
-        mojoString16ToString(profileProperties.nickname));
+    assertEquals('new profile nickname', profileProperties.nickname);
   });
 
   test('esimProfileRemote_ falsey, show error', async () => {
@@ -194,9 +191,7 @@ suite('<esim-rename-dialog>', () => {
     assertEquals(
         esimRenameDialog.i18n('eSimRenameProfileDialogErrorToast'),
         showErrorToastEvent.detail);
-    assertNotEquals(
-        'new profile nickname',
-        mojoString16ToString(profileProperties.nickname));
+    assertNotEquals('new profile nickname', profileProperties.nickname);
   });
 
   test('Warning message visibility', () => {
@@ -302,9 +297,7 @@ suite('<esim-rename-dialog>', () => {
     assertTrue(!!profile);
     const profileProperties = (await profile.getProperties()).properties;
 
-    assertEquals(
-        '12345678901234567890',
-        mojoString16ToString(profileProperties.nickname));
+    assertEquals('12345678901234567890', profileProperties.nickname);
   });
 
   test('Done button is disabled when empty input', async () => {

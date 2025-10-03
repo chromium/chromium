@@ -15,7 +15,6 @@ import '/strings.m.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -204,11 +203,11 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
     }
 
     const powerTimeStr = this.batteryChargeStatus.powerTime;
-    if (!powerTimeStr || powerTimeStr.data.length === 0) {
+    if (!powerTimeStr || powerTimeStr.length === 0) {
       return loadTimeData.getString('batteryCalculatingText');
     }
 
-    const timeValue = mojoString16ToString(powerTimeStr);
+    const timeValue = powerTimeStr;
     const charging =
         this.batteryChargeStatus.powerAdapterStatus === ExternalPowerSource.kAc;
 

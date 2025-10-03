@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {ESimManagerInterface, ESimManagerObserverInterface, ESimProfileInterface, ESimProfileProperties, ESimProfileRemote, EuiccInterface, EuiccProperties, EuiccRemote, ProfileInstallMethod, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {ESimOperationResult, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 interface DeferredPromiseObject {
   promise: Promise<any>;
@@ -28,9 +26,9 @@ export class FakeProfile implements ESimProfileInterface {
       eid: eid,
       iccid: iccid,
       activationCode: 'activation-code-' + iccid,
-      name: stringToMojoString16('profile' + iccid),
-      nickname: stringToMojoString16('profile' + iccid),
-      serviceProvider: stringToMojoString16('provider' + iccid),
+      name: 'profile' + iccid,
+      nickname: 'profile' + iccid,
+      serviceProvider: 'provider' + iccid,
       state: ProfileState.kPending,
     };
 
@@ -105,8 +103,7 @@ export class FakeProfile implements ESimProfileInterface {
     };
   }
 
-  setProfileNickname(nickname: String16):
-      Promise<{result: ESimOperationResult}> {
+  setProfileNickname(nickname: string): Promise<{result: ESimOperationResult}> {
     if (this.esimOperationResult_ === null ||
         this.esimOperationResult_ === ESimOperationResult.kSuccess) {
       this.properties.nickname = nickname;

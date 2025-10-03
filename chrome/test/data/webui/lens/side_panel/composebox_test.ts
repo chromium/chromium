@@ -9,7 +9,6 @@ import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome-untrusted://resources/js/mojo_type_util.js';
 import {type AutocompleteMatch, type AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -56,7 +55,7 @@ suite('Composebox', () => {
 
   function createAutocompleteMatch(): AutocompleteMatch {
     return {
-      a11yLabel: {data: []},
+      a11yLabel: '',
       actions: [],
       allowedToBeDefaultMatch: false,
       isSearchType: false,
@@ -64,19 +63,19 @@ suite('Composebox', () => {
       swapContentsAndDescription: false,
       supportsDeletion: false,
       suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
-      contents: {data: []},
+      contents: '',
       contentsClass: [{offset: 0, style: 0}],
-      description: {data: []},
+      description: '',
       descriptionClass: [{offset: 0, style: 0}],
       destinationUrl: {url: ''},
-      inlineAutocompletion: {data: []},
-      fillIntoEdit: {data: []},
+      inlineAutocompletion: '',
+      fillIntoEdit: '',
       iconPath: '',
       iconUrl: {url: ''},
       imageDominantColor: '',
       imageUrl: '',
       isNoncannedAimSuggestion: false,
-      removeButtonA11yLabel: {data: []},
+      removeButtonA11yLabel: '',
       type: '',
       isRichSuggestion: false,
       isWeatherAnswerSuggestion: null,
@@ -90,7 +89,7 @@ suite('Composebox', () => {
   function createAutocompleteResult(
       modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
     const base: AutocompleteResult = {
-      input: stringToMojoString16(''),
+      input: '',
       matches: [],
       suggestionGroupsMap: {},
       smartComposeInlineHint: null,
@@ -104,9 +103,9 @@ suite('Composebox', () => {
     return Object.assign(
         createAutocompleteMatch(), {
           isSearchType: true,
-          contents: stringToMojoString16('hello world'),
+          contents: 'hello world',
           destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
-          fillIntoEdit: stringToMojoString16('hello world'),
+          fillIntoEdit: 'hello world',
           type: 'search-suggest',
         },
         modifiers);
@@ -333,8 +332,7 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
-    const matches =
-        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -367,8 +365,7 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
-    const matches =
-        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -400,8 +397,7 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
-    const matches =
-        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -436,8 +432,7 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox and assert dropdown is visible.
-    const matches =
-        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -559,14 +554,14 @@ suite('Composebox', () => {
     await waitAfterNextRender(composebox);
 
     const matches = [createSearchMatch({
-      fillIntoEdit: stringToMojoString16(query),
+      fillIntoEdit: query,
       destinationUrl:
           {url: `https://www.google.com/search?q=${query.replace(/ /g, '+')}`},
       allowedToBeDefaultMatch: true,
     })];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16(query),
+          input: query,
           matches: matches,
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -604,8 +599,8 @@ suite('Composebox', () => {
 
     // Send suggestions to the composebox.
     const matches = [
-      createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')}),
-      createSearchMatch({fillIntoEdit: stringToMojoString16('match 2')}),
+      createSearchMatch({fillIntoEdit: 'match 1'}),
+      createSearchMatch({fillIntoEdit: 'match 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({matches}));

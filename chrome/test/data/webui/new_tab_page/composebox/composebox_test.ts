@@ -7,7 +7,6 @@ import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {FileUploadErrorType, FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -102,7 +101,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   function createAutocompleteMatch(): AutocompleteMatch {
     return {
-      a11yLabel: {data: []},
+      a11yLabel: '',
       actions: [],
       allowedToBeDefaultMatch: false,
       isSearchType: false,
@@ -110,19 +109,19 @@ suite('NewTabPageComposeboxTest', () => {
       swapContentsAndDescription: false,
       supportsDeletion: false,
       suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
-      contents: {data: []},
+      contents: '',
       contentsClass: [{offset: 0, style: 0}],
-      description: {data: []},
+      description: '',
       descriptionClass: [{offset: 0, style: 0}],
       destinationUrl: {url: ''},
-      inlineAutocompletion: {data: []},
-      fillIntoEdit: {data: []},
+      inlineAutocompletion: '',
+      fillIntoEdit: '',
       iconPath: '',
       iconUrl: {url: ''},
       imageDominantColor: '',
       imageUrl: '',
       isNoncannedAimSuggestion: false,
-      removeButtonA11yLabel: {data: []},
+      removeButtonA11yLabel: '',
       type: '',
       isRichSuggestion: false,
       isWeatherAnswerSuggestion: null,
@@ -136,7 +135,7 @@ suite('NewTabPageComposeboxTest', () => {
   function createAutocompleteResult(
       modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
     const base: AutocompleteResult = {
-      input: stringToMojoString16(''),
+      input: '',
       matches: [],
       suggestionGroupsMap: {},
       smartComposeInlineHint: null,
@@ -150,9 +149,9 @@ suite('NewTabPageComposeboxTest', () => {
     return Object.assign(
         createAutocompleteMatch(), {
           isSearchType: true,
-          contents: stringToMojoString16('hello world'),
+          contents: 'hello world',
           destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
-          fillIntoEdit: stringToMojoString16('hello world'),
+          fillIntoEdit: 'hello world',
           type: 'search-suggest',
         },
         modifiers);
@@ -682,7 +681,7 @@ suite('NewTabPageComposeboxTest', () => {
     const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16('test'),
+          input: 'test',
           matches,
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -730,7 +729,7 @@ suite('NewTabPageComposeboxTest', () => {
     const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16('test'),
+          input: 'test',
           matches: matches,
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -807,7 +806,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     const matches = [
       createSearchMatch(),
-      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
@@ -837,7 +836,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     const matches = [
       createSearchMatch(),
-      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
@@ -878,7 +877,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     const matches = [
       createSearchMatch(),
-      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
@@ -909,7 +908,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     const matches = [
       createSearchMatch(),
-      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
@@ -989,8 +988,7 @@ suite('NewTabPageComposeboxTest', () => {
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input:
-              stringToMojoString16(composeboxElement.$.input.value.trimStart()),
+          input: composeboxElement.$.input.value.trimStart(),
           matches,
         }));
     await microtasksFinished();
@@ -1011,14 +1009,15 @@ suite('NewTabPageComposeboxTest', () => {
     searchboxHandler.reset();
 
     matches = [
-      createSearchMatch({supportsDeletion: true}), createSearchMatch({
+      createSearchMatch({supportsDeletion: true}),
+      createSearchMatch({
         supportsDeletion: true,
-        fillIntoEdit: stringToMojoString16('hello world 2'),
+        fillIntoEdit: 'hello world 2',
       }),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16(''),
+          input: '',
           matches: matches,
         }));
     assertTrue(await areMatchesShowing());
@@ -1063,11 +1062,11 @@ suite('NewTabPageComposeboxTest', () => {
 
     matches = [createSearchMatch({
       supportsDeletion: true,
-      fillIntoEdit: stringToMojoString16('hello world 2'),
+      fillIntoEdit: 'hello world 2',
     })];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16(''),
+          input: '',
           matches: matches,
         }));
     assertTrue(await areMatchesShowing());
@@ -1086,9 +1085,9 @@ suite('NewTabPageComposeboxTest', () => {
 
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16('smart '),
+          input: 'smart ',
           matches: [],
-          smartComposeInlineHint: stringToMojoString16('compose'),
+          smartComposeInlineHint: 'compose',
         }));
     await microtasksFinished();
 
@@ -1105,9 +1104,9 @@ suite('NewTabPageComposeboxTest', () => {
 
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16('smart '),
+          input: 'smart ',
           matches: [],
-          smartComposeInlineHint: stringToMojoString16('compose'),
+          smartComposeInlineHint: 'compose',
         }));
     await microtasksFinished();
 
@@ -1154,7 +1153,7 @@ suite('NewTabPageComposeboxTest', () => {
     const matches = [createSearchMatch()];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16(''),
+          input: '',
           matches,
         }));
     assertTrue(await areMatchesShowing());
@@ -1189,7 +1188,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     const matches = [
       createSearchMatch(),
-      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
@@ -1210,7 +1209,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16('awesome'),
+          input: 'awesome',
           matches: matches,
         }));
     assertTrue(await areMatchesShowing());
@@ -1231,11 +1230,11 @@ suite('NewTabPageComposeboxTest', () => {
 
     const matches = [
       createSearchMatch(),
-      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
-          input: stringToMojoString16(''),
+          input: '',
           matches,
           suggestionGroupsMap: {},
         }));

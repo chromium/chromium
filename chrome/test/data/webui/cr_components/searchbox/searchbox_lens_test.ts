@@ -8,7 +8,6 @@ import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, createAutocompleteMatch, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -98,10 +97,10 @@ suite('Lens search', () => {
 
     const matches = [createAutocompleteMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
-      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      input: realbox.$.input.value.trimStart(),
       matches,
       suggestionGroupsMap: {},
-      smartComposeInlineHint: stringToMojoString16(''),
+      smartComposeInlineHint: '',
     });
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertTrue(await areMatchesShowing());

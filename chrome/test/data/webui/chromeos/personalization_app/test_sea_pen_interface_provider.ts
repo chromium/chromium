@@ -7,7 +7,6 @@ import type {RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMet
 import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -66,14 +65,14 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   recentImageInfo2: RecentSeaPenImageInfo = {
     query: this.seaPenQuery,
-    creationTime: stringToMojoString16('Dec 15, 2023'),
+    creationTime: 'Dec 15, 2023',
   };
 
   recentImageInfo3: RecentSeaPenImageInfo = {
     query: {
       textQuery: 'test freeform query',
     },
-    creationTime: stringToMojoString16('Dec 31, 2023'),
+    creationTime: 'Dec 31, 2023',
   };
 
   recentImageData: Record<string, RecentSeaPenThumbnailData|null> = {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-
 import type {StandardAcceleratorProperties} from './accelerator_info.mojom-webui.js';
 import * as MetaKeyTypes from './meta_key.mojom-webui.js';
 import type {ShortcutInputKeyElement} from './shortcut_input_key.js';
@@ -153,7 +151,7 @@ export function createInputKeyParts(
     }
   }
 
-  const keyDisplay = mojoString16ToString(shortcutLabelProperties.keyDisplay);
+  const keyDisplay = shortcutLabelProperties.keyDisplay;
   if (!pressedModifiers.includes(keyDisplay.toLowerCase())) {
     const key = document.createElement('shortcut-input-key');
     key.keyState = KeyInputState.ALPHANUMERIC_SELECTED;

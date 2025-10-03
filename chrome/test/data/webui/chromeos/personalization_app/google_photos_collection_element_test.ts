@@ -59,7 +59,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
-      date: {data: []},
+      date: '',
       url: {url: 'foo.com'},
       location: 'home',
     }]);
@@ -162,7 +162,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
-      date: {data: []},
+      date: '',
       url: {url: 'foo.com'},
       location: 'home',
     }]);

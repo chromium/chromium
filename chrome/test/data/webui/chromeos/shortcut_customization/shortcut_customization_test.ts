@@ -14,7 +14,6 @@ import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/inp
 import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
@@ -38,15 +37,6 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
-
-// Converts a JS string to mojo_base::mojom::String16 object.
-function strToMojoString16(str: string): {data: number[]} {
-  const arr = [];
-  for (let i = 0; i < str.length; i++) {
-    arr[i] = str.charCodeAt(i);
-  }
-  return {data: arr};
-}
 
 function initShortcutCustomizationAppElement():
     ShortcutCustomizationAppElement {
@@ -201,7 +191,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: acceleratorConfigResult,
-      shortcutName: stringToMojoString16('BRIGHTNESS_UP'),
+      shortcutName: 'BRIGHTNESS_UP',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -411,7 +401,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
@@ -485,7 +475,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -512,7 +502,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Press a different shortcut, this time with another error state.
     const fakeResult2: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult2);
 
@@ -624,7 +614,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -712,7 +702,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -760,7 +750,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -825,7 +815,7 @@ suite('shortcutCustomizationAppTest', function() {
     // kConflictCanOverride.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -939,7 +929,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeRemoveAcceleratorResult(fakeResult);
 
@@ -1062,7 +1052,7 @@ suite('shortcutCustomizationAppTest', function() {
       {
         category: AcceleratorCategory.kWindowsAndDesks,
         subCategory: AcceleratorSubcategory.kWindows,
-        description: strToMojoString16('Go to windows 1 through 8'),
+        description: 'Go to windows 1 through 8',
         style: LayoutStyle.kText,
         source: AcceleratorSource.kAmbient,
         action: 1,
@@ -1088,23 +1078,23 @@ suite('shortcutCustomizationAppTest', function() {
             textAccelerator: {
               parts: [
                 {
-                  text: strToMojoString16('ctrl'),
+                  text: 'ctrl',
                   type: TextAcceleratorPartType.kModifier,
                 },
                 {
-                  text: strToMojoString16(' + '),
+                  text: ' + ',
                   type: TextAcceleratorPartType.kDelimiter,
                 },
                 {
-                  text: strToMojoString16('1 '),
+                  text: '1 ',
                   type: TextAcceleratorPartType.kKey,
                 },
                 {
-                  text: strToMojoString16('through '),
+                  text: 'through ',
                   type: TextAcceleratorPartType.kPlainText,
                 },
                 {
-                  text: strToMojoString16('8'),
+                  text: '8',
                   type: TextAcceleratorPartType.kKey,
                 },
               ],
@@ -1144,7 +1134,7 @@ suite('shortcutCustomizationAppTest', function() {
       {
         category: AcceleratorCategory.kWindowsAndDesks,
         subCategory: AcceleratorSubcategory.kDesks,
-        description: stringToMojoString16('Create Desk'),
+        description: 'Create Desk',
         style: LayoutStyle.kDefault,
         source: AcceleratorSource.kAsh,
         action: 2,
@@ -1160,7 +1150,7 @@ suite('shortcutCustomizationAppTest', function() {
           locked: false,
           layoutProperties: {
             standardAccelerator: {
-              keyDisplay: stringToMojoString16('+'),
+              keyDisplay: '+',
               accelerator: {
                 modifiers: Modifier.COMMAND | Modifier.SHIFT,
                 keyCode: 187,
@@ -1204,7 +1194,7 @@ suite('shortcutCustomizationAppTest', function() {
             locked: false,
             layoutProperties: {
               standardAccelerator: {
-                keyDisplay: stringToMojoString16('+'),
+                keyDisplay: '+',
                 accelerator: {
                   modifiers: Modifier.COMMAND | Modifier.SHIFT,
                   keyCode: 187,
@@ -1224,7 +1214,7 @@ suite('shortcutCustomizationAppTest', function() {
             locked: false,
             layoutProperties: {
               standardAccelerator: {
-                keyDisplay: stringToMojoString16('a'),
+                keyDisplay: 'a',
                 accelerator: {
                   modifiers: Modifier.COMMAND,
                   keyCode: 65,

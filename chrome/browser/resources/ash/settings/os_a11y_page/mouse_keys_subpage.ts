@@ -13,7 +13,6 @@ import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_
 import {MetaKey, Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -294,7 +293,7 @@ export class SettingsMouseKeysSubpageElement extends
 
   private getShortcutLabelProperties_(): ShortcutLabelProperties[] {
     return [{
-      keyDisplay: stringToMojoString16('4'),
+      keyDisplay: '4',
       accelerator: {
         modifiers: Modifier.ALT + Modifier.COMMAND,
         keyCode: VKey.kNum4,

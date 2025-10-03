@@ -11,7 +11,6 @@ import type {PriceInsightsInfo} from 'chrome://resources/cr_components/commerce/
 import {PriceInsightsInfo_PriceBucket} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {ShoppingInsightsAppElement} from 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 import {PriceInsightsBrowserProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/price_insights_browser_proxy.js';
 import type {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
@@ -347,7 +346,7 @@ suite('ShoppingInsightsAppTest', () => {
           Promise.resolve({tracked: true}));
       priceTrackingProxy.setResultFor(
           'getParentBookmarkFolderNameForCurrentUrl',
-          Promise.resolve({name: stringToMojoString16('Parent folder')}));
+          Promise.resolve({name: 'Parent folder'}));
 
       document.body.appendChild(shoppingInsightsApp);
       await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
@@ -380,7 +379,7 @@ suite('ShoppingInsightsAppTest', () => {
         Promise.resolve({priceInsightsInfo: priceInsights1}));
     priceTrackingProxy.setResultFor(
         'getParentBookmarkFolderNameForCurrentUrl',
-        Promise.resolve({name: stringToMojoString16('Parent folder')}));
+        Promise.resolve({name: 'Parent folder'}));
 
     document.body.appendChild(shoppingInsightsApp);
     await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');

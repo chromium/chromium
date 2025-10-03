@@ -13,7 +13,6 @@ import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -255,11 +254,9 @@ export class EncryptionMigration extends EncryptionMigrationBase {
    * space size.
    */
   setSpaceInfoInString(
-      availableSpaceSize: String16, necessarySpaceSize: String16): void {
-    this.availableSpaceInString =
-        String.fromCharCode(...availableSpaceSize.data);
-    this.necessarySpaceInString =
-        String.fromCharCode(...necessarySpaceSize.data);
+      availableSpaceSize: string, necessarySpaceSize: string): void {
+    this.availableSpaceInString = availableSpaceSize;
+    this.necessarySpaceInString = necessarySpaceSize;
   }
 
   /**

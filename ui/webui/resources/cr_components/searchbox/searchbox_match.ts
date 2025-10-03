@@ -18,7 +18,7 @@ import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browse
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_match.css.js';
 import {getHtml} from './searchbox_match.html.js';
-import {decodeString16, mojoTimeTicks} from './utils.js';
+import {mojoTimeTicks} from './utils.js';
 
 
 
@@ -305,7 +305,7 @@ export class SearchboxMatchElement extends CrLitElement {
     if (!this.match) {
       return '';
     }
-    return decodeString16(this.match.a11yLabel);
+    return this.match.a11yLabel;
   }
 
   private sanitizeInnerHtml_(html: string): TrustedHTML {
@@ -367,7 +367,7 @@ export class SearchboxMatchElement extends CrLitElement {
     if (!this.match) {
       return '';
     }
-    return decodeString16(this.match.removeButtonA11yLabel);
+    return this.match.removeButtonA11yLabel;
   }
 
   private computeSeparatorText_(): string {
@@ -380,7 +380,7 @@ export class SearchboxMatchElement extends CrLitElement {
     if (!this.match || !this.match.tailSuggestCommonPrefix) {
       return '';
     }
-    const prefix = decodeString16(this.match.tailSuggestCommonPrefix);
+    const prefix = this.match.tailSuggestCommonPrefix;
     // Replace last space with non breaking space since spans collapse
     // trailing white spaces and the prefix always ends with a white space.
     if (prefix.slice(-1) === ' ') {
@@ -456,8 +456,7 @@ export class SearchboxMatchElement extends CrLitElement {
     const matchDescription =
         match.answer ? match.answer.secondLine : match.description;
 
-    return decodeString16(
-        match.swapContentsAndDescription ? matchDescription : matchContents);
+    return match.swapContentsAndDescription ? matchDescription : matchContents;
   }
 
   private getMatchDescription_(): string {
@@ -471,8 +470,7 @@ export class SearchboxMatchElement extends CrLitElement {
     const matchDescription =
         match.answer ? match.answer.secondLine : match.description;
 
-    return decodeString16(
-        match.swapContentsAndDescription ? matchContents : matchDescription);
+    return match.swapContentsAndDescription ? matchContents : matchDescription;
   }
 
   private getMatchContentsClassifications_(): ACMatchClassification[] {

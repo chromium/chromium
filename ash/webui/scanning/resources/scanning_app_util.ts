@@ -139,7 +139,7 @@ export function pageSizeFromString(pageSizeString: string): PageSize {
  * Converts a scanner's display name from UTF-16 to a displayable string.
  */
 export function getScannerDisplayName(scanner: Scanner): string {
-  return scanner.displayName.data.map(ch => String.fromCodePoint(ch)).join('');
+  return scanner.displayName;
 }
 
 /**

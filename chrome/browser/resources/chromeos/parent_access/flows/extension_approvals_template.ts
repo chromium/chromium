@@ -9,7 +9,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {ParentAccessEvent} from '../parent_access_app.js';
 import type {ExtensionApprovalsParams} from '../parent_access_ui.mojom-webui.js';
 import {getParentAccessParams} from '../parent_access_ui_handler.js';
-import {decodeMojoString16, getBase64EncodedSrcForPng} from '../utils.js';
+import {getBase64EncodedSrcForPng} from '../utils.js';
 
 import {getTemplate} from './extension_approvals_template.html.js';
 
@@ -64,11 +64,11 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
 
   private renderDetails(params: ExtensionApprovalsParams) {
     this.extensionIconSrc = getBase64EncodedSrcForPng(params.iconPngBytes);
-    this.extensionName = decodeMojoString16(params.extensionName);
+    this.extensionName = params.extensionName;
     this.extensionPermissions = params.permissions.map((permission) => {
       return {
-        permission: decodeMojoString16(permission.permission),
-        details: decodeMojoString16(permission.details),
+        permission: permission.permission,
+        details: permission.details,
       };
     });
   }

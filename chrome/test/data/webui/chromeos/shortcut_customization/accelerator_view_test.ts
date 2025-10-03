@@ -163,7 +163,7 @@ suite('acceleratorViewTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -282,7 +282,7 @@ suite('acceleratorViewTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -470,7 +470,7 @@ suite('acceleratorViewTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: {data: [1]},
+      shortcutName: '1',
     };
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 

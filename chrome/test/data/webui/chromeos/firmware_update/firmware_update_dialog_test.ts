@@ -13,7 +13,6 @@ import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dial
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -221,8 +220,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
-            'restartingTitleText',
-            mojoString16ToString(updateDialogElement.update!.deviceName)));
+            'restartingTitleText', updateDialogElement.update!.deviceName));
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('restartingBodyText'));
@@ -254,8 +252,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
-            'updating',
-            mojoString16ToString(updateDialogElement.update!.deviceName)));
+            'updating', updateDialogElement.update!.deviceName));
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('updatingInfo'));
@@ -274,8 +271,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
-            'restartingTitleText',
-            mojoString16ToString(updateDialogElement.update!.deviceName)));
+            'restartingTitleText', updateDialogElement.update!.deviceName));
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('restartingBodyText'));
@@ -328,8 +324,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
-            'restartingTitleText',
-            mojoString16ToString(updateDialogElement.update!.deviceName)));
+            'restartingTitleText', updateDialogElement.update!.deviceName));
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('restartingBodyText'));
@@ -390,8 +385,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
-            'updating',
-            mojoString16ToString(updateDialogElement.update!.deviceName)));
+            'updating', updateDialogElement.update!.deviceName));
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('updatingInfo'));
@@ -426,8 +420,7 @@ suite('FirmwareUpdateDialogTest', () => {
         assertEquals(
             getTextContent('#updateDialogTitle'),
             loadTimeData.getStringF(
-                'updating',
-                mojoString16ToString(updateDialogElement.update!.deviceName)));
+                'updating', updateDialogElement.update!.deviceName));
         assertEquals(
             getTextContent('#updateDialogBody'),
             loadTimeData.getString('updatingInfo'));
@@ -447,8 +440,7 @@ suite('FirmwareUpdateDialogTest', () => {
         assertEquals(
             getTextContent('#updateDialogTitle'),
             loadTimeData.getStringF(
-                'updating',
-                mojoString16ToString(updateDialogElement.update!.deviceName)));
+                'updating', updateDialogElement.update!.deviceName));
         assertEquals(
             getTextContent('#updateDialogBody'),
             loadTimeData.getString('updatingInfo'));
@@ -484,8 +476,7 @@ suite('FirmwareUpdateDialogTest', () => {
       [DeviceRequestId.kReplugInstall, 'requestIdReplugInstall'],
     ]);
 
-    const deviceName =
-        mojoString16ToString(updateDialogElement.update!.deviceName);
+    const deviceName = updateDialogElement.update!.deviceName;
 
     for (const [deviceRequestID, expectedString] of idToExpectedString
              .entries()) {
