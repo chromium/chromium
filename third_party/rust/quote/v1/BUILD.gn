@@ -31,7 +31,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "quote"
   cargo_pkg_description = "Quasi-quoting macro quote!(...)"
   cargo_pkg_repository = "https://github.com/dtolnay/quote"
-  cargo_pkg_version = "1.0.40"
+  cargo_pkg_version = "1.0.41"
 
   allow_unsafe = false
 
@@ -40,6 +40,9 @@ cargo_crate("lib") {
     "default",
     "proc-macro",
   ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/quote-v1/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/quote-v1/build.rs" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

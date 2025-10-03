@@ -200,7 +200,7 @@ fn test_floating() {
         #e32
         #e64
     };
-    let expected = concat!("2.345f32 2.345f64");
+    let expected = "2.345f32 2.345f64";
     assert_eq!(expected, tokens.to_string());
 }
 

@@ -1,6 +1,6 @@
 [package]
 name = "quote"
-version = "1.0.40"
+version = "1.0.41"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
@@ -10,14 +10,14 @@ edition = "2018"
 keywords = ["macros", "syn"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/quote"
-rust-version = "1.56"
+rust-version = "1.60"
 
 [dependencies]
 proc-macro2 = { version = "1.0.80", default-features = false }
 
 [dev-dependencies]
 rustversion = "1.0"
-trybuild = { version = "1.0.66", features = ["diff"] }
+trybuild = { version = "1.0.108", features = ["diff"] }
 
 [features]
 default = ["proc-macro"]
@@ -32,6 +32,7 @@ members = ["benches"]
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
