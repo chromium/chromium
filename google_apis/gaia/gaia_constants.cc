@@ -272,6 +272,8 @@ const char kPushNotificationOAuth2Scope[] =
 // OAuth2 scope for app license check.
 const char kLicenseCheckOAuth2Scope[] =
     "https://www.googleapis.com/auth/applicense.bytebot";
+// OAuth2 scope for manta.
+const char kMantaOAuth2Scope[] = "https://www.googleapis.com/auth/mdi.aratea";
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up

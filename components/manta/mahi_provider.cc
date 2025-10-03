@@ -30,7 +30,6 @@ namespace manta {
 
 namespace {
 
-constexpr char kOauthConsumerName[] = "manta_mahi";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 const net::NetworkTrafficAnnotationTag kMahiTrafficAnnotationTag =
@@ -173,8 +172,7 @@ void MahiProvider::Summarize(const std::string& input,
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
-      kOauthConsumerName, kMahiTrafficAnnotationTag, request,
-      MantaMetricType::kMahiSummary,
+      kMahiTrafficAnnotationTag, request, MantaMetricType::kMahiSummary,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);
@@ -214,8 +212,7 @@ void MahiProvider::Elucidate(const std::string& input,
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
-      kOauthConsumerName, kMahiTrafficAnnotationTag, request,
-      MantaMetricType::kMahiElucidation,
+      kMahiTrafficAnnotationTag, request, MantaMetricType::kMahiElucidation,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);
@@ -275,8 +272,7 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
-      kOauthConsumerName, kMahiTrafficAnnotationTag, request,
-      MantaMetricType::kMahiQA,
+      kMahiTrafficAnnotationTag, request, MantaMetricType::kMahiQA,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);

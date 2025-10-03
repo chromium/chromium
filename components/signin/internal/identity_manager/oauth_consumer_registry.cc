@@ -95,6 +95,8 @@ constexpr char kAmbientModeName[] = "ambient_mode";
 constexpr char kProfileDownloaderName[] = "profile_downloader";
 constexpr char kDataSharingAndroidName[] = "data_sharing_android";
 constexpr char kExtensionsIdentityAPIName[] = "extensions_identity_api";
+constexpr char kMantaName[] = "manta";
+
 }  // namespace
 
 namespace signin {
@@ -407,6 +409,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kExtensionsIdentityAPIName,
           /*scopes=*/{GaiaConstants::kAnyApiOAuth2Scope});
+    case OAuthConsumerId::kManta:
+      return OAuthConsumer(
+          /*name=*/kMantaName,
+          /*scopes=*/{GaiaConstants::kMantaOAuth2Scope});
   }
   NOTREACHED();
 }

@@ -157,6 +157,8 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWebstoreOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPushNotificationOAuth2Scope[];
 // OAuth2 scope for app license check.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kLicenseCheckOAuth2Scope[];
+// OAuth2 scope for manta.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kMantaOAuth2Scope[];
 
 // Constants for the Chrome Refresh Token Binding.
 inline constexpr std::string_view kTokenBindingAssertionSentinel =

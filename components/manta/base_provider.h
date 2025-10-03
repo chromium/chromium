@@ -51,7 +51,6 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   // Virtual to allow overriding in tests.
   virtual void RequestInternal(
       const GURL& url,
-      const std::string& oauth_consumer_name,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       manta::proto::Request& request,
       const MantaMetricType metric_type,
@@ -72,7 +71,6 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   // Creates an EndpointFetcher with oauth-based auth.
   std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
       const GURL& url,
-      const std::string& oauth_consumer_name,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const std::string& post_data,
       const base::TimeDelta timeout);

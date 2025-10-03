@@ -90,7 +90,8 @@ EndpointFetcher::RequestParams::Builder::Build() {
              (request_params_->oauth_consumer_name.has_value() &&
               !request_params_->oauth_consumer_name->empty()))
           << "OAUTH requests require oauth_consumer_name.";
-      DCHECK(!request_params_->oauth_scopes.empty())
+      DCHECK(request_params_->oauth_consumer_id.has_value() ||
+             !request_params_->oauth_scopes.empty())
           << "OAUTH requests require oauth_scopes.";
       DCHECK(request_params_->consent_level.has_value())
           << "OAUTH requests require consent_level.";

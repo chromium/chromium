@@ -18,8 +18,6 @@ namespace manta {
 
 namespace {
 constexpr base::TimeDelta kMockTimeout = base::Seconds(100);
-constexpr char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
-constexpr char kMockScope[] = "mock_scope";
 constexpr char kMockEndpoint[] = "https://my-endpoint.com";
 constexpr endpoint_fetcher::HttpMethod kHttpMethod =
     endpoint_fetcher::HttpMethod::kPost;
@@ -36,7 +34,6 @@ FakeBaseProvider::~FakeBaseProvider() = default;
 
 void FakeBaseProvider::RequestInternal(
     const GURL& url,
-    const std::string& oauth_consumer_name,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     manta::proto::Request& request,
     const MantaMetricType metric_type,
@@ -55,8 +52,7 @@ void FakeBaseProvider::RequestInternal(
           .SetContentType(kMockContentType)
           .SetTimeout(kMockTimeout)
           .SetUrl(GURL{kMockEndpoint})
-          .SetOauthScopes(std::vector<std::string>{kMockScope})
-          .SetOauthConsumerName(kMockOAuthConsumerName)
+          .SetOAuthConsumerId(signin::OAuthConsumerId::kManta)
           .SetPostData(request.SerializeAsString())
           .Build());
 

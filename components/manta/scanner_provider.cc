@@ -26,7 +26,6 @@ namespace manta {
 
 namespace {
 
-constexpr char kOauthConsumerName[] = "manta_scanner";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
 constexpr auto kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("chromeos_scanner_provider", R"(
@@ -166,8 +165,7 @@ void ScannerProvider::Call(
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsScannerUseProdServerEnabled())},
-      kOauthConsumerName, /*annotation_tag=*/kTrafficAnnotation, request,
-      MantaMetricType::kScanner,
+      /*annotation_tag=*/kTrafficAnnotation, request, MantaMetricType::kScanner,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);

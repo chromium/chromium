@@ -19,7 +19,6 @@ namespace manta {
 
 namespace {
 
-constexpr char kOauthConsumerName[] = "manta_walrus";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
 // The maximum number of pixels after resizing an image.
 constexpr int32_t kMaxPixelsAfterResizing = 512 * 512;
@@ -214,7 +213,7 @@ void WalrusProvider::Filter(const std::optional<std::string>& text_prompt,
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsWalrusUseProdServerEnabled())},
-      kOauthConsumerName, kTrafficAnnotation, request, MantaMetricType::kWalrus,
+      kTrafficAnnotation, request, MantaMetricType::kWalrus,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);
