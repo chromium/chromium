@@ -619,29 +619,25 @@ TEST_F(ElementTest, ParseFocusgroupAttrDefaultValuesWhenEmptyValue) {
   auto* not_fg = document.getElementById(AtomicString("not_fg"));
   ASSERT_TRUE(not_fg);
 
-  FocusgroupBehavior not_fg_behavior = not_fg->GetFocusgroupData().behavior;
-  EXPECT_EQ(not_fg_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      not_fg->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
   // Empty focusgroup attribute should be invalid (requires behavior token)
   auto* fg_empty = document.getElementById(AtomicString("fg_empty"));
   ASSERT_TRUE(fg_empty);
 
-  FocusgroupBehavior fg_empty_behavior = fg_empty->GetFocusgroupData().behavior;
-  EXPECT_EQ(fg_empty_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      fg_empty->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
   // Toolbar behavior with default axes
   auto* fg_toolbar = document.getElementById(AtomicString("fg_toolbar"));
   ASSERT_TRUE(fg_toolbar);
 
-  FocusgroupBehavior fg_toolbar_behavior =
-      fg_toolbar->GetFocusgroupData().behavior;
-  FocusgroupFlags fg_toolbar_flags = fg_toolbar->GetFocusgroupData().flags;
-  EXPECT_EQ(fg_toolbar_behavior, FocusgroupBehavior::kToolbar);
-  EXPECT_TRUE(fg_toolbar_flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(fg_toolbar_flags & FocusgroupFlags::kBlock);
-  EXPECT_FALSE(fg_toolbar_flags & FocusgroupFlags::kExtend);
-  EXPECT_FALSE(fg_toolbar_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_FALSE(fg_toolbar_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(fg_toolbar->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kToolbar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
@@ -661,61 +657,49 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
   auto* fg1 = document.getElementById(AtomicString("fg1"));
   ASSERT_TRUE(fg1);
 
-  FocusgroupBehavior fg1_behavior = fg1->GetFocusgroupData().behavior;
-  FocusgroupFlags fg1_flags = fg1->GetFocusgroupData().flags;
-  EXPECT_EQ(fg1_behavior, FocusgroupBehavior::kToolbar);
-  EXPECT_TRUE(fg1_flags & FocusgroupFlags::kInline);
-  EXPECT_FALSE(fg1_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(
+      fg1->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
 
   // 2. Only block should be supported.
   auto* fg2 = document.getElementById(AtomicString("fg2"));
   EXPECT_TRUE(fg2);
 
-  FocusgroupBehavior fg2_behavior = fg2->GetFocusgroupData().behavior;
-  FocusgroupFlags fg2_flags = fg2->GetFocusgroupData().flags;
-  EXPECT_EQ(fg2_behavior, FocusgroupBehavior::kTablist);
-  EXPECT_FALSE(fg2_flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(fg2_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(
+      fg2->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kTablist, FocusgroupFlags::kBlock));
 
   // 3. No axis specified so both should be supported
   auto* fg3 = document.getElementById(AtomicString("fg3"));
   ASSERT_TRUE(fg3);
 
-  FocusgroupBehavior fg3_behavior = fg3->GetFocusgroupData().behavior;
-  FocusgroupFlags fg3_flags = fg3->GetFocusgroupData().flags;
-  EXPECT_EQ(fg3_behavior, FocusgroupBehavior::kListbox);
-  EXPECT_TRUE(fg3_flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(fg3_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(fg3->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kListbox,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 
   // 4. Only support inline because it's specified.
   auto* fg3_a = document.getElementById(AtomicString("fg3_a"));
   ASSERT_TRUE(fg3_a);
 
-  FocusgroupBehavior fg3_a_behavior = fg3_a->GetFocusgroupData().behavior;
-  FocusgroupFlags fg3_a_flags = fg3_a->GetFocusgroupData().flags;
-  EXPECT_EQ(fg3_a_behavior, FocusgroupBehavior::kMenu);
-  EXPECT_TRUE(fg3_a_flags & FocusgroupFlags::kInline);
-  EXPECT_FALSE(fg3_a_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(
+      fg3_a->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kMenu, FocusgroupFlags::kInline));
 
   // 5. Only support block because it's specified.
   auto* fg3_b = document.getElementById(AtomicString("fg3_b"));
   ASSERT_TRUE(fg3_b);
 
-  FocusgroupBehavior fg3_b_behavior = fg3_b->GetFocusgroupData().behavior;
-  FocusgroupFlags fg3_b_flags = fg3_b->GetFocusgroupData().flags;
-  EXPECT_EQ(fg3_b_behavior, FocusgroupBehavior::kMenubar);
-  EXPECT_FALSE(fg3_b_flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(fg3_b_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(
+      fg3_b->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kMenubar, FocusgroupFlags::kBlock));
 
   // 6. Child specifying only behavior should still support both axes.
   auto* fg3_b_1 = document.getElementById(AtomicString("fg3_b_1"));
   ASSERT_TRUE(fg3_b_1);
 
-  FocusgroupBehavior fg3_b_1_behavior = fg3_b_1->GetFocusgroupData().behavior;
-  FocusgroupFlags fg3_b_1_flags = fg3_b_1->GetFocusgroupData().flags;
-  EXPECT_EQ(fg3_b_1_behavior, FocusgroupBehavior::kRadiogroup);
-  EXPECT_TRUE(fg3_b_1_flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(fg3_b_1_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(fg3_b_1->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kRadiogroup,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
@@ -763,77 +747,68 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
   ASSERT_TRUE(fg11);
   ASSERT_TRUE(fg12);
 
-  FocusgroupBehavior fg1_behavior = fg1->GetFocusgroupData().behavior;
-  FocusgroupFlags fg1_flags = fg1->GetFocusgroupData().flags;
-  EXPECT_NE(fg1_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_FALSE(fg1_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_FALSE(fg1_flags & FocusgroupFlags::kWrapBlock);
+  // Parent supports both axes but no wrap - children should not inherit wrap
+  EXPECT_EQ(fg1->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kToolbar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 
-  FocusgroupBehavior fg2_behavior = fg2->GetFocusgroupData().behavior;
-  FocusgroupFlags fg2_flags = fg2->GetFocusgroupData().flags;
-  EXPECT_NE(fg2_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg2_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_FALSE(fg2_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(
+      fg2->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
-  FocusgroupBehavior fg3_behavior = fg3->GetFocusgroupData().behavior;
-  FocusgroupFlags fg3_flags = fg3->GetFocusgroupData().flags;
-  EXPECT_NE(fg3_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_FALSE(fg3_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_TRUE(fg3_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(
+      fg3->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
-  FocusgroupBehavior fg4_behavior = fg4->GetFocusgroupData().behavior;
-  FocusgroupFlags fg4_flags = fg4->GetFocusgroupData().flags;
-  EXPECT_NE(fg4_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg4_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_TRUE(fg4_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(fg4->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kToolbar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
+                               FocusgroupFlags::kWrapInline |
+                               FocusgroupFlags::kWrapBlock));
 
-  FocusgroupBehavior fg5_behavior = fg5->GetFocusgroupData().behavior;
-  FocusgroupFlags fg5_flags = fg5->GetFocusgroupData().flags;
-  EXPECT_NE(fg5_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_FALSE(fg5_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_FALSE(fg5_flags & FocusgroupFlags::kWrapBlock);
+  // Parent supports only inline axis - children inherit this restriction
+  EXPECT_EQ(
+      fg5->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
 
-  FocusgroupBehavior fg6_behavior = fg6->GetFocusgroupData().behavior;
-  FocusgroupFlags fg6_flags = fg6->GetFocusgroupData().flags;
-  EXPECT_NE(fg6_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg6_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_FALSE(fg6_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(
+      fg6->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
-  FocusgroupBehavior fg7_behavior = fg7->GetFocusgroupData().behavior;
-  FocusgroupFlags fg7_flags = fg7->GetFocusgroupData().flags;
-  EXPECT_NE(fg7_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_FALSE(fg7_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_TRUE(fg7_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(
+      fg7->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
-  FocusgroupBehavior fg8_behavior = fg8->GetFocusgroupData().behavior;
-  FocusgroupFlags fg8_flags = fg8->GetFocusgroupData().flags;
-  EXPECT_NE(fg8_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg8_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_TRUE(fg8_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(fg8->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kToolbar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
+                               FocusgroupFlags::kWrapInline |
+                               FocusgroupFlags::kWrapBlock));
 
-  FocusgroupBehavior fg9_behavior = fg9->GetFocusgroupData().behavior;
-  FocusgroupFlags fg9_flags = fg9->GetFocusgroupData().flags;
-  EXPECT_NE(fg9_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_FALSE(fg9_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_FALSE(fg9_flags & FocusgroupFlags::kWrapBlock);
+  // Parent supports only block axis - children inherit this restriction
+  EXPECT_EQ(
+      fg9->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kBlock));
 
-  FocusgroupBehavior fg10_behavior = fg10->GetFocusgroupData().behavior;
-  FocusgroupFlags fg10_flags = fg10->GetFocusgroupData().flags;
-  EXPECT_NE(fg10_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg10_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_FALSE(fg10_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(
+      fg10->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
-  FocusgroupBehavior fg11_behavior = fg11->GetFocusgroupData().behavior;
-  FocusgroupFlags fg11_flags = fg11->GetFocusgroupData().flags;
-  EXPECT_NE(fg11_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_FALSE(fg11_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_TRUE(fg11_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(
+      fg11->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
-  FocusgroupBehavior fg12_behavior = fg12->GetFocusgroupData().behavior;
-  FocusgroupFlags fg12_flags = fg12->GetFocusgroupData().flags;
-  EXPECT_NE(fg12_behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg12_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_TRUE(fg12_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(fg12->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kToolbar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
+                               FocusgroupFlags::kWrapInline |
+                               FocusgroupFlags::kWrapBlock));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
@@ -905,41 +880,45 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   FocusgroupData e14_data = e14->GetFocusgroupData();
   FocusgroupData e15_data = e15->GetFocusgroupData();
 
-  EXPECT_EQ(e1_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e2_data.behavior, FocusgroupBehavior::kGrid);
-
-  EXPECT_EQ(e3_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e3_data.flags,
-            (FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock));
-  EXPECT_EQ(e4_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e4_data.flags, (FocusgroupFlags::kWrapInline));
-  EXPECT_EQ(e5_data.flags, (FocusgroupFlags::kWrapBlock));
-  EXPECT_EQ(e5_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e6_data.flags,
-            (FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock));
-  EXPECT_EQ(e6_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e7_data.flags,
-            (FocusgroupFlags::kRowFlow | FocusgroupFlags::kColFlow));
-  EXPECT_EQ(e7_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e8_data.flags, (FocusgroupFlags::kRowFlow));
-  EXPECT_EQ(e8_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e9_data.flags, (FocusgroupFlags::kColFlow));
-  EXPECT_EQ(e9_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e10_data.flags,
-            (FocusgroupFlags::kRowFlow | FocusgroupFlags::kColFlow));
-  EXPECT_EQ(e10_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e11_data.flags, (FocusgroupFlags::kWrapInline));
-  EXPECT_EQ(e11_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e12_data.flags,
-            (FocusgroupFlags::kWrapInline | FocusgroupFlags::kColFlow));
-  EXPECT_EQ(e12_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e13_data.flags, FocusgroupFlags::kWrapBlock);
-  EXPECT_EQ(e13_data.behavior, FocusgroupBehavior::kGrid);
-  EXPECT_EQ(e14_data.flags,
-            (FocusgroupFlags::kWrapBlock | FocusgroupFlags::kRowFlow));
-  EXPECT_EQ(e14_data.behavior, FocusgroupBehavior::kGrid);
+  EXPECT_EQ(e1_data,
+            FocusgroupData(FocusgroupBehavior::kGrid, FocusgroupFlags::kNone));
+  EXPECT_EQ(e2_data,
+            FocusgroupData(FocusgroupBehavior::kGrid, FocusgroupFlags::kNone));
+  EXPECT_EQ(e3_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kWrapInline |
+                                        FocusgroupFlags::kWrapBlock));
+  EXPECT_EQ(e4_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kWrapInline));
+  EXPECT_EQ(e5_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kWrapBlock));
+  EXPECT_EQ(e6_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kWrapInline |
+                                        FocusgroupFlags::kWrapBlock));
+  EXPECT_EQ(e7_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kRowFlow |
+                                        FocusgroupFlags::kColFlow));
+  EXPECT_EQ(e8_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kRowFlow));
+  EXPECT_EQ(e9_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kColFlow));
+  EXPECT_EQ(e10_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                     FocusgroupFlags::kRowFlow |
+                                         FocusgroupFlags::kColFlow));
+  // e11 has conflicting wrap/flow for row axis, so should be invalid.
+  EXPECT_EQ(e11_data, FocusgroupData(FocusgroupBehavior::kNoBehavior,
+                                     FocusgroupFlags::kNone));
+  EXPECT_EQ(e12_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                     FocusgroupFlags::kWrapInline |
+                                         FocusgroupFlags::kColFlow));
+  // e13 has conflicting wrap/flow for column axis, so should be invalid.
+  EXPECT_EQ(e13_data, FocusgroupData(FocusgroupBehavior::kNoBehavior,
+                                     FocusgroupFlags::kNone));
+  EXPECT_EQ(e14_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                     FocusgroupFlags::kWrapBlock |
+                                         FocusgroupFlags::kRowFlow));
   // e15 should be invalid since "flow" isn't a behavior token
-  EXPECT_EQ(e15_data.behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(e15_data, FocusgroupData(FocusgroupBehavior::kNoBehavior,
+                                     FocusgroupFlags::kNone));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrOptOutNone) {
@@ -957,19 +936,17 @@ TEST_F(ElementTest, ParseFocusgroupAttrOptOutNone) {
   ASSERT_TRUE(b);
   ASSERT_TRUE(c);
 
-  FocusgroupBehavior a_behavior = a->GetFocusgroupData().behavior;
-  FocusgroupBehavior b_behavior = b->GetFocusgroupData().behavior;
-  FocusgroupBehavior c_behavior = c->GetFocusgroupData().behavior;
-
-  EXPECT_EQ(a_behavior, FocusgroupBehavior::kOptOut);
+  EXPECT_EQ(a->GetFocusgroupData(), FocusgroupData(FocusgroupBehavior::kOptOut,
+                                                   FocusgroupFlags::kNone));
   EXPECT_FALSE(focusgroup::IsActualFocusgroup(a->GetFocusgroupData()));
 
   // 'none' combined with other tokens should still opt-out (others ignored).
-  EXPECT_EQ(b_behavior, FocusgroupBehavior::kOptOut);
+  EXPECT_EQ(b->GetFocusgroupData(), FocusgroupData(FocusgroupBehavior::kOptOut,
+                                                   FocusgroupFlags::kNone));
   EXPECT_FALSE(focusgroup::IsActualFocusgroup(b->GetFocusgroupData()));
 
   EXPECT_TRUE(focusgroup::IsActualFocusgroup(c->GetFocusgroupData()));
-  EXPECT_NE(c_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_NE(c->GetFocusgroupData().behavior, FocusgroupBehavior::kNoBehavior);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
@@ -984,20 +961,19 @@ TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
 
-  FocusgroupData a_data = a->GetFocusgroupData();
-  FocusgroupData b_data = b->GetFocusgroupData();
-
   // Default axes (inline+block) plus no-memory.
-  EXPECT_TRUE(focusgroup::IsActualFocusgroup(a_data));
-  EXPECT_TRUE(a_data.flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(a_data.flags & FocusgroupFlags::kBlock);
-  EXPECT_TRUE(a_data.flags & FocusgroupFlags::kNoMemory);
+  EXPECT_EQ(a->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kToolbar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
+                               FocusgroupFlags::kNoMemory));
+  EXPECT_TRUE(focusgroup::IsActualFocusgroup(a->GetFocusgroupData()));
 
   // Explicit inline axis only + no-memory.
-  EXPECT_TRUE(focusgroup::IsActualFocusgroup(b_data));
-  EXPECT_TRUE(b_data.flags & FocusgroupFlags::kInline);
-  EXPECT_FALSE(b_data.flags & FocusgroupFlags::kBlock);
-  EXPECT_TRUE(b_data.flags & FocusgroupFlags::kNoMemory);
+  EXPECT_EQ(
+      b->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kListbox,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kNoMemory));
+  EXPECT_TRUE(focusgroup::IsActualFocusgroup(b->GetFocusgroupData()));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
@@ -1015,9 +991,10 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
   auto* fg2 = document.getElementById(AtomicString("fg2"));
   ASSERT_TRUE(fg2);
 
-  FocusgroupData fg2_data = fg2->GetFocusgroupData();
-  EXPECT_NE(fg2_data.behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg2_data.flags & FocusgroupFlags::kWrapInline);
+  EXPECT_EQ(
+      fg2->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kMenu,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
   // 2. Move |fg2| from |fg1| to |not-fg|.
   auto* not_fg = document.getElementById(AtomicString("not-fg"));
@@ -1027,9 +1004,10 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
 
   // 3. Validate that the focusgroup properties were updated correctly on |fg2|
   // after they moved to a different ancestor. (No change)
-  fg2_data = fg2->GetFocusgroupData();
-  EXPECT_NE(fg2_data.behavior, FocusgroupBehavior::kNoBehavior);
-  EXPECT_TRUE(fg2_data.flags & FocusgroupFlags::kWrapInline);
+  EXPECT_EQ(
+      fg2->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kMenu,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {
@@ -1045,58 +1023,57 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {
   auto* fg1 = document.getElementById(AtomicString("fg1"));
   ASSERT_TRUE(fg1);
 
-  FocusgroupBehavior fg1_behavior = fg1->GetFocusgroupData().behavior;
-  EXPECT_NE(fg1_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_NE(fg1->GetFocusgroupData().behavior, FocusgroupBehavior::kNoBehavior);
 
   auto* fg2 = document.getElementById(AtomicString("fg2"));
   ASSERT_TRUE(fg2);
 
-  FocusgroupBehavior fg2_behavior = fg2->GetFocusgroupData().behavior;
-  EXPECT_NE(fg2_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_NE(fg2->GetFocusgroupData().behavior, FocusgroupBehavior::kNoBehavior);
 
   // 2. Remove |fg1| from the DOM.
   fg1->remove();
 
   // 3. Validate that the focusgroup properties were cleared from both
   // focusgroups.
-  fg1_behavior = fg1->GetFocusgroupData().behavior;
-  EXPECT_EQ(fg1_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      fg1->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
-  fg2_behavior = fg2->GetFocusgroupData().behavior;
-  EXPECT_EQ(fg2_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      fg2->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 }
 
 TEST_F(ElementTest, FocusgroupFlagsToString) {
   // Only test flag combinations that the parser can currently produce.
   FocusgroupData none_data{FocusgroupBehavior::kNoBehavior,
                            FocusgroupFlags::kNone};
-  EXPECT_EQ("FocusgroupData(None)",
+  EXPECT_EQ("No behavior",
             focusgroup::FocusgroupDataToStringForTesting(none_data));
 
   // Behavior tokens - toolbar with inline axis.
   FocusgroupData toolbar_inline_data{FocusgroupBehavior::kToolbar,
                                      FocusgroupFlags::kInline};
-  EXPECT_EQ("FocusgroupData(Toolbar:FocusgroupFlags(Inline))",
+  EXPECT_EQ("toolbar:(inline)",
             focusgroup::FocusgroupDataToStringForTesting(toolbar_inline_data));
 
   // Behavior tokens - tablist with inline axis.
   FocusgroupData tablist_inline_data{FocusgroupBehavior::kTablist,
                                      FocusgroupFlags::kInline};
-  EXPECT_EQ("FocusgroupData(Tablist:FocusgroupFlags(Inline))",
+  EXPECT_EQ("tablist:(inline)",
             focusgroup::FocusgroupDataToStringForTesting(tablist_inline_data));
 
   // Behavior tokens - listbox with block axis.
   FocusgroupData listbox_block_data{FocusgroupBehavior::kListbox,
                                     FocusgroupFlags::kBlock};
-  EXPECT_EQ("FocusgroupData(Listbox:FocusgroupFlags(Block))",
+  EXPECT_EQ("listbox:(block)",
             focusgroup::FocusgroupDataToStringForTesting(listbox_block_data));
 
   // Behavior tokens - radiogroup with block axis.
   FocusgroupData radiogroup_block_data{FocusgroupBehavior::kRadiogroup,
                                        FocusgroupFlags::kBlock};
-  EXPECT_EQ(
-      "FocusgroupData(Radiogroup:FocusgroupFlags(Block))",
-      focusgroup::FocusgroupDataToStringForTesting(radiogroup_block_data));
+  EXPECT_EQ("radiogroup:(block)", focusgroup::FocusgroupDataToStringForTesting(
+                                      radiogroup_block_data));
 
   // Linear focusgroup with wrap inline only.
   FocusgroupData toolbar_wrap_inline_data{
@@ -1104,38 +1081,38 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
       static_cast<FocusgroupFlags>(FocusgroupFlags::kInline |
                                    FocusgroupFlags::kWrapInline)};
   EXPECT_EQ(
-      "FocusgroupData(Toolbar:FocusgroupFlags(Inline|WrapInline))",
+      "toolbar:(inline|wrap|row-wrap)",
       focusgroup::FocusgroupDataToStringForTesting(toolbar_wrap_inline_data));
 
   // Grid basic.
   FocusgroupData grid_basic_data{FocusgroupBehavior::kGrid,
                                  FocusgroupFlags::kNone};
-  EXPECT_EQ("FocusgroupData(Grid:FocusgroupFlags())",
+  EXPECT_EQ("grid:()",
             focusgroup::FocusgroupDataToStringForTesting(grid_basic_data));
 
   // Grid with row wrap only.
   FocusgroupData grid_wrap_inline_data{FocusgroupBehavior::kGrid,
                                        FocusgroupFlags::kWrapInline};
   EXPECT_EQ(
-      "FocusgroupData(Grid:FocusgroupFlags(WrapInline))",
+      "grid:(wrap|row-wrap)",
       focusgroup::FocusgroupDataToStringForTesting(grid_wrap_inline_data));
 
   // Grid with row flow only.
   FocusgroupData grid_row_flow_data{FocusgroupBehavior::kGrid,
                                     FocusgroupFlags::kRowFlow};
-  EXPECT_EQ("FocusgroupData(Grid:FocusgroupFlags(RowFlow))",
+  EXPECT_EQ("grid:(flow|row-flow)",
             focusgroup::FocusgroupDataToStringForTesting(grid_row_flow_data));
 
   // Grid with column flow only.
   FocusgroupData grid_col_flow_data{FocusgroupBehavior::kGrid,
                                     FocusgroupFlags::kColFlow};
-  EXPECT_EQ("FocusgroupData(Grid:FocusgroupFlags(ColFlow))",
+  EXPECT_EQ("grid:(flow|col-flow)",
             focusgroup::FocusgroupDataToStringForTesting(grid_col_flow_data));
 
   // Opt-out.
   FocusgroupData opt_out_data{FocusgroupBehavior::kOptOut,
                               FocusgroupFlags::kNone};
-  EXPECT_EQ("FocusgroupData(OptOut)",
+  EXPECT_EQ("none:()",
             focusgroup::FocusgroupDataToStringForTesting(opt_out_data));
 
   // No-memory modifier with block axis.
@@ -1144,7 +1121,7 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
       static_cast<FocusgroupFlags>(FocusgroupFlags::kBlock |
                                    FocusgroupFlags::kNoMemory)};
   EXPECT_EQ(
-      "FocusgroupData(Toolbar:FocusgroupFlags(Block|NoMemory))",
+      "toolbar:(block|no-memory)",
       focusgroup::FocusgroupDataToStringForTesting(toolbar_no_memory_data));
 }
 
@@ -1483,99 +1460,84 @@ TEST_F(ElementTest, ParseFocusgroupAttrBehaviorFirstRequirement) {
     <div id=valid_menu focusgroup="menu"></div>
     <div id=valid_menubar focusgroup="menubar"></div>
     <div id=valid_none focusgroup="none"></div>
-    <div id=multiple_behaviors focusgroup="toolbar menu"></div>
   )HTML");
 
   // Empty focusgroup should be invalid
   auto* invalid_empty = document.getElementById(AtomicString("invalid_empty"));
   ASSERT_TRUE(invalid_empty);
-  FocusgroupBehavior invalid_empty_behavior =
-      invalid_empty->GetFocusgroupData().behavior;
-  EXPECT_EQ(invalid_empty_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      invalid_empty->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
   // Non-behavior token first should be invalid
   auto* invalid_inline_first =
       document.getElementById(AtomicString("invalid_inline_first"));
   ASSERT_TRUE(invalid_inline_first);
-  FocusgroupBehavior invalid_inline_first_behavior =
-      invalid_inline_first->GetFocusgroupData().behavior;
-  EXPECT_EQ(invalid_inline_first_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      invalid_inline_first->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
   auto* invalid_wrap_first =
       document.getElementById(AtomicString("invalid_wrap_first"));
   ASSERT_TRUE(invalid_wrap_first);
-  FocusgroupBehavior invalid_wrap_first_behavior =
-      invalid_wrap_first->GetFocusgroupData().behavior;
-  EXPECT_EQ(invalid_wrap_first_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      invalid_wrap_first->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
   // Valid behavior tokens should work
   auto* valid_toolbar = document.getElementById(AtomicString("valid_toolbar"));
   ASSERT_TRUE(valid_toolbar);
-  FocusgroupBehavior toolbar_behavior =
-      valid_toolbar->GetFocusgroupData().behavior;
-  FocusgroupFlags toolbar_flags = valid_toolbar->GetFocusgroupData().flags;
-  EXPECT_EQ(toolbar_behavior, FocusgroupBehavior::kToolbar);
-  EXPECT_TRUE(toolbar_flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(toolbar_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(valid_toolbar->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kToolbar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 
   auto* valid_tablist = document.getElementById(AtomicString("valid_tablist"));
   ASSERT_TRUE(valid_tablist);
-  FocusgroupBehavior tablist_behavior =
-      valid_tablist->GetFocusgroupData().behavior;
-  FocusgroupFlags tablist_flags = valid_tablist->GetFocusgroupData().flags;
-  EXPECT_EQ(tablist_behavior, FocusgroupBehavior::kTablist);
-  EXPECT_TRUE(tablist_flags & FocusgroupFlags::kInline);
-  EXPECT_FALSE(tablist_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(
+      valid_tablist->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kTablist, FocusgroupFlags::kInline));
 
   auto* valid_radiogroup =
       document.getElementById(AtomicString("valid_radiogroup"));
   ASSERT_TRUE(valid_radiogroup);
-  FocusgroupBehavior radiogroup_behavior =
-      valid_radiogroup->GetFocusgroupData().behavior;
-  FocusgroupFlags radiogroup_flags =
-      valid_radiogroup->GetFocusgroupData().flags;
-  EXPECT_EQ(radiogroup_behavior, FocusgroupBehavior::kRadiogroup);
-  EXPECT_FALSE(radiogroup_flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(radiogroup_flags & FocusgroupFlags::kBlock);
+  EXPECT_EQ(
+      valid_radiogroup->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kRadiogroup, FocusgroupFlags::kBlock));
 
   auto* valid_listbox = document.getElementById(AtomicString("valid_listbox"));
   ASSERT_TRUE(valid_listbox);
-  FocusgroupBehavior listbox_behavior =
-      valid_listbox->GetFocusgroupData().behavior;
-  FocusgroupFlags listbox_flags = valid_listbox->GetFocusgroupData().flags;
-  EXPECT_EQ(listbox_behavior, FocusgroupBehavior::kListbox);
-  EXPECT_TRUE(listbox_flags & FocusgroupFlags::kWrapInline);
-  EXPECT_TRUE(listbox_flags & FocusgroupFlags::kWrapBlock);
+  EXPECT_EQ(valid_listbox->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kListbox,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
+                               FocusgroupFlags::kWrapInline |
+                               FocusgroupFlags::kWrapBlock));
 
   auto* valid_menu = document.getElementById(AtomicString("valid_menu"));
   ASSERT_TRUE(valid_menu);
-  FocusgroupBehavior menu_behavior = valid_menu->GetFocusgroupData().behavior;
-  EXPECT_EQ(menu_behavior, FocusgroupBehavior::kMenu);
+  EXPECT_EQ(valid_menu->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kMenu,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 
   auto* valid_menubar = document.getElementById(AtomicString("valid_menubar"));
   ASSERT_TRUE(valid_menubar);
-  FocusgroupBehavior menubar_behavior =
-      valid_menubar->GetFocusgroupData().behavior;
-  EXPECT_EQ(menubar_behavior, FocusgroupBehavior::kMenubar);
+  EXPECT_EQ(valid_menubar->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kMenubar,
+                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 
   auto* valid_none = document.getElementById(AtomicString("valid_none"));
   ASSERT_TRUE(valid_none);
-  FocusgroupBehavior none_behavior = valid_none->GetFocusgroupData().behavior;
-  EXPECT_EQ(none_behavior, FocusgroupBehavior::kOptOut);
-
-  // Multiple behavior tokens should be invalid
-  auto* multiple_behaviors =
-      document.getElementById(AtomicString("multiple_behaviors"));
-  ASSERT_TRUE(multiple_behaviors);
-  FocusgroupBehavior multiple_behavior =
-      multiple_behaviors->GetFocusgroupData().behavior;
-  EXPECT_EQ(multiple_behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(
+      valid_none->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kOptOut, FocusgroupFlags::kNone));
 }
 
 // Provide assertion-prettify function for gtest.
 namespace focusgroup {
 void PrintTo(FocusgroupFlags flags, std::ostream* os) {
   *os << FocusgroupFlagsToStringForTesting(flags).Utf8().c_str();
+}
+void PrintTo(FocusgroupData data, std::ostream* os) {
+  *os << FocusgroupDataToStringForTesting(data).Utf8().c_str();
 }
 }  // namespace focusgroup
 

@@ -87,11 +87,14 @@ inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
 struct FocusgroupData {
   FocusgroupBehavior behavior = FocusgroupBehavior::kNoBehavior;
   FocusgroupFlags flags = FocusgroupFlags::kNone;
+
+  bool operator==(const FocusgroupData& other) const = default;
+  bool operator!=(const FocusgroupData& other) const = default;
 };
 
 FocusgroupData FindNearestFocusgroupAncestorData(const Element* element);
-FocusgroupData ParseFocusgroup(const Element* element,
-                               const AtomicString& input);
+CORE_EXPORT FocusgroupData ParseFocusgroup(const Element* element,
+                                           const AtomicString& input);
 
 // Exported helper for tests and logging to obtain a string form.
 CORE_EXPORT String FocusgroupDataToStringForTesting(const FocusgroupData& data);
