@@ -55,7 +55,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Tests for {@link ClipboardSuggestionProcessor}. */
@@ -95,7 +94,7 @@ public class ClipboardSuggestionProcessorUnitTest {
                         mContext,
                         mSuggestionHost,
                         mTextProvider,
-                        Optional.of(mImageSupplier),
+                        mImageSupplier,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,

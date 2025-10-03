@@ -25,8 +25,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
-
 /** Handles translating the UrlBar model data to the view state. */
 @NullMarked
 class UrlBarViewBinder {
@@ -49,18 +47,20 @@ class UrlBarViewBinder {
                         autocomplete.userText,
                         autocomplete.autocompleteText,
                         TextUtils.isEmpty(autocomplete.additionalText)
-                                ? Optional.empty()
-                                : Optional.of(autocomplete.additionalText));
+                                ? null
+                                : autocomplete.additionalText);
             }
         } else if (UrlBarProperties.DELEGATE.equals(propertyKey)) {
             view.setDelegate(model.get(UrlBarProperties.DELEGATE));
         } else if (UrlBarProperties.FOCUS_CHANGE_CALLBACK.equals(propertyKey)) {
-            final Optional<Callback<Boolean>> focusChangeCallback =
-                    Optional.ofNullable(model.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK));
+            final Callback<Boolean> focusChangeCallback =
+                    model.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK);
             view.setOnFocusChangeListener(
                     (v, focused) -> {
                         if (focused) view.setIgnoreTextChangesForAutocomplete(false);
-                        focusChangeCallback.ifPresent(cb -> cb.onResult(focused));
+                        if (focusChangeCallback != null) {
+                            focusChangeCallback.onResult(focused);
+                        }
                     });
         } else if (UrlBarProperties.SHOW_CURSOR.equals(propertyKey)) {
             view.setCursorVisible(model.get(UrlBarProperties.SHOW_CURSOR));

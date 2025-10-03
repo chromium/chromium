@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -34,13 +35,12 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** SuggestionProcessor for Most Visited URL tiles. */
 @NullMarked
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final SuggestionHost mSuggestionHost;
-    private final Optional<OmniboxImageSupplier> mImageSupplier;
+    private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final @Px int mCarouselItemViewWidth;
     private final @Px int mCarouselItemViewHeight;
     private final @Px int mInitialSpacing;
@@ -204,31 +204,29 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
         // Fetch site favicon for MV tiles.
         if (!isSearch) {
-            mImageSupplier.ifPresent(
-                    s ->
-                            s.fetchFavicon(
-                                    url,
-                                    icon -> {
-                                        if (icon == null) {
-                                            s.generateFavicon(
-                                                    url,
-                                                    fallback -> {
-                                                        if (fallback == null) return;
-                                                        model.set(
-                                                                TileViewProperties.ICON,
-                                                                new BitmapDrawable(
-                                                                        mContext.getResources(),
-                                                                        fallback));
-                                                        model.set(
-                                                                TileViewProperties.ICON_TINT, null);
-                                                    });
-                                            return;
-                                        }
-                                        model.set(
-                                                TileViewProperties.ICON,
-                                                new BitmapDrawable(mContext.getResources(), icon));
-                                        model.set(TileViewProperties.ICON_TINT, null);
-                                    }));
+            if (mImageSupplier != null) {
+                mImageSupplier.fetchFavicon(
+                        url,
+                        icon -> {
+                            if (icon == null) {
+                                mImageSupplier.generateFavicon(
+                                        url,
+                                        fallback -> {
+                                            if (fallback == null) return;
+                                            model.set(
+                                                    TileViewProperties.ICON,
+                                                    new BitmapDrawable(
+                                                            mContext.getResources(), fallback));
+                                            model.set(TileViewProperties.ICON_TINT, null);
+                                        });
+                                return;
+                            }
+                            model.set(
+                                    TileViewProperties.ICON,
+                                    new BitmapDrawable(mContext.getResources(), icon));
+                            model.set(TileViewProperties.ICON_TINT, null);
+                        });
+            }
         }
 
         return model;

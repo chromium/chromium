@@ -16,8 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.Optional;
-
 /** An abstraction of the text model to show, keep track of, and update autocomplete. */
 @NullMarked
 public interface AutocompleteEditTextModelBase {
@@ -187,7 +185,7 @@ public interface AutocompleteEditTextModelBase {
      *     default match.
      */
     @VisibleForTesting
-    Optional<String> getAdditionalText();
+    @Nullable String getAdditionalText();
 
     /**
      * Sets whether text changes should trigger autocomplete.
@@ -208,7 +206,7 @@ public interface AutocompleteEditTextModelBase {
     void setAutocompleteText(
             CharSequence userText,
             @Nullable CharSequence inlineAutocompleteText,
-            Optional<String> additionalText);
+            @Nullable String additionalText);
 
     /**
      * Whether we want to be showing inline autocomplete results. We don't want to show them as the

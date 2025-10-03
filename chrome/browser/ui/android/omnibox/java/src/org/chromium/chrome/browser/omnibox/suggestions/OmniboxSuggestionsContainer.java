@@ -35,8 +35,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
-import java.util.Optional;
-
 /**
  * A view that contains the omnibox suggestions dropdown. This view is responsible for measuring and
  * positioning the dropdown.
@@ -44,7 +42,7 @@ import java.util.Optional;
 @NullMarked
 public class OmniboxSuggestionsContainer extends FrameLayout {
     private OmniboxSuggestionsDropdown mDropdown;
-    private Optional<OmniboxSuggestionsDropdownEmbedder> mEmbedder = Optional.empty();
+    private @Nullable OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private @Nullable Callback<Integer> mHeightChangeListener;
     private OmniboxAlignment mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
 
@@ -65,7 +63,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        boolean isTablet = mEmbedder.map(e -> e.isTablet()).orElse(false);
+        boolean isTablet = mEmbedder != null && mEmbedder.isTablet();
 
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
                 TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime();
@@ -163,7 +161,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
         // Don't reset the current value of `mOmniboxAlignment`, and don't read the value from newly
         // installed embedder to ensure the `onOmniboxAlignmentChanged` does the right thing when we
         // install our observers.
-        mEmbedder = Optional.of(embedder);
+        mEmbedder = embedder;
     }
 
     /**
@@ -181,19 +179,17 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
     }
 
     private void installAlignmentObserver() {
-        mEmbedder.ifPresent(
-                e -> {
-                    e.onAttachedToWindow();
-                    mOmniboxAlignment = e.addAlignmentObserver(mOmniboxAlignmentObserver);
-                });
+        if (mEmbedder != null) {
+            mEmbedder.onAttachedToWindow();
+            mOmniboxAlignment = mEmbedder.addAlignmentObserver(mOmniboxAlignmentObserver);
+        }
     }
 
     private void removeAlignmentObserver() {
-        mEmbedder.ifPresent(
-                e -> {
-                    e.onDetachedFromWindow();
-                    e.removeAlignmentObserver(mOmniboxAlignmentObserver);
-                });
+        if (mEmbedder != null) {
+            mEmbedder.onDetachedFromWindow();
+            mEmbedder.removeAlignmentObserver(mOmniboxAlignmentObserver);
+        }
 
         if (!OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
             mDropdown.getRecycledViewPool().clear();

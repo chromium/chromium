@@ -31,7 +31,6 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Tests for {@link TailSuggestionProcessor}. */
@@ -58,7 +57,7 @@ public class TailSuggestionProcessorUnitTest {
                         RuntimeEnvironment.application,
                         mSuggestionHost,
                         mTextProvider,
-                        Optional.of(mImageSupplier),
+                        mImageSupplier,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,

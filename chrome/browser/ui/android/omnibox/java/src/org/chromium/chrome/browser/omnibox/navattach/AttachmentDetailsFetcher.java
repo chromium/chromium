@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecycl
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 /**
  * An AsyncTask that fetches attachment details (thumbnail, title, and description) from a content
@@ -34,7 +33,7 @@ import java.util.Optional;
  */
 @NullMarked
 class AttachmentDetailsFetcher
-        extends AsyncTask<Optional<AttachmentDetailsFetcher.AttachmentDetails>> {
+        extends AsyncTask<AttachmentDetailsFetcher.@Nullable AttachmentDetails> {
 
     /** A container for the fetched attachment details. */
     public static final class AttachmentDetails {
@@ -76,7 +75,7 @@ class AttachmentDetailsFetcher
     }
 
     @Override
-    protected Optional<AttachmentDetails> doInBackground() {
+    protected @Nullable AttachmentDetails doInBackground() {
         Drawable thumbnail = null;
         try {
             thumbnail =
@@ -117,29 +116,24 @@ class AttachmentDetailsFetcher
         // Bail: don't add the item if we miss metadata.
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(mimeType);
-        if (title == null || mimeType == null) return Optional.empty();
+        if (title == null || mimeType == null) return null;
 
         byte[] data;
 
         try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
-            if (inputStream == null) return Optional.empty();
+            if (inputStream == null) return null;
             data = FileUtils.readStream(inputStream);
         } catch (IOException e) {
-            return Optional.empty();
+            return null;
         }
 
-        return Optional.of(
-                new AttachmentDetails(
-                        NavigationAttachmentItemType.ATTACHMENT_ITEM,
-                        thumbnail,
-                        title,
-                        mimeType,
-                        data));
+        return new AttachmentDetails(
+                NavigationAttachmentItemType.ATTACHMENT_ITEM, thumbnail, title, mimeType, data);
     }
 
     @Override
-    protected void onPostExecute(Optional<AttachmentDetails> result) {
-        if (result.isEmpty()) return;
-        mCallback.onResult(result.get());
+    protected void onPostExecute(@Nullable AttachmentDetails result) {
+        if (result == null) return;
+        mCallback.onResult(result);
     }
 }

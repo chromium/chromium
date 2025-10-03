@@ -57,7 +57,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Tests for {@link EntitySuggestionProcessor}. */
@@ -130,7 +129,7 @@ public class EntitySuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mTextProvider,
-                        Optional.of(mImageSupplier),
+                        mImageSupplier,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
@@ -223,7 +222,7 @@ public class EntitySuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mTextProvider,
-                        /* imageSupplier= */ Optional.empty(),
+                        /* imageSupplier= */ null,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,

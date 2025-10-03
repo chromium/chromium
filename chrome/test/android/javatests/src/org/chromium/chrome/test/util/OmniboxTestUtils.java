@@ -55,7 +55,6 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -410,7 +409,7 @@ public class OmniboxTestUtils {
                 () -> {
                     mUrlBar.setText(userText);
                     // Push this to the model as well.
-                    mUrlBar.setAutocompleteText(userText, "", Optional.empty());
+                    mUrlBar.setAutocompleteText(userText, "", null);
                 });
         checkText(Matchers.equalTo(userText), null);
     }
@@ -442,7 +441,7 @@ public class OmniboxTestUtils {
      * @param autocompleteText The suggested autocompletion for the text.
      * @param additionalText The additional autocompletion for the text.
      */
-    public void setAutocompleteText(String autocompleteText, Optional<String> additionalText) {
+    public void setAutocompleteText(String autocompleteText, @Nullable String additionalText) {
         checkFocus(true);
 
         AtomicReference<String> userText = new AtomicReference<>();
@@ -543,9 +542,10 @@ public class OmniboxTestUtils {
                         }
 
                         if (additionalTextMatcher != null) {
+                            String additionalText = mUrlBar.getAdditionalText();
                             Criteria.checkThat(
                                     "Additional Text should match",
-                                    mUrlBar.getAdditionalText().orElse(""),
+                                    additionalText != null ? additionalText : "",
                                     additionalTextMatcher);
                         }
 

@@ -38,7 +38,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.Optional;
 
 /** A class that handles base properties and model for most suggestions. */
 @NullMarked
@@ -47,7 +46,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected final Context mContext;
     protected final SuggestionHost mSuggestionHost;
     private final ActionChipsProcessor mActionChipsProcessor;
-    private final Optional<OmniboxImageSupplier> mImageSupplier;
+    private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
@@ -347,17 +346,16 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param url Target URL the suggestion points to.
      */
     protected void fetchSuggestionFavicon(PropertyModel model, GURL url) {
-        mImageSupplier.ifPresent(
-                s ->
-                        s.fetchFavicon(
-                                url,
-                                icon -> {
-                                    if (icon != null) {
-                                        setOmniboxDrawableState(
-                                                model,
-                                                OmniboxDrawableState.forFavIcon(mContext, icon));
-                                    }
-                                }));
+        if (mImageSupplier != null) {
+            mImageSupplier.fetchFavicon(
+                    url,
+                    icon -> {
+                        if (icon != null) {
+                            setOmniboxDrawableState(
+                                    model, OmniboxDrawableState.forFavIcon(mContext, icon));
+                        }
+                    });
+        }
     }
 
     /**
@@ -368,16 +366,15 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param imageUrl the URL of the image to retrieve and decode
      */
     protected void fetchImage(PropertyModel model, GURL imageUrl) {
-        mImageSupplier.ifPresent(
-                s ->
-                        s.fetchImage(
-                                imageUrl,
-                                bitmap -> {
-                                    if (bitmap != null) {
-                                        setOmniboxDrawableState(
-                                                model,
-                                                OmniboxDrawableState.forImage(mContext, bitmap));
-                                    }
-                                }));
+        if (mImageSupplier != null) {
+            mImageSupplier.fetchImage(
+                    imageUrl,
+                    bitmap -> {
+                        if (bitmap != null) {
+                            setOmniboxDrawableState(
+                                    model, OmniboxDrawableState.forImage(mContext, bitmap));
+                        }
+                    });
+        }
     }
 }

@@ -59,7 +59,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Tests for {@link BaseSuggestionViewProcessor}. */
@@ -129,7 +128,7 @@ public class BaseSuggestionProcessorUnitTest {
                         mContext,
                         mSuggestionHost,
                         mTextProvider,
-                        Optional.of(mImageSupplier),
+                        mImageSupplier,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,

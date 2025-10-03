@@ -30,8 +30,6 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-import java.util.Optional;
-
 /** An {@link EditText} that shows autocomplete text at the end. */
 @NullMarked
 public class AutocompleteEditText extends VerticallyFixedEditText
@@ -145,8 +143,8 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      *     match.
      */
     @VisibleForTesting
-    public Optional<String> getAdditionalText() {
-        if (mModel == null) return Optional.empty();
+    public @Nullable String getAdditionalText() {
+        if (mModel == null) return null;
         return mModel.getAdditionalText();
     }
 
@@ -223,7 +221,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
     public void setAutocompleteText(
             CharSequence userText,
             @Nullable CharSequence inlineAutocompleteText,
-            Optional<String> additionalText) {
+            @Nullable String additionalText) {
         boolean emptyAutocomplete = TextUtils.isEmpty(inlineAutocompleteText);
         if (!emptyAutocomplete) mDisableTextScrollingFromAutocomplete = true;
         if (mModel != null) {

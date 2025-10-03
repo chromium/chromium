@@ -64,7 +64,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -127,7 +126,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                         mContext,
                         mSuggestionHost,
                         mTextProvider,
-                        Optional.of(mImageSupplier),
+                        mImageSupplier,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
@@ -213,7 +212,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                         mContext,
                         mSuggestionHost,
                         mTextProvider,
-                        /* imageSupplier= */ Optional.empty(),
+                        /* imageSupplier= */ null,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,

@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -38,7 +37,7 @@ public final class AutocompleteUIContext {
     public final UrlBarEditingTextStateProvider textProvider;
 
     /** Image supplier for suggestion icons, empty on low-memory devices. */
-    public final Optional<OmniboxImageSupplier> imageSupplier;
+    public final @Nullable OmniboxImageSupplier imageSupplier;
 
     /** Bookmark state provider for determining bookmark status of suggestions. */
     public final BookmarkState bookmarkState;
@@ -65,7 +64,7 @@ public final class AutocompleteUIContext {
             Context context,
             SuggestionHost host,
             UrlBarEditingTextStateProvider textProvider,
-            Optional<OmniboxImageSupplier> imageSupplier,
+            @Nullable OmniboxImageSupplier imageSupplier,
             BookmarkState bookmarkState,
             Supplier<@Nullable Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,

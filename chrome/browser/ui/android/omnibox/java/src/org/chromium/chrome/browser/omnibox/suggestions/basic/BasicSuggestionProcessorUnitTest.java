@@ -57,7 +57,6 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Tests for {@link BasicSuggestionProcessor}. */
@@ -146,7 +145,7 @@ public class BasicSuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mUrlBarText,
-                        Optional.of(mImageSupplier),
+                        mImageSupplier,
                         mIsBookmarked,
                         mTabSupplier,
                         mShareDelegateSupplier,

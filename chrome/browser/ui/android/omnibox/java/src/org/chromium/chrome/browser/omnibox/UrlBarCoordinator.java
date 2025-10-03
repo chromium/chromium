@@ -25,7 +25,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Optional;
 
 /** Coordinates the interactions with the UrlBar text component. */
 @NullMarked
@@ -50,7 +49,7 @@ public class UrlBarCoordinator
     private final UrlBarMediator mMediator;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Callback<Boolean> mFocusChangeCallback;
-    private Optional<Runnable> mKeyboardHideTask = Optional.empty();
+    private @Nullable Runnable mKeyboardHideTask;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -98,7 +97,9 @@ public class UrlBarCoordinator
     public void destroy() {
         mMediator.destroy();
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
-        mKeyboardHideTask.ifPresent(r -> mUrlBar.removeCallbacks(r));
+        if (mKeyboardHideTask != null) {
+            mUrlBar.removeCallbacks(mKeyboardHideTask);
+        }
         mUrlBar.destroy();
     }
 
@@ -292,8 +293,10 @@ public class UrlBarCoordinator
      */
     public void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
         // Cancel pending jobs to prevent any possibility of keyboard flicker.
-        mKeyboardHideTask.ifPresent(r -> mUrlBar.removeCallbacks(r));
-        mKeyboardHideTask = Optional.empty();
+        if (mKeyboardHideTask != null) {
+            mUrlBar.removeCallbacks(mKeyboardHideTask);
+        }
+        mKeyboardHideTask = null;
 
         // Note: due to nature of this mechanism, we may occasionally experience subsequent requests
         // to show or hide keyboard anyway. This may happen when we schedule keyboard hide, and
@@ -304,13 +307,11 @@ public class UrlBarCoordinator
             // The animation rendering may not yet be 100% complete and hiding the keyboard makes
             // the animation quite choppy.
             mKeyboardHideTask =
-                    Optional.of(
-                            () -> {
-                                mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
-                                mKeyboardHideTask = Optional.empty();
-                            });
-            mUrlBar.postDelayed(
-                    mKeyboardHideTask.get(), shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
+                    () -> {
+                        mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
+                        mKeyboardHideTask = null;
+                    };
+            mUrlBar.postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
             // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
             // of time in hopes the keyboard will be completely hidden before making this change).
         }

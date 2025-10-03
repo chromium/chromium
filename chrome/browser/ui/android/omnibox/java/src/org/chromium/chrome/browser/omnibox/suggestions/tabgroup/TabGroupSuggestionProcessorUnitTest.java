@@ -47,7 +47,6 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Tests for {@link TabGroupSuggestionProcessor}. */
@@ -84,7 +83,7 @@ public class TabGroupSuggestionProcessorUnitTest {
                         mContext,
                         mSuggestionHost,
                         mTextProvider,
-                        Optional.of(mImageSupplier),
+                        mImageSupplier,
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,

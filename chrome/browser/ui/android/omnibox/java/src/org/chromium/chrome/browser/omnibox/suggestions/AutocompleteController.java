@@ -29,7 +29,6 @@ import org.chromium.url.GURL;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -54,7 +53,7 @@ public class AutocompleteController {
 
     private final Set<OnSuggestionsReceivedListener> mListeners = new HashSet<>();
     private long mNativeController;
-    private Optional<AutocompleteResult> mAutocompleteResult = Optional.empty();
+    private @Nullable AutocompleteResult mAutocompleteResult;
 
     /** Listener for receiving OmniboxSuggestions. */
     public interface OnSuggestionsReceivedListener {
@@ -202,9 +201,9 @@ public class AutocompleteController {
         // Skip suggestions from cache.
         OmniboxMetrics.recordUsedSuggestionFromCache(match.getNativeObjectRef() == 0L);
         if (match.getNativeObjectRef() == 0L) return false;
-        return mAutocompleteResult
-                .map(res -> res.verifyCoherency(AutocompleteResult.NO_SUGGESTION_INDEX, reason))
-                .orElse(false);
+        return mAutocompleteResult != null
+                && mAutocompleteResult.verifyCoherency(
+                        AutocompleteResult.NO_SUGGESTION_INDEX, reason);
     }
 
     /**
@@ -243,7 +242,7 @@ public class AutocompleteController {
     @CalledByNative
     @VisibleForTesting
     public void onSuggestionsReceived(AutocompleteResult autocompleteResult, boolean isFinal) {
-        mAutocompleteResult = Optional.of(autocompleteResult);
+        mAutocompleteResult = autocompleteResult;
 
         // Notify callbacks of suggestions.
         for (OnSuggestionsReceivedListener listener : mListeners) {
