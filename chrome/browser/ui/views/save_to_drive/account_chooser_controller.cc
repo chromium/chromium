@@ -21,8 +21,8 @@ namespace {
 // window. Otherwise, the popup window is centered in the screen.
 gfx::Rect ComputePopupWindowBounds(content::WebContents* source_window) {
   gfx::Rect source_window_bounds = source_window->GetContainerBounds();
-  const int kPopupWindowWidth = 400;
-  const int kPopupWindowHeight = 484;
+  const int kPopupWindowWidth = 500;
+  const int kPopupWindowHeight = 600;
   int x_coordinate;
   int y_coordinate;
 
