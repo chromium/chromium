@@ -98,7 +98,6 @@ struct ShortcutsWidget: Widget {
 }
 
 #if IOS_ENABLE_WIDGETS_FOR_MIM
-  @available(iOS 17, *)
   // Provides the configuration and content of a widget to display on the Home screen.
   struct ShortcutsWidgetConfigurable: Widget {
     // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
@@ -129,7 +128,6 @@ struct ShortcutsWidget: Widget {
   }
 
   // Advises WidgetKit when to update a widget’s display.
-  @available(iOS 17, *)
   struct ConfigurableShortcutsWidgetEntryProvider: AppIntentTimelineProvider {
 
     // A type that specifies the entry of the configured timeline entry of the widget.

@@ -82,7 +82,6 @@ struct AccountDetail: AppEntity {
   }
 }
 
-@available(iOS 17, *)
 struct SelectAccountIntent: WidgetConfigurationIntent {
   static let title: LocalizedStringResource = "Select Account"
   static let description = IntentDescription(

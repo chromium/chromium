@@ -85,7 +85,6 @@ struct QuickActionsWidget: Widget {
 }
 
 #if IOS_ENABLE_WIDGETS_FOR_MIM
-  @available(iOS 17, *)
   struct QuickActionsWidgetConfigurable: Widget {
     // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
     // stop updating and show the placeholder state.
@@ -111,7 +110,6 @@ struct QuickActionsWidget: Widget {
   }
 
   // Advises WidgetKit when to update a widget’s display.
-  @available(iOS 17, *)
   struct ConfigurableQuickActionsWidgetEntryProvider: AppIntentTimelineProvider {
 
     func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {

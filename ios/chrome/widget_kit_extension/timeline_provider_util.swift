@@ -44,7 +44,6 @@ struct Provider: TimelineProvider {
 }
 
 #if IOS_ENABLE_WIDGETS_FOR_MIM
-  @available(iOS 17, *)
   struct ConfigurableProvider: AppIntentTimelineProvider {
     typealias Entry = ConfigureWidgetEntry
 

@@ -20,7 +20,6 @@ struct ChromeWidgetsMain {
   }
 }
 
-@available(iOS 17, *)
 struct ChromeWidgetsForMIM: WidgetBundle {
   @WidgetBundleBuilder
   var body: some Widget {
