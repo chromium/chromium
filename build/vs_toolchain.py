@@ -538,7 +538,11 @@ def Update(force=False, no_download=False):
         # ciopfs not found in PATH; try the one downloaded from the DEPS hook.
         ciopfs = os.path.join(script_dir, 'ciopfs')
       if not os.path.isdir(toolchain_dir):
-        os.mkdir(toolchain_dir)
+        try:
+          os.mkdir(toolchain_dir)
+        except FileExistsError:
+          # ciopfsd died, but fuse is still mounted.
+          subprocess.check_call(["fusermount", "-u", toolchain_dir])
       if not os.path.isdir(toolchain_dir + '.ciopfs'):
         os.mkdir(toolchain_dir + '.ciopfs')
       # Without use_ino, clang's #pragma once and Wnonportable-include-path
