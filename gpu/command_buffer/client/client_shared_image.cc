@@ -56,58 +56,6 @@ namespace gpu {
 
 namespace {
 
-class TestMappableBuffer : public MappableBuffer {
- public:
-  TestMappableBuffer(const gfx::Size& size, viz::SharedImageFormat format)
-      : size_(size), format_(format) {
-    size_t allocation_size = 0;
-    for (int plane_index = 0; plane_index < format_.NumberOfPlanes();
-         plane_index++) {
-      size_t height_in_pixels =
-          format_.GetPlaneSize(plane_index, size_).height();
-      CHECK(height_in_pixels);
-      allocation_size += stride(plane_index) * height_in_pixels;
-    }
-
-    data_ = std::vector<uint8_t>(allocation_size);
-  }
-
-  ~TestMappableBuffer() override = default;
-
-  // MappableBuffer:
-  bool Map() override { return true; }
-  void MapAsync(base::OnceCallback<void(bool)> result_cb) override {
-    NOTREACHED();
-  }
-  bool AsyncMappingIsNonBlocking() const override { return false; }
-  void* memory(size_t plane) override {
-    auto* data_ptr = data_.data();
-    return data_ptr +
-           viz::SharedMemoryOffsetForSharedImageFormat(format_, plane, size_);
-  }
-  void Unmap() override {}
-  int stride(size_t plane) const override {
-    DCHECK_LT(static_cast<int>(plane), format_.NumberOfPlanes());
-    return viz::SharedMemoryRowSizeForSharedImageFormat(format_, plane,
-                                                        size_.width())
-        .value();
-  }
-  gfx::GpuMemoryBufferType GetType() const override {
-    return gfx::SHARED_MEMORY_BUFFER;
-  }
-  gfx::GpuMemoryBufferHandle CloneHandle() const override { NOTREACHED(); }
-#if BUILDFLAG(IS_WIN)
-  void SetUsePreMappedMemory(bool use_premapped_memory) override {
-    NOTREACHED();
-  }
-#endif
-
- private:
-  gfx::Size size_;
-  viz::SharedImageFormat format_;
-  std::vector<uint8_t> data_;
-};
-
 class ScopedMappingMappableBuffer : public ClientSharedImage::ScopedMapping {
  public:
   ScopedMappingMappableBuffer(const gfx::Size& size,
@@ -779,11 +727,9 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
   SharedImageInfo info(metadata, "CSICreateForTesting");
 
-  auto client_si = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, info, sync_token, sii_holder, gfx::SHARED_MEMORY_BUFFER);
+  auto client_si =
+      CreateForTesting(mailbox, metadata, sync_token, buffer_usage, sii_holder);
   client_si->async_map_invoked_callback_for_testing_ = callback;
-  client_si->mappable_buffer_ =
-      std::make_unique<TestMappableBuffer>(info.meta.size, info.meta.format);
   client_si->premapped_for_testing_ = premapped;
   client_si->buffer_usage_ = buffer_usage;
   return client_si;
