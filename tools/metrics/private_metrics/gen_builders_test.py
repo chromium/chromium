@@ -6,15 +6,15 @@
 import unittest
 
 import codegen
-import builders_template
-import decode_template
+import dwa_builders_template
+import dwa_decode_template
 import dwa_model
 import os
 
 _FILE_DIR = os.path.dirname(__file__)
 
 
-class GenBuildersTest(unittest.TestCase):
+class GenBuildersDwaTest(unittest.TestCase):
 
   def setUp(self) -> None:
     self.relpath = '.'
@@ -35,7 +35,7 @@ class GenBuildersTest(unittest.TestCase):
   def testBuildersHeaderOutput(self) -> None:
     # Not using codegen.Template.WriteFile to avoid non-deterministic test
     # behaviour after writing to disk.
-    builders_header_output = builders_template.HEADER._StampFileCode(
+    builders_header_output = dwa_builders_template.HEADER._StampFileCode(
         self.relpath, self.data)
     self.assertIsNotNone(builders_header_output)
     self.assertIn("// Generated from gen_builders.py.  DO NOT EDIT!",
@@ -75,7 +75,7 @@ class {name} final : public ::dwa::internal::DwaEntryBuilderBase {{
            studyHash=self.study_info.hash), builders_header_output)
 
   def testBuildersImplementationOutput(self) -> None:
-    builders_impl_output = builders_template.IMPL._StampFileCode(
+    builders_impl_output = dwa_builders_template.IMPL._StampFileCode(
         self.relpath, self.data)
     self.assertIsNotNone(builders_impl_output)
     self.assertIn("// Generated from gen_builders.py.  DO NOT EDIT!",
@@ -120,7 +120,7 @@ const uint64_t {eventName}::k{metricName}NameHash;
            studyRawName=self.study_info.raw_name), builders_impl_output)
 
   def testDecodeHeaderOutput(self) -> None:
-    decode_header_output = decode_template.HEADER._StampFileCode(
+    decode_header_output = dwa_decode_template.HEADER._StampFileCode(
         self.relpath, self.data)
     self.assertIsNotNone(decode_header_output)
     self.assertIn("// Generated from gen_builders.py.  DO NOT EDIT!",
@@ -138,7 +138,7 @@ typedef std::map<uint64_t, EntryDecoder> DecodeMap;
 DecodeMap CreateDecodeMap();""", decode_header_output)
 
   def testDecodeImplementationOutput(self) -> None:
-    decode_impl_output = decode_template.IMPL._StampFileCode(
+    decode_impl_output = dwa_decode_template.IMPL._StampFileCode(
         self.relpath, self.data)
     self.assertIsNotNone(decode_impl_output)
     self.assertIn("// Generated from gen_builders.py.  DO NOT EDIT!",
@@ -156,7 +156,7 @@ DecodeMap CreateDecodeMap();""", decode_header_output)
                studyName=self.study_info.name), decode_impl_output)
 
   def testBuildersHeaderOutputFromDwaTest(self) -> None:
-    builders_header_output = builders_template.HEADER._StampFileCode(
+    builders_header_output = dwa_builders_template.HEADER._StampFileCode(
         self.relpath, self.dwa_test_data)
     self.assertEqual(
         builders_header_output, """
@@ -216,7 +216,7 @@ class DwaTestMetric final : public ::dwa::internal::DwaEntryBuilderBase {
 """)
 
   def testBuildersImplementationOutputFromDwaTest(self) -> None:
-    builders_impl_output = builders_template.IMPL._StampFileCode(
+    builders_impl_output = dwa_builders_template.IMPL._StampFileCode(
         self.relpath, self.dwa_test_data)
     self.assertEqual(
         builders_impl_output, """
@@ -236,7 +236,7 @@ const uint64_t DwaTestMetric::kEntryNameHash;
 
 DwaTestMetric::DwaTestMetric() :
   ::dwa::internal::DwaEntryBuilderBase(kEntryNameHash) {
-  
+
   AddToStudiesOfInterestInternal(kACTStudyName);
 
   AddToStudiesOfInterestInternal(kLegacyStudyName);
@@ -280,7 +280,7 @@ DwaTestMetric& DwaTestMetric::SetLatency(int64_t value) {
 """)
 
   def testDecodeHeaderOutputFromDwaTest(self) -> None:
-    decode_header_output = decode_template.HEADER._StampFileCode(
+    decode_header_output = dwa_decode_template.HEADER._StampFileCode(
         self.relpath, self.dwa_test_data)
     self.assertEqual(
         decode_header_output, """
@@ -313,7 +313,7 @@ DecodeMap CreateDecodeMap();
 """)
 
   def testDecodeImplementationOutputFromDwaTest(self) -> None:
-    decode_impl_output = decode_template.IMPL._StampFileCode(
+    decode_impl_output = dwa_decode_template.IMPL._StampFileCode(
         self.relpath, self.dwa_test_data)
     self.assertEqual(
         decode_impl_output, """
@@ -328,20 +328,20 @@ namespace builders {
 
 std::map<uint64_t, EntryDecoder> CreateDecodeMap() {
   return {
-    
+
     {
       UINT64_C(10084375266486398523),
       {
         DwaTestMetric::kEntryName,
         {
-          
+
     {DwaTestMetric::kHasVideoNameHash, DwaTestMetric::kHasVideoName},
 
     {DwaTestMetric::kLatencyNameHash, DwaTestMetric::kLatencyName},
 
         },
         {
-          
+
     {DwaTestMetric::kACTStudyNameHash, DwaTestMetric::kACTStudyName},
 
     {DwaTestMetric::kLegacyStudyNameHash, DwaTestMetric::kLegacyStudyName},

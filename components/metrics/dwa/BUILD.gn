@@ -1,41 +1,8 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//tools/metrics/private_metrics/gen_builders.gni")
 
-action("gen_private_metrics_builders") {
-  script = "//tools/metrics/private_metrics/gen_builders.py"
-
-  # Re-generate the outputs if the codegen code changes:
-  inputs = [
-    "//tools/metrics/private_metrics/builders_template.py",
-    "//tools/metrics/private_metrics/decode_template.py",
-    "//tools/metrics/private_metrics/codegen.py",
-  ]
-  sources = [ "//tools/metrics/private_metrics/dwa.xml" ]
-
-  outdir = "$target_gen_dir"
-
-  outputs = [
-    outdir + "/dwa_builders.cc",
-    outdir + "/dwa_builders.h",
-    outdir + "/dwa_decode.cc",
-    outdir + "/dwa_decode.h",
-  ]
-
-  args = [
-    "--input",
-    rebase_path(sources[0], root_build_dir),
-    "--output",
-    rebase_path(outdir, root_build_dir),
-  ]
-}
-
-static_library("dwa_builders") {
-  sources = get_target_outputs(":gen_private_metrics_builders")
-
-  deps = [
-    ":gen_private_metrics_builders",
-    "//base",
-    "//components/metrics/private_metrics",
-  ]
+private_metrics_builders("dwa_builders") {
+  type = "dwa"
 }

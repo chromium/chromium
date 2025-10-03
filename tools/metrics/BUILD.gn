@@ -92,8 +92,8 @@ group("metrics_python_tests") {
     "//tools/metrics/common/pretty_print_xml.py",
     "//tools/metrics/common/etree_util.py",
 
-    "//tools/metrics/private_metrics/builders_template.py",
-    "//tools/metrics/private_metrics/decode_template.py",
+    "//tools/metrics/private_metrics/dwa_builders_template.py",
+    "//tools/metrics/private_metrics/dwa_decode_template.py",
     "//tools/metrics/private_metrics/dwa.xml",
     "//tools/metrics/private_metrics/codegen.py",
     "//tools/metrics/private_metrics/dwa_model.py",
