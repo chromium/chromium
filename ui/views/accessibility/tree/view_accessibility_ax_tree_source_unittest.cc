@@ -99,46 +99,6 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, CacheInsertGetRemove) {
       test_api().cache().HasCachedChildren(&v->GetViewAccessibility()));
 }
 
-// This test validates that CacheChildrenIfNeeded properly caches the children
-// and not the grandchildren, and that it accurately track the "cached-children"
-// state.
-TEST_F(ViewAccessibilityAXTreeSourceTest, CacheChildrenIfNeeded) {
-  auto v = std::make_unique<View>();
-  auto* child = v->AddChildView(std::make_unique<View>());
-  auto* grandchild = child->AddChildView(std::make_unique<View>());
-
-  EXPECT_FALSE(
-      test_api().cache().HasCachedChildren(&v->GetViewAccessibility()));
-  EXPECT_FALSE(
-      test_api().cache().HasCachedChildren(&child->GetViewAccessibility()));
-  EXPECT_EQ(test_api().cache().Get(v->GetViewAccessibility().GetUniqueId()),
-            nullptr);
-  EXPECT_EQ(test_api().cache().Get(child->GetViewAccessibility().GetUniqueId()),
-            nullptr);
-  EXPECT_EQ(
-      test_api().cache().Get(grandchild->GetViewAccessibility().GetUniqueId()),
-      nullptr);
-
-  test_api().cache().CacheChildrenIfNeeded(&v->GetViewAccessibility());
-  EXPECT_TRUE(test_api().cache().HasCachedChildren(&v->GetViewAccessibility()));
-  EXPECT_FALSE(
-      test_api().cache().HasCachedChildren(&child->GetViewAccessibility()));
-  EXPECT_EQ(test_api().cache().Get(child->GetViewAccessibility().GetUniqueId()),
-            &child->GetViewAccessibility());
-  EXPECT_EQ(
-      test_api().cache().Get(grandchild->GetViewAccessibility().GetUniqueId()),
-      nullptr);
-
-  test_api().cache().RemoveFromChildCache(&v->GetViewAccessibility());
-  EXPECT_FALSE(
-      test_api().cache().HasCachedChildren(&v->GetViewAccessibility()));
-
-  // While we want to remove the "cached-children" mark, we still want to keep
-  // the nodes in the cache until they're explicitly removed.
-  EXPECT_EQ(test_api().cache().Get(child->GetViewAccessibility().GetUniqueId()),
-            &child->GetViewAccessibility());
-}
-
 TEST_F(ViewAccessibilityAXTreeSourceTest, GetRoot) {
   ASSERT_EQ(test_api().root_id(), root_id());
 
@@ -163,7 +123,11 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildCount_RealChildren) {
   auto v = std::make_unique<View>();
   v->AddChildView(std::make_unique<View>());
   v->AddChildView(std::make_unique<View>());
-  EXPECT_EQ(source()->GetChildCount(&v->GetViewAccessibility()), 2u);
+  auto& v_ax = v->GetViewAccessibility();
+
+  source()->CacheChildrenIfNeeded(&v_ax);
+  EXPECT_EQ(source()->GetChildCount(&v_ax), 2u);
+  source()->ClearChildCache(&v_ax);
 }
 
 TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildCount_VirtualChildren) {
@@ -171,25 +135,38 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildCount_VirtualChildren) {
   auto& v_ax = v->GetViewAccessibility();
   v_ax.AddVirtualChildView(std::make_unique<AXVirtualView>());
   v_ax.AddVirtualChildView(std::make_unique<AXVirtualView>());
+
+  source()->CacheChildrenIfNeeded(&v_ax);
   EXPECT_EQ(source()->GetChildCount(&v_ax), 2u);
+  source()->ClearChildCache(&v_ax);
 }
 
 TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildCount_MixedChildren) {
   auto v = std::make_unique<View>();
-  v->AddChildView(std::make_unique<View>());
+  v->AddChildView(std::make_unique<View>());  // real child
   auto& v_ax = v->GetViewAccessibility();
-  v_ax.AddVirtualChildView(std::make_unique<AXVirtualView>());
+  v_ax.AddVirtualChildView(std::make_unique<AXVirtualView>());  // virtual child
+
+  source()->CacheChildrenIfNeeded(&v_ax);
+  // Mixed case: Views behavior prefers real children over virtual; expect 1.
   EXPECT_EQ(source()->GetChildCount(&v_ax), 1u);
+  source()->ClearChildCache(&v_ax);
 }
 
 TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildAt_ValidAndInvalidIndices) {
   auto v = std::make_unique<View>();
   v->AddChildView(std::make_unique<View>());
   auto& v_ax = v->GetViewAccessibility();
-  auto children = v_ax.GetChildren();
+
+  source()->CacheChildrenIfNeeded(&v_ax);
+
+  const auto children = v_ax.GetChildren();
   ASSERT_EQ(children.size(), 1u);
+
   EXPECT_EQ(source()->ChildAt(&v_ax, 0), children[0]);
   EXPECT_EQ(source()->ChildAt(&v_ax, children.size()), nullptr);
+
+  source()->ClearChildCache(&v_ax);
 }
 
 TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_RootReturnsNull) {
@@ -399,6 +376,40 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, SerializeNode_AXVirtualView) {
   source()->SerializeNode(v.get(), &data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), name);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       GetChildCount_UsesSnapshotNotLiveList) {
+  auto parent = std::make_unique<View>();
+  auto& pax = parent->GetViewAccessibility();
+
+  // Live: one child initially.
+  auto* a = parent->AddChildView(std::make_unique<View>());
+
+  // Make the parent discoverable by the source/cache.
+  test_api().cache().Insert(&pax);
+
+  // Take snapshot via the tree-source entry point.
+  source()->CacheChildrenIfNeeded(&pax);
+  EXPECT_EQ(source()->GetChildCount(&pax), 1u);
+  EXPECT_EQ(source()->ChildAt(&pax, 0), &a->GetViewAccessibility());
+  EXPECT_EQ(source()->ChildAt(&pax, 1), nullptr);
+
+  // Mutate the live hierarchy after the snapshot.
+  auto* b = parent->AddChildView(std::make_unique<View>());
+
+  // Still reading from the cached snapshot (should remain 1).
+  EXPECT_EQ(source()->GetChildCount(&pax), 1u);
+  EXPECT_EQ(source()->ChildAt(&pax, 0), &a->GetViewAccessibility());
+  EXPECT_EQ(source()->ChildAt(&pax, 1), nullptr);
+
+  // Clear the snapshot; then re-cache and verify we see the new live state.
+  source()->ClearChildCache(&pax);
+  source()->CacheChildrenIfNeeded(&pax);
+  EXPECT_EQ(source()->GetChildCount(&pax), 2u);
+  // Order must correspond to the live children at re-snapshot time.
+  EXPECT_EQ(source()->ChildAt(&pax, 0), &a->GetViewAccessibility());
+  EXPECT_EQ(source()->ChildAt(&pax, 1), &b->GetViewAccessibility());
 }
 
 }  // namespace views::test

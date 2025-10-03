@@ -40,6 +40,9 @@ WidgetAXManager::WidgetAXManager(Widget* widget)
 
   if (ui::AXPlatform::GetInstance().GetMode() == ui::AXMode::kNativeAPIs) {
     Enable();
+  } else {
+    // TODO(https://crbug.com/40672441): Serialize the root node only when
+    // views accessibility is disabled.
   }
 }
 
@@ -63,10 +66,7 @@ void WidgetAXManager::Enable() {
   update.root_id = root_data.id;
   update.nodes.push_back(root_data);
 
-  // TODO(crbug.com/40672441): Do we probably don't need to seed the `cache_`
-  // with the root view. It should be done automatically upon the initial
-  // serialization.
-  cache_->Insert(&widget_->GetRootView()->GetViewAccessibility());
+  cache_->Initialize(widget_->GetRootView()->GetViewAccessibility());
 
   ax_tree_manager_.reset(
       ui::BrowserAccessibilityManager::Create(update, *this, this));
@@ -100,8 +100,8 @@ void WidgetAXManager::OnChildAdded(ViewAccessibility& child,
     return;
   }
 
+  cache_->Insert(&child);
   pending_data_updates_.insert(parent.GetUniqueId());
-  // TODO(https://crbug.com/40672441): Add child to the cache.
 
   SchedulePendingUpdate();
 }
@@ -112,8 +112,8 @@ void WidgetAXManager::OnChildRemoved(ViewAccessibility& child,
     return;
   }
 
+  cache_->Remove(child.GetUniqueId());
   pending_data_updates_.insert(parent.GetUniqueId());
-  // TODO(https://crbug.com/40672441): Remove child from the cache.
 
   SchedulePendingUpdate();
 }
@@ -397,6 +397,16 @@ void WidgetAXManager::SendPendingUpdate() {
     // Nothing to do, no updates or events.
     return;
   }
+
+#if DCHECK_IS_ON()
+  for (const auto& update : tree_updates) {
+    for (const auto& node : update.nodes) {
+      DCHECK(cache_->Get(node.id))
+          << "Unknown serialized node. All nodes we serialize should be known "
+             "to the WidgetAXManager.";
+    }
+  }
+#endif  // DCHECK_IS_ON()
 
   maybe_updates_and_events.emplace();
   maybe_updates_and_events->ax_tree_id = ax_tree_id_;

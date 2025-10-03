@@ -62,6 +62,42 @@ TEST_F(WidgetAXManagerTest, IsEnabledAfterAXModeAdded) {
   EXPECT_TRUE(manager()->is_enabled());
 }
 
+TEST_F(WidgetAXManagerTest, Enable_InitializesCacheWithRootAndSubtree) {
+  WidgetAXManagerTestApi api(manager());
+
+  View* root = widget()->GetRootView();
+  auto* c1 = root->AddChildView(std::make_unique<View>());
+  auto* c2 = root->AddChildView(std::make_unique<View>());
+  auto* g1 = c1->AddChildView(std::make_unique<View>());
+  auto* g2 = c2->AddChildView(std::make_unique<View>());
+
+  auto& rax = root->GetViewAccessibility();
+  auto& c1ax = c1->GetViewAccessibility();
+  auto& c2ax = c2->GetViewAccessibility();
+  auto& g1ax = g1->GetViewAccessibility();
+  auto& g2ax = g2->GetViewAccessibility();
+
+  EXPECT_EQ(api.cache()->Get(rax.GetUniqueId()), nullptr);
+  EXPECT_EQ(api.cache()->Get(c1ax.GetUniqueId()), nullptr);
+  EXPECT_EQ(api.cache()->Get(c2ax.GetUniqueId()), nullptr);
+  EXPECT_EQ(api.cache()->Get(g1ax.GetUniqueId()), nullptr);
+  EXPECT_EQ(api.cache()->Get(g2ax.GetUniqueId()), nullptr);
+
+  manager()->Enable();
+
+  EXPECT_EQ(api.cache()->Get(rax.GetUniqueId()), &rax);
+  EXPECT_EQ(api.cache()->Get(c1ax.GetUniqueId()), &c1ax);
+  EXPECT_EQ(api.cache()->Get(c2ax.GetUniqueId()), &c2ax);
+  EXPECT_EQ(api.cache()->Get(g1ax.GetUniqueId()), &g1ax);
+  EXPECT_EQ(api.cache()->Get(g2ax.GetUniqueId()), &g2ax);
+
+  EXPECT_FALSE(api.cache()->HasCachedChildren(&rax));
+  EXPECT_FALSE(api.cache()->HasCachedChildren(&c1ax));
+  EXPECT_FALSE(api.cache()->HasCachedChildren(&c2ax));
+  EXPECT_FALSE(api.cache()->HasCachedChildren(&g1ax));
+  EXPECT_FALSE(api.cache()->HasCachedChildren(&g2ax));
+}
+
 TEST_F(WidgetAXManagerTest, EnableInitializesBrowserAccessibilityManager) {
   WidgetAXManagerTestApi test_api(manager());
 
@@ -502,17 +538,21 @@ TEST_F(WidgetAXManagerTest, CanFireAccessibilityEvents) {
 }
 
 TEST_F(WidgetAXManagerTest, GetOrCreateAXNodeUniqueId) {
-  auto v = ViewAccessibility::Create(nullptr);
+  manager()->Enable();
 
-  WidgetAXManagerTestApi test_api(manager());
-  ASSERT_FALSE(test_api.cache()->HasCachedChildren(v.get()));
-  EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(v->GetUniqueId()),
+  auto v = std::make_unique<View>();
+  EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(
+                v->GetViewAccessibility().GetUniqueId()),
             ui::AXUniqueId::CreateInvalid());
 
-  test_api.cache()->Insert(v.get());
+  View* v_raw = widget()->GetRootView()->AddChildView(std::move(v));
 
-  EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(v->GetUniqueId()),
-            v->GetUniqueId());
+  WidgetAXManagerTestApi test_api(manager());
+  test_api.WaitForNextSerialization();
+
+  EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(
+                v_raw->GetViewAccessibility().GetUniqueId()),
+            v_raw->GetViewAccessibility().GetUniqueId());
 }
 
 TEST_F(WidgetAXManagerTest, OnChildAddedAndRemoved_ReserializeOnParent) {
@@ -537,6 +577,20 @@ TEST_F(WidgetAXManagerTest, OnChildAddedAndRemoved_ReserializeOnParent) {
   manager()->OnChildRemoved(*child, *parent);
   EXPECT_EQ(api.pending_data_updates().size(), 1u);
   EXPECT_TRUE(api.pending_data_updates().contains(parent->GetUniqueId()));
+}
+
+TEST_F(WidgetAXManagerTest, CacheTracksChildAddRemoveAfterEnable) {
+  WidgetAXManagerTestApi api(manager());
+  manager()->Enable();
+
+  View* root = widget()->GetRootView();
+
+  auto* child = root->AddChildView(std::make_unique<View>());
+  const auto child_id = child->GetViewAccessibility().GetUniqueId();
+  EXPECT_EQ(api.cache()->Get(child_id), &child->GetViewAccessibility());
+
+  root->RemoveChildViewT(child);
+  EXPECT_EQ(api.cache()->Get(child_id), nullptr);
 }
 
 }  // namespace views::test
