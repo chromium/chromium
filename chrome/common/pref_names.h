@@ -2124,15 +2124,6 @@ inline constexpr char kPinInfoBarTimesShown[] =
 inline constexpr char kSessionRestoreInfoBarTimesShown[] =
     "browser.session_restore_infobar_times_shown";
 
-// How many times the session restore infobar has been shown for restarting.
-inline constexpr char kSessionRestoreTurnOffFromRestartInfoBarTimesShown[] =
-    "browser.session_restore_turn_off_from_restart_infobar_times_shown";
-
-// How many times the session restore infobar has been shown for session turn
-// off.
-inline constexpr char kSessionRestoreTurnOffFromSessionInfoBarTimesShown[] =
-    "browser.session_restore_turn_off_from_session_infobar_times_shown";
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // A collection of position, size, and other data relating to the browser

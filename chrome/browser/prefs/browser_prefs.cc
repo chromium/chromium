@@ -1168,6 +1168,13 @@ constexpr char kLensOverlayEduActionChipShownCount[] =
 constexpr char kRendererCodeIntegrityEnabledNeedsDeletion[] =
     "renderer_code_integrity_enabled";
 
+// Deprecated 10/2025.
+constexpr char kSessionRestoreTurnOffFromRestartInfoBarTimesShown[] =
+    "browser.session_restore_turn_off_from_restart_infobar_times_shown";
+
+constexpr char kSessionRestoreTurnOffFromSessionInfoBarTimesShown[] =
+    "browser.session_restore_turn_off_from_session_infobar_times_shown";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1692,6 +1699,14 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 09/2025.
   registry->RegisterIntegerPref(kLensOverlayEduActionChipShownCount, 0);
+
+  // Deprecated 10/2025.
+  registry->RegisterIntegerPref(
+      kSessionRestoreTurnOffFromRestartInfoBarTimesShown, 0);
+
+  // Deprecated 10/2025.
+  registry->RegisterIntegerPref(
+      kSessionRestoreTurnOffFromSessionInfoBarTimesShown, 0);
 }
 
 }  // namespace
@@ -2656,6 +2671,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
+
+  // Added 10/2025.
+  profile_prefs->ClearPref(kSessionRestoreTurnOffFromRestartInfoBarTimesShown);
+  profile_prefs->ClearPref(kSessionRestoreTurnOffFromSessionInfoBarTimesShown);
 
   // Added 05/2025.
   profile_prefs->ClearPref(kPrivacySandboxFakeNoticePromptShownTimeSync);
