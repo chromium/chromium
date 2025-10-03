@@ -2159,6 +2159,14 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     }
   }
 
+  for (const auto& [_, result] : request_->device_bound_session_deferrals()) {
+    base::UmaHistogramEnumeration(
+        request_->failed()
+            ? "Net.DeviceBoundSessions.DeferralResultByOutcome.Failure"
+            : "Net.DeviceBoundSessions.DeferralResultByOutcome.Success",
+        result);
+  }
+
   start_time_ = base::TimeTicks();
 }
 

@@ -962,6 +962,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     device_bound_session_deferrals_[deferral] = result;
   }
 
+  // Returns true if the request failed or was canceled.
+  bool failed() const;
+
  protected:
   // Allow the URLRequestJob class to control the is_pending() flag.
   void set_is_pending(bool value) { is_pending_ = value; }
@@ -970,9 +973,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // net::Error code. See |status_|.
   int status() const { return status_; }
   void set_status(int status);
-
-  // Returns true if the request failed or was canceled.
-  bool failed() const;
 
   // Returns the error status of the request.
 

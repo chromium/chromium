@@ -1859,6 +1859,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.DeferralResultByOutcome.{Outcome}"
+    enum="DeviceBoundSessionRefreshResult" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the outcome of deferring a request due to a Device Bound
+    Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is
+    logged every time a {Outcome} request is unblocked after being deferred,
+    which is usually due to a refresh completing.
+  </summary>
+  <token key="Outcome">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.DeferralResult{Duration}"
     enum="DeviceBoundSessionRefreshResult" expires_after="2026-02-18">
   <owner>drubery@chromium.org</owner>
