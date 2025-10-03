@@ -24,7 +24,6 @@ class ArcServiceManager;
 class ArcSessionManager;
 class FakeAppInstance;
 class FakeCompatibilityModeInstance;
-class FakeIntentHelperHost;
 class FakeIntentHelperInstance;
 }  // namespace arc
 
@@ -183,7 +182,6 @@ class ArcAppTest {
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   std::unique_ptr<arc::FakeCompatibilityModeInstance>
       compatibility_mode_instance_;
-  std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>

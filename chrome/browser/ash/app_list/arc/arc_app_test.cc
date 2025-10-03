@@ -367,7 +367,6 @@ void ArcAppTest::TearDown() {
     arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
         intent_helper_instance_.get());
     intent_helper_instance_.reset();
-    intent_helper_host_.reset();
     arc::ArcIntentHelperBridge::ShutDownForTesting(profile_);
   }
 
