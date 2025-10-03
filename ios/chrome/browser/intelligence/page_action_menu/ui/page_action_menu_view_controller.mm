@@ -116,6 +116,9 @@ const CGFloat kFeatureRowVerticalPadding = 12;
 
   // The entry point for the Lens overlay.
   UIButton* _lensButton;
+
+  // Horizontal stack view containing the side-by-side small buttons.
+  UIStackView* _smallButtonsStackView;
 }
 
 - (void)viewDidLoad {
@@ -744,10 +747,10 @@ const CGFloat kFeatureRowVerticalPadding = 12;
     }
   }
   // Horizontal stack view for the 2 side-by-side buttons.
-  UIStackView* buttonsStackView = [self createSmallButtonsStackView];
-  [_contentStackView addArrangedSubview:buttonsStackView];
+  _smallButtonsStackView = [self createSmallButtonsStackView];
+  [_contentStackView addArrangedSubview:_smallButtonsStackView];
   [_contentStackView setCustomSpacing:kStackViewMargins
-                            afterView:buttonsStackView];
+                            afterView:_smallButtonsStackView];
 
   // If Reader Mode is available but inactive, we use a 3-button UI. Otherwise,
   // we just show the `buttonsStackView`, with an additional Reader mode section
@@ -790,6 +793,8 @@ const CGFloat kFeatureRowVerticalPadding = 12;
         constraintEqualToAnchor:_scrollView.bottomAnchor],
     [_contentStackView.widthAnchor
         constraintEqualToAnchor:_scrollView.widthAnchor],
+    [_smallButtonsStackView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
 }
 
