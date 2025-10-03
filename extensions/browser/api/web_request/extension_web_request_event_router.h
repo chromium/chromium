@@ -505,10 +505,10 @@ class WebRequestEventRouter : public KeyedService {
                           const ExtensionId& extension_id,
                           const std::string& sub_event_name);
 
-  // Removes the listener from `listeners` that matches the given criteria.
+  // Removes all listeners from `listeners` that matches the given criteria.
   // Optional criteria are ignored if not provided. Removes the matching
-  // listener, if any. Expects a maximum of one listener to match.
-  static std::unique_ptr<EventListener> RemoveMatchingListener(
+  // listeners, if any.
+  static std::vector<std::unique_ptr<EventListener>> RemoveMatchingListeners(
       Listeners& listeners,
       const ExtensionId& extension_id,
       const std::string& sub_event_name,

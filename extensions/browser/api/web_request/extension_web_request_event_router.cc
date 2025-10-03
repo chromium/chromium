@@ -5,6 +5,7 @@
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 
 #include <algorithm>
+#include <iterator>
 #include <string_view>
 #include <vector>
 
@@ -1869,8 +1870,8 @@ WebRequestEventRouter::FindEventListenerInContainer(
 }
 
 // static
-std::unique_ptr<WebRequestEventRouter::EventListener>
-WebRequestEventRouter::RemoveMatchingListener(
+std::vector<std::unique_ptr<WebRequestEventRouter::EventListener>>
+WebRequestEventRouter::RemoveMatchingListeners(
     Listeners& listeners,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
@@ -1898,9 +1899,7 @@ WebRequestEventRouter::RemoveMatchingListener(
     iter = listeners.erase(iter);
   }
 
-  DCHECK_LE(removed_listeners.size(), 1u);
-  return removed_listeners.empty() ? nullptr
-                                   : std::move(removed_listeners.front());
+  return removed_listeners;
 }
 
 void WebRequestEventRouter::RemoveLazyListener(
@@ -1922,12 +1921,12 @@ void WebRequestEventRouter::RemoveLazyListener(
   auto check_list = [&removed_listeners, extension_id, sub_event_name](
                         Listeners& listeners,
                         BrowserContextID browser_context_id) {
-    auto listener =
-        RemoveMatchingListener(listeners, extension_id, sub_event_name,
-                               std::nullopt, std::nullopt, browser_context_id);
-    if (listener) {
-      removed_listeners.push_back(std::move(listener));
-    }
+    auto newly_removed =
+        RemoveMatchingListeners(listeners, extension_id, sub_event_name,
+                                std::nullopt, std::nullopt, browser_context_id);
+    removed_listeners.insert(removed_listeners.end(),
+                             std::make_move_iterator(newly_removed.begin()),
+                             std::make_move_iterator(newly_removed.end()));
   };
 
   check_list(data.active_listeners[event_name], original_context_id);
@@ -1963,23 +1962,25 @@ void WebRequestEventRouter::UpdateActiveListener(
   const BrowserContextID browser_context_id =
       GetBrowserContextID(browser_context);
   BrowserContextData& data = data_[browser_context_id];
-  auto matching_listener = RemoveMatchingListener(
+  auto matching_listeners = RemoveMatchingListeners(
       data.active_listeners[event_name], extension_id, sub_event_name,
       worker_thread_id, service_worker_version_id, browser_context_id);
-  if (!matching_listener) {
+  if (matching_listeners.empty()) {
     return;
   }
 
-  CleanUpForListener(*matching_listener, update_type);
+  for (auto& listener : matching_listeners) {
+    CleanUpForListener(*listener, update_type);
 
-  // If this is only deactivating the listener, reset the process-specific bits
-  // for the listener and move it to inactive listeners.
-  if (update_type == ListenerUpdateType::kDeactivate) {
-    matching_listener->id.worker_thread_id = kMainThreadId;
-    matching_listener->id.service_worker_version_id =
-        blink::mojom::kInvalidServiceWorkerVersionId;
-    matching_listener->id.render_process_id = -1;
-    data.inactive_listeners[event_name].push_back(std::move(matching_listener));
+    // If this is only deactivating the listener, reset the process-specific
+    // bits for the listener and move it to inactive listeners.
+    if (update_type == ListenerUpdateType::kDeactivate) {
+      listener->id.worker_thread_id = kMainThreadId;
+      listener->id.service_worker_version_id =
+          blink::mojom::kInvalidServiceWorkerVersionId;
+      listener->id.render_process_id = -1;
+      data.inactive_listeners[event_name].push_back(std::move(listener));
+    }
   }
 }
 
