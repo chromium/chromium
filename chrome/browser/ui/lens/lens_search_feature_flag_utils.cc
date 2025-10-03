@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
+
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -9,9 +11,21 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 #include "components/variations/service/variations_service.h"
 
 namespace lens {
+
+namespace prefs {
+
+void RegisterFeatureFlagProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(kLensOverlayEduActionChipShownCount, 0);
+}
+
+}  // namespace prefs
 
 bool IsLensOverlayContextualSearchboxEnabled() {
   // If the feature is overridden (e.g. via server-side config or command-line),
@@ -60,6 +74,22 @@ bool IsAimM3Enabled(Profile* profile) {
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
       AimEligibilityServiceFactory::GetForProfile(profile),
       lens::features::kLensSearchAimM3);
+}
+
+bool ShouldShowLensOverlayEduActionChip(Profile* profile) {
+  auto* prefs = profile->GetPrefs();
+  int shown_count =
+      prefs->GetInteger(prefs::kLensOverlayEduActionChipShownCount);
+  return lens::features::IsLensOverlayEduActionChipEnabled() &&
+         shown_count <
+             lens::features::GetLensOverlayEduActionChipMaxShownCount();
+}
+
+void IncrementLensOverlayEduActionChipShownCount(Profile* profile) {
+  auto* prefs = profile->GetPrefs();
+  prefs->SetInteger(
+      prefs::kLensOverlayEduActionChipShownCount,
+      prefs->GetInteger(prefs::kLensOverlayEduActionChipShownCount) + 1);
 }
 
 }  // namespace lens

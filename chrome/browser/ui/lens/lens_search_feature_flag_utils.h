@@ -6,16 +6,37 @@
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCH_FEATURE_FLAG_UTILS_
 
 #include "chrome/browser/profiles/profile.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 
 // Utility functions for checking if Lens Search features are enabled. Separated
 // from lens_features.h to allow dependencies on chrome/browser.
 namespace lens {
+
+namespace prefs {
+
+// An integer setting indicating the number of times the Lens Overlay EDU action
+// chip has been shown.
+inline constexpr char kLensOverlayEduActionChipShownCount[] =
+    "lens.edu_action_chip.shown_count";
+
+// Registers the prefs used by the Lens Overlay.
+void RegisterFeatureFlagProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry);
+
+}  // namespace prefs
 
 // Whether to show the contextual searchbox in the Lens Overlay.
 bool IsLensOverlayContextualSearchboxEnabled();
 
 // Whether or not to enable the AIM M3 (side panel searchbox) experience.
 bool IsAimM3Enabled(Profile* profile);
+
+// Whether the EDU action chip is enabled and has not been shown too many times.
+bool ShouldShowLensOverlayEduActionChip(Profile* profile);
+
+// Increments the counter for the number of times the Lens Overlay EDU action
+// chip has been shown.
+void IncrementLensOverlayEduActionChipShownCount(Profile* profile);
 
 }  // namespace lens
 

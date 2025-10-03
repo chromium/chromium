@@ -962,6 +962,10 @@ bool IsLensSearchSidePanelDefaultWidthChangeEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 int GetLensSearchSidePanelDefaultWidth();
 
+// The number of times the EDU action chip can be shown.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensOverlayEduActionChipMaxShownCount();
+
 // Whether to enable keyboard selection in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayKeyboardSelectionEnabled();

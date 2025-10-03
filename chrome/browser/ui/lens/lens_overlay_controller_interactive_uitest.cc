@@ -864,8 +864,8 @@ class LensOverlayControllerTranslatePromoTest
 //  (1) User opens the Lens Overlay.
 //  (2) Promo shows. After, user clicks the translate button.
 //  (3) Promo hides.
-// TODO(crbug.com/392907122): Re-enable this test once the translate button is in a
-// launchable state.
+// TODO(crbug.com/392907122): Re-enable this test once the translate button is
+// in a launchable state.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerTranslatePromoTest,
                        DISABLED_ShowsTranslatePromo) {
   WaitForTemplateURLServiceToLoad();
@@ -1416,7 +1416,8 @@ class LensOverlayControllerEduActionChipTest
         {base::test::FeatureRefAndParams(
             lens::features::kLensOverlayEduActionChip,
             {{"url-allow-filters", "[\"*\"]"},
-             {"url-path-match-allow-filters", "[\"select\"]"}})},
+             {"url-path-match-allow-filters", "[\"select\"]"},
+             {"max-shown-count", "5"}})},
         {});
   }
 };

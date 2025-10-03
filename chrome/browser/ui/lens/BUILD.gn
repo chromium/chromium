@@ -20,6 +20,7 @@ source_set("lens") {
     "lens_overlay_untrusted_ui.h",
     "lens_search_controller.h",
     "lens_searchbox_controller.h",
+    "lens_search_feature_flag_utils.h",
     "lens_side_panel_untrusted_ui.h",
     "lens_string_utils.h",
   ]
@@ -42,7 +43,6 @@ source_set("lens") {
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.h",
     "lens_search_contextualization_controller.h",
-    "lens_search_feature_flag_utils.h",
     "lens_session_metrics_logger.h",
     "lens_url_matcher.h",
     "page_content_type_conversions.h",
@@ -68,6 +68,7 @@ source_set("lens") {
     "//components/lens",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
+    "//components/sync_preferences",
     "//components/user_education/webui",
     "//content/public/browser",
     "//third_party/lens_server_proto:lens_overlay_proto",
@@ -235,9 +236,9 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "lens_composebox_controller_browsertest.cc",
-    "lens_search_feature_flag_utils_browsertest.cc",
     "lens_overlay_controller_browsertest.cc",
     "lens_overlay_live_test.cc",
+    "lens_search_feature_flag_utils_browsertest.cc",
   ]
   deps = [
     ":lens",

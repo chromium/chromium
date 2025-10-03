@@ -571,6 +571,9 @@ const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
 constexpr base::FeatureParam<int> kLensSearchSidePanelDefaultWidth{
     &kLensSearchSidePanelDefaultWidthChange, "lens-panel-default-width", 440};
 
+const base::FeatureParam<int> kLensOverlayEduActionChipMaxShownCount{
+    &kLensOverlayEduActionChip, "max-shown-count", 3};
+
 constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
     &kLensOverlayStraightToSrp, "query", ""};
 
@@ -1233,6 +1236,10 @@ bool IsLensSearchSidePanelDefaultWidthChangeEnabled() {
 
 int GetLensSearchSidePanelDefaultWidth() {
   return kLensSearchSidePanelDefaultWidth.Get();
+}
+
+int GetLensOverlayEduActionChipMaxShownCount() {
+  return kLensOverlayEduActionChipMaxShownCount.Get();
 }
 
 bool IsLensOverlayKeyboardSelectionEnabled() {
