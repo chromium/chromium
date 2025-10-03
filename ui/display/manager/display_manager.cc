@@ -1481,12 +1481,13 @@ const Display& DisplayManager::GetFakePrimaryDisplay() {
   static Display* fake_display = nullptr;
   if (!fake_display) {
     fake_display = new Display(Display::GetDefaultDisplay());
-    // Note that if an inappropriate gfx::BufferFormat is specified in the
+    // Note that if an inappropriate format is specified in the
     // gfx::DisplayColorSpaces of the fake display, this can sometimes
     // propagate to allocation code and cause errors.
     // https://crbug.com/1057501
     gfx::DisplayColorSpaces display_color_spaces(
-        gfx::ColorSpace::CreateSRGB(), DisplaySnapshot::PrimaryFormat());
+        gfx::ColorSpace::CreateSRGB(),
+        DisplaySnapshot::PrimarySharedImageFormat());
     fake_display->SetColorSpaces(display_color_spaces);
   }
   return *fake_display;
