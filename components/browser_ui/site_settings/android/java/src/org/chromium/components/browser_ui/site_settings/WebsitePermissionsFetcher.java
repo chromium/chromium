@@ -454,8 +454,7 @@ public class WebsitePermissionsFetcher {
                 // To avoid collapsing addresses with and without wildcards into the same row,
                 // convert the embedder to add the scheme or the wildcard to create a
                 // unique key (and thus row) per pattern.
-                if (mSiteSettingsDelegate.isDisplayWildcardInContentSettingsEnabled()
-                        && embedder != null && !embedder.isEmpty()) {
+                if (embedder != null && !embedder.isEmpty()) {
                     embedder =
                             containsPatternWildcards(embedder)
                                     ? embedder

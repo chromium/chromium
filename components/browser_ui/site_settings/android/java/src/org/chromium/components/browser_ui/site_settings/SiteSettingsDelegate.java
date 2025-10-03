@@ -187,11 +187,6 @@ public interface SiteSettingsDelegate {
      */
     boolean isBlockAll3pcEnabledInTrackingProtection();
 
-    /**
-     * @return true if wildcards should be shown in content settings patterns.
-     */
-    boolean isDisplayWildcardInContentSettingsEnabled();
-
     /** Enables/disables Related Website Sets data access. */
     void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled);
 

@@ -124,11 +124,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             return mSite.getTitleForPreferenceRow();
         }
 
-        if (mSiteSettingsDelegate.isDisplayWildcardInContentSettingsEnabled()) {
-            return mSite.getTitleForContentSetting(mCategory.getContentSettingsType());
-        }
-
-        return mSite.getTitle();
+        return mSite.getTitleForContentSetting(mCategory.getContentSettingsType());
     }
 
     protected String buildExpirationSummary(ContentSettingException exception) {
