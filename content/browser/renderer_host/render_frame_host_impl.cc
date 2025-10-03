@@ -15361,11 +15361,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   DCHECK_EQ(ui::PageTransitionIsMainFrame(params->transition),
             !GetParent() && !IsFencedFrameRoot());
   // TODO(https://crbug.com/445585641): Make this enforceable on Android.
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kCheckDocumentSequenceNumber)) {
-    CHECK_NE(params->document_sequence_number, -1);
-  }
-#endif
   if (navigation_request &&
       navigation_request->commit_params().navigation_token !=
           params->navigation_token) {
@@ -16552,6 +16547,17 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // isn't possible to get a DidCommitNavigation IPC from the renderer in
   // kInBackForwardCache state.
   DCHECK(!IsInBackForwardCache());
+
+  // TODO(https://crbug.com/445585641): Make this enforceable on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kCheckDocumentSequenceNumber)) {
+    if (params->document_sequence_number == -1) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER);
+      return;
+    }
+  }
+#endif
 
   std::unique_ptr<NavigationRequest> request;
   // TODO(crbug.com/40546539): a `committing_navigation_request` is not

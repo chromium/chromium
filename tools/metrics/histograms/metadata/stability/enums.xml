@@ -497,6 +497,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="329" label="RFH_ORIGIN_TO_COMMIT_MISMATCH"/>
   <int value="330" label="RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE"/>
   <int value="331" label="RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED"/>
+  <int value="332" label="RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
