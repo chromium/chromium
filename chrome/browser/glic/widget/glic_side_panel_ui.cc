@@ -18,7 +18,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/views/view.h"
 
 namespace glic {
 
@@ -138,12 +137,6 @@ std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
   return GlicInactiveSidePanelUi::CreateForVisibleTab(
       tab_, delegate_->host().webui_contents());
-}
-
-views::View* GlicSidePanelUi::GetViewForTesting() {
-  return tab_->GetTabFeatures()
-      ->glic_side_panel_coordinator()
-      ->GetViewForTesting();  // IN-TEST
 }
 
 }  // namespace glic

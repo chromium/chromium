@@ -54,8 +54,6 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   // manually set a different width.
   int GetPreferredWidth();
 
-  views::View* GetViewForTesting();
-
  protected:
   // Called when the Glic enabled status changes for `profile_`.
   void OnGlicEnabledChanged();
