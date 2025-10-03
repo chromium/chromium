@@ -228,6 +228,7 @@ BrowserWindowInterface* GlicFocusedBrowserManager::ComputeActiveBrowser() {
   // Ignore this check when testing because we can't guarantee that the
   // application is active.
   if (!g_testing_mode && !ui::IsActiveApplication()) {
+    VLOG(1) << "ActiveBrowserCalc: App not active";
     return nullptr;
   }
 #endif
@@ -235,11 +236,14 @@ BrowserWindowInterface* GlicFocusedBrowserManager::ComputeActiveBrowser() {
   BrowserWindowInterface* const bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   if (!bwi) {
+    VLOG(1) << "ActiveBrowserCalc: No active browser";
     return nullptr;
   }
   if (!window_controller_->IsActive() && !bwi->IsActive()) {
+    VLOG(1) << "ActiveBrowserCalc: !IsActive()";
     return nullptr;
   }
+  VLOG(1) << "ActiveBrowserCalc: active browser";
   return bwi;
 }
 

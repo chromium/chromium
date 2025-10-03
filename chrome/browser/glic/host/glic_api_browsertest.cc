@@ -26,6 +26,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -147,8 +148,15 @@ class GlicApiTest : public NonInteractiveGlicApiTest {
         });
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(b/447705905): Remove extra logging for debugging.
+    vmodule_switches_.InitWithSwitches("glic_focused_browser_manager=1");
+    NonInteractiveGlicApiTest::SetUpCommandLine(command_line);
+  }
+
  protected:
   base::test::ScopedFeatureList features_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
 };
 
 class GlicApiTestWithOneTab : public GlicApiTest {
