@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
@@ -42,6 +43,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
      */
     private static final double MVT_CUSTOMIZATION_IPH_TILE_SCORE_THRESHOULD = 1.3;
 
+    private final Context mContext;
     private final Resources mResources;
     private final UiConfig mUiConfig;
     private final MostVisitedTilesLayout mMvTilesLayout;
@@ -65,7 +67,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     private final int mTileViewIntervalPaddingForTablet;
 
     public MostVisitedTilesMediator(
-            Resources resources,
+            Context context,
             UiConfig uiConfig,
             MostVisitedTilesLayout mvTilesLayout,
             TileRenderer renderer,
@@ -73,7 +75,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
             boolean isTablet,
             @Nullable Runnable snapshotTileGridChangedRunnable,
             @Nullable Runnable tileCountChangedRunnable) {
-        mResources = resources;
+        mContext = context;
+        mResources = context.getResources();
         mUiConfig = uiConfig;
         mRenderer = renderer;
         mModel = propertyModel;
@@ -111,7 +114,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
                         updateMvtVisibility();
                     }
                 };
-        NtpCustomizationConfigManager.getInstance().addListener(mMvtVisibilityListener);
+        NtpCustomizationConfigManager.getInstance().addListener(mMvtVisibilityListener, mContext);
     }
 
     /** Called to initialize this mediator when native is ready. */

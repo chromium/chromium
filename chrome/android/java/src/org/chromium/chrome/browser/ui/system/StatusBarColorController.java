@@ -296,7 +296,7 @@ public class StatusBarColorController
                             updateStatusBarColor();
                         }
                     };
-            ntpCustomizationConfigManager.addListener(mHomepageStateListener);
+            ntpCustomizationConfigManager.addListener(mHomepageStateListener, context);
         }
     }
 

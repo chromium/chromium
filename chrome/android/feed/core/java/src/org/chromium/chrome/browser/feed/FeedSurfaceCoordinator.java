@@ -540,7 +540,7 @@ public class FeedSurfaceCoordinator
                         }
                     };
 
-            mNtpCustomizationConfigManager.addListener(mHomepageStateListener);
+            mNtpCustomizationConfigManager.addListener(mHomepageStateListener, activity);
         } else {
             setBackgroundColor(mDefaultBackgroundColor);
         }

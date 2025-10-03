@@ -97,7 +97,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testOnBackgroundChanged_persistsStateAndNotifiesListener() {
         int initialBackgroundImageType = NtpBackgroundImageType.CHROME_THEME;
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(initialBackgroundImageType);
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
 
         mNtpCustomizationConfigManager.onBackgroundChanged(
                 mBitmap, new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix));
@@ -144,7 +144,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 /* oldType= */ NtpBackgroundImageType.DEFAULT);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
 
         // Verifies that the listener should be called back immediately with
         // fromInitialization=true.
@@ -171,7 +171,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 /* oldType= */ NtpBackgroundImageType.CHROME_COLOR);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
 
         // Verifies that the listener should be called back immediately with
         // fromInitialization=true.
@@ -189,7 +189,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testRemoveListener_stopsReceivingUpdates_onBackgroundChanged() {
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.IMAGE_FROM_DISK);
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
         mNtpCustomizationConfigManager.removeListener(mListener);
 
         // Triggers a change that would normally notify the listener.
@@ -206,7 +206,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testRemoveListener_stopsReceivingUpdates_onBackgroundColorChanged() {
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.DEFAULT);
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
         mNtpCustomizationConfigManager.removeListener(mListener);
 
         // Triggers a change that would normally notify the listener.
@@ -224,7 +224,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     public void testAddAndRemoveMvtVisibilityListener() {
         // Verifies the listener added is notified when the visibility if changed.
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
         mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ true);
         verify(mListener).onMvtToggleChanged();
 
@@ -240,7 +240,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testSetAndGetPrefMvtVisibility() {
         // Verifies setPrefIsMvtVisible() sets the ChromeSharedPreferences properly and
         // getPrefIsMvtVisible() gets the right value.
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
         mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ false);
         assertFalse(
                 ChromeSharedPreferences.getInstance()
@@ -267,7 +267,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testOnBackgroundColorChanged() {
-        mNtpCustomizationConfigManager.addListener(mListener);
+        mNtpCustomizationConfigManager.addListener(mListener, mContext);
         clearInvocations(mListener);
 
         @ColorRes int colorResId = R.color.default_red;

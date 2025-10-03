@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.edge_to_edge;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 
@@ -72,12 +73,14 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     /**
      * Instantiate the coordinator to handle drawing page into the Status bar area.
      *
+     * @param context The Activity context.
      * @param tabSupplier The supplier of current Tab instance.
      * @param insetObserver The {@link InsetObserver} that manages insets changes on the
      *     CoordinatorView.
      * @param layoutStateProviderSupplier The supplier of {@link LayoutStateProvider}.
      */
     public TopInsetCoordinator(
+            Context context,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             InsetObserver insetObserver,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
@@ -153,7 +156,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
                         TopInsetCoordinator.this.refreshWindowInsets(consumeTopInset);
                     }
                 };
-        NtpCustomizationConfigManager.getInstance().addListener(mHomepageStateListener);
+        NtpCustomizationConfigManager.getInstance().addListener(mHomepageStateListener, context);
 
         mWindowInsetsConsumer = this::onApplyWindowInsets;
         mInsetObserver.addInsetsConsumer(

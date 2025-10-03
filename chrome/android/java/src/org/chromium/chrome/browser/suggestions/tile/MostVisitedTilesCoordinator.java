@@ -81,7 +81,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mMediator =
                 new MostVisitedTilesMediator(
-                        activity.getResources(),
+                        activity,
                         mUiConfig,
                         tilesLayout,
                         mRenderer,

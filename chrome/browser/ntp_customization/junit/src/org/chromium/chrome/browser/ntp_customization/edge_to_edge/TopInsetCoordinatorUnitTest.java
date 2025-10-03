@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -69,6 +70,7 @@ public class TopInsetCoordinatorUnitTest {
     @Mock private NativePage mNativePage;
     @Mock private TopInsetCoordinator.Observer mObserver;
     @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private Context mContext;
 
     @Captor
     private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
@@ -97,7 +99,8 @@ public class TopInsetCoordinatorUnitTest {
 
         mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
         mTopInsetCoordinator =
-                new TopInsetCoordinator(mTabSupplier, mInsetObserver, mLayoutStateProviderSupplier);
+                new TopInsetCoordinator(
+                        mContext, mTabSupplier, mInsetObserver, mLayoutStateProviderSupplier);
         mTopInsetCoordinator.addObserver(mObserver);
 
         mWindowInsetsCompat = createWindowInsetsCompat(TOP_PADDING);

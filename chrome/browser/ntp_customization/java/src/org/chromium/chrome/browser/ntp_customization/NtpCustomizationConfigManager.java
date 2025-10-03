@@ -112,16 +112,10 @@ public class NtpCustomizationConfigManager {
         // Don't use the application's context to initialize these colors since only the Activity's
         // context is themed. Otherwise a wrong color is provided.
         mBackgroundColor = COLOR_NOT_SET;
-        maybeInitialize();
-    }
 
-    @VisibleForTesting
-    void maybeInitialize() {
-        if (mIsInitialized) return;
-
-        mIsInitialized = true;
         mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
         if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
+            mIsInitialized = true;
             BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageMatrices();
             NtpCustomizationUtils.readNtpBackgroundImage(
                     (bitmap) -> {
@@ -137,17 +131,6 @@ public class NtpCustomizationConfigManager {
                                 NtpBackgroundImageType.DEFAULT);
                     },
                     EXECUTOR);
-        } else if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
-            mBackgroundColor =
-                    NtpCustomizationUtils.getBackgroundColorFromSharedPreference(mBackgroundColor);
-            // Skips notifying the observers if the default background color isn't initialized. Any
-            // observer can initialize the default color when calling #getBackgroundColor(Context).
-            if (mBackgroundColor != COLOR_NOT_SET) {
-                notifyBackgroundColorChanged(
-                        mBackgroundColor,
-                        /* fromInitialization= */ true,
-                        NtpBackgroundImageType.DEFAULT);
-            }
         }
 
         mIsMvtToggleOn =
@@ -155,13 +138,32 @@ public class NtpCustomizationConfigManager {
                         .readBoolean(ChromePreferenceKeys.IS_MVT_VISIBLE, true);
     }
 
+    @VisibleForTesting
+    void maybeInitializeColorTheme(Context context) {
+        if (mIsInitialized) return;
+
+        mIsInitialized = true;
+        mBackgroundColor = getDefaultBackgroundColor(context);
+        if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
+            mBackgroundColor =
+                    NtpCustomizationUtils.getBackgroundColorFromSharedPreference(mBackgroundColor);
+            notifyBackgroundColorChanged(
+                    mBackgroundColor,
+                    /* fromInitialization= */ true,
+                    /* oldType= */ NtpBackgroundImageType.DEFAULT);
+        }
+    }
+
     /**
      * Adds a {@link HomepageStateListener} to receive updates when the home modules state changes.
      */
-    public void addListener(HomepageStateListener listener) {
+    public void addListener(HomepageStateListener listener, Context context) {
         mHomepageStateListeners.addObserver(listener);
 
-        if (!mIsInitialized) return;
+        if (!mIsInitialized) {
+            maybeInitializeColorTheme(context);
+            return;
+        }
 
         switch (mBackgroundImageType) {
             case NtpBackgroundImageType.IMAGE_FROM_DISK -> {
@@ -342,9 +344,8 @@ public class NtpCustomizationConfigManager {
      * @param context The current Activity context. It is themed and can provide the correct color.
      */
     public @ColorInt int getBackgroundColor(Context context) {
-        if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
-            mBackgroundColor = getDefaultBackgroundColor(context);
-        }
+        if (!mIsInitialized) return getDefaultBackgroundColor(context);
+
         return mBackgroundColor;
     }
 
