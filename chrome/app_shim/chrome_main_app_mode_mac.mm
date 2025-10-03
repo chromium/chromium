@@ -19,6 +19,7 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -49,10 +50,23 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/features.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
+
+namespace {
+
+// Called when the app shim process receives a bad IPC message.
+void HandleBadMessage(const std::string& error) {
+  LOG(ERROR) << "Mojo error in app shim process: " << error;
+  mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
+  base::debug::DumpWithoutCrashing();
+}
+
+}  // namespace
 
 // The NSApplication for app shims is a vanilla NSApplication, but
 // implements the CrAppProtocol and CrAppControlPrototocol protocols to skip
@@ -257,6 +271,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     mojo::core::Configuration config;
     config.is_broker_process = true;
     mojo::core::Init(config);
+    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
     mojo::core::ScopedIPCSupport ipc_support(
         io_thread->task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
