@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Udělejte si pořádek se skupinami karet</translation>
 <translation id="2597457036804169544">Nepoužívat pro weby tmavý motiv</translation>
 <translation id="2606760465469169465">Automatické ověření</translation>
+<translation id="2610903128639500624">Spravujte v <ph name="BEGIN_LINK1" />nastavení systému Android<ph name="END_LINK1" />
+
+Pokročilá ochrana spravuje tato nastavení Chromu:
+• Možnost Vždy používat zabezpečená připojení je zapnutá.
+• Optimalizátor JavaScriptu je vypnutý. <ph name="BEGIN_LINK2" />Spravovat výjimky pro konkrétní weby<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Povolit JavaScript pro konkrétní web.</translation>
 <translation id="2626708220538466178">Spodní panel výchozího prohlížeče je zavřený</translation>
 <translation id="2653659639078652383">Odeslat</translation>
@@ -340,6 +345,7 @@
 <translation id="4816495437032298535">Uložené přiblížení pro weby</translation>
 <translation id="4836046166855586901">Zeptat se, když chce web zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="483914009762354899">Zahrnout všechny weby v této doméně</translation>
+<translation id="4852997963351138624">Barva pozadí (hexadecimální kód)</translation>
 <translation id="4882919381756638075">Weby obvykle používají mikrofon ke komunikačním funkcím, jako je videohovor</translation>
 <translation id="4883854917563148705">Spravovaná nastavení nelze resetovat</translation>
 <translation id="4887024562049524730">Předtím, než webům bude povoleno použít zařízení a data pro virtuální realitu, se zeptat (doporučeno)</translation>
@@ -503,6 +509,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chráněný obsah</translation>
 <translation id="662080504995468778">Zůstat</translation>
+<translation id="6630443592285535486">Sem zadejte hexadecimální kód</translation>
 <translation id="6635327442719709864">Když je tato možnost zapnutá, mohou weby žádat o použití sériových portů. Když je vypnutá, weby sériové porty používat nemohou.</translation>
 <translation id="6678072580827808850">Provést bezpečnostní kontrolu</translation>
 <translation id="6682057173375416470">Nechte si na stránce Nová karta zobrazovat doporučené články</translation>
@@ -560,6 +567,7 @@
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
 <translation id="7406113532070524618">Toto nastavení funguje, aniž by webům umožňovalo identifikovat vás nebo zjistit vaši historii prohlížení. Weby však v rámci ověření mohou sdílet malé množství informací</translation>
 <translation id="7409735910987429903">Weby mohou prostřednictvím vyskakovacích oken zobrazovat reklamy, případně vás přesměrovat na weby, které dost možná nechcete navštívit</translation>
+<translation id="7412160840120117304">Primární barva (hexadecimální kód)</translation>
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>
 <translation id="7425915948813553151">Tmavý motiv pro weby</translation>

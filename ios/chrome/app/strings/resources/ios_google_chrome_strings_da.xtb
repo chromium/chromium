@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1076643793026027628">Chrome åbner automatisk YouTube-inkognitolinks i inkognitotilstand.</translation>
 <translation id="1086486568852410168">Søg med Google Lens</translation>
+<translation id="1088490543924960890">Begynd at gemme adgangsnøgler med Google Adgangskodeadministrator</translation>
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åbn en ny fane i Chrome</translation>
 <translation id="1158134713295836892">Gemini i Chrome</translation>
@@ -256,6 +257,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="7371674917547846460">Få nyttige Chrome-tips og meget mere.</translation>
 <translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
+<translation id="7444830584401232881">Denne adgangsnøgle gemmes i Google Adgangskodeadministrator for <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">Skriv Chrome i feltet Søgewidgets</translation>
 <translation id="7477056987201678345">Sletter Chrome-data…</translation>
 <translation id="7492574581995589075">Din organisation har deaktiveret muligheden for at bruge og gemme Chrome-data på din Google-konto. Nye bogmærker, adgangskoder m.m. gemmes kun på denne enhed.</translation>

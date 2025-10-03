@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">分頁群組助你保持條理</translation>
 <translation id="2597457036804169544">不要為網站套用深色主題背景</translation>
 <translation id="2606760465469169465">自動驗證</translation>
+<translation id="2610903128639500624">前往 <ph name="BEGIN_LINK1" />Android 設定<ph name="END_LINK1" />管理
+
+「進階保護功能」可控制以下 Chrome 設定：
+• 開啟「一律使用安全連線」。
+• 關閉「JavaScript 優化工具」。<ph name="BEGIN_LINK2" />管理網站例外情況<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
 <translation id="2626708220538466178">預設瀏覽器頁底面板閂咗</translation>
 <translation id="2653659639078652383">提交</translation>
@@ -340,6 +345,7 @@
 <translation id="4816495437032298535">已儲存的網站縮放等級</translation>
 <translation id="4836046166855586901">在網站要求知道您是否正在使用此裝置時詢問您</translation>
 <translation id="483914009762354899">包含此網域下的所有網站</translation>
+<translation id="4852997963351138624">背景顏色 (十六進制)</translation>
 <translation id="4882919381756638075">網站通常會使用麥克風來提供視像通訊等通訊功能</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">在允許網站使用您的虛擬實境裝置和資料前先詢問您 (建議)</translation>
@@ -503,6 +509,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
+<translation id="6630443592285535486">在此輸入十六進制值</translation>
 <translation id="6635327442719709864">開咗之後，網站可以要求用序列連接埠。閂咗之後，網站就用唔到序列連接埠。</translation>
 <translation id="6678072580827808850">查看安全檢查結果</translation>
 <translation id="6682057173375416470">在「新分頁」查看建議文章</translation>
@@ -560,6 +567,7 @@
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7406113532070524618">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄，不過網站可在驗證過程中分享少量資料</translation>
 <translation id="7409735910987429903">網站可傳送彈出式視窗以顯示廣告，或將您重新導向至非預期的網站</translation>
+<translation id="7412160840120117304">主顏色 (十六進制)</translation>
 <translation id="7423098979219808738">事先詢問</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7425915948813553151">網站深色主題背景</translation>

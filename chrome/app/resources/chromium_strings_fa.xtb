@@ -72,6 +72,7 @@
 <translation id="1896836275755235458">‏‫Chromium با محدود کردن فعالیت پس‌زمینه و جلوه‌های دیداری، مثل پیمایش روان و نرخ فریم ویدیو، در مصرف باتری صرفه‌جویی می‌کند. <ph name="BEGIN_LINK" />درباره «بهینه‌سازی انرژی» بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">پرسش درباره این صفحه</translation>
 <translation id="1900969832270057921">‏سرویس به‌روزرسان Chromium</translation>
+<translation id="1911666947158375684">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از گذرواژه‌ها و موارد دیگر «حساب Google» خود در Chromium استفاده کنید. هرزمان خواستید می‌توانید آن را در تنظیمات تغییر دهید.</translation>
 <translation id="1911763535808217981">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chromium به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
 <translation id="1929939181775079593">‏Chromium پاسخ نمی‌دهد. مجدداً راه‌اندازی شود؟</translation>
 <translation id="1933341829955786215">‏سازمانتان (<ph name="MANAGER" />) شما را ملزم می‌کند به سیستم Chromium وارد شوید</translation>
@@ -343,7 +344,7 @@
 <translation id="5187123684706427865">‏حساب Chromium به اصالت‌سنجی مجدد نیاز دارد</translation>
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
 <translation id="5231355151045086930">‏خروج از سیستم Chromium</translation>
-<translation id="5234764350956374838">رد کردن</translation>
+<translation id="5234764350956374838">بستن</translation>
 <translation id="5254739261293693943">پرسش درباره این ویدیو</translation>
 <translation id="5277894862589591112">‏برای اعمال تغییراتتان، Chromium را راه‌اندازی مجدد کنید</translation>
 <translation id="5286907366254680517">تشخیص داده شد</translation>

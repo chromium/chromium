@@ -1387,6 +1387,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1931152874660185993">Nie zainstalowano żadnych komponentów.</translation>
 <translation id="1931410639376954712">Instaluję <ph name="DEVICE_OS" />…</translation>
 <translation id="1932098463447129402">Nie wcześniej niż</translation>
+<translation id="1932125073382155239">Utworzyć kopię zapasową?</translation>
 <translation id="1933070475689690969">Aktywność w aplikacjach z Gemini</translation>
 <translation id="1933489278505808700">Może odczytywać i zmieniać dane</translation>
 <translation id="1935303383381416800">Zezwolono na sprawdzanie lokalizacji</translation>
@@ -1849,6 +1850,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="225614027745146050">Witamy</translation>
 <translation id="2257053455312861282">Po dodaniu konta szkolnego uczeń może łatwo logować się pod kontrolą rodzicielską na stronach oraz w rozszerzeniach i aplikacjach.</translation>
 <translation id="225716114209817872">Maksymalne</translation>
+<translation id="2259337945538989999">Aby zobaczyć karty z innych urządzeń, potwierdź swoją tożsamość. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="2261323523305321874">Administrator wprowadził zmianę systemową, która wyłączyła niektóre stare profile.</translation>
 <translation id="22614517036276112">Ten dokument lub Twoje urządzenie nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.</translation>
 <translation id="2262477216570151239">Opóźnienie przed powtarzaniem</translation>
@@ -2045,6 +2047,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2393313392064891208">Treść Warunków korzystania z ChromeOS Flex</translation>
 <translation id="2393944685985256805">Moduł <ph name="MODULE_NAME" /> jest ukryty</translation>
 <translation id="2395616325548404795">Urządzenie <ph name="DEVICE_TYPE" /> zostało zarejestrowane do zarządzania w firmie, ale nie wysłało informacji o zasobie ani lokalizacji. Wpisz te informacje ręcznie przy urządzeniu w konsoli administracyjnej.</translation>
+<translation id="2396593617786425274">Zsynchronizować historię?</translation>
 <translation id="2396783860772170191">Wpisz 4-cyfrowy kod PIN (0000–9999)</translation>
 <translation id="2398546389094871088">Powerwash urządzenia nie spowoduje usunięcia profili eSIM. Aby usunąć je ręcznie, otwórz <ph name="LINK_BEGIN" />Ustawienia urządzenia mobilnego<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Powiadomienia włączone</translation>
@@ -6708,6 +6711,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5651308944918885595">Udostępnianie w pobliżu wykrywalność</translation>
 <translation id="5653154844073528838">Zapisane drukarki: <ph name="PRINTER_COUNT" />.</translation>
+<translation id="565461030474814383">Zapisać na koncie?</translation>
 <translation id="5654669866168491665">Dowiedz się więcej o witrynach, które mogą nie działać, gdy blokujesz pliki cookie innych firm</translation>
 <translation id="5654751240928365405">To rozszerzenie zostało wyłączone, ponieważ nie jest już obsługiwane</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Aby chronić Twoją prywatność, usunęliśmy uprawnienia witryny}few{Aby chronić Twoją prywatność, usunęliśmy uprawnienia niektórych witryn}many{Aby chronić Twoją prywatność, usunęliśmy uprawnienia niektórych witryn}other{Aby chronić Twoją prywatność, usunęliśmy uprawnienia niektórych witryn}}</translation>
@@ -7012,6 +7016,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5869522115854928033">Zapisane hasła</translation>
 <translation id="5870086504539785141">Zamknij menu ułatwień dostępu</translation>
 <translation id="5870155679953074650">Poważne błędy</translation>
+<translation id="587234395549708302">Usunąć zakładki?</translation>
 <translation id="5875534259258494936">Udostępnianie ekranu zostało zakończone</translation>
 <translation id="5876851302954717356">Nowa karta po prawej</translation>
 <translation id="5877064549588274448">Kanał został zmieniony. Aby zastosować zmiany, uruchom ponownie urządzenie.</translation>

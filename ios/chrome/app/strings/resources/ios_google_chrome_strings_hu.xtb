@@ -3,6 +3,7 @@
 <translationbundle lang="hu">
 <translation id="1076643793026027628">A Chrome automatikusan inkognitó módban nyitja meg a YouTube inkognitó linkjeit.</translation>
 <translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
+<translation id="1088490543924960890">Mentse azonosítókulcsait a Google Jelszókezelővel</translation>
 <translation id="1143896152279775643">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="1146503048444965320">Új lap megnyitása a Chrome-ban</translation>
 <translation id="1158134713295836892">Gemini a Chrome-ban</translation>
@@ -256,6 +257,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7371674917547846460">Kövesse a hasznos Chrome-tippeket és még sok mást.</translation>
 <translation id="7394108421562933108">Térkép a Chrome-ban</translation>
 <translation id="7400722733683201933">A Google Chrome névjegye</translation>
+<translation id="7444830584401232881">Ez az azonosítókulcs a fiókjához (<ph name="USER_EMAIL" />) kapcsolt Google Jelszókezelőbe lesz mentve.</translation>
 <translation id="7466693328838535498">Írja be a Modulok keresése mezőbe a Chrome-ot.</translation>
 <translation id="7477056987201678345">Chrome-adatok törlése…</translation>
 <translation id="7492574581995589075">Szervezete kikapcsolta a Chrome-adatok Google-fiókban való használatát és mentését. Az új könyvjelzők, jelszavak és egyebek csak erre az eszközre lesznek mentve.</translation>

@@ -210,7 +210,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
           <ph name="LIST_ITEM" />A túa empresa ou centro educativo
           <ph name="LIST_ITEM" />O teu fornecedor de servizos de Internet
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Facer o seguimento deste artigo</translation>
 <translation id="1337692097987160377">Compartir esta pestana</translation>
 <translation id="1339601241726513588">Dominio de inscrición:</translation>
 <translation id="1340482604681802745">Enderezo de recollida</translation>
@@ -481,7 +480,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1762779605905950734">Nome da rúa</translation>
 <translation id="1763864636252898013">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o sistema operativo do teu dispositivo non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Consultar o historial de prezos</translation>
 <translation id="1777422078676229054">Foto (arquivo)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Queres instalar aplicacións web?</translation>
@@ -990,6 +988,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2610561535971892504">Fai clic para copiar a información</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="2612993535136743634">Eliminaranse os códigos de seguranza que teñas gardados no dispositivo e na Conta de Google</translation>
+<translation id="2614835674900828050">Non dispoñible para esta compra</translation>
 <translation id="2616412942031748191">Márketing e optimización de motores de busca</translation>
 <translation id="2618206371527040026">Publicacións e conferencias académicas</translation>
 <translation id="2619052155095999743">Inserir</translation>

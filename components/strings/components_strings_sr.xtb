@@ -210,7 +210,6 @@
           <ph name="LIST_ITEM" />послодавца или школу
           <ph name="LIST_ITEM" />интернет провајдера
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Пратите ову ставку</translation>
 <translation id="1337692097987160377">Дели ову картицу</translation>
 <translation id="1339601241726513588">Домен уписнице:</translation>
 <translation id="1340482604681802745">Адреса преузимања</translation>
@@ -481,7 +480,6 @@
 <translation id="1762779605905950734">Назив улице</translation>
 <translation id="1763864636252898013">Овај сервер не може да докаже да је <ph name="DOMAIN" />; оперативни систем уређаја нема поверења у његов безбедносни сертификат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Покушајте да покренете Windows дијагностику мреже<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Погледајте историју цена</translation>
 <translation id="1777422078676229054">Слика (архивска)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Желите да инсталирате веб-апликације?</translation>
@@ -990,6 +988,7 @@
 <translation id="2610561535971892504">Кликните да бисте копирали</translation>
 <translation id="2612676031748830579">Број картице</translation>
 <translation id="2612993535136743634">Сви безбедносни кодови сачувани на уређају и Google налогу ће бити избрисани</translation>
+<translation id="2614835674900828050">Није доступно за ову куповину</translation>
 <translation id="2616412942031748191">Оптимизација за претраживаче и маркетинг</translation>
 <translation id="2618206371527040026">Академске конференције и публикације</translation>
 <translation id="2619052155095999743">Уметање</translation>

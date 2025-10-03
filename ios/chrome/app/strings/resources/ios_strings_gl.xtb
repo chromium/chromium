@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204075260022434100">{count,plural, =1{Gardouse o marcador no cartafol "{title}" da túa conta ({email})}other{Gardáronse {count} marcadores no cartafol "{title}" da túa conta ({email})}}</translation>
-<translation id="120431140543679678">Seguir</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Vista dividida</translation>
 <translation id="1219674500290482172">Non se puido conectar a Internet.</translation>
@@ -535,6 +534,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="3032704072014531631">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />" e <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) xa non poderá interactuar contigo nos servizos de Google</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) perderá inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />" e xa non poderá interactuar contigo nos servizos de Google</translation>
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
+<translation id="3038136505713492417">Verifica a túa identidade para usar as túas claves de acceso neste dispositivo</translation>
 <translation id="3039671569659952257">Eliminar cartafol</translation>
 <translation id="3053332585453689122">Envía a Navegación segura de Google os URL que visites e unha pequena mostra do contido da páxina, das descargas, da actividade das extensións e da información do sistema para comprobar se son daniños.</translation>
 <translation id="3055102495753300780">Almacenamento de información</translation>
@@ -822,6 +822,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="422474357428465195">Tes varios problemas cos contrasinais que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="422477017457571619">Protección con tecnoloxía de IA e en tempo real contra sitios, descargas e extensións perigosos baseada nos teus datos de navegación enviados a Google</translation>
 <translation id="4231395118547300571">Activáronse as notificacións de Comprobación de seguranza</translation>
+<translation id="4232817129213135694">Configura as claves de acceso deste dispositivo</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Default Browser App<ph name="END_BOLD" /> (Aplicación de navegador predeterminada)</translation>
 <translation id="4241893428331130998">Non hai ningún contrasinal nin clave de acceso gardados</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
@@ -829,6 +830,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4250680216510889253">Non</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Licenzas de código aberto</translation>
+<translation id="4258815194323378612">Agora non</translation>
 <translation id="4263576668337963058">Mostrar accións da páxina dispoñibles</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Ignoraches {COUNT} aviso}other{Ignoraches {COUNT} avisos}}</translation>
 <translation id="4268574628540273656">URL:</translation>
@@ -910,7 +912,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606247758155004938">A túa organización xestiona o teu navegador.</translation>
 <translation id="4607887340472970274">Seguimento de prezos</translation>
-<translation id="4611811151908969241">Ocultar Deixar de seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Realizando buscas con Google</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4621768135601674446">Abrir opcións do modo de lectura</translation>
@@ -993,6 +994,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4870911314065352661">Queres pechar todas as pestanas?</translation>
 <translation id="4872664437015695612">Abrir no cartafol de descargas</translation>
 <translation id="4875260838563541343">Botón de acción</translation>
+<translation id="4876237378696925987">Comezar</translation>
 <translation id="4876305945144899064">Sen nome de usuario</translation>
 <translation id="4876665338492917862">Último acceso: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Lembrarmo máis tarde</translation>
@@ -1066,6 +1068,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="514154868070499296">Tipo de letra: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Saír do selector de pestanas</translation>
 <translation id="5148717509369231739">Importación de Safari</translation>
+<translation id="5152483358138813104">Inicia sesión máis rápido en todos os dispositivos</translation>
 <translation id="5157638238828697074">Produciuse un erro. Non se puido abrir a aplicación.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Creado para iPadOS</translation>
@@ -1075,6 +1078,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5177141896043341906">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais pouco seguros que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="5181140330217080051">Descargando</translation>
 <translation id="5186185447130319458">Privado</translation>
+<translation id="5189431381114029336">Garda a túa primeira clave de acceso</translation>
 <translation id="518997337573684769">Enviando informe de fallos…</translation>
 <translation id="519530786644929958">Erro na descarga. Non se pode volver tentar.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1239,7 +1243,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5779117921996157216">{count,plural, =1{Tes {count} contrasinal vulnerado que podería poñer en perigo a túa seguranza. Cámbiao xa para non correr riscos.}other{Tes {count} contrasinais vulnerados que poderían poñer en perigo a túa seguranza. Cámbiaos xa para non correr riscos.}}</translation>
 <translation id="5791632441210678828">Botón Ordenar do feed Seguindo.</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
-<translation id="5804012843049740908">Consellos de configuración para tirar o máximo proveito de Chrome</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="58081802114142635">A túa actividade mellora coa IA de Google</translation>
 <translation id="5813223718099710537">Cando uses esta función, o contido da páxina e os URL enviaranse a Google. Podes desactivala cando queiras na configuración.</translation>
@@ -1286,6 +1289,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
 <translation id="5972844218283131174">Anular toda a selección</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
+<translation id="5986043348928676121">Seguinte</translation>
 <translation id="598634819525651074">Superficie</translation>
 <translation id="5988097621740394599">Consulta as baixadas de prezo nas túas pestanas.</translation>
 <translation id="5988851877894965432">Abrir URL en Chrome</translation>
@@ -1399,7 +1403,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="63519665078626091">Para usar a ferramenta Web Inspector, conéctate a Safari desde o ordenador mediante un cable e accede ao teu iPad desde o menú Develop (Programación). Podes activar ese menú desde a sección Advanced (Configuración avanzada) dos axustes de Safari no teu ordenador.</translation>
 <translation id="6355820183143562453">Ocultar a tarxeta Seguimento de prezos</translation>
 <translation id="6355820205320395730">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros. <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
-<translation id="6361848730467328243">Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Escolle un buscador da lista.</translation>
 <translation id="6368102751067608420">Para eliminar todos os datos do xestor de contrasinais</translation>
 <translation id="6372558618707314581">Accede á páxina que queiras</translation>
@@ -1455,7 +1458,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6571070086367343653">Editar tarxeta de crédito</translation>
 <translation id="6574092468346088891">Activar notificacións de Comprobación de seguranza</translation>
-<translation id="6574225511994820656">Suxestións de configuración</translation>
 <translation id="6579867704846662339">Podes decidir abrir os URL entrantes desde outras aplicacións no modo de incógnito.</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a AutoFill Passwords (Autocompletar contrasinais).</translation>
 <translation id="6585618849026997638">Engade un marcador para volver acceder a unha páxina que consideres importante</translation>
@@ -1679,6 +1681,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7445682342344043969">Ventás emerxentes bloqueadas</translation>
 <translation id="7451023311965289370">{count,plural, =1{Gardouse o marcador en {title}}other{Gardáronse os marcadores en {title}}}</translation>
 <translation id="7451404862887877229">Toca Privacidade e seguranza e, a continuación, Navegación segura</translation>
+<translation id="7452393099119876789">Só tes que facelo unha vez.</translation>
 <translation id="7454057999980797137">Estado/provin.</translation>
 <translation id="7458706065921255639">Personalización e vinculación</translation>
 <translation id="745899714366929493">Todo o día</translation>
@@ -1990,6 +1993,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8571019948162152515">Queres eliminar "<ph name="FILENAME" />"?</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8577056989960190117">Autocompletar o ano de caducidade <ph name="YEAR" /></translation>
+<translation id="8587001564479545614">Crear un PIN de recuperación</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590286732816598906">Grupo de pestanas, <ph name="GROUP_TITLE" />, menú.</translation>
 <translation id="8600272508328041907">Cambiar á tradución da páxina completa</translation>
@@ -2049,7 +2053,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8750037785291841318">Aquí atoparás as túas pestanas</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
 <translation id="8763613688786959833">Ir á última pestana</translation>
-<translation id="8764015330924122850">Deixar de seguir: <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Eliminaranse os contrasinais de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="8775144690796719618">URL non válido</translation>
 <translation id="8781834595282316166">Nova pestana no grupo</translation>
@@ -2110,7 +2113,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8976382372951310360">Axuda</translation>
 <translation id="8976414606286374109">As tarxetas gárdanse na túa Conta de Google.</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
-<translation id="8984627322964256190">Ocultar opción de seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="9000532564152265066">Todas as pestanas</translation>

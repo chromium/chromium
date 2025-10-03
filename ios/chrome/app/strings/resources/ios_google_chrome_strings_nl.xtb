@@ -3,6 +3,7 @@
 <translationbundle lang="nl">
 <translation id="1076643793026027628">Chrome opent YouTube-incognitolinks automatisch in de incognitomodus.</translation>
 <translation id="1086486568852410168">Zoeken met Google Lens</translation>
+<translation id="1088490543924960890">Sla toegangssleutels op met Google Wachtwoordmanager</translation>
 <translation id="1143896152279775643">Je wachtwoord wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Nieuw tabblad openen in Chrome</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
@@ -256,6 +257,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7371674917547846460">Blijf op de hoogte van nuttige Chrome-tips en meer.</translation>
 <translation id="7394108421562933108">Maps in Chrome</translation>
 <translation id="7400722733683201933">Over Google Chrome</translation>
+<translation id="7444830584401232881">Deze toegangssleutel wordt opgeslagen in Google Wachtwoordmanager voor <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">Typ Chrome in het vak Widgets zoeken</translation>
 <translation id="7477056987201678345">Chrome-gegevens verwijderen…</translation>
 <translation id="7492574581995589075">Je organisatie heeft de mogelijkheid uitgezet om Chrome-gegevens te gebruiken en op te slaan in je Google-account. Items zoals nieuwe bookmarks en wachtwoorden worden alleen opgeslagen op dit apparaat.</translation>

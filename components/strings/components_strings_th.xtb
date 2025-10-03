@@ -210,7 +210,6 @@
           <ph name="LIST_ITEM" />นายจ้างหรือโรงเรียน
           <ph name="LIST_ITEM" />ผู้ให้บริการอินเทอร์เน็ต
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">ติดตามรายการนี้</translation>
 <translation id="1337692097987160377">แชร์แท็บนี้</translation>
 <translation id="1339601241726513588">โดเมนการลงทะเบียน:</translation>
 <translation id="1340482604681802745">ที่อยู่ในการรับ</translation>
@@ -481,7 +480,6 @@
 <translation id="1762779605905950734">ชื่อถนน</translation>
 <translation id="1763864636252898013">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะระบบปฏิบัติการของอุปกรณ์ของคุณไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
-<translation id="1771254328977666895">ดูประวัติราคา</translation>
 <translation id="1777422078676229054">รูปภาพ (Archival)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ติดตั้งเว็บแอปไหม</translation>

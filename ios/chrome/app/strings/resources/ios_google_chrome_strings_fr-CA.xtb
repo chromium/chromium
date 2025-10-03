@@ -3,6 +3,7 @@
 <translationbundle lang="fr-CA">
 <translation id="1076643793026027628">Chrome ouvre automatiquement les liens de la Navigation privée YouTube en mode Navigation privée.</translation>
 <translation id="1086486568852410168">Rechercher avec Lentille Google</translation>
+<translation id="1088490543924960890">Commencez à enregistrer les clés d'accès avec le gestionnaire de mots de passe Google</translation>
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Ouvrir un nouvel onglet dans Chrome</translation>
 <translation id="1158134713295836892">Gemini dans Chrome</translation>
@@ -256,6 +257,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="7371674917547846460">Soyez au courant des astuces Chrome et plus encore.</translation>
 <translation id="7394108421562933108">Maps dans Chrome</translation>
 <translation id="7400722733683201933">À propos de Google Chrome</translation>
+<translation id="7444830584401232881">Cette clé d'accès sera enregistrée dans le gestionnaire de mots de passe Google du compte <ph name="USER_EMAIL" />.</translation>
 <translation id="7466693328838535498">Dans le champ Widgets de recherche, entrez Chrome</translation>
 <translation id="7477056987201678345">Suppression des données Chrome en cours…</translation>
 <translation id="7492574581995589075">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer des données Chrome dans votre compte Google. Les nouveaux favoris, mots de passe et plus ne seront enregistrés que sur cet appareil.</translation>

@@ -34,6 +34,7 @@
 <translation id="1345251407431278948">고정되었습니다. 툴바의 새 버튼에서 이미지 검색을 다시 이용할 수 있습니다</translation>
 <translation id="1356661055722410047">New! 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
 <translation id="1383876407941801731">검색</translation>
+<translation id="1397530502368084401">Chromium 프로필 관리(&amp;M)</translation>
 <translation id="1414495520565016063">Chromium에 로그인했습니다.</translation>
 <translation id="141901961143729572">의견 공유</translation>
 <translation id="1465192221147974788">창을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
@@ -72,6 +73,7 @@
 <translation id="1896836275755235458">Chromium에서 부드러운 스크롤 및 동영상 프레임 속도 같은 시각 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">이 페이지에 대해 질문하기</translation>
 <translation id="1900969832270057921">Chromium 업데이터 서비스</translation>
+<translation id="1911666947158375684">로그인한 상태로 Chromium에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. 언제든지 설정에서 변경할 수 있습니다.</translation>
 <translation id="1911763535808217981">이 기능을 사용 중지하면 Chromium에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
 <translation id="1929939181775079593">Chromium이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="1933341829955786215">조직(<ph name="MANAGER" />)에서 Chromium에 로그인할 것을 요구합니다</translation>
@@ -473,6 +475,7 @@
 <translation id="6669284030132180248">Google 계정에도 북마크를 저장하면 Chromium에서 제품 가격을 추적하고 가격이 인하되면 알림을 받을 수 있습니다.</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
 <translation id="668175097507315160">로그인 중 오류가 발생하여 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
+<translation id="6691132793308828750">Chromium에서 이 앱 데이터 삭제</translation>
 <translation id="6692797197837897398">Chromium을 나에게 표시되는 광고를 보다 세부적으로 관리할 뿐만 아니라 사이트가 개인 맞춤 광고를 표시할 때 나에 관해 얻을 수 있는 정보를 제한할 수 있습니다.</translation>
 <translation id="6709350901466051922">Chromium에서 사이트에 대한 마이크 권한이 필요합니다.</translation>
 <translation id="6712881677154121168">다운로드 오류(<ph name="DOWNLOAD_ERROR" />)가 발생했습니다.</translation>
@@ -493,6 +496,7 @@
 <translation id="6877155553248388166">검색 영역의 오른쪽 하단: 오른쪽 <ph name="RIGHT" />%, 하단 <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6901631050894301805">Chromium을 기본 브라우저로 설정하고 태스크 바에 고정하세요.</translation>
+<translation id="6909503629704372277">Chromium 프로필 관리(&amp;M)</translation>
 <translation id="6934579572334859869">이미지 검색에 이 이미지에 관해 질문하기</translation>
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="6965382102122355670">확인</translation>

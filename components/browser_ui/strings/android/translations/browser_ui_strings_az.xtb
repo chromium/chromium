@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Nişan qrupları ilə nizamlayın</translation>
 <translation id="2597457036804169544">Saytlara tünd tema tətbiq etməyin</translation>
 <translation id="2606760465469169465">Avtomatik təsdiqləyin</translation>
+<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android ayarlarında<ph name="END_LINK1" /> idarə edin
+
+Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
+• "Həmişə güvənli bağlantılardan istifadə edin" seçimi aktivdir.
+• "JavaScript optimizatoru" sönülüdür. <ph name="BEGIN_LINK2" />Sayt istisnalarına nəzarət edin<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Xüsusi sayt üçün JavaScript'ə icazə verin.</translation>
 <translation id="2626708220538466178">Defolt brauzerin aşağıdakı vərəqi bağlandı</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
@@ -340,6 +345,7 @@
 <translation id="4816495437032298535">Saytlar üçün yadda saxlanılmış zum</translation>
 <translation id="4836046166855586901">Sayt bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək istədikdə icazə istəsin</translation>
 <translation id="483914009762354899">Bu domen altında olan bütün saytları daxil edin</translation>
+<translation id="4852997963351138624">Arxa fon rənginin hex kodu</translation>
 <translation id="4882919381756638075">Saytlar adətən video çat kimi ünsiyyət xüsusiyyətləri üçün mikrofondan istifadə edir</translation>
 <translation id="4883854917563148705">İdarə edilən ayarlar sıfırlana bilməz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallıq cihazınız və datanızı istifadə etməzdən əvvəl icazə istəsin (tövsiyə edilir)</translation>
@@ -503,6 +509,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Qorunan kontent</translation>
 <translation id="662080504995468778">Qalın</translation>
+<translation id="6630443592285535486">Hex kodunu bura daxil edin</translation>
 <translation id="6635327442719709864">Aktiv olduqda saytlar silsilə portlardan istifadə etmək istəyə bilər. Deaktiv olduqda saytlar silsilə portlardan istifadə edə bilməz.</translation>
 <translation id="6678072580827808850">Təhlükəsizlik yoxlanışını nəzərdən keçirin</translation>
 <translation id="6682057173375416470">Yeni Tab səhifəsində təklif olunan məqalələri əldə edin</translation>
@@ -560,6 +567,7 @@
 <translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>
 <translation id="7406113532070524618">Bu ayar kimliyi müəyyən etmir və ya saytlara brauzer tarixçəsini görmək imkanı vermir. Lakin saytlar doğrulamanın bir hissəsi kimi az miqdarda məlumat paylaşa bilər</translation>
 <translation id="7409735910987429903">Saytlar reklamları göstərmək üçün ani bildirişlər göndərə və ya sizi ziyarət etmək istəmədiyiniz veb-saytlara aparmaq üçün yönləndirmələrdən istifadə edə bilər</translation>
+<translation id="7412160840120117304">Əsas rəngin hex kodu</translation>
 <translation id="7423098979219808738">Öncə soruşun</translation>
 <translation id="7423538860840206698">Buferdə oxu girişi blok edildi</translation>
 <translation id="7425915948813553151">Saytlar üçün tünd tema</translation>

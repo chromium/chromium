@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">سروسامان دادن با گروه‌های زبانه</translation>
 <translation id="2597457036804169544">زمینه تاریک برای سایت‌ها استفاده نشود</translation>
 <translation id="2606760465469169465">تأیید خودکار</translation>
+<translation id="2610903128639500624">‏در <ph name="BEGIN_LINK1" />تنظیمات Android<ph name="END_LINK1" /> مدیریت کنید
+
+«محافظت پیشرفته» این تنظیمات Chrome را کنترل می‌کند:
+• «همیشه از اتصال ایمن استفاده شود» روشن است.
+• «بهینه‌ساز جاوا اسکریپت» خاموش است. <ph name="BEGIN_LINK2" />مدیریت کردن استثناهای «سایت»<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">جاوااسکریپت را برای سایتی خاص مجاز کنید.</translation>
 <translation id="2626708220538466178">برگ زیرین مرورگر پیش‌فرض بسته شده است</translation>
 <translation id="2653659639078652383">ارسال</translation>
@@ -379,7 +384,7 @@
 <translation id="5198930230016462977">برگ زیرین «سفارشی‌سازی صفحه زبانه جدید» بسته شده است</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>
 <translation id="5225463052809312700">روشن کردن دوربین</translation>
-<translation id="5234764350956374838">رد کردن</translation>
+<translation id="5234764350956374838">بستن</translation>
 <translation id="5239623327352565343">مکان مجاز است</translation>
 <translation id="5246825184569358663">با این کار، همه داده‌های محلی، ازجمله کوکی‌ها، حذف خواهد شد و تمام اجازه‌های <ph name="DOMAIN" /> و همه سایت‌های تحت آن بازنشانی خواهند شد</translation>
 <translation id="5264323282659631142">برداشتن «<ph name="CHIP_LABEL" />»</translation>

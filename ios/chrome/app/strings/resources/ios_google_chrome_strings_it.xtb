@@ -3,6 +3,7 @@
 <translationbundle lang="it">
 <translation id="1076643793026027628">Chrome apre automaticamente i link di YouTube in incognito in modalità di navigazione in incognito.</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
+<translation id="1088490543924960890">Inizia a salvare le passkey con Gestore delle password di Google</translation>
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Apri nuova scheda in Chrome</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
@@ -256,6 +257,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7371674917547846460">Ricevi aggiornamenti su suggerimenti utili per Chrome e altro ancora.</translation>
 <translation id="7394108421562933108">Maps in Chrome</translation>
 <translation id="7400722733683201933">Informazioni su Google Chrome</translation>
+<translation id="7444830584401232881">Questa passkey verrà salvata nel Gestore delle password di Google per <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">Nella casella Cerca nei widget, inserisci la parola Chrome</translation>
 <translation id="7477056987201678345">Eliminazione dei dati di Chrome in corso…</translation>
 <translation id="7492574581995589075">La tua organizzazione ha disattivato la possibilità di usare e salvare i dati di Chrome nel tuo Account Google. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>

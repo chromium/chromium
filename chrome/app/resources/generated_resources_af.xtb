@@ -1394,6 +1394,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1931152874660185993">Geen komponente is geïnstalleer nie.</translation>
 <translation id="1931410639376954712">Installeer tans <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Nie voor</translation>
+<translation id="1932125073382155239">Rugsteun jou goed?</translation>
 <translation id="1933070475689690969">Gemini-appsaktiwiteit</translation>
 <translation id="1933489278505808700">Toegelaat om te lees en te verander</translation>
 <translation id="1935303383381416800">Mag jou ligging sien</translation>
@@ -1857,6 +1858,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2257053455312861282">As 'n skoolrekening bygevoeg word, is dit vir 'n student maklik om by webwerwe, uitbreidings en programme aan te meld terwyl hulle steeds onder ouertoesig is.</translation>
 <translation id="225716114209817872">Maksimum</translation>
+<translation id="2259337945538989999">Verifieer dat dit jy is om jou oortjies van jou ander toestelle af te kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="2261323523305321874">Jou administrateur het 'n stelselwye verandering gemaak wat sommige ou profiele deaktiveer</translation>
 <translation id="22614517036276112">Hierdie dokument of jou toestel voldoen nie aan sommige van jou organisasie se sekuriteitsbeleide nie. Vind uit by jou admin wat reggestel moet word.</translation>
 <translation id="2262477216570151239">Wagtydperk voor herhaling</translation>
@@ -2067,6 +2069,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2393313392064891208">Inhoud van Google Chrome OS Flex se bepalings</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> is versteek</translation>
 <translation id="2395616325548404795">Jou <ph name="DEVICE_TYPE" /> is suksesvol vir ondernemingbestuur ingeskryf, maar kon nie sy bate- en ligginginligting te stuur nie. Voer hierdie inligting asseblief self in jou administrasiekonsole vir hierdie toestel in.</translation>
+<translation id="2396593617786425274">Sinkroniseer geskiedenis?</translation>
 <translation id="2396783860772170191">Voer 4-syfer-PIN (0000-9999) in</translation>
 <translation id="2398546389094871088">Jou e-SIM-profiele sal nie verwyder word as jy Powerwash met jou toestel gebruik nie. Gaan na <ph name="LINK_BEGIN" />Mobiele instellings<ph name="LINK_END" /> om hierdie profiele self te verwyder.</translation>
 <translation id="2399699884460174994">Kennisgewings is aangeskakel</translation>
@@ -6740,6 +6743,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5648166631817621825">Afgelope 7 dae</translation>
 <translation id="5651308944918885595">Nabydeling: opspoorbaarheid</translation>
 <translation id="5653154844073528838">Jy het <ph name="PRINTER_COUNT" /> gestoorde drukkers.</translation>
+<translation id="565461030474814383">Stoor in rekening?</translation>
 <translation id="5654669866168491665">Kom meer te wete oor werwe wat dalk nie werk wanneer derdepartywebkoekies geblokkeer word nie</translation>
 <translation id="5654751240928365405">Hierdie uitbreiding is afgeskakel omdat dit nie meer gesteun word nie</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Toestemmings is van ’n webwerf verwyder om jou privaatheid te beskerm}other{Toestemmings is van sommige webwerwe verwyder om jou privaatheid te beskerm}}</translation>
@@ -7044,6 +7048,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5869522115854928033">Gestoorde wagwoorde</translation>
 <translation id="5870086504539785141">Maak toeganklikheidkieslys toe</translation>
 <translation id="5870155679953074650">Harde foute</translation>
+<translation id="587234395549708302">Maak boekmerke skoon?</translation>
 <translation id="5875534259258494936">Skermdeling het geëindig</translation>
 <translation id="5876851302954717356">Nuwe oortjie aan die regterkant</translation>
 <translation id="5877064549588274448">Kanaal het verander. Herbegin jou toestel om veranderinge toe te pas.</translation>

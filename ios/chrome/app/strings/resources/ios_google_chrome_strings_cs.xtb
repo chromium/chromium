@@ -3,6 +3,7 @@
 <translationbundle lang="cs">
 <translation id="1076643793026027628">Odkazy z YouTube v anonymním režimu otevírá Chrome automaticky v anonymních oknech.</translation>
 <translation id="1086486568852410168">Vyhledat pomocí Google Lens</translation>
+<translation id="1088490543924960890">Začněte si ukládat přístupové klíče pomocí Správce hesel Google</translation>
 <translation id="1143896152279775643">Heslo bude uloženo do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otevřít novou kartu v prohlížeči Chrome</translation>
 <translation id="1158134713295836892">Gemini v Chromu</translation>
@@ -256,6 +257,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7371674917547846460">Sledujte užitečné tipy pro Chrome a další informace.</translation>
 <translation id="7394108421562933108">Mapy v Chromu</translation>
 <translation id="7400722733683201933">O aplikaci Google Chrome</translation>
+<translation id="7444830584401232881">Tento přístupový klíč se uloží do Správce hesel Google pro účet <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">Do pole Widgety Vyhledávání zadejte Chrome</translation>
 <translation id="7477056987201678345">Mazání dat prohlížeče Chrome…</translation>
 <translation id="7492574581995589075">Vaše organizace vypnula možnost používat a ukládat data Chromu v účtu Google. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>

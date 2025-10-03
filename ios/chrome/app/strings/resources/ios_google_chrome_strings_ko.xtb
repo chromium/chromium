@@ -3,6 +3,7 @@
 <translationbundle lang="ko">
 <translation id="1076643793026027628">Chrome에서 시크릿 모드로 YouTube 시크릿 모드 링크를 자동으로 엽니다</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
+<translation id="1088490543924960890">Google 비밀번호 관리자로 패스키를 저장하세요</translation>
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1146503048444965320">Chrome에서 새 탭 열기</translation>
 <translation id="1158134713295836892">Chrome의 Gemini</translation>
@@ -256,6 +257,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7371674917547846460">유용한 Chrome 도움말 등을 확인하세요.</translation>
 <translation id="7394108421562933108">Chrome의 지도</translation>
 <translation id="7400722733683201933">Chrome 정보</translation>
+<translation id="7444830584401232881">이 패스키가 <ph name="USER_EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="7466693328838535498">검색 위젯 상자에 Chrome을 입력합니다.</translation>
 <translation id="7477056987201678345">Chrome 데이터 삭제 중…</translation>
 <translation id="7492574581995589075">조직에서 Google 계정에 Chrome 데이터를 사용하고 저장하는 기능을 사용 중지했습니다. 새 북마크, 비밀번호 등이 이 기기에만 저장됩니다.</translation>

@@ -210,7 +210,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
           <ph name="LIST_ITEM" />Eich cyflogwr neu ysgol
           <ph name="LIST_ITEM" />Eich darparwr gwasanaeth rhyngrwyd
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Olrhain yr eitem hon</translation>
 <translation id="1337692097987160377">Rhannu'r tab hwn</translation>
 <translation id="1339601241726513588">Parth cofrestru:</translation>
 <translation id="1340482604681802745">Cyfeiriad casglu</translation>
@@ -481,7 +480,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1762779605905950734">Enw Stryd</translation>
 <translation id="1763864636252898013">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw system weithredu eich dyfais yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Rhowch gynnig ar redeg Diagnosteg Rhwydwaith Windows<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Gweld Hanes y Pris</translation>
 <translation id="1777422078676229054">Llun (Archifal)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Gosod apiau gwe?</translation>
@@ -990,6 +988,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2610561535971892504">Clicio i gopïo</translation>
 <translation id="2612676031748830579">Rhif y cerdyn</translation>
 <translation id="2612993535136743634">Bydd yr holl godau diogelwch sy'n cael eu cadw ar eich dyfais ac mewn Cyfrif Google yn cael eu dileu</translation>
+<translation id="2614835674900828050">Nid yw ar gael ar gyfer y pryniant hwn</translation>
 <translation id="2616412942031748191">Optimeiddio Peiriannau Chwilio a Marchnata</translation>
 <translation id="2618206371527040026">Cynadleddau a Chyhoeddiadau Academaidd</translation>
 <translation id="2619052155095999743">Mewnosod</translation>

@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Organitza't amb els grups de pestanyes</translation>
 <translation id="2597457036804169544">No apliquis el tema fosc als llocs web</translation>
 <translation id="2606760465469169465">Verificació automàtica</translation>
+<translation id="2610903128639500624">Gestiona a <ph name="BEGIN_LINK1" />Configuració d'Android<ph name="END_LINK1" />
+
+La Protecció avançada controla aquestes opcions de configuració de Chrome:
+• L'opció Utilitza sempre connexions segures està activada.
+• L'opció Optimitzador de JavaScript està desactivada. <ph name="BEGIN_LINK2" />Gestiona les excepcions de llocs web<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Permet JavaScript en un lloc web concret.</translation>
 <translation id="2626708220538466178">Full inferior del navegador predeterminat tancat</translation>
 <translation id="2653659639078652383">Envia</translation>
@@ -340,6 +345,7 @@
 <translation id="4816495437032298535">Zoom desat per als llocs web</translation>
 <translation id="4836046166855586901">Pregunta'm quan un lloc web vulgui saber quan estic utilitzant aquest dispositiu de manera activa</translation>
 <translation id="483914009762354899">Inclou tots els llocs web d'aquest domini</translation>
+<translation id="4852997963351138624">Color de fons hexadecimal</translation>
 <translation id="4882919381756638075">Els llocs web solen utilitzar el micròfon per a funcions de comunicació com ara el xat de vídeo</translation>
 <translation id="4883854917563148705">Les opcions de configuració gestionades no es poden restablir</translation>
 <translation id="4887024562049524730">Pregunta abans de permetre que els llocs web utilitzin el teu dispositiu i les teves dades de realitat virtual (opció recomanada)</translation>
@@ -503,6 +509,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contingut protegit</translation>
 <translation id="662080504995468778">No surtis</translation>
+<translation id="6630443592285535486">Escriu el valor hexadecimal aquí</translation>
 <translation id="6635327442719709864">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar els ports en sèrie. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els ports en sèrie.</translation>
 <translation id="6678072580827808850">Revisa Comprovació de seguretat</translation>
 <translation id="6682057173375416470">Obtén articles suggerits a la pàgina Pestanya nova</translation>
@@ -560,6 +567,7 @@
 <translation id="7399802613464275309">Comprovació de seguretat</translation>
 <translation id="7406113532070524618">Aquesta opció de configuració funciona sense identificar-te ni permetre que els llocs web vegin el teu historial de navegació, tot i que poden compartir una quantitat petita de dades com a part de la verificació</translation>
 <translation id="7409735910987429903">És possible que els llocs web enviïn finestres emergents per mostrar-te anuncis o que utilitzin redireccions que et portin a llocs web que potser no vols visitar</translation>
+<translation id="7412160840120117304">Color primari hexadecimal</translation>
 <translation id="7423098979219808738">Pregunta abans</translation>
 <translation id="7423538860840206698">L'accés de lectura al porta-retalls està bloquejat</translation>
 <translation id="7425915948813553151">Tema fosc per als llocs web</translation>

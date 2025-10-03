@@ -3,6 +3,7 @@
 <translationbundle lang="hr">
 <translation id="1076643793026027628">Chrome automatski otvara anonimne veze na YouTube u anonimnom načinu.</translation>
 <translation id="1086486568852410168">Pretraži pomoću Google objektiva</translation>
+<translation id="1088490543924960890">Počnite spremati pristupne ključeve pomoću Google upravitelja zaporki</translation>
 <translation id="1143896152279775643">Zaporka će se spremiti u Google upravitelj zaporki za <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvaranje nove kartice u Chromeu</translation>
 <translation id="1158134713295836892">Gemini u Chromeu</translation>
@@ -256,6 +257,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="7371674917547846460">Pratite korisne savjete za Chrome i drugo.</translation>
 <translation id="7394108421562933108">Karte u Chromeu</translation>
 <translation id="7400722733683201933">O programu Google Chrome</translation>
+<translation id="7444830584401232881">Ovaj pristupni ključ spremit će se u Google upravitelj zaporki za račun <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">U okvir Widgeti za pretraživanje upišite Chrome</translation>
 <translation id="7477056987201678345">Brisanje podataka Chromea…</translation>
 <translation id="7492574581995589075">Vaša organizacija isključila je mogućnost upotrebe i spremanja Chromeovih podataka na vaš Google račun. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>

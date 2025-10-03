@@ -3,6 +3,7 @@
 <translationbundle lang="bs">
 <translation id="1076643793026027628">Chrome automatski otvara anonimne linkove YouTubea u anonimnom načinu rada.</translation>
 <translation id="1086486568852410168">Pretraži putem Google Objektiva</translation>
+<translation id="1088490543924960890">Počnite pohranjivati pristupne ključeve pomoću Google upravitelja lozinki</translation>
 <translation id="1143896152279775643">Vaša lozinka će se sačuvati u Googleov Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvaranje nove kartice u Chromeu</translation>
 <translation id="1158134713295836892">Gemini u Chromeu</translation>
@@ -256,6 +257,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="7371674917547846460">Pratite korisne savjete za Chrome i drugo.</translation>
 <translation id="7394108421562933108">Mape u Chromeu</translation>
 <translation id="7400722733683201933">O Google Chromeu</translation>
+<translation id="7444830584401232881">Pristupni ključ će se sačuvati na Google upravitelj lozinki za <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">U polju Vidžet za pretraživanje unesite Chrome</translation>
 <translation id="7477056987201678345">Brisanje podataka Chromea…</translation>
 <translation id="7492574581995589075">Vaša organizacija je isključila mogućnost korištenja i pohranjivanja podataka Chromea na vaš Google račun. Nove oznake, lozinke i još mnogo toga će se pohranjivati samo na ovom uređaju.</translation>

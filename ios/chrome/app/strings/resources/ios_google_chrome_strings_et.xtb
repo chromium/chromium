@@ -3,6 +3,7 @@
 <translationbundle lang="et">
 <translation id="1076643793026027628">Chrome avab YouTube'i inkognito lingid automaatselt inkognito režiimis.</translation>
 <translation id="1086486568852410168">Otsing Google Lensiga</translation>
+<translation id="1088490543924960890">Hakake pääsuvõtmeid salvestama Google’i paroolihalduri abil.</translation>
 <translation id="1143896152279775643">Teie parool salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="1146503048444965320">Ava Chrome'is uus vaheleht</translation>
 <translation id="1158134713295836892">Gemini Chrome'is</translation>
@@ -256,6 +257,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="7371674917547846460">Püsige kursis kasulike Chrome'i nõuannete ja muuga.</translation>
 <translation id="7394108421562933108">Maps Chrome'is</translation>
 <translation id="7400722733683201933">Google Chrome'i kohta</translation>
+<translation id="7444830584401232881">See pääsuvõti salvestatakse konto <ph name="USER_EMAIL" /> Google’i paroolihaldurisse</translation>
 <translation id="7466693328838535498">Sisestage otsinguvidinate kasti „Chrome“</translation>
 <translation id="7477056987201678345">Chrome’i andmete kustutamine …</translation>
 <translation id="7492574581995589075">Teie organisatsioon on Chrome’i andmete kasutamise ja Google’i kontole salvestamise välja lülitanud. Uued järjehoidjad, paroolid ja muu sisu salvestatakse ainult sellesse seadmesse.</translation>

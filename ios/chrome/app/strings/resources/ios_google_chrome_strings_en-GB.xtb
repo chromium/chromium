@@ -3,6 +3,7 @@
 <translationbundle lang="en-GB">
 <translation id="1076643793026027628">Chrome automatically opens YouTube Incognito links in Incognito.</translation>
 <translation id="1086486568852410168">Search with Google Lens</translation>
+<translation id="1088490543924960890">Start saving passkeys with Google Password Manager</translation>
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Open new tab in Chrome</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
@@ -256,6 +257,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7371674917547846460">Keep up with helpful Chrome tips and more.</translation>
 <translation id="7394108421562933108">Maps in Chrome</translation>
 <translation id="7400722733683201933">About Google Chrome</translation>
+<translation id="7444830584401232881">This passkey will be saved to Google Password Manager for <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">In the Search Widgets box, enter Chrome</translation>
 <translation id="7477056987201678345">Deleting Chrome data…</translation>
 <translation id="7492574581995589075">Your organisation turned off the ability to use and save Chrome data in your Google Account. New bookmarks, passwords and more will be saved only to this device.</translation>

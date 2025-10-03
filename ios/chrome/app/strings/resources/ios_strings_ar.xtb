@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">مظهر باللون الأخضر</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1204075260022434100">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضِمن حسابك {email}}zero{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}" ضِمن حسابك {email}}few{تمّ حفظ {count} إشارات مرجعية في "{title}" ضِمن حسابك {email}}many{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}other{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}}</translation>
-<translation id="120431140543679678">متابعة</translation>
 <translation id="1207493287814084192">‫5:30 مساءً</translation>
 <translation id="1217294226280635614">تقسيم العرض</translation>
 <translation id="1219674500290482172">يتعذر الاتصال بالإنترنت.</translation>
@@ -535,6 +534,7 @@
 <translation id="3032704072014531631">‏سيصبح الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />" غير متاح بأثر فوري، ولن يعود بإمكان "<ph name="USER_NAME" />" ‏ (<ph name="USER_EMAIL" />) التفاعل معك على خدمات Google</translation>
 <translation id="3034496853223708513">‏سيفقد حساب "<ph name="USER_NAME" />" ‏(<ph name="USER_EMAIL" />) على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، ولن يعود بإمكانه التفاعل معك على خدمات Google</translation>
 <translation id="3037177537145227281">تتبُّع السعر</translation>
+<translation id="3038136505713492417">يجب إثبات هويتك لاستخدام مفاتيح المرور على هذا الجهاز</translation>
 <translation id="3039671569659952257">حذف مجلد</translation>
 <translation id="3053332585453689122">‏يُرسِل هذا الوضع إلى "التصفّح الآمن من Google" عناوين URL التي تزورها وعيّنة صغيرة من محتوى الصفحة وعمليات التنزيل ونشاط الإضافات ومعلومات النظام للتحقّق ممّا إذا كانت ضارة.</translation>
 <translation id="3055102495753300780">تخزين المعلومات</translation>
@@ -822,6 +822,7 @@
 <translation id="422474357428465195">هناك العديد من المشاكل المتعلقة بكلمات المرور، والتي قد تعرّضك لمخاطر أمنية.</translation>
 <translation id="422477017457571619">‏يوفِّر هذا الوضع حمايةً فورية مستندة إلى الذكاء الاصطناعي (AI) من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات تصفُّحك التي يتم إرسالها إلى Google</translation>
 <translation id="4231395118547300571">تم تفعيل إشعارات ميزة "التحقّق من الأمان"</translation>
+<translation id="4232817129213135694">إعداد مفاتيح مرور لهذا الجهاز</translation>
 <translation id="4237377247299956313">‏النقر على  <ph name="BEGIN_BOLD" />تطبيق المتصفِّح التلقائي (Default Browser App) <ph name="END_BOLD" /></translation>
 <translation id="4241893428331130998">ما مِن كلمات مرور أو مفاتيح مرور محفوظة</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -829,6 +830,7 @@
 <translation id="4250680216510889253">لا</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
+<translation id="4258815194323378612">لاحقًا</translation>
 <translation id="4263576668337963058">عرض الإجراءات المتاحة على الصفحة</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{لقد أغلقت تحذيرًا واحدًا ({COUNT}).}zero{لقد أغلقت {COUNT} تحذير.}two{لقد أغلقت تحذيرَين ({COUNT}).}few{لقد أغلقت {COUNT} تحذيرات.}many{لقد أغلقت {COUNT} تحذيرًا.}other{لقد أغلقت {COUNT} تحذير.}}</translation>
 <translation id="4268574628540273656">‏عنوان URL:</translation>
@@ -910,7 +912,6 @@
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4606247758155004938">تتولّى مؤسستك إدارة متصفِّحك.</translation>
 <translation id="4607887340472970274">تتبُّع الأسعار</translation>
-<translation id="4611811151908969241">إخفاء ميزة "إلغاء المتابعة <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">‏البحث من خلال Google</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4621768135601674446">فتح خيارات "وضع القراءة"</translation>
@@ -993,6 +994,7 @@
 <translation id="4870911314065352661">هل تريد إغلاق جميع علامات التبويب؟</translation>
 <translation id="4872664437015695612">الفتح في ملف عمليات التنزيل</translation>
 <translation id="4875260838563541343">زر الإجراء</translation>
+<translation id="4876237378696925987">البدء</translation>
 <translation id="4876305945144899064">ليس هناك اسم مستخدم</translation>
 <translation id="4876665338492917862">تمّ الفتح آخر مرة في <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">تذكيري لاحقًا</translation>
@@ -1066,6 +1068,7 @@
 <translation id="514154868070499296">الخط: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">الخروج من "أداة التبديل بين علامات التبويب"</translation>
 <translation id="5148717509369231739">‏استيراد بيانات Safari</translation>
+<translation id="5152483358138813104">تسجيل الدخول بشكل أسرع على جميع أجهزتك</translation>
 <translation id="5157638238828697074">حدث خطأ. تعذَّر فتح التطبيق.</translation>
 <translation id="5163417375525818870">‏ملفات PDF</translation>
 <translation id="5168414296986405587">‏مصمّم لنظام التشغيل iPadOS</translation>
@@ -1075,6 +1078,7 @@
 <translation id="5177141896043341906">لديك كلمات مرور ضعيفة يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="5181140330217080051">تنزيل</translation>
 <translation id="5186185447130319458">خاص</translation>
+<translation id="5189431381114029336">حفظ مفتاح المرور الأول</translation>
 <translation id="518997337573684769">جارٍ إرسال تقارير الأعطال…</translation>
 <translation id="519530786644929958">تعذّر تنزيل الملف ولا يمكن إعادة المحاولة.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
@@ -1237,7 +1241,6 @@
 <translation id="5779117921996157216">{count,plural, =1{لديك كلمة مرور واحدة ({count}) محتمَل تعرُّضها للاختراق، وقد تسبِّب مشاكل أمنية. عليك تغييرها الآن للحفاظ على أمانك.}zero{لديك {count} كلمة مرور محتمَل تعرُّضها للاختراق، وقد تسبِّب مشاكل أمنية. عليك تغييرها الآن للحفاظ على أمانك.}two{لديك كلمتا مرور ({count}) محتمَل تعرُّضهما للاختراق، وقد تسبِّبان مشاكل أمنية. عليك تغييرهما الآن للحفاظ على أمانك.}few{لديك {count} كلمات مرور محتمَل تعرُّضها للاختراق، وقد تسبِّب مشاكل أمنية. عليك تغييرها الآن للحفاظ على أمانك.}many{لديك {count} كلمة مرور محتمَل تعرُّضها للاختراق، وقد تسبِّب مشاكل أمنية. عليك تغييرها الآن للحفاظ على أمانك.}other{لديك {count} كلمة مرور محتمَل تعرُّضها للاختراق، وقد تسبِّب مشاكل أمنية. عليك تغييرها الآن للحفاظ على أمانك.}}</translation>
 <translation id="5791632441210678828">زر الترتيب لخلاصة المتابعة</translation>
 <translation id="5803566855766646066">هل تريد فعلاً تجاهل هذه البطاقة الجديدة؟</translation>
-<translation id="5804012843049740908">‏احصل على نصائح بشأن عملية إعداد Chrome للاستفادة إلى أقصى حدّ منه</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="58081802114142635">‏سجلّ نشاطك يساعد في تحسين ذكاء Google الاصطناعي</translation>
 <translation id="5813223718099710537">‏عند استخدام هذه الميزة، يتم إرسال محتوى الصفحة وعناوين URL إلى Google. ويمكنك إيقاف هذا من خلال الإعدادات في أي وقت.</translation>
@@ -1284,6 +1287,7 @@
 <translation id="5971872012779224351">{count,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {count} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({count}).}few{تم حذف {count} إشارات مرجعية.}many{تم حذف {count} إشارة مرجعية.}other{تم حذف {count} إشارة مرجعية.}}</translation>
 <translation id="5972844218283131174">إلغاء اختيار الكل</translation>
 <translation id="5977976211062815271">على هذا الجهاز</translation>
+<translation id="5986043348928676121">التالي</translation>
 <translation id="598634819525651074">المساحة</translation>
 <translation id="5988097621740394599">يمكنك الاطّلاع على الأسعار المخفَّضة في علامات التبويب.</translation>
 <translation id="5988851877894965432">‏فتح عناوين URL في Chrome</translation>
@@ -1397,7 +1401,6 @@
 <translation id="63519665078626091">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPad من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6355820183143562453">إخفاء بطاقة "تتبُّع الأسعار"</translation>
 <translation id="6355820205320395730">يمكن تخمين كلمات المرور الضعيفة بسهولة، ولذلك ننصحك بإنشاء كلمات مرور قوية. <ph name="BEGIN_LINK" />الاطّلاع على مزيد من نصائح الأمان<ph name="END_LINK" /></translation>
-<translation id="6361848730467328243">متابعة <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">اختَر محرك بحث من القائمة.</translation>
 <translation id="6368102751067608420">لحذف جميع بيانات "مدير كلمات المرور"</translation>
 <translation id="6372558618707314581">عليك الانتقال إلى أي صفحة مطلوبة</translation>
@@ -1453,7 +1456,6 @@
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6571070086367343653">تعديل بطاقة الائتمان</translation>
 <translation id="6574092468346088891">تفعيل إشعارات ميزة "التحقّق من الأمان"</translation>
-<translation id="6574225511994820656">الحصول على نصائح الإعداد</translation>
 <translation id="6579867704846662339">‏يمكنك اختيار فتح عناوين URL الواردة من تطبيقات أخرى في "وضع التصفّح المتخفي".</translation>
 <translation id="6583087784430677195">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings (الإعدادات)<ph name="END_LINK" /> ثم انتقِل إلى Passwords (كلمات المرور).</translation>
 <translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها</translation>
@@ -1677,6 +1679,7 @@
 <translation id="7445682342344043969">تم حظر النوافذ المنبثقة</translation>
 <translation id="7451023311965289370">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}".}zero{تم حفظ الإشارات المرجعية في "{title}".}two{تم حفظ الإشارتَين المرجعيتَين في "{title}".}few{تم حفظ الإشارات المرجعية في "{title}".}many{تم حفظ الإشارات المرجعية في "{title}".}other{تم حفظ الإشارات المرجعية في "{title}".}}</translation>
 <translation id="7451404862887877229">انقر على "الخصوصية والأمان" ثمّ على "التصفُّح الآمن"</translation>
+<translation id="7452393099119876789">لن تحتاج إلى إجراء ذلك سوى مرة واحدة.</translation>
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
 <translation id="7458706065921255639">الخيارات المخصَّصة والربط</translation>
 <translation id="745899714366929493">اليوم كله</translation>
@@ -1989,6 +1992,7 @@
 <translation id="8571019948162152515">هل المطلوب حذف <ph name="FILENAME" />؟</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
+<translation id="8587001564479545614">إنشاء رقم تعريف شخصي لاسترداد الحساب</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8590286732816598906">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />"، القائمة.</translation>
 <translation id="8600272508328041907">التبديل إلى خيار "ترجمة الصفحة بأكملها"</translation>
@@ -2048,7 +2052,6 @@
 <translation id="8750037785291841318">ستظهر لك علامات التبويب هنا</translation>
 <translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>
 <translation id="8763613688786959833">الانتقال إلى علامة التبويب الأخيرة</translation>
-<translation id="8764015330924122850">إلغاء متابعة <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" />. لن يتم حذف حساباتك.</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>
 <translation id="8781834595282316166">علامة تبويب جديدة في مجموعة</translation>
@@ -2109,7 +2112,6 @@
 <translation id="8976382372951310360">مساعدة</translation>
 <translation id="8976414606286374109">‏يتم حفظ بطاقات الائتمان في حسابك على Google.</translation>
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>
-<translation id="8984627322964256190">إخفاء ميزة "المتابعة" لـ <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">غير متاح على جهازك</translation>
 <translation id="9000089900434778519">محرّك بحثك هو <ph name="DSE_NAME" />. اطّلِع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="9000532564152265066">جميع علامات التبويب</translation>

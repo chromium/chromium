@@ -3,6 +3,7 @@
 <translationbundle lang="zh-TW">
 <translation id="1076643793026027628">在無痕模式下，Chrome 會自動開啟 YouTube 無痕模式連結。</translation>
 <translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
+<translation id="1088490543924960890">使用 Google 密碼管理工具儲存密碼金鑰</translation>
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具中。</translation>
 <translation id="1146503048444965320">使用 Chrome 開啟新分頁</translation>
 <translation id="1158134713295836892">Gemini 版 Chrome</translation>
@@ -256,6 +257,7 @@
 <translation id="7371674917547846460">隨時掌握 Chrome 實用提示和其他資訊。</translation>
 <translation id="7394108421562933108">在 Chrome 中顯示迷你 Google 地圖</translation>
 <translation id="7400722733683201933">關於 Google Chrome</translation>
+<translation id="7444830584401232881">這個密碼金鑰會儲存到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="7466693328838535498">在「搜尋小工具」方塊中輸入「Chrome」</translation>
 <translation id="7477056987201678345">正在刪除 Chrome 資料…</translation>
 <translation id="7492574581995589075">貴機構已關閉在 Google 帳戶中使用及儲存 Chrome 資料的功能。新的書籤、密碼等資訊只會儲存在這部裝置上。</translation>

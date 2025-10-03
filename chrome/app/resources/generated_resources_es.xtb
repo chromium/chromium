@@ -1384,6 +1384,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1931152874660185993">No hay componentes instalados.</translation>
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Posterior a</translation>
+<translation id="1932125073382155239">¿Crear copia de seguridad de tus cosas?</translation>
 <translation id="1933070475689690969">Actividad en las apps de Gemini</translation>
 <translation id="1933489278505808700">Tiene permiso para leer y modificar</translation>
 <translation id="1935303383381416800">Pueden ver tu ubicación</translation>
@@ -1847,6 +1848,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="225614027745146050">Te damos la bienvenida</translation>
 <translation id="2257053455312861282">Añadir una cuenta de centro educativo permite iniciar sesión fácilmente en sitios web, extensiones y aplicaciones como alumno a la vez que sigue aplicándose el control parental.</translation>
 <translation id="225716114209817872">Máximo</translation>
+<translation id="2259337945538989999">Para ver las pestañas de tus otros dispositivos, verifica tu identidad. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2261323523305321874">El administrador ha hecho un cambio que afecta a todo el sistema e inhabilita algunos perfiles antiguos.</translation>
 <translation id="22614517036276112">Este documento o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.</translation>
 <translation id="2262477216570151239">Tiempo para la repetición</translation>
@@ -2055,6 +2057,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2393313392064891208">Contenido de los Términos de Google ChromeOS Flex</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> oculto</translation>
 <translation id="2395616325548404795">El dispositivo <ph name="DEVICE_TYPE" /> se ha registrado correctamente para ser administrado por la empresa, pero no ha podido enviar la información de la ubicación ni del recurso. Introduce manualmente esta información en la consola de administración de este dispositivo.</translation>
+<translation id="2396593617786425274">¿Sincronizar historial?</translation>
 <translation id="2396783860772170191">Introduce el PIN de 4 dígitos (0000-9999)</translation>
 <translation id="2398546389094871088">Hacer un Powerwash a tu dispositivo no eliminará los perfiles eSIM. Ve a <ph name="LINK_BEGIN" />Configuración del móvil<ph name="LINK_END" /> para eliminarlos manualmente.</translation>
 <translation id="2399699884460174994">Notificaciones activadas</translation>
@@ -6724,6 +6727,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
+<translation id="565461030474814383">¿Guardar en la cuenta?</translation>
 <translation id="5654669866168491665">Más información sobre los sitios que posiblemente no funcionen al bloquear las cookies de terceros</translation>
 <translation id="5654751240928365405">Esta extensión se ha desactivado porque ya no es compatible</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger tu privacidad, se han eliminado los permisos de un sitio}other{Para proteger tu privacidad, se han eliminado los permisos de algunos sitios}}</translation>
@@ -7028,6 +7032,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5869522115854928033">Contraseñas guardadas</translation>
 <translation id="5870086504539785141">Cerrar menú de accesibilidad</translation>
 <translation id="5870155679953074650">Fallos complejos</translation>
+<translation id="587234395549708302">¿Borrar marcadores?</translation>
 <translation id="5875534259258494936">Pantalla compartida ha finalizado</translation>
 <translation id="5876851302954717356">Nueva pestaña a la derecha</translation>
 <translation id="5877064549588274448">Se ha cambiado el canal. Reinicia el dispositivo para aplicar los cambios.</translation>

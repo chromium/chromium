@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Organizirajte s skupinami zavihkov</translation>
 <translation id="2597457036804169544">Brez uporabe temne teme na spletnih mestih.</translation>
 <translation id="2606760465469169465">Samodejno preverjanje</translation>
+<translation id="2610903128639500624">Upravljanje v <ph name="BEGIN_LINK1" />nastavitvah za Android<ph name="END_LINK1" />
+
+Dodatna zaščita upravlja te nastavitve za Chrome:
+• Možnost »Vedno dovoli varne povezave« je vklopljena.
+• Možnost »Optimiziranje JavaScripta« je izklopljena. <ph name="BEGIN_LINK2" />Upravljanje izjem za spletna mesta<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Dovoli JavaScript za določeno spletno mesto.</translation>
 <translation id="2626708220538466178">Razdelek na dnu zaslona za privzeti brskalnik je zaprt</translation>
 <translation id="2653659639078652383">Pošlji</translation>

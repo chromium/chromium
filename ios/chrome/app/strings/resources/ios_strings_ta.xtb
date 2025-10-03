@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">பச்சை தீம்</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1204075260022434100">{count,plural, =1{{email} என்ற உங்கள் கணக்கில் உள்ள “{title}” ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது}other{{email} என்ற உங்கள் கணக்கில் உள்ள “{title}” ஃபோல்டரில் {count} புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
-<translation id="120431140543679678">பின்தொடர்</translation>
 <translation id="1207493287814084192">மாலை 5:30 மணி</translation>
 <translation id="1217294226280635614">காட்சிப் பிரிப்புப் பயன்முறை</translation>
 <translation id="1219674500290482172">இணையத்துடன் இணைக்க முடியவில்லை.</translation>
@@ -535,6 +534,7 @@
 <translation id="3032704072014531631">“<ph name="GROUP_NAME" />" பக்கக் குழுவிற்கான இணைப்பை உடனடியாக இழப்பீர்கள். அத்துடன், Google சேவை எதிலும் உங்களை இனி <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) தொடர்புகொள்ள முடியாது.</translation>
 <translation id="3034496853223708513">“<ph name="GROUP_NAME" />" பக்கக் குழுவிற்கான இணைப்பை <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) உடனடியாக இழப்பார். அத்துடன், Google சேவை எதிலும் உங்களை இனி அவரால் தொடர்புகொள்ள முடியாது.</translation>
 <translation id="3037177537145227281">விலையைக் கண்காணிக்கிறது</translation>
+<translation id="3038136505713492417">இந்தச் சாதனத்தில் உங்கள் கடவுச்சாவியைப் பயன்படுத்த இது நீங்கள்தான் என்பதை உறுதிப்படுத்துங்கள்</translation>
 <translation id="3039671569659952257">ஃபோல்டரை நீக்கு</translation>
 <translation id="3053332585453689122">நீங்கள் பார்க்கும் URLகளையும், பக்க உள்ளடக்கம், பதிவிறக்கங்கள், நீட்டிப்புச் செயல்பாடுகள், சிஸ்டம் தகவல் ஆகியவற்றின் சிறு மாதிரிகளையும் Google பாதுகாப்பு உலாவலுக்கு அனுப்பும். இவை தீங்கு விளைவிக்கக்கூடியவையா என்று சரிபார்ப்பதே இதன் நோக்கம்.</translation>
 <translation id="3055102495753300780">தகவல் சேமிப்பகம்</translation>
@@ -822,6 +822,7 @@
 <translation id="422474357428465195">உங்கள் பாதுகாப்பிற்கு ஆபத்தை ஏற்படுத்தக்கூடிய கடவுச்சொல் சிக்கல்கள் பல உள்ளன.</translation>
 <translation id="422477017457571619">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றிற்கு எதிராக, Googleளுக்கு அனுப்பப்படும் உலாவிய தரவின் அடிப்படையில் AI வழங்கும் நிகழ்நேரப் பாதுகாப்பு</translation>
 <translation id="4231395118547300571">பாதுகாப்புச் சரிபார்ப்பிற்கான அறிவிப்புகள் இயக்கப்பட்டுள்ளன</translation>
+<translation id="4232817129213135694">இந்தச் சாதனத்திற்குக் கடவுச்சாவிகளை அமைத்திடுங்கள்</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />இயல்பு உலாவி ஆப்ஸ்<ph name="END_BOLD" /> என்பதைத் தட்டவும்</translation>
 <translation id="4241893428331130998">எந்தவொரு கடவுச்சொல்லும் கடவுச்சாவியும் சேமிக்கப்படவில்லை</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
@@ -829,6 +830,7 @@
 <translation id="4250680216510889253">இல்லை</translation>
 <translation id="4253168017788158739">குறிப்பு</translation>
 <translation id="4256782883801055595">ஓப்பன் சோர்ஸ் உரிமங்கள்</translation>
+<translation id="4258815194323378612">இப்போது வேண்டாம்</translation>
 <translation id="4263576668337963058">இருக்கின்ற பக்கச் செயல்பாடுகளைக் காட்டு</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{{COUNT} எச்சரிக்கையை நிராகரித்துள்ளீர்கள்}other{{COUNT} எச்சரிக்கைகளை நிராகரித்துள்ளீர்கள்}}</translation>
 <translation id="4268574628540273656">URL:</translation>
@@ -910,7 +912,6 @@
 <translation id="4601095002996233687">சந்தேகத்திற்கிடமான பதிவிறக்கங்களை விரிவாக ஸ்கேன் செய்யலாம்.</translation>
 <translation id="4606247758155004938">உங்கள் உலாவியை உங்கள் நிறுவனம் நிர்வகிக்கிறது.</translation>
 <translation id="4607887340472970274">விலைக் கண்காணிப்பு</translation>
-<translation id="4611811151908969241">'<ph name="DOMAIN_NAME" /> ஐப் பின்தொடர்வதை நிறுத்து' விருப்பத்தை மறை</translation>
 <translation id="461440297010471931">Google மூலம் தேடுகிறது</translation>
 <translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
 <translation id="4621768135601674446">வாசிப்புப் பயன்முறை விருப்பங்களைத் திறக்கும்</translation>
@@ -993,6 +994,7 @@
 <translation id="4870911314065352661">அனைத்து உலாவிப் பக்கங்களையும் மூடவா?</translation>
 <translation id="4872664437015695612">பதிவிறக்கங்களில் திற</translation>
 <translation id="4875260838563541343">செயல் பட்டன்</translation>
+<translation id="4876237378696925987">தொடங்குங்கள்</translation>
 <translation id="4876305945144899064">பயனர்பெயர் இல்லை</translation>
 <translation id="4876665338492917862">திறந்தது: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">பிறகு நினைவூட்டு</translation>
@@ -1066,6 +1068,7 @@
 <translation id="514154868070499296">எழுத்து வடிவம்: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">பக்கம் மாற்றும் அம்சத்திலிருந்து வெளியேறும்</translation>
 <translation id="5148717509369231739">Safari பதிவிறக்கம்</translation>
+<translation id="5152483358138813104">உங்கள் சாதனங்கள் அனைத்திலும் விரைவாக உள்நுழையுங்கள்</translation>
 <translation id="5157638238828697074">ஏதோ தவறாகிவிட்டது. ஆப்ஸைத் திறக்க முடியவில்லை.</translation>
 <translation id="5163417375525818870">PDFகள்</translation>
 <translation id="5168414296986405587">iPadOSஸுக்காக உருவாக்கப்பட்டது</translation>
@@ -1075,6 +1078,7 @@
 <translation id="5177141896043341906">உங்கள் பாதுகாப்பிற்கு ஆபத்தை ஏற்படுத்தக்கூடிய <ph name="NUMBER_OF_PASSWORDS" /> வலுவற்ற கடவுச்சொற்கள் உள்ளன.</translation>
 <translation id="5181140330217080051">பதிவிறக்குகிறது</translation>
 <translation id="5186185447130319458">தனிப்பட்டது</translation>
+<translation id="5189431381114029336">முதல் கடவுச்சாவியைச் சேமியுங்கள்</translation>
 <translation id="518997337573684769">சிதைவு அறிக்கையை அனுப்புகிறது…</translation>
 <translation id="519530786644929958">பதிவிறக்க முடியவில்லை, இதை மீண்டும் முயல முடியாது.</translation>
 <translation id="5197255632782567636">இணையம்</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5779117921996157216">{count,plural, =1{உங்கள் பாதுகாப்பிற்கு ஆபத்தை ஏற்படுத்தக்கூடிய, களவாடப்பட்ட கடவுச்சொல் {count} உள்ளது. பாதுகாப்பாக இருக்க அதை இப்போதே மாற்றுங்கள்.}other{உங்கள் பாதுகாப்பிற்கு ஆபத்தை ஏற்படுத்தக்கூடிய, களவாடப்பட்ட கடவுச்சொற்கள் {count} உள்ளன. பாதுகாப்பாக இருக்க அவற்றை இப்போதே மாற்றுங்கள்.}}</translation>
 <translation id="5791632441210678828">பின்தொடரும் ஊட்டத்தின் தலைப்புகளை வரிசைப்படுத்துவதற்கான பட்டன்.</translation>
 <translation id="5803566855766646066">இந்தப் புதிய கார்டை நிராகரிக்க வேண்டுமா?</translation>
-<translation id="5804012843049740908">Chromeமில் இருந்து அதிகப் பலன்களைப் பெற உதவும் அமைவு உதவிக்குறிப்புகள்</translation>
 <translation id="5804241973901381774">அனுமதிகள்</translation>
 <translation id="58081802114142635">உங்கள் செயல்பாடுகள் Google AIயை மேம்படுத்தும்</translation>
 <translation id="5813223718099710537">நீங்கள் இந்த அம்சத்தைப் பயன்படுத்தும்போது பக்க உள்ளடக்கமும் URLகளும் Googleளுக்கு அனுப்பப்படும். அமைப்புகளில் நீங்கள் எப்போது வேண்டுமானாலும் இதை ஆஃப் செய்யலாம்.</translation>
@@ -1281,11 +1284,12 @@
 <translation id="5956112131836209882">பக்கக் குழுவின் பக்கம். <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> மூலம் தேடு</translation>
 <translation id="5963939892571022323">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை.</translation>
-<translation id="5968400720580217226">AI மோடு</translation>
+<translation id="5968400720580217226">AI மோட்</translation>
 <translation id="5971459446352190251">QR குறியீட்டைத் தேடும்</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 புக்மார்க் நீக்கப்பட்டது}other{{count} புக்மார்க்குகள் நீக்கப்பட்டன}}</translation>
 <translation id="5972844218283131174">அனைத்தையும் தேர்வுநீக்கு</translation>
 <translation id="5977976211062815271">இந்தச் சாதனத்தில்</translation>
+<translation id="5986043348928676121">அடுத்து</translation>
 <translation id="598634819525651074">பரப்பு</translation>
 <translation id="5988097621740394599">உலாவிப் பக்கங்களில் விலைச் சரிவு குறித்துக் காட்டப்படும்.</translation>
 <translation id="5988851877894965432">URLகளை Chromeமில் திற</translation>
@@ -1399,7 +1403,6 @@
 <translation id="63519665078626091">Web Inspectorரைப் பயன்படுத்த, கேபிளைப் பயன்படுத்தி உங்கள் கம்ப்யூட்டரில் Safariயை இணைத்து டெவெலப் மெனுவில் இருந்து உங்கள் iPadஐ அணுகவும். கம்ப்யூட்டரில் Safari அமைப்புகளுக்குச் சென்று மேம்பட்டவை பிரிவில் டெவெலப் மெனுவை இயக்கலாம்.</translation>
 <translation id="6355820183143562453">விலைக் கண்காணிப்புக் கார்டை மறைக்கும்</translation>
 <translation id="6355820205320395730">வலுவற்ற கடவுச்சொற்களை யூகிப்பது எளிது. எனவே வலிமையான கடவுச்சொற்களை உருவாக்கவும். <ph name="BEGIN_LINK" />கூடுதல் உதவிக்குறிப்புகளைக் காட்டு.<ph name="END_LINK" /></translation>
-<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> தளத்தைப் பின்தொடர்</translation>
 <translation id="6368038301482806847">பட்டியலில் இருந்து ஒரு தேடல் இன்ஜினைத் தேர்வுசெய்யவும்.</translation>
 <translation id="6368102751067608420">Password Manager தரவுகள் எல்லாவற்றையும் நீக்க</translation>
 <translation id="6372558618707314581">நீங்கள் விரும்பும் பக்கத்திற்குச் செல்லவும்</translation>
@@ -1455,7 +1458,6 @@
 <translation id="656065428026159829">மேலும் காட்டு</translation>
 <translation id="6571070086367343653">கடன் அட்டையைத் திருத்துக</translation>
 <translation id="6574092468346088891">பாதுகாப்புச் சரிபார்ப்பிற்கான அறிவிப்புகளை இயக்குங்கள்</translation>
-<translation id="6574225511994820656">அமைவு உதவிக்குறிப்புகளை வழங்கு</translation>
 <translation id="6579867704846662339">வேறொரு ஆப்ஸில் இருந்து வரும் URLகளை மறைநிலைப் பயன்முறையில் திறக்கலாம்.</translation>
 <translation id="6583087784430677195">முடக்க, <ph name="BEGIN_LINK" />அமைப்புகள்<ph name="END_LINK" /> என்பதைத் திறந்து ‘தன்னிரப்பிக் கடவுச்சொற்கள்’ என்பதற்குச் செல்லவும்.</translation>
 <translation id="6585618849026997638">முக்கியமான பக்கங்களை புக்மார்க் செய்வதன் மூலம் எப்போது வேண்டுமானாலும் அவற்றை உடனடியாக அணுகலாம்</translation>
@@ -1679,6 +1681,7 @@
 <translation id="7445682342344043969">பாப்-அப்கள் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}" என்பதில் புக்மார்க் சேமிக்கப்பட்டது}other{"{title}" என்பதில் புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="7451404862887877229">"தனியுரிமையும் பாதுகாப்பும்" என்பதைத் தட்டி அதன்பிறகு "பாதுகாப்பு உலாவல்" என்பதைத் தட்டவும்</translation>
+<translation id="7452393099119876789">இதை ஒருமுறை மட்டுமே செய்ய வேண்டியிருக்கும்.</translation>
 <translation id="7454057999980797137">மாநிலம் / மாகாணம்</translation>
 <translation id="7458706065921255639">பிரத்தியேகமாக்குதல் &amp; இணைத்தல்</translation>
 <translation id="745899714366929493">நாள் முழுவதும்</translation>
@@ -1990,6 +1993,7 @@
 <translation id="8571019948162152515">"<ph name="FILENAME" />" ஐ நீக்க வேண்டுமா?</translation>
 <translation id="8571213806525832805">கடந்த 4 வாரங்கள்</translation>
 <translation id="8577056989960190117"><ph name="YEAR" /> என்ற காலாவதியாகும் வருடத்தைத் தானாக நிரப்பும்</translation>
+<translation id="8587001564479545614">மீட்டெடுப்புப் பின்னை (PIN) உருவாக்குதல்</translation>
 <translation id="8588404856427128947">ஆஃப்</translation>
 <translation id="8590286732816598906">பக்கக் குழு, <ph name="GROUP_TITLE" />, மெனு.</translation>
 <translation id="8600272508328041907">முழுப் பக்க மொழிபெயர்ப்புக்கு மாற்றுங்கள்</translation>
@@ -2049,7 +2053,6 @@
 <translation id="8750037785291841318">உங்கள் தாவல்களை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="8756969031206844760">கடவுச்சொல்லைப் புதுப்பிக்கவா?</translation>
 <translation id="8763613688786959833">கடைசிப் பக்கத்திற்குச் செல்</translation>
-<translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> தளத்தைப் பின்தொடர்வதை நிறுத்து</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ஆகியவற்றுக்கான கடவுச்சொற்கள் நீக்கப்படும். உங்கள் கணக்குகள் நீக்கப்படாது.</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
 <translation id="8781834595282316166">குழுவில் புதிய தாவல்</translation>
@@ -2110,7 +2113,6 @@
 <translation id="8976382372951310360">உதவி</translation>
 <translation id="8976414606286374109">கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்படும்.</translation>
 <translation id="8981454092730389528">Google செயல்பாட்டுக் கட்டுப்பாடுகள்</translation>
-<translation id="8984627322964256190">'<ph name="DOMAIN_NAME" /> ஐப் பின்தொடர்' என்பதை மறை</translation>
 <translation id="8998289560386111590">உங்கள் சாதனத்தில் இல்லை</translation>
 <translation id="9000089900434778519">உங்கள் தேடல் இன்ஜின்: <ph name="DSE_NAME" />. தேடல் விவரங்களை நீக்க அதன் வழிமுறைகளைப் பாருங்கள் (நீக்க அனுமதித்தால்).</translation>
 <translation id="9000532564152265066">அனைத்து பக்கங்களும்</translation>

@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">绿色主题</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1204075260022434100">{count,plural, =1{书签已保存到账号 {email} 中的“{title}”}other{{count} 个书签已保存到账号 {email} 中的“{title}”}}</translation>
-<translation id="120431140543679678">关注</translation>
 <translation id="1207493287814084192">下午 5:30</translation>
 <translation id="1217294226280635614">拆分视图</translation>
 <translation id="1219674500290482172">无法连接到互联网。</translation>
@@ -535,6 +534,7 @@
 <translation id="3032704072014531631">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将无法再在各项 Google 服务中与您互动</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，也不能再在各项 Google 服务中与您互动</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
+<translation id="3038136505713492417">请验证您的身份，以便在此设备上使用您的通行密钥</translation>
 <translation id="3039671569659952257">删除文件夹</translation>
 <translation id="3053332585453689122">将您访问过的网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
 <translation id="3055102495753300780">信息存储空间</translation>
@@ -822,6 +822,7 @@
 <translation id="422474357428465195">您有多个密码问题，这可能会给您带来安全风险。</translation>
 <translation id="422477017457571619">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，防范危险的网站、下载内容和扩展程序</translation>
 <translation id="4231395118547300571">安全检查通知已开启</translation>
+<translation id="4232817129213135694">为此设备设置通行密钥</translation>
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="4241893428331130998">尚未保存任何密码或通行密钥</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -829,6 +830,7 @@
 <translation id="4250680216510889253">否</translation>
 <translation id="4253168017788158739">备注</translation>
 <translation id="4256782883801055595">开源许可</translation>
+<translation id="4258815194323378612">以后再说</translation>
 <translation id="4263576668337963058">显示可用的网页操作</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{您忽略了 {COUNT} 条警告}other{您忽略了 {COUNT} 条警告}}</translation>
 <translation id="4268574628540273656">网址：</translation>
@@ -910,7 +912,6 @@
 <translation id="4601095002996233687">深入扫描可疑的下载内容。</translation>
 <translation id="4606247758155004938">您的浏览器由贵单位管理。</translation>
 <translation id="4607887340472970274">价格跟踪</translation>
-<translation id="4611811151908969241">隐藏“取消关注‘<ph name="DOMAIN_NAME" />’”</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4621768135601674446">打开阅读模式选项</translation>
@@ -993,6 +994,7 @@
 <translation id="4870911314065352661">要关闭所有标签页吗？</translation>
 <translation id="4872664437015695612">在“下载内容”中打开</translation>
 <translation id="4875260838563541343">操作按钮</translation>
+<translation id="4876237378696925987">开始使用</translation>
 <translation id="4876305945144899064">无用户名</translation>
 <translation id="4876665338492917862">上次打开日期：<ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">以后再提醒我</translation>
@@ -1066,6 +1068,7 @@
 <translation id="514154868070499296">字体：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">离开标签页切换器</translation>
 <translation id="5148717509369231739">从 Safari 导入</translation>
+<translation id="5152483358138813104">在不同设备上快速登录</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">专为 iPadOS 打造</translation>
@@ -1075,6 +1078,7 @@
 <translation id="5177141896043341906">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个安全系数低的密码，这可能会给您带来安全风险。</translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5186185447130319458">不公开</translation>
+<translation id="5189431381114029336">保存您的第一个通行密钥</translation>
 <translation id="518997337573684769">正在发送崩溃报告…</translation>
 <translation id="519530786644929958">下载失败，无法重试。</translation>
 <translation id="5197255632782567636">互联网</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5779117921996157216">{count,plural, =1{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}other{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}}</translation>
 <translation id="5791632441210678828">用于对所关注 Feed 进行排序的按钮。</translation>
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
-<translation id="5804012843049740908">帮助您充分利用 Chrome 的设置提示</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="58081802114142635">您的活动记录可以帮助改进 Google AI</translation>
 <translation id="5813223718099710537">当您使用此功能时，网页内容和网址会发送给 Google。您随时可以在设置中关闭此功能。</translation>
@@ -1255,7 +1258,7 @@
 <translation id="5854790677617711513">30 天之前的</translation>
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5859715514067755465">前进</translation>
-<translation id="5860491529813859533">启用</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="5868644772996939262">自动填充密码和通行密钥</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5873179562631407582">按住任意打开的标签页</translation>
@@ -1286,6 +1289,7 @@
 <translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
 <translation id="5972844218283131174">取消全选</translation>
 <translation id="5977976211062815271">在这部设备上</translation>
+<translation id="5986043348928676121">下一步</translation>
 <translation id="598634819525651074">面积</translation>
 <translation id="5988097621740394599">查看您打开的标签页上的降价商品。</translation>
 <translation id="5988851877894965432">在 Chrome 中打开网址</translation>
@@ -1399,7 +1403,6 @@
 <translation id="63519665078626091">如需使用网页检查器，请使用数据线连接到计算机上的 Safari，并从“开发”菜单中访问 iPad。您可在计算机上 Safari 设置中的“高级”部分内启用“开发”菜单。</translation>
 <translation id="6355820183143562453">隐藏“价格跟踪”卡片</translation>
 <translation id="6355820205320395730">安全系数低的密码容易被人猜到。请务必创建安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
-<translation id="6361848730467328243">关注“<ph name="DOMAIN_NAME" />”</translation>
 <translation id="6368038301482806847">从列表中选择搜索引擎。</translation>
 <translation id="6368102751067608420">删除所有密码管理工具数据</translation>
 <translation id="6372558618707314581">前往您喜欢的任何页面</translation>
@@ -1455,7 +1458,6 @@
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6571070086367343653">修改信用卡</translation>
 <translation id="6574092468346088891">开启安全检查通知</translation>
-<translation id="6574225511994820656">设置提示</translation>
 <translation id="6579867704846662339">您可选择在无痕模式下打开来自其他应用的传入网址。</translation>
 <translation id="6583087784430677195">如需关闭此功能，请打开<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />，然后转至“自动填充密码”。</translation>
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
@@ -1679,6 +1681,7 @@
 <translation id="7445682342344043969">已拦截弹出式窗口</translation>
 <translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7451404862887877229">依次点按“隐私与安全”和“安全浏览”</translation>
+<translation id="7452393099119876789">您只需输入一次 PIN 码。</translation>
 <translation id="7454057999980797137">州/省/区/县</translation>
 <translation id="7458706065921255639">个性化和关联</translation>
 <translation id="745899714366929493">全天</translation>
@@ -1990,6 +1993,7 @@
 <translation id="8571019948162152515">要删除“<ph name="FILENAME" />”吗？</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
+<translation id="8587001564479545614">创建恢复 PIN 码</translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8590286732816598906">标签页分组，<ph name="GROUP_TITLE" />，菜单。</translation>
 <translation id="8600272508328041907">切换为整页翻译</translation>
@@ -2049,7 +2053,6 @@
 <translation id="8750037785291841318">您打开的标签页会显示在此处</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8763613688786959833">转到最后一个标签页</translation>
-<translation id="8764015330924122850">取消关注“<ph name="DOMAIN_NAME" />”</translation>
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="8775144690796719618">网址无效</translation>
 <translation id="8781834595282316166">在分组内添加新标签页</translation>
@@ -2110,7 +2113,6 @@
 <translation id="8976382372951310360">帮助</translation>
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 账号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
-<translation id="8984627322964256190">隐藏“关注 <ph name="DOMAIN_NAME" />”</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9000532564152265066">所有标签页</translation>

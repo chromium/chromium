@@ -210,7 +210,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
           <ph name="LIST_ITEM" />Jou werkgewer of skool
           <ph name="LIST_ITEM" />Jou internetdiensverskaffer
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Spoor hierdie item na</translation>
 <translation id="1337692097987160377">Deel hierdie oortjie</translation>
 <translation id="1339601241726513588">Inskrywingdomein:</translation>
 <translation id="1340482604681802745">Oplaai-adres</translation>
@@ -481,7 +480,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1762779605905950734">Straatnaam</translation>
 <translation id="1763864636252898013">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur jou toestel se bedryfstelsel vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Probeer Windows Network Diagnostics uitvoer<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Sien prysgeskiedenis</translation>
 <translation id="1777422078676229054">Foto (argivalies)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Installeer webapps?</translation>
@@ -990,6 +988,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2610561535971892504">Klik om te kopieer</translation>
 <translation id="2612676031748830579">Kaartnommer</translation>
 <translation id="2612993535136743634">Alle sekuriteitskodes wat op jou toestel en in Google-rekening gestoor is, sal uitgevee word</translation>
+<translation id="2614835674900828050">Nie vir hierdie aankoop beskikbaar nie</translation>
 <translation id="2616412942031748191">Soekenjinoptimering en -bemarking</translation>
 <translation id="2618206371527040026">Akademiese konferensies en publikasies</translation>
 <translation id="2619052155095999743">Invoeg</translation>

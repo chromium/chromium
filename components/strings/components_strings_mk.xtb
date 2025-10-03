@@ -210,7 +210,6 @@
           <ph name="LIST_ITEM" />работодавачот или училиштето
           <ph name="LIST_ITEM" />интернет операторот
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Следете ја ставкава</translation>
 <translation id="1337692097987160377">Сподели ја картичкава</translation>
 <translation id="1339601241726513588">Домен за запишување:</translation>
 <translation id="1340482604681802745">Адреса за подигнување</translation>
@@ -481,7 +480,6 @@
 <translation id="1762779605905950734">Име на улица</translation>
 <translation id="1763864636252898013">Серверот не може да докаже дека е <ph name="DOMAIN" />; oперативниот систем на уредот не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Обидете се да извршите дијагностика на мрежата на Windows<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Погледнете ја историјата на цени</translation>
 <translation id="1777422078676229054">Фотографија (архивска)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Да се инсталираат апликации за прелистувач?</translation>
@@ -990,6 +988,7 @@
 <translation id="2610561535971892504">Кликнете за копирање</translation>
 <translation id="2612676031748830579">Број на картичка</translation>
 <translation id="2612993535136743634">Ќе се избришат сите безбедносни кодови што се зачувани на уредот и сметката на Google</translation>
+<translation id="2614835674900828050">Недостапно за ова купување</translation>
 <translation id="2616412942031748191">Оптимизација и маркетинг на пребарувачи</translation>
 <translation id="2618206371527040026">Академски конференции и публикации</translation>
 <translation id="2619052155095999743">Вметни</translation>

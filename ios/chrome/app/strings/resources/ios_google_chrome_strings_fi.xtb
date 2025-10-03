@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1076643793026027628">Chrome avaa YouTuben incognito-linkit automaattisesti incognito-tilassa.</translation>
 <translation id="1086486568852410168">Hae Google Lensilla</translation>
+<translation id="1088490543924960890">Aloita avainkoodien tallentaminen Google Salasanoilla</translation>
 <translation id="1143896152279775643">Salasana tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Avaa uusi välilehti Chromessa</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
@@ -256,6 +257,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7371674917547846460">Pysy ajan tasalla hyödyllisistä Chrome-vinkeistä ja muusta.</translation>
 <translation id="7394108421562933108">Maps Chromessa</translation>
 <translation id="7400722733683201933">Tietoja Google Chromesta</translation>
+<translation id="7444830584401232881">Tämä avainkoodi tallennetaan Google Salasanoihin tilille <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">Kirjoita widgetien hakukenttään "Chrome"</translation>
 <translation id="7477056987201678345">Poistetaan Chrome-dataa…</translation>
 <translation id="7492574581995589075">Organisaatiosi on laittanut Chrome-datan käyttämisen ja tallentamisen Google-tilillä pois päältä. Uudet kirjanmerkit, salasanat ja muut tiedot tallennetaan vain tälle laitteelle.</translation>

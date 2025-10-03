@@ -3,6 +3,7 @@
 <translationbundle lang="sl">
 <translation id="1076643793026027628">Chrome samodejno odpre povezave v anonimnem načinu v YouTubu v anonimnem načinu.</translation>
 <translation id="1086486568852410168">Iskanje z Googlom Lens</translation>
+<translation id="1088490543924960890">Začnite shranjevati ključe za dostop z Googlovim upraviteljem gesel</translation>
 <translation id="1143896152279775643">Geslo bo shranjeno v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Odpiranje novega zavihka v Chromu</translation>
 <translation id="1158134713295836892">Gemini v Chromu</translation>
@@ -256,6 +257,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7371674917547846460">Bodite na tekočem s koristnimi nasveti za Chrome in drugim.</translation>
 <translation id="7394108421562933108">Google Zemljevidi v Chromu</translation>
 <translation id="7400722733683201933">O brskalniku Google Chrome</translation>
+<translation id="7444830584401232881">Ta ključ za dostop bo shranjen v Googlovem upravitelju gesel za <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">V polje »Pripomočki za iskanje« vnesite Chrome</translation>
 <translation id="7477056987201678345">Brisanje podatkov v Chromu …</translation>
 <translation id="7492574581995589075">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>

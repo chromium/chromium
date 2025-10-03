@@ -3,6 +3,7 @@
 <translationbundle lang="uz">
 <translation id="1076643793026027628">Chrome YouTube Inkognito havolalarini Inkognito rejimida avtomatik tarzda ochadi.</translation>
 <translation id="1086486568852410168">Google Lens orqali qidirish</translation>
+<translation id="1088490543924960890">Kirish kalitlarini Google Parollar menejerida saqlashni boshlang</translation>
 <translation id="1143896152279775643">Parolingiz Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="1146503048444965320">Chromeda yangi varaq ochish</translation>
 <translation id="1158134713295836892">Chrome ichida Gemini</translation>
@@ -257,6 +258,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="7371674917547846460">Chrome foydali maslahatlari va boshqalarni olish.</translation>
 <translation id="7394108421562933108">Chrome ichida Xaritalar</translation>
 <translation id="7400722733683201933">Google Chrome haqida</translation>
+<translation id="7444830584401232881">Bu kalit Google Parollar menejerida <ph name="USER_EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="7466693328838535498">Qidiruv vidjetlari maydonida Chrome kiriting</translation>
 <translation id="7477056987201678345">Chrome maʼlumotlari oʻchirilmoqda…</translation>
 <translation id="7492574581995589075">Google hisobida saqlangan Chrome maʼlumotlaridan foydalanish tashkilotingiz tomonidan faolsizlantierilgan. Yangi bukmarklar, parollar va boshqalar faqat shu qurilmada saqlanadi.</translation>

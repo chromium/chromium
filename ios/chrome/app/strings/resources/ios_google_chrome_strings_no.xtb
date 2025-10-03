@@ -3,6 +3,7 @@
 <translationbundle lang="no">
 <translation id="1076643793026027628">Chrome åpner automatisk YouTube-inkognitolinker i inkognitomodus.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
+<translation id="1088490543924960890">Begynn å lagre passnøkler med Google Passordlagring</translation>
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åpne en ny fane i Chrome</translation>
 <translation id="1158134713295836892">Gemini i Chrome</translation>
@@ -256,6 +257,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7371674917547846460">Få med deg nyttige Chrome-tips med mer.</translation>
 <translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
+<translation id="7444830584401232881">Denne passnøkkelen lagres i Google Passordlagring for <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">I feltet Søkemoduler skriver du inn Chrome</translation>
 <translation id="7477056987201678345">Sletter Chrome-data …</translation>
 <translation id="7492574581995589075">Organisasjonen din har slått av muligheten til å bruke og lagre Chrome-data i Google-kontoen din. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>

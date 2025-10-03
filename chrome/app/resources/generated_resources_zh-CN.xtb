@@ -1378,6 +1378,7 @@
 <translation id="1931152874660185993">没有安装任何组件。</translation>
 <translation id="1931410639376954712">正在安装 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">不早于</translation>
+<translation id="1932125073382155239">要备份您的资料吗？</translation>
 <translation id="1933070475689690969">Gemini 应用活动记录</translation>
 <translation id="1933489278505808700">可以读取和更改</translation>
 <translation id="1935303383381416800">允许查看您的位置信息</translation>
@@ -1841,6 +1842,7 @@
 <translation id="225614027745146050">欢迎</translation>
 <translation id="2257053455312861282">您只需添加一个学校账号，便能以学生身份轻松登录网站、扩展程序和应用，同时仍在家长控制下执行操作。</translation>
 <translation id="225716114209817872">最大限度</translation>
+<translation id="2259337945538989999">如需查看您在其他设备上打开的标签页，请验证身份。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="2261323523305321874">您的管理员做出了一项系统级更改，致使一些旧个人资料遭到停用。</translation>
 <translation id="22614517036276112">此文档或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。</translation>
 <translation id="2262477216570151239">重复前的延迟时间</translation>
@@ -2048,6 +2050,7 @@
 <translation id="2393313392064891208">Google ChromeOS Flex 条款内容</translation>
 <translation id="2393944685985256805">已隐藏“<ph name="MODULE_NAME" />”</translation>
 <translation id="2395616325548404795">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务，但未能发送其资产和位置信息。请通过管理控制台为此设备手动输入这些信息。</translation>
+<translation id="2396593617786425274">要同步历史记录吗？</translation>
 <translation id="2396783860772170191">输入 4 位数的 PIN 码 (0000-9999)</translation>
 <translation id="2398546389094871088">对您的设备执行 Powerwash 不会移除您的 eSIM 卡配置文件。请转到<ph name="LINK_BEGIN" />移动设置<ph name="LINK_END" />页面手动移除这些配置文件。</translation>
 <translation id="2399699884460174994">通知已开启</translation>
@@ -6589,7 +6592,7 @@
 <translation id="5561162485081632007">检测危险事件并在此类事件发生时向您发出警告</translation>
 <translation id="5562588178647493983">请与您的管理员联系了解更多信息</translation>
 <translation id="556321030400250233">本地文件或分享的文件</translation>
-<translation id="5563234215388768762">在 Google 中搜索，或输入网址</translation>
+<translation id="5563234215388768762">在 Google 中搜索或输入网址</translation>
 <translation id="5563824734298958390">退出标签页分组？</translation>
 <translation id="5564450015351086922">在 iOS 设备上试用 Google 智能镜头</translation>
 <translation id="5565579144504951367">您的硬件可以设置了</translation>
@@ -6716,6 +6719,7 @@
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5651308944918885595">“附近分享”功能的设备可侦测性</translation>
 <translation id="5653154844073528838">您有 <ph name="PRINTER_COUNT" /> 台已保存的打印机。</translation>
+<translation id="565461030474814383">要保存到账号吗？</translation>
 <translation id="5654669866168491665">详细了解在屏蔽第三方 Cookie 后可能无法正常运行的网站</translation>
 <translation id="5654751240928365405">此扩展程序不再受支持，因此已停用</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{为保护您的隐私，已撤消某个网站的权限}other{为保护您的隐私，已撤消某些网站的权限}}</translation>
@@ -6998,7 +7002,7 @@
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860254591544742609">显示标题栏</translation>
 <translation id="5860335608673904825">搜索键 + Ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="5860491529813859533">启用</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="5860494867054883682">正在将您的设备更新至<ph name="CHANNEL_NAME" />版本 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">在任务栏中显示触控笔工具</translation>
 <translation id="5862319196656206789">设置已连接的设备</translation>
@@ -7020,6 +7024,7 @@
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5870086504539785141">关闭辅助功能菜单</translation>
 <translation id="5870155679953074650">硬故障数</translation>
+<translation id="587234395549708302">要清理书签吗？</translation>
 <translation id="5875534259258494936">屏幕共享已结束</translation>
 <translation id="5876851302954717356">在右侧新增标签页</translation>
 <translation id="5877064549588274448">版本已更改。请重新启动设备来应用这些变更。</translation>

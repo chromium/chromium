@@ -1384,6 +1384,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1931152874660185993">Non se instalou ningún compoñente.</translation>
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Posterior a</translation>
+<translation id="1932125073382155239">Queres facer unha copia de seguranza da túa información?</translation>
 <translation id="1933070475689690969">Actividade nas aplicacións Gemini</translation>
 <translation id="1933489278505808700">Permiso concedido para ler o sitio e cambialo</translation>
 <translation id="1935303383381416800">Permiso concedido para ver a túa localización</translation>
@@ -1847,6 +1848,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="225614027745146050">Dámosche a benvida</translation>
 <translation id="2257053455312861282">Se engades unha conta de centro educativo, o usuario poderá iniciar sesión como estudante de forma sinxela en determinados sitios web, extensións e aplicacións sen que deixen de aplicarse os controis parentais.</translation>
 <translation id="225716114209817872">Máximo</translation>
+<translation id="2259337945538989999">Para obter as pestanas dos teus outros dispositivos, verifica a túa identidade. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="2261323523305321874">O teu administrador realizou un cambio que afecta a todo o sistema e que desactiva algúns perfís antigos.</translation>
 <translation id="22614517036276112">Este documento ou o teu dispositivo non cumpre algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.</translation>
 <translation id="2262477216570151239">Tempo antes da repetición</translation>
@@ -2054,6 +2056,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2393313392064891208">Contido das condicións de Google Chrome OS Flex</translation>
 <translation id="2393944685985256805">Ocultouse <ph name="MODULE_NAME" /></translation>
 <translation id="2395616325548404795">O teu <ph name="DEVICE_TYPE" /> inscribiuse correctamente para a xestión de empresas, pero non enviou a súa información de recursos e localización. Introduce manualmente esta información desde a consola de administración para este dispositivo.</translation>
+<translation id="2396593617786425274">Queres sincronizar o historial?</translation>
 <translation id="2396783860772170191">Introduce o PIN de 4 díxitos (0000-9999)</translation>
 <translation id="2398546389094871088">Os perfís de eSIM non se quitarán ao executar a función Powerwash do dispositivo. Para quitalos de xeito manual, vai a <ph name="LINK_BEGIN" />Configuración para móbiles<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Activáronse as notificacións</translation>
@@ -6731,6 +6734,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5651308944918885595">Detectabilidade de Compartir por Nearby</translation>
 <translation id="5653154844073528838">Tes <ph name="PRINTER_COUNT" /> impresoras gardadas.</translation>
+<translation id="565461030474814383">Queres gardalo na conta?</translation>
 <translation id="5654669866168491665">Máis información sobre os sitios que pode que non funcionen ao bloquear as cookies de terceiros</translation>
 <translation id="5654751240928365405">Desactivouse esta extensión porque xa non se admite</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Co fin de protexer a túa privacidade, quitáronse os permisos dun sitio}other{Co fin de protexer a túa privacidade, quitáronse os permisos dalgúns sitios}}</translation>
@@ -7035,6 +7039,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
 <translation id="5870086504539785141">Pechar menú de accesibilidade</translation>
 <translation id="5870155679953074650">Erros graves</translation>
+<translation id="587234395549708302">Queres borrar os marcadores?</translation>
 <translation id="5875534259258494936">Deixouse de compartir a pantalla</translation>
 <translation id="5876851302954717356">Nova pestana á dereita</translation>
 <translation id="5877064549588274448">Canle cambiada. Reinicia o dispositivo para aplicar os cambios.</translation>

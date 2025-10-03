@@ -3,6 +3,7 @@
 <translationbundle lang="bg">
 <translation id="1076643793026027628">Chrome автоматично отваря в режим „инкогнито“ връзките в режим „инкогнито“ към YouTube.</translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
+<translation id="1088490543924960890">Започнете да запазвате ключове за достъп с Google Мениджър на пароли</translation>
 <translation id="1143896152279775643">Паролата ви ще бъде запазена в мениджъра на паролите в Google за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отваряне на нов раздел в Chrome</translation>
 <translation id="1158134713295836892">Gemini в Chrome</translation>
@@ -256,6 +257,7 @@
 <translation id="7371674917547846460">Получавайте полезни съвети за Chrome и др.</translation>
 <translation id="7394108421562933108">Карти в Chrome</translation>
 <translation id="7400722733683201933">Всичко за Google Chrome</translation>
+<translation id="7444830584401232881">Ключът за достъп ще бъде запазен в Google Мениджър на пароли за <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">В полето за търсене на приспособления въведете Chrome.</translation>
 <translation id="7477056987201678345">Данните в Chrome се изтриват…</translation>
 <translation id="7492574581995589075">Организацията ви изключи възможността за използване и запазване на данните от Chrome в профила ви в Google. Новите отметки, пароли и др. ще се запазват само на това устройство.</translation>

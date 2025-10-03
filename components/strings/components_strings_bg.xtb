@@ -210,7 +210,6 @@
 <ph name="LIST_ITEM" />работодателя ви или учебното ви заведение;
 <ph name="LIST_ITEM" />доставчика ви на интернет услуги.
 <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Проследяване на този елемент</translation>
 <translation id="1337692097987160377">Споделяне на този раздел</translation>
 <translation id="1339601241726513588">Домейн за записване:</translation>
 <translation id="1340482604681802745">Адрес за вземане</translation>
@@ -481,7 +480,6 @@
 <translation id="1762779605905950734">Улица</translation>
 <translation id="1763864636252898013">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; операционната система на устройството ви няма доверие на сертификата му за сигурност. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Опитайте да стартирате мрежова диагностика в Windows<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Вижте историята на цените</translation>
 <translation id="1777422078676229054">Снимка (архивна)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Да се инсталират ли уеб приложения?</translation>
@@ -990,6 +988,7 @@
 <translation id="2610561535971892504">Кликнете, за да копирате</translation>
 <translation id="2612676031748830579">Номер на картата</translation>
 <translation id="2612993535136743634">Всички кодове за сигурност, запазени на устройството ви и в профила ви в Google, ще бъдат изтрити</translation>
+<translation id="2614835674900828050">Не е налице за тази покупка</translation>
 <translation id="2616412942031748191">Оптимизиране за търсещи машини и маркетинг чрез търсещи машини</translation>
 <translation id="2618206371527040026">Академични конференции и публикации</translation>
 <translation id="2619052155095999743">Вмъкване</translation>

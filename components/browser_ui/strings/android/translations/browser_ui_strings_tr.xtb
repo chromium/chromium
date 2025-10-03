@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Sekme gruplarıyla düzenleyin</translation>
 <translation id="2597457036804169544">Sitelere koyu tema uygulama</translation>
 <translation id="2606760465469169465">Otomatik doğrulama</translation>
+<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android ayarları<ph name="END_LINK1" /> bölümünde yönetin
+
+Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
+• "Her zaman güvenli bağlantılar kullan" ayarı açık.
+• "JavaScript optimize edici" kapalı. <ph name="BEGIN_LINK2" />Site istisnalarını yönetin<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Belirli bir site için JavaScript'e izin verin.</translation>
 <translation id="2626708220538466178">Varsayılan tarayıcı alt sayfası kapatıldı</translation>
 <translation id="2653659639078652383">Gönder</translation>
@@ -340,6 +345,7 @@
 <translation id="4816495437032298535">Siteler için kayıtlı yakınlaştırma seviyeleri</translation>
 <translation id="4836046166855586901">Bir site bu cihazı etkin olarak kullandığımı bilmek istediğinde sor</translation>
 <translation id="483914009762354899">Bu alandaki tüm siteleri dahil et</translation>
+<translation id="4852997963351138624">Arka Plan Rengi (Onaltılık)</translation>
 <translation id="4882919381756638075">Görüntülü sohbet gibi iletişim özellikleri için siteler genellikle mikrofonunuzu kullanır</translation>
 <translation id="4883854917563148705">Yönetilen ayarlar sıfırlanamaz</translation>
 <translation id="4887024562049524730">Sitelerin sanal gerçeklik cihazıma veya verilerime erişmesine izin vermeden önce sor (önerilir)</translation>
@@ -503,6 +509,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Korunan içerik</translation>
 <translation id="662080504995468778">Kal</translation>
+<translation id="6630443592285535486">On altılık değeri buraya yazın</translation>
 <translation id="6635327442719709864">Bu düğme açıkken siteler seri bağlantı noktalarını kullanmak için izin isteyebilir. Düğme kapalıyken siteler seri bağlantı noktalarını kullanamaz.</translation>
 <translation id="6678072580827808850">Güvenlik Kontrolü'nü inceleyin</translation>
 <translation id="6682057173375416470">Yeni Sekme sayfasında önerilen makaleleri göster</translation>
@@ -560,6 +567,7 @@
 <translation id="7399802613464275309">Güvenlik Kontrolü</translation>
 <translation id="7406113532070524618">Bu ayar çalışırken kimliğinizin belirlenmesine veya sitelerin tarama geçmişinizi görmesine izin verilmez. Ancak siteler, doğrulama kapsamında az miktarda bilgi paylaşabilir</translation>
 <translation id="7409735910987429903">Siteler reklam göstermek için pop-up'lar gönderebilir veya yönlendirmeler kullanarak sizi ziyaret etmek istemeyebileceğiniz web sitelerine yönlendirebilir</translation>
+<translation id="7412160840120117304">Birincil Renk (Onaltılık)</translation>
 <translation id="7423098979219808738">Önce sor</translation>
 <translation id="7423538860840206698">Pano okuma engellendi</translation>
 <translation id="7425915948813553151">Siteler için koyu tema</translation>

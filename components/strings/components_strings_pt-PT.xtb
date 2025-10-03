@@ -210,7 +210,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
           <ph name="LIST_ITEM" />A sua entidade empregadora ou escola
           <ph name="LIST_ITEM" />O seu fornecedor de serviços de Internet
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Acompanhar este artigo</translation>
 <translation id="1337692097987160377">Partilhar este separador</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>
 <translation id="1340482604681802745">Endereço de recolha</translation>
@@ -481,7 +480,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1762779605905950734">Rua</translation>
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o sistema operativo do seu dispositivo não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Experimente executar o Diagnóstico de rede do Windows<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Ver histórico de preços</translation>
 <translation id="1777422078676229054">Foto (de arquivo)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Instalar apps Web?</translation>
@@ -1239,6 +1237,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="305162504811187366">Histórico do Ambiente de Trabalho Remoto do Chrome, incluindo datas/horas, anfitriões e IDs de sessão de cliente</translation>
 <translation id="3052868890529250114">Costuma estabelecer ligação aos sites em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: descida do preço de <ph name="PRICE_DROP" /></translation>
+<translation id="3056660797732519147">Ecrã de erro do método Comprar agora e pagar depois. Teclado oculto.</translation>
 <translation id="3061707000357573562">Serviço de patch</translation>
 <translation id="3062655045399308513">Eliminar dados de navegação…</translation>
 <translation id="3063453392496098461">Falha ao instalar os serviços em segundo plano da VPN.</translation>
@@ -1993,6 +1992,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4242981939686657948">Para uma forma mais eficaz de pesquisar no seu histórico de navegação, ative a</translation>
 <translation id="4244926541863471678">Filme</translation>
 <translation id="4246517972543675653">Estudar no estrangeiro</translation>
+<translation id="4250343410682686342">Ecrã de erro do método Comprar agora e pagar depois aberto à altura total.</translation>
 <translation id="4250431568374086873">A ligação a este site não é totalmente segura</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2509,6 +2509,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5122786942953798871">Envelope (algodão)</translation>
 <translation id="5123063207673082822">Fim de semana</translation>
 <translation id="5123433949759960244">Bola de basquetebol</translation>
+<translation id="5124797626438336458">Ecrã de erro do método Comprar agora e pagar depois aberto a meia altura.</translation>
 <translation id="5125575917473813637">Edite o cartão de identificação</translation>
 <translation id="5125751979347152379">URL inválido.</translation>
 <translation id="512592033764059484">Futebol</translation>
@@ -4176,6 +4177,7 @@ Detalhes adicionais:
 <translation id="7860345425589240791">Introduza a nova data de validade e o Código de Segurança/CVC que se encontra no <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Quer sair do site?</translation>
 <translation id="7865448901209910068">A melhor velocidade</translation>
+<translation id="7865482168955081228">O ecrã de erro do método Comprar agora e pagar depois está fechado.</translation>
 <translation id="7870281855125116701">Desconto encontrado</translation>
 <translation id="7871445724586827387">Altere a palavra-passe da sua Conta Google</translation>
 <translation id="787226752901403048">Inicie sessão no Chrome para partilhar e aderir a grupos de separadores, e desenvolver ideias em conjunto</translation>

@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Organizohu me grupet e skedave</translation>
 <translation id="2597457036804169544">Mos zbato temën e errët për sajtet</translation>
 <translation id="2606760465469169465">Verifiko automatikisht</translation>
+<translation id="2610903128639500624">Menaxhoje te <ph name="BEGIN_LINK1" />Cilësimet e Android<ph name="END_LINK1" />
+
+"Mbrojtja e përparuar" i kontrollon këto cilësimet të Chrome:
+• "Përdor gjithmonë lidhje të sigurta" është aktive.
+• "Optimizuesi i JavaScript" është joaktiv. <ph name="BEGIN_LINK2" />Menaxho përjashtimet e sajteve<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Lejo JavaScript për një sajt specifik</translation>
 <translation id="2626708220538466178">Fleta e poshtme e shfletuesit të parazgjedhur u mbyll</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
@@ -340,6 +345,7 @@
 <translation id="4816495437032298535">Zmadhimi i ruajtur për sajtet</translation>
 <translation id="4836046166855586901">Pyet kur një sajt kërkon të dijë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="483914009762354899">Përfshi të gjitha sajtet nën këtë domen</translation>
+<translation id="4852997963351138624">Kodi hekzadecimal i ngjyrës së sfondit</translation>
 <translation id="4882919381756638075">Sajtet përdorin zakonisht mikrofonin për veçoritë e komunikimit si biseda me video</translation>
 <translation id="4883854917563148705">Cilësimet e menaxhuara nuk mund të rivendosen</translation>
 <translation id="4887024562049524730">Pyet përpara se sajtet të lejohen të përdorin pajisjen e realitetit virtual dhe të dhënat e tua (rekomandohet)</translation>
@@ -503,6 +509,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Përmbajtje e mbrojtur</translation>
 <translation id="662080504995468778">Qëndro</translation>
+<translation id="6630443592285535486">Shkruaj kodin hekzadecimal këtu</translation>
 <translation id="6635327442719709864">Kur cilësimi është aktiv, sajtet mund të kërkojnë të përdorin portat seriale. Kur cilësimi është joaktiv, sajtet nuk mund t'i përdorin portat seriale.</translation>
 <translation id="6678072580827808850">Rishiko "Kontrollin e sigurisë"</translation>
 <translation id="6682057173375416470">Merr artikuj të sugjeruar në faqen "Skedë e re"</translation>
@@ -560,6 +567,7 @@
 <translation id="7399802613464275309">Kontrolli i sigurisë</translation>
 <translation id="7406113532070524618">Ky cilësim funksionon pa të identifikuar ty ose pa i lejuar sajtet që të shikojnë historikun tënd të shfletimit, megjithëse sajtet mund të ndajnë një sasi të vogël informacionesh si pjesë e verifikimit</translation>
 <translation id="7409735910987429903">Sajtet mund të dërgojnë dritare kërcyese për të të shfaqur reklama ose mund të përdorin ridrejtimet për të të drejtuar te sajte uebi që mund të mos dëshirosh t'i vizitosh</translation>
+<translation id="7412160840120117304">Kodi hekzadecimal i ngjyrës kryesore</translation>
 <translation id="7423098979219808738">Pyet në fillim</translation>
 <translation id="7423538860840206698">Bllokuar për leximin e kujtesës së fragmenteve</translation>
 <translation id="7425915948813553151">Tema e errët për sajtet</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1076643793026027628">„Chrome“ automatiškai atidaro „YouTube“ inkognito nuorodas inkognito režimu.</translation>
 <translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
+<translation id="1088490543924960890">Pradėkite saugoti prieigos raktus naudodami „Google“ slaptažodžių tvarkyklę</translation>
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">Atidarykite naują skirtuką naršyklėje „Chrome“</translation>
 <translation id="1158134713295836892">„Gemini“ narš. „Chrome“</translation>
@@ -256,6 +257,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7371674917547846460">Nepraleiskite naudingų „Chrome“ patarimų ir kt.</translation>
 <translation id="7394108421562933108">Žemėlapiai naršyklėje „Chrome“</translation>
 <translation id="7400722733683201933">Apie „Google Chrome“</translation>
+<translation id="7444830584401232881">Prieigos raktas bus išsaugotas „Google“ slaptažodžių tvarkyklėje paskyroje <ph name="USER_EMAIL" />.</translation>
 <translation id="7466693328838535498">Laukelyje „Paieškos valdikliai“ įveskite „Chrome“</translation>
 <translation id="7477056987201678345">Ištrinami „Chrome“ duomenys…</translation>
 <translation id="7492574581995589075">Organizacija išjungė galimybę naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>

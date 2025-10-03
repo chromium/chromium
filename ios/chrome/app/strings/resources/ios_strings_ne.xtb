@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">हरियो थिम</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1204075260022434100">{count,plural, =1{यो बुकमार्क तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरिएको छ}other{तपाईंको खाता ({email}) मा भएको "{title}" मा {count} वटा बुकमार्क सेभ गरिएका छन्}}</translation>
-<translation id="120431140543679678">फलो गर्नुहोस्</translation>
 <translation id="1207493287814084192">बेलुका ५:३० बजे</translation>
 <translation id="1217294226280635614">स्प्लिट भ्यू</translation>
 <translation id="1219674500290482172">इन्टर्नेटमा जडान गर्न असमर्थ भयो।</translation>
@@ -535,6 +534,7 @@
 <translation id="3032704072014531631">तपाईं तत्कालै “<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउनु हुने छ र <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) अबदेखि Google का विभिन्न सेवाहरूमार्फत तपाईंसँग अन्तर्क्रिया गर्न सक्नु हुने छैन</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) तत्कालै <ph name="GROUP_NAME" /> ट्याब समूहको एक्सेस गुमाउनु हुने छ र अबदेखि Google का विभिन्न सेवाहरूमार्फत तपाईंसँग अन्तर्क्रिया गर्न सक्नु हुने छैन</translation>
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
+<translation id="3038136505713492417">यो डिभाइसमा आफ्ना पसकीहरू प्रयोग गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="3039671569659952257">फोल्डर मेट्नुहोस्</translation>
 <translation id="3053332585453689122">यसले तपाईं जानुभएका URL हरू खतरनाक छन् कि छैनन् भन्ने कुरा जाँच गर्न ती URL, पेजका सामग्रीको सानो नमुना, डाउनलोड, एक्स्टेन्सनको क्रियाकलाप र सिस्टमसम्बन्धी जानकारी Google सुरक्षित ब्राउजिङमा पठाउँछ।</translation>
 <translation id="3055102495753300780">जानकारीको भण्डारण</translation>
@@ -822,6 +822,7 @@
 <translation id="422474357428465195">तपाईंको सुरक्षा जोखिममा पार्न सक्ने पासवर्डसम्बन्धी कयौँ समस्याहरू छन्।</translation>
 <translation id="422477017457571619">Google मा पठाइने तपाईंको ब्राउजिङ डेटाका आधारमा प्रदान गरिने खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट सक्रिय र AI मा आधारित सुरक्षा</translation>
 <translation id="4231395118547300571">सुरक्षा जाँच गर्ने सुविधासम्बन्धी नोटिफिकेसनहरू अन गरिएका छन्</translation>
+<translation id="4232817129213135694">यो डिभाइसको पासकी सेटअप गर्नुहोस्</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डिफल्ट ब्राउजर एप<ph name="END_BOLD" />मा ट्याप गर्नुहोस्</translation>
 <translation id="4241893428331130998">कुनै पनि पासवर्ड वा पासकी सेभ गरिएको छैन</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
@@ -829,6 +830,7 @@
 <translation id="4250680216510889253">होइन</translation>
 <translation id="4253168017788158739">नोट</translation>
 <translation id="4256782883801055595">स्रोत इजाजतपत्रहरू खोल्नुहोस्</translation>
+<translation id="4258815194323378612">अहिले होइन</translation>
 <translation id="4263576668337963058">पृष्ठमा गर्न सकिने उपलब्ध कारबाहीहरू देखाउनुहोस्</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{तपाईंले {COUNT} वटा चेतावनी खारेज गर्नुभएको छ}other{तपाईंले {COUNT} वटा चेतावनी खारेज गर्नुभएको छ}}</translation>
 <translation id="4268574628540273656">URL:</translation>
@@ -910,7 +912,6 @@
 <translation id="4601095002996233687">डाउनलोड गरिएका फाइल शङ्कास्पद देखिएमा विस्तृत रूपमा स्क्यान गर्ने सुविधा।</translation>
 <translation id="4606247758155004938">तपाईंको सङ्गठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ।</translation>
 <translation id="4607887340472970274">मूल्य ट्र्याकिङ</translation>
-<translation id="4611811151908969241">"<ph name="DOMAIN_NAME" /> अनफलो गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="461440297010471931">Google मार्फत खोज गर्दै</translation>
 <translation id="4619564267100705184">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="4621768135601674446">रिडिङ मोडसम्बन्धी विकल्पहरू खोल्नुहोस्</translation>
@@ -993,6 +994,7 @@
 <translation id="4870911314065352661">सबै ट्याबहरू बन्द गर्ने हो?</translation>
 <translation id="4872664437015695612">"डाउनलोड" फोल्डरमा खोल्नुहोस्</translation>
 <translation id="4875260838563541343">एक्सन बटन</translation>
+<translation id="4876237378696925987">सुरु गर्नुहोस्</translation>
 <translation id="4876305945144899064">कुनै पनि प्रयोगकर्ता नाम छैन</translation>
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" /> मा खोलियो</translation>
 <translation id="4877597489778380935">मलाई पछि स्मरण गराउनुहोस्</translation>
@@ -1066,6 +1068,7 @@
 <translation id="514154868070499296">फन्ट: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ट्याब स्विचरबाट बाहिरिनुहोस्</translation>
 <translation id="5148717509369231739">Safari बाट इम्पोर्ट गर्ने सुविधा</translation>
+<translation id="5152483358138813104">आफ्ना विभिन्न डिभाइसमा अझ छिटो साइन इन गर्नुहोस्</translation>
 <translation id="5157638238828697074">कुनै समस्या आयो। यो एप खोल्न मिल्दैन।</translation>
 <translation id="5163417375525818870">PDF हरू</translation>
 <translation id="5168414296986405587">iPadOS का लागि बनाइएको</translation>
@@ -1075,6 +1078,7 @@
 <translation id="5177141896043341906">तपाईंको सुरक्षा जोखिममा पार्न सक्ने <ph name="NUMBER_OF_PASSWORDS" /> वटा कमजोर पासवर्ड छन्।</translation>
 <translation id="5181140330217080051">डाउनलोड गर्दै</translation>
 <translation id="5186185447130319458">निजी</translation>
+<translation id="5189431381114029336">आफ्नो पहिलो पासकी सेभ गर्नुहोस्</translation>
 <translation id="518997337573684769">क्रयास रिपोर्ट पठाइँदै छ…</translation>
 <translation id="519530786644929958">डाउनलोड गर्न सकिएन र फेरि डाउनलोड गर्ने प्रयास गर्न मिल्दैन।</translation>
 <translation id="5197255632782567636">इन्टरनेट</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5779117921996157216">{count,plural, =1{तपाईंको {count} पासवर्ड अरूले देखेका छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यो समस्या समाधान गर्नुहोस्।}other{तपाईंका {count} वटा पासवर्ड अरूले देखेका छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यी समस्या समाधान गर्नुहोस्।}}</translation>
 <translation id="5791632441210678828">"फलो गरिराखिएका" फिड क्रमबद्ध गर्नुहोस् नामक बटन।</translation>
 <translation id="5803566855766646066">तपाईंले यो नयाँ कार्ड हटाउन खोज्नुभएकै हो?</translation>
-<translation id="5804012843049740908">Chrome बाट बढीभन्दा बढी फाइदा लिने गरी सेटअप गर्ने तरिकासम्बन्धी सुझावहरू</translation>
 <translation id="5804241973901381774">अनुमतिहरू</translation>
 <translation id="58081802114142635">तपाईंको क्रियाकलापले Google AI को गुणस्तर सुधार्न सघाउँछ</translation>
 <translation id="5813223718099710537">तपाईंले यो सुविधा प्रयोग गर्दा पेजको कन्टेन्ट र URL हरू Google मा पठाइन्छन्। तपाईं जुनसुकै बेला सेटिङमा गई यो सुविधा अफ गर्न सक्नुहुन्छ।</translation>
@@ -1286,6 +1289,7 @@
 <translation id="5971872012779224351">{count,plural, =1{एउटा बुकमार्क मेटाइएको छ}other{{count} वटा बुकमार्क मेटाइएका छन्}}</translation>
 <translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
 <translation id="5977976211062815271">यस यन्त्रमा</translation>
+<translation id="5986043348928676121">अर्को</translation>
 <translation id="598634819525651074">क्षेत्रफल</translation>
 <translation id="5988097621740394599">आफ्ना ट्याबहरूमा मूल्य घटेको कुरासम्बन्धी जानकारी हेर्नुहोस्।</translation>
 <translation id="5988851877894965432">Chrome मा URL हरू खोल्नुहोस्</translation>
@@ -1399,7 +1403,6 @@
 <translation id="63519665078626091">वेब इन्स्पेक्टर प्रयोग गर्न आफ्नो कम्प्युटरमा केबल प्रयोग गरेर Safari मा कनेक्ट गर्नुहोस् Develop मेनुमा गई आफ्नो iPad प्रयोग गर्नुहोस्। तपाईं आफ्नो कम्प्युटरमा Safari का सेटिङको उन्नत खण्डमा गई Develop मेनु अन गर्न सक्नुहुन्छ।</translation>
 <translation id="6355820183143562453">"मूल्य ट्र्याकिङ" नामक कार्ड लुकाउनुहोस्</translation>
 <translation id="6355820205320395730">कमजोर पासवर्डहरू सजिलैसँग अनुमान लगाउन सकिन्छ। आफूले राख्न लागेका पासवर्डहरू भरपर्दा छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="BEGIN_LINK" />सुरक्षासम्बन्धी थप सुझावहरू हेर्नुहोस्।<ph name="END_LINK" /></translation>
-<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> फलो गर्नुहोस्</translation>
 <translation id="6368038301482806847">सूचीबाट सर्च इन्जिन एप छनौट गर्नुहोस्</translation>
 <translation id="6368102751067608420">पासवर्ड म्यानेजरका सबै जानकारी मेटाउन</translation>
 <translation id="6372558618707314581">आफूले चाहेको जुनसुकै पेजमा जानुहोस्</translation>
@@ -1455,7 +1458,6 @@
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6571070086367343653">क्रेडिट कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="6574092468346088891">सुरक्षा जाँच गर्ने सुविधासम्बन्धी नोटिफिकेसनहरू अन गर्नुहोस्</translation>
-<translation id="6574225511994820656">सेटअप गर्नुहोस्</translation>
 <translation id="6579867704846662339">तपाईं अन्य एपबाट प्राप्त हुने URL हरू इन्कोग्निटो मोडमा खोल्न सक्नुहुन्छ।</translation>
 <translation id="6583087784430677195">तपाईं अटोफिल गर्ने सुविधा अफ गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" /> खोल्नुहोस् अनि "पासवर्डहरू अटोफिल गर्नुहोस्" मा जानुहोस्।</translation>
 <translation id="6585618849026997638">तपाईं आफ्ना लागि महत्त्वपूर्ण पृष्ठ बुकमार्क गरी सजिलैसँग उक्त पृष्ठमा फर्कन सक्नुहुन्छ</translation>
@@ -1679,6 +1681,7 @@
 <translation id="7445682342344043969">पप-अपमाथि रोक लगाइएको छ</translation>
 <translation id="7451023311965289370">{count,plural, =1{बुकमार्क "{title}" मा सेभ गरिएको छ}other{बुकमार्कहरू "{title}" मा सेभ गरिएका छन्}}</translation>
 <translation id="7451404862887877229">"गोपनीयता तथा सुरक्षा" र त्यसपछि "सुरक्षित ब्राउजिङ" मा ट्याप गर्नुहोस्</translation>
+<translation id="7452393099119876789">तपाईंले यो कार्य एक पटक मात्र गर्नु पर्ने हुन्छ।</translation>
 <translation id="7454057999980797137">राज्य / काउन्टी</translation>
 <translation id="7458706065921255639">पर्सनलाइज र लिंक गर्ने सुविधा</translation>
 <translation id="745899714366929493">दिनभरि</translation>
@@ -1990,6 +1993,7 @@
 <translation id="8571019948162152515">"<ph name="FILENAME" />" मेटाउने हो?</translation>
 <translation id="8571213806525832805">पछिल्ला ४ हप्ता</translation>
 <translation id="8577056989960190117">म्याद सकिने वर्ष (<ph name="YEAR" />) स्वतः भर्नुहोस्</translation>
+<translation id="8587001564479545614">रिकभरी PIN बनाउनुहोस्</translation>
 <translation id="8588404856427128947">अफ</translation>
 <translation id="8590286732816598906">ट्याब समूह, <ph name="GROUP_TITLE" />, मेनु।</translation>
 <translation id="8600272508328041907">पूरै पेज अनुवाद गर्ने विकल्प प्रयोग गर्नुहोस्</translation>
@@ -2049,7 +2053,6 @@
 <translation id="8750037785291841318">तपाईंका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="8763613688786959833">अन्तिम ट्याबमा जानुहोस्</translation>
-<translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> लाई अनफलो गर्नुहोस्</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> र <ph name="SECOND_WEBSITE" /> का पासवर्डहरू मेटिने छन्। तपाईंका खाताहरू मेटिने छैनन्।</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
 <translation id="8781834595282316166">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
@@ -2110,7 +2113,6 @@
 <translation id="8976382372951310360">मद्दत</translation>
 <translation id="8976414606286374109">कार्डहरू तपाईंको Google खातामा सेभ गरिन्छन्।</translation>
 <translation id="8981454092730389528">Google गतिविधि नियन्त्रणहरू</translation>
-<translation id="8984627322964256190"><ph name="DOMAIN_NAME" /> "फलो गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="8998289560386111590">तपाईंको डिभाइसमा उपलब्ध छैन</translation>
 <translation id="9000089900434778519">तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE_NAME" /> हो। तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
 <translation id="9000532564152265066">सबै ट्याबहरू</translation>

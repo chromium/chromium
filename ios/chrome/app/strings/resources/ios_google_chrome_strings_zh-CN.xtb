@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1076643793026027628">Chrome 会自动在无痕模式下打开 YouTube 无痕式链接。</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
+<translation id="1088490543924960890">开始使用 Google 密码管理工具保存通行密钥</translation>
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="1146503048444965320">在 Chrome 中打开新标签页</translation>
 <translation id="1158134713295836892">Chrome 中的 Gemini</translation>
@@ -254,6 +255,7 @@
 <translation id="7371674917547846460">及时了解实用的 Chrome 提示等内容。</translation>
 <translation id="7394108421562933108">Chrome 中的地图</translation>
 <translation id="7400722733683201933">关于 Google Chrome</translation>
+<translation id="7444830584401232881">此通行密钥将保存到 <ph name="USER_EMAIL" /> 的 Google 密码管理工具中</translation>
 <translation id="7466693328838535498">在“搜索小组件”框中，输入“Chrome”</translation>
 <translation id="7477056987201678345">正在删除 Chrome 数据…</translation>
 <translation id="7492574581995589075">您的组织已关闭在您的 Google 账号中保存 Chrome 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>

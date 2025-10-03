@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">Thème vert</translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1204075260022434100">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{{count} favori enregistré dans « {title} » dans votre compte, {email}.}other{{count} favoris enregistrés dans « {title} » dans votre compte, {email}.}}</translation>
-<translation id="120431140543679678">Suivre</translation>
 <translation id="1207493287814084192">17 h 30</translation>
 <translation id="1217294226280635614">Affichage partagé</translation>
 <translation id="1219674500290482172">Échec de connexion à Internet.</translation>
@@ -535,6 +534,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="3032704072014531631">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> » et <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ne pourra plus interagir avec vous sur les services Google</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> » et ne pourra plus interagir avec vous dans les services Google</translation>
 <translation id="3037177537145227281">Suivi du prix en cours…</translation>
+<translation id="3038136505713492417">Confirmez qu'il s'agit bien de vous pour utiliser vos clés d'accès sur cet appareil</translation>
 <translation id="3039671569659952257">Supprimer le dossier</translation>
 <translation id="3053332585453689122">Envoie les URL que vous visitez et des échantillons du contenu de la page, des téléchargements, des activités des extensions et des données système à la navigation sécurisée Google pour qu'elle vérifie s'ils sont dangereux.</translation>
 <translation id="3055102495753300780">Stockage des informations</translation>
@@ -822,6 +822,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="422474357428465195">Vous avez plusieurs problèmes relatifs aux mots de passe qui pourraient compromettre votre sécurité.</translation>
 <translation id="422477017457571619">Une protection propulsée par l'IA en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="4231395118547300571">Les notifications de Vérification de sécurité sont activées</translation>
+<translation id="4232817129213135694">Configurer des clés d'accès pour cet appareil</translation>
 <translation id="4237377247299956313">Touchez <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="4241893428331130998">Aucun mot de passe ni clé d'accès enregistré</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -829,6 +830,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4250680216510889253">Non</translation>
 <translation id="4253168017788158739">Remarque</translation>
 <translation id="4256782883801055595">Licences de logiciels libres</translation>
+<translation id="4258815194323378612">Pas maintenant</translation>
 <translation id="4263576668337963058">Afficher les actions de page proposées</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Vous avez ignoré {COUNT} avertissement}one{Vous avez ignoré {COUNT} avertissement}other{Vous avez ignoré {COUNT} avertissements}}</translation>
 <translation id="4268574628540273656">Adresse URL :</translation>
@@ -910,7 +912,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4601095002996233687">Analyses approfondies des téléchargements suspects.</translation>
 <translation id="4606247758155004938">Votre navigateur est géré par votre organisation.</translation>
 <translation id="4607887340472970274">Suivi des prix</translation>
-<translation id="4611811151908969241">Masquer Ne plus suivre <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Recherche avec Google</translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4621768135601674446">Ouvrir les options du mode Lecture</translation>
@@ -993,6 +994,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4870911314065352661">Fermer tous les onglets?</translation>
 <translation id="4872664437015695612">Ouvrir dans le dossier des téléchargements</translation>
 <translation id="4875260838563541343">Bouton d'action</translation>
+<translation id="4876237378696925987">Premiers pas</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
 <translation id="4876665338492917862">Dernière ouverture : <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Me le rappeler plus tard</translation>
@@ -1066,6 +1068,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="514154868070499296">Police : <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Quitter le Gestionnaire d'onglets</translation>
 <translation id="5148717509369231739">Importation Safari</translation>
+<translation id="5152483358138813104">Connectez-vous plus rapidement à vos appareils.</translation>
 <translation id="5157638238828697074">Un problème est survenu. L'application n'a pas pu être ouverte.</translation>
 <translation id="5163417375525818870">Fichiers PDF</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
@@ -1075,6 +1078,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5177141896043341906">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe faibles, ce qui pourrait compromettre votre sécurité.</translation>
 <translation id="5181140330217080051">Téléchargement en cours...</translation>
 <translation id="5186185447130319458">Privé</translation>
+<translation id="5189431381114029336">Sauvegardez votre première clé d'accès.</translation>
 <translation id="518997337573684769">Envoi du rapport de plantage en cours…</translation>
 <translation id="519530786644929958">Le téléchargement a échoué et ne peut pas être réessayé.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1239,7 +1243,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5779117921996157216">{count,plural, =1{Vous avez {count} mot de passe compromis, ce qui pourrait compromettre votre sécurité. Modifiez-le maintenant pour rester en sécurité.}one{Vous avez {count} mot de passe compromis, ce qui pourrait compromettre votre sécurité. Modifiez-le maintenant pour rester en sécurité.}other{Vous avez {count} mots de passe compromis, ce qui pourrait compromettre votre sécurité. Modifiez-les maintenant pour rester en sécurité.}}</translation>
 <translation id="5791632441210678828">Bouton Trier pour le flux Suivis.</translation>
 <translation id="5803566855766646066">Voulez-vous vraiment supprimer cette nouvelle carte?</translation>
-<translation id="5804012843049740908">Des conseils de configuration qui vous aident à tirer le meilleur parti de Chrome</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="58081802114142635">Votre activité améliore l'IA de Google</translation>
 <translation id="5813223718099710537">Lorsque vous utilisez cette fonctionnalité, le contenu et les URL de la page sont envoyés à Google. Vous pouvez désactiver cette option dans les paramètres en tout temps.</translation>
@@ -1286,6 +1289,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5971872012779224351">{count,plural, =1{1 favori supprimé}one{{count} favoris supprimés}other{{count} favoris supprimés}}</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
 <translation id="5977976211062815271">Sur cet appareil</translation>
+<translation id="5986043348928676121">Suivant</translation>
 <translation id="598634819525651074">Zone</translation>
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
@@ -1399,7 +1403,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="63519665078626091">Pour utiliser l'inspecteur Web, connectez-vous à Safari sur votre ordinateur à l'aide d'un câble et accédez à votre iPad à partir du menu Développer. Vous pouvez activer le menu de développement dans la section Avancé des paramètres de Safari sur votre ordinateur.</translation>
 <translation id="6355820183143562453">Masquer la carte Suivi des prix</translation>
 <translation id="6355820205320395730">Les mots de passe faibles sont faciles à deviner. Assurez-vous de créer des mots de passe forts. <ph name="BEGIN_LINK" />Consultez plus d'astuces de sécurité.<ph name="END_LINK" /></translation>
-<translation id="6361848730467328243">Suivre <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Choisissez un moteur de recherche dans la liste.</translation>
 <translation id="6368102751067608420">Pour supprimer toutes les données du gestionnaire de mots de passe</translation>
 <translation id="6372558618707314581">Accédez à la page de votre choix</translation>
@@ -1455,7 +1458,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="656065428026159829">En voir plus</translation>
 <translation id="6571070086367343653">Modifier la carte de crédit</translation>
 <translation id="6574092468346088891">Activer les notifications pour Vérification de sécurité</translation>
-<translation id="6574225511994820656">Configurer</translation>
 <translation id="6579867704846662339">Vous pouvez choisir d'ouvrir les URL entrantes provenant d'autres applications en navigation privée.</translation>
 <translation id="6583087784430677195">Pour désactiver, ouvrez <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" /> et accédez à remplissage automatique des mots de passe.</translation>
 <translation id="6585618849026997638">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
@@ -1679,6 +1681,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7445682342344043969">Fenêtres contextuelles bloquées</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans « {title} »}one{Favoris enregistré dans « {title} »}other{Favoris enregistrés dans « {title} »}}</translation>
 <translation id="7451404862887877229">Touchez « Confidentialité et sécurité », puis « Navigation sécurisée »</translation>
+<translation id="7452393099119876789">Vous n'aurez à effectuer cette opération qu'une seule fois.</translation>
 <translation id="7454057999980797137">État / Comté</translation>
 <translation id="7458706065921255639">Personnalisation, association</translation>
 <translation id="745899714366929493">Toute la journée</translation>
@@ -1990,6 +1993,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8571019948162152515">Supprimer « <ph name="FILENAME" /> »?</translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8577056989960190117">Remplir automatiquement l'année d'expiration <ph name="YEAR" /></translation>
+<translation id="8587001564479545614">Créer un NIP de récupération</translation>
 <translation id="8588404856427128947">Désactivée</translation>
 <translation id="8590286732816598906">Groupe d'onglets, <ph name="GROUP_TITLE" />, menu.</translation>
 <translation id="8600272508328041907">Passer à la traduction de la page complète</translation>
@@ -2049,7 +2053,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8750037785291841318">Vous trouverez vos onglets ici</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe?</translation>
 <translation id="8763613688786959833">Aller au dernier onglet</translation>
-<translation id="8764015330924122850">Se désabonner de <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Les mots de passe de <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>
@@ -2110,7 +2113,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes seront enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes d'activité Google</translation>
-<translation id="8984627322964256190">Masquer Suivre <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
 <translation id="9000089900434778519">Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="9000532564152265066">Tous les onglets</translation>

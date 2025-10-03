@@ -210,7 +210,6 @@
           <ph name="LIST_ITEM" />вашему системному администратору;
           <ph name="LIST_ITEM" />интернет-провайдеру.
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Отслеживайте этот товар</translation>
 <translation id="1337692097987160377">Поделиться вкладкой</translation>
 <translation id="1339601241726513588">Регистрация домена:</translation>
 <translation id="1340482604681802745">Адрес выдачи</translation>
@@ -481,7 +480,6 @@
 <translation id="1762779605905950734">Улица</translation>
 <translation id="1763864636252898013">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Операционная система устройства не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Выполните диагностику сети в Windows<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Посмотрите историю изменения цен</translation>
 <translation id="1777422078676229054">Фотобумага (архивная)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Установить веб-приложения?</translation>
@@ -1254,6 +1252,7 @@
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3090667236485488075">Стекло</translation>
 <translation id="3093122472063815077">Экран с демонстрацией прогресса покупки в рассрочку открыт наполовину.</translation>
+<translation id="309381737510736393">Ваша организация ограничила сохранение данных в аккаунт Google, поэтому вы не можете взаимодействовать с другими пользователями и делиться с ними вкладками.</translation>
 <translation id="3094051226187213523">Включить режим ИИ и передать в него эту подсказку</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Игнорируется, так как список "Отключено" содержит шаблон "*", что приравнивается к отключению правила.</translation>
@@ -1698,6 +1697,7 @@
 <translation id="3784372983762739446">Устройства Bluetooth</translation>
 <translation id="3785246317262748285">Обычно подключение к сайтам защищено, но в этот раз Chrome не удалось установить безопасное соединение. Возможно, злоумышленник пытается перехватить или изменить ваше сетевое подключение. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Лучшие совпадения по запросу "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> или <ph name="ISSUER_3_NAME" />.</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="3791118028061680614">Платите, не переключаясь между приложениями</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" />")</translation>
@@ -2679,6 +2679,7 @@
 <translation id="5412040515238827314">Недействительный формат. Необходимо указать список шаблонов.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Укладчик 4</translation>
+<translation id="5414306071315087019">В Google Pay доступна покупка в рассрочку</translation>
 <translation id="5414446060143308245">Проверьте файлы, перед тем как переносить их</translation>
 <translation id="5414511064953050917">Все равно переместить</translation>
 <translation id="5418700249417444482">URL страниц, которые вы посещаете, могут быть просмотрены администратором. Они передаются на проверку в Google Cloud или сторонние сервисы. Страницы могут быть просканированы на предмет безопасности или отфильтрованы на основе правил, заданных администратором.</translation>
@@ -2799,6 +2800,7 @@
 <translation id="5595485650161345191">Изменить адрес</translation>
 <translation id="5596939519753369075">2 x 3,5 дюйма</translation>
 <translation id="5597254438174353289">Синий 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> или <ph name="ISSUER_2_NAME" />.</translation>
 <translation id="560412284261940334">Управление устройствами не поддерживается</translation>
 <translation id="5605249000617390290">Подробнее об отслеживании цены…</translation>
 <translation id="5605670050355397069">Ledger</translation>

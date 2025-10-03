@@ -3,6 +3,7 @@
 <translationbundle lang="es-419">
 <translation id="1076643793026027628">Chrome abre automáticamente los vínculos de Incógnito de YouTube en modo Incógnito.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
+<translation id="1088490543924960890">Comienza a guardar llaves de acceso con el Administrador de contraseñas de Google</translation>
 <translation id="1143896152279775643">La contraseña se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir una pestaña nueva en Chrome</translation>
 <translation id="1158134713295836892">Gemini en Chrome</translation>
@@ -256,6 +257,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="7371674917547846460">Mantente al tanto de las sugerencias útiles de Chrome y mucho más.</translation>
 <translation id="7394108421562933108">Maps en Chrome</translation>
 <translation id="7400722733683201933">Acerca de Google Chrome</translation>
+<translation id="7444830584401232881">Esta llave de acceso se guardará en el Administrador de contraseñas de Google para <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">En el cuadro Widgets de la Búsqueda, ingresa "Chrome"</translation>
 <translation id="7477056987201678345">Borrando datos de Chrome…</translation>
 <translation id="7492574581995589075">Tu organización desactivó la función para usar y guardar datos de Chrome en tu Cuenta de Google. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>

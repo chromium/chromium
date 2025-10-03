@@ -3,6 +3,7 @@
 <translationbundle lang="uk">
 <translation id="1076643793026027628">Chrome автоматично відкриває посилання YouTube, надіслані із сеансу в анонімному режимі, у тому самому режимі.</translation>
 <translation id="1086486568852410168">Шукати через Об’єктив</translation>
+<translation id="1088490543924960890">Зберігайте ключі доступу за допомогою Google Менеджера паролів</translation>
 <translation id="1143896152279775643">Ваш пароль буде збережено в Менеджері паролів Google для електронної адреси <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Відкрити нову вкладку в Chrome</translation>
 <translation id="1158134713295836892">Gemini у Chrome</translation>
@@ -256,6 +257,7 @@
 <translation id="7371674917547846460">Отримуйте поради щодо Chrome і іншу корисну інформацію.</translation>
 <translation id="7394108421562933108">Карти в Chrome</translation>
 <translation id="7400722733683201933">Про Google Chrome</translation>
+<translation id="7444830584401232881">Ключ доступу буде збережено в Google Менеджері паролів для облікового запису <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">У вікні "Віджети Пошуку" введіть Chrome</translation>
 <translation id="7477056987201678345">Видалення даних Chrome…</translation>
 <translation id="7492574581995589075">Ваша організація вимкнула можливість використовувати й зберігати дані Chrome у вашому обліковому записі Google. Нові закладки, паролі тощо буде збережено лише на цьому пристрої.</translation>

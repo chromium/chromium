@@ -1398,6 +1398,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1931152874660185993">Neįdiegti jokie komponentai.</translation>
 <translation id="1931410639376954712">Įdiegiama programa „<ph name="DEVICE_OS" />“</translation>
 <translation id="1932098463447129402">Nuo</translation>
+<translation id="1932125073382155239">Kurti atsarginę turinio kopiją?</translation>
 <translation id="1933070475689690969">„Gemini Apps“ veikla</translation>
 <translation id="1933489278505808700">Leidžiama skaityti ir keisti</translation>
 <translation id="1935303383381416800">Leidžiama peržiūrėti vietovę</translation>
@@ -1861,6 +1862,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="225614027745146050">Sveiki</translation>
 <translation id="2257053455312861282">Pridėjus mokyklos paskyrą bus galima lengvai prisijungti prie svetainių, plėtinių ir programų kaip mokiniui toliau taikant tėvų kontrolę.</translation>
 <translation id="225716114209817872">Maksimalus</translation>
+<translation id="2259337945538989999">Jei norite gauti skirtukus iš kitų įrenginių, patvirtinkite savo tapatybę. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="2261323523305321874">Administratorius atliko visos sistemos pakeitimą, dėl kurio buvo išjungti kai kurie seni profiliai.</translation>
 <translation id="22614517036276112">Šis dokumentas arba įrenginys neatitinka tam tikrų organizacijos saugos politikos nuostatų. Susisiekite su administratoriumi ir sužinokite, ką reikia pataisyti.</translation>
 <translation id="2262477216570151239">Atidėti iki pakartojimo</translation>
@@ -2071,6 +2073,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2393313392064891208">„Google ChromeOS Flex“ sąlygų turinys</translation>
 <translation id="2393944685985256805">Paslėpta: „<ph name="MODULE_NAME" />“</translation>
 <translation id="2395616325548404795">„<ph name="DEVICE_TYPE" />“ sėkmingai užregistruotas kaip tvarkomas įmonėje, bet nepavyko išsiųsti jo išteklių ir vietovės informacijos. Įveskite šią informaciją neautomatiškai įrenginio skiltyje „Admin console“.</translation>
+<translation id="2396593617786425274">Sinchronizuoti istoriją?</translation>
 <translation id="2396783860772170191">Įveskite 4 skaitmenų PIN kodą (0000–9999)</translation>
 <translation id="2398546389094871088">Naudojant funkciją „Powerwash“ įrenginyje „eSIM“ kortelės profiliai nebus pašalinti. Eikite į skiltį <ph name="LINK_BEGIN" />„Mobiliojo įrenginio nustatymai“<ph name="LINK_END" /> ir patys pašalinkite šiuos profilius.</translation>
 <translation id="2399699884460174994">Pranešimai įjungti</translation>
@@ -6748,6 +6751,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5648166631817621825">Pastarosios 7 dienos</translation>
 <translation id="5651308944918885595">Bendrinimo netoliese aptinkamumas</translation>
 <translation id="5653154844073528838">Esate išsaugoję <ph name="PRINTER_COUNT" /> spausdintuv.</translation>
+<translation id="565461030474814383">Išsaugoti paskyroje?</translation>
 <translation id="5654669866168491665">Sužinokite daugiau apie svetaines, kurios gali neveikti, kai blokuojami trečiųjų šalių slapukai</translation>
 <translation id="5654751240928365405">Šis plėtinys išjungtas, nes nebėra palaikomas</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš svetainės}one{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}few{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}many{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}other{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}}</translation>
@@ -7052,6 +7056,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5869522115854928033">Išsaugoti slaptažodžiai</translation>
 <translation id="5870086504539785141">Uždaryti pasiekiamumo meniu</translation>
 <translation id="5870155679953074650">Sunkūs gedimai</translation>
+<translation id="587234395549708302">Išvalyti žymes?</translation>
 <translation id="5875534259258494936">Ekrano bendrinimas baigtas</translation>
 <translation id="5876851302954717356">Naujas skirtukas dešinėje</translation>
 <translation id="5877064549588274448">Kanalas pakeistas. Kad pritaikytumėte pakeitimus, iš naujo paleiskite įrenginį.</translation>

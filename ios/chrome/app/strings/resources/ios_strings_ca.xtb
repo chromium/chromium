@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">Tema verd</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1204075260022434100">{count,plural, =1{L'adreça d'interès s'ha desat a {title} al teu compte, {email}}other{{count} adreces d'interès s'han desat a {title} al teu compte, {email}}}</translation>
-<translation id="120431140543679678">Segueix</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Visualització dividida</translation>
 <translation id="1219674500290482172">No es pot connectar a Internet.</translation>
@@ -535,6 +534,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="3032704072014531631">Perdràs immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /> i <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ja no podrà interaccionar amb tu als serveis de Google</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) perdrà immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /> i ja no podrà interaccionar amb tu als serveis de Google</translation>
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
+<translation id="3038136505713492417">Verifica la teva identitat per utilitzar les claus d'accés en aquest dispositiu</translation>
 <translation id="3039671569659952257">Suprimeix la carpeta</translation>
 <translation id="3053332585453689122">Envia a Navegació segura de Google els URL que visites i una petita mostra del contingut de les pàgines, les baixades, l'activitat de les extensions i informació del sistema per comprovar si són perjudicials.</translation>
 <translation id="3055102495753300780">Emmagatzematge d'informació</translation>
@@ -822,6 +822,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="422474357428465195">Tens diversos problemes relacionats amb les contrasenyes que poden posar en perill la teva seguretat.</translation>
 <translation id="422477017457571619">Protecció basada en la IA en temps real contra baixades, extensions i llocs web perillosos que es fonamenta en les teves dades de navegació enviades a Google</translation>
 <translation id="4231395118547300571">S'han activat les notificacions de Comprovació de seguretat</translation>
+<translation id="4232817129213135694">Configura claus d'accés per a aquest dispositiu</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />App de navegació per omissió<ph name="END_BOLD" />.</translation>
 <translation id="4241893428331130998">No hi ha cap contrasenya ni clau d'accés desada</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
@@ -829,6 +830,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4250680216510889253">No</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Llicències de codi obert</translation>
+<translation id="4258815194323378612">Ara no</translation>
 <translation id="4263576668337963058">Mostra les accions de pàgina disponibles</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Has ignorat {COUNT} advertiment}other{Has ignorat {COUNT} advertiments}}</translation>
 <translation id="4268574628540273656">URL:</translation>
@@ -910,7 +912,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4601095002996233687">Anàlisis detallades per comprovar si hi ha baixades sospitoses.</translation>
 <translation id="4606247758155004938">La teva organització gestiona el navegador.</translation>
 <translation id="4607887340472970274">Seguiment de preus</translation>
-<translation id="4611811151908969241">Amaga l'opció Deixa de seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">S'està cercant amb Google</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4621768135601674446">Obre les opcions del mode de lectura</translation>
@@ -993,6 +994,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4870911314065352661">Vols tancar totes les pestanyes?</translation>
 <translation id="4872664437015695612">Obre a les baixades</translation>
 <translation id="4875260838563541343">Botó d’acció</translation>
+<translation id="4876237378696925987">Comença</translation>
 <translation id="4876305945144899064">Sense nom d'usuari</translation>
 <translation id="4876665338492917862">Obert: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Recorda-m'ho més tard</translation>
@@ -1066,6 +1068,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Surt del selector de pestanyes</translation>
 <translation id="5148717509369231739">Importació de Safari</translation>
+<translation id="5152483358138813104">Inicia la sessió més ràpidament en tots els dispositius</translation>
 <translation id="5157638238828697074">S'ha produït un error. No s'ha pogut obrir l'aplicació.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Creat per a iPadOS</translation>
@@ -1075,6 +1078,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5177141896043341906">Tens <ph name="NUMBER_OF_PASSWORDS" /> contrasenyes poc segures que podrien posar en perill la teva seguretat.</translation>
 <translation id="5181140330217080051">S'està baixant</translation>
 <translation id="5186185447130319458">Privat</translation>
+<translation id="5189431381114029336">Desa la primera clau d'accés</translation>
 <translation id="518997337573684769">S'està enviant un informe de bloqueig…</translation>
 <translation id="519530786644929958">La baixada ha fallat i no es pot tornar a provar.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1239,7 +1243,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5779117921996157216">{count,plural, =1{Tens {count} contrasenya en perill que podria posar en risc la teva seguretat. Corregeix el problema per protegir-te.}other{Tens {count} contrasenyes en perill que podrien posar en risc la teva seguretat. Corregeix el problema per protegir-te.}}</translation>
 <translation id="5791632441210678828">Botó Ordena del tauler Seguint</translation>
 <translation id="5803566855766646066">Confirmes que vols descartar aquesta targeta nova?</translation>
-<translation id="5804012843049740908">Consells de configuració que t'ajuden a treure el màxim partit de Chrome</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="58081802114142635">La teva activitat millora la IA de Google</translation>
 <translation id="5813223718099710537">Si fas servir aquesta funció, s'enviaran a Google els URL i el contingut de les pàgines. Pots desactivar aquesta opció a la configuració en qualsevol moment.</translation>
@@ -1286,6 +1289,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5971872012779224351">{count,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {count} adreces d'interès}}</translation>
 <translation id="5972844218283131174">Desselecciona-ho tot</translation>
 <translation id="5977976211062815271">En aquest dispositiu</translation>
+<translation id="5986043348928676121">Següent</translation>
 <translation id="598634819525651074">Àrea</translation>
 <translation id="5988097621740394599">Consulta les baixades de preu a les pestanyes.</translation>
 <translation id="5988851877894965432">Obre els URL a Chrome</translation>
@@ -1399,7 +1403,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="63519665078626091">Per utilitzar Web Inspector, connecta't a Safari a l'ordinador amb un cable i accedeix a l'iPad des del menú Desenvolupament. Pots activar aquest menú a la secció Avançat de la configuració de Safari a l'ordinador.</translation>
 <translation id="6355820183143562453">Amaga la targeta Seguiment de preus</translation>
 <translation id="6355820205320395730">Les contrasenyes poc segures són fàcils d'endevinar. Crea contrasenyes que siguin segures. <ph name="BEGIN_LINK" />Consulta més consells de seguretat<ph name="END_LINK" />.</translation>
-<translation id="6361848730467328243">Segueix <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Tria un motor de cerca de la llista.</translation>
 <translation id="6368102751067608420">Per suprimir totes les dades del gestor de contrasenyes</translation>
 <translation id="6372558618707314581">Ves a la pàgina que vulguis</translation>
@@ -1455,7 +1458,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="656065428026159829">Mostra'n més</translation>
 <translation id="6571070086367343653">Edita la targeta de crèdit</translation>
 <translation id="6574092468346088891">Activa les notificacions de Comprovació de seguretat</translation>
-<translation id="6574225511994820656">Fes la configuració</translation>
 <translation id="6579867704846662339">Pots triar si vols obrir els URL entrants d'altres aplicacions en incògnit.</translation>
 <translation id="6583087784430677195">Per desactivar aquesta funció, obre <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" /> i ves a Emplenament automàtic de contrasenyes.</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
@@ -1679,6 +1681,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7445682342344043969">S'han bloquejat les finestres emergents</translation>
 <translation id="7451023311965289370">{count,plural, =1{L'adreça d'interès s'ha desat a {title}}other{Les adreces d'interès s'han desat a {title}"}}</translation>
 <translation id="7451404862887877229">Toca Privadesa i seguretat i, a continuació, Navegació segura</translation>
+<translation id="7452393099119876789">Només caldrà que ho facis una vegada.</translation>
 <translation id="7454057999980797137">Província</translation>
 <translation id="7458706065921255639">Personalització i enllaçaments</translation>
 <translation id="745899714366929493">Tot el dia</translation>
@@ -1990,6 +1993,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8571019948162152515">Vols suprimir <ph name="FILENAME" />?</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
 <translation id="8577056989960190117">Emplena automàticament l'any de caducitat (<ph name="YEAR" />)</translation>
+<translation id="8587001564479545614">Crea un PIN de recuperació</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590286732816598906">Grup de pestanyes, <ph name="GROUP_TITLE" />, menú.</translation>
 <translation id="8600272508328041907">Canvia a la traducció de pàgina completa</translation>
@@ -2049,7 +2053,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8750037785291841318">Trobaràs les pestanyes aquí</translation>
 <translation id="8756969031206844760">Vols actualitzar la contrasenya?</translation>
 <translation id="8763613688786959833">Ves a la darrera pestanya</translation>
-<translation id="8764015330924122850">Deixa de seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Les contrasenyes de <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="8775144690796719618">URL no vàlid</translation>
 <translation id="8781834595282316166">Pestanya nova al grup</translation>
@@ -2110,7 +2113,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Les targetes es desen al teu Compte de Google.</translation>
 <translation id="8981454092730389528">Controls d'activitat de Google</translation>
-<translation id="8984627322964256190">Amaga l'opció Segueix <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">No disponible al teu dispositiu</translation>
 <translation id="9000089900434778519">El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="9000532564152265066">Totes les pestanyes</translation>

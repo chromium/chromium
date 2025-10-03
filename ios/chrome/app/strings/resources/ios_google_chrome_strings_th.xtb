@@ -3,6 +3,7 @@
 <translationbundle lang="th">
 <translation id="1076643793026027628">Chrome จะเปิดลิงก์ที่ไม่ระบุตัวตนของ YouTube ในโหมดไม่ระบุตัวตนโดยอัตโนมัติ</translation>
 <translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
+<translation id="1088490543924960890">เริ่มบันทึกพาสคีย์ด้วยเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="1143896152279775643">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">เปิดแท็บใหม่ใน Chrome</translation>
 <translation id="1158134713295836892">Gemini ใน Chrome</translation>
@@ -256,6 +257,7 @@
 <translation id="7371674917547846460">ติดตามเคล็ดลับที่เป็นประโยชน์เกี่ยวกับ Chrome และอื่นๆ</translation>
 <translation id="7394108421562933108">Maps ใน Chrome</translation>
 <translation id="7400722733683201933">เกี่ยวกับ Google Chrome</translation>
+<translation id="7444830584401232881">ระบบจะบันทึกพาสคีย์นี้ไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">ในช่องวิดเจ็ต Search ให้ป้อน Chrome</translation>
 <translation id="7477056987201678345">กำลังลบข้อมูลใน Chrome…</translation>
 <translation id="7492574581995589075">องค์กรได้ปิดความสามารถในการใช้และบันทึกข้อมูล Chrome ในบัญชี Google ของคุณ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>

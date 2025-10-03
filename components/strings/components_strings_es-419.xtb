@@ -210,7 +210,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
           <ph name="LIST_ITEM" />Tu empleador o institución educativa
           <ph name="LIST_ITEM" />El proveedor de servicios de Internet
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Seguir este elemento</translation>
 <translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1339601241726513588">Inscripción de dominio:</translation>
 <translation id="1340482604681802745">Dirección de retiro</translation>
@@ -481,7 +480,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1762779605905950734">Nombre de la calle</translation>
 <translation id="1763864636252898013">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el sistema operativo del dispositivo no confía en el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Intenta ejecutar el Diagnóstico de red de Windows<ph name="END_LINK" />.</translation>
-<translation id="1771254328977666895">Ver el historial de precios</translation>
 <translation id="1777422078676229054">Foto (archivo)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">¿Quieres instalar apps web?</translation>
@@ -990,6 +988,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2610561535971892504">Haz clic para copiar.</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="2612993535136743634">Se borrarán todos los códigos de seguridad guardados en tu dispositivo y en tu Cuenta de Google</translation>
+<translation id="2614835674900828050">No está disponible para esta compra</translation>
 <translation id="2616412942031748191">Marketing y optimización para motores de búsqueda</translation>
 <translation id="2618206371527040026">Conferencias y publicaciones académicas</translation>
 <translation id="2619052155095999743">Insertar</translation>

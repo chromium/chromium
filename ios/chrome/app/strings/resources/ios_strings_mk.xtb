@@ -55,7 +55,6 @@
 <translation id="1199963004393929848">Тема во зелена боја</translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1204075260022434100">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка {email}}one{{count} обележувач се зачувани во „{title}“ во вашата сметка {email}}other{{count} обележувачи се зачувани во „{title}“ во вашата сметка {email}}}</translation>
-<translation id="120431140543679678">Следете</translation>
 <translation id="1207493287814084192">17:30 ч.</translation>
 <translation id="1217294226280635614">Поделен приказ</translation>
 <translation id="1219674500290482172">Не може да се поврзе на интернет.</translation>
@@ -535,6 +534,7 @@
 <translation id="3032704072014531631">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) веќе нема да може да стапува во контакт со вас на услугите на Google</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) веднаш ќе го изгуби пристапот до групата картички „<ph name="GROUP_NAME" />“ и веќе нема да може да стапува во контакт со вас на услугите на Google</translation>
 <translation id="3037177537145227281">Цената се следи</translation>
+<translation id="3038136505713492417">Потврдете го вашиот идентитет за да ги користите вашите криптографски клучеви на уредов</translation>
 <translation id="3039671569659952257">Избриши ја папката</translation>
 <translation id="3053332585453689122">Ги испраќа URL-адресите што ги отворате и мал примерок од содржините на страниците, преземањата, екстензиите, активноста и податоците за системот во „Безбедно прелистување со Google“ за да провери дали се штетни.</translation>
 <translation id="3055102495753300780">Простор за податоци</translation>
@@ -822,6 +822,7 @@
 <translation id="422474357428465195">Имате неколку проблеми со лозинки што би можеле да претставуваат ризик за вашата безбедност.</translation>
 <translation id="422477017457571619">Заштита овозможена од AI во реално време од опасни сајтови, преземања и екстензии согласно со вашите податоци од прелистување што се испраќаат до Google</translation>
 <translation id="4231395118547300571">Известувањата за „Безбедносна проверка“ се вклучени</translation>
+<translation id="4232817129213135694">Поставете криптографски клучеви за уредов</translation>
 <translation id="4237377247299956313">Допрете <ph name="BEGIN_BOLD" />Стандардна апликација за прелистување<ph name="END_BOLD" /></translation>
 <translation id="4241893428331130998">Нема зачувани лозинки или криптографски клучеви</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
@@ -829,6 +830,7 @@
 <translation id="4250680216510889253">Не</translation>
 <translation id="4253168017788158739">Забелешка</translation>
 <translation id="4256782883801055595">Лиценци за отворен код</translation>
+<translation id="4258815194323378612">Не сега</translation>
 <translation id="4263576668337963058">Прикажи ги достапните дејства на страницата</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Отфрливте {COUNT} предупредување}one{Отфрливте {COUNT} предупредување}other{Отфрливте {COUNT} предупредувања}}</translation>
 <translation id="4268574628540273656">URL:</translation>
@@ -910,7 +912,6 @@
 <translation id="4601095002996233687">Детални скенирања за сомнителни преземања.</translation>
 <translation id="4606247758155004938">Вашата организација управува со прелистувачот.</translation>
 <translation id="4607887340472970274">Следење цени</translation>
-<translation id="4611811151908969241">Скриј „Поништи го следењето на <ph name="DOMAIN_NAME" />“</translation>
 <translation id="461440297010471931">Се пребарува со Google</translation>
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
 <translation id="4621768135601674446">Отвори ги опциите за Reading mode</translation>
@@ -993,6 +994,7 @@
 <translation id="4870911314065352661">Да се затворат сите картички?</translation>
 <translation id="4872664437015695612">Отвори во „Преземања“</translation>
 <translation id="4875260838563541343">Копче за дејство</translation>
+<translation id="4876237378696925987">Започнете</translation>
 <translation id="4876305945144899064">Нема корисничко име</translation>
 <translation id="4876665338492917862">Последно отворено: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Потсети ме подоцна</translation>
@@ -1066,6 +1068,7 @@
 <translation id="514154868070499296">Фонт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Излези од „Менувачот на картички“</translation>
 <translation id="5148717509369231739">Увезување во Safari</translation>
+<translation id="5152483358138813104">Најавувајте се побрзо на вашите уреди</translation>
 <translation id="5157638238828697074">Нешто тргна наопаку. Апликацијата не можеше да се отвори.</translation>
 <translation id="5163417375525818870">PDF-датотеки</translation>
 <translation id="5168414296986405587">Создадено за iPad OS</translation>
@@ -1075,6 +1078,7 @@
 <translation id="5177141896043341906">Имате <ph name="NUMBER_OF_PASSWORDS" /> слаби лозинки што би можеле да претставуваат ризик за вашата безбедност.</translation>
 <translation id="5181140330217080051">Се презема</translation>
 <translation id="5186185447130319458">Приватен</translation>
+<translation id="5189431381114029336">Зачувајте го првиот криптографски клуч</translation>
 <translation id="518997337573684769">Се испраќа извештај за пад…</translation>
 <translation id="519530786644929958">Преземањето не успеа и не може да се повтори.</translation>
 <translation id="5197255632782567636">Интернет</translation>
@@ -1239,7 +1243,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5779117921996157216">{count,plural, =1{Имате {count} компромитирана лозинка што би можела да ја загрози вашата безбедност. Решете го проблемот со неа сега за да се заштитите.}one{Имате {count} компромитирана лозинка што би можеле да ја загрозат вашата безбедност. Решете го проблемот со нив за да се заштитите.}other{Имате {count} компромитирани лозинки што би можеле да ја загрозат вашата безбедност. Решете го проблемот со нив за да се заштитите.}}</translation>
 <translation id="5791632441210678828">Копче за подредување активност со следење.</translation>
 <translation id="5803566855766646066">Дали сигурно сакате да ја отфрлите новава картичка?</translation>
-<translation id="5804012843049740908">Поставување совети што ќе ви помогнат да извлечете максимум од Chrome</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="58081802114142635">Вашата активност ја подобрува Google AI</translation>
 <translation id="5813223718099710537">Кога ја користите функцијава, содржините и URL-адресите на страницата се испраќаат до Google. Ова може да го исклучите во поставките кога сакате.</translation>
@@ -1286,6 +1289,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5971872012779224351">{count,plural, =1{Избришан е 1 обележувач}one{Избришани се {count} обележувач}other{Избришани се {count} обележувачи}}</translation>
 <translation id="5972844218283131174">Поништи го изборот на сите</translation>
 <translation id="5977976211062815271">На уредов</translation>
+<translation id="5986043348928676121">Следно</translation>
 <translation id="598634819525651074">Површина</translation>
 <translation id="5988097621740394599">Гледајте ги попустите на картичките.</translation>
 <translation id="5988851877894965432">Отвори ги URL-адресите во Chrome</translation>
@@ -1399,7 +1403,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="63519665078626091">За користење на Web Inspector, поврзете се на Safari на вашиот компјутер со кабел и пристапете до вашиот iPad од менито Develop. Може да го овозможите менито Develop во делот „Напредно“ во поставките за Safari на компјутерот.</translation>
 <translation id="6355820183143562453">Скриј ја картичката „Следење цена“</translation>
 <translation id="6355820205320395730">Слабите лозинки се лесни за погаѓање. Уверете се дека создавате силни лозинки. <ph name="BEGIN_LINK" />Погледнете повеќе совети за безбедност.<ph name="END_LINK" /></translation>
-<translation id="6361848730467328243">Следете го <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Изберете пребарувач од списокот.</translation>
 <translation id="6368102751067608420">За да ги избришете сите податоци во Password Manager</translation>
 <translation id="6372558618707314581">Одете на која било страница што ви се допаѓа</translation>
@@ -1455,7 +1458,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6571070086367343653">Измени кредитна картичка</translation>
 <translation id="6574092468346088891">Вклучете ги известувањата за „Безбедносна проверка“</translation>
-<translation id="6574225511994820656">Поставување</translation>
 <translation id="6579867704846662339">Може да изберете да се отвораат дојдовните URL-адреси од други апликации во „Инкогнито“.</translation>
 <translation id="6583087784430677195">За да го исклучите, отворете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" /> и одете на „Автоматско пополнување лозинки“.</translation>
 <translation id="6585618849026997638">Може да се навратите на страница што ви е важна со додавање обележувач</translation>
@@ -1679,6 +1681,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7445682342344043969">Скокачките прозорци се блокирани</translation>
 <translation id="7451023311965289370">{count,plural, =1{Обележувачот е зачуван во „{title}“}one{Обележувачите се зачувани во „{title}“}other{Обележувачите се зачувани во „{title}“}}</translation>
 <translation id="7451404862887877229">Допрете „Приватност и безбедност“, па „Безбедно прелистување“</translation>
+<translation id="7452393099119876789">Ова ќе треба да го направите само еднаш.</translation>
 <translation id="7454057999980797137">Држава/Земја</translation>
 <translation id="7458706065921255639">Персонализација и поврзување</translation>
 <translation id="745899714366929493">Цел ден</translation>
@@ -1990,6 +1993,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8571019948162152515">Да се избрише „<ph name="FILENAME" />“?</translation>
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>
 <translation id="8577056989960190117">Пополни ја автоматски годината на истекување <ph name="YEAR" /></translation>
+<translation id="8587001564479545614">Создајте PIN за враќање</translation>
 <translation id="8588404856427128947">Исклучена</translation>
 <translation id="8590286732816598906">Група картички, <ph name="GROUP_TITLE" />, мени.</translation>
 <translation id="8600272508328041907">Префрлете на превод на целата страница</translation>
@@ -2049,7 +2053,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8750037785291841318">Вашите картички ќе ги најдете тука</translation>
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8763613688786959833">Одете на последната картичка</translation>
-<translation id="8764015330924122850">Престани со следење на <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Лозинките за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>
 <translation id="8781834595282316166">Нова картичка во групата</translation>
@@ -2110,7 +2113,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8976382372951310360">Помош</translation>
 <translation id="8976414606286374109">Картичките се зачувуваат во вашата сметка на Google.</translation>
 <translation id="8981454092730389528">Контроли на активност на Google</translation>
-<translation id="8984627322964256190">Скриј „Следи <ph name="DOMAIN_NAME" />“</translation>
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
 <translation id="9000089900434778519">Вашиот пребарувач е <ph name="DSE_NAME" />. Погледнете го неговото упатство за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="9000532564152265066">Сите картички</translation>

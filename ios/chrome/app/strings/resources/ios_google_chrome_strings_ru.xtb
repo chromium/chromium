@@ -3,6 +3,7 @@
 <translationbundle lang="ru">
 <translation id="1076643793026027628">В Chrome ссылки на видео YouTube в режиме инкогнито автоматически открываются в режиме инкогнито.</translation>
 <translation id="1086486568852410168">Поиск с Google Объективом</translation>
+<translation id="1088490543924960890">Сохраняйте ключи доступа в Google Менеджере паролей</translation>
 <translation id="1143896152279775643">Ваш пароль будет сохранен в Google Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Открыть новую вкладку в Chrome</translation>
 <translation id="1158134713295836892">Gemini в Chrome</translation>
@@ -256,6 +257,7 @@
 <translation id="7371674917547846460">Не пропускайте полезные советы Chrome и многое другое.</translation>
 <translation id="7394108421562933108">Карты в Chrome</translation>
 <translation id="7400722733683201933">О браузере Google Chrome</translation>
+<translation id="7444830584401232881">Этот ключ доступа будет сохранен в Google Менеджере паролей для аккаунта <ph name="USER_EMAIL" />.</translation>
 <translation id="7466693328838535498">В окне поиска виджетов введите "Chrome".</translation>
 <translation id="7477056987201678345">Удаление данных Chrome…</translation>
 <translation id="7492574581995589075">В вашей организации отключена возможность использовать и сохранять данные Chrome в аккаунте Google. Новые закладки, пароли и другие данные будут сохраняться только на этом устройстве.</translation>

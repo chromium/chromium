@@ -210,7 +210,6 @@
           <ph name="LIST_ITEM" />你的雇主或學校
           <ph name="LIST_ITEM" />你的網際網路服務供應商
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">追蹤這項商品</translation>
 <translation id="1337692097987160377">分享此分頁</translation>
 <translation id="1339601241726513588">註冊網域：</translation>
 <translation id="1340482604681802745">取件地址</translation>
@@ -480,7 +479,6 @@
 <translation id="1762779605905950734">街道名稱</translation>
 <translation id="1763864636252898013">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得你裝置作業系統的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網路診斷<ph name="END_LINK" />。</translation>
-<translation id="1771254328977666895">查看價格記錄</translation>
 <translation id="1777422078676229054">相紙 (典藏用)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">要安裝網頁應用程式嗎？</translation>
@@ -989,6 +987,7 @@
 <translation id="2610561535971892504">點選複製</translation>
 <translation id="2612676031748830579">卡號</translation>
 <translation id="2612993535136743634">儲存在裝置和 Google 帳戶中的所有安全碼都會刪除</translation>
+<translation id="2614835674900828050">無法用於本次交易</translation>
 <translation id="2616412942031748191">搜尋引擎最佳化與行銷</translation>
 <translation id="2618206371527040026">學術研討會與出版品</translation>
 <translation id="2619052155095999743">插入</translation>

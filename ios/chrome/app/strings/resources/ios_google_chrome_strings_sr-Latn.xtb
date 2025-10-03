@@ -3,6 +3,7 @@
 <translationbundle lang="sr-Latn">
 <translation id="1076643793026027628">Chrome automatski otvara YouTube linkove bez arhiviranja u režimu bez arhiviranja.</translation>
 <translation id="1086486568852410168">Pretražite pomoću Google objektiva</translation>
+<translation id="1088490543924960890">Počnite da čuvate pristupne ključeve pomoću Google menadžera lozinki</translation>
 <translation id="1143896152279775643">Lozika se čuva u Google menadžeru lozinki za <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvaranje nove kartice u Chrome-u</translation>
 <translation id="1158134713295836892">Gemini u Chrome-u</translation>
@@ -256,6 +257,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="7371674917547846460">Budite u toku sa korisnim savetima za Chrome i drugim sadržajima.</translation>
 <translation id="7394108421562933108">Mape u Chrome-u</translation>
 <translation id="7400722733683201933">O programu Google Chrome</translation>
+<translation id="7444830584401232881">Pristupni ključ se čuva u Google menadžeru lozinki za <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">U okvir Pretražite vidžete unesite Chrome</translation>
 <translation id="7477056987201678345">Brišu se Chrome podaci…</translation>
 <translation id="7492574581995589075">Organizacija je isključila mogućnost korišćenja i čuvanja Chrome podataka na Google nalogu. Novi obeleživači, lozinke i drugi sadržaj će se čuvati samo na ovom uređaju.</translation>

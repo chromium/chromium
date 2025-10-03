@@ -35,6 +35,7 @@
 <translation id="1345251407431278948">Закачено! Може да пристапите до „Пребарување со слики“ повторно од новото копче на алатникот</translation>
 <translation id="1356661055722410047">Ново! Може да ги преведувате и текстот и сликите на екранот</translation>
 <translation id="1383876407941801731">Барај</translation>
+<translation id="1397530502368084401">&amp;Управувајте со профилите на Chromium</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
 <translation id="141901961143729572">Споделете го вашето мислење</translation>
 <translation id="1465192221147974788">За да го споделите прозорецот, дозволете снимање на екранот за Chromium во System Settings.</translation>
@@ -474,6 +475,7 @@
 <translation id="6669284030132180248">Ако ги зачувувате и вашите обележувачи во вашата сметка на Google, може да ги следите цените на производите во Chromium и да добивате известувања кога ќе се намали цената</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
 <translation id="668175097507315160">Chromium OS не може да ги синхронизира податоците поради грешка при најавување.</translation>
+<translation id="6691132793308828750">Отстрани ги податоците поврзани со апликацијава од Chromium</translation>
 <translation id="6692797197837897398">Chromium ви дава поголема контрола над рекламите што ги гледате и ограничува што може да учат сајтовите за вас кога ви прикажуваат персонализирани реклами</translation>
 <translation id="6709350901466051922">На Chromium му треба дозвола за микрофонот за сајтов</translation>
 <translation id="6712881677154121168">Грешка при преземање: <ph name="DOWNLOAD_ERROR" /></translation>
@@ -494,6 +496,7 @@
 <translation id="6877155553248388166">долен десен агол на областа за пребарување: десно <ph name="RIGHT" /> %, долу <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6901631050894301805">Поставете го Chromium како стандарден прелистувач и закачете го на „Лента со задачи“</translation>
+<translation id="6909503629704372277">&amp;Управувајте со профилите на Chromium</translation>
 <translation id="6934579572334859869">Прашајте ја „Пребарување слики“ за сликава</translation>
 <translation id="6964305034639999644">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
 <translation id="6965382102122355670">Во ред</translation>

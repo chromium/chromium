@@ -1384,6 +1384,7 @@
 <translation id="1931152874660185993">未安裝任何元件。</translation>
 <translation id="1931410639376954712">正在安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">此日期之後：</translation>
+<translation id="1932125073382155239">要備份資料嗎？</translation>
 <translation id="1933070475689690969">Gemini 系列應用程式活動記錄</translation>
 <translation id="1933489278505808700">可以讀取及變更</translation>
 <translation id="1935303383381416800">允許以下網站查看你的位置資訊</translation>
@@ -1847,6 +1848,7 @@
 <translation id="225614027745146050">歡迎使用</translation>
 <translation id="2257053455312861282">新增學校帳戶可讓你以學生的身分輕鬆登入網站、擴充功能及應用程式，同時繼續遵守家長監護功能的操作規範。</translation>
 <translation id="225716114209817872">最大</translation>
+<translation id="2259337945538989999">如要取得其他裝置的分頁，請驗證身分。你隨時可以前往設定停止同步。Google 可根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="2261323523305321874">你的管理員變更了系統設定，部分舊的設定檔因此遭到停用。</translation>
 <translation id="22614517036276112">這份文件或你的裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。</translation>
 <translation id="2262477216570151239">重複前延遲時間</translation>
@@ -2054,6 +2056,7 @@
 <translation id="2393313392064891208">Google ChromeOS Flex 條款內容</translation>
 <translation id="2393944685985256805">已隱藏「<ph name="MODULE_NAME" />」</translation>
 <translation id="2395616325548404795">你的 <ph name="DEVICE_TYPE" /> 已成功註冊企業管理服務，但無法傳送資產和位置資訊。請前往管理控制台，為這個裝置手動輸入這些資訊。</translation>
+<translation id="2396593617786425274">要同步歷史記錄嗎？</translation>
 <translation id="2396783860772170191">輸入 4 位數 PIN 碼 (0000-9999)</translation>
 <translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 設定檔。請前往<ph name="LINK_BEGIN" />行動設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
 <translation id="2399699884460174994">已開啟通知功能</translation>
@@ -6715,6 +6718,7 @@
 <translation id="5648166631817621825">過去 7 天</translation>
 <translation id="5651308944918885595">鄰近分享可偵測性</translation>
 <translation id="5653154844073528838">你有 <ph name="PRINTER_COUNT" /> 台已儲存的印表機。</translation>
+<translation id="565461030474814383">要儲存到帳戶嗎？</translation>
 <translation id="5654669866168491665">進一步瞭解在封鎖第三方 Cookie 的情況下，可能無法運作的網站</translation>
 <translation id="5654751240928365405">系統不再支援這項擴充功能，因此已停用</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{為保護你的隱私，系統已從一個網站移除相關權限}other{為保護你的隱私，系統已從某些網站移除相關權限}}</translation>
@@ -7019,6 +7023,7 @@
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5870086504539785141">關閉無障礙選單</translation>
 <translation id="5870155679953074650">硬性錯誤數</translation>
+<translation id="587234395549708302">要清理書籤嗎？</translation>
 <translation id="5875534259258494936">已終止分享螢幕畫面</translation>
 <translation id="5876851302954717356">在右側新增分頁</translation>
 <translation id="5877064549588274448">版本已變更。請重新啟動裝置以套用變更。</translation>

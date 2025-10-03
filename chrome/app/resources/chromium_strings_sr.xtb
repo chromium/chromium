@@ -35,6 +35,7 @@
 <translation id="1345251407431278948">Закачено је. Можете поново да приступите претрази слика помоћу новог дугмета на траци с алаткама</translation>
 <translation id="1356661055722410047">Ново. Можете да преводите и текст и слике на екрану</translation>
 <translation id="1383876407941801731">Претражи</translation>
+<translation id="1397530502368084401">&amp;Управљајте Chromium профилима</translation>
 <translation id="1414495520565016063">Пријављени сте на Chromium!</translation>
 <translation id="141901961143729572">Делите размишљања</translation>
 <translation id="1465192221147974788">Да бисте делили прозор, дозволите снимање екрана за Chromium у подешавањима система.</translation>
@@ -475,6 +476,7 @@
 <translation id="6669284030132180248">Ако сачувате обележиваче и на Google налогу, можете да пратите цене производа у Chromium-у и да добијате обавештења када падне цена</translation>
 <translation id="6676384891291319759">Приступите Интернету</translation>
 <translation id="668175097507315160">Chromium ОС не може да синхронизује податке због грешке при пријављивању.</translation>
+<translation id="6691132793308828750">Уклони податке ове апликације из Chromium-а</translation>
 <translation id="6692797197837897398">Chromium вам пружа већу контролу над огласима које видите и ограничава информације које сајтови могу да сазнају о вама када приказују персонализоване огласе</translation>
 <translation id="6709350901466051922">Chromium-у треба дозвола за микрофон за овај сајт</translation>
 <translation id="6712881677154121168">Грешка при преузимању: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -495,6 +497,7 @@
 <translation id="6877155553248388166">доњи десни угао области претраге: удесно <ph name="RIGHT" />%, надоле <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6901631050894301805">Подесите Chromium као подразумевани прегледач и закачите га на траку задатака</translation>
+<translation id="6909503629704372277">&amp;Управљајте Chromium профилима</translation>
 <translation id="6934579572334859869">Поставите питање претрази слика о овој слици</translation>
 <translation id="6964305034639999644">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
 <translation id="6965382102122355670">Потврди</translation>

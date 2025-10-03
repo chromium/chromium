@@ -33,6 +33,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1345251407431278948">Пошук за зображенням закріплено. Щоб скористатися ним, натисніть нову кнопку на панелі інструментів.</translation>
 <translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="1397530502368084401">&amp;Керувати профілями Chromium</translation>
 <translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
 <translation id="141901961143729572">Поділіться своєю думкою</translation>
 <translation id="1465192221147974788">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
@@ -472,6 +473,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6669284030132180248">Щоб відстежувати ціни на товари в Chromium і отримувати сповіщення, якщо вони знизяться, також збережіть закладки в обліковому записі Google</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="668175097507315160">Chromium OS не вдалося синхронізувати ваші дані через помилку входу.</translation>
+<translation id="6691132793308828750">Видалити дані цього додатка з Chromium</translation>
 <translation id="6692797197837897398">Chromium дає змогу краще керувати тим, які оголошення вам показуються, і обмежує обсяг даних про вас, які можуть отримувати сайти під час показу персоналізованої реклами</translation>
 <translation id="6709350901466051922">Веб-переглядачу Chromium потрібен доступ до мікрофона для цього сайту</translation>
 <translation id="6712881677154121168">Помилка завантаження: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -492,6 +494,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6877155553248388166">правий нижній кут області пошуку: <ph name="RIGHT" />% праворуч, <ph name="BOTTOM" />% знизу</translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6901631050894301805">Зробіть Chromium вебпереглядачем за умовчанням і закріпіть його на панелі завдань</translation>
+<translation id="6909503629704372277">&amp;Керувати профілями Chromium</translation>
 <translation id="6934579572334859869">Запитати про це зображення в сервісі "Пошук за зображенням"</translation>
 <translation id="6964305034639999644">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
