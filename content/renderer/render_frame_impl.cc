@@ -4960,7 +4960,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
                                   does_status_code_qualify_for_history;
 
   if (previous_page_state.has_value()) {
-    params->previous_page_state = previous_page_state;
+    params->previous_page_state = std::move(previous_page_state).value();
   }
 
   // Make navigation state a part of the DidCommitProvisionalLoad message so
@@ -5190,7 +5190,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
 
   auto params = MakeDidCommitProvisionalLoadParams(
       commit_type, transition, permissions_policy_header,
-      document_policy_header, embedding_token, previous_page_state);
+      document_policy_header, embedding_token, std::move(previous_page_state));
   NavigationState* navigation_state =
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
           ->navigation_state();
