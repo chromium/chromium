@@ -439,6 +439,13 @@ void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
   NOTREACHED();
 }
 
+bool TestSharedImageInterface::CanVerifySyncToken(
+    const gpu::SyncToken& sync_token) {
+  return true;
+}
+
+void TestSharedImageInterface::VerifyFlush() {}
+
 scoped_refptr<ClientSharedImage>
 TestSharedImageInterface::CreateSharedImageWithAsyncMapControl(
     const SharedImageInfo& si_info,

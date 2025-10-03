@@ -510,6 +510,15 @@ void SharedImageInterfaceInProcessBase::VerifySyncToken(SyncToken& sync_token) {
   sync_token.SetVerifyFlush();
 }
 
+bool SharedImageInterfaceInProcessBase::CanVerifySyncToken(
+    const gpu::SyncToken& sync_token) {
+  return sync_token.namespace_id() == namespace_id_;
+}
+
+void SharedImageInterfaceInProcessBase::VerifyFlush() {
+  // No flush required as we are only within a single process
+}
+
 void SharedImageInterfaceInProcessBase::WaitSyncToken(
     const SyncToken& sync_token) {
   base::AutoLock lock(lock_);

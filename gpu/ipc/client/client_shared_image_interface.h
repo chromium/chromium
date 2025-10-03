@@ -46,6 +46,8 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
   SyncToken GenUnverifiedSyncToken() override;
   SyncToken GenVerifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
+  bool CanVerifySyncToken(const gpu::SyncToken& sync_token) override;
+  void VerifyFlush() override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,

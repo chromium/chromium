@@ -91,6 +91,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
   SyncToken GenUnverifiedSyncToken() final;
   SyncToken GenVerifiedSyncToken() final;
   void VerifySyncToken(SyncToken& sync_token) final;
+  bool CanVerifySyncToken(const gpu::SyncToken& sync_token) final;
+  void VerifyFlush() final;
   void WaitSyncToken(const SyncToken& sync_token) final;
   const SharedImageCapabilities& GetCapabilities() final;
 

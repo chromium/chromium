@@ -165,6 +165,8 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
   MOCK_METHOD0(GenUnverifiedSyncToken, gpu::SyncToken());
   MOCK_METHOD0(GenVerifiedSyncToken, gpu::SyncToken());
   MOCK_METHOD1(VerifySyncToken, void(gpu::SyncToken& sync_token));
+  MOCK_METHOD1(CanVerifySyncToken, bool(const gpu::SyncToken& sync_token));
+  MOCK_METHOD0(VerifyFlush, void());
   MOCK_METHOD1(WaitSyncToken, void(const gpu::SyncToken& sync_token));
   MOCK_METHOD1(GetNativePixmap,
                scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));

@@ -151,12 +151,6 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
  private:
   struct ImportedResource;
 
-  void PrepareSendToParentInternal(
-      const std::vector<ResourceId>& export_ids,
-      std::vector<TransferableResource>* list,
-      base::OnceCallback<void(std::vector<GLbyte*>* tokens)>
-          verify_sync_tokens);
-
   // Validates the memory impact of resources that are locked once we are both
   // evicted and no longer visible. This will also notify clients of eviction
   // via any `RemoveImportedResources`. If resources have been already returned

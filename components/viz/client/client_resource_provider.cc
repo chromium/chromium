@@ -21,7 +21,9 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/sync_token.h"
 
 namespace viz {
 
@@ -239,21 +241,6 @@ void ClientResourceProvider::PrepareSendToParent(
     const std::vector<ResourceId>& export_ids,
     std::vector<TransferableResource>* list,
     RasterContextProvider* context_provider) {
-  PrepareSendToParentInternal(
-      export_ids, list,
-      base::BindOnce(
-          [](scoped_refptr<RasterContextProvider> context_provider,
-             std::vector<GLbyte*>* tokens) {
-            context_provider->RasterInterface()->VerifySyncTokensCHROMIUM(
-                tokens->data(), tokens->size());
-          },
-          base::WrapRefCounted(context_provider)));
-}
-
-void ClientResourceProvider::PrepareSendToParentInternal(
-    const std::vector<ResourceId>& export_ids,
-    std::vector<TransferableResource>* list,
-    base::OnceCallback<void(std::vector<GLbyte*>* tokens)> verify_sync_tokens) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This function goes through the array multiple times, store the resources
@@ -268,19 +255,22 @@ void ClientResourceProvider::PrepareSendToParentInternal(
     imports.push_back(&it->second);
   }
 
-  // Lazily create any mailboxes and verify all unverified sync tokens.
-  std::vector<GLbyte*> unverified_sync_tokens;
-  for (ImportedResource* imported : imports) {
-    if (!imported->resource.is_software &&
-        !imported->resource.sync_token().verified_flush()) {
-      unverified_sync_tokens.push_back(
-          imported->resource.mutable_sync_token().GetData());
-    }
-  }
+  static auto can_verify_resource =
+      [](const ImportedResource* imported_resource) {
+        CHECK(imported_resource);
+        return !imported_resource->resource.is_software &&
+               !imported_resource->resource.sync_token().verified_flush();
+      };
 
-  if (!unverified_sync_tokens.empty()) {
-    DCHECK(verify_sync_tokens);
-    std::move(verify_sync_tokens).Run(&unverified_sync_tokens);
+  if (context_provider) {
+    context_provider->SharedImageInterface()->VerifySyncTokens(
+        imports, [](ImportedResource* imported) {
+          return can_verify_resource(imported)
+                     ? &imported->resource.mutable_sync_token()
+                     : nullptr;
+        });
+  } else {
+    DCHECK(std::none_of(imports.begin(), imports.end(), can_verify_resource));
   }
 
   list->reserve(list->size() + imports.size());

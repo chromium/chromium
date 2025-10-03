@@ -125,6 +125,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   SyncToken GenUnverifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
+  bool CanVerifySyncToken(const gpu::SyncToken& sync_token) override;
+  void VerifyFlush() override;
 
   // This is used only on windows for webrtc tests where test wants the
   // production code to trigger ClientSharedImage::MapAsync() but wants

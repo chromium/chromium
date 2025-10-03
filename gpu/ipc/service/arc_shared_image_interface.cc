@@ -234,6 +234,12 @@ void ArcSharedImageInterface::VerifySyncToken(SyncToken& sync_token) {
 void ArcSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
   NOTREACHED();
 }
+bool ArcSharedImageInterface::CanVerifySyncToken(const SyncToken& sync_token) {
+  NOTREACHED();
+}
+void ArcSharedImageInterface::VerifyFlush() {
+  NOTREACHED();
+}
 
 const SharedImageCapabilities& ArcSharedImageInterface::GetCapabilities() {
   NOTREACHED();

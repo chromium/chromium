@@ -86,6 +86,15 @@ void ClientSharedImageInterface::VerifySyncToken(gpu::SyncToken& sync_token) {
   proxy_->VerifySyncToken(sync_token);
 }
 
+bool ClientSharedImageInterface::CanVerifySyncToken(
+    const gpu::SyncToken& sync_token) {
+  return proxy_->CanVerifySyncToken(sync_token);
+}
+
+void ClientSharedImageInterface::VerifyFlush() {
+  return proxy_->VerifyFlush();
+}
+
 void ClientSharedImageInterface::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   proxy_->WaitSyncToken(sync_token);

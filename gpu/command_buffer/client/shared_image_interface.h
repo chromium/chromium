@@ -336,6 +336,49 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   // Verifies the SyncToken.
   virtual void VerifySyncToken(gpu::SyncToken& sync_token) = 0;
 
+  // Check if a token is able to be verified by this client
+  virtual bool CanVerifySyncToken(const gpu::SyncToken& sync_token) = 0;
+
+  // Runs a synchronous round trip mojo IPC to ensure everything up this point
+  // is visible to the service
+  virtual void VerifyFlush() = 0;
+
+  // Verifies a range of SyncTokens. Will trigger a synchronous round trip IPC
+  // if there is anything to sync.
+  //
+  // The `proj` parameter allows using this function with ranges containing
+  // elements other than raw gpu::SyncToken pointers. For example to handle a
+  // vector of unique_ptrs, use:
+  // `[](const auto& p) { return p.get(); }`
+  template <std::ranges::input_range Range, typename Proj = std::identity>
+    requires std::convertible_to<
+        std::invoke_result_t<Proj&, std::ranges::range_reference_t<Range>>,
+        gpu::SyncToken*>
+  void VerifySyncTokens(Range&& sync_token_range, Proj proj = {}) {
+    bool flush_required = false;
+    for (auto const& element : sync_token_range) {
+      gpu::SyncToken* const sync_token = proj(element);
+      if (!sync_token || sync_token->verified_flush()) {
+        continue;
+      }
+
+      if (!sync_token->HasData()) {
+        sync_token->SetVerifyFlush();
+        continue;
+      }
+
+      if (CanVerifySyncToken(*sync_token)) {
+        flush_required = true;
+
+        sync_token->SetVerifyFlush();
+      }
+    }
+
+    if (flush_required) {
+      VerifyFlush();
+    }
+  }
+
   // Wait on this SyncToken to be released before executing new commands on
   // this interface on the service side. This is an async wait for all the
   // previous commands which will be sent to server on the next flush().
