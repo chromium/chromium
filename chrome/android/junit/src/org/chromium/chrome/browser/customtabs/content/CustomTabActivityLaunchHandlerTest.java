@@ -77,6 +77,7 @@ public class CustomTabActivityLaunchHandlerTest {
         clearInvocations(env.tabFromFactory);
         when(env.intentDataProvider.getActivityType())
                 .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(env.intentDataProvider.getClientPackageName()).thenReturn("test.package.name");
     }
 
     private void doTestLaunchHandler(
@@ -99,6 +100,7 @@ public class CustomTabActivityLaunchHandlerTest {
         CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
         when(dataProvider.getSession()).thenReturn(env.session);
         when(dataProvider.getUrlToLoad()).thenReturn(OTHER_URL);
+        when(dataProvider.getClientPackageName()).thenReturn("test.package.name");
         return dataProvider;
     }
 

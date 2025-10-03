@@ -10,6 +10,9 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 import static androidx.browser.trusted.TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -24,6 +27,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -43,6 +47,7 @@ import java.util.List;
  * Manages web application launch configurations based on client mode. Provides methods to process
  * client mode and work with launch queue.
  */
+@NullMarked
 @JNINamespace("webapps")
 public class WebAppLaunchHandler extends WebContentsObserver {
     private static final String TAG = "WebAppLaunchHandler";
@@ -155,8 +160,8 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         WebAppLaunchParams launchParams =
                 getLaunchParams(
                         /* newNavigationStarted= */ true,
-                        intentDataProvider.getUrlToLoad(),
-                        intentDataProvider.getClientPackageName(),
+                        assertNonNull(intentDataProvider.getUrlToLoad()),
+                        assertNonNull(intentDataProvider.getClientPackageName()),
                         intentDataProvider.getFileHandlingData());
 
         maybeNotifyLaunchQueue(launchParams);
@@ -178,29 +183,31 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         recordClientMode(clientModeFromIntent);
         @ClientMode int clientMode = getClientMode(clientModeFromIntent);
 
+        String urlToLoad = intentDataProvider.getUrlToLoad();
+        assert urlToLoad != null;
+        String packageName = intentDataProvider.getClientPackageName();
+
         CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
         if (clientMode == NAVIGATE_NEW
                 || state == null
                 || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
-            launchNewIntent(
-                    intentDataProvider.getUrlToLoad(),
-                    intentDataProvider.getClientPackageName(),
-                    intentDataProvider.getFileHandlingData());
+            launchNewIntent(urlToLoad, packageName, intentDataProvider.getFileHandlingData());
         } else {
             boolean startNavigation =
-                    clientMode == NAVIGATE_EXISTING
-                            && !TextUtils.isEmpty(intentDataProvider.getUrlToLoad());
+                    clientMode == NAVIGATE_EXISTING && !TextUtils.isEmpty(urlToLoad);
 
             if (startNavigation) {
-                LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
-                mNavigationController.navigate(params, intentDataProvider.getIntent());
+                LoadUrlParams params = new LoadUrlParams(urlToLoad);
+                mNavigationController.navigate(
+                        params, assumeNonNull(intentDataProvider.getIntent()));
             }
 
+            assert packageName != null;
             WebAppLaunchParams launchParams =
                     getLaunchParams(
                             startNavigation,
-                            intentDataProvider.getUrlToLoad(),
-                            intentDataProvider.getClientPackageName(),
+                            urlToLoad,
+                            packageName,
                             intentDataProvider.getFileHandlingData());
 
             maybeNotifyLaunchQueue(launchParams);
@@ -237,7 +244,8 @@ public class WebAppLaunchHandler extends WebContentsObserver {
      * @param fileData The list of file URIs, if the web app was launched by opening one or multiple
      *     files
      */
-    private void launchNewIntent(String targetUrl, String packageName, FileHandlingData fileData) {
+    private void launchNewIntent(
+            String targetUrl, @Nullable String packageName, @Nullable FileHandlingData fileData) {
         if (packageName == null) {
             return;
         }

@@ -182,7 +182,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     public void detachAndStartReparenting(
-            Intent intent, Bundle startActivityOptions, Runnable finishCallback) {
+            Intent intent, @Nullable Bundle startActivityOptions, Runnable finishCallback) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {
             assert false;

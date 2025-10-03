@@ -65,6 +65,7 @@ public class TwaSharingController {
             return Promise.fulfilled(false);
         }
         Intent intent = intentDataProvider.getIntent();
+        assert intent != null;
 
         return mVerifierDelegate
                 .verify(shareTarget.getAction())
