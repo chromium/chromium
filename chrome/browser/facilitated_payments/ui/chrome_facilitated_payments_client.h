@@ -87,6 +87,7 @@ class ChromeFacilitatedPaymentsClient
   std::optional<CoreAccountInfo> GetCoreAccountInfo() final;
   bool IsInLandscapeMode() final;
   bool IsFoldable() final;
+  bool IsInChromeCustomTabMode() final;
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
       final;
   payments::facilitated::DeviceDelegate* GetDeviceDelegate() final;

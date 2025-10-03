@@ -6,13 +6,19 @@ package org.chromium.components.facilitated_payments;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
+import android.view.inputmethod.InputMethodInfo;
+import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -50,6 +56,7 @@ public class DeviceDelegate {
             "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome&email=%s";
     // Minimum Google Wallet version that supports Pix account linking.
     private static final long PIX_MIN_SUPPORTED_WALLET_VERSION = 932848136;
+    private static final String GBOARD_PACKAGE_NAME = "com.google.android.inputmethod.latin";
 
     private DeviceDelegate() {}
 
@@ -148,6 +155,64 @@ public class DeviceDelegate {
                                 TimeUtils.elapsedRealtimeMillis(),
                                 paymentLinkScheme),
                 /* errorId= */ null);
+    }
+
+    /**
+     * Checks if Pix payment is supported on the device via Gboard.
+     *
+     * @param windowAndroid The current {@link WindowAndroid}.
+     * @return True if Gboard is the current IME, false otherwise.
+     */
+    @CalledByNative
+    static boolean isPixSupportAvailableViaGboard(WindowAndroid windowAndroid) {
+        // For versions below Android T, Pix is not supported via Gboard.
+        if (!isAtLeastT()) {
+            return false;
+        }
+        if (windowAndroid == null) {
+            return false;
+        }
+        Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return false;
+        }
+        return GBOARD_PACKAGE_NAME.equals(getDefaultImePackageName(context));
+    }
+
+    private static String getDefaultImePackageName(Context context) {
+        if (isAtLeastU()) {
+            InputMethodManager imm = context.getSystemService(InputMethodManager.class);
+            if (imm == null) {
+                return "";
+            }
+            InputMethodInfo currentIme = imm.getCurrentInputMethodInfo();
+            if (currentIme == null) {
+                return "";
+            }
+            return currentIme.getPackageName();
+        } else {
+            String currentImeId =
+                    Settings.Secure.getString(
+                            context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+            if (currentImeId == null || currentImeId.isEmpty()) {
+                return "";
+            }
+            ComponentName componentName = ComponentName.unflattenFromString(currentImeId);
+            if (componentName == null) {
+                return "";
+            }
+            return componentName.getPackageName();
+        }
+    }
+
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+    private static boolean isAtLeastT() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
+    }
+
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private static boolean isAtLeastU() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
     @VisibleForTesting

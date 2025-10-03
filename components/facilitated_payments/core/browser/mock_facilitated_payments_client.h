@@ -102,6 +102,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
                base::OnceCallback<void()> on_declined),
               (override));
   MOCK_METHOD(bool, HasScreenlockOrBiometricSetup, (), (override));
+  MOCK_METHOD(bool, IsInChromeCustomTabMode, (), (override));
 };
 
 }  // namespace payments::facilitated

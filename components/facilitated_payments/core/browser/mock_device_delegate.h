@@ -38,6 +38,7 @@ class MockDeviceDelegate : public DeviceDelegate {
                std::string_view activity_name,
                const GURL& payment_link_url),
               (override));
+  MOCK_METHOD(bool, IsPixSupportAvailableViaGboard, (), (const, override));
 };
 
 }  // namespace payments::facilitated

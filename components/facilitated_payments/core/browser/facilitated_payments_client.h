@@ -85,6 +85,10 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Returns true if the device is a foldable device.
   virtual bool IsFoldable() = 0;
 
+  // Returns true if the current tab is opened as a CCT in another app instead
+  // of the Chrome browser app.
+  virtual bool IsInChromeCustomTabMode() = 0;
+
   // Returns an instance of the OptimizationGuideDecider associated with the
   // Chrome profile. It is used to determine whether a render frame host URL is
   // part of a feature allowlist.

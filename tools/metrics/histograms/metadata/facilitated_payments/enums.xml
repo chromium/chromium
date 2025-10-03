@@ -150,6 +150,8 @@ reviewer.
   <int value="15" label="Merchant is not allowlisted"/>
   <int value="16" label="Pix code was copied within an iframe"/>
   <int value="17" label="Pix code was copied in an inactive frame"/>
+  <int value="18"
+      label="Pix code was copied in CCT with Gboard as the default IME"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->
