@@ -93,10 +93,6 @@ bool IsWebFeedFeedbackRerouteEnabled() {
   return base::FeatureList::IsEnabled(kWebFeedFeedbackReroute);
 }
 
-bool IsSignedOutViewDemotionEnabled() {
-  return NO;
-}
-
 bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
 }

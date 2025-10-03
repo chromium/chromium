@@ -128,9 +128,6 @@ bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
 // YES if discover feedback is going to be sent to the updated target.
 bool IsWebFeedFeedbackRerouteEnabled();
 
-// YES if the signed out user view demotion is enabled.
-bool IsSignedOutViewDemotionEnabled();
-
 // Whether ghost cards are enabled on the iPad feeds.
 bool IsiPadFeedGhostCardsEnabled();
 
