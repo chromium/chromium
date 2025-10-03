@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {SelectCredentialDialogRequest} from '/glic/glic_api/glic_api.js';
+import {UserGrantedPermissionDuration} from '/glic/glic_api/glic_api.js';
+
 import {client, logMessage} from '../client.js';
 import {$} from '../page_element_types.js';
 
@@ -55,4 +58,53 @@ $.stopActorTask.addEventListener('click', () => {
     client!.browser!.stopActorTask!();
     $.actionStatus.innerText = 'Stopped most recent task.';
   }
+});
+
+let lastCredentialRequest: SelectCredentialDialogRequest|null = null;
+
+function pickCredential(once: boolean) {
+  if (!lastCredentialRequest) {
+    return;
+  }
+
+  const select = $.selectCredential;
+
+  lastCredentialRequest.onDialogClosed({
+    response: {
+      taskId: lastCredentialRequest.taskId,
+      selectedCredentialId: parseInt(select.value),
+      permissionDuration: once ? UserGrantedPermissionDuration.ONE_TIME :
+                                 UserGrantedPermissionDuration.ALWAYS_ALLOW,
+    },
+  });
+
+  lastCredentialRequest = null;
+  $.credentialSelection.style.display = 'none';
+}
+
+function showCredentialPicker(request: SelectCredentialDialogRequest) {
+  const select = $.selectCredential;
+  select.innerHTML = '';
+  request.credentials.forEach((cred) => {
+    const opt = document.createElement('option');
+    opt.value = `${cred.id}`;
+    opt.text = cred.username;
+    select.add(opt);
+  });
+
+  lastCredentialRequest = request;
+  $.credentialSelection.style.display = 'block';
+}
+
+$.credentialOnce.addEventListener('click', () => {
+  pickCredential(true);
+});
+
+$.credentialAlways.addEventListener('click', () => {
+  pickCredential(false);
+});
+
+client.getInitialized().then(() => {
+  client.browser!.selectCredentialDialogRequestHandler?.().subscribe(
+      showCredentialPicker);
 });

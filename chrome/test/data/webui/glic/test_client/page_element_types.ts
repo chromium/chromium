@@ -123,6 +123,10 @@ export interface PageElementTypes {
   stopActorTask: HTMLButtonElement;
   actorTaskId: HTMLInputElement;
   executeAction: HTMLButtonElement;
+  credentialSelection: HTMLDivElement;
+  selectCredential: HTMLSelectElement;
+  credentialOnce: HTMLButtonElement;
+  credentialAlways: HTMLButtonElement;
   actionProtoEncodedText: HTMLInputElement;
   actionStatus: HTMLSpanElement;
   actionUpdatedContextResult: HTMLSpanElement;
