@@ -6690,6 +6690,7 @@ static_library("browser") {
       "//components/crash/core/app",
       "//components/device_signals/core/browser/mac",
       "//components/metal_util",
+      "//components/os_crypt/async/browser:keychain_key_provider",
       "//components/policy/core/common:common_constants",
       "//components/remote_cocoa/app_shim:features",
       "//components/remote_cocoa/browser",

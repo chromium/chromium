@@ -20,6 +20,7 @@ component("sync") {
     "//components/gcm_driver",
     "//components/os_crypt/async/browser:dpapi_key_provider",
     "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+    "//components/os_crypt/async/browser:keychain_key_provider",
     "//components/os_crypt/async/browser:secret_portal_key_provider",
     "//components/os_crypt/async/browser:unit_tests",
     "//components/os_crypt/async/common",

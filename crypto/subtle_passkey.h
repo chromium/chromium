@@ -30,6 +30,7 @@ crypto::SubtlePassKey MakeCryptoPassKey();
 
 namespace os_crypt_async {
 class FreedesktopSecretKeyProvider;
+class KeychainKeyProvider;
 }
 
 class OSCryptImpl;
@@ -74,6 +75,7 @@ class CRYPTO_EXPORT SubtlePassKey final {
   // compatibility with existing persisted data.
   friend class ::OSCryptImpl;
   friend class os_crypt_async::FreedesktopSecretKeyProvider;
+  friend class os_crypt_async::KeychainKeyProvider;
 
   // This class uses custom PBKDF2 parameters which cannot be changed for
   // compatibility with persisted data.
