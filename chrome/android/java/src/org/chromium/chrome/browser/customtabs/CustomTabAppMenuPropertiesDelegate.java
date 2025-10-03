@@ -63,7 +63,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             "remove_desktop_site_menu_item";
     private final Verifier mVerifier;
     private final @CustomTabsUiType int mUiType;
-    private final boolean mShowShare;
+    private boolean mShowShare;
     private final boolean mShowStar;
     private final boolean mShowDownload;
     private final boolean mIsOpenedByChrome;
@@ -142,6 +142,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean requestDesktopSiteVisible = true;
         boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCct();
         boolean readerModePrefsVisible = false;
+        boolean translateVisible = true;
+        // When the icon row is visible, site info is a button in that row.
+        // This is a separate menu item row for the site info shown within the icon row.
+        boolean siteSettingsItemVisible = false;
+        boolean zoomVisible = false;
 
         if (ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
             if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -184,6 +189,25 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
             downloadItemVisible = false;
             bookmarkItemVisible = false;
+        } else if (mUiType == CustomTabsUiType.TRUSTED_WEB_ACTIVITY) {
+            // The CCT menu button was removed for TWAs. This would only affect the
+            // app header's menu button.
+            if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
+                addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
+                requestDesktopSiteVisible = false;
+                downloadItemVisible = false;
+                bookmarkItemVisible = false;
+
+                openInChromeItemVisible = false;
+                translateVisible = false;
+                // Remove icons.
+                iconRowVisible = false;
+                // Site settings menu item row.
+                siteSettingsItemVisible = true;
+                zoomVisible = true;
+                findInPageVisible = false;
+                mShowShare = true;
+            }
         } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {
             openInChromeItemVisible = false;
             bookmarkItemVisible = true;
@@ -298,6 +322,15 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                             buildModelForDivider(R.id.divider_line_id)));
         }
 
+        // --- App info row ---
+        if (siteSettingsItemVisible) {
+            modelList.add(
+                    new MVCListAdapter.ListItem(
+                            AppMenuHandler.AppMenuItemType.STANDARD,
+                            buildModelForStandardMenuItem(
+                                    R.id.info_menu_id, R.string.menu_app_info, 0)));
+        }
+
         // --- Open in browser ---
         boolean showOpenInBrowserAtTop =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -376,7 +409,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         }
 
         // --- Translate ---
-        if (shouldShowTranslateMenuItem(currentTab)) {
+        if (translateVisible && shouldShowTranslateMenuItem(currentTab)) {
             modelList.add(buildTranslateMenuItem(currentTab, false));
         }
 
@@ -388,6 +421,15 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         // --- Open in Browser ---
         if (openInChromeItemVisible && !showOpenInBrowserAtTop) {
             addOpenInChrome(modelList, /* showIcon= */ false);
+        }
+
+        // --- Zoom ---
+        if (zoomVisible) {
+            modelList.add(
+                    new MVCListAdapter.ListItem(
+                            AppMenuHandler.AppMenuItemType.STANDARD,
+                            buildModelForStandardMenuItem(
+                                    R.id.page_zoom_id, R.string.page_zoom_menu_title, 0)));
         }
         return modelList;
     }

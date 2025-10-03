@@ -1921,6 +1921,31 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures(ChromeFeatureList.ANDROID_WEB_APP_MENU_BUTTON)
+    public void uiTypeTwa_withExperimentFlag_returnsWebAppMenu() {
+        CustomTabsSession session =
+                CustomTabsSession.createMockSessionForTesting(
+                        new ComponentName(mContext, ChromeLauncherActivity.class));
+        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(
+                "Should resolve to minimal ui display mode",
+                DisplayMode.MINIMAL_UI,
+                dataProvider.getResolvedDisplayMode());
+        assertEquals(
+                "Should resolve to TRUSTED_WEB_ACTIVITY",
+                CustomTabsUiType.TRUSTED_WEB_ACTIVITY,
+                dataProvider.getUiType());
+    }
+
+    @Test
     public void testGetOpenInBrowserButtonState_defaultState() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(

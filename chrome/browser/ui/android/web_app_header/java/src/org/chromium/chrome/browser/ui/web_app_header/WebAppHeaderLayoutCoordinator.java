@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.web_app_header;
 
+import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
@@ -19,21 +20,28 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,13 +65,14 @@ public class WebAppHeaderLayoutCoordinator
                 WebAppHeaderDelegate,
                 BrowserControlsStateProvider.Observer {
 
-    // 48dp * 2 (back and reload button) + 4dp (start padding).
-    static final int MIN_HEADER_WIDTH_DP = 100;
+    private int mHeaderControlButtonWidthDp;
+    private int mHeaderButtonPaddingDp;
 
     private @Nullable WebAppHeaderLayoutMediator mMediator;
     private @Nullable WebAppHeaderLayout mView;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
+    private @Nullable MenuButtonCoordinator mMenuButtonCoordinator;
     private final ViewStub mViewStub;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
@@ -81,6 +90,16 @@ public class WebAppHeaderLayoutCoordinator
     private long mLastButtonVisibilityChangeTime;
     private final Callback<Boolean> mSetHeaderAsOverlayCallback;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
+    private final BrowserStateBrowserControlsVisibilityDelegate
+            mBrowserStateBrowserControlsVisibilityDelegate;
+    private final WindowAndroid mActivityWindowAndroid;
+    private final Runnable mRequestRenderRunnable;
+    private final Activity mActivity;
+    private final boolean mIsTWA;
+    private final ObservableSupplierImpl<MenuButtonState> mMenuButtonStateSupplier =
+            new ObservableSupplierImpl<>();
+    private @Nullable View mMenuButtonView;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -89,6 +108,7 @@ public class WebAppHeaderLayoutCoordinator
      * @param desktopWindowStateManager a class that notifies about desktop windowing state changes.
      */
     public WebAppHeaderLayoutCoordinator(
+            Activity activity,
             ViewStub viewStub,
             DesktopWindowStateManager desktopWindowStateManager,
             ObservableSupplier<@Nullable Tab> tabSupplier,
@@ -97,10 +117,16 @@ public class WebAppHeaderLayoutCoordinator
             ScrimManager scrimManager,
             NavigationPopup.HistoryDelegate historyDelegate,
             Callback<Boolean> setHeaderAsOverlayCallback,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
+            BrowserStateBrowserControlsVisibilityDelegate
+                    browserStateBrowserControlsVisibilityDelegate,
+            WindowAndroid activityWindowAndroid,
+            Runnable requestRenderRunnable) {
         assert browserServicesIntentDataProvider.isWebApkActivity()
                 || browserServicesIntentDataProvider.isTrustedWebActivity();
 
+        mIsTWA = browserServicesIntentDataProvider.isTrustedWebActivity();
         mDisplayMode = browserServicesIntentDataProvider.getResolvedDisplayMode();
         mHistoryDelegate = historyDelegate;
         mControlsEnabledSupplier = new ObservableSupplierImpl<>(true);
@@ -110,6 +136,20 @@ public class WebAppHeaderLayoutCoordinator
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
+
+        // MenuButtonCoordinator
+        mAppMenuCoordinatorSupplier = appMenuCoordinatorSupplier;
+        mBrowserStateBrowserControlsVisibilityDelegate =
+                browserStateBrowserControlsVisibilityDelegate;
+        mActivityWindowAndroid = activityWindowAndroid;
+        mRequestRenderRunnable = requestRenderRunnable;
+        mActivity = activity;
+        MenuButtonState buttonState = new MenuButtonState();
+        buttonState.menuContentDescription = R.string.accessibility_toolbar_btn_menu_update;
+        buttonState.darkBadgeIcon = R.drawable.badge_update_dark;
+        buttonState.lightBadgeIcon = R.drawable.badge_update_light;
+        buttonState.adaptiveBadgeIcon = R.drawable.badge_update;
+        mMenuButtonStateSupplier.set(buttonState);
 
         mViewStub = viewStub;
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
@@ -141,15 +181,16 @@ public class WebAppHeaderLayoutCoordinator
         if (mView != null) return;
 
         mView = (WebAppHeaderLayout) mViewStub.inflate();
+        mHeaderControlButtonWidthDp =
+                mView.getResources().getDimensionPixelSize(R.dimen.header_button_width);
+        mHeaderButtonPaddingDp =
+                mView.getResources().getDimensionPixelSize(R.dimen.header_button_padding);
         final var model = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
         final int headerButtonHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.header_button_height);
 
-        mMinUIControlsMinWidthPx =
-                DisplayUtil.dpToPx(
-                        DisplayAndroid.getNonMultiDisplay(mView.getContext()), MIN_HEADER_WIDTH_DP);
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         model,
@@ -210,6 +251,30 @@ public class WebAppHeaderLayoutCoordinator
                         mHistoryDelegate,
                         /* isWebApp= */ true);
 
+        if (mIsTWA && ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
+            View webAppMenuButton = mView.findViewById(R.id.web_app_menu_button_wrapper);
+            webAppMenuButton.setVisibility(View.VISIBLE);
+            mMenuButtonView = mView.findViewById(R.id.web_app_menu_button);
+
+            mMenuButtonCoordinator =
+                    new MenuButtonCoordinator(
+                            mActivity,
+                            mAppMenuCoordinatorSupplier,
+                            mBrowserStateBrowserControlsVisibilityDelegate,
+                            mActivityWindowAndroid,
+                            /* setUrlBarFocusFunction= */ (should, reason) -> {},
+                            mRequestRenderRunnable,
+                            /* canShowAppUpdateBadge= */ false,
+                            /* isInOverviewModeSupplier= */ () -> false,
+                            mThemeColorProvider,
+                            mIncognitoStateProvider,
+                            mMenuButtonStateSupplier,
+                            /* onMenuButtonClicked= */ () -> {},
+                            R.id.menu_button_wrapper,
+                            /* visibilityDelegate= */ null);
+        }
+        // Determine width of initialized minUI controls.
+        mMinUIControlsMinWidthPx = getControlButtonsWidthPx();
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }
 
@@ -225,6 +290,12 @@ public class WebAppHeaderLayoutCoordinator
         }
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.setVisibility(mShowButtons);
+        }
+        if (mMenuButtonCoordinator != null) {
+            mMenuButtonCoordinator.setVisibility(mShowButtons);
+            if (mMenuButtonView != null) {
+                mMenuButtonView.setVisibility(mShowButtons ? View.VISIBLE : View.GONE);
+            }
         }
         logControlsVisibilityChange(wasShowingButtons);
     }
@@ -260,7 +331,57 @@ public class WebAppHeaderLayoutCoordinator
             areas.add(mBackButtonCoordinator.getHitRect());
         }
 
+        if (mMenuButtonCoordinator != null && mMenuButtonCoordinator.isVisible()) {
+            areas.add(mMenuButtonCoordinator.getHitRect());
+        }
+
         return areas;
+    }
+
+    /**
+     * @return The total width of the initialized controls in px.
+     */
+    @VisibleForTesting
+    int getControlButtonsWidthPx() {
+        if (mView == null) return 0;
+
+        int totalWidthDp = 0;
+        if (mReloadButtonCoordinator != null) {
+            totalWidthDp += mHeaderControlButtonWidthDp;
+        }
+
+        if (mBackButtonCoordinator != null) {
+            totalWidthDp += mHeaderControlButtonWidthDp;
+        }
+
+        if (mMenuButtonCoordinator != null) {
+            totalWidthDp += mHeaderControlButtonWidthDp;
+        }
+
+        // Add button padding.
+        totalWidthDp += mHeaderButtonPaddingDp;
+
+        int totalWidthPx =
+                DisplayUtil.dpToPx(
+                        DisplayAndroid.getNonMultiDisplay(mView.getContext()), totalWidthDp);
+
+        return totalWidthPx;
+    }
+
+    /**
+     * @return The header control button width in dp.
+     */
+    @VisibleForTesting
+    int getHeaderControlButtonWidthDp() {
+        return mHeaderControlButtonWidthDp;
+    }
+
+    /**
+     * @return The header button padding in dp.
+     */
+    @VisibleForTesting
+    int getHeaderButtonPaddingDp() {
+        return mHeaderButtonPaddingDp;
     }
 
     private void onButtonBottomInsetChanged(int bottomInset) {
@@ -326,6 +447,11 @@ public class WebAppHeaderLayoutCoordinator
         if (mReloadButtonCoordinator != null) {
             mReloadButtonCoordinator.destroy();
             mReloadButtonCoordinator = null;
+        }
+
+        if (mMenuButtonCoordinator != null) {
+            mMenuButtonCoordinator.destroy();
+            mMenuButtonCoordinator = null;
         }
     }
 

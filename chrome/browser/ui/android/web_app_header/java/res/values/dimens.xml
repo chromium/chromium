@@ -9,4 +9,5 @@ found in the LICENSE file.
     <dimen name="web_app_header_min_height">0dp</dimen>
     <dimen name="header_button_height">48dp</dimen>
     <dimen name="header_button_width">48dp</dimen>
+    <dimen name="header_button_padding">4dp</dimen>
 </resources>

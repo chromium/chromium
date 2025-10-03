@@ -12,6 +12,7 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
@@ -341,6 +342,18 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
     public void updateButtonBackground(@DrawableRes int backgroundResId) {
         assumeNonNull(mMenuButton);
         mMenuButton.getImageButton().setBackgroundResource(backgroundResId);
+    }
+
+    /**
+     * Gets an area of the button that are touchable/clickable.
+     *
+     * @return a {@link Rect} that contains touchable/clickable area.
+     */
+    public Rect getHitRect() {
+        assumeNonNull(mMenuButton);
+        final var rect = new Rect();
+        mMenuButton.getHitRect(rect);
+        return rect;
     }
 
     @Override

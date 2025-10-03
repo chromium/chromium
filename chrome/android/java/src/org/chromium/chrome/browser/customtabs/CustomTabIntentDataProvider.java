@@ -321,7 +321,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final @Nullable Intent mKeepAliveServiceIntent;
     private final @Nullable Bundle mAnimationBundle;
 
-    private final int mUiType;
+    private int mUiType;
     private final int mTitleVisibilityState;
     private final @Nullable String mMediaViewerUrl;
     private final boolean mEnableEmbeddedMediaExperience;
@@ -639,6 +639,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         mTrustedWebActivityDisplayMode = resolveTwaDisplayMode();
         mTrustedWebActivityDisplayOverrideMode = resolveTwaDisplayOverrideMode();
 
+        // After TWA checks, update custom tabs ui types. Order seems to matter
+        // here.
+        mUiType = getCustomTabsUiType(requestedUiType);
         int intentVisibilityState =
                 IntentUtils.safeGetIntExtra(
                         intent,
@@ -818,12 +821,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Get the verified custom tabs UI type, according to the intent extras, and whether
-     * the intent is trusted.
+     * Get the verified custom tabs UI type, according to the intent extras, and whether the intent
+     * is trusted.
      *
-     * If the intent extras include a valid EXTRA_NETWORK, consider that the custom tab is
-     * used for captive portal scenarios especially and the UI hides the "Open in Chrome browser"
-     * menu item accordingly.
+     * <p>If the intent extras include a valid EXTRA_NETWORK, consider that the custom tab is used
+     * for captive portal scenarios especially and the UI hides the "Open in Chrome browser" menu
+     * item accordingly.
      *
      * @param requestedUiType requested UI type in the intent, unqualified
      * @return verified UI type
@@ -831,6 +834,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @BrowserServicesIntentDataProvider.CustomTabsUiType
     private int getCustomTabsUiType(int requestedUiType) {
         if (mNetwork != null) return CustomTabsUiType.NETWORK_BOUND_TAB;
+        if (isTrustedWebActivity() && resolveDisplayMode() == DisplayMode.MINIMAL_UI) {
+            return CustomTabsUiType.TRUSTED_WEB_ACTIVITY;
+        }
         if (!isTrustedIntent()) {
             if (VersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
             return CustomTabsUiType.DEFAULT;
