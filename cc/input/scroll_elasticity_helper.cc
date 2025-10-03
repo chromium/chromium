@@ -74,6 +74,9 @@ void ScrollElasticityHelperImpl::SetStretchAmount(
     const gfx::Vector2dF& stretch_amount) {
   const ScrollNode* scroll_node =
       host_impl_->active_tree()->InnerViewportScrollNode();
+  if (!scroll_node) {
+    return;
+  }
   if (!host_impl_->active_tree()
            ->property_trees()
            ->scroll_tree_mutable()
