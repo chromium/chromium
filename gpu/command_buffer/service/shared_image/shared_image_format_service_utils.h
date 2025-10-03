@@ -115,6 +115,7 @@ class GPU_GLES2_EXPORT GLFormatCaps {
   // not supported.
   GLenum GetFallbackFormatIfNotSupported(GLenum gl_format) const;
 
+  bool angle_rgbx_internal_format_ = false;
   bool oes_texture_float_available_ = false;
   bool ext_texture_rg_ = false;
   bool ext_texture_norm16_ = false;

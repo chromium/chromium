@@ -1635,6 +1635,12 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_ANGLE_shader_pixel_local_storage_coherent");
   }
 
+  if (gfx::HasExtension(extensions, "GL_ANGLE_rgbx_internal_format")) {
+    feature_flags_.angle_rgbx_internal_format = true;
+    AddExtensionString("GL_ANGLE_rgbx_internal_format");
+    validators_.texture_internal_format_storage.AddValue(GL_RGBX8_ANGLE);
+  }
+
   if (gfx::HasExtension(extensions, "GL_ANGLE_provoking_vertex")) {
     feature_flags_.angle_provoking_vertex = true;
     AddExtensionString("GL_ANGLE_provoking_vertex");

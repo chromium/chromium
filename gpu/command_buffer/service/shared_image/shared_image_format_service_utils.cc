@@ -233,11 +233,12 @@ class SharedImageFormatRestrictedUtilsAccessor {
 
   // Returns texture storage format for given `format`.
   static GLenum TextureStorageFormat(viz::SharedImageFormat format,
-                                     int plane_index) {
+                                     int plane_index,
+                                     bool use_angle_rgbx_format) {
     DCHECK(format.IsValidPlaneIndex(plane_index));
     if (format.is_single_plane()) {
       return viz::SharedImageFormatRestrictedSinglePlaneUtils::
-          ToGLTextureStorageFormat(format, false);
+          ToGLTextureStorageFormat(format, use_angle_rgbx_format);
     }
 
     // For multiplanar formats without external sampler, GL formats are per
@@ -318,7 +319,9 @@ SkColorType ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format) {
 }
 
 GLFormatCaps::GLFormatCaps(const gles2::FeatureInfo* feature_info)
-    : oes_texture_float_available_(feature_info->oes_texture_float_available()),
+    : angle_rgbx_internal_format_(
+          feature_info->feature_flags().angle_rgbx_internal_format),
+      oes_texture_float_available_(feature_info->oes_texture_float_available()),
       ext_texture_rg_(feature_info->feature_flags().ext_texture_rg),
       ext_texture_norm16_(feature_info->feature_flags().ext_texture_norm16),
       disable_r8_shared_images_(
@@ -362,7 +365,7 @@ GLFormatDesc GLFormatCaps::ToGLFormatDesc(viz::SharedImageFormat format,
   gl_format.image_internal_format = GLInternalFormat(format, plane_index);
   gl_format.storage_internal_format =
       SharedImageFormatRestrictedUtilsAccessor::TextureStorageFormat(
-          format, plane_index);
+          format, plane_index, angle_rgbx_internal_format_);
   if (format.is_multi_plane()) {
     gl_format.data_format =
         GetFallbackFormatIfNotSupported(gl_format.data_format);

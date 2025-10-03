@@ -393,4 +393,10 @@ void TestContextProvider::RemoveObserver(ContextLostObserver* obs) {
   observers_.RemoveObserver(obs);
 }
 
+unsigned int TestContextProvider::GetGrGLTextureFormat(
+    SharedImageFormat format) const {
+  return SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
+      format, ContextCapabilities().angle_rgbx_internal_format);
+}
+
 }  // namespace viz

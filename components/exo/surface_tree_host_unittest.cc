@@ -355,6 +355,11 @@ class FakeRasterContextProvider
   gpu::raster::RasterInterface* RasterInterface() override {
     return GetInterceptingTestRasterInterface();
   }
+  unsigned int GetGrGLTextureFormat(
+      viz::SharedImageFormat format) const override {
+    ADD_FAILURE();
+    return 0;
+  }
 
   InterceptingTestRasterInterface* GetInterceptingTestRasterInterface() {
     return &intercepting_test_raster_interface_;
