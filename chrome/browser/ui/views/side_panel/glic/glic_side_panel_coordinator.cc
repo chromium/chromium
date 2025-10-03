@@ -158,6 +158,10 @@ void GlicSidePanelCoordinator::SetContentsView(
   glic_container_tracker_.view()->AddChildView(std::move(contents_view));
 }
 
+views::View* GlicSidePanelCoordinator::GetViewForTesting() {
+  return glic_container_tracker_.view();
+}
+
 int GlicSidePanelCoordinator::GetPreferredWidth() {
   return features::kGlicSidePanelMinWidth.Get();
 }

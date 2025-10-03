@@ -92,6 +92,10 @@ void GlicInactiveSidePanelUi::Close() {
   NOTIMPLEMENTED();
 }
 
+views::View* GlicInactiveSidePanelUi::GetViewForTesting() {
+  return nullptr;
+}
+
 std::unique_ptr<GlicUiEmbedder>
 GlicInactiveSidePanelUi::CreateInactiveEmbedder() const {
   NOTREACHED() << "The embedder is already inactive.";

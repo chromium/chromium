@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -165,16 +167,59 @@ class InteractiveGlicTestT : public T {
                                     guest_url_.spec());
   }
 
-  void TearDownOnMainThread() override {
-    T::TearDownOnMainThread();
-  }
+  void TearDownOnMainThread() override { T::TearDownOnMainThread(); }
 
   void SetGlicPagePath(const std::string& glic_page_path) {
     glic_page_path_ = glic_page_path;
   }
 
   auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode) {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      return WaitForAndInstrumentGlicMultiInstance(instrument_mode);
+    }
     return WaitForAndInstrumentGlic(instrument_mode, window_controller());
+  }
+
+  auto WaitForAndInstrumentGlicMultiInstance(
+      GlicInstrumentMode instrument_mode) {
+    Api::MultiStep steps;
+    switch (instrument_mode) {
+      case GlicInstrumentMode::kHostAndContents:
+        steps = Api::Steps(
+            Api::UninstrumentWebContents(kGlicContentsElementId, false),
+            Api::UninstrumentWebContents(kGlicHostElementId, false),
+            Api::InAnyContext(Api::Steps(
+                Api::InstrumentNonTabWebView(kGlicHostElementId,
+                                             kGlicViewElementId),
+                Api::InstrumentInnerWebContents(kGlicContentsElementId,
+                                                kGlicHostElementId, 0),
+                Api::WaitForWebContentsReady(kGlicContentsElementId))),
+            Api::PollUntil(
+                [&]() -> bool {
+                  GlicInstance* instance = GetGlicInstance();
+                  if (!instance) {
+                    LOG(ERROR) << "No glic instance for active tab";
+                    return false;
+                  }
+                  if (!instance->IsShowing()) {
+                    LOG(ERROR) << "Glic not showing";
+                    return false;
+                  }
+                  if (!instance->host().IsReady()) {
+                    LOG(ERROR) << "Glic host not ready";
+                    return false;
+                  }
+                  return true;
+                },
+                "Glic not ready"));
+        break;
+      case GlicInstrumentMode::kNone:
+        // no-op.
+        break;
+      default:
+        NOTREACHED();
+    };
+    return steps;
   }
 
   // Ensures that the WebContents for some combination of glic host and contents
@@ -237,13 +282,11 @@ class InteractiveGlicTestT : public T {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
-    auto steps = Api::Steps(
-        EnsureGlicWindowState("window must be closed in order to open it",
-                              GlicWindowController::State::kClosed),
-        // Technically, this toggles the window, but we've already ensured that
-        // it's closed.
-        ToggleGlicWindow(window_mode),
-        WaitForAndInstrumentGlic(instrument_mode));
+    auto steps = Api::Steps(CheckGlicIsClosed(),
+                            // Technically, this toggles the window, but we've
+                            // already ensured that it's closed.
+                            ToggleGlicWindow(window_mode),
+                            WaitForAndInstrumentGlic(instrument_mode));
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
   }
@@ -252,6 +295,11 @@ class InteractiveGlicTestT : public T {
   // Does not wait for Glic to open or close, tests using this should check for
   // the correct window state after toggling.
   auto ToggleGlicWindow(GlicWindowMode window_mode) {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      return Api::PressButton(kGlicButtonElementId)
+          .SetContext(views::ElementTrackerViews::GetContextForView(
+              browser()->TopContainer()));
+    }
     switch (window_mode) {
       case GlicWindowMode::kAttached:
         return Api::PressButton(kGlicButtonElementId)
@@ -275,6 +323,35 @@ class InteractiveGlicTestT : public T {
           window_controller().Toggle(browser(), false, invocation_source);
         });
     }
+  }
+
+  // Close the glic panel, regardless of the current state. Unlike
+  // `CloseGlicWindow()`, this will close the window even if the glic client is
+  // not connected, and will do nothing if the window is already closed.
+  auto CloseGlic() {
+    return Api::Do([&]() {
+      if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+        GlicInstanceImpl* instance = GetGlicInstance();
+        if (!instance) {
+          return;
+        }
+        GlicUiEmbedder* embedder = instance->GetEmbedderForTab(
+            browser()->tab_strip_model()->GetTabAtIndex(0));
+        if (!embedder) {
+          embedder->Close();
+        }
+      } else {
+        window_controller().Close();
+      }
+    });
+  }
+
+  auto ClickWebuiCloseButton() {
+    auto steps = Api::Steps(
+        Api::WaitForElementVisible(kGlicHostElementId, {"body"}),
+        Api::ExecuteJsAt(
+            kGlicHostElementId, {".close-button"}, "(el)=>el.click()",
+            InteractiveBrowserTestApi::ExecuteJsMode::kWaitForCompletion));
   }
 
   // Ensures a mock glic button is present and then clicks it. Works even if the
@@ -314,19 +391,17 @@ class InteractiveGlicTestT : public T {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
-    auto steps = Api::InAnyContext(Api::Steps(
-        EnsureGlicWindowState("cannot close window if it is not open",
-                              GlicWindowController::State::kOpen),
-        ClickMockGlicElement(kPathToMockGlicCloseButton),
-        Api::WaitForHide(kGlicViewElementId)));
+    auto steps =
+        Api::InAnyContext(Api::Steps(CheckGlicWindowIsOpen(), CloseGlic(),
+                                     Api::WaitForHide(kGlicViewElementId)));
     Api::AddDescriptionPrefix(steps, "CloseGlicWindow");
     return steps;
   }
 
   auto SimulateAcceleratorPress(const ui::Accelerator& accelerator) {
     return Api::Do([this, accelerator] {
-      gfx::NativeWindow target_window =
-          window_controller().GetGlicWidget()->GetNativeWindow();
+      CHECK(GetGlicWidget());
+      gfx::NativeWindow target_window = GetGlicWidget()->GetNativeWindow();
 #if (USE_AURA)
       ui::test::EventGenerator event_generator(target_window->GetRootWindow(),
                                                target_window);
@@ -340,9 +415,8 @@ class InteractiveGlicTestT : public T {
   }
 
   auto CheckControllerHasWidget(bool expect_widget) {
-    return Api::CheckResult(
-        [this]() { return window_controller().GetGlicWidget() != nullptr; },
-        expect_widget, "CheckControllerHasWidget");
+    return Api::CheckResult([this]() { return GetGlicWidget() != nullptr; },
+                            expect_widget, "CheckControllerHasWidget");
   }
 
   auto CheckControllerShowing(bool expect_showing) {
@@ -382,10 +456,8 @@ class InteractiveGlicTestT : public T {
     auto expected_size = glic::GlicWidget::GetInitialSize();
     expected_size.SetToMax(size);
     return Api::CheckResult(
-        [this]() {
-          return window_controller().GetGlicWidget()->GetMinimumSize();
-        },
-        expected_size, "CheckWidgetMinimumSize");
+        [this]() { return GetGlicWidget()->GetMinimumSize(); }, expected_size,
+        "CheckWidgetMinimumSize");
   }
 
   auto CheckTabCount(int expected_count) {
@@ -400,7 +472,7 @@ class InteractiveGlicTestT : public T {
           return base::Contains(PictureInPictureWindowManager::GetInstance()
                                     ->GetOcclusionTracker()
                                     ->GetPictureInPictureWidgetsForTesting(),
-                                window_controller().GetGlicWidget());
+                                GetGlicWidget());
         },
         expect_is_tracked, "CheckOcclusionTracked");
   }
@@ -428,8 +500,11 @@ class InteractiveGlicTestT : public T {
   }
 
   content::RenderFrameHost* FindGlicGuestMainFrame() {
-    for (GlicPageHandler* handler :
-         GetHostForActiveTab()->GetPageHandlersForTesting()) {
+    Host* host = GetHost();
+    if (!host) {
+      return nullptr;
+    }
+    for (GlicPageHandler* handler : GetHost()->GetPageHandlersForTesting()) {
       if (handler->GetGuestMainFrame()) {
         return handler->GetGuestMainFrame();
       }
@@ -438,7 +513,8 @@ class InteractiveGlicTestT : public T {
   }
 
   content::WebContents* FindGlicWebUIContents() {
-    return GetHostForActiveTab()->webui_contents();
+    Host* host = GetHost();
+    return host ? host->webui_contents() : nullptr;
   }
 
   glic::GlicTestEnvironment& glic_test_environment() {
@@ -467,10 +543,85 @@ class InteractiveGlicTestT : public T {
     return glic_service()->window_controller();
   }
 
-  Host* GetHostForActiveTab() {
-    GlicInstance* instance = glic_service()->GetInstanceForActiveTab(browser());
-    CHECK(instance);
+  GlicInstanceImpl* GetGlicInstance() {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      // TODO(harringtond): Currently, we only use the instance tied to the
+      // first tab. This allows us to test what happens when the instance is not
+      // tied to the active tab, but does seem arbitrary. We should make it
+      // possible to switch which instance is used by default in this class, and
+      // make this behavior more obvious somehow.
+      return static_cast<GlicInstanceImpl*>(glic_service()->GetInstanceForTab(
+          browser()->tab_strip_model()->GetTabAtIndex(0)));
+    }
+    return static_cast<GlicInstanceImpl*>(
+        glic_service()->GetInstanceForActiveTab(browser()));
+  }
+
+  GlicUiEmbedder* GetGlicUiEmbedder() {
+    GlicInstanceImpl* instance = GetGlicInstance();
+    if (!instance) {
+      return nullptr;
+    }
+    return instance->GetEmbedderForTab(browser()->GetActiveTabInterface());
+  }
+
+  views::View* GetGlicView() {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      GlicUiEmbedder* embedder = GetGlicUiEmbedder();
+      if (!embedder) {
+        return nullptr;
+      }
+      return embedder->GetViewForTesting();
+    }
+    return window_controller().GetGlicView();
+  }
+
+  views::Widget* GetGlicWidget() {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      GlicUiEmbedder* embedder = GetGlicUiEmbedder();
+      if (!embedder) {
+        return nullptr;
+      }
+      auto* view = embedder->GetViewForTesting();
+      if (!view) {
+        return nullptr;
+      }
+      return view->GetWidget();
+    }
+    return window_controller().GetGlicWidget();
+  }
+
+  Host* GetHost() {
+    GlicInstance* instance = GetGlicInstance();
+    if (!instance) {
+      return nullptr;
+    }
     return &instance->host();
+  }
+
+  auto CheckGlicWindowIsOpen() {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      return Api::CheckResult(
+          [this]() {
+            views::View* view = GetGlicView();
+            return view && view->GetVisible();
+          },
+          "glic panel must be open");
+    }
+    return EnsureGlicWindowState("glic window must be open",
+                                 GlicWindowController::State::kOpen);
+  }
+  auto CheckGlicIsClosed() {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      return Api::CheckResult(
+          [this]() {
+            views::View* view = GetGlicView();
+            return !view || !view->GetVisible();
+          },
+          "glic panel must be closed");
+    }
+    return EnsureGlicWindowState("glic window must be closed",
+                                 GlicWindowController::State::kClosed);
   }
 
   template <typename... M>

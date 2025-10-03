@@ -131,6 +131,11 @@ std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
   return GlicInactiveFloatingUi::From(*this);
 }
 
+views::View* GlicFloatingUi::GetViewForTesting() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void GlicFloatingUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {

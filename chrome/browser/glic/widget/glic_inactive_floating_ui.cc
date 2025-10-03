@@ -46,6 +46,10 @@ void GlicInactiveFloatingUi::Close() {
   NOTIMPLEMENTED();
 }
 
+views::View* GlicInactiveFloatingUi::GetViewForTesting() {
+  return nullptr;
+}
+
 std::unique_ptr<GlicUiEmbedder> GlicInactiveFloatingUi::CreateInactiveEmbedder()
     const {
   NOTREACHED() << "The embedder is already inactive.";
