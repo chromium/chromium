@@ -6,6 +6,51 @@
 
 #import "ios/web/public/web_state.h"
 
+ChooseFileEvent::Builder::Builder() = default;
+ChooseFileEvent::Builder::~Builder() = default;
+
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetAllowMultipleFiles(
+    bool value) {
+  allow_multiple_files_ = value;
+  return *this;
+}
+
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetHasSelectedFile(
+    bool value) {
+  has_selected_file_ = value;
+  return *this;
+}
+
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetAcceptFileExtensions(
+    std::vector<std::string> value) {
+  accept_file_extensions_ = std::move(value);
+  return *this;
+}
+
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetAcceptMimeTypes(
+    std::vector<std::string> value) {
+  accept_mime_types_ = std::move(value);
+  return *this;
+}
+
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetWebState(
+    web::WebState* value) {
+  web_state_ = value;
+  return *this;
+}
+
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetTime(base::Time value) {
+  time_ = value;
+  return *this;
+}
+
+ChooseFileEvent ChooseFileEvent::Builder::Build() {
+  CHECK(web_state_);
+  return ChooseFileEvent(allow_multiple_files_, has_selected_file_,
+                         std::move(accept_file_extensions_),
+                         std::move(accept_mime_types_), web_state_, time_);
+}
+
 ChooseFileEvent::ChooseFileEvent(
     bool allow_multiple_files,
     bool has_selected_file,

@@ -238,9 +238,11 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     choose_file_tab_helper_ =
         ChooseFileTabHelper::FromWebState(web_state_.get());
     auto controller = std::make_unique<FakeChooseFileController>(
-        ChooseFileEvent(false /*allow_multiple_files*/,
-                        false /*has_selected_file*/, std::vector<std::string>{},
-                        std::vector<std::string>{}, web_state_.get()));
+        ChooseFileEvent::Builder()
+            .SetAllowMultipleFiles(false)
+            .SetHasSelectedFile(false)
+            .SetWebState(web_state_.get())
+            .Build());
     choose_file_tab_helper_->StartChoosingFiles(std::move(controller));
     fake_delegate_ = [[FakeDriveFilePickerMediatorDelegate alloc] init];
     fake_consumer_ = [[FakeDriveFilePickerConsumer alloc] init];
@@ -301,9 +303,11 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::FromWebState(web_state_.get());
     auto controller = std::make_unique<FakeChooseFileController>(
-        ChooseFileEvent(false /*allow_multiple_files*/,
-                        false /*has_selected_file*/, std::vector<std::string>{},
-                        std::vector<std::string>{}, web_state_.get()));
+        ChooseFileEvent::Builder()
+            .SetAllowMultipleFiles(false)
+            .SetHasSelectedFile(false)
+            .SetWebState(web_state_.get())
+            .Build());
     tab_helper->StartChoosingFiles(std::move(controller));
   }
 

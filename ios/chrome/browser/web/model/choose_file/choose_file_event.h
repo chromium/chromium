@@ -9,6 +9,7 @@
 #import <string>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
 
@@ -18,12 +19,30 @@ class WebState;
 
 // Records information about the user's interaction with a file `<input>`.
 struct ChooseFileEvent {
-  ChooseFileEvent(bool allow_multiple_files,
-                  bool has_selected_file,
-                  std::vector<std::string> accept_file_extensions,
-                  std::vector<std::string> accept_mime_types,
-                  web::WebState* web_state,
-                  base::Time time = base::Time::Now());
+ public:
+  class Builder {
+   public:
+    Builder();
+    ~Builder();
+
+    Builder& SetAllowMultipleFiles(bool value);
+    Builder& SetHasSelectedFile(bool value);
+    Builder& SetAcceptFileExtensions(std::vector<std::string> value);
+    Builder& SetAcceptMimeTypes(std::vector<std::string> value);
+    Builder& SetWebState(web::WebState* value);
+    Builder& SetTime(base::Time value);
+
+    ChooseFileEvent Build();
+
+   private:
+    bool allow_multiple_files_ = false;
+    bool has_selected_file_ = false;
+    std::vector<std::string> accept_file_extensions_;
+    std::vector<std::string> accept_mime_types_;
+    raw_ptr<web::WebState> web_state_ = nullptr;
+    base::Time time_ = base::Time::Now();
+  };
+
   ChooseFileEvent(const ChooseFileEvent& event);
   ChooseFileEvent(ChooseFileEvent&& event);
   ~ChooseFileEvent();
@@ -42,6 +61,14 @@ struct ChooseFileEvent {
   base::WeakPtr<web::WebState> web_state;
   // The time at which this event occurred.
   base::Time time;
+
+ private:
+  ChooseFileEvent(bool allow_multiple_files,
+                  bool has_selected_file,
+                  std::vector<std::string> accept_file_extensions,
+                  std::vector<std::string> accept_mime_types,
+                  web::WebState* web_state,
+                  base::Time time = base::Time::Now());
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_EVENT_H_

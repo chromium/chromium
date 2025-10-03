@@ -172,9 +172,14 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
     base::UmaHistogramBoolean(
         "IOS.Web.FileInput.EventDropped",
         ChooseFileEventHolder::GetInstance()->HasLastChooseFileEvent());
-    ChooseFileEvent event{*has_multiple, *has_selected_file,
-                          std::move(accept_file_extensions),
-                          std::move(accept_mime_types), web_state};
+    ChooseFileEvent event =
+        ChooseFileEvent::Builder()
+            .SetAllowMultipleFiles(*has_multiple)
+            .SetHasSelectedFile(*has_selected_file)
+            .SetAcceptFileExtensions(std::move(accept_file_extensions))
+            .SetAcceptMimeTypes(std::move(accept_mime_types))
+            .SetWebState(web_state)
+            .Build();
     ChooseFileEventHolder::GetInstance()->SetLastChooseFileEvent(
         std::move(event));
   }

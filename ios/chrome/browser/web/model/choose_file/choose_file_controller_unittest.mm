@@ -19,9 +19,12 @@ class ChooseFileControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     web_state_ = std::make_unique<web::FakeWebState>();
-    event_ = std::make_unique<ChooseFileEvent>(
-        false, false, std::vector<std::string>{}, std::vector<std::string>{},
-        web_state_.get());
+    event_ =
+        std::make_unique<ChooseFileEvent>(ChooseFileEvent::Builder()
+                                              .SetAllowMultipleFiles(false)
+                                              .SetHasSelectedFile(false)
+                                              .SetWebState(web_state_.get())
+                                              .Build());
     controller_ = std::make_unique<FakeChooseFileController>(*event_);
   }
 

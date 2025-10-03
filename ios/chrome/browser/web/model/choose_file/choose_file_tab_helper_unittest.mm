@@ -40,9 +40,11 @@ TEST_F(ChooseFileTabHelperTest, StopChoosingFiles) {
   // Test that calling `StopChoosingFiles()` forwards its arguments to the
   // controller and ends file selection.
   auto controller = std::make_unique<FakeChooseFileController>(
-      ChooseFileEvent(false /*allow_multiple_files*/,
-                      false /*has_selected_file*/, std::vector<std::string>{},
-                      std::vector<std::string>{}, web_state_.get()));
+      ChooseFileEvent::Builder()
+          .SetAllowMultipleFiles(false)
+          .SetHasSelectedFile(false)
+          .SetWebState(web_state_.get())
+          .Build());
   NSURL* file_url = [NSURL fileURLWithPath:@"/path/to/file"];
   NSArray<NSURL*>* file_urls = @[ file_url ];
   NSString* display_string = @"display_string";
@@ -68,9 +70,11 @@ TEST_F(ChooseFileTabHelperTest, StopChoosingFiles) {
   // Test that calling `StopChoosingFiles()` with no arguments forwards an empty
   // list of files to the controller and ends file selection.
   controller = std::make_unique<FakeChooseFileController>(
-      ChooseFileEvent(false /*allow_multiple_files*/,
-                      false /*has_selected_file*/, std::vector<std::string>{},
-                      std::vector<std::string>{}, web_state_.get()));
+      ChooseFileEvent::Builder()
+          .SetAllowMultipleFiles(false)
+          .SetHasSelectedFile(false)
+          .SetWebState(web_state_.get())
+          .Build());
   controller->SetSubmitSelectionCompletion(
       base::BindOnce(^(const FakeChooseFileController& control) {
         selection_submitted = true;
@@ -91,9 +95,11 @@ TEST_F(ChooseFileTabHelperTest, DidFinishNavigation) {
   EXPECT_FALSE(tab_helper_->IsChoosingFiles());
 
   auto controller = std::make_unique<FakeChooseFileController>(
-      ChooseFileEvent(false /*allow_multiple_files*/,
-                      false /*has_selected_file*/, std::vector<std::string>{},
-                      std::vector<std::string>{}, web_state_.get()));
+      ChooseFileEvent::Builder()
+          .SetAllowMultipleFiles(false)
+          .SetHasSelectedFile(false)
+          .SetWebState(web_state_.get())
+          .Build());
   tab_helper_->StartChoosingFiles(std::move(controller));
   EXPECT_TRUE(tab_helper_->IsChoosingFiles());
 
@@ -112,9 +118,11 @@ TEST_F(ChooseFileTabHelperTest, DidFinishNavigation) {
 // are forwarded to the controller.
 TEST_F(ChooseFileTabHelperTest, SetIsPresentingFilePicker) {
   auto controller = std::make_unique<FakeChooseFileController>(
-      ChooseFileEvent(false /*allow_multiple_files*/,
-                      false /*has_selected_file*/, std::vector<std::string>{},
-                      std::vector<std::string>{}, web_state_.get()));
+      ChooseFileEvent::Builder()
+          .SetAllowMultipleFiles(false)
+          .SetHasSelectedFile(false)
+          .SetWebState(web_state_.get())
+          .Build());
   ChooseFileController* controller_ptr = controller.get();
   tab_helper_->StartChoosingFiles(std::move(controller));
   ASSERT_TRUE(tab_helper_->IsChoosingFiles());
@@ -131,8 +139,11 @@ TEST_F(ChooseFileTabHelperTest, SetIsPresentingFilePicker) {
 // Tests that `GetChooseFileEvent()` returns the event passed to the controller
 // at construction.
 TEST_F(ChooseFileTabHelperTest, GetChooseFileEvent) {
-  ChooseFileEvent event(false, false, std::vector<std::string>{},
-                        std::vector<std::string>{}, web_state_.get());
+  ChooseFileEvent event = ChooseFileEvent::Builder()
+                              .SetAllowMultipleFiles(false)
+                              .SetHasSelectedFile(false)
+                              .SetWebState(web_state_.get())
+                              .Build();
   auto controller = std::make_unique<FakeChooseFileController>(event);
   tab_helper_->StartChoosingFiles(std::move(controller));
   const ChooseFileEvent tab_helper_event = tab_helper_->GetChooseFileEvent();

@@ -57,9 +57,11 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::FromWebState(fake_web_state_.get());
     auto controller = std::make_unique<FakeChooseFileController>(
-        ChooseFileEvent(false /*allow_multiple_files*/,
-                        false /*has_selected_file*/, std::vector<std::string>{},
-                        std::vector<std::string>{}, fake_web_state_.get()));
+        ChooseFileEvent::Builder()
+            .SetAllowMultipleFiles(false)
+            .SetHasSelectedFile(false)
+            .SetWebState(fake_web_state_.get())
+            .Build());
     tab_helper->StartChoosingFiles(std::move(controller));
   }
 
