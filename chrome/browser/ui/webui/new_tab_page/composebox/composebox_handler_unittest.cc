@@ -162,8 +162,13 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
 
   SubmitQueryAndWaitForNavigation();
 
-  GURL expected_url = query_controller().CreateAimUrl(
-      kQueryText, /*query_start_time=*/base::Time::Now());
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = kQueryText;
+  search_url_request_info->query_start_time = base::Time::Now();
+  GURL expected_url =
+      query_controller().CreateSearchUrl(std::move(search_url_request_info));
   GURL actual_url =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
 

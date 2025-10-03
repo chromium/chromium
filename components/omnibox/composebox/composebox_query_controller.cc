@@ -107,6 +107,11 @@ ComposeboxQueryController::UploadRequest::~UploadRequest() = default;
 ComposeboxQueryController::FileInfo::FileInfo() = default;
 ComposeboxQueryController::FileInfo::~FileInfo() = default;
 
+ComposeboxQueryController::CreateSearchUrlRequestInfo::
+    CreateSearchUrlRequestInfo() = default;
+ComposeboxQueryController::CreateSearchUrlRequestInfo::
+    ~CreateSearchUrlRequestInfo() = default;
+
 namespace {
 
 // Creates a payload for a contextual data upload request, for webpage contents
@@ -240,10 +245,8 @@ ComposeboxQueryController::GetNextRequestId(
   return request_id;
 }
 
-GURL ComposeboxQueryController::CreateAimUrl(
-    const std::string& query_text,
-    base::Time query_start_time,
-    std::map<std::string, std::string> additional_params) {
+GURL ComposeboxQueryController::CreateSearchUrl(
+    std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) {
   num_files_in_request_ = 0;
   if (!active_files_.empty() && cluster_info_.has_value()) {
     if (enable_multi_context_input_flow_) {
@@ -260,10 +263,12 @@ GURL ComposeboxQueryController::CreateAimUrl(
       }
       return GetUrlForMultimodalAim(
           template_url_service_,
-          omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT, query_start_time,
+          omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+          search_url_request_info->query_start_time,
           cluster_info_->search_session_id(), std::move(contextual_inputs),
           send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
-          base::UTF8ToUTF16(query_text), additional_params);
+          base::UTF8ToUTF16(search_url_request_info->query_text),
+          std::move(search_url_request_info->additional_params));
     } else {
       // When multi-context input flow is not enabled, only one file is
       // supported.
@@ -277,14 +282,16 @@ GURL ComposeboxQueryController::CreateAimUrl(
         num_files_in_request_ = 1;
         return GetUrlForMultimodalAim(
             template_url_service_,
-            omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT, query_start_time,
+            omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+            search_url_request_info->query_start_time,
             cluster_info_->search_session_id(),
             GetNextRequestId(lens::RequestIdUpdateMode::kSearchUrl,
                              last_file->mime_type_,
                              last_file->request_id_->media_type()),
             last_file->mime_type_,
             send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
-            base::UTF8ToUTF16(query_text), additional_params);
+            base::UTF8ToUTF16(search_url_request_info->query_text),
+            std::move(search_url_request_info->additional_params));
       }
     }
   }
@@ -292,9 +299,11 @@ GURL ComposeboxQueryController::CreateAimUrl(
   // not valid, as unimodal text queries.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
-  return GetUrlForAim(
-      template_url_service_, omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
-      query_start_time, base::UTF8ToUTF16(query_text), additional_params);
+  return GetUrlForAim(template_url_service_,
+                      omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+                      search_url_request_info->query_start_time,
+                      base::UTF8ToUTF16(search_url_request_info->query_text),
+                      std::move(search_url_request_info->additional_params));
 }
 
 void ComposeboxQueryController::AddObserver(FileUploadStatusObserver* obs) {
