@@ -42,24 +42,6 @@ class GPU_GLES2_EXPORT ServiceDiscardableManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  void InsertLockedTexture(uint32_t texture_id,
-                           size_t texture_size,
-                           gles2::TextureManager* texture_manager,
-                           ServiceDiscardableHandle handle);
-
-  // Unlocks the indicated texture. If *|texture_to_unbind| is not nullptr,
-  // ServiceDiscardableManager has taken ownership of the given texture, and
-  // it is the callers responsibility to unbind it from any other objects.
-  // Returns false if the given texture_id has not been initialized for use
-  // with discardable.
-  bool UnlockTexture(uint32_t texture_id,
-                     gles2::TextureManager* texture_manager,
-                     gles2::TextureRef** texture_to_unbind);
-  // Locks the indicated texture, allowing it to be used in future GL commands.
-  // Returns false if the given texture_id has not been initialized for use
-  // with discardable.
-  bool LockTexture(uint32_t texture_id, gles2::TextureManager* texture_manager);
-
   // Returns all unlocked texture refs to the texture_manager for deletion.
   // After this point, this class will have no references to the given
   // |texture_manager|.

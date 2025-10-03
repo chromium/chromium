@@ -144,66 +144,6 @@ bool ServiceDiscardableManager::OnMemoryDump(
   return true;
 }
 
-void ServiceDiscardableManager::InsertLockedTexture(
-    uint32_t texture_id,
-    size_t texture_size,
-    gles2::TextureManager* texture_manager,
-    ServiceDiscardableHandle handle) {
-  auto found = entries_.Get({texture_id, texture_manager});
-  if (found != entries_.end()) {
-    // We have somehow initialized a texture twice. The client *shouldn't* send
-    // this command, but if it does, we will clean up the old entry and use
-    // the new one.
-    total_size_ -= found->second.size;
-    if (found->second.unlocked_texture_ref) {
-      texture_manager->ReturnTexture(
-          std::move(found->second.unlocked_texture_ref));
-    }
-    entries_.Erase(found);
-  }
-
-  total_size_ += texture_size;
-  entries_.Put(GpuDiscardableEntryKey{texture_id, texture_manager},
-               GpuDiscardableEntry{handle, texture_size});
-  EnforceCacheSizeLimit(cache_size_limit_);
-}
-
-bool ServiceDiscardableManager::UnlockTexture(
-    uint32_t texture_id,
-    gles2::TextureManager* texture_manager,
-    gles2::TextureRef** texture_to_unbind) {
-  *texture_to_unbind = nullptr;
-
-  auto found = entries_.Get({texture_id, texture_manager});
-  if (found == entries_.end())
-    return false;
-
-  found->second.handle.Unlock();
-  if (--found->second.service_ref_count_ == 0) {
-    found->second.unlocked_texture_ref =
-        texture_manager->TakeTexture(texture_id);
-    *texture_to_unbind = found->second.unlocked_texture_ref.get();
-  }
-
-  return true;
-}
-
-bool ServiceDiscardableManager::LockTexture(
-    uint32_t texture_id,
-    gles2::TextureManager* texture_manager) {
-  auto found = entries_.Peek({texture_id, texture_manager});
-  if (found == entries_.end())
-    return false;
-
-  ++found->second.service_ref_count_;
-  if (found->second.unlocked_texture_ref) {
-    texture_manager->ReturnTexture(
-        std::move(found->second.unlocked_texture_ref));
-  }
-
-  return true;
-}
-
 void ServiceDiscardableManager::OnTextureManagerDestruction(
     gles2::TextureManager* texture_manager) {
   for (auto& entry : entries_) {
