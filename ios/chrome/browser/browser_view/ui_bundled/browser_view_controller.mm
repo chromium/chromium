@@ -922,15 +922,13 @@ const CGFloat kTopDynamicIslandInset = 24;
     self.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      [weakSelf updateUIOnTraitChange:previousCollection];
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+  __weak __typeof(self) weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    [weakSelf updateUIOnTraitChange:previousCollection];
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1730,10 +1728,8 @@ const CGFloat kTopDynamicIslandInset = 24;
 
 // Notifies or modifies BVC owned UI elements when a UITrait has been changed.
 - (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (@available(iOS 17.0, *)) {
-    if (base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
-      [self updateTraitsIfNeeded];
-    }
+  if (base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
+    [self updateTraitsIfNeeded];
   }
 
   // After `-shutdown` is called, profile is invalid and will cause a
