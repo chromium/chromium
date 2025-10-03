@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_view.h"
+
 @class ImageContentConfiguration;
 
 // A content view for an image view.
-@interface ImageContentView : UIImageView <UIContentView>
+@interface ImageContentView : UIImageView <ChromeContentView>
 
 - (instancetype)initWithConfiguration:(ImageContentConfiguration*)configuration
     NS_DESIGNATED_INITIALIZER;

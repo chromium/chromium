@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_view.h"
+
 @class ColorfulSymbolContentConfiguration;
 
 // A content view for a symbol image view with a colorful background.
-@interface ColorfulSymbolContentView : UIView <UIContentView>
+@interface ColorfulSymbolContentView : UIView <ChromeContentView>
 
 - (instancetype)initWithConfiguration:
     (ColorfulSymbolContentConfiguration*)configuration

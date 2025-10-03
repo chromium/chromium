@@ -4,10 +4,9 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 
-@implementation TableViewCell {
-  NSString* _accessibilityLabel;
-  NSArray<NSString*>* _accessibilityUserInputLabels;
-}
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_view.h"
+
+@implementation TableViewCell
 
 #pragma mark - UITableViewCell
 
@@ -15,26 +14,35 @@
   [super prepareForReuse];
   self.accessoryType = UITableViewCellAccessoryNone;
   self.accessibilityLabel = nil;
+  self.accessibilityHint = nil;
+  self.accessibilityValue = nil;
   self.accessibilityUserInputLabels = nil;
 }
 
 #pragma mark - Accessibility
-
-- (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
-  _accessibilityLabel = accessibilityLabel;
-}
 
 - (NSString*)accessibilityLabel {
   NSObject* contentConfiguration = self.contentConfiguration;
   if (contentConfiguration.accessibilityLabel) {
     return contentConfiguration.accessibilityLabel;
   }
-  return _accessibilityLabel;
+  return [super accessibilityLabel];
 }
 
-- (void)setAccessibilityUserInputLabels:
-    (NSArray<NSString*>*)accessibilityUserInputLabels {
-  _accessibilityUserInputLabels = accessibilityUserInputLabels;
+- (NSString*)accessibilityValue {
+  NSObject* contentConfiguration = self.contentConfiguration;
+  if (contentConfiguration.accessibilityValue) {
+    return contentConfiguration.accessibilityValue;
+  }
+  return [super accessibilityValue];
+}
+
+- (NSString*)accessibilityHint {
+  NSObject* contentConfiguration = self.contentConfiguration;
+  if (contentConfiguration.accessibilityHint) {
+    return contentConfiguration.accessibilityHint;
+  }
+  return [super accessibilityHint];
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
@@ -42,7 +50,18 @@
   if (contentConfiguration.accessibilityUserInputLabels) {
     return contentConfiguration.accessibilityUserInputLabels;
   }
-  return _accessibilityUserInputLabels;
+  return [super accessibilityUserInputLabels];
+}
+
+- (CGPoint)accessibilityActivationPoint {
+  if ([self.contentView conformsToProtocol:@protocol(ChromeContentView)]) {
+    UIView<ChromeContentView>* chromeContentView =
+        static_cast<UIView<ChromeContentView>*>(self.contentView);
+    if ([chromeContentView hasCustomAccessibilityActivationPoint]) {
+      return chromeContentView.accessibilityActivationPoint;
+    }
+  }
+  return [super accessibilityActivationPoint];
 }
 
 @end

@@ -8,7 +8,24 @@
 
 @implementation ColorfulSymbolContentConfiguration
 
+#pragma mark - ChromeContentConfiguration
+
+- (UIView<ChromeContentView>*)makeChromeContentView {
+  return [[ColorfulSymbolContentView alloc] initWithConfiguration:self];
+}
+
 #pragma mark - UIContentConfiguration
+
+- (UIView*)makeContentView {
+  return [self makeChromeContentView];
+}
+
+- (id<UIContentConfiguration>)updatedConfigurationForState:
+    (id<UIConfigurationState>)state {
+  return self;
+}
+
+#pragma mark - NSCopying
 
 - (instancetype)copyWithZone:(NSZone*)zone {
   ColorfulSymbolContentConfiguration* copy =
@@ -20,15 +37,6 @@
   copy.symbolTintColor = _symbolTintColor;
   // LINT.ThenChange(colorful_symbol_content_configuration.h:Copy)
   return copy;
-}
-
-- (id<UIContentConfiguration>)updatedConfigurationForState:
-    (id<UIConfigurationState>)state {
-  return self;
-}
-
-- (UIView*)makeContentView {
-  return [[ColorfulSymbolContentView alloc] initWithConfiguration:self];
 }
 
 @end

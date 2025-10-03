@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_configuration.h"
+
 // A content configuration for an image view.
-@interface ImageContentConfiguration : NSObject <UIContentConfiguration>
+@interface ImageContentConfiguration : NSObject <ChromeContentConfiguration>
 
 // LINT.IfChange(Copy)
 

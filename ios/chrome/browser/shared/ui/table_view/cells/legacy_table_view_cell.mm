@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -74,6 +75,17 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
     accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
   return accessibilityTraits;
+}
+
+- (CGPoint)accessibilityActivationPoint {
+  if ([self.contentView conformsToProtocol:@protocol(ChromeContentView)]) {
+    UIView<ChromeContentView>* chromeContentView =
+        static_cast<UIView<ChromeContentView>*>(self.contentView);
+    if ([chromeContentView hasCustomAccessibilityActivationPoint]) {
+      return chromeContentView.accessibilityActivationPoint;
+    }
+  }
+  return [super accessibilityActivationPoint];
 }
 
 @end

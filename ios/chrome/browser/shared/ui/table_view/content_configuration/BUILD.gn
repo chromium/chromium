@@ -22,10 +22,20 @@ source_set("content_configuration") {
     "table_view_cell_content_view.mm",
   ]
   deps = [
+    ":generic_content",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view/cells:generic_cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("generic_content") {
+  sources = [
+    "chrome_content_configuration.h",
+    "chrome_content_view.h",
   ]
 }

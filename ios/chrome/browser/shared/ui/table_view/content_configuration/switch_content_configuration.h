@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_configuration.h"
+
 @class SwitchContentView;
 
 // Content configuration for a view with a single switch.
-@interface SwitchContentConfiguration : NSObject <UIContentConfiguration>
+@interface SwitchContentConfiguration : NSObject <ChromeContentConfiguration>
 
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
@@ -21,6 +23,9 @@
 
 // Whether the switch is on by default. Default it NO.
 @property(nonatomic, assign) BOOL on;
+
+// Whether the switch is enabled. Default is YES.
+@property(nonatomic, assign) BOOL enabled;
 
 // The tag for the switch.
 @property(nonatomic, assign) NSInteger tag;

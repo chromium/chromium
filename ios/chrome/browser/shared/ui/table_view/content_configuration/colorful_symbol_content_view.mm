@@ -55,6 +55,12 @@ const CGFloat kSymbolContainerCornerRadius = 7;
   return self;
 }
 
+#pragma mark - ChromeContentView
+
+- (BOOL)hasCustomAccessibilityActivationPoint {
+  return NO;
+}
+
 #pragma mark - UIContentView
 
 - (id<UIContentConfiguration>)configuration {

@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_view.h"
 
 @implementation TableViewCellContentConfiguration
@@ -99,6 +100,26 @@
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
   return @[ self.title ];
+}
+
+- (NSString*)accessibilityHint {
+  if (self.trailingConfiguration.accessibilityHint) {
+    return self.trailingConfiguration.accessibilityHint;
+  }
+  if (self.leadingConfiguration.accessibilityHint) {
+    return self.leadingConfiguration.accessibilityHint;
+  }
+  return [super accessibilityHint];
+}
+
+- (NSString*)accessibilityValue {
+  if (self.trailingConfiguration.accessibilityValue) {
+    return self.trailingConfiguration.accessibilityValue;
+  }
+  if (self.leadingConfiguration.accessibilityValue) {
+    return self.leadingConfiguration.accessibilityValue;
+  }
+  return [super accessibilityValue];
 }
 
 @end

@@ -16,14 +16,19 @@
   return self;
 }
 
-#pragma mark - UIContentConfiguration
+#pragma mark - ChromeContentConfiguration
 
-- (UIView<UIContentView>*)makeContentView {
+- (UIView<ChromeContentView>*)makeChromeContentView {
   return [[ImageContentView alloc] initWithConfiguration:self];
 }
 
+#pragma mark - UIContentConfiguration
+
+- (id<UIContentView>)makeContentView {
+  return [self makeChromeContentView];
+}
+
 - (instancetype)updatedConfigurationForState:(id<UIConfigurationState>)state {
-  // No state changes supported for now.
   return self;
 }
 

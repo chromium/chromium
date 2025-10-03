@@ -33,6 +33,12 @@
   return self;
 }
 
+#pragma mark - ChromeContentView
+
+- (BOOL)hasCustomAccessibilityActivationPoint {
+  return YES;
+}
+
 #pragma mark - UIContentView
 
 - (id<UIContentConfiguration>)configuration {
@@ -50,6 +56,16 @@
   return [configuration isMemberOfClass:SwitchContentConfiguration.class];
 }
 
+#pragma mark - UIAccessibility
+
+- (CGPoint)accessibilityActivationPoint {
+  CGRect frameInScreenCoordinates =
+      UIAccessibilityConvertFrameToScreenCoordinates(_switchView.bounds,
+                                                     _switchView);
+  return CGPointMake(CGRectGetMidX(frameInScreenCoordinates),
+                     CGRectGetMidY(frameInScreenCoordinates));
+}
+
 #pragma mark - Private
 
 // Updates the content view with the current configuration.
@@ -62,6 +78,7 @@
         forControlEvents:UIControlEventValueChanged];
   _switchView.tag = _configuration.tag;
   _switchView.on = _configuration.on;
+  _switchView.enabled = _configuration.enabled;
 }
 
 @end

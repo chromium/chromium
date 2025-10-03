@@ -7,9 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_configuration.h"
+
 // A content configuration for a symbol image view with a colorful background.
 @interface ColorfulSymbolContentConfiguration
-    : NSObject <UIContentConfiguration>
+    : NSObject <ChromeContentConfiguration>
 
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
