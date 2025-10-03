@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
@@ -113,6 +114,7 @@ class GnomeRemoteDesktopSession {
   void OnSessionStarted(std::tuple<>);
   void OnEisFd(std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList> args);
   void OnEiSession(std::unique_ptr<EiSenderSession> ei_session);
+  void OnDisplayConfigReceived(const GnomeDisplayConfig& config);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -140,6 +142,8 @@ class GnomeRemoteDesktopSession {
       display_config_monitor_.GetWeakPtr()};
   PersistentDisplayLayoutManager persistent_display_layout_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
+      display_config_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<GnomeRemoteDesktopSession> weak_ptr_factory_{this};
 };

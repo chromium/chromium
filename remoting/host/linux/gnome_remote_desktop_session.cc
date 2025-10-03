@@ -245,10 +245,30 @@ void GnomeRemoteDesktopSession::OnEiSession(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ei_session_ = std::move(ei_session);
 
+  display_config_subscription_ = display_config_monitor_.AddCallback(
+      base::BindRepeating(&GnomeRemoteDesktopSession::OnDisplayConfigReceived,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*call_with_current_config=*/true);
+}
+
+void GnomeRemoteDesktopSession::OnDisplayConfigReceived(
+    const GnomeDisplayConfig& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  display_config_subscription_.reset();
   capture_stream_manager_.Init(&connection_,
                                display_config_monitor_.GetWeakPtr(),
                                screencast_session_path_);
-  persistent_display_layout_manager_.Start(CreateDefaultLayout());
+  // This is a hack to make IT2ME work -- in IT2ME mode, the remote desktop
+  // session will be started with pre-existing monitors, so we skip starting the
+  // persistent display layout manager in that case, which prevents attempts to
+  // restore the display layout and creations of any virtual monitors. This,
+  // however, means the display layout may not be persisted when ME2ME is set up
+  // on a physical machine with physical monitors.
+  // TODO: yuweih - see what to do for ME2ME on a physical machine.
+  if (config.monitors.empty()) {
+    persistent_display_layout_manager_.Start(CreateDefaultLayout());
+  }
   initialization_state_ = InitializationState::kInitialized;
   init_callbacks_.Notify(base::ok());
   DCHECK(init_callbacks_.empty());

@@ -23,6 +23,21 @@ class ScreenResolution;
 
 // An interface for a class that allows for adding and removing a pipewire
 // stream, and associating it with the screen ID.
+//
+// This interface manages two types of streams: "virtual stream", for which this
+// interface manages the creation and deletion of the corresponding virtual
+// monitor, and "monitor stream", for which the corresponding monitor is either
+// physical, or virtual but managed by something other than this interface or
+// process.
+//
+// Callers can create a new virtual stream and its corresponding virtual monitor
+// by calling AddVirtualStream(), and delete it and its virtual monitor by
+// calling RemoveVirtualStream(). If a new monitor that is not managed by this
+// interface is found, a corresponding monitor stream for said monitor will be
+// created, and OnPipewireCaptureStreamAdded() will be called; the monitor
+// stream will be removed and OnPipewireCaptureStreamRemoved() will be called
+// once the corresponding monitor no longer exists. Callers cannot remove a
+// monitor stream with this interface.
 class CaptureStreamManager {
  public:
   using AddStreamResult =
@@ -50,8 +65,8 @@ class CaptureStreamManager {
       Observer* observer) = 0;
 
   // Returns the stream associated with `screen_id`. A non-null result will only
-  // be returned if the AddStreamCallback passed to the AddStream() method has
-  // been called.
+  // be returned if the AddStreamCallback passed to the AddVirtualStream()
+  // method has been called.
   virtual base::WeakPtr<CaptureStream> GetStream(
       webrtc::ScreenId screen_id) = 0;
 
@@ -60,14 +75,15 @@ class CaptureStreamManager {
     return const_cast<CaptureStreamManager*>(this)->GetStream(screen_id);
   }
 
-  // Adds a new PipewireCaptureStream and creates the corresponding virtual
-  // display with the specified initial resolution. `callback` is called once
-  // the stream is successfully added or failed to be added.
-  virtual void AddStream(const ScreenResolution& initial_resolution,
-                         AddStreamCallback callback) = 0;
+  // Adds a new virtual stream and creates the corresponding virtual monitor
+  // with the specified initial resolution. `callback` is called once the stream
+  // is successfully added or failed to be added.
+  virtual void AddVirtualStream(const ScreenResolution& initial_resolution,
+                                AddStreamCallback callback) = 0;
 
-  // Removes a stream and destroys the corresponding virtual display.
-  virtual void RemoveStream(webrtc::ScreenId screen_id) = 0;
+  // Removes a virtual stream and destroys its corresponding virtual monitor.
+  // This method cannot be used to remove a monitor stream.
+  virtual void RemoveVirtualStream(webrtc::ScreenId screen_id) = 0;
 
   // Returns all active streams.
   virtual base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
