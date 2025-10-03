@@ -612,7 +612,8 @@
                     },
                     "enable_features": [
                         "AndroidAppearanceSettings",
-                        "AndroidBookmarkBar"
+                        "AndroidBookmarkBar",
+                        "TopControlsRefactor"
                     ]
                 },
                 {
@@ -622,7 +623,8 @@
                     },
                     "enable_features": [
                         "AndroidAppearanceSettings",
-                        "AndroidBookmarkBar"
+                        "AndroidBookmarkBar",
+                        "TopControlsRefactor"
                     ]
                 }
             ]
@@ -25037,21 +25039,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ToolbarSnapshotRefactor"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TopControlsRefactor": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TopControlsRefactor"
                     ]
                 }
             ]
