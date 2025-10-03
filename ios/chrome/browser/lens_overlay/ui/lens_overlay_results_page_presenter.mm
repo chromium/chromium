@@ -242,7 +242,8 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   // To prevent such a behavior, extract the recognizers added as a consequence
   // of presenting and allow touches to be delivered to views.
   __block NSSet<UIGestureRecognizer*>* panRecognizersBeforePresenting =
-      [self panGestureRecognizersOnWindow];
+      UseCustomLensOverlayBottomSheet() ? [[NSSet alloc] init]
+                                        : [self panGestureRecognizersOnWindow];
 
   [self setUpVisibleAreaLayoutGuideIfNeeded];
   [self monitorResultsBottomSheetPosition];
@@ -257,7 +258,10 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
   ProceduralBlock afterPresentation = ^{
     [weakSelf resultsPagePresentationDidAppear];
-    [weakSelf handlePanRecognizersAddedAfter:panRecognizersBeforePresenting];
+    if (!UseCustomLensOverlayBottomSheet()) {
+      [weakSelf handlePanRecognizersAddedAfter:panRecognizersBeforePresenting];
+    }
+
     if (completion) {
       completion();
     }
