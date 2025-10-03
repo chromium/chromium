@@ -1871,7 +1871,6 @@ if (use_fuzzing_engine_with_lpm) {
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/browser/proto",
       "//components/autofill/core/common",
-      "//content/test:test_support",
       "//third_party/libprotobuf-mutator",
     ]
   }
