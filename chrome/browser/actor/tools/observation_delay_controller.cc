@@ -53,15 +53,15 @@ ObservationDelayController::ObservationDelayController(
       journal_(journal),
       task_id_(task_id) {
   CHECK(web_contents());
-  const bool may_use_page_stability = page_stability_config.has_value();
+  const bool waits_for_page_stability = page_stability_config.has_value();
 
   journal.Log(GURL::EmptyGURL(), task_id, mojom::JournalTrack::kActor,
               "ObservationDelay: Created",
               JournalDetailsBuilder()
-                  .Add("May Use PageStability", may_use_page_stability)
+                  .Add("May Use PageStability", waits_for_page_stability)
                   .Build());
 
-  if (may_use_page_stability) {
+  if (waits_for_page_stability) {
     CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
              features::ActorGeneralPageStabilityMode::kDisabled);
     journal.EnsureJournalBound(target_frame);
