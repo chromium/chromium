@@ -12,6 +12,9 @@
 class Profile;
 
 namespace glic {
+class GlicInstance;
+
+class GlicWindowController;
 
 // Sharing manager that tracks with the active browser. When a Chrome window is
 // active and its active tab is showing a GlicInstance, this sharing manager
@@ -19,7 +22,9 @@ namespace glic {
 // an empty sharing manager (nothing is or can be shared).
 class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager {
  public:
-  explicit GlicActiveBrowserSharingManager(Profile* profile);
+  explicit GlicActiveBrowserSharingManager(
+      Profile* profile,
+      GlicWindowController* instance_coordinator);
   ~GlicActiveBrowserSharingManager() override;
 
   GlicActiveBrowserSharingManager(const GlicActiveBrowserSharingManager&) =
@@ -31,6 +36,9 @@ class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager {
   void OnActiveTabChanged(tabs::TabInterface* active_tab);
 
  private:
+  // Callback for changes to the last active GlicInstance.
+  void OnLastActiveInstanceChanged(GlicInstance* instance);
+
   // Updates the delegate based on current active browser state.
   void UpdateDelegate();
 
@@ -41,6 +49,9 @@ class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager {
   base::CallbackListSubscription active_tab_subscription_;
 
   raw_ptr<Profile> profile_;
+
+  // Subscription for last active instance changes.
+  base::CallbackListSubscription last_active_instance_subscription_;
 };
 
 }  // namespace glic

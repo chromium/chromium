@@ -7,16 +7,24 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace glic {
 
 GlicActiveBrowserSharingManager::GlicActiveBrowserSharingManager(
-    Profile* profile)
+    Profile* profile,
+    GlicWindowController* instance_coordinator)
     : active_tab_tracker_(profile), profile_(profile) {
   active_tab_subscription_ = active_tab_tracker_.AddActiveTabChangedCallback(
       base::BindRepeating(&GlicActiveBrowserSharingManager::OnActiveTabChanged,
                           base::Unretained(this)));
+
+  last_active_instance_subscription_ =
+      instance_coordinator->RegisterLastActiveInstanceChangedCallback(
+          base::BindRepeating(
+              &GlicActiveBrowserSharingManager::OnLastActiveInstanceChanged,
+              base::Unretained(this)));
 }
 
 GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() = default;
@@ -24,6 +32,15 @@ GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() = default;
 void GlicActiveBrowserSharingManager::OnActiveTabChanged(
     tabs::TabInterface* active_tab) {
   UpdateDelegate();
+}
+
+void GlicActiveBrowserSharingManager::OnLastActiveInstanceChanged(
+    GlicInstance* instance) {
+  if (!instance) {
+    SetDelegate(nullptr);
+    return;
+  }
+  SetDelegate(instance->host().sharing_manager().GetWeakPtr());
 }
 
 void GlicActiveBrowserSharingManager::UpdateDelegate() {

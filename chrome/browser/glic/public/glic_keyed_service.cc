@@ -117,7 +117,8 @@ std::unique_ptr<GlicSharingManager> CreateSharingManager(
                                                     metrics);
   }
 
-  return std::make_unique<GlicActiveBrowserSharingManager>(profile);
+  return std::make_unique<GlicActiveBrowserSharingManager>(profile,
+                                                           window_controller);
 }
 
 }  // namespace
