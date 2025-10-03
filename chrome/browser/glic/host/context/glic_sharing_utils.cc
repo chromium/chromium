@@ -46,6 +46,9 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
 GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(Profile* profile)
     : active_tab_changed_callback_list_(), profile_(profile) {
   BrowserList::AddObserver(this);
+  // Trigger an update now, even though we have no subscribers, so that
+  // GetActiveTab works correctly.
+  UpdateActiveTab();
 }
 
 GlicActiveTabForProfileTracker::~GlicActiveTabForProfileTracker() {
