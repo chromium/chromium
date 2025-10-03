@@ -1387,6 +1387,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Stores the time at which the last successful call to Init happened.
   base::TimeTicks last_init_time_;
 
+  // Stores the last time Pause() was called on the IPC channel when the channel
+  // was initialized / renderer process launch was requested, respectively.
+  base::TimeTicks pause_channel_on_init_time_;
+  base::TimeTicks pause_channel_on_process_launch_time_;
+
   // Used to launch and terminate the process without blocking the UI thread.
   std::unique_ptr<ChildProcessLauncher> child_process_launcher_;
 

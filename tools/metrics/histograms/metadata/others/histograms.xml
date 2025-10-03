@@ -6028,6 +6028,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.Channel.ChannelInitPauseToFlushTime" units="ms"
+    expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>navigation-dev@chromium.org</owner>
+  <summary>
+    For each RenderProcessHost, records its time spent between pausing and
+    flushing its IPC channel via Pause() (triggered when the channel is
+    intialized) and Flush() (after the renderer process launched notification is
+    received) respectively.
+
+    Recorded when the channel gets flushed.
+  </summary>
+</histogram>
+
+<histogram name="Mojo.Channel.ChannelInitPauseToUnpauseTime" units="ms"
+    expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>navigation-dev@chromium.org</owner>
+  <summary>
+    For each RenderProcessHost, records its time spent between pausing and
+    flushing its IPC channel via Pause() (triggered when the channel is
+    initialized) and Unpause() (after the renderer process launched notification
+    is received) respectively.
+
+    Recorded when the channel gets unpaused.
+  </summary>
+</histogram>
+
+<histogram name="Mojo.Channel.ProcessLaunchPauseToFlushTime" units="ms"
+    expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>navigation-dev@chromium.org</owner>
+  <summary>
+    For each RenderProcessHost, records its time spent between pausing and
+    flushing its IPC channel via Pause() (triggered when renderer process launch
+    is requested) and Flush() (after the renderer process launched notification
+    is received) respectively.
+
+    Recorded when the channel gets flushed.
+  </summary>
+</histogram>
+
+<histogram name="Mojo.Channel.ProcessLaunchPauseToUnpauseTime" units="ms"
+    expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>navigation-dev@chromium.org</owner>
+  <summary>
+    For each RenderProcessHost, records its time spent between pausing and
+    flushing its IPC channel via Pause() (triggered when renderer process launch
+    is requested) and Unpause() (after the renderer process launched
+    notification is received) respectively.
+
+    Recorded when the channel gets unpaused.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.Channel.WriteMessageLatency" units="ms"
     expires_after="2026-03-22">
   <owner>amistry@chromium.org</owner>
