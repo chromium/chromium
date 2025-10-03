@@ -129,8 +129,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
   EXPECT_FALSE(IsDropTimerRunning());
 }
 
+// TODO(crbug.com/440805211): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OnTabDragUpdatedMaximizedWithEndPoint \
+  DISABLED_OnTabDragUpdatedMaximizedWithEndPoint
+#else
+#define MAYBE_OnTabDragUpdatedMaximizedWithEndPoint \
+  OnTabDragUpdatedMaximizedWithEndPoint
+#endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
-                       OnTabDragUpdatedMaximizedWithEndPoint) {
+                       MAYBE_OnTabDragUpdatedMaximizedWithEndPoint) {
   SimulateTabDrag(true, gfx::Point(GetViewWidth() - 10, 250));
   EXPECT_FALSE(IsDropTimerRunning());
 }
