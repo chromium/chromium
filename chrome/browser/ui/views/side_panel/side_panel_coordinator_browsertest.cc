@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -181,7 +182,10 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
   }
 
   std::u16string_view GetTitleText() {
-    return coordinator()->panel_title_->GetText();
+    return coordinator()
+        ->GetSidePanelHeaderForTesting()
+        ->panel_title()
+        ->GetText();
   }
 
   void AddTabToBrowser(const GURL& tab_url) {
@@ -2282,7 +2286,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator()->SetNoDelaysForTesting(true);
   coordinator()->DisableAnimationsForTesting();
   coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(coordinator()->GetHeaderPinButtonForTesting()->GetVisible());
+  EXPECT_TRUE(coordinator()
+                  ->GetSidePanelHeaderForTesting()
+                  ->header_pin_button()
+                  ->GetVisible());
 
   // Make a guest window. This process can be either synchronous or
   // asynchronous, so use RunUntil.
@@ -2299,7 +2306,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator->SetNoDelaysForTesting(true);
   coordinator->DisableAnimationsForTesting();
   coordinator->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(coordinator->GetHeaderPinButtonForTesting()->GetVisible());
+  EXPECT_FALSE(coordinator->GetSidePanelHeaderForTesting()
+                   ->header_pin_button()
+                   ->GetVisible());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -2319,7 +2328,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       GetKeyForExtension(extension->id())));
 
   views::ToggleImageButton* pin_button =
-      coordinator()->GetHeaderPinButtonForTesting();
+      coordinator()->GetSidePanelHeaderForTesting()->header_pin_button();
   EXPECT_TRUE(pin_button->GetVisible());
   EXPECT_FALSE(pin_button->GetToggled());
 
@@ -2355,7 +2364,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLensOverlayTest,
                                    SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kLensOverlayResults);
   views::ImageButton* more_info_button =
-      coordinator()->GetHeaderMoreInfoButtonForTesting();
+      coordinator()->GetSidePanelHeaderForTesting()->header_more_info_button();
   EXPECT_TRUE(more_info_button->GetVisible());
 }
 
@@ -2368,7 +2377,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLensOverlayTest,
                                    SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kLens);
   views::ImageButton* more_info_button =
-      coordinator()->GetHeaderMoreInfoButtonForTesting();
+      coordinator()->GetSidePanelHeaderForTesting()->header_more_info_button();
   EXPECT_FALSE(more_info_button->GetVisible());
 }
 

@@ -29,15 +29,13 @@
 #include "ui/views/view_observer.h"
 
 class BrowserView;
+class SidePanelHeader;
 
 namespace actions {
 class ActionItem;
 }  // namespace actions
 
 namespace views {
-class ImageButton;
-class MenuRunner;
-class ToggleImageButton;
 class View;
 }  // namespace views
 
@@ -93,15 +91,9 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   SidePanelEntry* GetCurrentSidePanelEntryForTesting();
 
-  views::ToggleImageButton* GetHeaderPinButtonForTesting() {
-    return header_pin_button_;
-  }
-
-  views::ImageButton* GetHeaderMoreInfoButtonForTesting() {
-    return header_more_info_button_;
-  }
-
   SidePanelEntry* GetLoadingEntryForTesting() const;
+
+  SidePanelHeader* GetSidePanelHeaderForTesting() { return side_panel_header_; }
 
  private:
   friend class SidePanelCoordinatorTest;
@@ -150,8 +142,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // The key is the unique key of the action item that has changed.
   void OnActionItemChanged(UniqueKey key);
 
-  std::unique_ptr<views::View> CreateHeader();
-
   void NotifyPinnedContainerOfActiveStateChange(SidePanelEntryKey key,
                                                 bool show_active_in_toolbar);
 
@@ -189,23 +179,8 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // item associated with the side panel entry changes.
   base::CallbackListSubscription action_item_controller_subscription_;
 
-  // Used to update icon in the side panel header.
-  raw_ptr<views::ImageView, AcrossTasksDanglingUntriaged> panel_icon_ = nullptr;
-
-  // Used to update the displayed title in the side panel header.
-  raw_ptr<views::Label, AcrossTasksDanglingUntriaged> panel_title_ = nullptr;
-
-  // Used to update the visibility of the 'Open in New Tab' header button.
-  raw_ptr<views::ImageButton, AcrossTasksDanglingUntriaged>
-      header_open_in_new_tab_button_ = nullptr;
-
-  // Used to update the visibility of the pin header button.
-  raw_ptr<views::ToggleImageButton, AcrossTasksDanglingUntriaged>
-      header_pin_button_ = nullptr;
-
-  // Used to update the visibility of the more info button.
-  raw_ptr<views::ImageButton, AcrossTasksDanglingUntriaged>
-      header_more_info_button_ = nullptr;
+  raw_ptr<SidePanelHeader, AcrossTasksDanglingUntriaged> side_panel_header_ =
+      nullptr;
 
   // Model for the more info menu.
   std::unique_ptr<ui::MenuModel> more_info_menu_model_;
