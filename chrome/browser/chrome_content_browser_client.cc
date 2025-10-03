@@ -164,8 +164,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
@@ -528,6 +526,8 @@
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -4191,6 +4191,7 @@ std::optional<SkColor> GetRootScrollbarThemeColor(WebContents* web_contents) {
     return std::nullopt;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (ThemeService* theme_service = ThemeServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
       !theme_service || (theme_service->UsingDefaultTheme() &&
@@ -4198,6 +4199,7 @@ std::optional<SkColor> GetRootScrollbarThemeColor(WebContents* web_contents) {
                          !theme_service->UsingDeviceTheme())) {
     return std::nullopt;
   }
+#endif
 
   color_utils::HSL hsl;
   color_utils::SkColorToHSL(
