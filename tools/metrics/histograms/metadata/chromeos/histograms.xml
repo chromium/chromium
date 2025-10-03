@@ -3534,8 +3534,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     so existing anomalies get recorded again after the two-hour window.
 
     Memfd execution attempts are checked every thirty seconds and new attempts
-    are recorded. memfd_create events are only recorded once per boot. Prior to
-    M111 memfd_create events were recorded up to ten times per boot.
+    are recorded. memfd_create evets are no longer recorded starting with M143.
+    memfd_create events were only recorded once per boot prior to M143, and up
+    to ten times per boot prior to M111.
   </summary>
 </histogram>
 
