@@ -903,10 +903,15 @@ class Generator(generator.Generator):
     for kind in self.module.structs + self.module.unions:
       for field in kind.fields:
 
-        # Peel array kinds.
+        # Peel array and map kinds.
         kind = field.kind
-        while mojom.IsArrayKind(kind):
-          kind = kind.kind
+        while True:
+          if mojom.IsArrayKind(kind):
+            kind = kind.kind
+          elif mojom.IsMapKind(kind):
+            kind = kind.value_kind
+          else:
+            break
 
         if kind.module == imported_module:
           # Need full def for struct/union fields, even when not inlined.
