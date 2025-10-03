@@ -22,6 +22,7 @@ source_set("session_restore_infobar") {
   deps = [
     "//chrome/app:branded_strings_grit",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/infobars",
     "//chrome/browser/profiles",
     "//chrome/browser/sessions",
@@ -35,6 +36,7 @@ source_set("session_restore_infobar") {
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/views/infobars",
     "//chrome/common",
+    "//components/content_settings/core/browser",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/omnibox/browser:vector_icons",
