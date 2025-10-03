@@ -22,8 +22,6 @@ class SkPixelRef;
 
 namespace ui {
 
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCompressBitmapAtBackgroundPriority);
-
 class UI_ANDROID_EXPORT Etc1 {
   public:
   // Compresses `raw_data` using ETC1 compression into an SkPixelRef. Can be
