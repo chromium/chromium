@@ -215,6 +215,34 @@ public class DisplayAndroidManagerTest {
     }
 
     @Test
+    public void testIsDisplayTopologyAvailableHistogram() {
+        final HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                DisplayAndroidManager.IS_DISPLAY_TOPOLOGY_AVAILABLE_HISTOGRAM_NAME,
+                                false)
+                        .expectBooleanRecord(
+                                DisplayAndroidManager.IS_DISPLAY_TOPOLOGY_AVAILABLE_HISTOGRAM_NAME,
+                                true)
+                        .build();
+
+        // ANDROID_USE_DISPLAY_TOPOLOGY is enabled and
+        // mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable() is true
+        DisplayAndroidManager displayAndroidManager = DisplayAndroidManager.getInstance();
+
+        DisplayAndroidManager.resetInstanceForTesting();
+        doReturn(false)
+                .when(mAconfigFlaggedApiDelegate)
+                .isDisplayTopologyAvailable(mDisplayManager);
+
+        // ANDROID_USE_DISPLAY_TOPOLOGY is enabled, but
+        // mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable() is false
+        displayAndroidManager = DisplayAndroidManager.getInstance();
+
+        histogramWatcher.assertExpected("Incorrect histogram values.");
+    }
+
+    @Test
     public void testDisplayAddHistogram() {
         final DisplayAndroidManager displayAndroidManager = DisplayAndroidManager.getInstance();
 

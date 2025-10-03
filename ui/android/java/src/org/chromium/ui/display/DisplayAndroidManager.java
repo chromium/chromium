@@ -27,6 +27,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -39,6 +40,8 @@ import java.util.HashSet;
 @JNINamespace("ui")
 @NullMarked
 public class DisplayAndroidManager {
+    private static final String TAG = "DisplayManager";
+
     /**
      * DisplayListenerBackend is used to handle the actual listening of display changes. It handles
      * it via the Android DisplayListener API.
@@ -68,7 +71,7 @@ public class DisplayAndroidManager {
             // newDisplaysAbsoluteCoordinates)} when {@link
             // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
             // absoluteBounds)} is triggered.
-            if (!isDisplayTopologyAvailable()) {
+            if (!mIsDisplayTopologyAvailable) {
                 removeDisplay(sdkDisplayId);
             }
         }
@@ -105,11 +108,16 @@ public class DisplayAndroidManager {
     private static final long IS_NULL_DISPLAY_REMOVED_DELAY_MS = 1000;
 
     @VisibleForTesting
+    static final String IS_DISPLAY_TOPOLOGY_AVAILABLE_HISTOGRAM_NAME =
+            "Android.Display.IsDisplayTopologyAvaialble";
+
+    @VisibleForTesting
     static final String IS_NULL_DISPLAY_REMOVED_HISTOGRAM_NAME =
             "Android.Display.IsNullDisplayRemoved";
 
     private long mNativePointer;
     private int mMainSdkDisplayId;
+    private boolean mIsDisplayTopologyAvailable;
     @VisibleForTesting final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
     private final DisplayListenerBackend mBackend = new DisplayListenerBackend();
 
@@ -193,8 +201,13 @@ public class DisplayAndroidManager {
         }
 
         mMainSdkDisplayId = defaultDisplay.getDisplayId(); // Note this display is never removed.
+        mIsDisplayTopologyAvailable = isDisplayTopologyAvailable();
 
-        if (isDisplayTopologyAvailable()) {
+        Log.i(TAG, "Is Display Topology available: " + mIsDisplayTopologyAvailable);
+        RecordHistogram.recordBooleanHistogram(
+                IS_DISPLAY_TOPOLOGY_AVAILABLE_HISTOGRAM_NAME, mIsDisplayTopologyAvailable);
+
+        if (mIsDisplayTopologyAvailable) {
             mDisplaysAbsoluteCoordinates =
                     assumeNonNull(
                             assumeNonNull(AconfigFlaggedApiDelegate.getInstance())
@@ -275,7 +288,7 @@ public class DisplayAndroidManager {
     }
 
     private void removeDisplay(int sdkDisplayId) {
-        if (isDisplayTopologyAvailable()) {
+        if (mIsDisplayTopologyAvailable) {
             mNullDisplayIds.remove(sdkDisplayId);
         }
 
