@@ -62,7 +62,7 @@ class NotificationMetricsRecorderTest : public PlatformTest {
   void CreateNotificationCenter() {
     notification_center_ = OCMClassMock([UNUserNotificationCenter class]);
     delivered_notifications_ = [NSMutableArray array];
-    id block = ^(void (^completionHandler)(NSArray<UNNotification*>*)) {
+    auto block = ^(void (^completionHandler)(NSArray<UNNotification*>*)) {
       completionHandler([this->delivered_notifications_ copy]);
       return YES;
     };
