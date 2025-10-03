@@ -253,8 +253,16 @@ void TextFragmentHandler::OpenedContextMenuOverSelection(LocalFrame* frame) {
     return;
   }
 
-  if (frame->Selection().SelectedText().empty())
-    return;
+  if (RuntimeEnabledFeatures::
+          NonEmptyVisibleTextSelectionForTextFragmentEnabled()) {
+    if (!frame->Selection().HasVisibleText()) {
+      return;
+    }
+  } else {
+    if (frame->Selection().SelectedText().empty()) {
+      return;
+    }
+  }
 
   if (!frame->GetTextFragmentHandler())
     frame->CreateTextFragmentHandler();

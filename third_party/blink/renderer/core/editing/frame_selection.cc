@@ -1212,6 +1212,12 @@ String FrameSelection::SelectedTextForClipboard() const {
                  .Build());
 }
 
+bool FrameSelection::HasVisibleText() const {
+  const EphemeralRange range =
+      ComputeVisibleSelectionInDOMTree().ToNormalizedEphemeralRange();
+  return !PlainText(range, TextIteratorBehavior()).empty();
+}
+
 PhysicalRect FrameSelection::AbsoluteUnclippedBounds() const {
   LocalFrameView* view = frame_->View();
   LayoutView* layout_view = frame_->ContentLayoutObject();

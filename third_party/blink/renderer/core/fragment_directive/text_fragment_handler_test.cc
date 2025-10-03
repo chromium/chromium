@@ -1057,6 +1057,25 @@ TEST_F(TextFragmentHandlerTest, NotGenerated) {
   EXPECT_EQ(expected_error, GetTextFragmentHandler().error_);
 }
 
+// https://crbug.com/447973114
+TEST_F(TextFragmentHandlerTest, NotGeneratedWithFileInput) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <input type="file">
+  )HTML");
+  GetDocument().GetFrame()->Selection().SelectAll();
+  // This shouldn't crash.
+  TextFragmentHandler::OpenedContextMenuOverSelection(GetDocument().GetFrame());
+
+  EXPECT_EQ(RequestSelector(), "");
+
+  shared_highlighting::LinkGenerationError expected_error =
+      shared_highlighting::LinkGenerationError::kNotGenerated;
+  EXPECT_EQ(expected_error, GetTextFragmentHandler().error_);
+}
+
 TEST_F(TextFragmentHandlerTest, InvalidateOverflowOnRemoval) {
   SimRequest request(
       "https://example.com/"

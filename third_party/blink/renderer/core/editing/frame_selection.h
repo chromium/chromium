@@ -291,6 +291,9 @@ class CORE_EXPORT FrameSelection final
   String SelectedText(const TextIteratorBehavior&) const;
   String SelectedText() const;
   String SelectedTextForClipboard() const;
+  // Returns true if the current selection corresponds to a non-empty visible
+  // text range within this frame.
+  bool HasVisibleText() const;
 
   // This returns last layouted selection bounds of LayoutSelection rather than
   // SelectionEditor keeps.

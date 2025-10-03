@@ -3367,6 +3367,10 @@
       status: "stable",
     },
     {
+      name: "NonEmptyVisibleTextSelectionForTextFragment",
+      status: "stable",
+    },
+    {
       // TODO(crbug.com/1426629): This feature enables the deprecated value
       // slider-vertical. Disable this feature to stop parsing or allowing these
       // values.

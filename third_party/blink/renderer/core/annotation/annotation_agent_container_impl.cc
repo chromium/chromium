@@ -355,8 +355,15 @@ bool AnnotationAgentContainerImpl::ShouldPreemptivelyGenerate() {
     return false;
   }
 
-  if (GetFrame().Selection().SelectedText().empty()) {
-    return false;
+  if (RuntimeEnabledFeatures::
+          NonEmptyVisibleTextSelectionForTextFragmentEnabled()) {
+    if (!GetFrame().Selection().HasVisibleText()) {
+      return false;
+    }
+  } else {
+    if (GetFrame().Selection().SelectedText().empty()) {
+      return false;
+    }
   }
 
   if (GetFrame().IsOutermostMainFrame()) {

@@ -2255,6 +2255,18 @@ TEST_F(ContextMenuControllerTest, SelectUnselectableContent) {
   EXPECT_EQ(context_menu_data.selected_text, "A test_all B");
 }
 
+// http://crbug.com/447973114
+TEST_F(ContextMenuControllerTest, FileInputSelectAllShowsContextMenuNoCrash) {
+  Document* document = GetDocument();
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<input type=file id=test>");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  document->GetFrame()->Selection().SelectAll();
+  Element* element = document->getElementById(AtomicString("test"));
+  // Passed without crashing.
+  EXPECT_TRUE(ShowContextMenuForElement(element, kMenuSourceMouse));
+}
+
 class ContextMenuControllerRemoteParentFrameTest : public testing::Test {
  public:
   ContextMenuControllerRemoteParentFrameTest() = default;

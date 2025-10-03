@@ -1457,6 +1457,54 @@ TEST_F(FrameSelectionTest, SelectedTextForClipboardEntersTextControls) {
   EXPECT_EQ("foo\nbar\nbaz", Selection().SelectedTextForClipboard());
 }
 
+TEST_F(FrameSelectionTest, HasVisibleText) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>^foo|</div>"),
+      SetSelectionOptions());
+  EXPECT_FALSE(VisibleSelectionInDOMTree().IsNone());
+  EXPECT_TRUE(Selection().HasVisibleText());
+  EXPECT_EQ_SELECTED_TEXT("foo");
+}
+
+TEST_F(FrameSelectionTest, HasVisibleTextWithInput) {
+  // File
+  Selection().SetSelection(SetSelectionTextToBody("^<input type=file>|"),
+                           SetSelectionOptions());
+  EXPECT_FALSE(VisibleSelectionInDOMTree().IsNone());
+  EXPECT_FALSE(Selection().HasVisibleText());
+  // Checkbox
+  Selection().SetSelection(SetSelectionTextToBody("^<input type=checkbox>|"),
+                           SetSelectionOptions());
+  EXPECT_FALSE(VisibleSelectionInDOMTree().IsNone());
+  EXPECT_FALSE(Selection().HasVisibleText());
+  // Radio
+  Selection().SetSelection(SetSelectionTextToBody("^<input type=radio>|"),
+                           SetSelectionOptions());
+  EXPECT_FALSE(VisibleSelectionInDOMTree().IsNone());
+  EXPECT_FALSE(Selection().HasVisibleText());
+  // Date
+  Selection().SetSelection(SetSelectionTextToBody("^<input type=date>|"),
+                           SetSelectionOptions());
+  EXPECT_FALSE(VisibleSelectionInDOMTree().IsNone());
+  EXPECT_FALSE(Selection().HasVisibleText());
+}
+
+TEST_F(FrameSelectionTest, HasVisibleTextInShadowTree) {
+  SetBodyContent("<p id='host'></p>");
+  ShadowRoot* shadow_root = SetShadowContent("foo", "host");
+  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsNone());
+
+  Node* text_node = shadow_root->firstChild();
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text_node, 0), Position(text_node, 3))
+          .Build(),
+      SetSelectionOptions());
+  EXPECT_FALSE(Selection().GetSelectionInDOMTree().IsNone());
+  EXPECT_TRUE(Selection().HasVisibleText());
+  EXPECT_EQ_SELECTED_TEXT("foo");
+}
+
 // For https://crbug.com/1177295
 TEST_F(FrameSelectionTest, PositionDisconnectedInFlatTree) {
   SetBodyContent("<div id=host>x</div>y");
