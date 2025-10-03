@@ -363,8 +363,6 @@ typedef int(__cdecl* _strnicmpFunction)(IN const char* _Str1,
 
 typedef size_t(__cdecl* strlenFunction)(IN const char* _Str);
 
-typedef size_t(__cdecl* wcslenFunction)(IN const wchar_t* _Str);
-
 typedef void*(__cdecl* memcpyFunction)(IN void* dest,
                                        IN const void* src,
                                        IN size_t count);
@@ -373,6 +371,10 @@ typedef NTSTATUS(WINAPI* RtlAnsiStringToUnicodeStringFunction)(
     IN OUT PUNICODE_STRING DestinationString,
     IN PANSI_STRING SourceString,
     IN BOOLEAN AllocateDestinationString);
+
+typedef VOID(WINAPI* RtlInitAnsiStringFunction)(OUT PANSI_STRING
+                                                    DestinationString,
+                                                IN OPTIONAL PCSZ SourceString);
 
 typedef LONG(WINAPI* RtlCompareUnicodeStringFunction)(
     IN PCUNICODE_STRING String1,

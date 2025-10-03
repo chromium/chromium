@@ -19,7 +19,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/win/pe_image.h"
-#include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -161,6 +160,7 @@ void InitGlobalNt() {
   INIT_NT(WaitForSingleObject);
   INIT_RTL(RtlAllocateHeap);
   INIT_RTL(RtlAnsiStringToUnicodeString);
+  INIT_RTL(RtlInitAnsiString);
   INIT_RTL(RtlCompareUnicodeString);
   INIT_RTL(RtlCreateHeap);
   INIT_RTL(RtlDestroyHeap);
@@ -168,7 +168,6 @@ void InitGlobalNt() {
   INIT_RTL(RtlNtStatusToDosError);
   INIT_RTL(_strnicmp);
   INIT_RTL(strlen);
-  INIT_RTL(wcslen);
   INIT_RTL(memcpy);
   sandbox::g_nt.Initialized = true;
 }
@@ -187,6 +186,18 @@ struct PARTIAL_TEB {
 // Check PEB offset between the partial definition and the public one.
 static_assert(offsetof(PARTIAL_TEB, ProcessEnvironmentBlock) ==
               offsetof(TEB, ProcessEnvironmentBlock));
+
+// Can't use the base::win version in component builds so just repeat it.
+bool ViewToUnicodeString(std::wstring_view str, UNICODE_STRING& ustr) {
+  constexpr size_t kMaxLength = UINT16_MAX / sizeof(WCHAR);
+  if (std::size(str) > kMaxLength) {
+    return false;
+  }
+  ustr.Buffer = const_cast<WCHAR*>(str.data());
+  ustr.Length = static_cast<USHORT>(std::size(str) * sizeof(WCHAR));
+  ustr.MaximumLength = ustr.Length;
+  return true;
+}
 
 }  // namespace.
 
@@ -242,6 +253,13 @@ bool MapGlobalMemory() {
 
   return true;
 }
+
+ScopedUnicodeString::ScopedUnicodeString() = default;
+ScopedUnicodeString::~ScopedUnicodeString() = default;
+ScopedUnicodeString::ScopedUnicodeString(
+    std::unique_ptr<uint8_t, NtAllocDeleter> buffer,
+    std::wstring_view str)
+    : buffer_(std::move(buffer)), str_(str) {}
 
 void* GetGlobalIPCMemory() {
   if (!MapGlobalMemory())
@@ -320,16 +338,6 @@ bool ValidParameter(void* buffer, size_t size, RequiredAccess intent) {
     return false;
   }
   return true;
-}
-
-NTSTATUS CopyData(void* destination, const void* source, size_t bytes) {
-  NTSTATUS ret = STATUS_SUCCESS;
-  __try {
-    GetNtExports()->memcpy(destination, source, bytes);
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-    ret = (NTSTATUS)GetExceptionCode();
-  }
-  return ret;
 }
 
 NTSTATUS GetProcessId(HANDLE process, DWORD* process_id) {
@@ -416,70 +424,58 @@ bool IsValidImageSection(HANDLE section,
   return true;
 }
 
-UNICODE_STRING* AnsiToUnicode(const char* string) {
-  ANSI_STRING ansi_string;
-  ansi_string.Length = static_cast<USHORT>(GetNtExports()->strlen(string));
-  ansi_string.MaximumLength = ansi_string.Length + 1;
-  ansi_string.Buffer = const_cast<char*>(string);
+ScopedUnicodeString AnsiToUnicode(const char* string) {
+  STACK_UNINITIALIZED ANSI_STRING ansi_string;
+  GetNtExports()->RtlInitAnsiString(&ansi_string, string);
 
-  if (ansi_string.Length > ansi_string.MaximumLength)
-    return nullptr;
+  size_t name_bytes = ansi_string.MaximumLength * sizeof(wchar_t);
 
-  size_t name_bytes =
-      ansi_string.MaximumLength * sizeof(wchar_t) + sizeof(UNICODE_STRING);
-
-  UNICODE_STRING* out_string =
-      reinterpret_cast<UNICODE_STRING*>(new (NT_ALLOC) char[name_bytes]);
-  if (!out_string)
-    return nullptr;
-
-  out_string->MaximumLength = ansi_string.MaximumLength * sizeof(wchar_t);
-  out_string->Buffer = reinterpret_cast<wchar_t*>(&out_string[1]);
-
-  BOOLEAN alloc_destination = false;
-  NTSTATUS ret = GetNtExports()->RtlAnsiStringToUnicodeString(
-      out_string, &ansi_string, alloc_destination);
-  DCHECK_NT(STATUS_BUFFER_OVERFLOW != ret);
-  if (!NT_SUCCESS(ret)) {
-    operator delete(out_string, NT_ALLOC);
-    return nullptr;
+  auto buffer = std::unique_ptr<uint8_t, NtAllocDeleter>(
+      new (NT_ALLOC) uint8_t[name_bytes]);
+  if (!buffer) {
+    return {};
   }
 
-  return out_string;
+  STACK_UNINITIALIZED UNICODE_STRING out_string;
+  out_string.Length = 0;
+  out_string.MaximumLength = ansi_string.MaximumLength * sizeof(wchar_t);
+  out_string.Buffer = reinterpret_cast<wchar_t*>(buffer.get());
+
+  NTSTATUS ret = GetNtExports()->RtlAnsiStringToUnicodeString(
+      &out_string, &ansi_string, FALSE);
+  DCHECK_NT(STATUS_BUFFER_OVERFLOW != ret);
+  if (!NT_SUCCESS(ret)) {
+    return {};
+  }
+
+  return {std::move(buffer),
+          std::wstring_view(out_string.Buffer,
+                            out_string.Length / sizeof(wchar_t))};
 }
 
-UNICODE_STRING* GetImageInfoFromModule(HMODULE module, uint32_t* flags) {
+ScopedUnicodeString GetImageInfoFromModule(HMODULE module, bool* has_code) {
 // PEImage's dtor won't be run during SEH unwinding, but that's OK.
 #pragma warning(push)
 #pragma warning(disable : 4509)
-  UNICODE_STRING* out_name = nullptr;
   __try {
-    do {
-      *flags = 0;
-      base::win::PEImage pe(module);
+    *has_code = false;
+    base::win::PEImage pe(module);
 
-      if (!pe.VerifyMagic())
-        break;
-      *flags |= MODULE_IS_PE_IMAGE;
+    if (!pe.VerifyMagic()) {
+      return {};
+    }
+    PIMAGE_NT_HEADERS headers = pe.GetNTHeaders();
+    *has_code = headers && !!headers->OptionalHeader.SizeOfCode;
 
-      PIMAGE_EXPORT_DIRECTORY exports = pe.GetExportDirectory();
-      if (exports) {
-        char* name = reinterpret_cast<char*>(pe.RVAToAddr(exports->Name));
-        out_name = AnsiToUnicode(name);
-      }
-
-      PIMAGE_NT_HEADERS headers = pe.GetNTHeaders();
-      if (headers) {
-        if (headers->OptionalHeader.AddressOfEntryPoint)
-          *flags |= MODULE_HAS_ENTRY_POINT;
-        if (headers->OptionalHeader.SizeOfCode)
-          *flags |= MODULE_HAS_CODE;
-      }
-    } while (false);
+    PIMAGE_EXPORT_DIRECTORY exports = pe.GetExportDirectory();
+    if (exports) {
+      char* name = reinterpret_cast<char*>(pe.RVAToAddr(exports->Name));
+      return AnsiToUnicode(name);
+    }
   } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
 
-  return out_name;
+  return {};
 #pragma warning(pop)
 }
 
@@ -487,109 +483,74 @@ const char* GetAnsiImageInfoFromModule(HMODULE module) {
 // PEImage's dtor won't be run during SEH unwinding, but that's OK.
 #pragma warning(push)
 #pragma warning(disable : 4509)
-  const char* out_name = nullptr;
   __try {
-    do {
       base::win::PEImage pe(module);
 
-      if (!pe.VerifyMagic())
-        break;
+      if (!pe.VerifyMagic()) {
+        return nullptr;
+      }
 
       PIMAGE_EXPORT_DIRECTORY exports = pe.GetExportDirectory();
-      if (exports)
-        out_name = static_cast<const char*>(pe.RVAToAddr(exports->Name));
-    } while (false);
+      if (exports) {
+        return static_cast<const char*>(pe.RVAToAddr(exports->Name));
+      }
   } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
 
-  return out_name;
+  return nullptr;
 #pragma warning(pop)
 }
 
-UNICODE_STRING* GetBackingFilePath(PVOID address) {
+ScopedUnicodeString GetBackingFilePath(PVOID address) {
   // We'll start with something close to max_path charactes for the name.
   SIZE_T buffer_bytes = MAX_PATH * 2;
 
   for (;;) {
-    MEMORY_SECTION_NAME* section_name = reinterpret_cast<MEMORY_SECTION_NAME*>(
-        new (NT_ALLOC) char[buffer_bytes]);
-
-    if (!section_name)
-      return nullptr;
+    std::unique_ptr<uint8_t, NtAllocDeleter> section_name(
+        new (NT_ALLOC) uint8_t[buffer_bytes]);
+    if (!section_name) {
+      return {};
+    }
 
     SIZE_T returned_bytes;
     NTSTATUS ret = GetNtExports()->QueryVirtualMemory(
-        NtCurrentProcess, address, MemorySectionName, section_name,
+        NtCurrentProcess, address, MemorySectionName, section_name.get(),
         buffer_bytes, &returned_bytes);
 
     if (STATUS_BUFFER_OVERFLOW == ret) {
       // Retry the call with the given buffer size.
-      operator delete(section_name, NT_ALLOC);
-      section_name = nullptr;
       buffer_bytes = returned_bytes;
       continue;
     }
     if (!NT_SUCCESS(ret)) {
-      operator delete(section_name, NT_ALLOC);
-      return nullptr;
+      return {};
     }
 
-    return reinterpret_cast<UNICODE_STRING*>(section_name);
+    UNICODE_STRING* str = reinterpret_cast<UNICODE_STRING*>(section_name.get());
+    return {std::move(section_name),
+            std::wstring_view(str->Buffer, str->Length / sizeof(wchar_t))};
   }
 }
 
-UNICODE_STRING* ExtractModuleName(const UNICODE_STRING* module_path) {
-  if ((!module_path) || (!module_path->Buffer))
-    return nullptr;
-
-  wchar_t* start_ptr = &module_path->Buffer[0];
-  if (module_path->Length > 0) {
-    size_t last_char = module_path->Length / sizeof(wchar_t) - 1;
-    // Ends with path separator. Not a valid module name.
-    if (module_path->Buffer[last_char] == L'\\')
-      return nullptr;
-    // Search backwards for path separator.
-    for (size_t i = 0; i <= last_char; ++i) {
-      if (module_path->Buffer[last_char - i] == L'\\') {
-        start_ptr = &module_path->Buffer[last_char - i + 1];
-        break;
-      }
-    }
+std::wstring_view ExtractModuleName(std::wstring_view module_path) {
+  if (module_path.empty()) {
+    return {};
   }
-
-  size_t skip_bytes = reinterpret_cast<uintptr_t>(start_ptr) -
-                      reinterpret_cast<uintptr_t>(&module_path->Buffer[0]);
-  // We add a nul wchar to the buffer.
-  size_t size_bytes = module_path->Length - skip_bytes + sizeof(wchar_t);
-
-  // Because module_path is a UNICODE_STRING, size_bytes will be small enough
-  // to make the static_cast below safe.
-  DCHECK_NT(UINT16_MAX > size_bytes);
-  char* str_buffer = new (NT_ALLOC) char[size_bytes + sizeof(UNICODE_STRING)];
-  if (!str_buffer)
-    return nullptr;
-
-  UNICODE_STRING* out_string = reinterpret_cast<UNICODE_STRING*>(str_buffer);
-  out_string->Buffer = reinterpret_cast<wchar_t*>(&out_string[1]);
-  out_string->Length = static_cast<USHORT>(size_bytes - sizeof(wchar_t));
-  out_string->MaximumLength = static_cast<USHORT>(size_bytes);
-
-  NTSTATUS ret = CopyData(out_string->Buffer, start_ptr, out_string->Length);
-  if (!NT_SUCCESS(ret)) {
-    operator delete(out_string, NT_ALLOC);
-    return nullptr;
+  auto last_slash = module_path.rfind(L'\\');
+  // If the string ends with path separator then this will return an empty
+  // string which signifies no module name.
+  if (last_slash != std::wstring_view::npos) {
+    module_path.remove_prefix(last_slash + 1);
   }
-
-  out_string->Buffer[out_string->Length / sizeof(wchar_t)] = L'\0';
-  return out_string;
+  return module_path;
 }
 
 std::optional<bool> EqualUnicodeString(std::wstring_view left,
                                        std::wstring_view right) {
   UNICODE_STRING left_ustr;
   UNICODE_STRING right_ustr;
-  if (!base::win::ViewToUnicodeString(left, left_ustr) ||
-      !base::win::ViewToUnicodeString(right, right_ustr)) {
+  if (!ViewToUnicodeString(left, left_ustr) ||
+      !ViewToUnicodeString(right, right_ustr)) {
     return std::nullopt;
   }
 

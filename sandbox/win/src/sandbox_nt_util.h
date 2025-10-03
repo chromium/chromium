@@ -18,6 +18,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -105,6 +106,23 @@ struct NtAllocDeleter {
   }
 };
 
+class ScopedUnicodeString {
+ public:
+  ScopedUnicodeString();
+  ~ScopedUnicodeString();
+  // `str` should point into the `buffer` but it doesn't need to point to the
+  // start. This allows the class to manage the string view and the allocation
+  // separately.
+  ScopedUnicodeString(std::unique_ptr<uint8_t, NtAllocDeleter> buffer,
+                      std::wstring_view str);
+  std::wstring_view str() const LIFETIME_BOUND { return str_; }
+  bool valid() const { return !!buffer_; }
+
+ private:
+  std::unique_ptr<uint8_t, NtAllocDeleter> buffer_;
+  std::wstring_view str_;
+};
+
 // Returns a pointer to the IPC shared memory.
 void* GetGlobalIPCMemory();
 
@@ -124,36 +142,23 @@ enum RequiredAccess { READ, WRITE };
 // or write.
 bool ValidParameter(void* buffer, size_t size, RequiredAccess intent);
 
-// Copies data from a user buffer to our buffer. Returns the operation status.
-NTSTATUS CopyData(void* destination, const void* source, size_t bytes);
-
 // Initializes our ntdll level heap
 bool InitHeap();
 
 // Returns true if the provided handle refers to the current process.
 bool IsSameProcess(HANDLE process);
 
-enum MappedModuleFlags {
-  MODULE_IS_PE_IMAGE = 1,      // Module is an executable.
-  MODULE_HAS_ENTRY_POINT = 2,  // Execution entry point found.
-  MODULE_HAS_CODE = 4          // Non zero size of executable sections.
-};
-
 // Returns the name and characteristics for a given PE module. The return
-// value is the name as defined by the export table and the flags is any
-// combination of the MappedModuleFlags enumeration.
+// value is the name as defined by the export table and a flag which indicates
+// if the module has any code.
 //
-// The returned buffer must be freed with a placement delete from the ntdll
-// level allocator:
-//
-// UNICODE_STRING* name = GetPEImageInfoFromModule(HMODULE module, &flags);
+// ScopedUnicodeString name = GetImageInfoFromModule(HMODULE module, &has_code);
 // if (!name) {
 //   // probably not a valid dll
 //   return;
 // }
 // InsertYourLogicHere(name);
-// operator delete(name, NT_ALLOC);
-UNICODE_STRING* GetImageInfoFromModule(HMODULE module, uint32_t* flags);
+ScopedUnicodeString GetImageInfoFromModule(HMODULE module, bool* has_code);
 
 // Returns the name and characteristics for a given PE module. The return
 // value is the name as defined by the export table.
@@ -163,15 +168,15 @@ const char* GetAnsiImageInfoFromModule(HMODULE module);
 
 // Returns the full path and filename for a given dll.
 // May return nullptr if the provided address is not backed by a named section,
-// or if the current OS version doesn't support the call. The returned buffer
-// must be freed with a placement delete (see GetImageNameFromModule example).
-UNICODE_STRING* GetBackingFilePath(PVOID address);
+// or if the current OS version doesn't support the call.
+ScopedUnicodeString GetBackingFilePath(PVOID address);
 
-// Returns the last component of a path that contains the module name.
-// It will return nullptr if the path ends with the path separator. The returned
-// buffer must be freed with a placement delete (see GetImageNameFromModule
-// example).
-UNICODE_STRING* ExtractModuleName(const UNICODE_STRING* module_path);
+// Extract the last component of a path that contains the module name.
+// It will return an empty string if the path ends with the path separator or
+// there is no module name.
+// This is a view is into the `module_path` so it must be valid as long as
+// view remains valid.
+std::wstring_view ExtractModuleName(std::wstring_view module_path);
 
 // Returns true if the parameters correspond to a dll mapped as code.
 bool IsValidImageSection(HANDLE section,
@@ -180,7 +185,7 @@ bool IsValidImageSection(HANDLE section,
                          PSIZE_T view_size);
 
 // Converts an ansi string to an UNICODE_STRING.
-UNICODE_STRING* AnsiToUnicode(const char* string);
+ScopedUnicodeString AnsiToUnicode(const char* string);
 
 // Use the RtlCompareUnicodeString API to compares two strings for equality. The
 // comparison always ignores case.

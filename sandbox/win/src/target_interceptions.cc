@@ -80,34 +80,28 @@ TargetNtMapViewOfSection(NtMapViewOfSectionFunction orig_MapViewOfSection,
     if (!IsValidImageSection(section, base, offset, view_size))
       break;
 
-    UINT image_flags;
-    UNICODE_STRING* module_name =
-        GetImageInfoFromModule(reinterpret_cast<HMODULE>(*base), &image_flags);
-    UNICODE_STRING* file_name = GetBackingFilePath(*base);
+    bool has_code = false;
+    ScopedUnicodeString image_name =
+        GetImageInfoFromModule(reinterpret_cast<HMODULE>(*base), &has_code);
+    ScopedUnicodeString file_name = GetBackingFilePath(*base);
+    std::wstring_view module_name = image_name.str();
 
-    if ((!module_name) && (image_flags & MODULE_HAS_CODE)) {
+    if (module_name.empty() && has_code) {
       // If the module has no exports we retrieve the module name from the
       // full path of the mapped section.
-      module_name = ExtractModuleName(file_name);
+      module_name = ExtractModuleName(file_name.str());
     }
 
     InterceptionAgent* agent = InterceptionAgent::GetInterceptionAgent();
 
     if (agent) {
-      if (!agent->OnDllLoad(file_name, module_name, *base)) {
+      if (!agent->OnDllLoad(file_name.str(), module_name, *base)) {
         // Interception agent is demanding to un-map the module.
         GetNtExports()->UnmapViewOfSection(process, *base);
         *base = nullptr;
         ret = STATUS_UNSUCCESSFUL;
       }
     }
-
-    if (module_name)
-      operator delete(module_name, NT_ALLOC);
-
-    if (file_name)
-      operator delete(file_name, NT_ALLOC);
-
   } while (false);
 
   return ret;
