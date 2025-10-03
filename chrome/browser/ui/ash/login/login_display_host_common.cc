@@ -250,7 +250,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
   app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &LoginDisplayHostCommon::OnAppTerminating, base::Unretained(this)));
-  BrowserController::GetInstance()->AddObserver(this);
+  browser_controller_observation_.Observe(BrowserController::GetInstance());
 }
 
 LoginDisplayHostCommon::~LoginDisplayHostCommon() = default;
@@ -684,7 +684,7 @@ void LoginDisplayHostCommon::OnBrowserCreated(BrowserDelegate* browser) {
     // exists and the window can acquire input focus.
     OnBrowserCreated();
     app_terminating_subscription_ = {};
-    BrowserController::GetInstance()->RemoveObserver(this);
+    browser_controller_observation_.Reset();
   }
 }
 
@@ -771,7 +771,7 @@ void LoginDisplayHostCommon::Cleanup() {
 
   SigninProfileHandler::Get()->ClearSigninProfile(base::DoNothing());
   app_terminating_subscription_ = {};
-  BrowserController::GetInstance()->RemoveObserver(this);
+  browser_controller_observation_.Reset();
   login_ui_pref_controller_.reset();
 
   // Cancel kiosk session start since kiosk holds a pointer to `this` during

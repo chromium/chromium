@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/callback_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
@@ -163,6 +164,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   std::unique_ptr<OobeMetricsHelper> oobe_metrics_helper_;
 
   std::unique_ptr<OobeCrosEventsMetrics> oobe_cros_events_metrics_;
+
+  base::ScopedObservation<BrowserController, BrowserController::Observer>
+      browser_controller_observation_{this};
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };
