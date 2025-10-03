@@ -24,8 +24,18 @@ by a child template that "extends" this file.
 
     <uses-feature android:glEsVersion="0x00030000" />
 
+
+    <!-- Needed for
+          * servicing requests from websites to obtain location through the Web Geolocation API,
+            which, however, is further gated on the user expressly granting the geolocation
+            permission to individual web origins
+          * supporting bluetooth discovery pre-S
+          * providing a geolocation header to the default search engine; used to annotate omnibox
+            suggestions, search prefetch and search navigation requests.
+    -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -36,6 +46,7 @@ by a child template that "extends" this file.
       permission on Android M and later without a prompt.
     -->
     {% if channel in ['default'] %}
+        <!--  Needed for allowing downloaded APKs to be installed. -->
         <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     {% endif %}
 
@@ -90,11 +101,20 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Needed to determine whether an app installed on the device should handle a web navigation.  -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_AUDIO"/>
+
+    <!-- Needed for handling media-viewing Intents from other apps for images and video on low end
+         or managed devices (eg. crbug.com/40546519), monitoring of screenshots if permission has
+         been previously granted (doesn't request independently) (crbug.com/40520892), and
+         Chromium's custom photo picker used on Android S and below (crbug.com/40489056) -->
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
+
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!--
