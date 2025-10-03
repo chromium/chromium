@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event_holder.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
@@ -164,7 +165,8 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
 
   LogChooseFileEvent(accept_type_int, *has_multiple, *has_selected_file);
 
-  if (base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
+  if (base::FeatureList::IsEnabled(kIOSChooseFromDrive) ||
+      base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
     std::vector<std::string> accept_file_extensions = ParseAttributeFromValue(
         body_dict, "fileExtensions", ParseAcceptAttributeFileExtensions);
     std::vector<std::string> accept_mime_types = ParseAttributeFromValue(
@@ -180,8 +182,14 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
             .SetAcceptMimeTypes(std::move(accept_mime_types))
             .SetWebState(web_state)
             .Build();
-    ChooseFileEventHolder::GetInstance()->SetLastChooseFileEvent(
-        std::move(event));
+    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
+      ChooseFileTabHelper* tab_helper =
+          ChooseFileTabHelper::FromWebState(web_state);
+      tab_helper->SetLastChooseFileEvent(std::move(event));
+    } else {
+      ChooseFileEventHolder::GetInstance()->SetLastChooseFileEvent(
+          std::move(event));
+    }
   }
 }
 

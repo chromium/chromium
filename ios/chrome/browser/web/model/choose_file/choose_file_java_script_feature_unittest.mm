@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event_holder.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -85,6 +86,7 @@ class ChooseFileJavaScriptFeatureTest
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
 
+    ChooseFileTabHelper::CreateForWebState(web_state_.get());
     java_script_feature_ = std::make_unique<ChooseFileJavaScriptFeature>();
     GetWebClient()->SetJavaScriptFeatures({java_script_feature_.get()});
   }
@@ -435,6 +437,29 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestResetLastChooseFileEventMimeTypes) {
       }
     }
   }
+}
+
+// Tests that `ResetLastChooseFileEvent()` returns the expected event and resets
+// it when `kIOSCustomFileUploadMenu` is enabled.
+TEST_P(ChooseFileJavaScriptFeatureTest,
+       TestResetLastChooseFileEventCustomMenu) {
+  base::test::ScopedFeatureList feature_list(kIOSCustomFileUploadMenu);
+  ChooseFileTabHelper* tab_helper =
+      ChooseFileTabHelper::FromWebState(web_state());
+
+  LoadHtml(/*has_multiple=*/true, /*has_accept=*/true, @".jpg",
+           /*already_has_file=*/true);
+  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
+
+  EXPECT_FALSE(ChooseFileEventHolder::GetInstance()->HasLastChooseFileEvent());
+  EXPECT_TRUE(tab_helper->HasLastChooseFileEvent());
+  const std::optional<ChooseFileEvent> event =
+      tab_helper->ResetLastChooseFileEvent();
+  ASSERT_TRUE(event.has_value());
+  EXPECT_EQ(std::vector<std::string>{".jpg"}, event->accept_file_extensions);
+  EXPECT_EQ(true, event->allow_multiple_files);
+  EXPECT_EQ(true, event->has_selected_file);
+  EXPECT_FALSE(tab_helper->HasLastChooseFileEvent());
 }
 
 INSTANTIATE_TEST_SUITE_P(

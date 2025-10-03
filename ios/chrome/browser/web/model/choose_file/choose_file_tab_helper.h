@@ -45,6 +45,13 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
                     base::OnceCallback<void(NSArray<NSURL*>*)> completion)
       API_AVAILABLE(ios(18.4));
 
+  // Set the last ChooseFileEvent.
+  void SetLastChooseFileEvent(ChooseFileEvent event);
+  // Returns and reset the last ChooseFileEvent.
+  std::optional<ChooseFileEvent> ResetLastChooseFileEvent();
+  // Returns whether `last_choose_file_event_` has a value.
+  bool HasLastChooseFileEvent() const;
+
   // Adds `file_url` to the set of file URLs ready to be passed to
   // `StopChoosingFiles`. `version_identifier` is used to represent the version
   // of the file which is stored at `file_url`.
@@ -92,6 +99,9 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
 
   // Abort the current selection flow.
   void AbortSelection();
+
+  // Latest `ChooseFileEvent` received from JavaScript.
+  std::optional<ChooseFileEvent> last_choose_file_event_;
 
   // URLs of files ready to be submitted using `StopChoosingFiles`. This can be
   // used to reuse a local copy for a file instead of downloading it again. The

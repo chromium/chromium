@@ -64,6 +64,18 @@ void ChooseFileTabHelper::RunOpenPanel(
   std::move(completion).Run(nil);
 }
 
+void ChooseFileTabHelper::SetLastChooseFileEvent(ChooseFileEvent event) {
+  last_choose_file_event_ = std::move(event);
+}
+
+std::optional<ChooseFileEvent> ChooseFileTabHelper::ResetLastChooseFileEvent() {
+  return std::exchange(last_choose_file_event_, std::nullopt);
+}
+
+bool ChooseFileTabHelper::HasLastChooseFileEvent() const {
+  return last_choose_file_event_.has_value();
+}
+
 void ChooseFileTabHelper::AbortSelection() {
   if (IsChoosingFiles()) {
     controller_->Abort();

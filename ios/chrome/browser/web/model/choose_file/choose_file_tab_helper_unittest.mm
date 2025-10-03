@@ -154,3 +154,31 @@ TEST_F(ChooseFileTabHelperTest, GetChooseFileEvent) {
   EXPECT_EQ(event.web_state.get(), tab_helper_event.web_state.get());
   EXPECT_EQ(event.time, tab_helper_event.time);
 }
+
+// Tests that `SetLastChooseFileEvent()`, `ResetLastChooseFileEvent()` and
+// `HasLastChooseFileEvent()` work as expected.
+TEST_F(ChooseFileTabHelperTest, LastChooseFileEvent) {
+  EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+
+  ChooseFileEvent event = ChooseFileEvent::Builder()
+                              .SetAllowMultipleFiles(false)
+                              .SetHasSelectedFile(false)
+                              .SetWebState(web_state_.get())
+                              .Build();
+  tab_helper_->SetLastChooseFileEvent(event);
+  EXPECT_TRUE(tab_helper_->HasLastChooseFileEvent());
+
+  std::optional<ChooseFileEvent> tab_helper_event =
+      tab_helper_->ResetLastChooseFileEvent();
+  ASSERT_TRUE(tab_helper_event.has_value());
+  EXPECT_EQ(event.allow_multiple_files,
+            tab_helper_event.value().allow_multiple_files);
+  EXPECT_EQ(event.accept_file_extensions,
+            tab_helper_event.value().accept_file_extensions);
+  EXPECT_EQ(event.accept_mime_types,
+            tab_helper_event.value().accept_mime_types);
+  EXPECT_EQ(event.web_state.get(), tab_helper_event.value().web_state.get());
+  EXPECT_EQ(event.time, tab_helper_event.value().time);
+
+  EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+}
