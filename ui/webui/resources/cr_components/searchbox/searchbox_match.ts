@@ -109,6 +109,8 @@ export class SearchboxMatchElement extends CrLitElement {
 
       match: {type: Object},
 
+      selection: {type: Object},
+
       /**
        * Index of the match in the autocomplete result. Used to inform embedder
        * of events such as deletion, click, etc.
@@ -169,6 +171,11 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor isEntitySuggestion: boolean = false;
   accessor isRichSuggestion: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
+  accessor selection: OmniboxPopupSelection = {
+    line: -1,
+    state: SelectionLineState.kNormal,
+    actionIndex: 0,
+  };
   accessor matchIndex: number = -1;
   accessor sideType: SideType = SideType.kDefaultPrimary;
   accessor showThumbnail: boolean = false;
@@ -390,7 +397,7 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   /**
-   * Decodes the AcMatchClassificationStyle enteries encoded in the given
+   * Decodes the AcMatchClassificationStyle entries encoded in the given
    * ACMatchClassification style field, maps each entry to a CSS
    * class and returns them.
    */
@@ -436,34 +443,6 @@ export class SearchboxMatchElement extends CrLitElement {
           container.appendChild(currentElement);
           return container;
         }, document.createElement('span'));
-  }
-
-  updateSelection(selection: OmniboxPopupSelection) {
-    this.$['focus-indicator'].classList.toggle(
-        'selected-within',
-        selection.state !== SelectionLineState.kNormal &&
-            selection.line === this.matchIndex);
-
-    this.shadowRoot.querySelector('#keyword')
-        ?.classList.toggle(
-            'selected',
-            selection.state === SelectionLineState.kKeywordMode &&
-                selection.line === this.matchIndex);
-
-    [...this.shadowRoot.querySelectorAll(
-         '#actions-container cr-searchbox-action')]
-        .forEach((action, index) => {
-          action.classList.toggle(
-              'selected',
-              selection.state === SelectionLineState.kFocusedButtonAction &&
-                  selection.actionIndex === index &&
-                  selection.line === this.matchIndex);
-        });
-
-    this.$.remove.classList.toggle(
-        'selected',
-        selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion &&
-            selection.line === this.matchIndex);
   }
 
   private getMatchContents_(): string {
@@ -512,6 +491,36 @@ export class SearchboxMatchElement extends CrLitElement {
     const match = this.match;
     return match.swapContentsAndDescription ? match.contentsClass :
                                               match.descriptionClass;
+  }
+
+  protected getFocusIndicatorCssClass_(): string {
+    return this.selection.line === this.matchIndex &&
+            this.selection.state !== SelectionLineState.kNormal ?
+        'selected-within' :
+        '';
+  }
+
+  protected getKeywordCssClass_(): string {
+    return this.selection.line === this.matchIndex &&
+            this.selection.state === SelectionLineState.kKeywordMode ?
+        'selected' :
+        '';
+  }
+
+  protected getActionCssClass_(actionIndex: number): string {
+    return this.selection.line === this.matchIndex &&
+            this.selection.state === SelectionLineState.kFocusedButtonAction &&
+            this.selection.actionIndex === actionIndex ?
+        'selected' :
+        '';
+  }
+
+  protected getRemoveCssClass_(): string {
+    return this.selection.line === this.matchIndex &&
+            this.selection.state ===
+                SelectionLineState.kFocusedButtonRemoveSuggestion ?
+        'selected' :
+        '';
   }
 }
 

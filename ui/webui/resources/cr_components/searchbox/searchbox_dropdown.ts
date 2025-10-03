@@ -176,12 +176,16 @@ export class SearchboxDropdownElement extends CrLitElement {
     // If the updated selection is a new match, remove any remaining selection
     // on the previously selected match.
     if (oldSelection.line !== selection.line) {
-      this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
-          selection);
+      const oldMatch = this.selectableMatchElements[this.selectedMatchIndex];
+      if (oldMatch) {
+        oldMatch.selection = selection;
+      }
     }
     this.selectIndex(selection.line);
-    this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
-        selection);
+    const newMatch = this.selectableMatchElements[this.selectedMatchIndex];
+    if (newMatch) {
+      newMatch.selection = selection;
+    }
   }
 
   /**
