@@ -44,36 +44,33 @@ TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
 
 // Tests that ASPasskeyCredentialIdentity can be created from Credential.
 TEST_F(ASPasskeyCredentialIdentity_CredentialTest, create) {
-  if (@available(iOS 17, *)) {
-    ArchivableCredential* credential = [[ArchivableCredential alloc]
-         initWithFavicon:@"favicon"
-                    gaia:nil
-        recordIdentifier:@"recordIdentifier"
-                  syncId:StringToData("syncId")
-                username:@"username"
-         userDisplayName:@"userDisplayName"
-                  userId:StringToData("userId")
-            credentialId:StringToData("credentialId")
-                    rpId:@"rpId"
-              privateKey:StringToData("privateKey")
-               encrypted:StringToData("encrypted")
-            creationTime:kJan1st2024
-            lastUsedTime:kJan1st2024
-                  hidden:NO
-              hiddenTime:kJan1st2024
-            editedByUser:NO];
-    ASPasskeyCredentialIdentity* credentialIdentity =
-        [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
+  ArchivableCredential* credential =
+      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
+                                   recordIdentifier:@"recordIdentifier"
+                                             syncId:StringToData("syncId")
+                                           username:@"username"
+                                    userDisplayName:@"userDisplayName"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
+                                               rpId:@"rpId"
+                                         privateKey:StringToData("privateKey")
+                                          encrypted:StringToData("encrypted")
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
+  ASPasskeyCredentialIdentity* credentialIdentity =
+      [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
 
-    EXPECT_NSEQ(credential.username, credentialIdentity.userName);
-    EXPECT_NSEQ([@"userId" dataUsingEncoding:NSUTF8StringEncoding],
-                credentialIdentity.userHandle);
-    EXPECT_NSEQ(credential.recordIdentifier,
-                credentialIdentity.recordIdentifier);
-    EXPECT_NSEQ(credential.rpId, credentialIdentity.relyingPartyIdentifier);
-    EXPECT_NSEQ([@"credentialId" dataUsingEncoding:NSUTF8StringEncoding],
-                credentialIdentity.credentialID);
-  }
+  EXPECT_NSEQ(credential.username, credentialIdentity.userName);
+  EXPECT_NSEQ([@"userId" dataUsingEncoding:NSUTF8StringEncoding],
+              credentialIdentity.userHandle);
+  EXPECT_NSEQ(credential.recordIdentifier, credentialIdentity.recordIdentifier);
+  EXPECT_NSEQ(credential.rpId, credentialIdentity.relyingPartyIdentifier);
+  EXPECT_NSEQ([@"credentialId" dataUsingEncoding:NSUTF8StringEncoding],
+              credentialIdentity.credentialID);
 }
 
 }  // namespace
