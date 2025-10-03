@@ -47,7 +47,7 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   // TODO(https://crbug.com/1410784): Validate the list of `third_party_origins`
   // against the ones the renderer process believes were active.
   {% for feature in browser_read_access_with_third_party_features %}
-  bool Is{{feature.name}}EnabledForThirdParty(const base::span<url::Origin>& third_party_origins) const {
+  bool Is{{feature.name}}EnabledForThirdParty(base::span<const url::Origin> third_party_origins) const {
     return IsEnabledForThirdParty(
         blink::mojom::RuntimeFeature::k{{feature.name}}, third_party_origins);
   }
@@ -65,7 +65,7 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   }
 
   bool IsEnabledForThirdParty(blink::mojom::RuntimeFeature feature,
-                              const base::span<url::Origin>& third_party_origins) const {
+                              base::span<const url::Origin> third_party_origins) const {
     auto override_it = possible_third_party_feature_overrides_.find(feature);
     if (override_it == possible_third_party_feature_overrides_.end())
       return false;
