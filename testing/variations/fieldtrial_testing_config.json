@@ -25790,6 +25790,25 @@
             ]
         }
     ],
+    "UsePersistentCacheForCodeCache": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "windows",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UsePersistentCacheForCodeCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSCContentSharingPicker": [
         {
             "platforms": [
