@@ -242,11 +242,14 @@ void WebAppCommandScheduler::ScheduleManifestSilentUpdate(
 
 void WebAppCommandScheduler::ScheduleApplyPendingManifestUpdate(
     const webapps::AppId& app_id,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     ApplyPendingManifestUpdateCommand::CompletedCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<ApplyPendingManifestUpdateCommand>(app_id,
-                                                          std::move(callback)),
+      std::make_unique<ApplyPendingManifestUpdateCommand>(
+          app_id, std::move(keep_alive), std::move(profile_keep_alive),
+          std::move(callback)),
       location);
 }
 

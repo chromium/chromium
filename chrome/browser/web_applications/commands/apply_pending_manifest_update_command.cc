@@ -4,10 +4,14 @@
 
 #include "chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h"
 
+#include <memory>
+
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 
 namespace web_app {
 
@@ -32,6 +36,8 @@ std::ostream& operator<<(std::ostream& os,
 
 ApplyPendingManifestUpdateCommand::ApplyPendingManifestUpdateCommand(
     const webapps::AppId& app_id,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     CompletedCallback callback)
     : WebAppCommand<AppLock, ApplyPendingManifestUpdateResult>(
           "ApplyPendingManifestUpdateCommand",
@@ -43,7 +49,9 @@ ApplyPendingManifestUpdateCommand::ApplyPendingManifestUpdateCommand(
           }).Then(std::move(callback)),
           /*args_for_shutdown=*/
           std::make_tuple(ApplyPendingManifestUpdateResult::kSystemShutdown)),
-      app_id_(app_id) {
+      app_id_(app_id),
+      keep_alive_(std::move(keep_alive)),
+      profile_keep_alive_(std::move(profile_keep_alive)) {
   GetMutableDebugValue().Set("app_id", app_id_);
 }
 

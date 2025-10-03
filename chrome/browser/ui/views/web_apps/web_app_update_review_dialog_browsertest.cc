@@ -146,11 +146,24 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
   }
 
  protected:
+  void ClickIgnoreButtonOnDialog(views::Widget* dialog_widget) {
+    views::test::WidgetDestroyedWaiter destroyed_waiter(dialog_widget);
+    views::ElementTrackerViews* tracker_views =
+        views::ElementTrackerViews::GetInstance();
+    ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForWidget(dialog_widget);
+    views::Button* button = tracker_views->GetUniqueViewAs<views::Button>(
+        kWebAppUpdateReviewIgnoreButton, context);
+    views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
+    destroyed_waiter.Wait();
+  }
+
   SkBitmap old_icon_;
   SkBitmap new_icon_;
   WebAppIdentityUpdate update_;
   std::string app_id_;
   base::test::TestFuture<WebAppIdentityUpdateResult> dialog_result_;
+  base::HistogramTester tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, InvokeUi_NameChange) {
@@ -440,13 +453,26 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, Accept) {
 IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, CancelUninstall) {
   views::NamedWidgetShownWaiter update_dialog_waiter(
       views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
-  InstallAppAndTriggerAppUpdateDialog();
+  const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
+
+  // This will trigger uninstallation of the app. Wait for the uninstallation
+  // dialog to show up.
+  views::NamedWidgetShownWaiter uninstall_dialog_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
   views::test::CancelDialog(dialog_widget);
   EXPECT_THAT(
       tester_.GetAllSamples(kAppUpdateDialogResultHistogram),
       BucketsAre(base::Bucket(WebAppIdentityUpdateResult::kUninstallApp, 1)));
+  views::Widget* uninstall_dialog =
+      uninstall_dialog_waiter.WaitIfNeededAndGet();
+
+  // Trigger uninstallation of the app by accepting the dialog and verify.
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile());
+  views::test::AcceptDialog(uninstall_dialog);
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, Ignore) {

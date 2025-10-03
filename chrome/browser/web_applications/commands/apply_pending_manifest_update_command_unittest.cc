@@ -93,7 +93,8 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
     base::test::TestFuture<ApplyPendingManifestUpdateResult>
         manifest_apply_pending_update_future;
     fake_provider().scheduler().ScheduleApplyPendingManifestUpdate(
-        app_id, manifest_apply_pending_update_future.GetCallback());
+        app_id, /*keep_alive=*/nullptr, /*profile_keep_alive=*/nullptr,
+        manifest_apply_pending_update_future.GetCallback());
 
     EXPECT_TRUE(manifest_apply_pending_update_future.Wait());
     return manifest_apply_pending_update_future.Get();

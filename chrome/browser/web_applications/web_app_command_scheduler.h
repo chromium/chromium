@@ -242,6 +242,8 @@ class WebAppCommandScheduler {
   // algorithm as defined in go/predictable-app-updating-design-doc.
   void ScheduleApplyPendingManifestUpdate(
       const webapps::AppId& app_id,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       ApplyPendingManifestUpdateCallback callback,
       const base::Location& location = FROM_HERE);
 
