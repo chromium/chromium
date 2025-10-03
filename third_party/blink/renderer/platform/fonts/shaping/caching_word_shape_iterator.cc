@@ -21,7 +21,6 @@ const ShapeResult* CachingWordShapeIterator::ShapeWordWithoutSpacing(
   if (!shape_result)
     return nullptr;
 
-  shape_result->SetDeprecatedInkBounds(shape_result->ComputeInkBounds());
   if (cache_entry)
     *cache_entry = shape_result;
 
@@ -35,32 +34,7 @@ const ShapeResult* CachingWordShapeIterator::ShapeWord(const TextRun& word_run,
     return result;
   }
 
-  ShapeResult* spacing_result = result->ApplySpacingToCopy(spacing_, word_run);
-  gfx::RectF ink_bounds = spacing_result->ComputeInkBounds();
-  DCHECK_GE(ink_bounds.width(), 0);
-
-  // Return bounds as is because glyph bounding box is in logical space.
-  if (spacing_result->Width() >= 0) {
-    spacing_result->SetDeprecatedInkBounds(ink_bounds);
-    return spacing_result;
-  }
-
-  // Negative word-spacing and/or letter-spacing may cause some glyphs to
-  // overflow the left boundary and result negative measured width. Adjust glyph
-  // bounds accordingly to cover the overflow.
-  // The negative width should be clamped to 0 in CSS box model, but it's up to
-  // caller's responsibility.
-  float left = std::min(spacing_result->Width(), ink_bounds.width());
-  if (left < ink_bounds.x()) {
-    // The right edge should be the width of the first character in most cases,
-    // but computing it requires re-measuring bounding box of each glyph. Leave
-    // it unchanged, which gives an excessive right edge but assures it covers
-    // all glyphs.
-    ink_bounds.Outset(gfx::OutsetsF().set_left(ink_bounds.x() - left));
-  }
-
-  spacing_result->SetDeprecatedInkBounds(ink_bounds);
-  return spacing_result;
+  return result->ApplySpacingToCopy(spacing_, word_run);
 }
 
 }  // namespace blink

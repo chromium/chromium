@@ -102,7 +102,7 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
                                 IsRtl(direction) ? total_width : 0};
   for (unsigned j = 0; j < results_.size(); j++) {
     const ShapeResult* result = results_[j];
-    ComputeRangeIn(*result, result->GetDeprecatedInkBounds(), context);
+    ComputeRangeIn(*result, result->ComputeInkBounds(), context);
   }
 
   // The position in question might be just after the text.

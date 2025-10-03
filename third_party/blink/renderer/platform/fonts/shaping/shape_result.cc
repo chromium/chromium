@@ -86,7 +86,6 @@ ASSERT_SIZE(ShapeResultCharacterData, SameSizeAsShapeResultCharacterData);
 struct SameSizeAsShapeResult {
   Vector<int> character_position_;
   Vector<UntracedMember<void*>, 1> runs_;
-  UntracedMember<void*> deprecated_ink_bounds_;
   float width;
   unsigned start_index_;
   unsigned bitfields;
@@ -429,7 +428,6 @@ ShapeResult::ShapeResult(const ShapeResult& other)
 ShapeResult::~ShapeResult() = default;
 
 void ShapeResult::Trace(Visitor* visitor) const {
-  visitor->Trace(deprecated_ink_bounds_);
   visitor->Trace(runs_);
   visitor->Trace(character_position_);
 }
