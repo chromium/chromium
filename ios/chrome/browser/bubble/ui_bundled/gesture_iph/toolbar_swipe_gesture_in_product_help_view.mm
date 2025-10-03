@@ -55,28 +55,12 @@ const int kBidirectionalAnimationRepeatCount = 4;
       _bidirectional = NO;
       _animationRepeatCount = [super animationRepeatCount];
     }
-    if (@available(iOS 17, *)) {
-      [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                        @[ UITraitVerticalSizeClass.class ])
-                         withAction:@selector(updateUIOnTraitChange)];
-    }
+    [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                      @[ UITraitVerticalSizeClass.class ])
+                       withAction:@selector(updateUIOnTraitChange)];
   }
   return self;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self updateUIOnTraitChange];
-  }
-}
-#endif
 
 - (void)setInitialBubbleViewWithDirection:(BubbleArrowDirection)direction
                              boundingSize:(CGSize)boundingSize {

@@ -343,17 +343,14 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     self.isAccessibilityElement = YES;
     self.accessibilityViewIsModal = YES;
 
-    if (@available(iOS 17, *)) {
-      __weak __typeof(self) weakSelf = self;
-      NSArray<UITrait>* traits = (@[
-        UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
-      ]);
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        [weakSelf pauseAnimationOnTraitChange:previousCollection];
-      };
-      [self registerForTraitChanges:traits withHandler:handler];
-    }
+    __weak __typeof(self) weakSelf = self;
+    NSArray<UITrait>* traits =
+        (@[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf pauseAnimationOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -413,17 +410,6 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   return CGSizeMake(MAX(min_width, targetSize.width),
                     MAX(min_height, targetSize.height));
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self pauseAnimationOnTraitChange:previousTraitCollection];
-}
-#endif
 
 - (void)layoutSubviews {
   [super layoutSubviews];

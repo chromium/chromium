@@ -427,19 +427,17 @@ UIStackView* PageControl(BubblePageControlPage page) {
 
     self.isAccessibilityElement = YES;
 
-    if (@available(iOS 17, *)) {
-      __weak __typeof(self) weakSelf = self;
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
-        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
-        UITraitUserInterfaceLevel.class
-      ]);
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        [weakSelf maybeChangeArrowColor:previousCollection];
-      };
-      [weakSelf registerForTraitChanges:traits withHandler:handler];
-    }
+    __weak __typeof(self) weakSelf = self;
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+      UITraitUserInterfaceLevel.class
+    ]);
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf maybeChangeArrowColor:previousCollection];
+    };
+    [weakSelf registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -1021,17 +1019,6 @@ UIStackView* PageControl(BubblePageControlPage page) {
   CGSize bubbleSize = CGSizeMake(bubbleWidth, bubbleHeight);
   return bubbleSize;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self maybeChangeArrowColor:previousTraitCollection];
-}
-#endif
 
 #pragma mark - Private sizes
 
