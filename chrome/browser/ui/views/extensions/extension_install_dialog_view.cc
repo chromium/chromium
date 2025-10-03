@@ -60,7 +60,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"

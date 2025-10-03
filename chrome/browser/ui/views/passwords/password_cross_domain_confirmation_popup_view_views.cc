@@ -34,7 +34,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"

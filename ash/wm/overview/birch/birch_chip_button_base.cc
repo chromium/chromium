@@ -10,7 +10,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/metadata/view_factory_internal.h"
 
 namespace ash {
 

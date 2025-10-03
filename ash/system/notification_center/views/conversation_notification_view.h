@@ -9,7 +9,6 @@
 
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/views/metadata/view_factory_internal.h"
 
 using MessageView = message_center::MessageView;
 using Notification = message_center::Notification;

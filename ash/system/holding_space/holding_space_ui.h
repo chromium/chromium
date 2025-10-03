@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/view_factory_internal.h"
 
 namespace ash::holding_space_ui {
 

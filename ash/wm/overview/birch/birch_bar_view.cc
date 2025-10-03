@@ -32,7 +32,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 

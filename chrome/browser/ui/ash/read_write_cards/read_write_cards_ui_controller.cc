@@ -21,7 +21,6 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/tooltip_manager.h"
