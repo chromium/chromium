@@ -37,8 +37,10 @@ class AccountChooserRadioButtonRow : public views::FlexLayoutView {
       delete;
   ~AccountChooserRadioButtonRow() override;
 
-  // Selects the account.
+  // View:
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+
   // Registers the account selection.
   void OnAccountSelected();
   // Selects the radio button.

@@ -74,7 +74,8 @@ std::unique_ptr<views::View> AccountChooserView::CreateBodySingleAccount(
                                        views::MinimumFlexSizeRule::kPreferred,
                                        views::MaximumFlexSizeRule::kUnbounded))
           .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetFocusBehavior(views::BoxLayoutView::FocusBehavior::ALWAYS)
+          .SetFocusBehavior(
+              views::BoxLayoutView::FocusBehavior::ACCESSIBLE_ONLY)
           .AddChildren(views::Builder<views::Separator>(),
                        views::Builder<views::FlexLayoutView>()
                            .SetOrientation(views::LayoutOrientation::kVertical)
