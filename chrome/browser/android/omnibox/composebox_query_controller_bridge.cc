@@ -38,7 +38,8 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
       g_browser_process->GetApplicationLocale(),
       TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetVariationsClient(), /*send_lns_surface=*/false,
-      /*enable_multi_context_input_flow=*/false);
+      /*enable_multi_context_input_flow=*/false,
+      /*enable_viewport_images=*/true);
   query_controller_->AddObserver(this);
 }
 

@@ -192,7 +192,8 @@ ComposeboxQueryController::ComposeboxQueryController(
     TemplateURLService* template_url_service,
     variations::VariationsClient* variations_client,
     bool send_lns_surface,
-    bool enable_multi_context_input_flow)
+    bool enable_multi_context_input_flow,
+    bool enable_viewport_images)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       channel_(channel),
@@ -200,7 +201,8 @@ ComposeboxQueryController::ComposeboxQueryController(
       template_url_service_(template_url_service),
       variations_client_(variations_client),
       send_lns_surface_(send_lns_surface),
-      enable_multi_context_input_flow_(enable_multi_context_input_flow) {
+      enable_multi_context_input_flow_(enable_multi_context_input_flow),
+      enable_viewport_images_(enable_viewport_images) {
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -330,9 +332,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
 
 #if BUILDFLAG(IS_IOS)
   bool has_viewport_screenshot =
+      enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot_bytes.has_value();
 #else
   bool has_viewport_screenshot =
+      enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot.has_value();
 #endif  // BUILDFLAG(IS_IOS)
   // Unlike image uploads, PDF / page content uploads need to increment the
@@ -737,7 +741,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
   // TODO(crbug.com/442685171): Pass the pdf page number to the viewport
   // upload request if available.
 #if BUILDFLAG(IS_IOS)
-  if (contextual_input_data->viewport_screenshot_bytes.has_value()) {
+  if (enable_viewport_images_ &&
+      contextual_input_data->viewport_screenshot_bytes.has_value()) {
     CHECK(image_options.has_value());
     CreateImageUploadRequest(
         file_token,
@@ -754,7 +759,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                            file_info->num_outstanding_network_requests_++)));
   }
 #else
-  if (contextual_input_data->viewport_screenshot.has_value()) {
+  if (enable_viewport_images_ &&
+      contextual_input_data->viewport_screenshot.has_value()) {
     CHECK(image_options.has_value());
     ProcessDecodedImageAndContinue(
         *file_info->request_id_, image_options.value(),

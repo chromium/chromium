@@ -146,7 +146,7 @@ const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
 
 const base::FeatureParam<bool> kSendLnsSurfaceParam(&kNtpComposebox,
                                                     "SendLnsSurfaceParam",
-                                                    false);
+                                                    true);
 
 const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
                                                   "ShowComposeboxZps",
@@ -173,6 +173,10 @@ const base::FeatureParam<bool> kShowContextMenuTabPreviews(
 const base::FeatureParam<bool> kShowContextMenuDescription(
     &kNtpComposebox,
     "ShowContextMenuDescription",
+    true);
+const base::FeatureParam<bool> kEnableViewportImages(
+    &kNtpComposebox,
+    "EnableViewportImages",
     true);
 
 const base::FeatureParam<bool> kShowToolsAndModels(&kNtpComposebox,

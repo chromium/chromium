@@ -110,7 +110,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
           templateURLService,
           VariationsClientServiceFactory::GetForProfile(self.profile),
           /*send_lns_surface=*/false,
-          /*enable_multi_context_input_flow=*/false);
+          /*enable_multi_context_input_flow=*/false,
+          /*enable_viewport_images=*/true);
 
   web::WebState::CreateParams params =
       web::WebState::CreateParams(self.profile);

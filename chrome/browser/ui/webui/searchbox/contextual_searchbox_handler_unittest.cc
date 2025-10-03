@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -26,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -64,15 +63,15 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
       content::WebContents* web_contents,
       std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
       std::unique_ptr<ComposeboxQueryController> query_controller)
-      : ContextualSearchboxHandler(
-            std::move(pending_page_handler),
-            profile,
-            web_contents,
-            /*metrics_reporter=*/nullptr,
-            std::move(metrics_recorder),
-            std::make_unique<OmniboxController>(
-                /*view=*/nullptr, std::make_unique<TestOmniboxClient>()),
-            std::move(query_controller)) {}
+      : ContextualSearchboxHandler(std::move(pending_page_handler),
+                                   profile,
+                                   web_contents,
+                                   /*metrics_reporter=*/nullptr,
+                                   std::move(metrics_recorder),
+                                   std::make_unique<OmniboxController>(
+                                       /*view=*/nullptr,
+                                       std::make_unique<TestOmniboxClient>()),
+                                   std::move(query_controller)) {}
   ~FakeContextualSearchboxHandler() override = default;
 
   // searchbox::mojom::PageHandler
@@ -89,8 +88,8 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 };
 }  // namespace
 
-class ContextualSearchboxHandlerTest :
-    public ContextualSearchboxHandlerTestHarness {
+class ContextualSearchboxHandlerTest
+    : public ContextualSearchboxHandlerTestHarness {
  public:
   ~ContextualSearchboxHandlerTest() override = default;
 
@@ -101,15 +100,16 @@ class ContextualSearchboxHandlerTest :
         /*identity_manager=*/nullptr, url_loader_factory(),
         version_info::Channel::UNKNOWN, "en-US", template_url_service(),
         fake_variations_client(), /*send_lns_surface=*/false,
-        /*enable_multi_context_input_flow=*/false);
+        /*enable_multi_context_input_flow=*/false,
+        /*enable_viewport_images=*/true);
     query_controller_ = query_controller_ptr.get();
     web_contents()->SetDelegate(&delegate_);
     auto metrics_recorder_ptr =
         std::make_unique<MockComposeboxMetricsRecorder>();
     metrics_recorder_ = metrics_recorder_ptr.get();
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        profile(), web_contents(), std::move(metrics_recorder_ptr),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+        web_contents(), std::move(metrics_recorder_ptr),
         std::move(query_controller_ptr));
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
@@ -222,8 +222,8 @@ TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
   handler().ClearFiles();
 }
 
-class ContextualSearchboxHandlerTestTabsTest :
-    public ContextualSearchboxHandlerTest {
+class ContextualSearchboxHandlerTestTabsTest
+    : public ContextualSearchboxHandlerTest {
  public:
   ContextualSearchboxHandlerTestTabsTest() = default;
 
