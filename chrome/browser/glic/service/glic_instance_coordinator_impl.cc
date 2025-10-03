@@ -388,14 +388,6 @@ GlicInstanceCoordinatorImpl::RegisterLastActiveInstanceChangedCallback(
   return subscription;
 }
 
-void GlicInstanceCoordinatorImpl::AttachInstance(GlicInstance* instance) {
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
-  NOTIMPLEMENTED();
-}
-
 GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
     tabs::TabInterface* tab) {

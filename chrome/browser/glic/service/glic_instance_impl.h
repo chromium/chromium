@@ -53,8 +53,6 @@ class GlicInstanceImpl : public GlicInstance,
   class InstanceCoordinatorDelegate {
    public:
     virtual ~InstanceCoordinatorDelegate() = default;
-    virtual void AttachInstance(GlicInstance* instance) = 0;
-    virtual void DetachInstance(GlicInstance* instance) = 0;
     virtual void OnInstanceOrphaned(GlicInstance* instance) = 0;
     // Called by an instance when its visibility state changes.
     virtual void OnInstanceVisibilityChanged(GlicInstance* instance,
@@ -80,8 +78,6 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicSharingManagerProvider implementation.
   GlicSharingManager& sharing_manager() override;
 
-  void AttachInstance();
-  void DetachInstance();
   void CloseInstanceAndShutdown();
   bool IsShowing() const override;
 

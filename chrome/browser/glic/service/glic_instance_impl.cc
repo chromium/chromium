@@ -125,20 +125,6 @@ GlicInstanceImpl::GlicInstanceImpl(
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;
 
-void GlicInstanceImpl::AttachInstance() {
-  if (!coordinator_delegate_) {
-    return;
-  }
-  coordinator_delegate_->AttachInstance(this);
-}
-
-void GlicInstanceImpl::DetachInstance() {
-  if (!coordinator_delegate_) {
-    return;
-  }
-  coordinator_delegate_->DetachInstance(this);
-}
-
 bool GlicInstanceImpl::IsShowing() const {
   return active_embedder_key_.has_value();
 }

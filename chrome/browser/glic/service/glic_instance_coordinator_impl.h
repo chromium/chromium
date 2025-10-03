@@ -55,8 +55,6 @@ class GlicInstanceCoordinatorImpl
   ~GlicInstanceCoordinatorImpl() override;
 
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
-  void AttachInstance(GlicInstance* instance) override;
-  void DetachInstance(GlicInstance* instance) override;
   void OnInstanceOrphaned(GlicInstance* instance) override;
   void OnInstanceVisibilityChanged(GlicInstance* instance,
                                    bool is_showing) override;
