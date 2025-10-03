@@ -1601,6 +1601,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 // Displays a restoration window to preserve lens overlay's visual state during
 // tab changes.
 - (void)showRestorationWindowIfNeeded {
+  // The custom presentation does not need the restoration window as the bottom
+  // sheet is contained in the container view.
+  if (UseCustomLensOverlayBottomSheet()) {
+    return;
+  }
+
   // If there is a pending snapshot, show it in a separate fullscreen window to
   // ease the transition.
   UIWindow* sceneWindow = self.browser->GetSceneState().window;
