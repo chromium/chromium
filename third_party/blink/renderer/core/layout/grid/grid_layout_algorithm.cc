@@ -1983,9 +1983,10 @@ class GapAccumulator {
   //
   // See third_party/blink/renderer/core/layout/gap/README.md for more.
   void BuildMainGaps(const GridLayoutData& layout_data) {
+    const auto& rows = layout_data.Rows();
     const Vector<LayoutUnit> row_tracks =
-        LayoutGrid::ComputeExpandedPositions(layout_data.Rows());
-    row_gutter_size_ = layout_data.Rows().GutterSize();
+        LayoutGrid::ComputeExpandedPositions(rows);
+    row_gutter_size_ = rows.GutterSize();
     wtf_size_t row_track_count = row_tracks.size();
 
     // CSS Gaps[1] defines an intersection point to exist in the center of gaps.
@@ -1995,7 +1996,15 @@ class GapAccumulator {
     // range [1, `row_track_count` - 1).
     //
     // [1] https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
+    // TODO(samomekarajr): This is currently O(nlogn) but can be optimized to
+    // be O(n) if we find the first range index and increment it as we go.
     for (wtf_size_t i = 1; i < row_track_count - 1; ++i) {
+      const wtf_size_t range_index = rows.RangeIndexFromGridLine(i);
+      if (rows.RangeProperties(range_index)
+              .HasProperty(TrackSpanProperties::kIsCollapsed)) {
+        continue;
+      }
+
       LayoutUnit row_midpoint =
           LayoutUnit(row_tracks[i] - (row_gutter_size_ / 2.0f));
       MainGap main_gap = MainGap(row_midpoint);
@@ -2007,9 +2016,10 @@ class GapAccumulator {
   }
 
   void BuildCrossGaps(const GridLayoutData& layout_data) {
+    const auto& columns = layout_data.Columns();
     const Vector<LayoutUnit> col_tracks =
-        LayoutGrid::ComputeExpandedPositions(layout_data.Columns());
-    col_gutter_size_ = layout_data.Columns().GutterSize();
+        LayoutGrid::ComputeExpandedPositions(columns);
+    col_gutter_size_ = columns.GutterSize();
     wtf_size_t col_track_count = col_tracks.size();
 
     // CSS Gaps defines an intersection point to exist in the center
@@ -2018,7 +2028,14 @@ class GapAccumulator {
     // track, and the last gap ends at the second-to-last track. So gaps are
     // defined in the track range [1, `col_track_count` - 1).
     // See: https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
+    // TODO(samomekarajr): This is currently O(nlogn) but can be optimized to
+    // be O(n) if we find the first range index and increment it as we go.
     for (wtf_size_t i = 1; i < col_track_count - 1; ++i) {
+      const wtf_size_t range_index = columns.RangeIndexFromGridLine(i);
+      if (columns.RangeProperties(range_index)
+              .HasProperty(TrackSpanProperties::kIsCollapsed)) {
+        continue;
+      }
       LayoutUnit col_midpoint =
           LayoutUnit(col_tracks[i] - (col_gutter_size_ / 2.0f));
       LogicalOffset cross_gap_offset =
@@ -2927,12 +2944,16 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       const LayoutUnit row_gap_start_offset =
           row_gap_midpoint - half_row_gap_size;
       // If the gap start is beyond the fragmentainer space, this is the first
-      // gap we know doesn't fit in this fragmentainer, so get the set idx for
-      // the previous gap since that will be the gap we need to consider for
-      // suppression.
-      if (row_gap_start_offset > fragmentainer_space &&
-          fragment_main_gaps.size() > 0) {
-        current_processed_gap_set_idx = (*track_idx_to_set_idx)[gap_index - 1];
+      // gap we know doesn't fit in this fragmentainer, so we should break.
+      if (row_gap_start_offset > fragmentainer_space) {
+        // If we have placed gaps in this fragment, we need to check if the last
+        // placed gap needs to be suppressed. Hence, we get the set index for
+        // the previous gap since that will be the gap to consider for
+        // suppression.
+        if (fragment_main_gaps.size() > 0) {
+          current_processed_gap_set_idx =
+              (*track_idx_to_set_idx)[gap_index - 1];
+        }
         break;
       }
 
