@@ -45,11 +45,6 @@
 
 namespace {
 
-/// Minimum number of whitespace to auto trigger AIM.
-constexpr size_t kMinWhitespaceTriggerAIM = 1;
-/// Minimum number of characters to auto trigger AIM.
-constexpr size_t kMinCharTriggerAIM = 10;
-
 // Reads data from a file URL. Runs on a background thread.
 NSData* ReadDataFromURL(GURL url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
@@ -114,14 +109,6 @@ CreateInputDataFromAnnotatedPageContent(
   input_data->page_url = web_state->GetVisibleURL();
   input_data->page_title = base::UTF16ToUTF8(web_state->GetTitle());
   return input_data;
-}
-
-/// Returns the number of whitespace in `string`.
-size_t WhitespaceCount(const std::u16string& string) {
-  return std::count_if(
-      string.begin(), string.end(),
-      [](unsigned char c) { return std::isspace(c); }  // The condition
-  );
 }
 
 }  // namespace
@@ -591,14 +578,6 @@ size_t WhitespaceCount(const std::u16string& string) {
          userInputInProgress:(BOOL)userInputInProgress {
   // Update mic button visibility.
   [self.consumer hideMicButton:text.length()];
-
-  // Auto trigger AIM if conditions are met.
-  if (!_AIModeEnabled && userInputInProgress && isSearchQuery) {
-    if (text.length() >= kMinCharTriggerAIM &&
-        WhitespaceCount(text) >= kMinWhitespaceTriggerAIM) {
-      [self.consumer setAIModeEnabled:YES];
-    }
-  }
 }
 
 #pragma mark - Private helpers
