@@ -194,7 +194,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     new TitleUpdater(), false /* recursive */);
         }
 
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+        if (isContainmentEnabled()) {
             // In multi-column mode, the main settings fragment is a child of the
             // MultiColumnSettings fragment, so the callbacks must be registered recursively.
             boolean recursive = true;
@@ -221,12 +221,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         @Override
                         public void onFragmentViewCreated(
                                 @NonNull FragmentManager fm,
-                                @NonNull Fragment f,
+                                @NonNull Fragment fragment,
                                 @NonNull View v,
                                 @Nullable Bundle savedInstanceState) {
-                            if (f instanceof PreferenceFragmentCompat fragment) {
-                                updateBackgrounds(fragment);
-                            }
+                            applyContainmentForFragment(fragment);
                         }
 
                         @Override
@@ -279,7 +277,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         mSnackbarManagerSupplier.set(new SnackbarManager(this, getContentView(), null));
 
         mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+        if (isContainmentEnabled()) {
             int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(this);
             findViewById(R.id.content).setBackgroundColor(backgroundColor);
             findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
@@ -353,9 +351,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (!ChromeFeatureList.sSearchInSettings.isEnabled()) return;
+        updateContainmentForMultiColumnLayout();
+
+        if (!ChromeFeatureList.sSearchInSettings.isEnabled()) {
+            return;
+        }
 
         boolean useMultiColumn = getUseMultiColumn();
+
         if (useMultiColumn == mUseMultiColumn) {
             if (mUseMultiColumn) new Handler().post(this::updateDetailPanelWidth);
             return;
@@ -401,15 +404,109 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         .getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
     }
 
-    @Override
-    public void onPreferencesUpdated(PreferenceFragmentCompat fragment) {
-        updateBackgrounds(fragment);
+    /** Returns true if the AndroidSettingsContainment feature is enabled. */
+    private static boolean isContainmentEnabled() {
+        return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
     }
 
-    /** Updates the background of all the visible preferences on the settings screen. */
-    private void updateBackgrounds(PreferenceFragmentCompat fragment) {
-        if (!ChromeFeatureList.sAndroidSettingsContainment.isEnabled()
-                || fragment.getListView() == null) return;
+    @Override
+    public void onPreferencesUpdated(PreferenceFragmentCompat fragment) {
+        applyContainmentForFragment(fragment);
+    }
+
+    /**
+     * Applies or removes containment styling for fragments within the multi-column settings layout
+     * based on whether the multi-column layout is currently active.
+     */
+    private void updateContainmentForMultiColumnLayout() {
+        if (mMultiColumnSettings == null) {
+            return;
+        }
+
+        for (Fragment rootFragment :
+                mMultiColumnSettings.getChildFragmentManager().getFragments()) {
+            if (rootFragment.isAdded()) {
+                if (getUseMultiColumn()) {
+                    removeContainmentForFragment(rootFragment);
+                } else {
+                    applyContainmentForFragment(rootFragment);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method to validate and cast a fragment for containment styling.
+     *
+     * @param f The fragment to check.
+     * @return The casted {@link PreferenceFragmentCompat} if valid for styling, otherwise null.
+     */
+    private @Nullable PreferenceFragmentCompat resolveFragmentForContainment(Fragment f) {
+        if (!(f instanceof PreferenceFragmentCompat fragment) || fragment.getListView() == null) {
+            return null;
+        }
+        return fragment;
+    }
+
+    /**
+     * Removes containment from the given fragment.
+     *
+     * @param f The fragment to remove the styling from.
+     */
+    private void removeContainmentForFragment(Fragment f) {
+        PreferenceFragmentCompat fragment = resolveFragmentForContainment(f);
+        if (!isContainmentEnabled() || fragment == null) {
+            return;
+        }
+
+        if (fragment instanceof MainSettings) {
+            ContainmentItemDecoration itemDecoration = mItemDecorations.get(fragment);
+            if (itemDecoration != null) {
+                fragment.getListView().removeItemDecoration(itemDecoration);
+                mItemDecorations.remove(fragment);
+                // Force a full redraw of the recycler view items.
+                if (fragment.getListView().getAdapter() != null) {
+                    // `invalidate()` is insufficient to remove the containment background because
+                    // it doesn't trigger a re-evaluation of `RecyclerView.ItemDecoration`s, which
+                    // applies the containment styling. A full redraw of items is needed.
+                    fragment.getListView()
+                            .getAdapter()
+                            .notifyItemRangeChanged(
+                                    0, fragment.getListView().getAdapter().getItemCount());
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns whether containment should be skipped for the given fragment, specifically for
+     * MainSettings when in multi-column, two-pane mode.
+     */
+    private boolean shouldSkipContainmentForMainSettings(PreferenceFragmentCompat fragment) {
+        return fragment instanceof MainSettings
+                && getUseMultiColumn()
+                && mMultiColumnSettings != null
+                && mMultiColumnSettings.isTwoPane();
+    }
+
+    /**
+     * Applies containment styling to the given fragment if containment is enabled and the fragment
+     * is a valid {@link PreferenceFragmentCompat} with a list view. This method also handles
+     * skipping containment for MainSettings when in multi-column, two-pane mode.
+     *
+     * @param f The fragment to apply the styling to.
+     */
+    private void applyContainmentForFragment(Fragment f) {
+        PreferenceFragmentCompat fragment = resolveFragmentForContainment(f);
+        if (!isContainmentEnabled() || fragment == null) {
+            return;
+        }
+
+        // For MainSettings, skip containment if multi-column layout is visible.
+        if (shouldSkipContainmentForMainSettings(fragment)) {
+            return;
+        }
+
         // Posting this runnable ensures the RecyclerView has completed its layout pass before
         // updating backgrounds.
         fragment.getListView()
@@ -434,7 +531,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public void applyThemeOverlays() {
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+        if (isContainmentEnabled()) {
             applySingleThemeOverlay(R.style.ThemeOverlay_Chromium_Settings_Containment);
         }
         super.applyThemeOverlays();

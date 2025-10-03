@@ -164,6 +164,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return mHeaderPanelWidthPx;
     }
 
+    /** Returns whether the current layout is in two-pane mode. */
+    boolean isTwoPane() {
+        return !getSlidingPaneLayout().isSlideable();
+    }
+
     private class InnerOnBackPressedCallback extends OnBackPressedCallback
             implements SlidingPaneLayout.PanelSlideListener {
         InnerOnBackPressedCallback() {
