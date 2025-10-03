@@ -454,8 +454,10 @@ void TabContainerImpl::ToggleTabGroup(
             ? CloseTabSource::kFromMouse
             : CloseTabSource::kFromTouch;
 
+    // Use actual last tab bounds instead of ideal_bounds to match
+    // current_group_width timing.
     EnterTabClosingMode(
-        tabs_view_model_.ideal_bounds(GetTabCount() - 1).right() -
+        tabs_view_model_.view_at(GetTabCount() - 1)->bounds().right() -
             current_group_width + collapsed_group_width,
         source);
   } else {

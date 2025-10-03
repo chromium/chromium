@@ -235,6 +235,14 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_container_->RemoveTab(model_index, was_active);
   }
 
+  void ToggleTabGroup(const tab_groups::TabGroupId& group) {
+    bool is_collapsed = tab_strip_controller_->IsGroupCollapsed(group);
+    tab_strip_controller_->ToggleTabGroupCollapsedState(
+        group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+    tab_container_->ToggleTabGroup(group, !is_collapsed,
+                                   ToggleTabGroupCollapsedStateOrigin::kMouse);
+  }
+
   void AddTabToGroup(int model_index, tab_groups::TabGroupId group) {
     tab_container_->GetTabAtModelIndex(model_index)->SetGroup(group);
     tab_strip_controller_->AddTabToGroup(model_index, group);
@@ -1226,4 +1234,35 @@ TEST_F(TabContainerTest, GroupHeader) {
   SetTabContainerWidthSingleLayout(1000);
   tab_container_->CompleteAnimationAndLayout();
   ASSERT_TRUE(group_header->GetVisible());
+}
+
+// Test for crbug.com/378223017.
+TEST_F(TabContainerTest,
+       CollapseGroupWhileExpandingProducesCorrectOverrideWidth) {
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+
+  AddTab(0, std::nullopt, TabActive::kActive);
+  AddTab(1, group);
+  AddTab(2, group);
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_EQ(tab_strip_controller_->IsGroupCollapsed(group), false);
+
+  // Collapse the group.
+  ToggleTabGroup(group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int correct_collapsed_pref_width =
+      tab_container_->GetPreferredSize().width();
+
+  // Expanding the group without CompleteAnimationAndLayout()
+  // During animations, should get correct preferred width.
+  ToggleTabGroup(group);
+  tab_container_->AnimateToIdealBounds();
+
+  // Immediately collapse again while expansion is in progress.
+  ToggleTabGroup(group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  EXPECT_EQ(tab_container_->GetPreferredSize().width(),
+            correct_collapsed_pref_width);
 }
