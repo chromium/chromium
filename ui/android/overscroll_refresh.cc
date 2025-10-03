@@ -106,6 +106,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
   } else if (in_x_direction) {
     DCHECK(source_device == blink::WebGestureDevice::kTouchpad ||
            source_device == blink::WebGestureDevice::kTouchscreen);
+    DCHECK_GE(viewport_width_, 0);
     bool scroll_from_edge = scroll_begin_x_ < edge_width_ ||
                             viewport_width_ - scroll_begin_x_ < edge_width_;
     // Swipe-to-navigate. Check overscroll-behavior-x and scroll start position.
