@@ -21,7 +21,7 @@ namespace ash::cfm {
 // collecting data temporarily. In the working case, we should never
 // hit this limit, but we may reach it if we're unable to enqueue logs
 // via Fetch() for whatever reason (eg a network outage).
-inline constexpr int kMaxInternalBufferSize = 500000;  // 500Kb
+inline constexpr int kMaxInternalBufferSize = 50000;  // 50Kb
 
 class LocalDataSource : public mojom::DataSource {
  public:
