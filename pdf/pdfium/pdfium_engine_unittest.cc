@@ -920,18 +920,6 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SetFormHighlight) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Removing form highlights should remove focus.
-  EXPECT_CALL(client, FormFieldFocusChange(
-                          PDFiumEngineClient::FocusFieldType::kNoFocus));
-  engine->SetFormHighlight(false);
-}
-
 TEST_P(PDFiumEngineTest, GetScreenRectsForCaret) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -2108,6 +2096,27 @@ TEST_P(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
   EXPECT_EQ(1u, GetSelectionSize(engine.get()));
 }
 
+TEST_P(PDFiumEngineTabbingTest, SetFormHighlight) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  InSequence sequence;
+  EXPECT_CALL(client,
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+
+  // Tab into the document.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+  // Tab into the page.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+
+  // Removing form highlights should remove focus.
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
+  engine->SetFormHighlight(false);
+}
+
 class ScrollingTestClient : public TestClient {
  public:
   ScrollingTestClient() = default;
@@ -2226,13 +2235,22 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTabbingTest, testing::Bool());
 
-using PDFiumEngineReadOnlyTest = PDFiumTestBase;
+using PDFiumEngineReadOnlyTest = PDFiumEngineTabbingTest;
 
 TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
+
+  InSequence sequence;
+  EXPECT_CALL(client,
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+
+  // Tab into the document.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+  // Tab into the page.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
 
   // Setting read-only mode should kill form focus.
   EXPECT_FALSE(engine->IsReadOnly());
@@ -2273,7 +2291,7 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-using PDFiumEngineInkTest = PDFiumTestBase;
+using PDFiumEngineInkTest = PDFiumEngineTabbingTest;
 
 TEST_P(PDFiumEngineInkTest, KillFormFocusInAnnotationMode) {
   NiceMock<MockTestClient> client;
@@ -2281,10 +2299,18 @@ TEST_P(PDFiumEngineInkTest, KillFormFocusInAnnotationMode) {
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
 
-  EXPECT_CALL(client, IsInAnnotationMode()).WillOnce(Return(true));
+  InSequence sequence;
+  EXPECT_CALL(client,
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
 
-  // Attempting to focus in annotation mode should once more trigger a killing
-  // of form focus.
+  // Tab into the document.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+  // Tab into the page.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+
+  // Attempting to focus the PDF Viewer in annotation mode should kill form
+  // focus.
+  EXPECT_CALL(client, IsInAnnotationMode()).WillOnce(Return(true));
   EXPECT_CALL(client, FormFieldFocusChange(
                           PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->UpdateFocus(true);
