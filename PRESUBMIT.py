@@ -125,9 +125,8 @@ class BanRule:
     # Explanation as a sequence of strings. Each string in the sequence will be
     # printed on its own line.
     explanation: Tuple[str, ...]
-    # Whether or not to treat this ban as a fatal error. If unspecified,
-    # defaults to true.
-    treat_as_error: Optional[bool] = None
+    # Whether or not to treat this ban as a fatal error.
+    treat_as_error: bool = False
     # Paths that should be excluded from the ban check. Each string is a regular
     # expression that will be matched against the path of the file being checked
     # relative to the root of the source tree.
@@ -142,6 +141,7 @@ _BANNED_JAVA_IMPORTS: Sequence[BanRule] = (
         'import java.net.URI;',
         ('Use org.chromium.url.GURL instead of java.net.URI, where possible.',
          ),
+        True,
         excluded_paths=(
             (r'net/android/javatests/src/org/chromium/net/'
              r'AndroidProxySelectorTest\.java'),
@@ -154,11 +154,13 @@ _BANNED_JAVA_IMPORTS: Sequence[BanRule] = (
         ('Do not use TargetApi, use @androidx.annotation.RequiresApi instead. '
          'RequiresApi ensures that any calls are guarded by the appropriate '
          'SDK_INT check. See https://crbug.com/1116486.', ),
+        True
     ),
     BanRule(
         'import androidx.test.rule.ActivityTestRule;',
         ('Do not use ActivityTestRule, use '
          'org.chromium.base.test.BaseActivityTestRule instead.', ),
+        True,
         excluded_paths=('components/cronet/', ),
     ),
     BanRule(
@@ -166,6 +168,7 @@ _BANNED_JAVA_IMPORTS: Sequence[BanRule] = (
         ('Do not use VectorDrawableCompat, use getResources().getDrawable() '
          'to avoid extra indirections. Please also add trace event as the call '
          'might take more than 20 ms to complete.', ),
+        True,
     ),
 )
 
@@ -2891,8 +2894,8 @@ def _GetMessageForMatchingType(input_api, affected_file, line_number, line,
     return result
 
 
-def CheckNoBannedFunctions(input_api, output_api):
-    """Make sure that banned functions are not used."""
+def CheckNoBannedPatterns(input_api, output_api):
+    """Make sure that banned patterns are not used."""
     results = []
 
     def IsExcludedFile(affected_file, excluded_paths):
@@ -2934,22 +2937,22 @@ def CheckNoBannedFunctions(input_api, output_api):
                         start_line=line_num,
                         end_line=line_num,
                     ))
-            if ban_rule.treat_as_error is not None and ban_rule.treat_as_error:
+            if ban_rule.treat_as_error:
                 results.append(
-                    output_api.PresubmitError('A banned function was used.\n' +
+                    output_api.PresubmitError('A banned pattern was used.\n' +
                                               '\n'.join(message),
                                               locations=result_loc))
 
             else:
                 results.append(
                     output_api.PresubmitPromptWarning(
-                        'A banned function was used.\n' + '\n'.join(message),
+                        'A banned pattern was used.\n' + '\n'.join(message),
                         locations=result_loc))
 
     file_filter = lambda f: f.LocalPath().endswith(('.java'))
     for f in input_api.AffectedFiles(file_filter=file_filter):
         for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_JAVA_FUNCTIONS:
+            for ban_rule in _BANNED_JAVA_FUNCTIONS + _BANNED_JAVA_IMPORTS:
                 CheckForMatch(f, line_num, line, ban_rule)
 
     file_filter = lambda f: f.LocalPath().endswith(('.js', '.ts'))
@@ -3011,32 +3014,8 @@ def CheckNoBannedFunctions(input_api, output_api):
     return results
 
 
-def _CheckAndroidNoBannedImports(input_api, output_api):
-    """Make sure that banned java imports are not used."""
-    errors = []
-
-    file_filter = lambda f: f.LocalPath().endswith(('.java'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_JAVA_IMPORTS:
-                # Consider merging this into the above function. There is no
-                # real difference anymore other than helping with a little
-                # bit of boilerplate text. Doing so means things like
-                # `treat_as_error` will also be uniformly handled.
-                problems = _GetMessageForMatchingType(input_api, f, line_num,
-                                                      line, ban_rule)
-                if problems:
-                    errors.extend(problems)
-    result = []
-    if (errors):
-        result.append(
-            output_api.PresubmitError('Banned imports were used.\n' +
-                                      '\n'.join(errors)))
-    return result
-
-
 def CheckNoPragmaOnce(input_api, output_api):
-    """Make sure that banned functions are not used."""
+    """Make sure #pragma once is not used."""
     files = []
     pattern = input_api.re.compile(r'^#pragma\s+once', input_api.re.MULTILINE)
     for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
@@ -5888,7 +5867,6 @@ def ChecksAndroidSpecificOnUpload(input_api, output_api):
     results.extend(_CheckAndroidWebkitImports(input_api, output_api))
     results.extend(_CheckAndroidXmlStyle(input_api, output_api, True))
     results.extend(_CheckNewImagesWarning(input_api, output_api))
-    results.extend(_CheckAndroidNoBannedImports(input_api, output_api))
     results.extend(_CheckAndroidInfoBarDeprecation(input_api, output_api))
     results.extend(_CheckAndroidNullAwayAnnotatedClasses(
         input_api, output_api))
