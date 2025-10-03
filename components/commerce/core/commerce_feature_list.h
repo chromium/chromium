@@ -39,7 +39,7 @@ extern const base::FeatureParam<bool> kPriceInsightsShowFeedback;
 extern const char kPriceInsightsUseCacheParam[];
 extern const base::FeatureParam<bool> kPriceInsightsUseCache;
 BASE_DECLARE_FEATURE(kPriceTrackingPromo);
-BASE_DECLARE_FEATURE(kShopCard);
+BASE_DECLARE_FEATURE(kTabResumptionShopCard);
 BASE_DECLARE_FEATURE(kShopCardImpressionLimits);
 
 std::string ShopCardExperiment();
@@ -161,9 +161,9 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
     ""};
 
 inline constexpr base::FeatureParam<std::string> kShopCardVariation{
-    &kShopCard, "ShopCardVariant", ""};
+    &kTabResumptionShopCard, "ShopCardVariant", ""};
 inline constexpr base::FeatureParam<std::string> kShopCardPosition{
-    &kShopCard, "ShopCardPosition", ""};
+    &kTabResumptionShopCard, "ShopCardPosition", ""};
 
 extern const char kShopCardArm1[];
 extern const char kShopCardArm2[];

@@ -50,16 +50,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-namespace {
-
-int GetImpressionLimit() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      commerce::kShopCard, commerce::kShopCardMaxImpressions,
-      kShopCardMaxImpressions);
-}
-
-}  // namespace
-
 @interface ShopCardMediator () <ImpressionLimitServiceObserverBridgeDelegate,
                                 MagicStackModuleDelegate,
                                 PrefObserverDelegate,
@@ -425,7 +415,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   }
   std::optional<int> count = _impressionLimitService->GetImpressionCount(
       url, shop_card_prefs::kShopCardPriceDropUrlImpressions);
-  return count.has_value() && count.value() >= GetImpressionLimit();
+  return count.has_value() && count.value() >= kShopCardMaxImpressions;
 }
 
 - (BOOL)hasBeenOpened:(const GURL&)url {
