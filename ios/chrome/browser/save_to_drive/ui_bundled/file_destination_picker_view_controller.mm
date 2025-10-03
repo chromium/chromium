@@ -188,7 +188,7 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
-  TableViewCell* cell =
+  UITableViewCell* cell =
       [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   const bool selected = ItemIsSelected(itemIdentifier);
   FileDestination destination = ItemFileDestination(itemIdentifier);

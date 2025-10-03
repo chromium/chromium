@@ -40,6 +40,11 @@
 // drawn as in the "off" state, with dimmed text.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
 
+// Configuration of the switch.
+@property(nonatomic, weak) id target;
+@property(nonatomic, assign) SEL selector;
+@property(nonatomic, assign) NSInteger tag;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_SWITCH_ITEM_H_

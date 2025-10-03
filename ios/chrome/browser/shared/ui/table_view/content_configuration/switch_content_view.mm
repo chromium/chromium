@@ -23,6 +23,10 @@
     _switchView.translatesAutoresizingMaskIntoConstraints = NO;
     [_switchView setContentHuggingPriority:UILayoutPriorityRequired - 1
                                    forAxis:UILayoutConstraintAxisHorizontal];
+    [_switchView
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
     [self addSubview:_switchView];
 
     _configuration = configuration;
@@ -31,6 +35,10 @@
     AddSameConstraints(_switchView, self);
   }
   return self;
+}
+
+- (UISwitch*)switchForTesting {
+  return _switchView;
 }
 
 #pragma mark - ChromeContentView

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -86,6 +85,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _handoffSwitchItem.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES);
   _handoffSwitchItem.on = _handoffEnabled.value;
+  _handoffSwitchItem.target = self;
+  _handoffSwitchItem.selector = @selector(switchChanged:);
   [model addItem:_handoffSwitchItem
       toSectionWithIdentifier:SectionIdentifierSwitch];
 
@@ -94,26 +95,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   footer.text = l10n_util::GetNSString(
       IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES_DETAILS);
   [model setFooter:footer forSectionWithIdentifier:SectionIdentifierSwitch];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-
-  if (itemType == ItemTypeSwitch) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchChanged:)
-                    forControlEvents:UIControlEventValueChanged];
-  }
-  return cell;
 }
 
 #pragma mark - SettingsControllerProtocol

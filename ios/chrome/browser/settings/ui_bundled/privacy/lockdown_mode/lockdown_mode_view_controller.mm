@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/info_popover_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -182,18 +181,7 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
-      case ItemTypeLockdownModeSwitch: {
-        TableViewSwitchCell* switchCell =
-            base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-        [switchCell.switchView addTarget:self
-                                  action:@selector(lockdownModeSwitchChanged:)
-                        forControlEvents:UIControlEventValueChanged];
-        break;
-      }
-    }
-  } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
+  if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* infoCell =
         base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     [infoCell.trailingButton addTarget:self
@@ -247,6 +235,8 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
       lockdownModeItem.detailText =
           l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_SWITCH_BUTTON_SUMMARY);
       lockdownModeItem.accessibilityIdentifier = kLockdownModeCellId;
+      lockdownModeItem.target = self;
+      lockdownModeItem.selector = @selector(lockdownModeSwitchChanged:);
       _lockdownModeItem = lockdownModeItem;
     }
   }

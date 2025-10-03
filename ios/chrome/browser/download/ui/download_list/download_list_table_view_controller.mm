@@ -100,7 +100,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   configuration.subtitle = item.detailText;
   configuration.leadingConfiguration = imageConfiguration;
 
-  TableViewCell* cell =
+  UITableViewCell* cell =
       [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
   cell.contentConfiguration = configuration;
 

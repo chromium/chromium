@@ -51,9 +51,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
@@ -133,9 +134,15 @@ bool IsIPad() {
 
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
-    TableViewSwitchCell* switch_cell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(element);
-    UISwitch* switch_view = switch_cell.switchView;
+    UITableViewCell* cell =
+        base::apple::ObjCCastStrict<UITableViewCell>(element);
+    TableViewCellContentView* content_view =
+        base::apple::ObjCCastStrict<TableViewCellContentView>(cell.contentView);
+    SwitchContentView* switch_content_view =
+        base::apple::ObjCCastStrict<SwitchContentView>(
+            [content_view trailingContentViewForTesting]);
+
+    UISwitch* switch_view = [switch_content_view switchForTesting];
     return (switch_view.on && is_toggled_on) ||
            (!switch_view.on && !is_toggled_on);
   };
@@ -151,9 +158,16 @@ id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
 
 id<GREYMatcher> TableViewSwitchIsEnabled(BOOL is_enabled) {
   GREYMatchesBlock matches = ^BOOL(id element) {
-    TableViewSwitchCell* switch_cell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(element);
-    UISwitch* switch_view = switch_cell.switchView;
+    UITableViewCell* cell =
+        base::apple::ObjCCastStrict<UITableViewCell>(element);
+    TableViewCellContentView* content_view =
+        base::apple::ObjCCastStrict<TableViewCellContentView>(cell.contentView);
+    SwitchContentView* switch_content_view =
+        base::apple::ObjCCastStrict<SwitchContentView>(
+            [content_view trailingContentViewForTesting]);
+
+    UISwitch* switch_view = [switch_content_view switchForTesting];
+
     return (switch_view.enabled && is_enabled) ||
            (!switch_view.enabled && !is_enabled);
   };

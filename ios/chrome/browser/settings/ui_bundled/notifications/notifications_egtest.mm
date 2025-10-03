@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -24,18 +25,6 @@ using chrome_test_util::SettingsMenuNotificationsButton;
 using chrome_test_util::SettingsNotificationsTableView;
 
 namespace {
-
-// Returns the matcher for the Tips Notifications switch.
-id<GREYMatcher> TipsSwitchMatcher() {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TIPS_TITLE);
-  return grey_accessibilityID([NSString stringWithFormat:@"%@, switch", title]);
-}
-
-// Returns the matcher for the Safety Check Notifications switch.
-id<GREYMatcher> SafetyCheckSwitchMatcher() {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
-  return grey_accessibilityID([NSString stringWithFormat:@"%@, switch", title]);
-}
 
 // Taps the alert item with the given label.
 void TapAlertItem(int labelId) {
@@ -142,16 +131,11 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
   // Check that the TableView is presented.
   [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
-      assertWithMatcher:grey_notNil()];
-
-  // Toggle off the switch.
-  [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
-      performAction:grey_turnSwitchOn(NO)];
 
   // Toggle on the switch.
-  [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
-      performAction:grey_turnSwitchOn(YES)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSettingsNotificationsTipsCellId, NO)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Tap Go To Settings action.
   TapAlertItem(IDS_IOS_NOTIFICATIONS_ALERT_GO_TO_SETTINGS);
@@ -181,16 +165,12 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
   // Check that the TableView is presented.
   [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:SafetyCheckSwitchMatcher()]
-      assertWithMatcher:grey_notNil()];
-
-  // Toggle off the switch.
-  [[EarlGrey selectElementWithMatcher:SafetyCheckSwitchMatcher()]
-      performAction:grey_turnSwitchOn(NO)];
 
   // Toggle on the switch.
-  [[EarlGrey selectElementWithMatcher:SafetyCheckSwitchMatcher()]
-      performAction:grey_turnSwitchOn(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kSettingsNotificationsSafetyCheckCellId, NO)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Tap Go To Settings action.
   TapAlertItem(IDS_IOS_NOTIFICATIONS_ALERT_GO_TO_SETTINGS);

@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -236,7 +235,6 @@ bool TooNarrowForBanner(UIView* view) {
                                       itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewSwitchCell>(_tableView);
   [TableViewCellContentConfiguration legacyRegisterCellForTableView:_tableView];
 
   [_dataSource applySnapshot:self.snapshot animatingDifferences:NO];
@@ -373,15 +371,11 @@ bool TooNarrowForBanner(UIView* view) {
                                       item:(TableViewItem*)item
                             itemIdentifier:
                                 (NotificationsItemIdentifier)itemIdentifier {
-  TableViewSwitchCell* cell =
-      DequeueTableViewCell<TableViewSwitchCell>(tableView);
+  LegacyTableViewCell* cell =
+      [TableViewCellContentConfiguration legacyDequeueTableViewCell:tableView];
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(item);
   [self configureCell:cell item:switchItem identifier:itemIdentifier];
-  cell.switchView.tag = itemIdentifier;
-  [cell.switchView addTarget:self
-                      action:@selector(switchAction:)
-            forControlEvents:UIControlEventValueChanged];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   return cell;
 }
@@ -398,17 +392,6 @@ bool TooNarrowForBanner(UIView* view) {
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
   return cell;
-}
-
-// Called when switch is toggled.
-- (void)switchAction:(UISwitch*)sender {
-  TableViewItem* item =
-      [self tableItemForItemIdentifier:static_cast<NotificationsItemIdentifier>(
-                                           sender.tag)];
-  TableViewSwitchItem* switchItem =
-      base::apple::ObjCCastStrict<TableViewSwitchItem>(item);
-  DCHECK(switchItem);
-  [self.modelDelegate didToggleSwitchItem:switchItem withValue:sender.isOn];
 }
 
 // Updates the tableView's height constraint.

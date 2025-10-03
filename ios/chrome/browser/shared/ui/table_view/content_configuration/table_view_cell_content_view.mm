@@ -111,6 +111,10 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   return self;
 }
 
+- (UIView*)trailingContentViewForTesting {
+  return _trailingContentView;
+}
+
 #pragma mark - ChromeContentView
 
 - (BOOL)hasCustomAccessibilityActivationPoint {

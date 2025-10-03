@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -164,6 +163,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     translateSwitchItem.detailText = l10n_util::GetNSString(
         IDS_IOS_LANGUAGE_SETTINGS_TRANSLATE_SWITCH_SUBTITLE);
     translateSwitchItem.on = [self.dataSource translateEnabled];
+    translateSwitchItem.target = self;
+    translateSwitchItem.selector = @selector(translateSwitchChanged:);
     [model addItem:translateSwitchItem
         toSectionWithIdentifier:SectionIdentifierTranslate];
   }
@@ -377,14 +378,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemType itemType =
       (ItemType)[self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
-    case ItemTypeTranslateSwitch: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(translateSwitchChanged:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
-    }
     case ItemTypeTranslateManaged: {
       TableViewInfoButtonCell* managedCell =
           base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
@@ -394,6 +387,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           forControlEvents:UIControlEventTouchUpInside];
       break;
     }
+    case ItemTypeTranslateSwitch:
     case ItemTypeHeader:
     case ItemTypeLanguage:
     case ItemTypeAddLanguage:

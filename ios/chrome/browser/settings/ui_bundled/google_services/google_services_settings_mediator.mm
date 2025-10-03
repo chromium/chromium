@@ -241,15 +241,15 @@ bool GetStatusForSigninPolicy() {
     ItemType type = static_cast<ItemType>(item.type);
     switch (type) {
       case AllowChromeSigninItemType: {
-        SyncSwitchItem* signinDisabledItem =
+        SyncSwitchItem* switchItem =
             base::apple::ObjCCast<SyncSwitchItem>(item);
         // Supervised users cannot manually enable/disable sign-in.
         if (![self isSubjectToParentalControls] &&
             IsControllingSigninAllowedByPolicy()) {
-          signinDisabledItem.on = self.allowChromeSigninPreference.value;
+          switchItem.on = self.allowChromeSigninPreference.value;
         } else {
-          signinDisabledItem.on = NO;
-          signinDisabledItem.enabled = NO;
+          switchItem.on = NO;
+          switchItem.enabled = NO;
         }
         break;
       }
@@ -410,6 +410,9 @@ bool GetStatusForSigninPolicy() {
   if (detailStringID) {
     switchItem.detailText = GetNSString(detailStringID);
   }
+  switchItem.target = self;
+  switchItem.selector = @selector(itemSwitchToggled:);
+  switchItem.tag = itemType;
   return switchItem;
 }
 
@@ -453,14 +456,28 @@ bool GetStatusForSigninPolicy() {
   return [self isSubjectToParentalControls];
 }
 
-#pragma mark - GoogleServicesSettingsServiceDelegate
+#pragma mark - BooleanObserver
 
-- (void)toggleSwitchItem:(TableViewItem*)item
-               withValue:(BOOL)value
-              targetRect:(CGRect)targetRect {
-  SyncSwitchItem* syncSwitchItem = base::apple::ObjCCast<SyncSwitchItem>(item);
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  [self updateNonPersonalizedSectionWithNotification:YES];
+}
+
+#pragma mark - Private
+
+// Handler for the switches.
+- (void)itemSwitchToggled:(UISwitch*)sender {
+  BOOL value = sender.on;
+  CGRect targetRect = [sender convertRect:sender.bounds toView:nil];
+
+  SyncSwitchItem* syncSwitchItem;
+  ItemType type = static_cast<ItemType>(sender.tag);
+  for (TableViewItem* item in self.nonPersonalizedItems) {
+    if (item.type == type) {
+      syncSwitchItem = base::apple::ObjCCastStrict<SyncSwitchItem>(item);
+      break;
+    }
+  }
   syncSwitchItem.on = value;
-  ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
     case AllowChromeSigninItemType: {
       [self handleUpdateIsSigninAllowedValue:value
@@ -486,14 +503,6 @@ bool GetStatusForSigninPolicy() {
       NOTREACHED();
   }
 }
-
-#pragma mark - BooleanObserver
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self updateNonPersonalizedSectionWithNotification:YES];
-}
-
-#pragma mark - Private
 
 - (BOOL)isSubjectToParentalControls {
   return self.identityManager &&

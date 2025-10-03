@@ -9,8 +9,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -18,7 +19,6 @@
 namespace {
 
 const CGFloat kSymbolSize = 20;
-const CGFloat kSwitchCellCornerRadius = 12;
 
 }  // namespace
 
@@ -41,26 +41,30 @@ SettingsImageDetailTextCell* PrivacyGuideExplanationCell(
   return cell;
 }
 
-TableViewSwitchCell* PrivacyGuideSwitchCell(UITableView* table_view,
-                                            int text_id,
-                                            BOOL switch_enabled,
-                                            BOOL switch_on,
-                                            NSString* accessibility_id) {
-  TableViewSwitchCell* cell =
-      DequeueTableViewCell<TableViewSwitchCell>(table_view);
+UITableViewCell* PrivacyGuideSwitchCell(UITableView* table_view,
+                                        int text_id,
+                                        BOOL switch_on,
+                                        NSString* accessibility_id,
+                                        id target,
+                                        SEL selector) {
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:table_view];
 
   NSString* title = l10n_util::GetNSString(text_id);
-  [cell configureCellWithTitle:title
-                      subtitle:nil
-                 switchEnabled:switch_enabled
-                            on:switch_on];
-  [cell setUseCustomSeparator:NO];
-  cell.textLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  cell.textLabel.numberOfLines = 0;
-  cell.textLabel.adjustsFontForContentSizeCategory = YES;
-  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  cell.layer.cornerRadius = kSwitchCellCornerRadius;
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = title;
+
+  SwitchContentConfiguration* switch_configuration =
+      [[SwitchContentConfiguration alloc] init];
+  switch_configuration.on = switch_on;
+  switch_configuration.target = target;
+  switch_configuration.selector = selector;
+
+  configuration.trailingConfiguration = switch_configuration;
+  cell.contentConfiguration = configuration;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
   cell.accessibilityIdentifier = accessibility_id;
 
   return cell;

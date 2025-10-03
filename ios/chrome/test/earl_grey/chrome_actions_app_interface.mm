@@ -5,8 +5,9 @@
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_view.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_actions.h"
@@ -98,11 +99,18 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
           // action interacts with UI, kick it over to the main thread.
           __block BOOL success = NO;
           grey_dispatch_sync_on_main_thread(^{
-            TableViewSwitchCell* switchCell =
-                base::apple::ObjCCast<TableViewSwitchCell>(collectionViewCell);
-            if (!switchCell) {
+            UITableViewCell* cell =
+                base::apple::ObjCCast<UITableViewCell>(collectionViewCell);
+            TableViewCellContentView* contentView =
+                base::apple::ObjCCast<TableViewCellContentView>(
+                    cell.contentView);
+            SwitchContentView* switchContentView =
+                base::apple::ObjCCastStrict<SwitchContentView>(
+                    [contentView trailingContentViewForTesting]);
+
+            if (!switchContentView) {
               NSString* description = @"The element isn't of the expected type "
-                                      @"(TableViewSwitchCell).";
+                                      @"(SwitchContentView).";
               *errorOrNil = [NSError
                   errorWithDomain:kChromeActionsErrorDomain
                              code:0
@@ -110,7 +118,8 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
               success = NO;
               return;
             }
-            UISwitch* switchView = switchCell.switchView;
+
+            UISwitch* switchView = [switchContentView switchForTesting];
             if (switchView.on != on) {
               id<GREYAction> action = [GREYActions actionForTurnSwitchOn:on];
               success = [action perform:switchView error:errorOrNil];

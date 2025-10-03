@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/common/string_util.h"
@@ -130,15 +129,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       (ItemType)[self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypePermissionsCamera:
-    case ItemTypePermissionsMicrophone: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      switchCell.switchView.tag = itemType;
-      [switchCell.switchView addTarget:self
-                                action:@selector(permissionSwitchToggled:)
-                      forControlEvents:UIControlEventValueChanged];
+    case ItemTypePermissionsMicrophone:
       break;
-    }
     case ItemTypePermissionsDescription:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
@@ -252,16 +244,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       TableViewSwitchItem* currentItem =
           base::apple::ObjCCastStrict<TableViewSwitchItem>(
               [self.tableViewModel itemAtIndexPath:index]);
-      TableViewSwitchCell* currentCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(
-              [self.tableView cellForRowAtIndexPath:index]);
       currentItem.on = state == web::PermissionStateAllowed;
-      // Reload the switch cell if its value is outdated.
-      if (currentItem.isOn != currentCell.switchView.isOn) {
-        [self.tableView
-            reloadRowsAtIndexPaths:@[ index ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-      }
+      [self.tableView reloadRowsAtIndexPaths:@[ index ]
+                            withRowAnimation:UITableViewRowAnimationAutomatic];
     }
     return;
   }
@@ -273,6 +258,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewSwitchItem* switchItem =
       [[TableViewSwitchItem alloc] initWithType:itemType];
+  switchItem.target = self;
+  switchItem.selector = @selector(permissionSwitchToggled:);
+  switchItem.tag = itemType;
   switchItem.text = label;
   switchItem.on = state == web::PermissionStateAllowed;
   switchItem.accessibilityIdentifier =

@@ -62,6 +62,7 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.useCustomSeparator = NO;
+  self.selectionStyle = UITableViewCellSelectionStyleDefault;
   self.userInteractionEnabled = YES;
   self.accessibilityLabel = nil;
   self.accessibilityUserInputLabels = nil;

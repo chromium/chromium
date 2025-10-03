@@ -13,8 +13,7 @@
 
 // Presents the sign-out dialog to the user if any profile is signed-in in
 // another scene. Otherwise directly call completion with success=YES.
-// `targetRect` rect in table view system coordinate to display the signout
-// popover dialog.
+// `targetRect` rect in window coordinate to display the signout popover dialog.
 - (void)maybeShowSignOutFromTargetRect:(CGRect)targetRect
                             completion:(signin_ui::SignoutCompletionCallback)
                                            completion;

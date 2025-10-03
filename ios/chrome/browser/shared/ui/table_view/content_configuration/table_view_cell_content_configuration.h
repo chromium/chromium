@@ -62,7 +62,7 @@
 // ensures that the pool of cells that will be used for this content
 // configuration can be reused for the same configurations.
 + (void)registerCellForTableView:(UITableView*)tableView;
-+ (TableViewCell*)dequeueTableViewCell:(UITableView*)tableView;
++ (UITableViewCell*)dequeueTableViewCell:(UITableView*)tableView;
 
 // TODO(crbug.com/443034511): Remove this method.
 // **DO NOT use both the legacy and non-legacy versions on the same

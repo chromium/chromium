@@ -6,6 +6,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/push_notifications_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -23,17 +24,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Returns the matcher for the Tips Notifications switch.
-id<GREYMatcher> TipsSwitchMatcher() {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TIPS_TITLE);
-  return grey_accessibilityID([NSString stringWithFormat:@"%@, switch", title]);
-}
-
-// Returns the matcher for the Tips Notifications switch.
-id<GREYMatcher> ContentSwitchMatcher() {
-  return grey_accessibilityID(@"Personalized Content, switch");
-}
 
 // Returns the matcher for the Notifications Opt-In Screen.
 id<GREYMatcher> OptInScreenMatcher() {
@@ -113,14 +103,18 @@ id<GREYMatcher> OptInScreenMatcher() {
   [self assertPrimaryButtonEnabled:NO];
 
   // Toggle on the switch.
-  [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
-      performAction:grey_turnSwitchOn(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kNotificationsOptInTipsAccessibilityID, NO)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   [self assertPrimaryButtonEnabled:YES];
 
   // Toggle off the switch.
-  [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
-      performAction:grey_turnSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kNotificationsOptInTipsAccessibilityID, YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
   [self assertPrimaryButtonEnabled:NO];
 
@@ -142,8 +136,10 @@ id<GREYMatcher> OptInScreenMatcher() {
 
   // The Content Notification item should not be shown at this time, becasue
   // feature flag and user eligibility is not fulfilled by default setup.
-  [[EarlGrey selectElementWithMatcher:ContentSwitchMatcher()]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kNotificationsOptInContentAccessibilityID,
+                                   NO)] assertWithMatcher:grey_nil()];
 }
 
 @end

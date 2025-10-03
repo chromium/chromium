@@ -18,6 +18,9 @@
 - (instancetype)initWithConfiguration:
     (SwitchContentConfiguration*)configuration;
 
+// Returns the switch, to be used in testing only.
+- (UISwitch*)switchForTesting;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CONTENT_CONFIGURATION_SWITCH_CONTENT_VIEW_H_

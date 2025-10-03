@@ -9,7 +9,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -59,6 +58,9 @@ NSString* const kPreciseLocationCellId = @"PreciseLocationCellId";
       [[TableViewSwitchItem alloc] initWithType:ItemTypeLocation];
   _preciseLocationSwitchItem.text =
       l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_SWITCH_TITLE);
+  _preciseLocationSwitchItem.target = self;
+  _preciseLocationSwitchItem.selector =
+      @selector(preciseLocationSwitchToggled:);
   _preciseLocationSwitchItem.on = _preciseLocationEnabled;
   _preciseLocationSwitchItem.accessibilityIdentifier = kPreciseLocationCellId;
 
@@ -84,30 +86,10 @@ NSString* const kPreciseLocationCellId = @"PreciseLocationCellId";
 
 #pragma mark - Private
 
-// Called from the Precise Location setting's UIControlEventTouchUpInside.
+// Called from the Precise Location setting's UIControlEventValueChanged.
 // Updates underlying precise location sharing pref.
-- (void)preciseLocationSwitchTapped:(UISwitch*)switchView {
+- (void)preciseLocationSwitchToggled:(UISwitch*)switchView {
   [self.mutator setPreciseLocationPref:switchView.isOn];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-
-  if (itemType == ItemTypeLocation) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(preciseLocationSwitchTapped:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  }
-  return cell;
 }
 
 #pragma mark - SettingsControllerProtocol

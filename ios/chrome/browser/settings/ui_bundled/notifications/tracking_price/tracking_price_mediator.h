@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/settings/ui_bundled/notifications/tracking_price/tracking_price_view_controller_delegate.h"
 
 class AuthenticationService;
 class PrefService;
@@ -21,8 +20,7 @@ class ShoppingService;
 }  // namespace commerce
 
 // Mediator for the Tracking Price.
-@interface TrackingPriceMediator
-    : NSObject <TrackingPriceViewControllerDelegate>
+@interface TrackingPriceMediator : NSObject
 
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)shoppingService

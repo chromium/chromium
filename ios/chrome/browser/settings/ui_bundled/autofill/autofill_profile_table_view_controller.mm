@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -234,6 +233,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewSwitchItem alloc] initWithType:ItemTypeAutofillAddressSwitch];
   switchItem.text =
       l10n_util::GetNSString(IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL);
+  switchItem.target = self;
+  switchItem.selector = @selector(autofillAddressSwitchChanged:);
   switchItem.on = [self isAutofillProfileEnabled];
   switchItem.accessibilityIdentifier = kAutofillAddressSwitchViewId;
   return switchItem;
@@ -586,15 +587,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeFooter:
     case ItemTypePlusAddress:
     case ItemTypePlusAddressFooter:
+    case ItemTypeAutofillAddressSwitch:
       break;
-    case ItemTypeAutofillAddressSwitch: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(autofillAddressSwitchChanged:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
-    }
     case ItemTypeAutofillAddressManaged: {
       TableViewInfoButtonCell* managedCell =
           base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);

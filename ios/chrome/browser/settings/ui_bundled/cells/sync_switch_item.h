@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
-// SyncSwitchItem is a model class that uses TableViewSwitchCell.
+// SyncSwitchItem is a model class that uses a switch.
 @interface SyncSwitchItem : TableViewItem
 
 // The text to display.
@@ -27,6 +27,11 @@
 
 // UserSelectableType for the item.
 @property(nonatomic, assign) NSInteger dataType;
+
+// Configuration of the switch.
+@property(nonatomic, weak) id target;
+@property(nonatomic, assign) SEL selector;
+@property(nonatomic, assign) NSInteger tag;
 
 @end
 

@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -137,6 +136,8 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
       [[TableViewSwitchItem alloc] initWithType:ItemTypeTranslate];
   _translationItem.text = l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING);
   _translationItem.on = [_translationEnabled value];
+  _translationItem.target = self;
+  _translationItem.selector = @selector(translateSwitchToggled:);
   [model addItem:_translationItem
       toSectionWithIdentifier:SectionIdentifierTranslate];
 
@@ -157,31 +158,6 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
                                              ->GetApplicationLocaleStorage()
                                              ->Get())] ];
   [model setFooter:footer forSectionWithIdentifier:SectionIdentifierTranslate];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
-  switch (itemType) {
-    case ItemTypeTranslate: {
-      cell.selectionStyle = UITableViewCellSelectionStyleNone;
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(translateToggled:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
-    }
-    default:
-      break;
-  }
-
-  return cell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -235,7 +211,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
 
 #pragma mark - Actions
 
-- (void)translateToggled:(id)sender {
+- (void)translateSwitchToggled:(UISwitch*)sender {
   NSIndexPath* switchPath =
       [self.tableViewModel indexPathForItemType:ItemTypeTranslate
                               sectionIdentifier:SectionIdentifierTranslate];
@@ -243,12 +219,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
-  TableViewSwitchCell* switchCell =
-      base::apple::ObjCCastStrict<TableViewSwitchCell>(
-          [self.tableView cellForRowAtIndexPath:switchPath]);
-
-  DCHECK_EQ(switchCell.switchView, sender);
-  BOOL isOn = switchCell.switchView.isOn;
+  BOOL isOn = sender.isOn;
   switchItem.on = isOn;
   [_translationEnabled setValue:isOn];
 }

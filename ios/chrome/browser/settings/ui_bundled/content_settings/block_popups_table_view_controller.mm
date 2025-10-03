@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -126,6 +125,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [[TableViewSwitchItem alloc] initWithType:ItemTypeMainSwitch];
     _blockPopupsItem.text = l10n_util::GetNSString(IDS_IOS_BLOCK_POPUPS);
     _blockPopupsItem.on = [_disablePopupsSetting value];
+    _blockPopupsItem.target = self;
+    _blockPopupsItem.selector = @selector(blockPopupsSwitchChanged:);
     _blockPopupsItem.accessibilityIdentifier = @"blockPopupsContentView_switch";
     [model addItem:_blockPopupsItem
         toSectionWithIdentifier:SectionIdentifierMainSwitch];
@@ -177,15 +178,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypeHeader:
     case ItemTypeException:
+    case ItemTypeMainSwitch:
       break;
-    case ItemTypeMainSwitch: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(blockPopupsSwitchChanged:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
-    }
     case ItemTypeManaged: {
       TableViewInfoButtonCell* managedCell =
           base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);

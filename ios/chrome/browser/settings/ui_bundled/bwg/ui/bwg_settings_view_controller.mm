@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -101,6 +100,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                                  IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_TITLE)
                   switchValue:_pageContentSharingEnabled
       accessibilityIdentifier:kPageContentSharingCellId];
+  _pageContentSharingItem.target = self;
+  _pageContentSharingItem.selector = @selector(pageContentSharingSwitchTapped:);
 
   TableViewLinkHeaderFooterItem* locationFooterItem = [self
       headerFooterItemWithType:ItemTypeLocationFooter
@@ -262,26 +263,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       base::apple::ObjCCast<TableViewLinkHeaderFooterView>(footerView);
   footer.delegate = self;
   return footerView;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-
-  if (itemType == ItemTypePageContentSharing) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(pageContentSharingSwitchTapped:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  }
-  return cell;
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate

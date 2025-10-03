@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/privacy_guide_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -134,7 +134,7 @@ enum ItemIdentifier {
                                                 itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewSwitchCell>(_tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:_tableView];
   RegisterTableViewCell<SettingsImageDetailTextCell>(_tableView);
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(_tableView);
 
@@ -162,9 +162,9 @@ enum ItemIdentifier {
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case kItemIdentifierSwitch: {
-      TableViewSwitchCell* cell =
-          PrivacyGuideSwitchCell(_tableView, IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC,
-                                 YES, YES, kPrivacyGuideHistorySyncSwitchID);
+      UITableViewCell* cell = PrivacyGuideSwitchCell(
+          _tableView, IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC, YES,
+          kPrivacyGuideHistorySyncSwitchID, nil, nil);
       return cell;
     }
     case kItemIdentifierAcrossDevices: {

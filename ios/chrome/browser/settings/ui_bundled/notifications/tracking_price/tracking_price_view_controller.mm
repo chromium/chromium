@@ -9,8 +9,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/tracking_price/tracking_price_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/notifications/tracking_price/tracking_price_view_controller_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -94,35 +92,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   if (!parent) {
     [self.presentationDelegate trackingPriceViewControllerDidRemove:self];
   }
-}
-
-#pragma mark - Private
-
-// Called when switch is toggled.
-- (void)switchAction:(UISwitch*)sender {
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:sender.tag];
-  DCHECK(indexPath);
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.modelDelegate toggleSwitchItem:item withValue:sender.isOn];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchAction:)
-                    forControlEvents:UIControlEventValueChanged];
-    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    switchCell.switchView.tag = item.type;
-  }
-  return cell;
 }
 
 @end

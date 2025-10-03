@@ -13,10 +13,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/supervised_user_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller_model_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -47,17 +45,6 @@
 }
 
 #pragma mark - Private
-
-- (void)switchAction:(UISwitch*)sender {
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:sender.tag];
-  DCHECK(indexPath);
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  CGRect targetRect = [self.view convertRect:sender.bounds fromView:sender];
-  [self.serviceDelegate toggleSwitchItem:item
-                               withValue:sender.isOn
-                              targetRect:targetRect];
-}
 
 // Shows an info popover anchored on `buttonView` depending on the signed-in
 // policy.
@@ -117,15 +104,7 @@
   if (_settingsAreDismissed) {
     return cell;
   }
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchAction:)
-                    forControlEvents:UIControlEventValueChanged];
-    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    switchCell.switchView.tag = item.type;
-  } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
+  if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* managedCell =
         base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     if ([self.modelDelegate

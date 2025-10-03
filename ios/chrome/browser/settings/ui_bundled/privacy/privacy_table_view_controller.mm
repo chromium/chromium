@@ -57,7 +57,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -411,6 +410,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _HTTPSOnlyModeItem.detailText =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION);
     _HTTPSOnlyModeItem.on = [self.HTTPSOnlyModePref value];
+    _HTTPSOnlyModeItem.target = self;
+    _HTTPSOnlyModeItem.selector = @selector(HTTPSOnlyModeSwitchToggled:);
     _HTTPSOnlyModeItem.accessibilityIdentifier = kSettingsHttpsOnlyModeCellId;
   }
   return _HTTPSOnlyModeItem;
@@ -423,6 +424,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _incognitoInterstitialItem.text =
         l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL);
     _incognitoInterstitialItem.on = self.incognitoInterstitialPref.value;
+    _incognitoInterstitialItem.target = self;
+    _incognitoInterstitialItem.selector =
+        @selector(incognitoInterstitialSwitchToggled:);
     _incognitoInterstitialItem.enabled = YES;
     _incognitoInterstitialItem.accessibilityIdentifier =
         kSettingsIncognitoInterstitialId;
@@ -568,6 +572,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME);
   _incognitoReauthItem.on = self.incognitoReauthPref.value;
   _incognitoReauthItem.enabled = YES;
+  _incognitoReauthItem.target = self;
+  _incognitoReauthItem.selector = @selector(incognitoReauthSwitchToggled:);
   return _incognitoReauthItem;
 }
 
@@ -689,31 +695,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   ItemType itemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
 
-  if (itemType == ItemTypeIncognitoReauth) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchTapped:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeIncognitoReauthDisabled) {
+  if (itemType == ItemTypeIncognitoReauthDisabled) {
     TableViewInfoButtonCell* managedCell =
         base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     [managedCell.trailingButton
                addTarget:self
                   action:@selector(didTapIncognitoReauthDisabledInfoButton:)
-        forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeHTTPSOnlyMode) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(HTTPSOnlyModeTapped:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeIncognitoInterstitial) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView
-               addTarget:self
-                  action:@selector(incognitoInterstitialSwitchTapped:)
         forControlEvents:UIControlEventTouchUpInside];
   } else if (itemType == ItemTypeIncognitoInterstitialDisabled) {
     TableViewInfoButtonCell* managedCell =
@@ -906,21 +893,21 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [self presentViewController:popover animated:YES completion:nil];
 }
 
-// Called from the HTTPS-Only Mode setting's UIControlEventTouchUpInside.
+// Called from the HTTPS-Only Mode setting's UIControlEventValueChanged.
 // When this is called, `switchView` already has the updated value:
 // If the switch was off, and user taps it, when this method is called,
 // switchView.on is YES.
-- (void)HTTPSOnlyModeTapped:(UISwitch*)switchView {
+- (void)HTTPSOnlyModeSwitchToggled:(UISwitch*)switchView {
   BOOL isOn = switchView.isOn;
   [_HTTPSOnlyModePref setValue:isOn];
   [self enhancedSafeBrowsingInlinePromoTriggerCriteriaMet];
 }
 
-// Called from the Incognito interstitial setting's UIControlEventTouchUpInside.
+// Called from the Incognito interstitial setting's UIControlEventValueChanged.
 // When this is called, `switchView` already has the updated value:
 // If the switch was off, and user taps it, when this method is called,
 // switchView.on is YES.
-- (void)incognitoInterstitialSwitchTapped:(UISwitch*)switchView {
+- (void)incognitoInterstitialSwitchToggled:(UISwitch*)switchView {
   self.incognitoInterstitialPref.value = switchView.on;
   UMA_HISTOGRAM_ENUMERATION(
       kIncognitoInterstitialSettingsActionsHistogram,
@@ -929,11 +916,11 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [self enhancedSafeBrowsingInlinePromoTriggerCriteriaMet];
 }
 
-// Called from the reauthentication setting's UIControlEventTouchUpInside.
+// Called from the reauthentication setting's UIControlEventValueChanged.
 // When this is called, `switchView` already has the updated value:
 // If the switch was off, and user taps it, when this method is called,
 // switchView.on is YES.
-- (void)switchTapped:(UISwitch*)switchView {
+- (void)incognitoReauthSwitchToggled:(UISwitch*)switchView {
   if (switchView.isOn && ![self.reauthModule canAttemptReauth]) {
     // This should normally not happen: the switch should not even be enabled.
     // Fallback behaviour added just in case.

@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_consumer.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_view_controller_delegate.h"
 
 class AuthenticationService;
 class PrefService;
@@ -18,8 +17,7 @@ class IdentityManager;
 }
 
 // Mediator for the Google services settings.
-@interface SafeBrowsingStandardProtectionMediator
-    : NSObject <SafeBrowsingStandardProtectionViewControllerDelegate>
+@interface SafeBrowsingStandardProtectionMediator : NSObject
 
 // View controller.
 @property(nonatomic, weak) id<SafeBrowsingStandardProtectionConsumer> consumer;

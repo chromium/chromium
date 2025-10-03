@@ -13,6 +13,8 @@
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.accessoryType = UITableViewCellAccessoryNone;
+  self.selectionStyle = UITableViewCellSelectionStyleDefault;
+  self.userInteractionEnabled = YES;
   self.accessibilityLabel = nil;
   self.accessibilityHint = nil;
   self.accessibilityValue = nil;

@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -99,24 +98,6 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
   self.UMAReportingUserChoice = sender.isOn;
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchAction:)
-                    forControlEvents:UIControlEventValueChanged];
-    ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    switchCell.switchView.tag = item.type;
-  }
-  return cell;
-}
-
 #pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
@@ -128,6 +109,9 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
   // Adds switch item.
   TableViewSwitchItem* switchItem =
       [[TableViewSwitchItem alloc] initWithType:UMAItemTypeCheckbox];
+  switchItem.target = self;
+  switchItem.selector = @selector(switchAction:);
+  switchItem.tag = switchItem.type;
   switchItem.on = self.UMAReportingUserChoice;
   switchItem.text =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX);

@@ -29,12 +29,6 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
   return grey_accessibilityID(kNotificationsBannerTableViewId);
 }
 
-// Returns the matcher for the Tips Notifications switch.
-id<GREYMatcher> TipsSwitchMatcher() {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TIPS_TITLE);
-  return grey_accessibilityID([NSString stringWithFormat:@"%@, switch", title]);
-}
-
 // Taps the context menu item with the given label.
 void TapMenuItem(int labelId) {
   id item = chrome_test_util::ContextMenuItemWithAccessibilityLabelId(labelId);
@@ -80,12 +74,14 @@ void TapMenuItem(int labelId) {
   // Check that the TableView is presented.
   [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSettingsNotificationsTipsCellId, NO)]
       assertWithMatcher:grey_notNil()];
 
   // Toggle on the switch.
-  [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
-      performAction:grey_turnSwitchOn(YES)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSettingsNotificationsTipsCellId, NO)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Tap Go To Settings action.
   TapMenuItem(IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_OPEN_SETTINGS_BUTTON);

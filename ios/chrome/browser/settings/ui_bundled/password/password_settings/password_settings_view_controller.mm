@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -319,14 +318,9 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
                      cellForRowAtIndexPath:indexPath];
 
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
-    case ItemTypeSavePasswordsSwitch: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(savePasswordsSwitchChanged:)
-                      forControlEvents:UIControlEventValueChanged];
+    case ItemTypeSavePasswordsSwitch:
+    case ItemTypeAutomaticPasskeyUpgradesSwitch:
       break;
-    }
     case ItemTypeManagedSavePasswords: {
       TableViewInfoButtonCell* managedCell =
           base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
@@ -335,14 +329,6 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
                     action:@selector(didTapManagedUIInfoButton:)
           forControlEvents:UIControlEventTouchUpInside];
       break;
-    }
-    case ItemTypeAutomaticPasskeyUpgradesSwitch: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView
-                 addTarget:self
-                    action:@selector(automaticPasskeyUpgradesSwitchChanged:)
-          forControlEvents:(UIControlEvents)UIControlEventValueChanged];
     }
   }
   return cell;
@@ -453,6 +439,8 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   savePasswordsItem.accessibilityIdentifier =
       kPasswordSettingsSavePasswordSwitchTableViewId;
   savePasswordsItem.on = _savingPasswordsEnabled;
+  savePasswordsItem.target = self;
+  savePasswordsItem.selector = @selector(savePasswordsSwitchChanged:);
   return savePasswordsItem;
 }
 
@@ -548,6 +536,9 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   automaticPasskeyUpgradesSwitchItem.on = _automaticPasskeyUpgradesEnabled;
   automaticPasskeyUpgradesSwitchItem.accessibilityIdentifier =
       kPasswordSettingsAutomaticPasskeyUpgradeToggleId;
+  automaticPasskeyUpgradesSwitchItem.target = self;
+  automaticPasskeyUpgradesSwitchItem.selector =
+      @selector(automaticPasskeyUpgradesSwitchChanged:);
   return automaticPasskeyUpgradesSwitchItem;
 }
 
