@@ -513,13 +513,12 @@ TEST_F(URLCanonHostTest, Host) {
        CanonHostInfo::NEUTRAL, -1, ""},
       // U+2132 (turned capital F) is disallowed. UTS 46, table 4, row (c)
       // Allowed in IDNA 2003, but the mapping changed after Unicode 3.2
-      {"\xe2\x84\xb2oo", L"\x2132oo", "%E2%84%B2oo", Component(0, 11),
-       CanonHostInfo::BROKEN, -1, ""},
+      {"\xe2\x84\xb2oo", L"\x2132oo", "xn--oo-3tu", Component(0, 10),
+       CanonHostInfo::NEUTRAL, -1, ""},
       // U+2F868 (CJK Comp) is disallowed. UTS 46, table 4, row (d)
       // Allowed in IDNA 2003, but the mapping changed after Unicode 3.2
       {"\xf0\xaf\xa1\xa8\xe5\xa7\xbb.cn", L"\xd87e\xdc68\x59fb.cn",
-       "%F0%AF%A1%A8%E5%A7%BB.cn", Component(0, 24), CanonHostInfo::BROKEN, -1,
-       ""},
+       "xn--snl080h.cn", Component(0, 14), CanonHostInfo::NEUTRAL, -1, ""},
       // Maps uppercase letters to lower case letters. UTS 46 table 4 row (e)
       {"M\xc3\x9cNCHEN", L"M\xdcNCHEN", "xn--mnchen-3ya", Component(0, 14),
        CanonHostInfo::NEUTRAL, -1, ""},

@@ -115,9 +115,9 @@ some common locales.
 
 [en-ZA] English (South Africa)
   [default] 123
-  [default] 1,234
-  [default] 12,345
-  [ZAR] R 12,345.00
+  [default] 1 234
+  [default] 12 345
+  [ZAR] R 12 345,00
 
 [es] Spanish
   [default] 123
@@ -179,7 +179,7 @@ some common locales.
 
 [it] Italian
   [default] 123
-  [default] 1.234
+  [default] 1234
   [default] 12.345
   [EUR] 12.345,00 €
 

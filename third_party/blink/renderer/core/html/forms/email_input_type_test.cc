@@ -57,11 +57,11 @@ TEST(EmailInputTypeTest, ConvertEmailAddressToASCIIUTS46) {
                String::FromUTF8("foo@\xEF\xBC\x81.com"));
 
   // U+2132
-  ExpectToFail(task_environment.isolate(),
-               String::FromUTF8("foo@\xE2\x84\xB2.com"));
+  ExpectToSucceed(task_environment.isolate(),
+                  String::FromUTF8("foo@\xE2\x84\xB2.com"));
   // U+2F868
-  ExpectToFail(task_environment.isolate(),
-               String::FromUTF8("foo@\xF0\xAF\xA1\xA8.com"));
+  ExpectToSucceed(task_environment.isolate(),
+                  String::FromUTF8("foo@\xF0\xAF\xA1\xA8.com"));
 
   // U+00C0
   ExpectToSucceed(task_environment.isolate(),

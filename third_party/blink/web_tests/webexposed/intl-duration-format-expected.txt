@@ -3,9 +3,9 @@ some common locales.
 
 [am] Amharic
   [digital] 2:00:35
-  [narrow] 2 ሰ 35 ሰ
-  [short] 2 ሰዓ፣ 35 ሰከ
-  [long] 2 ሰዓቶች፣ 35 ሰከንዶች
+  [narrow] 2 ሰ እና 35 ሰ
+  [short] 2 ሰዓ እና 35 ሰከ
+  [long] 2 ሰዓቶች እና 35 ሰከንዶች
 
 [ar] Arabic
   [digital] 2:00:35
@@ -51,7 +51,7 @@ some common locales.
 
 [en-AU] Australian English
   [digital] 2:00:35
-  [narrow] 2h 35s.
+  [narrow] 2h 35s
   [short] 2 hrs, 35 secs
   [long] 2 hours, 35 seconds
 

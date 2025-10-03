@@ -1569,7 +1569,7 @@ TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
   std::u16string diacritics_not_removed =
       checker.MaybeRemoveDiacritics(non_lgc_result.result);
   EXPECT_EQ(u"नागरी́.com", diacritics_not_removed);
-  EXPECT_EQ(IDNSpoofChecker::Result::kDangerousPattern,
+  EXPECT_EQ(IDNSpoofChecker::Result::kICUSpoofChecks,
             non_lgc_result.spoof_check_result);
 }
 

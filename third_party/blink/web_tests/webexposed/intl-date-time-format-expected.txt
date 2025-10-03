@@ -6,7 +6,7 @@ some common locales.
   [short] 14/06/2023 4:50 ከሰዓት
   [medium] 14 ጁን 2023 4:50:00 ከሰዓት
   [long] 14 ጁን 2023 4:50:00 ከሰዓት ጂ ኤም ቲ+3
-  [full] 2023 ጁን 14, ረቡዕ 4:50:00 ከሰዓት የምስራቅ አፍሪካ ሰዓት
+  [full] ረቡዕ 14 ጁን 2023 4:50:00 ከሰዓት የምስራቅ አፍሪካ ሰዓት
 
 [ar] Arabic
   [default] 14‏/6‏/2023
@@ -62,21 +62,21 @@ some common locales.
   [short] 14/6/23, 11:50 pm
   [medium] 14 June 2023, 11:50:00 pm
   [long] 14 June 2023 at 11:50:00 pm AEST
-  [full] Wednesday 14 June 2023 at 11:50:00 pm Australian Eastern Standard Time
+  [full] Wednesday, 14 June 2023 at 11:50:00 pm Australian Eastern Standard Time
 
 [en-CA] Canadian English
   [default] 2023-06-14
   [short] 2023-06-14, 6:50 a.m.
   [medium] Jun 14, 2023, 6:50:00 a.m.
   [long] June 14, 2023 at 6:50:00 a.m. PDT
-  [full] Wednesday, June 14, 2023 at 6:50:00 a.m. Pacific Daylight Saving Time
+  [full] Wednesday, June 14, 2023 at 6:50:00 a.m. Pacific Daylight Time
 
 [en-GB] British English
   [default] 14/06/2023
   [short] 14/06/2023, 14:50
   [medium] 14 Jun 2023, 14:50:00
   [long] 14 June 2023 at 14:50:00 BST
-  [full] Wednesday 14 June 2023 at 14:50:00 British Summer Time
+  [full] Wednesday, 14 June 2023 at 14:50:00 British Summer Time
 
 [en-IE] English (Ireland)
   [default] 14/6/2023
@@ -90,7 +90,7 @@ some common locales.
   [short] 14/06/23, 7:20 pm
   [medium] 14 Jun 2023, 7:20:00 pm
   [long] 14 June 2023 at 7:20:00 pm IST
-  [full] Wednesday 14 June, 2023 at 7:20:00 pm India Standard Time
+  [full] Wednesday, 14 June 2023 at 7:20:00 pm India Standard Time
 
 [en-NG] English (Nigeria)
   [default] 14/06/2023
@@ -227,10 +227,10 @@ some common locales.
 
 [kn] Kannada
   [default] 14/6/2023
-  [short] 14/6/23, 07:20 ಅಪರಾಹ್ನ
-  [medium] ಜೂನ್ 14, 2023, 07:20:00 ಅಪರಾಹ್ನ
-  [long] ಜೂನ್ 14, 2023 ರಂದು 07:20:00 ಅಪರಾಹ್ನ IST ಸಮಯಕ್ಕೆ
-  [full] ಬುಧವಾರ, ಜೂನ್ 14, 2023 ರಂದು 07:20:00 ಅಪರಾಹ್ನ ಭಾರತೀಯ ಪ್ರಮಾಣಿತ ಸಮಯ ಸಮಯಕ್ಕೆ
+  [short] 14/6/23, 07:20 PM
+  [medium] ಜೂನ್ 14, 2023, 07:20:00 PM
+  [long] ಜೂನ್ 14, 2023 ರಂದು 07:20:00 PM IST ಸಮಯಕ್ಕೆ
+  [full] ಬುಧವಾರ, ಜೂನ್ 14, 2023 ರಂದು 07:20:00 PM ಭಾರತೀಯ ಪ್ರಮಾಣಿತ ಸಮಯ ಸಮಯಕ್ಕೆ
 
 [ko] Korean
   [default] 2023. 6. 14.
@@ -297,10 +297,10 @@ some common locales.
 
 [ta] Tamil
   [default] 14/6/2023
-  [short] 14/6/23, PM 7:20
-  [medium] 14 ஜூன், 2023, PM 7:20:00
-  [long] 14 ஜூன், 2023 அன்று PM 7:20:00 IST
-  [full] புதன், 14 ஜூன், 2023 அன்று PM 7:20:00 இந்திய நிலையான நேரம்
+  [short] 14/6/23, 7:20 PM
+  [medium] 14 ஜூன், 2023, 7:20:00 PM
+  [long] 14 ஜூன், 2023 அன்று 7:20:00 PM IST
+  [full] புதன், 14 ஜூன், 2023 அன்று 7:20:00 PM இந்திய நிலையான நேரம்
 
 [te] Telugu
   [default] 14/6/2023
