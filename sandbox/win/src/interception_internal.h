@@ -44,6 +44,7 @@ struct DllPatchInfo {
   size_t offset_to_functions;
   size_t num_functions;
   bool unload_module;
+  size_t dll_name_len;
   wchar_t dll_name[1];  // placeholder for null terminated name
   // FunctionInfo function_info[] // followed by the functions to intercept
 };

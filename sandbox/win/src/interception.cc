@@ -278,6 +278,7 @@ bool InterceptionManager::SetupDllInfo(const InterceptionData& data,
   dll_info->record_bytes = required;
   dll_info->offset_to_functions = required;
   dll_info->num_functions = 0;
+  dll_info->dll_name_len = data.dll.size();
   data.dll.copy(dll_info->dll_name, data.dll.size());
   dll_info->dll_name[data.dll.size()] = L'\0';
 
