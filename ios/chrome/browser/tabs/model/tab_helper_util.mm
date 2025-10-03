@@ -107,6 +107,7 @@
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web/model/invalid_url_tab_helper.h"
@@ -384,4 +385,10 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   }
 
   WebViewProxyTabHelper::CreateForWebState(web_state);
+
+  if (!for_prerender && !for_reader_mode && !for_lens_overlay &&
+      (base::FeatureList::IsEnabled(kIOSChooseFromDrive) ||
+       base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu))) {
+    ChooseFileTabHelper::CreateForWebState(web_state);
+  }
 }

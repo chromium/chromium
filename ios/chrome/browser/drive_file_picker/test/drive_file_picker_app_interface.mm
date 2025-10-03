@@ -32,8 +32,8 @@ std::unique_ptr<DriveListResult> gDriveListResult;
 + (void)startChoosingSingleFileInCurrentWebState {
   Browser* currentBrowser = chrome_test_util::GetCurrentBrowser();
   WebStateList* webStateList = currentBrowser->GetWebStateList();
-  ChooseFileTabHelper* tab_helper = ChooseFileTabHelper::GetOrCreateForWebState(
-      webStateList->GetActiveWebState());
+  ChooseFileTabHelper* tab_helper =
+      ChooseFileTabHelper::FromWebState(webStateList->GetActiveWebState());
   auto controller = std::make_unique<FakeChooseFileController>(ChooseFileEvent(
       false /*allow_multiple_files*/, false /*has_selected_file*/,
       std::vector<std::string>{}, std::vector<std::string>{},
@@ -44,8 +44,8 @@ std::unique_ptr<DriveListResult> gDriveListResult;
 + (void)startChoosingMultipleFilesInCurrentWebState {
   Browser* currentBrowser = chrome_test_util::GetCurrentBrowser();
   WebStateList* webStateList = currentBrowser->GetWebStateList();
-  ChooseFileTabHelper* tab_helper = ChooseFileTabHelper::GetOrCreateForWebState(
-      webStateList->GetActiveWebState());
+  ChooseFileTabHelper* tab_helper =
+      ChooseFileTabHelper::FromWebState(webStateList->GetActiveWebState());
   auto controller = std::make_unique<FakeChooseFileController>(ChooseFileEvent(
       true /*allow_multiple_files*/, false /*has_selected_file*/,
       std::vector<std::string>{}, std::vector<std::string>{},

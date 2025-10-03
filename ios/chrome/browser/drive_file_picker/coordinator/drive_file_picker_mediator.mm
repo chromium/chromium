@@ -114,7 +114,7 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     _fetchedDriveItems = {};
     // Initialize the list of accepted types.
     ChooseFileTabHelper* tab_helper =
-        ChooseFileTabHelper::GetOrCreateForWebState(webState);
+        ChooseFileTabHelper::FromWebState(webState);
     CHECK(tab_helper->IsChoosingFiles());
     const ChooseFileEvent& event = tab_helper->GetChooseFileEvent();
     _acceptedTypes = UTTypesAcceptedForEvent(event);
@@ -134,7 +134,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
     if (_collection->IsRoot()) {
       ChooseFileTabHelper* tab_helper =
-          ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+          ChooseFileTabHelper::FromWebState(_webState.get());
+      CHECK(tab_helper);
       [_metricsHelper
           reportActivationMetricsForEvent:tab_helper->GetChooseFileEvent()];
     }
@@ -158,7 +159,9 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 - (void)disconnect {
   if (_collection->IsRoot() && _webState && !_webState->IsBeingDestroyed()) {
     ChooseFileTabHelper* tab_helper =
-        ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+        ChooseFileTabHelper::FromWebState(_webState.get());
+
+    CHECK(tab_helper);
     if (tab_helper->IsChoosingFiles()) {
       tab_helper->StopChoosingFiles();
     }
@@ -346,7 +349,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     return;
   }
   ChooseFileTabHelper* tab_helper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tab_helper);
   if (!tab_helper->IsChoosingFiles()) {
     [self.driveFilePickerHandler hideDriveFilePicker];
     return;
@@ -745,7 +749,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
       },
       weakSelf, fileURL, fileToDownload.identifier));
   ChooseFileTabHelper* tabHelper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tabHelper);
   tabHelper->CheckFileUrlReadyForSelection(
       fileURL, fileToDownload.modified_time,
       _fileVersionReadyCallback.callback());
@@ -803,7 +808,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
           weakSelf, fileURL));
   // Inform the WebState that the destination URL isn't ready for selection yet.
   ChooseFileTabHelper* tabHelper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tabHelper);
   tabHelper->RemoveFileUrlReadyForSelection(fileURL);
 }
 
@@ -853,7 +859,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   // selection, pop the file from the queue and continue processing the download
   // queue.
   ChooseFileTabHelper* tabHelper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tabHelper);
   tabHelper->AddFileUrlReadyForSelection(
       fileURL, _downloadingQueue.front().modified_time);
   _downloadingQueue.pop();

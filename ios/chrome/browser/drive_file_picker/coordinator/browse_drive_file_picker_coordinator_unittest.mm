@@ -46,6 +46,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
     [dispatcher startDispatchingToTarget:handler_
                              forProtocol:@protocol(DriveFilePickerCommands)];
     fake_web_state_ = std::make_unique<web::FakeWebState>();
+    ChooseFileTabHelper::CreateForWebState(fake_web_state_.get());
     metrics_helper_ = [[DriveFilePickerMetricsHelper alloc] init];
     image_fetcher_ =
         std::make_unique<DriveFilePickerImageFetcher>(shared_factory_);
@@ -67,7 +68,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   // Starts file selection in the WebState.
   void StartChoosingFiles() {
     ChooseFileTabHelper* tab_helper =
-        ChooseFileTabHelper::GetOrCreateForWebState(fake_web_state_.get());
+        ChooseFileTabHelper::FromWebState(fake_web_state_.get());
     auto controller = std::make_unique<FakeChooseFileController>(
         ChooseFileEvent(false /*allow_multiple_files*/,
                         false /*has_selected_file*/, std::vector<std::string>{},

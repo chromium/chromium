@@ -20,7 +20,8 @@ class ChooseFileTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     web_state_ = std::make_unique<web::FakeWebState>();
-    tab_helper_ = ChooseFileTabHelper::GetOrCreateForWebState(web_state_.get());
+    ChooseFileTabHelper::CreateForWebState(web_state_.get());
+    tab_helper_ = ChooseFileTabHelper::FromWebState(web_state_.get());
   }
 
  protected:
