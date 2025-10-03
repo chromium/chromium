@@ -74,11 +74,12 @@ void GlicSidePanelUi::EnableDragResize(bool enabled) {
 }
 
 void GlicSidePanelUi::Attach() {
-  NOTIMPLEMENTED();
+  // The Side Panel Ui is already attached.
+  NOTREACHED();
 }
 
 void GlicSidePanelUi::Detach() {
-  NOTIMPLEMENTED();
+  delegate_->Detach();
 }
 
 void GlicSidePanelUi::SetMinimumWidgetSize(const gfx::Size& size) {

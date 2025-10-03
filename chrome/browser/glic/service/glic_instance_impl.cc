@@ -450,7 +450,7 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
                  [&](FloatingEmbedderKey) {
                    auto [entry_iter, _] = embedders_.try_emplace(key);
                    entry_iter->second.embedder =
-                       std::make_unique<GlicFloatingUi>();
+                       std::make_unique<GlicFloatingUi>(profile_, *this);
                    embedder_ptr = entry_iter->second.embedder.get();
                  },
                  [&](tabs::TabInterface* tab) {
@@ -516,6 +516,10 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder,
     host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
                         std::move(options));
   }
+}
+
+void GlicInstanceImpl::Detach() {
+  Show(EmbedderType::kFloating, nullptr);
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,

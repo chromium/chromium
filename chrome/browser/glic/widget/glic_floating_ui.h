@@ -14,10 +14,13 @@
 
 namespace glic {
 
+class GlicWidget;
+class GlicView;
+
 // A stub implementation of GlicUiEmbedder for floating UIs.
 class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
  public:
-  GlicFloatingUi();
+  GlicFloatingUi(Profile* profile, GlicUiEmbedder::Delegate& delegate);
   ~GlicFloatingUi() override;
 
   // GlicUiEmbedder:
@@ -44,8 +47,22 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   void ClosePanel() override;
 
  private:
-  std::unique_ptr<views::View> CreateView();
+  GlicWidget* GetGlicWidget() const;
+  GlicView* GetGlicView() const;
+  void CreateAndSetupWidget();
+  // void SetDraggingAreasAndWatchForMouseEvents();
+
+  // Used to monitor key and mouse events from native window.
+  // class WindowEventObserver;
+  // std::unique_ptr<WindowEventObserver> window_event_observer_;
+
+  std::unique_ptr<GlicWidget> glic_widget_;
   mojom::PanelState panel_state_;
+
+  raw_ptr<Profile> profile_;
+  raw_ref<GlicUiEmbedder::Delegate> delegate_;
+
+  base::WeakPtrFactory<GlicFloatingUi> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

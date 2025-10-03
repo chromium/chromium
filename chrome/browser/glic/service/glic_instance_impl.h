@@ -100,6 +100,8 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<std::string> conversation_id() const;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
+  // Opens the floating UI for this instance
+  void Detach() override;
 
   // Host::InstanceDelegate:
   void CreateTab(
