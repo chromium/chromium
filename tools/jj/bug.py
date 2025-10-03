@@ -6,6 +6,9 @@
 
 import argparse
 import logging
+import re
+import shutil
+import subprocess
 import sys
 import util
 
@@ -14,12 +17,70 @@ _FIND_TRAILER = '''self.trailers()
 .map(|trailer| trailer.value())
 .join(",")'''
 
+_BUGGED_MISSING_ERR = '''\
+Searching for bugs requires the CLI tool "bugged" to be installed.
+This tool is only available to Googlers (see go/bugged for install instructions)
+'''
+
 
 def _calculate_bugs(bugs: str) -> set[str]:
   bugs = set(bugs.split(','))
   # The template produces ,, if some parents don't have bugs.
   bugs.discard('')
   return bugs
+
+
+def _search_bugs(query: str | None):
+  args = [
+      'bugged', 'search', '--error-if-not-found=true',
+      '--columns=issue,reporter,assignee,status,summary'
+  ]
+  if query:
+    args.append(query)
+  ps = util.run_command(
+      args,
+      stdout=subprocess.PIPE,
+      check=False,
+      text=True,
+  )
+  if ps.returncode == 5:  # No results found
+    print('No results found. Try another query?')
+    return _search_bugs(input('>>> '))
+  elif ps.returncode != 0:
+    print('Issue tracker search failed', file=sys.stderr)
+    exit(1)
+
+  # The first column is the bug number. We need this internally, but don't want
+  # to show it to the user.
+  lines = [
+      re.split(r'\s+', line, maxsplit=1)
+      for line in ps.stdout.rstrip().split('\n')
+  ]
+  print(f'#  {lines[0][1]}')
+  issues = {}
+  # Reverse it because we want the important information to be at the bottom.
+  # We do this since the prompt is at the bottom.
+  for i, (issue, line) in reversed(list(enumerate(lines))[1:]):
+    issues[str(i)] = issue
+    fmt = f'{i:>2} {line}'
+    # Print every second line in cyan so you can easily line up the numbers
+    # with the summary
+    print(f'\033[36m{fmt}\033[0m' if i % 2 else fmt)
+
+  # Maybe someone with experience with TUIs could improve on the UX, but this
+  # works pretty well and is much easier to code.
+  print('Type the number in the left column to select an issue')
+  print('Type "q [query]" to search for something different')
+  while True:
+    answer = input('>>> ')
+    if answer.startswith('q '):
+      return _search_bugs(answer.removeprefix('q '))
+    elif answer == '':
+      # Run the default query
+      return _search_bugs(None)
+    elif answer in issues:
+      return issues[answer]
+    print('Invalid response')
 
 
 def _add_handler(args, revs: str):
@@ -54,9 +115,17 @@ def _add_handler(args, revs: str):
     rev['bugs'] = _calculate_bugs(rev['bugs'])
 
   bugs = set(args.bug)
-  if not bugs and not args.inherit:
-    print('List of bugs is required if --inherit is not used', file=sys.stderr)
-    exit(1)
+
+  if args.query or (not bugs and not args.inherit):
+    if args.query:
+      print('Searching for bugs on issue tracker...')
+    else:
+      print('No bugs provided. Searching for bugs on issue tracker...')
+    bugged = shutil.which('bugged')
+    if bugged is None:
+      print(_BUGGED_MISSING_ERR, file=sys.stderr)
+      exit(1)
+    bugs.add(_search_bugs(args.query))
 
   for rev in reversed(ancestors):
     if rev['change_id'] not in direct:
@@ -134,6 +203,12 @@ if __name__ == '__main__':
       help='The bug to add to the revisions',
       nargs='*',
       default=[],
+  )
+  parser_add.add_argument(
+      '-q',
+      '--query',
+      help='Query to use when searching for a bug in issue tracker',
+      default=None,
   )
 
   main(parser.parse_args())
