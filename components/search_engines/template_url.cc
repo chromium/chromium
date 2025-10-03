@@ -1818,16 +1818,32 @@ std::optional<std::string_view> TemplateURL::GetBaseBuiltinResourceId() const {
     return std::nullopt;
   }
 
+  // User-defined engines should not be decorated with branded icons.
+  if (data().prepopulate_id == 0) {
+    return std::nullopt;
+  }
+
   if (!base_builtin_resource_id_.has_value()) {
+    // 1. Attempt to identify the definition by keyword.
+    // This is going to handle 99% of the cases correctly, including Yahoo
+    // variants, where different countries may use different assets.
     const TemplateURLPrepopulateData::PrepopulatedEngine*
         reference_builtin_engine =
             TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
-                data().prepopulate_id,
-                // We are deliberately not providing a list of regional engines.
-                // It would be useful to disambiguate between regional variants
-                // of some engines that could be using different icons. It is
-                // not a use case we have for now, so that's unnecessary.
+                data().keyword(),
                 /*regional_prepopulated_engines=*/{});
+
+    if (!reference_builtin_engine) {
+      // 2. Attempt to identify the definition by prepopulate_id.
+      // Failed to look up engine by keyword. Fall back to identifying engine by
+      // matching prepopulate id. This might cause some assets to be incorrectly
+      // assigned if the regional variant of a search engine expects to use a
+      // different asset which has not been supplied (see: Yahoo vs Yahoo JP).
+      reference_builtin_engine =
+          TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
+              data().prepopulate_id,
+              /*regional_prepopulated_engines=*/{});
+    }
 
     if (reference_builtin_engine &&
         reference_builtin_engine->base_builtin_resource_id) {

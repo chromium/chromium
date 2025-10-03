@@ -91,6 +91,16 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
         regional_prepopulated_engines);
 
+// Returns the prepopulated search engine with the given `keyword`
+// from the full list of known prepopulated search engines, or `nullptr` if
+// it's not known there.
+// This function assumes no overrides, as a single keyword can only be
+// associated with a single search engine.
+const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
+    std::u16string_view keyword,
+    const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+        regional_prepopulated_engines);
+
 #if BUILDFLAG(IS_ANDROID)
 // Returns the prepopulated URLs associated with `country_code`.
 // `country_code` is a two-character uppercase ISO 3166-1 country code.
