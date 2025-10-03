@@ -1772,6 +1772,20 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       NavigateFromDefaultToTabsFromOtherDevicesInSameTab) {
+  {
+    content::LoadStopObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    chrome::ShowHistorySubPage(browser(), chrome::kChromeUIHistorySyncedTabs);
+    observer.Wait();
+  }
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL(chrome::kChromeUIHistoryURL)
+                .Resolve(chrome::kChromeUIHistorySyncedTabs),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromDefaultToBookmarksInSameTab) {
   {
     content::LoadStopObserver observer(

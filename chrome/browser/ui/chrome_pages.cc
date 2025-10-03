@@ -365,6 +365,10 @@ void ShowHistory(Browser* browser) {
   ShowHistory(browser, std::string());
 }
 
+void ShowHistorySubPage(Browser* browser, std::string_view sub_page) {
+  ShowSingletonTabIgnorePathOverwriteNTP(browser, GetHistoryUrl(sub_page));
+}
+
 void ShowDownloads(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowDownloads"));
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -436,6 +440,10 @@ void ShowSlow(Browser* browser) {
 
 GURL GetSettingsUrl(std::string_view sub_page) {
   return GURL(base::StrCat({kChromeUISettingsURL, sub_page}));
+}
+
+GURL GetHistoryUrl(std::string_view sub_page) {
+  return GURL(kChromeUIHistoryURL).Resolve(kChromeUIHistorySyncedTabs);
 }
 
 bool IsTrustedPopupWindowWithScheme(const Browser* browser,

@@ -203,8 +203,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   int GetAndIncrementNextMenuID();
 
   // Executes the commands for entries that do something other than restore tabs
-  // such as the "History", "Group History", and "Sign in to see tabs from other
-  // devices" menu items. Returns true if `command_id` was executed.
+  // such as the "History", "Group History", and "See tabs from other devices"
+  // menu items. Returns true if `command_id` was executed.
   bool ExecuteCustomCommand(int command_id, int event_flags);
 
   // Returns true if `command_id` identifies as `command_type`.

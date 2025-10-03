@@ -249,7 +249,7 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
   // Supported custom commands.
   static constexpr auto custom_commands = base::MakeFixedFlatSet<int>(
       {IDC_SHOW_HISTORY, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS});
+       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, IDC_RECENT_TABS_SEE_DEVICE_TABS});
 
   if (!custom_commands.contains(command_id)) {
     return false;
@@ -449,6 +449,13 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     if (open_tabs) {
       AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
                           IDS_RECENT_TABS_NO_DEVICE_TABS);
+    } else if (base::FeatureList::IsEnabled(
+                   syncer::kReplaceSyncPromosWithSignInPromos)) {
+      AddItemWithStringIdAndIcon(IDC_RECENT_TABS_SEE_DEVICE_TABS,
+                                 IDS_RECENT_TABS_SEE_DEVICE_TABS,
+                                 ui::ImageModel::FromVectorIcon(
+                                     kSyncRefreshIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
     } else {
       AddItemWithStringIdAndIcon(IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
                                  IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,

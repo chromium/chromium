@@ -116,6 +116,7 @@ enum AppMenuAction {
   MENU_ACTION_OPEN_GLIC = 94,
   MENU_ACTION_FIND_EXTENSIONS = 95,
   MENU_SHOW_SIGNIN = 96,
+  MENU_ACTION_RECENT_TABS_SEE_DEVICE_TABS = 97,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)
