@@ -159,6 +159,9 @@ void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen(
 
   // Finishes the sign-in process by moving to the history sync optin screen.
   CHECK(IsInitialized());
+  if (!step_switch_callback_->is_null()) {
+    std::move(step_switch_callback_.value()).Run(true);
+  }
   host_->ShowScreen(
       contents(), GetHistorySyncOptinURL(),
       /*navigation_finished_closure=*/
