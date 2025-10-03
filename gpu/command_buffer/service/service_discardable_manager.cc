@@ -227,22 +227,4 @@ void ServiceDiscardableManager::EnforceCacheSizeLimit(size_t limit) {
   }
 }
 
-bool ServiceDiscardableManager::IsEntryLockedForTesting(
-    uint32_t texture_id,
-    gles2::TextureManager* texture_manager) const {
-  auto found = entries_.Peek({texture_id, texture_manager});
-  CHECK(found != entries_.end());
-
-  return found->second.handle.IsLockedForTesting();
-}
-
-gles2::TextureRef* ServiceDiscardableManager::UnlockedTextureRefForTesting(
-    uint32_t texture_id,
-    gles2::TextureManager* texture_manager) const {
-  auto found = entries_.Peek({texture_id, texture_manager});
-  CHECK(found != entries_.end());
-
-  return found->second.unlocked_texture_ref.get();
-}
-
 }  // namespace gpu
