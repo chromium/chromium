@@ -39,10 +39,6 @@ enum class NTPMIAEntrypointVariation {
 
 #pragma mark - Feature declarations
 
-// Feature flag to enable static resource serving for the Discover feed.
-// TODO(crbug.com/40246814): Remove this.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
-
 // Feature flag to enable discofeed endpoint for the Discover feed.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint);
 

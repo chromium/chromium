@@ -29,9 +29,6 @@ const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
 
 #pragma mark - Feature declarations
 
-BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint,
              "EnableDiscoFeedEndpoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
