@@ -5,15 +5,20 @@
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/web_dialogs/test/test_web_dialog_delegate.h"
 
 namespace data_controls {
 
@@ -97,6 +102,9 @@ class DesktopDataControlsDialogTest : public InProcessBrowserTest,
 
  protected:
   size_t constructor_called_count_ = 0;
+  // ensure NoWebContentsModalDialogManager test's bool observer outlives its
+  // objects destruction.
+  bool test_dialog_destructor_called_unused_ = false;
 
   std::map<DesktopDataControlsDialog*, views::DialogDelegate*> delegates_;
   std::map<DesktopDataControlsDialog*, base::OnceClosure>
@@ -166,6 +174,35 @@ IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
 
   ASSERT_EQ(constructor_called_count_, 2u);
   CloseDialogsAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
+                       NoWebContentsModalDialogManager) {
+  ui::test::TestWebDialogDelegate* delegate =
+      new ui::test::TestWebDialogDelegate(GURL(url::kAboutBlankURL));
+  delegate->SetDeleteOnClosedAndObserve(&test_dialog_destructor_called_unused_);
+
+  auto view = std::make_unique<views::WebDialogView>(
+      browser()->profile(), delegate,
+      std::make_unique<ChromeWebContentsHandler>());
+  auto view_ptr = view.get();
+  gfx::NativeView parent_view =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView();
+  auto* widget =
+      views::Widget::CreateWindowWithParent(std::move(view), parent_view);
+  widget->Show();
+  ASSERT_TRUE(content::WaitForLoadStop(view_ptr->web_contents()));
+
+  base::test::TestFuture<bool> was_bypassed;
+  DesktopDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      view_ptr->web_contents(), DataControlsDialog::Type::kClipboardCopyBlock,
+      was_bypassed.GetCallback());
+
+  for (auto& dialog_and_loop : dialog_close_loops_) {
+    dialog_and_loop.second->Run();
+  }
+  ASSERT_TRUE(was_bypassed.IsReady());
+  ASSERT_FALSE(was_bypassed.Get());
 }
 
 }  // namespace data_controls

@@ -9,6 +9,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -230,6 +231,17 @@ void DesktopDataControlsDialog::Show(base::OnceClosure on_destructed) {
   dialog_delegate_ = std::make_unique<DataControlsDialogDelegate>(type_, this);
   dialog_delegate_->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      top_web_contents);
+  if (!manager) {
+    // `manager` being null indicates that `web_contents()` doesn't correspond
+    // to a browser tab. In such a case, accept and close the dialog
+    // immediately.
+    DesktopDataControlsDialog::CloseDialog(
+        views::Widget::ClosedReason::kAcceptButtonClicked);
+    return;
+  }
 
   widget_ = constrained_window::ShowWebModalDialogViewsOwned(
       dialog_delegate_.get(), top_web_contents,
