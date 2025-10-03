@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/cfi_buildflags.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -103,6 +104,7 @@
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -128,6 +130,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
@@ -3969,3 +3972,69 @@ INSTANTIATE_TEST_SUITE_P(,
                                       ? "GlicEligibleProfiles"
                                       : "GlicIneligibleProfiles";
                          });
+
+// Tests a mode of the SyncService where the changes are propagated through the
+// file system rather than the Google servers.
+class ProfilePickerCreationFlowRoamingProfileBrowserTest
+    : public ProfilePickerCreationFlowBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ProfilePickerCreationFlowBrowserTest::SetUpCommandLine(command_line);
+
+    // By default on Window OS local sync backend uses roaming profile. It can
+    // lead to problems if some tests run simultaneously and use the same
+    // roaming profile.
+    EXPECT_TRUE(local_sync_backend_dir_.CreateUniqueTempDir());
+    base::FilePath file = local_sync_backend_dir_.GetPath().Append(
+        FILE_PATH_LITERAL("profile.pb"));
+    command_line->AppendSwitchASCII(switches::kLocalSyncBackendDir,
+                                    file.MaybeAsASCII());
+    command_line->AppendSwitch(switches::kEnableLocalSyncBackend);
+    command_line->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds,
+                                    "0");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+  base::ScopedTempDir local_sync_backend_dir_;
+};
+
+// Create a signed-in profile when roaming profiles are enabled.
+// Regression test for crbug.com/448888641
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowRoamingProfileBrowserTest,
+                       CreateSignedInProfile) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  BrowserAddedWaiter browser_waiter = BrowserAddedWaiter(2u);
+
+  Profile* profile_being_created =
+      StartDiceSignIn(/*start_on_management_page=*/false);
+  FinishDiceSignIn(profile_being_created, "joe.consumer@gmail.com", "Joe",
+                   kNoHostedDomainFound,
+                   /*is_supervised_profile=*/false,
+                   /*should_have_primary_account=*/true);
+
+  // History optin screen is skipped.
+  // This should not crash (crbug.com/448888641).
+  BrowserWindowInterface* const new_browser = browser_waiter.Wait();
+  WaitForLoadStop(GURL("chrome://newtab/"),
+                  new_browser->GetTabStripModel()->GetActiveWebContents());
+
+  // Check expectations when the profile creation flow is done.
+  WaitForPickerClosed();
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
+  EXPECT_FALSE(sync_service->HasSyncConsent());
+}
