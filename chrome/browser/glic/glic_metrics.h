@@ -295,7 +295,12 @@ class GlicMetrics {
   // Called when the user clicks Accept in the FRE.
   void OnFreAccepted();
   // Called when the glic window starts to open.
-  void OnGlicWindowOpen(bool attached, mojom::InvocationSource source);
+  void OnGlicWindowStartedOpening(bool attached,
+                                  mojom::InvocationSource source);
+  // Called to signal that the Glic window opening was interrupted for some
+  // reason (e.g, an error happened, reached a login page instead of the web
+  // client, etc).
+  void OnGlicWindowOpenInterrupted();
   // Called just after the the glic window has been loaded into the UI.
   void OnGlicWindowShown(Browser* browser,
                          std::optional<display::Display> glic_display,
@@ -337,9 +342,6 @@ class GlicMetrics {
   void LogGetContextFromFocusedTabError(
       GlicGetContextFromFocusedTabError error);
 
-  // See `last_input_mode_` for details.
-  mojom::WebClientMode last_input_mode() const { return last_input_mode_; }
-
   // Must be called immediately after constructor before any calls from
   // glic.mojom.
   void SetControllers(GlicWindowController* window_controller,
@@ -349,9 +351,8 @@ class GlicMetrics {
   // Must be called when context is requested.
   void DidRequestContextFromFocusedTab();
 
-  void set_show_start_time(base::TimeTicks time) { show_start_time_ = time; }
-
-  void set_starting_mode(mojom::WebClientMode mode) { starting_mode_ = mode; }
+  // Sets the starting input mode of the web client.
+  void SetStartingMode(mojom::WebClientMode mode);
 
   mojom::WebClientModel current_model() const { return current_model_; }
 
@@ -373,9 +374,6 @@ class GlicMetrics {
 
   // Called when kGlicTabContextEnabled changes.
   void OnTabContextEnabledPrefChanged();
-
-  // Resets the window timing state variables.
-  void ResetGlicWindowPresentationTimingState();
 
   // Returns the area in the display a given center point is.
   DisplayPosition GetDisplayPositionOfPoint(
@@ -412,15 +410,16 @@ class GlicMetrics {
 
   TurnInfo turn_;
 
-  mojom::WebClientMode input_mode_;
+  // The last web client input mode used by the user.
+  mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   std::set<mojom::WebClientMode> inputs_modes_used_;
   int attach_change_count_ = 0;
 
   mojom::WebClientModel current_model_ = mojom::WebClientModel::kDefault;
 
   // Session state. `session_start_time_` is a sentinel that is cleared in
-  // OnGlicWindowClose() and is used to determine whether OnGlicWindowOpen was
-  // called.
+  // OnGlicWindowClose() and is used to determine whether
+  // OnGlicWindowStartedOpening was called.
   int session_responses_ = 0;
   base::TimeTicks session_start_time_;
   mojom::InvocationSource invocation_source_ =
@@ -453,8 +452,6 @@ class GlicMetrics {
   // reset together after the metric is recorded.
   // The timestamp when the glic window starts to be shown.
   base::TimeTicks show_start_time_;
-  // Web client's operation modes.
-  mojom::WebClientMode starting_mode_ = mojom::WebClientMode::kUnknown;
 
   // The following variables are used for recording scroll related metrics.
   // The number of scroll attempts  (tracked per session and reset when the
@@ -467,12 +464,7 @@ class GlicMetrics {
   // `OnResponseStopped()`, which resets `input_submitted_time_` and
   // `input_mode_`.
   base::TimeTicks scroll_input_submitted_time_;
-  mojom::WebClientMode scroll_input_mode_;
-
-  // The last input mode used by the user. This is not cleared when the response
-  // is finished, so it can be used to attribute events that happen after the
-  // response has completed to the input mode that triggered them.
-  mojom::WebClientMode last_input_mode_ = mojom::WebClientMode::kUnknown;
+  mojom::WebClientMode scroll_input_mode_ = mojom::WebClientMode::kUnknown;
 
   std::optional<base::TimeTicks> last_upload_start_time_;
 

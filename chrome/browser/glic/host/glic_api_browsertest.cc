@@ -1149,6 +1149,17 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithoutPermission) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
+
+  // Should record the respective error to the text mode histogram.
+  histogram_tester->ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text",
+      GlicGetContextFromFocusedTabError::
+          kPermissionDeniedContextPermissionNotEnabled,
+      1);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
@@ -1161,6 +1172,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithNoRequestedData) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
+
+  // No context error should have been recorded.
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
 }
 
 // Win-ASAN is flaky.
@@ -1175,12 +1194,28 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        MAYBE_testGetContextFromFocusedTabWithAllRequestedData) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
+
+  // No context error should have been recorded.
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextForActorFromFocusedTabWithoutPermission) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
+
+  // No context error should have been recorded.
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1198,6 +1233,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       InProcessBrowserTest::embedded_test_server()->GetURL("/pdf/test.pdf")));
 
   ExecuteJsTest();
+
+  // No context error should have been recorded.
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
 }
 
 // TODO(harringtond): Fix this, it hangs.

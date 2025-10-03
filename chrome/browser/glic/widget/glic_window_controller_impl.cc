@@ -327,7 +327,7 @@ void GlicWindowControllerImpl::WebClientInitializeFailed() {
     // now, show the UI anyway, which should be helpful in development.
     LOG(ERROR)
         << "Glic web client failed to initialize, it won't work properly.";
-    glic_service_->metrics()->set_show_start_time(base::TimeTicks());
+    glic_service_->metrics()->OnGlicWindowOpenInterrupted();
     GlicLoadedAndReadyToDisplay();
   }
 }
@@ -337,7 +337,7 @@ void GlicWindowControllerImpl::LoginPageCommitted() {
   if (state_ == State::kWaitingForGlicToLoad && !host().IsReady()) {
     // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
     // page is reached.
-    glic_service_->metrics()->set_show_start_time(base::TimeTicks());
+    glic_service_->metrics()->OnGlicWindowOpenInterrupted();
     GlicLoadedAndReadyToDisplay();
   }
 }
@@ -668,10 +668,9 @@ bool GlicWindowControllerImpl::BeforeViewCreated(
 
   SetWindowState(State::kWaitingForGlicToLoad);
 
-  glic_service_->metrics()->OnGlicWindowOpen(/*attached=*/browser, source);
+  glic_service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/browser,
+                                                       source);
   glic_service_->GetAuthController().OnGlicWindowOpened();
-
-  glic_service_->metrics()->set_show_start_time(base::TimeTicks::Now());
 
   MaybeResetPanelPostionOnShow(source);
 
@@ -889,7 +888,7 @@ void GlicWindowControllerImpl::MaybeResetPanelPostionOnShow(
 void GlicWindowControllerImpl::ClientReadyToShow(
     const mojom::OpenPanelInfo& open_info) {
   DVLOG(1) << "Glic client ready to show " << open_info.web_client_mode;
-  glic_service_->metrics()->set_starting_mode(open_info.web_client_mode);
+  glic_service_->metrics()->SetStartingMode(open_info.web_client_mode);
   glic_service_->metrics()->OnGlicWindowOpenAndReady();
   if (open_info.panelSize.has_value()) {
     Resize(*open_info.panelSize, open_info.resizeDuration, base::DoNothing());

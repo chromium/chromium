@@ -268,7 +268,6 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   turn_.input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
   inputs_modes_used_.insert(mode);
-  last_input_mode_ = mode;
 }
 
 void GlicMetrics::OnContextUploadStarted() {
@@ -448,12 +447,13 @@ void GlicMetrics::OnModelChanged(mojom::WebClientModel model) {
   current_model_ = model;
 }
 
-void GlicMetrics::OnGlicWindowOpen(bool attached,
-                                   mojom::InvocationSource source) {
+void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
+                                             mojom::InvocationSource source) {
   base::UmaHistogramEnumeration(
       "Glic.Session.Open.BrowserActiveState",
       browser_activity_observer_->GetBrowserActiveState());
   base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
+  show_start_time_ = base::TimeTicks::Now();
   session_start_time_ = base::TimeTicks::Now();
   invocation_source_ = source;
   base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
@@ -482,6 +482,10 @@ void GlicMetrics::OnGlicWindowOpen(bool attached,
                                 base::Time::Now());
 }
 
+void GlicMetrics::OnGlicWindowOpenInterrupted() {
+  show_start_time_ = base::TimeTicks();
+}
+
 void GlicMetrics::OnGlicWindowOpenAndReady() {
   if (show_start_time_.is_null()) {
     return;
@@ -492,23 +496,23 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
       delegate_->GetActiveTabSharingState());
 
   // Record the presentation time of showing the glic panel in an UMA histogram.
-  std::string input_mode;
-  if (starting_mode_ == mojom::WebClientMode::kText) {
-    input_mode = ".Text";
-  } else if (starting_mode_ == mojom::WebClientMode::kAudio) {
-    input_mode = ".Audio";
-  }
   base::TimeDelta presentation_time = base::TimeTicks::Now() - show_start_time_;
   base::UmaHistogramCustomTimes(
       base::StrCat({kHistogramGlicPanelPresentationTime, ".All"}),
       presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
-  if (starting_mode_ != mojom::WebClientMode::kUnknown) {
+  if (input_mode_ != mojom::WebClientMode::kUnknown) {
+    std::string input_mode;
+    if (input_mode_ == mojom::WebClientMode::kText) {
+      input_mode = ".Text";
+    } else if (input_mode_ == mojom::WebClientMode::kAudio) {
+      input_mode = ".Audio";
+    }
     base::UmaHistogramCustomTimes(
         base::StrCat({kHistogramGlicPanelPresentationTime, input_mode}),
         presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
   }
 
-  ResetGlicWindowPresentationTimingState();
+  OnGlicWindowOpenInterrupted();
 }
 
 void GlicMetrics::OnGlicWindowShown(
@@ -667,7 +671,7 @@ void GlicMetrics::OnShareImageComplete(ShareImageResult result) {
 void GlicMetrics::LogGetContextFromFocusedTabError(
     GlicGetContextFromFocusedTabError error) {
   std::string mode_string;
-  switch (last_input_mode_) {
+  switch (input_mode_) {
     case mojom::WebClientMode::kText:
       mode_string = "Text";
       break;
@@ -703,6 +707,10 @@ void GlicMetrics::DidRequestContextFromFocusedTab() {
   } else {
     turn_.source_id_ = ukm::NoURLSourceId();
   }
+}
+
+void GlicMetrics::SetStartingMode(mojom::WebClientMode mode) {
+  input_mode_ = mode;
 }
 
 void GlicMetrics::OnImpressionTimerFired() {
@@ -813,11 +821,6 @@ void GlicMetrics::OnTabContextEnabledPrefChanged() {
         "OnTabContextPermissionGranted",
         delegate_->GetActiveTabSharingState());
   }
-}
-
-void GlicMetrics::ResetGlicWindowPresentationTimingState() {
-  show_start_time_ = base::TimeTicks();
-  starting_mode_ = mojom::WebClientMode::kUnknown;
 }
 
 DisplayPosition GlicMetrics::GetDisplayPositionOfPoint(

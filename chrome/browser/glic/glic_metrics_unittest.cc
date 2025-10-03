@@ -163,10 +163,9 @@ class GlicMetricsTest : public testing::Test {
   void ExpectEntryPointImpressionLogged(
       EntryPointStatus entry_point_impression) {
     task_environment_.FastForwardBy(base::Minutes(16));
-    histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Status", 1);
-    histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Status",
-                                        entry_point_impression,
-                                        /*expected_count=*/1);
+    histogram_tester_.ExpectUniqueSample("Glic.EntryPoint.Status",
+                                         entry_point_impression,
+                                         /*expected_count=*/1);
   }
 
  protected:
@@ -224,8 +223,8 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   delegate_->showing_ = true;
   delegate_->attached_ = true;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/true,
-                             mojom::InvocationSource::kOsButton);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/true,
+                                       mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
@@ -245,7 +244,8 @@ TEST_F(GlicMetricsTest, BasicVisible) {
 
 TEST_F(GlicMetricsTest, BasicUkm) {
   delegate_->showing_ = true;
-  metrics_->OnGlicWindowOpen(/*attached=*/false, mojom::InvocationSource::kFre);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/false,
+                                       mojom::InvocationSource::kFre);
   for (int i = 0; i < 2; ++i) {
     metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
     metrics_->OnResponseStarted();
@@ -300,7 +300,8 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
 
   delegate_->showing_ = true;
   metrics_->DidRequestContextFromFocusedTab();
-  metrics_->OnGlicWindowOpen(/*attached=*/false, mojom::InvocationSource::kFre);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/false,
+                                       mojom::InvocationSource::kFre);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
@@ -328,8 +329,8 @@ TEST_F(GlicMetricsTest, BasicStopReasonOther) {
   delegate_->showing_ = true;
   delegate_->attached_ = true;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/true,
-                             mojom::InvocationSource::kOsButton);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/true,
+                                       mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped(mojom::ResponseStopCause::kOther);
@@ -344,8 +345,8 @@ TEST_F(GlicMetricsTest, BasicStopReasonByUser) {
   delegate_->showing_ = true;
   delegate_->attached_ = true;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/true,
-                             mojom::InvocationSource::kOsButton);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/true,
+                                       mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped(mojom::ResponseStopCause::kUser);
@@ -360,8 +361,8 @@ TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
   delegate_->showing_ = true;
   delegate_->attached_ = true;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/true,
-                             mojom::InvocationSource::kOsButton);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/true,
+                                       mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
@@ -377,8 +378,8 @@ TEST_F(GlicMetricsTest, Segmentation3DotsMenuDetachedAudio) {
   delegate_->showing_ = true;
   delegate_->attached_ = false;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/false,
-                             mojom::InvocationSource::kThreeDotsMenu);
+  metrics_->OnGlicWindowStartedOpening(
+      /*attached=*/false, mojom::InvocationSource::kThreeDotsMenu);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
@@ -392,8 +393,8 @@ TEST_F(GlicMetricsTest, Segmentation3DotsMenuDetachedAudio) {
 }
 
 TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {
-  metrics_->OnGlicWindowOpen(/*attached=*/true,
-                             mojom::InvocationSource::kOsButton);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/true,
+                                       mojom::InvocationSource::kOsButton);
   int minutes = 10;
   task_environment_.FastForwardBy(base::Minutes(minutes));
   metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
@@ -455,6 +456,39 @@ TEST_F(GlicMetricsTest, OnTabPinSharedUnsuccessfulNotValid) {
       "Glic.Sharing.TabPinnedForSharing",
       GlicTabPinnedForSharingResult::kPinTabForSharingFailedNotValidForSharing,
       1);
+}
+
+TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_UnknownMode) {
+  // Unknown is the default mode.
+  metrics_->LogGetContextFromFocusedTabError(
+      GlicGetContextFromFocusedTabError::kTabNotFound);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown",
+      GlicGetContextFromFocusedTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_ChangingModes) {
+  // Simulates the client starting in text mode and later switching to audio.
+  metrics_->SetStartingMode(mojom::WebClientMode::kText);
+  metrics_->LogGetContextFromFocusedTabError(
+      GlicGetContextFromFocusedTabError::kWebContentsChanged);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics_->LogGetContextFromFocusedTabError(
+      GlicGetContextFromFocusedTabError::kPermissionDenied);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text",
+      GlicGetContextFromFocusedTabError::kWebContentsChanged, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio",
+      GlicGetContextFromFocusedTabError::kPermissionDenied, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
 }
 
 TEST_F(GlicMetricsTest, ImpressionBeforeFreNotPermittedByPolicy) {
@@ -683,8 +717,8 @@ TEST_F(GlicMetricsTest, TimeElapsedBetweenSessions) {
   metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   task_environment_.FastForwardBy(elapsed_time);
 
-  metrics_->OnGlicWindowOpen(/*attached=*/true,
-                             mojom::InvocationSource::kOsButton);
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/true,
+                                       mojom::InvocationSource::kOsButton);
   histogram_tester_.ExpectTotalCount(
       "Glic.PanelWebUi.ElapsedTimeBetweenSessions",
       /*expected_count=*/1);
@@ -744,11 +778,10 @@ TEST_F(GlicMetricsTest, TabFocusStateReporting) {
   profile_->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, false);
   profile_->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, true);
 
-  // Marks the panel as open.
-  metrics_->OnGlicWindowOpen(/*attached=*/true,
-                             mojom::InvocationSource::kOsButton);
-  // Enable OnGlicWindowOpenAndReady to record metrics.
-  metrics_->set_show_start_time(base::TimeTicks::Now());
+  // Marks the panel as starting  to open; enables OnGlicWindowOpenAndReady to
+  // record metrics.
+  metrics_->OnGlicWindowStartedOpening(/*attached=*/true,
+                                       mojom::InvocationSource::kOsButton);
   // Records a sample of *.OnPanelOpenAndReady.
   metrics_->OnGlicWindowOpenAndReady();
 
