@@ -54,8 +54,8 @@ bool GetAppOutputInternal(
     int* exit_code,
     TimeDelta timeout = TimeDelta::Max(),
     LaunchOptions options = {},
-    FunctionRef<void(std::string_view)> still_waiting =
-        [](std::string_view partial_output) {},
+    FunctionRef<void(const Process&, std::string_view)> still_waiting =
+        [](const Process& process, std::string_view partial_output) {},
     TerminationStatus* final_status = nullptr) {
   TRACE_EVENT0("base", "GetAppOutput");
 
@@ -126,7 +126,7 @@ bool GetAppOutputInternal(
         }
         CHECK_LE(bytes_read, bytes_to_read);
         std::string_view buffer_view(buffer, bytes_read);
-        still_waiting(buffer_view);
+        still_waiting(process, buffer_view);
         if (output) {
           output->append(buffer_view);
         }
@@ -146,7 +146,7 @@ bool GetAppOutputInternal(
       break;
     }
 
-    still_waiting({});
+    still_waiting(process, {});
   } while (timer.Elapsed() < timeout);
 
   if (final_status) {
@@ -505,7 +505,7 @@ bool GetAppOutputWithExitCodeAndTimeout(
     int* exit_code,
     TimeDelta timeout,
     const LaunchOptions& options,
-    FunctionRef<void(std::string_view)> still_waiting,
+    FunctionRef<void(const Process&, std::string_view)> still_waiting,
     TerminationStatus* final_status) {
   return GetAppOutputInternal(cl, include_stderr, output, exit_code, timeout,
                               options, still_waiting, final_status);

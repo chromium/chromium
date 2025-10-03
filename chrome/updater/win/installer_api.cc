@@ -537,14 +537,16 @@ InstallerResult RunApplicationInstaller(
         base::TerminationStatus::TERMINATION_STATUS_MAX_ENUM;
     std::ignore = base::GetAppOutputWithExitCodeAndTimeout(
         cmdline, true, nullptr, &exit_code, timeout - timer.Elapsed(), options,
-        [&](std::string_view partial_output) {
+        [&](const base::Process& process, std::string_view partial_output) {
           if (!partial_output.empty()) {
-            VLOG(1) << "Installer output: " << partial_output;
+            VLOG(1) << "Installer pid: " << process.Pid()
+                    << ", output: " << partial_output;
           }
 
           const int progress =
               GetInstallerProgress(app_info.scope, app_info.app_id);
-          VLOG(3) << "installer progress: " << progress;
+          VLOG(1) << "Installer pid: " << process.Pid()
+                  << ", installer progress: " << progress;
           progress_callback.Run(progress);
         },
         &final_status);

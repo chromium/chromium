@@ -48,7 +48,8 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_SuccessOutput) {
   ASSERT_TRUE(GetAppOutputWithExitCodeAndTimeout(
       cl.GetCommandLineString(), true, &output, &exit_code, base::Seconds(2),
       options,
-      [&](std::string_view partial_output) {
+      [&](const Process& process, std::string_view partial_output) {
+        ASSERT_TRUE(process.IsValid());
         ++count;
         partial_outputs.append(partial_output);
       },
@@ -73,7 +74,8 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_TimeoutOutput) {
   ASSERT_FALSE(GetAppOutputWithExitCodeAndTimeout(
       cl.GetCommandLineString(), true, &output, &exit_code, base::Seconds(1),
       options,
-      [&](std::string_view partial_output) {
+      [&](const Process& process, std::string_view partial_output) {
+        ASSERT_TRUE(process.IsValid());
         ++count;
         partial_outputs.append(partial_output);
       },
@@ -99,7 +101,8 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_StreamingOutput) {
   ASSERT_TRUE(GetAppOutputWithExitCodeAndTimeout(
       cl.GetCommandLineString(), true, &output, &exit_code, TimeDelta::Max(),
       options,
-      [&](std::string_view partial_output) {
+      [&](const Process& process, std::string_view partial_output) {
+        ASSERT_TRUE(process.IsValid());
         ++count;
         partial_outputs.append(partial_output);
       },

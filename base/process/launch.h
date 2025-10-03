@@ -454,12 +454,12 @@ BASE_EXPORT bool GetAppOutput(CommandLine::StringViewType cl,
 // * an optional `output` providing the complete output of `cl`.
 // * an optional `timeout` if `cl` does not complete in time.
 // * an optional `LaunchOptions`.
-// * an optional `FunctionRef`, called multiple times while waiting, with
-//   streaming partial output received since the last call to the `FunctionRef`
-//   from stdout/stderr of the running `cl` process. The implementation of the
-//   `FunctionRef` can log the output, or concatenate the partial outputs over
-//   successive calls to effectively produce the full `output` from the `cl`
-//   process.
+// * an optional `FunctionRef`, called multiple times while waiting, with the
+//   launched `Process` and streaming partial output received since the last
+//   call to the `FunctionRef` from stdout/stderr of the running `cl` process.
+//   The implementation of the `FunctionRef` can log the output, or concatenate
+//   the partial outputs over successive calls to effectively produce the full
+//   `output` from the `cl` process.
 // * an optional `final_status` `TerminationStatus` value on function return.
 //
 // Returns `true` if the application runs and exits. If this is the case the
@@ -483,8 +483,8 @@ BASE_EXPORT bool GetAppOutputWithExitCodeAndTimeout(
     int* exit_code,
     TimeDelta timeout = TimeDelta::Max(),
     const LaunchOptions& options = {},
-    FunctionRef<void(std::string_view)> still_waiting =
-        [](std::string_view partial_output) {},
+    FunctionRef<void(const Process&, std::string_view)> still_waiting =
+        [](const Process& process, std::string_view partial_output) {},
     TerminationStatus* final_status = nullptr);
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
