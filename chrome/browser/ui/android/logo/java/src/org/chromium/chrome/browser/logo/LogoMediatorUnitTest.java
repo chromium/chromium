@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -31,6 +32,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -90,7 +94,8 @@ public class LogoMediatorUnitTest {
     }
 
     @Test
-    public void testDseChangedAndGoogleIsDseAndDoodleIsSupported() {
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR)
+    public void testDseChangedAndGoogleIsDseAndDoodleIsSupported_disabled() {
         LogoMediator logoMediator = createMediator();
         Assert.assertNotNull(logoMediator.getDefaultGoogleLogo(mContext));
 
@@ -102,10 +107,36 @@ public class LogoMediatorUnitTest {
     }
 
     @Test
-    public void testDseChangedAndGoogleIsNotDse() {
+    public void testDseChangedAndGoogleIsDseAndDoodleIsSupported() {
+        LogoMediator logoMediator = createMediator(mContext.getDrawable(R.drawable.ic_google_logo));
+        Assert.assertNotNull(logoMediator.getDefaultGoogleLogoDrawable());
+
+        verify(mTemplateUrlService)
+                .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
+        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
+
+        verify(mLogoBridge, times(1)).getCurrentLogo(any());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR)
+    public void testDseChangedAndGoogleIsNotDse_disabled() {
         LogoMediator logoMediator = createMediator();
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         Assert.assertNull(logoMediator.getDefaultGoogleLogo(mContext));
+
+        verify(mTemplateUrlService)
+                .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
+        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
+
+        verify(mLogoBridge, times(1)).getCurrentLogo(any());
+    }
+
+    @Test
+    public void testDseChangedAndGoogleIsNotDse() {
+        LogoMediator logoMediator = createMediator(mContext.getDrawable(R.drawable.ic_google_logo));
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        Assert.assertNull(logoMediator.getDefaultGoogleLogoDrawable());
 
         verify(mTemplateUrlService)
                 .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
@@ -211,12 +242,20 @@ public class LogoMediatorUnitTest {
     }
 
     private LogoMediator createMediator() {
-        LogoMediator logoMediator = createMediatorWithoutNative();
+        return createMediator(null);
+    }
+
+    private LogoMediator createMediator(@Nullable Drawable defaultGoogleLogoDrawable) {
+        LogoMediator logoMediator = createMediatorWithoutNative(defaultGoogleLogoDrawable);
         logoMediator.initWithNative(mProfile);
         return logoMediator;
     }
 
     private LogoMediator createMediatorWithoutNative() {
+        return createMediatorWithoutNative(null);
+    }
+
+    private LogoMediator createMediatorWithoutNative(@Nullable Drawable defaultGoogleLogoDrawable) {
         LogoMediator logoMediator =
                 new LogoMediator(
                         mContext,
@@ -225,7 +264,8 @@ public class LogoMediatorUnitTest {
                         mOnLogoAvailableCallback,
                         null,
                         new CachedTintedBitmap(
-                                R.drawable.google_logo, R.color.google_logo_tint_color));
+                                R.drawable.google_logo, R.color.google_logo_tint_color),
+                        defaultGoogleLogoDrawable);
         logoMediator.setLogoBridgeForTesting(mLogoBridge);
         return logoMediator;
     }

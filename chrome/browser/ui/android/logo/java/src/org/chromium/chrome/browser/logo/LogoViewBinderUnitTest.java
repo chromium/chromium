@@ -18,10 +18,12 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
+import androidx.core.content.ContextCompat;
 import androidx.test.filters.SmallTest;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
@@ -40,6 +42,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -105,7 +109,8 @@ public class LogoViewBinderUnitTest {
                         mLogoModel,
                         /* onLogoAvailableCallback= */ null,
                         /* visibilityObserver= */ null,
-                        /* defaultGoogleLogo= */ null);
+                        /* defaultGoogleLogo= */ null,
+                        /* defaultGoogleLogoDrawable= */ null);
     }
 
     @After
@@ -139,7 +144,18 @@ public class LogoViewBinderUnitTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR)
+    public void testEndFadeAnimation_disabled() {
+        testEndFadeAnimationImpl();
+    }
+
+    @Test
+    @SmallTest
     public void testEndFadeAnimation() {
+        testEndFadeAnimationImpl();
+    }
+
+    public void testEndFadeAnimationImpl() {
         Logo logo =
                 new Logo(
                         Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
@@ -165,7 +181,8 @@ public class LogoViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testUpdateLogo() {
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR})
+    public void testUpdateLogo_refactorDisabled() {
         Logo logo =
                 new Logo(
                         Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
@@ -181,13 +198,39 @@ public class LogoViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testDefaultGoogleLogo() {
+    public void testUpdateLogo() {
+        Logo logo =
+                new Logo(
+                        Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
+                        null,
+                        null,
+                        "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
+        assertNull(mLogoView.getFadeAnimationForTesting());
+        assertNotEquals(logo.image, mLogoView.getNewLogoDrawableBitmapForTesting());
+        mLogoModel.set(LogoProperties.LOGO, logo);
+        assertNotNull(mLogoView.getFadeAnimationForTesting());
+        assertEquals(logo.image, mLogoView.getNewLogoDrawableBitmapForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultGoogleLogo_refactorDisabled() {
         Bitmap defaultLogo =
                 BitmapFactory.decodeResource(
                         mLogoView.getContext().getResources(), R.drawable.google_logo);
         assertNotEquals(defaultLogo, mLogoView.getDefaultGoogleLogoForTesting());
         mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO, defaultLogo);
         assertEquals(defaultLogo, mLogoView.getDefaultGoogleLogoForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultGoogleLogo() {
+        Drawable defaultLogo =
+                ContextCompat.getDrawable(mLogoView.getContext(), R.drawable.ic_google_logo);
+        assertNotEquals(defaultLogo, mLogoView.getDefaultGoogleLogoDrawableForTesting());
+        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, defaultLogo);
+        assertEquals(defaultLogo, mLogoView.getDefaultGoogleLogoDrawableForTesting());
     }
 
     @Test

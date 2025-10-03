@@ -182,6 +182,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_DESKTOP_DENSITY = "AndroidDesktopDensity";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_FIRST_RUN_LAUNCH_BOUNDS = "AndroidFirstRunLaunchBounds";
+    public static final String ANDROID_LOGO_VIEW_REFACTOR = "AndroidLogoViewRefactor";
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
@@ -719,6 +720,7 @@ public abstract class ChromeFeatureList {
     // keep-sorted end
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
+
     public static final CachedFlag sAccountForSuppressedKeyboardInsets =
             newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
     public static final CachedFlag sAllowTabClosingUponMinimization =
@@ -746,6 +748,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_DESKTOP_DENSITY, false);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
+    public static final CachedFlag sAndroidLogoViewRefactor =
+            newCachedFlag(ANDROID_LOGO_VIEW_REFACTOR, /* defaultValue= */ true);
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, true);
     public static final CachedFlag sAndroidOpenIncognitoAsWindow =
@@ -1114,6 +1118,7 @@ public abstract class ChromeFeatureList {
                     sAndroidDataImporterService,
                     sAndroidDesktopDensity,
                     sAndroidElegantTextHeight,
+                    sAndroidLogoViewRefactor,
                     sAndroidMinimalUiLargeScreen,
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidProgressBarVisualUpdate,

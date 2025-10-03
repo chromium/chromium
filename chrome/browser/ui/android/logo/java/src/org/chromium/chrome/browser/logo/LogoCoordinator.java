@@ -5,16 +5,21 @@
 package org.chromium.chrome.browser.logo;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.View.MeasureSpec;
+
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.ColorUtils;
 
 /** Coordinator used to fetch and load logo image for Start surface and NTP. */
 @NullMarked
@@ -52,6 +57,19 @@ public class LogoCoordinator {
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
+
+        Drawable defaultGoogleLogoDrawable = null;
+        if (ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) {
+            defaultGoogleLogoDrawable =
+                    ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
+            boolean isNightMode = ColorUtils.inNightMode(context);
+            if (isNightMode) {
+                // Check the mode before applying a tinted color. A transparent tint in light mode
+                // will cause the logo's color to disappear.
+                defaultGoogleLogoDrawable.setTint(context.getColor(R.color.google_logo_tint_color));
+            }
+        }
+
         mMediator =
                 new LogoMediator(
                         context,
@@ -59,7 +77,8 @@ public class LogoCoordinator {
                         mLogoModel,
                         onLogoAvailableCallback,
                         visibilityObserver,
-                        sDefaultGoogleLogo);
+                        sDefaultGoogleLogo,
+                        defaultGoogleLogoDrawable);
     }
 
     /**

@@ -144,6 +144,10 @@ found in the LICENSE file.
     <color name="modern_yellow_300">#FDD663</color>
     <color name="modern_yellow_500">#FBBC04</color>
     <color name="google_blue_grey_500" tools:ignore="UnusedResources">#607D8B</color>
+    <color name="google_logo_blue">#4285F4</color>
+    <color name="google_logo_red">#EA4335</color>
+    <color name="google_logo_yellow">#FBBC05</color>
+    <color name="google_logo_green">#34A853</color>
 
     <!-- Only use for older versions of Android mimics UI. -->
     <color name="google_blue_grey_900" tools:ignore="UnusedResources">#263238</color>

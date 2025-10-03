@@ -94,6 +94,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private boolean mHasLogoLoadedForCurrentSearchEngine;
     private final LogoCoordinator.@Nullable VisibilityObserver mVisibilityObserver;
     private final CachedTintedBitmap mDefaultGoogleLogo;
+    private final @Nullable Drawable mDefaultGoogleLogoDrawable;
+    private final boolean mIsRefactorEnabled;
     private boolean mShouldShowLogo;
     private boolean mIsLoadPending;
     private @Nullable String mOnLogoClickUrl;
@@ -114,6 +116,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
      * @param visibilityObserver Observer object monitoring logo visibility.
      * @param defaultGoogleLogo The google logo shared across all NTPs when Google is the default
      *     search engine.
+     * @param defaultGoogleLogoDrawable The google logo drawable shared across all NTPs when Google
+     *     is the default search engine.
      */
     LogoMediator(
             Context context,
@@ -121,7 +125,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             PropertyModel logoModel,
             Callback<Logo> onLogoAvailableCallback,
             @Nullable VisibilityObserver visibilityObserver,
-            CachedTintedBitmap defaultGoogleLogo) {
+            CachedTintedBitmap defaultGoogleLogo,
+            @Nullable Drawable defaultGoogleLogoDrawable) {
         mContext = context;
         mLogoModel = logoModel;
         mLogoClickedCallback = logoClickedCallback;
@@ -130,7 +135,9 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             mVisibilityObservers.addObserver(mVisibilityObserver);
         }
         mDefaultGoogleLogo = defaultGoogleLogo;
+        mDefaultGoogleLogoDrawable = defaultGoogleLogoDrawable;
         mLogoModel.set(LogoProperties.LOGO_AVAILABLE_CALLBACK, onLogoAvailableCallback);
+        mIsRefactorEnabled = ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled();
     }
 
     /**
@@ -259,9 +266,15 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                                 // fresh one before making any further decisions.
                                 return;
                             }
-                            mLogoModel.set(
-                                    LogoProperties.DEFAULT_GOOGLE_LOGO,
-                                    getDefaultGoogleLogo(mContext));
+                            if (mIsRefactorEnabled) {
+                                mLogoModel.set(
+                                        LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE,
+                                        getDefaultGoogleLogoDrawable());
+                            } else {
+                                mLogoModel.set(
+                                        LogoProperties.DEFAULT_GOOGLE_LOGO,
+                                        getDefaultGoogleLogo(mContext));
+                            }
                         }
                         mLogoModel.set(
                                 LogoProperties.LOGO_CLICK_HANDLER,
@@ -272,7 +285,12 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     }
 
     private void showSearchProviderInitialView() {
-        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO, getDefaultGoogleLogo(mContext));
+        if (mIsRefactorEnabled) {
+            mLogoModel.set(
+                    LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, getDefaultGoogleLogoDrawable());
+        } else {
+            mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO, getDefaultGoogleLogo(mContext));
+        }
         mLogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
     }
 
@@ -302,6 +320,22 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         return TemplateUrlServiceFactory.getForProfile(mProfile).isDefaultSearchEngineGoogle()
                 ? mDefaultGoogleLogo.getBitmap(context)
                 : null;
+    }
+
+    /**
+     * Get the default Google logo drawable if available.
+     *
+     * @return The default Google logo drawable.
+     */
+    @VisibleForTesting
+    @Nullable Drawable getDefaultGoogleLogoDrawable() {
+        if (mProfile == null
+                || !TemplateUrlServiceFactory.getForProfile(mProfile)
+                        .isDefaultSearchEngineGoogle()) {
+            return null;
+        }
+
+        return mDefaultGoogleLogoDrawable;
     }
 
     public void onLogoClicked(boolean isAnimatedLogoShowing) {

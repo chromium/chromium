@@ -30,6 +30,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -81,11 +83,26 @@ public class LogoViewTest {
     }
 
     @Test
-    public void testDefaultLogoView() {
+    public void testDefaultLogoView_refactorDisabled() {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mView.setDefaultGoogleLogo(
                 new CachedTintedBitmap(R.drawable.google_logo, R.color.google_logo_tint_color)
                         .getBitmap(mView.getContext()));
+        mView.updateLogo(null);
+        mView.endAnimationsForTesting();
+
+        Assert.assertFalse("Default logo should not be clickable.", mView.isClickable());
+        Assert.assertFalse("Default logo should not be focusable.", mView.isFocusable());
+        Assert.assertTrue(
+                "Default logo should not have a content description.",
+                TextUtils.isEmpty(mView.getContentDescription()));
+    }
+
+    @Test
+    public void testDefaultLogoView() {
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mView.setDefaultGoogleLogoDrawable(
+                mView.getContext().getDrawable(R.drawable.ic_google_logo));
         mView.updateLogo(null);
         mView.endAnimationsForTesting();
 
@@ -146,7 +163,8 @@ public class LogoViewTest {
     }
 
     @Test
-    public void testShowLoadingView() {
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR})
+    public void testShowLoadingView_disabled() {
         Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null, null);
         mModel.set(LogoProperties.LOGO, logo);
         mView.endAnimationsForTesting();
@@ -158,21 +176,49 @@ public class LogoViewTest {
     }
 
     @Test
+    public void testShowLoadingView() {
+        Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null, null);
+        mModel.set(LogoProperties.LOGO, logo);
+        mView.endAnimationsForTesting();
+        Assert.assertNotNull(mView.getLogoDrawableForTesting());
+        mView.setLoadingViewVisibilityForTesting(View.VISIBLE);
+        mModel.set(LogoProperties.SHOW_LOADING_VIEW, true);
+        Assert.assertNull(mView.getLogoDrawableForTesting());
+        Assert.assertEquals(View.GONE, mView.getLoadingViewVisibilityForTesting());
+    }
+
+    @Test
     @MediumTest
-    public void testDoodleAnimation() {
-        Resources res = mView.getResources();
-        int logoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
-        int logoTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
-        int doodleHeight = LogoUtils.getDoodleHeightInTabletSplitScreen(res);
-        int doodleTopMargin = LogoUtils.getTopMarginForDoodle(res);
-
-        MarginLayoutParams logoLayoutParams = (MarginLayoutParams) mView.getLayoutParams();
-
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR})
+    public void testDoodleAnimation_disabled() {
         // Test default google logo.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mView.setDefaultGoogleLogo(
                 new CachedTintedBitmap(R.drawable.google_logo, R.color.google_logo_tint_color)
                         .getBitmap(mView.getContext()));
+
+        testDoodleAnimationImpl();
+    }
+
+    @Test
+    @MediumTest
+    public void testDoodleAnimation() {
+        // Test default google logo drawable.
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mView.setDefaultGoogleLogoDrawable(
+                mView.getContext().getDrawable(R.drawable.ic_google_logo));
+
+        testDoodleAnimationImpl();
+    }
+
+    private void testDoodleAnimationImpl() {
+        Resources res = mView.getResources();
+        int logoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
+        int logoTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int doodleHeight = LogoUtils.getDoodleHeightInTabletSplitScreen(res);
+        int doodleTopMargin = LogoUtils.getTopMarginForDoodle(res);
+        MarginLayoutParams logoLayoutParams = (MarginLayoutParams) mView.getLayoutParams();
+
         mView.updateLogo(null);
         mView.endAnimationsForTesting();
         Assert.assertEquals(logoHeight, logoLayoutParams.height);
