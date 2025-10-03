@@ -275,7 +275,7 @@ void ConfigureButtonShadow(UIButton* button) {
 // Callback when there is a long press on the diamond button in the toolbar.
 - (void)longPressButton:(NSNotification*)notification {
   id<BrowserProviderInterface> browserProvider =
-      self.regularBrowser->GetSceneState().controller.browserProviderInterface;
+      self.regularBrowser->GetSceneState().browserProviderInterface;
   Browser* browser = browserProvider.currentBrowserProvider.browser;
 
   web::WebState* activeWebState =

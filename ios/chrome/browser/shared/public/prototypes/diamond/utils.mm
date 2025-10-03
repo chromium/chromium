@@ -27,7 +27,7 @@ bool IsInIncognito(bool from_tab_grid,
     return incognito_grid;
   }
   id<BrowserProviderInterface> browser_provider =
-      regular_browser->GetSceneState().controller.browserProviderInterface;
+      regular_browser->GetSceneState().browserProviderInterface;
   return (browser_provider.currentBrowserProvider ==
           browser_provider.incognitoBrowserProvider);
 }
