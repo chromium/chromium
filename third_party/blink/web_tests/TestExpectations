@@ -750,10 +750,6 @@ crbug.com/40550039 virtual/svg2-cascade/svg/W3C-SVG-1.1/animate-elem-40-t.svg [ 
 crbug.com/40550039 external/wpt/svg/styling/use-element-id-selector-transition.tentative.html [ Failure ]
 crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation.tentative.html [ Failure ]
 
-# Anchor positioning failures due to fragmentation offset* APIs.
-external/wpt/css/css-anchor-position/anchor-position-grid-001.html [ Failure ]
-external/wpt/css/css-anchor-position/anchor-position-multicol-nested-001.html [ Failure ]
-
 # CSS Anchor Positioning Update failures.
 # New tests which fail without the flag enabled.
 crbug.com/438515315 external/wpt/css/css-anchor-position/anchor-scroll-chained-002.html [ Failure ]
@@ -2957,8 +2953,6 @@ crbug.com/445726874 external/wpt/html/semantics/embedded-content/the-iframe-elem
 crbug.com/445726874 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_top_navigation_with_user_gesture.tentative.html [ Crash Failure ]
 crbug.com/445726874 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_top_navigation_without_user_gesture_same_site.tentative.html [ Crash Failure ]
 
-external/wpt/css/css-anchor-position/anchor-position-multicol-007.html [ Failure ]
-external/wpt/css/css-anchor-position/anchor-position-multicol-008.html [ Failure ]
 external/wpt/css/css-text/text-autospace/text-autospace-elements-007.html [ Failure ]
 external/wpt/css/css-text/text-autospace/text-autospace-transform-full-width-001.tentative.html [ Failure ]
 external/wpt/navigation-api/navigation-methods/return-value/navigate-javascript-url.html [ Timeout ]
