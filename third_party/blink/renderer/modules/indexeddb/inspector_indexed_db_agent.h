@@ -52,6 +52,8 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
   ~InspectorIndexedDBAgent() override;
   void Trace(Visitor*) const override;
 
+  v8_inspector::V8InspectorSession* v8_session() { return v8_session_; }
+
   void Restore() override;
   void DidCommitLoadForLocalFrame(LocalFrame*) override;
 
