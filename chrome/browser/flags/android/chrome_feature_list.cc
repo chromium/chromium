@@ -359,6 +359,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kMostVisitedTilesReselect,
     &kMultiInstanceApplicationStatusCleanup,
     &kMvcUpdateViewWhenModelChanged,
+    &kNativePageTransitionHardwareCapture,
     &kNavBarColorAnimation,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
@@ -925,6 +926,9 @@ BASE_FEATURE(kMultiInstanceApplicationStatusCleanup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMvcUpdateViewWhenModelChanged, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNativePageTransitionHardwareCapture,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNavBarColorAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 
