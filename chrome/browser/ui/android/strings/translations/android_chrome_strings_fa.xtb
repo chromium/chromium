@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">داده‌های این سایت‌ها و برنامه‌ها نیز پاک شود؟</translation>
 <translation id="1034259925032978114">پنجره باز است</translation>
+<translation id="1035113036584565771">تبلیغ اعلان نکات بسته است</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1045899828449635435">داده‌های این سایت‌ها نیز پاک شود؟</translation>
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="1052842760770519282">برخی‌از گذرواژه‌هایتان دردسترس نیست</translation>
 <translation id="1058669287135776095">آفلاین هستید. اتصال اینترنت را بررسی و دوباره امتحان کنید.</translation>
+<translation id="1066338698580889414">تبلیغ اعلان نکات به‌صورت کامل باز شده است</translation>
 <translation id="1070689840697074178">‏می‌توانید فایل‌های PDF را از اینجا بارگیری کنید</translation>
 <translation id="107147699690128016">اگر پسوند فایل را تغییر دهید، ممکن است فایل در برنامه دیگری باز شود و به‌طور بالقوه برای دستگاه مضر باشد.</translation>
 <translation id="1087799850623149508">می‌توانید برای انتقال نوار نشانی به پایین، آن را لمس کنید و نگه دارید</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973">می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="1702543251015153180">تنظیمات زمینه تاریک تغییر کند؟</translation>
 <translation id="1702907158640575240">مرورگر تحت‌مدیریت</translation>
+<translation id="170478069042229393">‫<ph name="TAB_TITLE" />، زبانه ناشناس سنجاق‌شده</translation>
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1726477445370128854">‏وقتی Chrome صفحاتی را که فکر می‌کند ممکن است بازدید کنید پیش‌بارگیری می‌کند، می‌توانید سریع‌تر مرور و جستجو کنید.</translation>
 <translation id="1728803206919861584">گذرکلید خارج از «حالت ناشناس» ذخیره شود؟</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636">از <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">گزینه پیش‌بارگذاری وجود ندارد</translation>
 <translation id="3029704984691124060">عبارت‌های عبور مطابقت ندارند</translation>
+<translation id="3029829659829245765">‫<ph name="TAB_TITLE" />، زبانه سنجاق‌شده انتخابی</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />دریافت راهنمایی<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
 <translation id="3037517125981011456">‏درخواست‌های ورود به سیستم Chrome را نشان می‌دهد</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="397583555483684758">همگام‌سازی متوقف شده است</translation>
 <translation id="3976396876660209797">این میان‌بر را بردارید و دوباره ایجاد کنید</translation>
+<translation id="397650873162244514">‫<ph name="TAB_TITLE" />، زبانه سنجاق‌شده</translation>
 <translation id="3985022125189960801">اگر می‌خواهید سایتی در مجموعه سایت‌هایی که می‌توانند علایقتان را حدس بزنند قرار گیرد، آن سایت را دوباره اضافه کنید</translation>
 <translation id="3985215325736559418">می‌خواهید دوباره <ph name="FILE_NAME" /> را بارگیری کنید؟</translation>
 <translation id="3987993985790029246">کپی پیوند</translation>
@@ -1413,6 +1418,7 @@
 <translation id="7375125077091615385">نوع:</translation>
 <translation id="7376560087009844242">با گنجاندن بخش بیشتری از نوشتار صفحه، ممکن هنگام استفاده از «لمس کردن برای جستجو» نتایج بهتری دریافت کنید. همواره می‌توانید با رفتن به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> این مورد را تغییر دهید.</translation>
 <translation id="7379900596734708416">زمینه تاریک برای سایت‌ها دردسترس است</translation>
+<translation id="7384486627147155832">تبلیغ اعلان نکات به‌صورت نیمه باز شده است</translation>
 <translation id="7388615499319468910">سایت‌ها و تبلیغ‌کنندگان می‌توانند نحوه عملکرد آگهی‌ها را درک کنند. این تنظیم خاموش است.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{۱ فایل دیگر در فهرست}one{# فایل دیگر در فهرست}other{# فایل دیگر در فهرست}}</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
@@ -1584,6 +1590,7 @@
 <translation id="8090732854597034573">اگر به راهنمایی نیاز داشتید، از ولی خود کمک بگیرید</translation>
 <translation id="8101414242770404289">برگه‌ای از <ph name="TIME_PERIOD" /> بسته نمی‌شود</translation>
 <translation id="8103578431304235997">برگه ناشناس</translation>
+<translation id="810433609302852">برگ زیرین تبلیغ ویژگی اعلان نکات و مراحل استفاده</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">بستن گزینه‌های مرتب‌سازی</translation>
 <translation id="8110024788458304985">‏کمک به بهبود عملکرد و ویژگی‌های Chrome</translation>
@@ -1825,6 +1832,7 @@
 <translation id="9169507124922466868">سابقه «پیمایش» نیمه‌باز است</translation>
 <translation id="9189607089796819144">‏آیا می‌خواهید «<ph name="FILE_NAME" />» (‎<ph name="FILE_SIZE" />) را درهرصورت بارگیری کنید؟</translation>
 <translation id="9190276265094487094">سابقه‌تان در همه دستگاه‌های همگام‌سازی‌شده دردسترس خواهد بود تا بتوانید آنچه را انجام می‌دادید ادامه دهید</translation>
+<translation id="9197941237799589838">‫<ph name="TAB_TITLE" />، زبانه ناشناس سنجاق‌شده انتخابی</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{آخرین بررسی: ۱ دقیقه قبل}one{آخرین بررسی: # دقیقه قبل}other{آخرین بررسی: # دقیقه قبل}}</translation>
 <translation id="9204836675896933765">۱ فایل باقی مانده است</translation>
 <translation id="9205933215779845960">صفحه پیدا نشد. املای واژه‌های تایپ‌شده را بررسی کنید یا در <ph name="SEARCH_ENGINE" /> جستجو کنید.</translation>

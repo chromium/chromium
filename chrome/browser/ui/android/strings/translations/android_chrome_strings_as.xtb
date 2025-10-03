@@ -9,11 +9,13 @@
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
 <translation id="103269572468856066">এই ছাইট আৰু এপৰ পৰাও ডেটা মচিবনে?</translation>
 <translation id="1034259925032978114">ৱিণ্ড’খন খোলা আছে</translation>
+<translation id="1035113036584565771">কিটিপ সম্পৰ্কীয় জাননীৰ প্ৰ’ম’ বন্ধ কৰা হৈছে</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1045899828449635435">এই ছাইটসমূহৰ পৰাও ডেটা মচিবনে?</translation>
 <translation id="1049743911850919806">ইনক’গনিট’</translation>
 <translation id="1052842760770519282">আপোনাৰ কিছুমান পাছৱৰ্ড এক্সেছ কৰিব নোৱাৰি</translation>
 <translation id="1058669287135776095">আপুনি অফলাইন হৈ আছে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
+<translation id="1066338698580889414">কিটিপ সম্পৰ্কীয় জাননীৰ প্ৰ’ম’ সম্পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="1070689840697074178">আপুনি PDFসমূহ ইয়াত ডাউনল’ড কৰিব পাৰে</translation>
 <translation id="107147699690128016">আপুনি যদি ফাইল এক্সটেনশ্বন সলনি কৰে ফাইলটো হয়তো বেলেগ এটা এপ্লিকেশ্বনত খুলিব আৰু সেয়া আপোনাৰ ডিভাইচটোৰ বাবে এক সম্ভাব্য বিপদ হ’ব পাৰে।</translation>
 <translation id="1087799850623149508">ঠিকনাৰ বাৰডাল একেবাৰে তললৈ নিবলৈ আপুনি স্পৰ্শ কৰি ধৰি ৰাখিব পাৰে</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973">আপুনি <ph name="SITE_ETLD_PLUS_ONE" />ত অব্যাহত ৰাখিবলৈ আন উপায় চেষ্টা কৰিব পাৰে।</translation>
 <translation id="1702543251015153180">গাঢ় ৰঙৰ থীমৰ ছেটিং সলনি কৰিব নেকি?</translation>
 <translation id="1702907158640575240">পৰিচালিত ব্ৰাউজাৰ</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, পিন কৰি থোৱা ইনক’গনিট’ টেব</translation>
 <translation id="1718835860248848330">যোৱা ১ ঘণ্টাৰ</translation>
 <translation id="1726477445370128854">আপুনি যাব পৰাৰ সম্ভাৱনা থকা পৃষ্ঠাসমূহ Chromeএ আগতীয়াকৈ ল’ড কৰিলে আপুনি খৰতকীয়াকৈ ব্ৰাউজ আৰু সন্ধান কৰিব পাৰে</translation>
 <translation id="1728803206919861584">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হৈ পাছকী ছেভ কৰিবনে?</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636"><ph name="APP_LABEL" />ৰ পৰা</translation>
 <translation id="3029276696788198026">কোনো আগতীয়া ল’ডিং নাই</translation>
 <translation id="3029704984691124060">পাছফ্ৰেজ নিমিলে</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, পিন কৰি থোৱা বাছনিকৃত টেব</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />সহায় লওক<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">মূল্য ট্ৰেক কৰি থকা হৈছে</translation>
 <translation id="3037517125981011456">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="397583555483684758">ছিংক কৰা সুবিধাটোৱে কাম কৰা বন্ধ কৰিছে</translation>
 <translation id="3976396876660209797">এই শ্বৰ্টকাটটো আঁতৰাই ইয়াক আকৌ বনাওক</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, পিন কৰি থোৱা টেব</translation>
 <translation id="3985022125189960801">আপুনি কি ভাল পায় সেয়া অনুমান কৰিব পৰা ছাইটৰ সূচীত আপুনি ৰাখিবলৈ বিচৰা কোনো ছাইট পুনৰায় যোগ দিয়ক</translation>
 <translation id="3985215325736559418">আপুনি <ph name="FILE_NAME" /> পুনৰ ডাউনল'ড কৰিব খোজে নেকি?</translation>
 <translation id="3987993985790029246">লিংক প্ৰতিলিপি কৰক</translation>
@@ -1413,6 +1418,7 @@
 <translation id="7375125077091615385">ধৰণ:</translation>
 <translation id="7376560087009844242">কোনো পৃষ্ঠাৰ অধিক পাঠ অন্তৰ্ভুক্ত কৰি, সন্ধান কৰিবলৈ স্পৰ্শ কৰক সুবিধাটো ব্যৱহাৰ কৰোঁতে আপুনি হয়তো উন্নত ফলাফল দেখা পাব পাৰে। এইটো সলনি কৰিবলৈ আপুনি যিকোনো সময়তে <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" /> লৈ যাব পাৰে।</translation>
 <translation id="7379900596734708416">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম উপলব্ধ</translation>
+<translation id="7384486627147155832">কিটিপ সম্পৰ্কীয় জাননীৰ প্ৰ’ম’ অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনে কেনেকৈ কাম কৰে সেয়া ছাইট বিজ্ঞাপনদাতাসকলে বুজি পাব পাৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{অন্য, সূচীত ১ টা ফাইল আছে}one{অন্য, সূচীত # টা ফাইল আছে}other{অন্য, সূচীত # টা ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@
 <translation id="8090732854597034573">আপোনাক সহায়ৰ প্ৰয়োজন হ’লে আপোনাৰ অভিভাৱকক কওক</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />ৰ পৰা কোনো টেব নাই</translation>
 <translation id="8103578431304235997">ইনক’গনিট’ টেব</translation>
+<translation id="810433609302852">কিটিপ সম্পৰ্কীয় জাননীৰ সুবিধাৰ প্ৰ’ম’ আৰু ব্যৱহাৰ পদক্ষেপৰ তলৰ শ্বীট</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">সজোৱাৰ বিকল্প বন্ধ কৰক</translation>
 <translation id="8110024788458304985">Chromeৰ সুবিধাসমূহ আৰু কাৰ্যদক্ষতা উন্নত কৰাত সহায় কৰক</translation>
@@ -1825,6 +1832,7 @@
 <translation id="9169507124922466868">নেভিগেশ্বন ইতিহাস আধা খোলা আছে</translation>
 <translation id="9189607089796819144">আপুনি যিহ’লেও "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ডাউনল’ড কৰিব বিচাৰে নেকি?</translation>
 <translation id="9190276265094487094">আপোনাৰ আটাইবোৰ ছিংক কৰা ডিভাইচত আপোনাৰ ইতিহাস থাকিব যাতে আপুনি যি কৰি আছিল সেয়া অব্যাহত ৰাখিব পাৰে</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, পিন কৰি থোৱা বাছনিকৃত ইনক’গনিট’ টেব</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}one{# মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}other{# মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}}</translation>
 <translation id="9204836675896933765">১টা ফাইল বাকী আছে</translation>
 <translation id="9205933215779845960">সেই পৃষ্ঠাখন বিচাৰি পোৱা নাই। আপোনাৰ বানান পৰীক্ষা কৰক অথবা <ph name="SEARCH_ENGINE" />ত সন্ধান কৰি চাওক।</translation>

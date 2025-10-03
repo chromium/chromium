@@ -990,6 +990,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2610561535971892504">Kliko për të kopjuar</translation>
 <translation id="2612676031748830579">Numri i kartës</translation>
 <translation id="2612993535136743634">Të gjitha kodet e sigurisë të ruajtura në pajisjen tënde dhe në "Llogarinë e Google" do të fshihen</translation>
+<translation id="2614835674900828050">Nuk ofrohet për këtë blerje</translation>
 <translation id="2616412942031748191">Marketingu dhe optimizimi i motorëve të kërkimit</translation>
 <translation id="2618206371527040026">Konferenca dhe botime akademike</translation>
 <translation id="2619052155095999743">Insert</translation>
@@ -1253,6 +1254,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3090667236485488075">Qelq</translation>
 <translation id="3093122472063815077">Ekrani i progresit për metodën "Bli tani, paguaj më vonë" u hap në gjysmë lartësi.</translation>
+<translation id="309381737510736393">Kur organizata jote kufizon ruajtjen në "Llogarinë tënde të Google", nuk mund të ndash skedat apo të bashkëpunosh me të tjerët</translation>
 <translation id="3094051226187213523">Hap "Modalitetin e IA-së" me këtë sugjerim.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">U shpërfill, pasi lista "çaktivizo" përmban një motiv të barabartë me "*", i cili është ekuivalent me çaktivizimin e politikës.</translation>
@@ -1698,6 +1700,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3784372983762739446">Pajisjet me Bluetooth</translation>
 <translation id="3785246317262748285">Zakonisht lidhesh me sajtet në mënyrë të sigurt, por Chrome nuk mund të përdorte një lidhje të sigurt në këtë moment. Një sulmues mund të jetë duke u përpjekur të përgjojë ose modifikojë lidhjen tënde të rrjetit. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Përputhjet më të mira për "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> ose <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3791118028061680614">Paguaj pa ndërruar aplikacionet</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inç)</translation>
@@ -2679,6 +2682,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5412040515238827314">Format i pavlefshëm: Pritet një listë motivesh.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stivuesi 4</translation>
+<translation id="5414306071315087019">"Bli tani, paguaj më vonë" ofrohet me Google Pay</translation>
 <translation id="5414446060143308245">Kërkohet rishikimi përpara transferimit</translation>
 <translation id="5414511064953050917">Zhvendos gjithsesi</translation>
 <translation id="5418700249417444482">URL-të e faqeve që viziton i dërgohen Google Cloud ose palëve të treta për analizim dhe mund të jenë të dukshme për administratorin tënd. Për shembull, ato mund të skanohen për të zbuluar uebsajtet e pasigurta ose për të filtruar uebsajtet bazuar në rregullat e caktuara nga administratori.</translation>
@@ -2799,6 +2803,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="5596939519753369075">2 x 3,5 inç</translation>
 <translation id="5597254438174353289">Blu 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ose <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Menaxhimi nuk mbështetet</translation>
 <translation id="5605249000617390290">Mëso më shumë për monitorimin e çmimeve</translation>
 <translation id="5605670050355397069">Ledger</translation>

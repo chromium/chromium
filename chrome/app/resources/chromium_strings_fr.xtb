@@ -33,6 +33,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1345251407431278948">Recherche dans des images épinglée ! Vous pouvez de nouveau y accéder à l'aide du nouveau bouton de la barre d'outils.</translation>
 <translation id="1356661055722410047">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
+<translation id="1397530502368084401">&amp;Gérer les profils Chromium</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium.</translation>
 <translation id="141901961143729572">Donnez-nous votre avis</translation>
 <translation id="1465192221147974788">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chromium dans les réglages système.</translation>
@@ -493,6 +494,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="6877155553248388166">angle inférieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="BOTTOM" /> % bas</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6901631050894301805">Définissez Chromium comme navigateur par défaut et épinglez-le à la barre des tâches</translation>
+<translation id="6909503629704372277">&amp;Gérer les profils Chromium</translation>
 <translation id="6934579572334859869">Demander des infos sur cette image à la recherche dans des images</translation>
 <translation id="6964305034639999644">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="6965382102122355670">OK</translation>

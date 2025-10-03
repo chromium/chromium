@@ -1395,6 +1395,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1931152874660185993">Walang naka-install na mga bahagi.</translation>
 <translation id="1931410639376954712">Ini-install ang <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Hindi Bago</translation>
+<translation id="1932125073382155239">I-back Up ang Iyong Mga Bagay-bagay?</translation>
 <translation id="1933070475689690969">Aktibidad sa Mga Gemini App</translation>
 <translation id="1933489278505808700">Pinapayagang basahin at baguhin</translation>
 <translation id="1935303383381416800">Pinapayagang makita ang iyong lokasyon</translation>
@@ -1858,6 +1859,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="225614027745146050">Maligayang pagdating</translation>
 <translation id="2257053455312861282">Kapag nagdagdag ng pampaaralang account, magiging madali ang pag-sign in sa mga website, extension, at app bilang mag-aaral habang tumatakbo pa rin sa ilalim ng parental controls.</translation>
 <translation id="225716114209817872">Maximum</translation>
+<translation id="2259337945538989999">Para makuha ang iyong mga tab mula sa iba mo pang device, i-verify na ikaw ito. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="2261323523305321874">Gumawa ang iyong administrator ng mga pagbabago sa buong system na nagdi-disable sa ilang lumang profile.</translation>
 <translation id="22614517036276112">Hindi natutugunan ng dokumentong ito o ng iyong device ang ilan sa mga patakarang panseguridad ng organisasyon mo. Itanong sa iyong admin kung ano ang kailangang ayusin.</translation>
 <translation id="2262477216570151239">Pagkaantala bago ang pag-uulit</translation>
@@ -2068,6 +2070,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2393313392064891208">Mga content ng Mga Tuntunin ng Google ChromeOS Flex</translation>
 <translation id="2393944685985256805">Naka-hide ang <ph name="MODULE_NAME" /></translation>
 <translation id="2395616325548404795">Matagumpay na na-enroll ang iyong <ph name="DEVICE_TYPE" /> para sa pamamahala ng enterprise, ngunit hindi naipadala ang impormasyon ng asset at lokasyon nito. Pakilagay nang manual ang impormasyong ito na mula sa iyong Admin console para sa device na ito.</translation>
+<translation id="2396593617786425274">I-sync ang History?</translation>
 <translation id="2396783860772170191">Ilagay ang 4 na digit na pin (0000-9999)</translation>
 <translation id="2398546389094871088">Kapag na-Powerwash ang iyong device, hindi maaalis ang mga profile ng eSIM mo. Pumunta sa <ph name="LINK_BEGIN" />Mga Setting ng Mobile<ph name="LINK_END" /> para manual na alisin ang mga profile na ito.</translation>
 <translation id="2399699884460174994">Na-on ang mga notification</translation>
@@ -6741,6 +6744,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5648166631817621825">Nakalipas na 7 araw</translation>
 <translation id="5651308944918885595">Pagiging nahahanap sa Nearby Share</translation>
 <translation id="5653154844073528838">May <ph name="PRINTER_COUNT" /> kang naka-save na printer.</translation>
+<translation id="565461030474814383">I-save sa Account?</translation>
 <translation id="5654669866168491665">Matuto pa tungkol sa mga site na posibleng hindi gumana kapag nagba-block ng third-party na cookies</translation>
 <translation id="5654751240928365405">In-off ang extension na ito dahil hindi na ito sinusuportahan</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para protektahan ang iyong privacy, inalis ang mga pahintulot sa isang site}one{Para protektahan ang iyong privacy, inalis ang mga pahintulot sa ilang site}other{Para protektahan ang iyong privacy, inalis ang mga pahintulot sa ilang site}}</translation>
@@ -7045,6 +7049,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="5870086504539785141">Isara ang menu ng accessibility</translation>
 <translation id="5870155679953074650">Mga hard fault</translation>
+<translation id="587234395549708302">Mag-clean Up ng Mga Bookmark?</translation>
 <translation id="5875534259258494936">Nagtapos na ang pagbabahagi ng screen</translation>
 <translation id="5876851302954717356">Bagong Tab sa Kanan</translation>
 <translation id="5877064549588274448">Binago ang channel. I-restart ang iyong device upang ilapat ang mga pagbabago.</translation>

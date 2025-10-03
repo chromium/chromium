@@ -1384,6 +1384,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1931152874660185993">Nije instalirana nijedna komponenta.</translation>
 <translation id="1931410639376954712">Instalira se <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Ne pre</translation>
+<translation id="1932125073382155239">Želite da napravite rezervnu kopiju sadržaja?</translation>
 <translation id="1933070475689690969">Aktivnosti u Gemini aplikacijama</translation>
 <translation id="1933489278505808700">Dozvoljeno je čitanje i izmena</translation>
 <translation id="1935303383381416800">Dozvoljeno im je da vide vašu lokaciju</translation>
@@ -1846,6 +1847,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="225614027745146050">Dobro došli</translation>
 <translation id="2257053455312861282">Dodavanje školskog naloga omogućava da se dete lako prijavljuje na veb-sajtove, u dodatke i u aplikacije kao učenik, a da i dalje radi pod roditeljskim nadzorom.</translation>
 <translation id="225716114209817872">Maksimalno</translation>
+<translation id="2259337945538989999">Da biste preuzeli kartice sa drugih uređaja, potvrdite identitet. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="2261323523305321874">Administrator je uneo promenu koja se odnosi na ceo sistem i koja je onemogućila neke stare profile.</translation>
 <translation id="22614517036276112">Ovaj dokument ili uređaj nije u skladu sa nekim bezbednosnim smernicama organizacije. Proverite sa administratorom šta treba da popravite.</translation>
 <translation id="2262477216570151239">Odlaganje pre ponavljanja</translation>
@@ -2053,6 +2055,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2393313392064891208">Sadržaj Google Chrome OS Flex uslova</translation>
 <translation id="2393944685985256805">Skriveno: <ph name="MODULE_NAME" /></translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> je registrovan za upravljanje preduzećem, ali nije poslao informacije o elementu i lokaciji. Unesite te informacije ručno na Admin console-u za ovaj uređaj.</translation>
+<translation id="2396593617786425274">Želite da sinhronizujete istoriju?</translation>
 <translation id="2396783860772170191">Unesite 4-cifreni PIN (0000–9999)</translation>
 <translation id="2398546389094871088">Ako obavite Powerwash na uređaju, nećete ukloniti eSIM profile. Idite u <ph name="LINK_BEGIN" />podešavanja za mobilne uređaja<ph name="LINK_END" /> da biste ručno uklonili te profile.</translation>
 <translation id="2399699884460174994">Obaveštenja su uključena</translation>
@@ -6729,6 +6732,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5648166631817621825">Poslednjih 7 dana</translation>
 <translation id="5651308944918885595">Vidljivost za Deljenje u blizini</translation>
 <translation id="5653154844073528838">Imate sačuvane štampače: <ph name="PRINTER_COUNT" />.</translation>
+<translation id="565461030474814383">Želite da sačuvate na nalogu?</translation>
 <translation id="5654669866168491665">Saznajte više o sajtovima koji možda neće funkcionisati kada blokirate kolačiće trećih strana</translation>
 <translation id="5654751240928365405">Ovaj dodatak je isključen jer više nije podržan</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Da bismo zaštitili privatnost, dozvole su uklonjene za sajt}one{Da bismo zaštitili privatnost, dozvole su uklonjene za neke sajtove}few{Da bismo zaštitili privatnost, dozvole su uklonjene za neke sajtove}other{Da bismo zaštitili privatnost, dozvole su uklonjene za neke sajtove}}</translation>
@@ -7033,6 +7037,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
 <translation id="5870086504539785141">Zatvori meni pristupačnosti</translation>
 <translation id="5870155679953074650">Greške u vezi sa hard-diskom</translation>
+<translation id="587234395549708302">Želite da obrišete obeleživače?</translation>
 <translation id="5875534259258494936">Deljenje sadržaja ekrana je završeno</translation>
 <translation id="5876851302954717356">Nova kartica na desnoj strani</translation>
 <translation id="5877064549588274448">Kanal je promenjen. Pokrenite ponovo uređaj da biste primenili promene.</translation>

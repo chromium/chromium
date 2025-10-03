@@ -344,6 +344,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4816495437032298535">Zapisane powiększenie witryn</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="483914009762354899">Uwzględnij wszystkie witryny w tej domenie</translation>
+<translation id="4852997963351138624">Szesnastkowy kod koloru tła</translation>
 <translation id="4882919381756638075">Strony zwykle używają mikrofonu na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
 <translation id="4887024562049524730">Pytaj, zanim zezwolisz stronom na korzystanie z urządzenia i danych rzeczywistości wirtualnej (zalecane)</translation>
@@ -507,6 +508,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Treść chroniona</translation>
 <translation id="662080504995468778">Zostań</translation>
+<translation id="6630443592285535486">Wpisz tutaj wartość szesnastkową</translation>
 <translation id="6635327442719709864">Gdy to ustawienie jest włączone, strony mogą prosić o zgodę na używanie portów szeregowych. Gdy jest wyłączone, strony nie mogą używać portów szeregowych.</translation>
 <translation id="6678072580827808850">Przeprowadź kontrolę zabezpieczeń</translation>
 <translation id="6682057173375416470">Otrzymuj sugerowane artykuły na stronie Nowa karta</translation>
@@ -564,6 +566,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7406113532070524618">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania, chociaż witryny mogą w ramach weryfikacji udostępniać niewielką ilość informacji.</translation>
 <translation id="7409735910987429903">Strony mogą wysyłać wyskakujące okienka, by wyświetlać reklamy, albo używać przekierowań, by otwierać strony, których możesz nie chcieć odwiedzać</translation>
+<translation id="7412160840120117304">Szesnastkowy kod koloru podstawowego</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7425915948813553151">Ciemny motyw witryn</translation>

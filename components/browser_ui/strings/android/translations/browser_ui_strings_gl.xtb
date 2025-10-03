@@ -344,6 +344,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="4816495437032298535">Zoom gardado para os sitios</translation>
 <translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="483914009762354899">Incluír todos os sitios deste dominio</translation>
+<translation id="4852997963351138624">Valor hexadecimal da cor de fondo</translation>
 <translation id="4882919381756638075">Os sitios adoitan usar o micrófono para ofrecerche determinadas funcións relacionadas coa comunicación (por exemplo, chat de vídeo)</translation>
 <translation id="4883854917563148705">Non se pode restablecer a configuración xestionada</translation>
 <translation id="4887024562049524730">Pregunta antes de permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual (recomendado)</translation>
@@ -507,6 +508,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contido protexido</translation>
 <translation id="662080504995468778">Quedar</translation>
+<translation id="6630443592285535486">Escribe o valor hexadecimal da cor aquí</translation>
 <translation id="6635327442719709864">Cando esta opción está activada, os sitios poden pedir permiso para utilizar portos de serie. Cando está desactivada, os sitios non poden usar eses portos.</translation>
 <translation id="6678072580827808850">Revisar Comprobación de seguranza</translation>
 <translation id="6682057173375416470">Obter artículos suxeridos na páxina Nova pestana</translation>
@@ -564,6 +566,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7406113532070524618">Esta opción de configuración non te identifica nin permite que os sitios vexan o teu historial de navegación. Aínda así, os sitios poden compartir certa información mínima como parte da verificación</translation>
 <translation id="7409735910987429903">Os sitios poderían mostrar ventás emerxentes con anuncios ou redirixirte a sitios web que quizais non queiras visitar</translation>
+<translation id="7412160840120117304">Valor hexadecimal da cor principal</translation>
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7423538860840206698">Bloqueouse a lectura do portapapeis</translation>
 <translation id="7425915948813553151">Tema escuro para os sitios</translation>

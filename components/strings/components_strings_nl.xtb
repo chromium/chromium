@@ -1254,6 +1254,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3087734570205094154">Onderaan</translation>
 <translation id="3090667236485488075">Glas</translation>
 <translation id="3093122472063815077">Voortgangsscherm voor Koop nu, betaal later is op halve hoogte geopend.</translation>
+<translation id="309381737510736393">Als je organisatie opslaan in je Google-account beperkt, kun je geen tabbladen delen of samenwerken met anderen</translation>
 <translation id="3094051226187213523">AI-modus openen met deze suggestie.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Genegeerd omdat de lijst 'disable' een patroon bevat dat gelijk is aan '*', wat het equivalent is van het beleid niet toepassen.</translation>
@@ -1694,6 +1695,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3784372983762739446">Bluetooth-apparaten</translation>
 <translation id="3785246317262748285">Meestal maak je veilig verbinding met sites, maar Chrome kan op dit moment geen beveiligde verbinding gebruiken. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Beste overeenkomsten voor '<ph name="SEARCH_QUERY" />'</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> of <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3791118028061680614">Betalen zonder van app te wisselen</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -2674,6 +2676,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5412040515238827314">Ongeldige indeling: er wordt een lijst met patronen verwacht.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stapeleenheid 4</translation>
+<translation id="5414306071315087019">Koop nu, betaal later is beschikbaar met Google Pay</translation>
 <translation id="5414446060143308245">Check bestanden voordat je ze overzet</translation>
 <translation id="5414511064953050917">Toch verplaatsen</translation>
 <translation id="5418700249417444482">URL's van pagina's die je bezoekt, worden voor analyse naar Google Cloud of derden gestuurd en zijn misschien zichtbaar voor je beheerder. Ze kunnen bijvoorbeeld worden gescand om onveilige websites op te sporen of websites te filteren op basis van regels die zijn ingesteld door de beheerder.</translation>
@@ -2794,6 +2797,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5595485650161345191">Adres bewerken</translation>
 <translation id="5596939519753369075">2 x 3,5 inch</translation>
 <translation id="5597254438174353289">Blauw 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> of <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Beheer wordt niet ondersteund</translation>
 <translation id="5605249000617390290">Meer informatie over het volgen van prijzen</translation>
 <translation id="5605670050355397069">Ledger</translation>

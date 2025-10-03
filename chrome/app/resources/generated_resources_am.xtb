@@ -1392,6 +1392,7 @@
 <translation id="1931152874660185993">ምንም አካላት አልተጫኑም።</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" />ን በመጫን ላይ</translation>
 <translation id="1932098463447129402">በፊት ያልሆነ</translation>
+<translation id="1932125073382155239">ለእርስዎ ነገሮች ምትኬ ይቀመጥ?</translation>
 <translation id="1933070475689690969">የGemini መተግበሪያ እንቅስቃሴ</translation>
 <translation id="1933489278505808700">ለማንበብ እና ለመለወጥ ተፈቅዷል</translation>
 <translation id="1935303383381416800">አካባቢዎን ለማየት ተፈቅዷል</translation>
@@ -1855,6 +1856,7 @@
 <translation id="225614027745146050">እንኳን ደህና መጡ</translation>
 <translation id="2257053455312861282">የትምህርት ቤት መለያን ማከል በወላጅ ቁጥጥሮች ሥር ሆኖ እየሰሩ እንደ ተማሪ ሆኖ በቀላሉ በመለያ ወደ ድር ጣቢያዎች፣ ቅጥያዎች እና መተግበሪያዎች መግባትን ያስችላል።</translation>
 <translation id="225716114209817872">ከፍተኛ</translation>
+<translation id="2259337945538989999">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት እርስዎ መሆንዎን ያረጋግጡ። ቅንብሮች ውስጥ በማንኛውም ጊዜ ማስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="2261323523305321874">የእርስዎ አስተዳዳሪ አንዳንድ የቆዩ መገለጫዎችን የሚያሰናክል ሙሉ ስርዓት ለውጦችን አድርገዋል።</translation>
 <translation id="22614517036276112">ይህ ሰነድ ወይም የእርስዎ መሣሪያ አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="2262477216570151239">ከመድገም በፊት አዘግይ</translation>
@@ -2063,6 +2065,7 @@
 <translation id="2393313392064891208">የGoogle ChromeOS Flex ውል ይዘቶች</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> ተደብቋል</translation>
 <translation id="2395616325548404795">የእርስዎ <ph name="DEVICE_TYPE" /> በተሳካ ሁኔታ ለድርጅት አስተዳደር ተመዝግቧል፣ ነገር ግን የእሴት እና የአካባቢ መረጃውን መላክ አልተሳካም። እባክዎ ለዚህ መሣሪያ ይህን መረጃ ከእርስዎ መሥሪያዎ ላይ ራስዎ ያስገቡ።</translation>
+<translation id="2396593617786425274">ታሪክ ይሥመር?</translation>
 <translation id="2396783860772170191">ባለ4 አሃዝ ፒን (0000-9999) ያስገቡ</translation>
 <translation id="2398546389094871088">መሣሪያዎን Powerwash ማድረግ የኢሲም መገለጫዎን አያስወግድም። እነዚህን መገለጫዎች በራስዎ ለማስወገድ ወደ <ph name="LINK_BEGIN" />ሞባይል ቅንብሮች<ph name="LINK_END" /> ይሂዱ።</translation>
 <translation id="2399699884460174994">ማሳወቂያዎች በርተዋል</translation>
@@ -6734,6 +6737,7 @@
 <translation id="5648166631817621825">ያለፉት 7 ቀኖች</translation>
 <translation id="5651308944918885595">የአቅራቢያ አጋራ ተገኝነት</translation>
 <translation id="5653154844073528838">የተቀመጡ <ph name="PRINTER_COUNT" /> አታሚዎች አልዎት።</translation>
+<translation id="565461030474814383">በመለያ ውስጥ ይቀመጥ?</translation>
 <translation id="5654669866168491665">የሦስተኛ ወገን ኩኪዎች በሚታገዱበት ጊዜ ላይሠሩ ስለሚችሉ ጣቢያዎች የበለጠ ይወቁ</translation>
 <translation id="5654751240928365405">ይህ ቅጥያ የጠፋው ከአሁን በኋላ ስለማይደገፍ ነው</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{ግላዊነትዎን ለመጠበቅ፣ ከአንድ ጣቢያ ላይ ፈቃዶች ተወግደዋል}one{ግላዊነትዎን ለመጠበቅ፣ ከአንድ ጣቢያ ላይ ፈቃዶች ተወግደዋል}other{ግላዊነትዎን ለመጠበቅ፣ ከጣቢያዎች ላይ ፈቃዶች ተወግደዋል}}</translation>
@@ -7038,6 +7042,7 @@
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
 <translation id="5870086504539785141">የተደራሽነት ምናሌ ዝጋ</translation>
 <translation id="5870155679953074650">ከባድ ስህተቶች</translation>
+<translation id="587234395549708302">ዕልባቶች ይጽዱ?</translation>
 <translation id="5875534259258494936">ማያ ገጽን ማጋራት አብቅቷል</translation>
 <translation id="5876851302954717356">በቀኝ በኩል አዲስ ትር</translation>
 <translation id="5877064549588274448">ሰርጥ ተለውጧል። ለውጦችን ለመተግበር መሳሪያዎን ዳግም ያስጀምሩ።</translation>

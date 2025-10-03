@@ -990,6 +990,7 @@
 <translation id="2610561535971892504">கிளிக் செய்து நகலெடுக்கவும்</translation>
 <translation id="2612676031748830579">கார்டு எண்</translation>
 <translation id="2612993535136743634">உங்கள் சாதனத்திலும் Google கணக்கிலும் சேமிக்கப்பட்டுள்ள பாதுகாப்புக் குறியீடுகள் அனைத்தும் நீக்கப்படும்</translation>
+<translation id="2614835674900828050">இந்தப் பர்ச்சேஸிற்குக் கிடைக்கவில்லை</translation>
 <translation id="2616412942031748191">தேடலில் மேம்படுத்துதல் &amp; மார்க்கெட்டிங்</translation>
 <translation id="2618206371527040026">கல்வி மாநாடுகள் மற்றும் வெளியீடுகள்</translation>
 <translation id="2619052155095999743">சேர்</translation>
@@ -1695,7 +1696,7 @@
 <translation id="3784372983762739446">புளூடூத் சாதனங்கள்</translation>
 <translation id="3785246317262748285">வழக்கமாக, தளங்களுடன் பாதுகாப்பாக இணைக்கப்படுவீர்கள். ஆனால், இந்த முறை Chrome பிரவுசரால் பாதுகாப்பான இணைப்பைப் பயன்படுத்த முடியவில்லை. ஹேக்கர் உங்களைக் கண்காணிக்கவோ உங்கள் நெட்வொர்க் இணைப்பை மாற்றவோ முயலலாம். <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" என்பதற்கான சிறந்த பொருத்தங்கள்</translation>
-<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" />, அல்லது <ph name="ISSUER_3_NAME" /></translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> அல்லது <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
 <translation id="3791118028061680614">ஆப்ஸிற்கு இடையே மாறாமல் பணம் செலுத்துங்கள்</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> இன்ச்)</translation>
@@ -2997,7 +2998,7 @@
 <translation id="5967592137238574583">தொடர்புத் தகவலைத் திருத்தவும்</translation>
 <translation id="5967867314010545767">வரலாற்றிலிருந்து அகற்று</translation>
 <translation id="5968022600320704045">முடிவுகள் எதுவுமில்லை</translation>
-<translation id="5968400720580217226">AI மோடு</translation>
+<translation id="5968400720580217226">AI மோட்</translation>
 <translation id="5969199813874624822">விலை விவரத்தைச் சேமித்துக் கண்காணியுங்கள்</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ரோல் 6</translation>

@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">Festet. Du kan åpne bildesøk igjen via den nye knappen på verktøylinjen</translation>
 <translation id="1356661055722410047">Nyhet! Du kan oversette både tekst og bilder på skjermen</translation>
 <translation id="1383876407941801731">Søk</translation>
+<translation id="1397530502368084401">&amp;Administrer Chromium-profiler</translation>
 <translation id="1414495520565016063">Du er logget på Chromium.</translation>
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1465192221147974788">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
@@ -493,6 +494,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="6877155553248388166">nederst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, nederst <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6901631050894301805">Angi Chromium som standardnettleser, og fest den til oppgavelinjen</translation>
+<translation id="6909503629704372277">&amp;Administrer Chromium-profiler</translation>
 <translation id="6934579572334859869">Spør Bildesøk om dette bildet</translation>
 <translation id="6964305034639999644">Åpne linken i et inko&amp;gnitovindu i Chromium</translation>
 <translation id="6965382102122355670">OK</translation>

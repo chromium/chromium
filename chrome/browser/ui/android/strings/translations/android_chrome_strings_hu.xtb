@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Küldés a következő eszközre: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Törli e webhelyek és alkalmazások adatait is?</translation>
 <translation id="1034259925032978114">Megnyitott ablak</translation>
+<translation id="1035113036584565771">Tippekre vonatkozó értesítések promóciója bezárva</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1045899828449635435">Törli az e webhelyekről származó adatokat is?</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="1052842760770519282">Bizonyos jelszavai nem állnak rendelkezésre</translation>
 <translation id="1058669287135776095">Offline állapotban van. Ellenőrizze az internetkapcsolatot, és próbálkozzon újra.</translation>
+<translation id="1066338698580889414">A tippekre vonatkozó értesítések promóciója teljes magasságban van megnyitva</translation>
 <translation id="1070689840697074178">Itt töltheti le a PDF-fájlokat</translation>
 <translation id="107147699690128016">Ha módosítja a fájl kiterjesztését, előfordulhat, hogy a fájlt másik alkalmazás nyitja meg, ami veszélyt jelenthet az eszközre.</translation>
 <translation id="1087799850623149508">A címsáv alulra való áthelyezéséhez tartsa lenyomva ujját</translation>
@@ -151,6 +153,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1696555181932908973">Más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
 <translation id="1702543251015153180">Módosítja a sötét téma beállításait?</translation>
 <translation id="1702907158640575240">Felügyelt böngésző</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, rögzített inkognitó lap</translation>
 <translation id="1718835860248848330">Az elmúlt órából</translation>
 <translation id="1726477445370128854">Gyorsabban böngészhet és kereshet, ha a Chrome betölti előre azokat az oldalakat, amelyeket a böngésző szerint Ön már felkeresett.</translation>
 <translation id="1728803206919861584">Menti az azonosítókulcsot az inkognitó módon kívül?</translation>
@@ -439,6 +442,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3027950907978057636">Innen: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Nincs előtöltés</translation>
 <translation id="3029704984691124060">Az összetett jelszavak nem egyeznek</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, kiválasztott lap rögzítve</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037517125981011456">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
@@ -626,6 +630,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="397583555483684758">A szinkronizálás leállt</translation>
 <translation id="3976396876660209797">A gyorsparancs eltávolítása és újbóli létrehozása</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, rögzített lap</translation>
 <translation id="3985022125189960801">Újra felvehet egyes webhelyeket, ha azt szeretné, hogy azon webhelyek csoportjában legyenek, amelyek kitalálhatják, hogy mi tetszik Önnek.</translation>
 <translation id="3985215325736559418">Ismét letölti a(z) <ph name="FILE_NAME" /> fájlt?</translation>
 <translation id="3987993985790029246">Link másolása</translation>
@@ -1413,6 +1418,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7375125077091615385">Típus:</translation>
 <translation id="7376560087009844242">Hasznosabb találatokat kaphat az Érintéssel keresés funkció használatakor, ha nagyobb részt jelöl ki az oldal szövegéből. Bármikor módosíthatja ezt a <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">A sötét téma rendelkezésre áll a webhelyeknél</translation>
+<translation id="7384486627147155832">A tippekkel kapcsolatos értesítések promóciója félmagasságban van megnyitva</translation>
 <translation id="7388615499319468910">A webhelyek és a hirdetők megismerhetik a hirdetések teljesítményét. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{További 1 fájl a listában}other{További # fájl a listában}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8090732854597034573">Ha segítségre van szükséged, fordulj a szülődhöz</translation>
 <translation id="8101414242770404289">Nincsenek lapok a következő időszakból: <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Inkognitó lap</translation>
+<translation id="810433609302852">A tippekre vonatkozó értesítések funkció promóciós és használati lépéseket tartalmazó alsó lapja</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Rendezési beállítások bezárása</translation>
 <translation id="8110024788458304985">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
@@ -1825,6 +1832,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="9169507124922466868">Félmagasságban megnyitott navigációs előzmények</translation>
 <translation id="9189607089796819144">Mindenképpen le szeretné tölteni a következő fájlt: „<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Előzményeihez az összes szinkronizált eszközén hozzáférhet, így ott folytathatja a böngészést, ahol abbahagyta</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, rögzített kiválasztott inkognitó lap</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 perce ellenőrizve}other{# perce ellenőrizve}}</translation>
 <translation id="9204836675896933765">1 fájl maradt</translation>
 <translation id="9205933215779845960">A keresett oldal nem található. Ellenőrizze, hogy helyesen írta-e be, vagy próbáljon rákeresni a következő keresőben: <ph name="SEARCH_ENGINE" />.</translation>

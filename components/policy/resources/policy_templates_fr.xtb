@@ -2703,6 +2703,7 @@ Le chiffrement du cache du navigateur peut avoir un impact sur les performances.
 
           Plusieurs remplacements peuvent être envoyés, l'entrée valide la plus récente étant celle qui sera appliquée.</translation>
 <translation id="2901725272378498025">Activer les alertes de sécurité pour les indicateurs de ligne de commande.</translation>
+<translation id="2901969573658712576">Privilégier les algorithmes de chiffrement répondant aux exigences de la suite CNSA 1.0 et 2.0</translation>
 <translation id="2905984450136807296">Durée de mise en cache des données d'authentification</translation>
 <translation id="2906874737073861391">Liste des extensions AppPack</translation>
 <translation id="2908277604670530363">Nombre maximal de connexions simultanées au serveur proxy</translation>
@@ -5498,6 +5499,7 @@ Cette règle est provisoire et sera supprimée en 2026.</translation>
 <translation id="4860900625632464759">Autoriser les utilisateurs à synchroniser les SMS entre leur téléphone et leur Chromebook</translation>
 <translation id="486146220825734683">Ne pas autoriser les utilisateurs à mémoriser les mots de passe Kerberos</translation>
 <translation id="4861767323695239729">Configurer les modes de saisie autorisés dans une session utilisateur</translation>
+<translation id="4872597029876646534">Privilégier des algorithmes de chiffrement spécifiques pour TLS</translation>
 <translation id="4872803921706580974">Activer l'affichage de l'écran de détection de présence humaine lors de la connexion</translation>
 <translation id="4873380469296842901">Si ce paramètre est activé, les utilisateurs qui ont déjà activé Phone Hub pourront envoyer et recevoir les notifications de leur téléphone sur Chrome OS.
 
@@ -6285,6 +6287,7 @@ Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne
 <translation id="5337869685871558036">Autoriser le préchargement SpeculationRules pour les URL contrôlées par ServiceWorker</translation>
 <translation id="5339096331970464266">Activer le clavier virtuel d'accessibilité</translation>
 <translation id="5340008866815063393">Activer les rapports sur les données des règles</translation>
+<translation id="5342379224047377786">Utiliser l'ordre des algorithmes de chiffrement par défaut de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5345892164332459671">Désactiver le SSO flottant et ne pas déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
 <translation id="5345910753471481870">Ne pas afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="5346587320074666194">Bloquer l'accès aux capteurs sur ces sites</translation>
@@ -7590,6 +7593,21 @@ Si cette règle n'est pas configurée, la valeur globale par défaut est utilis�
 <translation id="6207607210601267301">Désactiver l'authentification sans code PIN pour l'hôte d'accès à distance</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
+<translation id="6214712395769944855">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes de chiffrement préférés dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
+
+Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
+
+Si vous définissez la règle sur "<ph name="CNSA_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les algorithmes de chiffrement requis pour la conformité avec les versions 1.0 et 2.0 de la suite Commercial National Security Algorithm (CNSA 1.0 et 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses algorithmes de chiffrement par défaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.</translation>
 <translation id="6215023506958127056">Permet de contrôler l'installation d'extensions externes.
 
 Si cette règle est activée, les extensions externes ne pourront pas être installées.
@@ -7982,6 +8000,23 @@ Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translatio
           Si elle est désactivée, l'appareil <ph name="PRODUCT_OS_NAME" /> ne peut pas récupérer les événements <ph name="GOOGLE_CALENDAR_NAME" /> pour remplir le widget d'agenda <ph name="PRODUCT_OS_NAME" /> dans la barre d'état système pour l'utilisateur connecté.
 
           Si elle n'est pas configurée, la fonctionnalité <ph name="GOOGLE_CALENDAR_NAME" /> est activée par défaut pour les utilisateurs de la version Enterprise.</translation>
+<translation id="6450557649904429321">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes d'accord de clé préférés (groupes compatibles) dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
+
+Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
+
+Si vous définissez la règle sur "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les méthodes d'échange de clés requises pour la conformité avec la suite Commercial National Security Algorithm 2.0 (CNSA 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses méthodes d'échange de clés par défaut.
+
+Si cette règle est définie sur une valeur qui configure <ph name="PRODUCT_NAME" /> de sorte à privilégier un algorithme d'accord de clé post-quantique, mais que <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> est désactivé, le paramètre de <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> prévaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.</translation>
 <translation id="6452882999388592166">Si cette règle est activée, l'extension de composant CryptoToken intégrée sera chargée au démarrage. Si elle est désactivée ou n'est pas configurée, CryptoToken ne sera pas chargée au démarrage du navigateur. Cette règle est une solution temporaire pour les sites qui ne fonctionnent pas lorsque `chrome.runtime` n'est pas défini à la suite de la suppression de CryptoToken dans M106. Les sites Web ne doivent pas compter sur le fait que `chrome.runtime` soit défini sans conditions.</translation>
 <translation id="6453641799812499182">Atténuer les vérifications <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Activer la connexion forcée pour <ph name="PRODUCT_NAME" /></translation>
@@ -9631,6 +9666,7 @@ Si cette règle est vide, aucune exception à <ph name="FLOATING_SSO_DOMAIN_BLOC
 <translation id="7587345076013230465">Demander à l'utilisateur de sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats sur l'écran de connexion</translation>
 <translation id="7587921466180902617">Active la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
 <translation id="7588140323025689972">Activer les journaux d'applis kiosque</translation>
+<translation id="7593286371155131669">Utiliser les groupes compatibles par défaut de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7595074040612182185">Permet de lister les formats d'URL indiquant quels sites peuvent afficher des images.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.

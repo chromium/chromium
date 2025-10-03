@@ -34,6 +34,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1345251407431278948">U gozhdua! Mund të qasesh përsëri te "Kërkimi nëpërmjet imazheve" nga butoni i ri në shiritin e veglave</translation>
 <translation id="1356661055722410047">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd</translation>
 <translation id="1383876407941801731">Kërko</translation>
+<translation id="1397530502368084401">&amp;Menaxho profilet e Chromium</translation>
 <translation id="1414495520565016063">Je i identifikuar në Chromium!</translation>
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
 <translation id="1465192221147974788">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
@@ -72,6 +73,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1896836275755235458">Chromium kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove të videove. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e energjisë"<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Pyet rreth kësaj faqeje</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
+<translation id="1911666947158375684">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chromium. Këtë mund ta ndryshosh në çdo kohë te cilësimet.</translation>
 <translation id="1911763535808217981">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chromium</translation>
 <translation id="1916451563296275579">Hiq të dhënat e këtij aplikacioni nga Chromium</translation>
 <translation id="1929939181775079593">Chromium nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
@@ -494,6 +496,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="6877155553248388166">këndi poshtë djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, poshtë <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6901631050894301805">Cakto Chromium si shfletuesin tënd të parazgjedhur dhe gozhdoje te shiriti i detyrave</translation>
+<translation id="6909503629704372277">&amp;Menaxho profilet e Chromium</translation>
 <translation id="6934579572334859869">Pyet "Kërkimin e imazheve" për këtë imazh</translation>
 <translation id="6964305034639999644">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
 <translation id="6965382102122355670">Në rregull</translation>

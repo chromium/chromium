@@ -344,6 +344,7 @@
 <translation id="4816495437032298535">已保存的网站缩放级别</translation>
 <translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
 <translation id="483914009762354899">包含该网域下的所有网站</translation>
+<translation id="4852997963351138624">背景颜色十六进制代码</translation>
 <translation id="4882919381756638075">网站通常会使用您的麦克风以实现通信功能（例如视频聊天）</translation>
 <translation id="4883854917563148705">无法重置受管理的设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟现实设备和数据（推荐）</translation>
@@ -435,7 +436,7 @@
 <translation id="5844448279347999754">开启此设置后，网站可以请求查看保存到剪贴板中的文字和图片。关闭此设置后，网站无法查看保存到剪贴板中的文字或图片。</translation>
 <translation id="5853982612236235577">开启此设置后，网站可以请求发送通知。关闭此设置后，网站无法发送通知。</translation>
 <translation id="5860033963881614850">关闭</translation>
-<translation id="5860491529813859533">启用</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="5876056640971328065">暂停视频</translation>
 <translation id="5877248419911025165">收起所有请求</translation>
 <translation id="5878945009165002849">屏蔽来自身份服务的登录提示</translation>
@@ -507,6 +508,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保护的内容</translation>
 <translation id="662080504995468778">留下</translation>
+<translation id="6630443592285535486">在此处输入十六进制代码</translation>
 <translation id="6635327442719709864">开启此设置后，网站可以请求使用串行端口。关闭此设置后，网站无法使用串行端口。</translation>
 <translation id="6678072580827808850">查看安全检查</translation>
 <translation id="6682057173375416470">在“新标签页”页面上获取推荐的文章</translation>
@@ -564,6 +566,7 @@
 <translation id="7399802613464275309">安全检查</translation>
 <translation id="7406113532070524618">处于启用状态时，此设置不会识别您的身份，也不会允许网站查看您的浏览记录。不过，在验证过程中，网站可能会分享少量信息</translation>
 <translation id="7409735910987429903">网站可能会发送弹出式窗口以展示广告，或者使用重定向将您引导至您可能不想访问的网站</translation>
+<translation id="7412160840120117304">主颜色十六进制代码</translation>
 <translation id="7423098979219808738">先询问</translation>
 <translation id="7423538860840206698">已阻止读取剪贴板中的内容</translation>
 <translation id="7425915948813553151">为网站开启深色主题</translation>

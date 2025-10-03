@@ -35,6 +35,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1345251407431278948">Bərkidildi! Alətlər panelindəki yeni düymə ilə Şəkil Axtarışına yenidən daxil ola bilərsiniz</translation>
 <translation id="1356661055722410047">Yenilik! Həm ekrandakı mətni, həm də təsvirləri tərcümə edə bilərsiniz</translation>
 <translation id="1383876407941801731">Axtar</translation>
+<translation id="1397530502368084401">&amp;Chromium Profillərini idarə edin</translation>
 <translation id="1414495520565016063">Chromium'a daxil oldunuz!</translation>
 <translation id="141901961143729572">Fikirlərinizi paylaşın</translation>
 <translation id="1465192221147974788">Pəncərəni paylaşmaq üçün Sistem Ayarlarında Chromium üzrə ekranın qeydə alınmasına icazə verin.</translation>
@@ -73,6 +74,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1896836275755235458">Chromium arxa fon fəaliyyətini, habelə rahat sürüşdürmə və video çərçivə səviyyəsi kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisinə qənaət edir. <ph name="BEGIN_LINK" />Enerjiyə Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Bu səhifə haqqında soruşun</translation>
 <translation id="1900969832270057921">Chromium Güncəlləyici Xidməti</translation>
+<translation id="1911666947158375684">Daxil olduğunuz müddətdə Chromium-da Google Hesabınızdan əldə edilən parolları və s. istifadə edə bilərsiniz. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="1911763535808217981">Bunu deaktiv etməklə Chromium'a giriş etmədən Gmail kimi Google saytlarına daxil ola bilərsiniz</translation>
 <translation id="1916451563296275579">Bu tətbiq datasını Chromium-dan silin</translation>
 <translation id="1929939181775079593">Chromium cavab vermir. İndi yenidən başladılsın?</translation>
@@ -493,6 +495,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6877155553248388166">axtarış sahəsinin aşağı sağ küncü: <ph name="RIGHT" />% sağ, <ph name="BOTTOM" />% aşağı</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6901631050894301805">Chromium-u defolt brauzer kimi ayarlayın və tapşırıqlar panelinə bərkidin</translation>
+<translation id="6909503629704372277">&amp;Chromium profillərini idarə edin</translation>
 <translation id="6934579572334859869">Bu şəkil haqqında Şəkil Axtarışından soruşun</translation>
 <translation id="6964305034639999644">Linki gizli Chromium pəncərəsində açın</translation>
 <translation id="6965382102122355670">OK</translation>

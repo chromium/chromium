@@ -1254,6 +1254,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3087734570205094154">Alaserv</translation>
 <translation id="3090667236485488075">Klaas</translation>
 <translation id="3093122472063815077">Järelmaksu edenemise ekraanikuva on avatud poolel kõrgusel.</translation>
+<translation id="309381737510736393">Kui teie organisatsioon piirab Google’i kontole salvestamist, ei saa te jagada vahelehti ega teha teistega koostööd.</translation>
 <translation id="3094051226187213523">Avage AI-režiim selle soovitusega.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Eiratakse, kuna keelatute loend hõlmab mustrit, mis on võrdne tähemärgiga „*“, mis võrdub reegli keelamisega.</translation>
@@ -1699,6 +1700,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3784372983762739446">Bluetooth-seadmed</translation>
 <translation id="3785246317262748285">Tavaliselt loote saitidega turvaliselt ühenduse, kuid Chrome ei saanud seekord turvalist ühendust kasutada. Ründaja võib püüda teie võrguühendust pealt kuulata või seda muuta. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Parimad vasted päringule „<ph name="SEARCH_QUERY" />”</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> või <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Installi</translation>
 <translation id="3791118028061680614">Makske ilma rakendusi vahetamata</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> tolli)</translation>
@@ -2680,6 +2682,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5412040515238827314">Vale vorming: oodati mustrite loendit.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Virnastaja 4</translation>
+<translation id="5414306071315087019">Google Pay teenuses on saadaval järelmaksuvõimalus</translation>
 <translation id="5414446060143308245">Enne ülekandmist on ülevaatus nõutav</translation>
 <translation id="5414511064953050917">Teisalda siiski</translation>
 <translation id="5418700249417444482">Külastatavate lehtede URL-id saadetakse analüüsimiseks Google Cloudile või kolmandatele osapooltele ja need võivad olla nähtavad teie administraatorile. Näiteks võidakse neid skannida ebaturvaliste veebisaitide tuvastamiseks või veebisaitide filtreerimiseks administraatori määratud reeglite põhjal.</translation>
@@ -2800,6 +2803,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5595485650161345191">Muuda aadressi</translation>
 <translation id="5596939519753369075">2 × 3,5 tolli</translation>
 <translation id="5597254438174353289">Sinine 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> või <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Haldust ei toetata</translation>
 <translation id="5605249000617390290">Lisateave hindade jälgimise kohta</translation>
 <translation id="5605670050355397069">Ledger</translation>

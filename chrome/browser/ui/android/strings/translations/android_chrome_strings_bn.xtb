@@ -9,11 +9,13 @@
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />-এ পাঠানো হচ্ছে...</translation>
 <translation id="103269572468856066">এই সাইট ও অ্যাপের ডেটাও মুছে ফেলতে চান?</translation>
 <translation id="1034259925032978114">উইন্ডো খোলা রয়েছে</translation>
+<translation id="1035113036584565771">পরামর্শ বিজ্ঞপ্তি প্রোমো বন্ধ করা হয়েছে</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1045899828449635435">এই সাইটগুলির ডেটাও কি মুছে ফলতে চান?</translation>
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1052842760770519282">আপনার কিছু পাসওয়ার্ড অ্যাক্সেস করা যাচ্ছে না</translation>
 <translation id="1058669287135776095">আপনি অফলাইন আছেন। ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</translation>
+<translation id="1066338698580889414">পরামর্শ বিজ্ঞপ্তি প্রোমো সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="1070689840697074178">আপনি এখানে PDF ডাউনলোড করতে পারবেন</translation>
 <translation id="107147699690128016">আপনি ফাইলের এক্সটেনশন পরিবর্তন করলে, সেটি অন্য অ্যাপ্লিকেশনে খুলতে পারে এবং আপনার ডিভাইসে সমস্যার সৃষ্টি করতে পারে।</translation>
 <translation id="1087799850623149508">আপনি নিচে অ্যাড্রেস বার সরানোর জন্য টাচ করে ধরে রাখতে পারবেন</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
 <translation id="1702543251015153180">ডার্ক থিম সেটিংস পরিবর্তন করবেন?</translation>
 <translation id="1702907158640575240">ম্যানেজ করা ব্রাউজার</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, পিন করা ছদ্মবেশী ট্যাব</translation>
 <translation id="1718835860248848330">শেষ ঘণ্টা</translation>
 <translation id="1726477445370128854">Chrome-এর মতে আপনি দেখতে পারেন এমন পৃষ্ঠা প্রিলোড করা হলে আরও দ্রুত ব্রাউজ ও সার্চ করতে পারবেন</translation>
 <translation id="1728803206919861584">ছদ্মবেশী মোডের বাইরে পাসকী সেভ করতে চান?</translation>
@@ -323,7 +326,7 @@
 <translation id="2531209299761896527">নতুন উইন্ডোতে ট্যাব খুলতে পিঞ্চ করুন, হোল্ড করুন এবং টেনে আনুন</translation>
 <translation id="2532336938189706096">ওয়েব দর্শন</translation>
 <translation id="253498598929009420">সাইটটি আপনার স্ক্রিনের কন্টেন্ট দেখতে পারবে</translation>
-<translation id="2535807170289627159">সব ট্য়াব</translation>
+<translation id="2535807170289627159">সব ট্যাব</translation>
 <translation id="2536728043171574184">এই পৃষ্ঠার একটি অফলাইন কপি দেখছেন</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ট্যাব</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> থেকে</translation>
 <translation id="3029276696788198026">প্রিলোড করার প্রয়োজন নেই</translation>
 <translation id="3029704984691124060">পাসফ্রেজসমূহ মেলে না</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, পিন করা বেছে নেওয়া ট্যাব</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />সহায়তা পান<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">দাম ট্র্যাক করা হচ্ছে</translation>
 <translation id="3037517125981011456">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="397583555483684758">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে</translation>
 <translation id="3976396876660209797">এই শর্টকাটটি সরিয়ে নতুন করে তৈরি করুন</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, পিন করা ট্যাব</translation>
 <translation id="3985022125189960801">আপনি কী পছন্দ করেন তা অনুমান করতে পারে এমন সাইটগুলির পুলে আপনি চাইলে একটি সাইট আবার যোগ করুন</translation>
 <translation id="3985215325736559418">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
@@ -1038,7 +1043,7 @@
 <translation id="5839058148541733625">Chrome ডাইনো গেম</translation>
 <translation id="5841444063256914865">আপনি কি তবুও "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
 <translation id="5842871376175639063">আপনি যেসব ট্যাব ও ট্যাব গ্রুপ <ph name="DAYS_INACTIVE" /> দিন ব্যবহার করেননি সেগুলি সরিয়ে দেওয়া হবে এখানে <ph name="AUTODELETE_SECTION" />। আপনি যেকোনও সময় <ph name="SETTINGS_TITLE" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
-<translation id="5848257610304005265"><ph name="APP_NAME" /> অ্যাপের সাহায্য়ে পিডিএফ ফাইল খুলতে চান?</translation>
+<translation id="5848257610304005265"><ph name="APP_NAME" /> অ্যাপের সাহায্যে পিডিএফ ফাইল খুলতে চান?</translation>
 <translation id="5849288995120328556">শেয়ার করা বন্ধ করতে চান?</translation>
 <translation id="5853623416121554550">পজ করা হয়েছে</translation>
 <translation id="5855546874025048181">রিফাইন করুন: <ph name="REFINE_TEXT" /></translation>
@@ -1413,6 +1418,7 @@
 <translation id="7375125077091615385">প্রকার:</translation>
 <translation id="7376560087009844242">কোনও পৃষ্ঠার টেক্সটে আরও শব্দ যোগ করলে, 'সার্চ করতে টাচ করুন' ফিচার ব্যবহার করার সময় আপনি হয়ত আরও ভাল ফলাফল দেখতে পারবেন। এটি পরিবর্তন করতে আপনি সব সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" />-এ যেতে পারবেন।</translation>
 <translation id="7379900596734708416">সাইটের জন্য ডার্ক থিম উপলভ্য আছে</translation>
+<translation id="7384486627147155832">পরামর্শ বিজ্ঞপ্তি প্রোমো অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{তালিকাতে অন্য ১টি ফাইল আছে}one{তালিকাতে অন্য #টি ফাইল আছে}other{তালিকাতে অন্য #টি ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@
 <translation id="8090732854597034573">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />-এ কোনও ট্যাব নেই</translation>
 <translation id="8103578431304235997">ছদ্মবেশী ট্যাব</translation>
+<translation id="810433609302852">পরামর্শ বিজ্ঞপ্তি ফিচার প্রোমো ও ব্যবহারের ধাপ নিচে দেওয়া শিট</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">সাজানোর বিকল্প বন্ধ করুন</translation>
 <translation id="8110024788458304985">Chrome-এর ফিচার ও পারফর্ম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন</translation>
@@ -1825,6 +1832,7 @@
 <translation id="9169507124922466868">নেভিগেশনের ইতিহাস অর্ধেক খোলা রয়েছে</translation>
 <translation id="9189607089796819144">আপনি কি তবুও "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ডাউনলোড করতে চান?</translation>
 <translation id="9190276265094487094">আপনার সিঙ্ক করা সব ডিভাইসে ইতিহাস সেভ হবে, তাই আপনার আগের করা কাজ চালিয়ে যেতে পারবেন</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, পিন করা বেছে নেওয়া ছদ্মবেশী ট্যাব</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিট আগে চেক করা হয়েছে}one{# মিনিট আগে চেক করা হয়েছে}other{# মিনিট আগে চেক করা হয়েছে}}</translation>
 <translation id="9204836675896933765">১টি ফাইল বাকি</translation>
 <translation id="9205933215779845960">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা <ph name="SEARCH_ENGINE" />-এ সার্চ করে দেখুন।</translation>

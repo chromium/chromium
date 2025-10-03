@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">탭 그룹으로 깔끔하게 정리하기</translation>
 <translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="2606760465469169465">자동 인증</translation>
+<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android 설정<ph name="END_LINK1" />에서 관리
+
+고급 보호 기능은 다음 Chrome 설정을 제어합니다.
+• '항상 보안 연결 사용'을 사용 설정합니다.
+• 'JavaScript 옵티마이저'를 사용 중지합니다. <ph name="BEGIN_LINK2" />사이트 예외 관리<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
 <translation id="2626708220538466178">기본 브라우저 하단 시트가 닫힘</translation>
 <translation id="2653659639078652383">제출</translation>
@@ -339,6 +344,7 @@
 <translation id="4816495437032298535">저장된 사이트 확대/축소</translation>
 <translation id="4836046166855586901">사용자가 현재 기기를 사용 중인지 사이트에서 알고자 할 때 확인</translation>
 <translation id="483914009762354899">이 도메인의 모든 사이트 포함</translation>
+<translation id="4852997963351138624">배경 색상 16진수</translation>
 <translation id="4882919381756638075">사이트에서는 일반적으로 영상 채팅 같은 커뮤니케이션 기능에 마이크를 사용합니다.</translation>
 <translation id="4883854917563148705">관리 설정은 재설정할 수 없습니다.</translation>
 <translation id="4887024562049524730">사이트에서 내 가상 현실 기기 및 데이터를 사용하도록 허용하기 전에 확인(권장)</translation>
@@ -502,6 +508,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
 <translation id="662080504995468778">머무르기</translation>
+<translation id="6630443592285535486">여기에 16진수 입력</translation>
 <translation id="6635327442719709864">사용 설정하면 사이트에서 직렬 포트 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 직렬 포트를 사용할 수 없습니다.</translation>
 <translation id="6678072580827808850">안전 확인 검토</translation>
 <translation id="6682057173375416470">새 탭 페이지에서 추천 기사 보기</translation>
@@ -559,6 +566,7 @@
 <translation id="7399802613464275309">안전 확인</translation>
 <translation id="7406113532070524618">이 설정은 확인 과정의 일부로 약간의 정보를 공유할 수는 있지만 사용자를 식별하거나 사이트에서 방문 기록을 보도록 허용하지 않고 작동합니다.</translation>
 <translation id="7409735910987429903">사이트에서 팝업을 전송하여 광고를 표시하거나, 원치 않는 웹사이트로 리디렉션할 수 있습니다.</translation>
+<translation id="7412160840120117304">기본 색상 16진수</translation>
 <translation id="7423098979219808738">우선 확인</translation>
 <translation id="7423538860840206698">클립보드 액세스가 차단됨</translation>
 <translation id="7425915948813553151">사이트에 어두운 테마 적용</translation>

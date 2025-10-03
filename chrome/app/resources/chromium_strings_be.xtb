@@ -34,6 +34,7 @@
 <translation id="1345251407431278948">Замацавана! Цяпер пошук відарысаў можна запускаць з дапамогай новай кнопкі панэлі інструментаў.</translation>
 <translation id="1356661055722410047">Навінка! Вы можаце перакладаць тэкст і відарысы на экране</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="1397530502368084401">&amp;Кіраваць профілямі Chromium</translation>
 <translation id="1414495520565016063">Вы ўвайшлі ў Chromium!</translation>
 <translation id="141901961143729572">Што вы думаеце</translation>
 <translation id="1465192221147974788">Каб абагуліць акно, у сістэмных наладах дазвольце браўзеру Chromium запіс экрана.</translation>
@@ -72,6 +73,7 @@
 <translation id="1896836275755235458">Chromium зберагае зарад акумулятара, абмяжоўваючы фонавыя працэсы і візуальныя эфекты (напрыклад, плаўную прагортку і частату кадраў відэа). <ph name="BEGIN_LINK" />Даведацца больш пра рэжым эканоміі энергіі<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Задайце пытанне пра гэту старонку</translation>
 <translation id="1900969832270057921">Сэрвіс абнаўлення Chromium</translation>
+<translation id="1911666947158375684">Пакуль выкананы ўваход, вы можаце выкарыстоўваць у Chromium свае паролі і іншыя даныя Уліковага запісу Google. Гэты параметр заўжды можна змяніць у наладах.</translation>
 <translation id="1911763535808217981">Выключыўшы гэта, вы зможаце ўваходзіць на сайты Google, такія як Gmail, не ўваходзячы ў Chromium</translation>
 <translation id="1916451563296275579">Выдаліць даныя гэтай праграмы з Chromium</translation>
 <translation id="1929939181775079593">Chromium не адказвае. Перазапусціць яго?</translation>
@@ -494,6 +496,7 @@
 <translation id="6877155553248388166">ніжні правы вугал поля пошуку: <ph name="RIGHT" />% справа, <ph name="BOTTOM" />% знізу</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6901631050894301805">Усталюйце Chromium у якасці стандартнага браўзера і замацуйце яго на панэлі задач</translation>
+<translation id="6909503629704372277">&amp;Кіраваць профілямі Chromium</translation>
 <translation id="6934579572334859869">Спытаць пра гэты відарыс з дапамогай функцыі "Пошук відарысаў"</translation>
 <translation id="6964305034639999644">Адкрыць спасылку ў акне інко&amp;гніта ў Chromium</translation>
 <translation id="6965382102122355670">ОК</translation>

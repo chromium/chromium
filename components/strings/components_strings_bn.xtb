@@ -567,7 +567,7 @@
 <translation id="1927439846988093361">চুলের পরিচর্যা</translation>
 <translation id="1935353813610900265">AI-এর সাহায্যে সার্চ করা ইতিহাস সম্পর্কে মতামত জানান</translation>
 <translation id="1935995810530254458">যেকোনওভাবে কপি করুন</translation>
-<translation id="1938580037092872316">ঠিকানা সেভ করতে নতুন তথ্য় যোগ করুন</translation>
+<translation id="1938580037092872316">ঠিকানা সেভ করতে নতুন তথ্য যোগ করুন</translation>
 <translation id="1939059826036755332">অটোমেটিক 'ছবির-মধ্যে-ছবি'</translation>
 <translation id="1939175642807587452">বিজ্ঞপ্তি পাঠাতে অনুমতি চাইতে পারে</translation>
 <translation id="1940441167050915935">সেভ করা নিরাপত্তা কোড মুছুন</translation>
@@ -991,6 +991,7 @@
 <translation id="2610561535971892504">কপি করতে ক্লিক করুন</translation>
 <translation id="2612676031748830579">কার্ড নম্বর</translation>
 <translation id="2612993535136743634">আপনার ডিভাইস ও Google অ্যাকাউন্টে সেভ করা সব নিরাপত্তা কোড মুছে যাবে</translation>
+<translation id="2614835674900828050">এই কেনাকাটার জন্য উপলভ্য নয়</translation>
 <translation id="2616412942031748191">সার্চ ইঞ্জিন অপ্টিমাইজেশান ও মার্কেটিং</translation>
 <translation id="2618206371527040026">শিক্ষামূলক সম্মেলন এবং প্রকাশনা</translation>
 <translation id="2619052155095999743">ঢোকান</translation>
@@ -1254,6 +1255,7 @@
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090667236485488075">গ্লাস</translation>
 <translation id="3093122472063815077">'এখন কিনুন, পরে পেমেন্ট করুন' পেমেন্ট পদ্ধতির প্রোগ্রেস স্ক্রিন অর্ধেক স্ক্রিন জুড়ে খোলা আছে।</translation>
+<translation id="309381737510736393">আপনার সংস্থা আপনার Google অ্যাকাউন্টে সেভ করার উপর সীমাবদ্ধতা আরোপ করলে আপনি ট্যাব শেয়ার করতে বা অন্যদের সাথে কোলাবরেট করতে পারবেন না</translation>
 <translation id="3094051226187213523">এই সাজেশন ব্যবহার করে AI মোড খুলুন।</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">বাদ দেওয়া হয়েছে কারণ, 'বন্ধ আছে' তালিকাতে '*'-এর মতো প্যাটার্ন আছে। এর মানে নীতি বন্ধ করার সমান।</translation>
@@ -1567,7 +1569,7 @@
 <translation id="3583757800736429874">&amp;সরানোর কাজটি আবার করুন</translation>
 <translation id="3584299510153766161">নিচে ডুয়াল পাঞ্চ</translation>
 <translation id="3584755835709800788">সায়েন্স ফিকশন এবং ফ্যান্টাসি সিনেমা</translation>
-<translation id="3585455899094692781">উপলভ্য় ক্যামেরা ব্য়বহার করুন এবং সরান (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="3585455899094692781">উপলভ্য ক্যামেরা ব্যবহার করুন এবং সরান (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">ওয়েট ফিল্ম</translation>
 <translation id="3586931643579894722">বিশদ বিবরণ লুকান</translation>
 <translation id="3587725436724465984">আপনার সংস্থা সাইট হিসেবে  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-কে শনাক্ত করেছে, যেটি নীতি লঙ্ঘন করতে পারে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1699,6 +1701,7 @@
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইস</translation>
 <translation id="3785246317262748285">সাধারণত আপনি সুরক্ষিতভাবে সাইটের সাথে কানেক্ট করেন, তবে Chrome এই মুহূর্তে কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে বা সেটি পরিবর্তন করার চেষ্টা করতে পারে। <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"-এর জন্য মিলে যাওয়া সেরা ফলাফল</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> বা <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="3791118028061680614">অ্যাপ পরিবর্তন না করেই পেমেন্ট করুন</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ইঞ্চি)</translation>
@@ -2680,6 +2683,7 @@
 <translation id="5412040515238827314">ভুল ফর্ম্যাট: প্রত্যাশিত প্যাটার্নের তালিকা।</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">স্ট্যাকার ৪</translation>
+<translation id="5414306071315087019">Google Pay-র মাধ্যমে এখন কিনে পরে পেমেন্ট করার সুবিধা আছে</translation>
 <translation id="5414446060143308245">ট্রান্সফার করার আগেই পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5414511064953050917">যেকোনওভাবে সরান</translation>
 <translation id="5418700249417444482">আপনি যেসব পৃষ্ঠা দেখেন, সেগুলির URL বিশ্লেষণ করার জন্য Google Cloud-এ বা অন্য থার্ড-পার্টির কাছে পাঠানো হয় এবং আপনার অ্যাডমিনিস্ট্রেটর তা দেখতে পেতে পারেন। যেমন- সেগুলিতে কোনও অসুরক্ষিত ওয়েবসাইট আছে কিনা তা জানার জন্য স্ক্যান করা হতে পারে বা অ্যাডমিনিস্ট্রেটর দ্বারা সেট করা নিয়মের উপর ভিত্তি করে ওয়েবসাইট ফিল্টার করুন।</translation>
@@ -2800,6 +2804,7 @@
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5596939519753369075">২ x ৩.৫ ইঞ্চি</translation>
 <translation id="5597254438174353289">নীল ৩</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> বা <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">পরিচালনা সমর্থিত নয়</translation>
 <translation id="5605249000617390290">দাম ট্র্যাক করা সম্পর্কে আরও জানুন</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3075,7 +3080,7 @@
 <translation id="6085149458302186532">লেবেল (রঙিন)</translation>
 <translation id="6087312102907839798">সম্পর্কিত সার্চ</translation>
 <translation id="6089505343295765444">Chrome ইতিহাস থেকে আপনার মোছা ট্যাব এখনও আপনার 'তুলনা' করার টেবিলে দেখা যাবে</translation>
-<translation id="6091691259076781835">ঝটপট চেকআউট করার জন্য় আপনার ডিভাইসে এই CVC সেভ করুন</translation>
+<translation id="6091691259076781835">ঝটপট চেকআউট করার জন্য আপনার ডিভাইসে এই CVC সেভ করুন</translation>
 <translation id="6093599771645355227">হলুদ ১</translation>
 <translation id="6093795393556121384">আপনার কার্ডটি যাচাই করা হয়েছে</translation>
 <translation id="6094253940069566294">গাড়ি সম্পর্কিত তথ্য এডিট করুন</translation>
@@ -3537,7 +3542,7 @@
 <translation id="6849023911358004088">'নিরাপত্তা সেটিংস ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার Safe Browsing ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="6850286078059909152">টেক্সটের রঙ</translation>
 <translation id="6852204201400771460">আবার অ্যাপ লোড করতে চান?</translation>
-<translation id="6854691830678097752">ঝটপট চেকআউট করার জন্য় আপনার অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এ এই CVC সেভ করুন</translation>
+<translation id="6854691830678097752">ঝটপট চেকআউট করার জন্য আপনার অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এ এই CVC সেভ করুন</translation>
 <translation id="6857776781123259569">পাসওয়ার্ড ম্যানেজ করুন…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">'ছবির-মধ্যে-ছবি' মোডে প্রবেশ করার জন্য বলা হতে পারে</translation>

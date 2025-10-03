@@ -34,6 +34,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1345251407431278948">Připnuto! Vyhledávání obrázků můžete znovu otevřít pomocí nového tlačítka na panelu nástrojů</translation>
 <translation id="1356661055722410047">Novinka! Můžete překládat text i obrázky na obrazovce</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
+<translation id="1397530502368084401">&amp;Spravovat profily prohlížeče Chromium</translation>
 <translation id="1414495520565016063">Jste přihlášeni do prohlížeče Chromium.</translation>
 <translation id="141901961143729572">Podělte se o svůj názor</translation>
 <translation id="1465192221147974788">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chromium nahrávání obrazovky.</translation>
@@ -72,6 +73,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1896836275755235458">Chromium šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí. <ph name="BEGIN_LINK" />Další informace o Spořiči energie<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Zeptejte se na tuhle stránku</translation>
 <translation id="1900969832270057921">Aktualizační služba prohlížeče Chromium</translation>
+<translation id="1911666947158375684">Když jste přihlášeni, můžete v prohlížeči Chromium používat hesla a další položky ze svého účtu Google. V nastavení to můžete kdykoli změnit.</translation>
 <translation id="1911763535808217981">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do prohlížeče Chromium</translation>
 <translation id="1916451563296275579">Odstranit z prohlížeče Chromium data těchto aplikací</translation>
 <translation id="1929939181775079593">Prohlížeč Chromium neodpovídá. Chcete jej znovu načíst?</translation>
@@ -494,6 +496,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="6877155553248388166">pravý dolní roh oblasti hledání: vpravo <ph name="RIGHT" /> %, dole <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6901631050894301805">Nastavte si Chromium jako výchozí prohlížeč a připněte ho na hlavní panel</translation>
+<translation id="6909503629704372277">&amp;Spravovat profily prohlížeče Chromium</translation>
 <translation id="6934579572334859869">Zeptat se Vyhledávání obrázků na tento obrázek</translation>
 <translation id="6964305034639999644">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
 <translation id="6965382102122355670">OK</translation>

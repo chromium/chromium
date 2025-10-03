@@ -35,6 +35,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="1345251407431278948">Кадалды! Эми Сүрөт издөө функциясын куралдар тилкесиндеги жаңы баскыч аркылуу колдоно аласыз</translation>
 <translation id="1356661055722410047">Жаңылык! Экрандагы текстти да, сүрөттөрдү да которо аласыз</translation>
 <translation id="1383876407941801731">Издөө</translation>
+<translation id="1397530502368084401">&amp;Chromium профилдерин тескөө</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="141901961143729572">Ойлоруңузду бөлүшүңүз</translation>
 <translation id="1465192221147974788">Терезени бөлүшүү үчүн Тутумдун параметрлеринен Chromium'га экрандан видео жаздырып алууга уруксат бериңиз.</translation>
@@ -73,6 +74,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="1896836275755235458">Chromium жылма сыдыруу жана видеодогу кадрлардын жыштыгы сыяктуу визуалдык кубулуштарды жана фондогу аракеттерди чектөө менен батареянын кубатын үнөмдөйт. <ph name="BEGIN_LINK" />Кубатты үнөмдөгүч жөнүндө кеңири маалымат алыңыз<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Бул бет жөнүндө суроо берүү</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
+<translation id="1911666947158375684">Кирип турганыңызда Chromium'да Google аккаунтуңуздагы сырсөздөрдү жана башкаларды колдоно аласыз. Муну каалаган убакта параметрлерден өзгөртө аласыз.</translation>
 <translation id="1911763535808217981">Ушуну өчүрүү менен Gmail сыяктуу Google сайттарына Chromium'суз кире аласыз</translation>
 <translation id="1916451563296275579">Бул колдонмодогу нерселерди Chromium'дан өчүрүү</translation>
 <translation id="1929939181775079593">Chromium жооп бербей жатат. Өчүрүп кайра ишке киргизесизби?</translation>
@@ -495,6 +497,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="6877155553248388166">издөө аймагынын төмөнкү оң бурчу: оң жагы <ph name="RIGHT" />%, төмөн жагы <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6901631050894301805">Chromium'ду демейки серепчиңиз катары тууралап, аны тапшырмалар панелине кадап коюңуз</translation>
+<translation id="6909503629704372277">&amp;Chromium профилдерин тескөө</translation>
 <translation id="6934579572334859869">Сүрөт издөө функциясынан бул сүрөт жөнүндө суроо</translation>
 <translation id="6964305034639999644">Шилтемени Chromium'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="6965382102122355670">OK</translation>

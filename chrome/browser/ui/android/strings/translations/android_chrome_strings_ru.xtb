@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Удалить эти данные?</translation>
 <translation id="1034259925032978114">Окно открыто</translation>
+<translation id="1035113036584565771">Уведомление для продвижения функции закрыто</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1045899828449635435">Удалить эти данные?</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1052842760770519282">Некоторые пароли недоступны</translation>
 <translation id="1058669287135776095">Действие выполнено в офлайн-режиме. Проверьте подключение к интернету и повторите попытку.</translation>
+<translation id="1066338698580889414">Уведомление для продвижения функции раскрыто на весь экран</translation>
 <translation id="1070689840697074178">PDF-файлы можно скачивать здесь.</translation>
 <translation id="107147699690128016">Если вы сделаете это, файл может открыться в другом приложении и нанести вред устройству.</translation>
 <translation id="1087799850623149508">Чтобы переместить адресную строку вниз, нажмите на нее и удерживайте</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973">Чтобы продолжить использовать сайт <ph name="SITE_ETLD_PLUS_ONE" />, попробуйте другие способы авторизации.</translation>
 <translation id="1702543251015153180">Изменить настройки тёмной темы?</translation>
 <translation id="1702907158640575240">Управляемый браузер</translation>
+<translation id="170478069042229393">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />"</translation>
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1726477445370128854">С предзагрузкой вы сможете быстрее находить и открывать страницы в Chrome.</translation>
 <translation id="1728803206919861584">Сохранить ключ доступа не в режиме инкогнито?</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636"><ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Без предзагрузки</translation>
 <translation id="3029704984691124060">Кодовые фразы не совпадают</translation>
+<translation id="3029829659829245765">Выбранная закрепленная вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037517125981011456">Показывать предложения войти в Chrome</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="397583555483684758">Ошибка синхронизации</translation>
 <translation id="3976396876660209797">Удалите этот ярлык и создайте его заново</translation>
+<translation id="397650873162244514">Закрепленная вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="3985022125189960801">Вы в любой момент можете убрать сайт из списка заблокированных.</translation>
 <translation id="3985215325736559418">Скачать файл <ph name="FILE_NAME" /> ещё раз?</translation>
 <translation id="3987993985790029246">Скопировать ссылку</translation>
@@ -1413,6 +1418,7 @@
 <translation id="7375125077091615385">Тип:</translation>
 <translation id="7376560087009844242">Благодаря этой функции при использовании быстрого поиска результаты могут стать точнее. Включить или отключить ее можно в любое время в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Доступна тёмная тема для сайтов</translation>
+<translation id="7384486627147155832">Уведомление для продвижения функции открыто наполовину</translation>
 <translation id="7388615499319468910">Сайты и рекламодатели могут оценивать эффективность рекламы. Параметр отключен.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Другое, 1 файл в списке}one{Другое, # файл в списке}few{Другое, # файла в списке}many{Другое, # файлов в списке}other{Другое, # файла в списке}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@
 <translation id="8090732854597034573">Если потребуется помощь, можно обратиться к родителю</translation>
 <translation id="8101414242770404289">0 вкладок <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Вкладка инкогнито</translation>
+<translation id="810433609302852">Нижний экран с уведомлением для продвижения функции и инструкцией по ее настройке</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Закрыть параметры сортировки</translation>
 <translation id="8110024788458304985">Помогать повышать производительность и улучшать функции Chrome</translation>
@@ -1825,6 +1832,7 @@
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
 <translation id="9189607089796819144">Все равно скачать файл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">История будет доступна на всех синхронизируемых устройствах, чтобы на любом из них вы могли продолжать то, что начали на другом.</translation>
+<translation id="9197941237799589838">Выбранная закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />"</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено 1 минуту назад.}one{Проверено # минуту назад.}few{Проверено # минуты назад.}many{Проверено # минут назад.}other{Проверено # минуты назад.}}</translation>
 <translation id="9204836675896933765">Остался 1 файл</translation>
 <translation id="9205933215779845960">Не удается найти страницу. Проверьте, правильно ли введен запрос, или воспользуйтесь поисковой системой <ph name="SEARCH_ENGINE" />.</translation>

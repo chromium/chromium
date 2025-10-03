@@ -990,6 +990,7 @@
 <translation id="2610561535971892504">Kopyalamaq üçün klikləyin</translation>
 <translation id="2612676031748830579">Kart nömrəsi</translation>
 <translation id="2612993535136743634">Cihaz və Google Hesabında yadda saxlanan təhlükəsizlik kodları silinəcək</translation>
+<translation id="2614835674900828050">Bu alış üçün əlçatan deyil</translation>
 <translation id="2616412942031748191">Axtarış mexanizminin optimallaşdırılması və marketinq</translation>
 <translation id="2618206371527040026">Akademik Konfranslar və Nəşrlər</translation>
 <translation id="2619052155095999743">Daxil edin</translation>
@@ -1253,6 +1254,7 @@
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090667236485488075">Şüşə</translation>
 <translation id="3093122472063815077">"İndi al, sonra ödə" gedişat ekranı yarım hündürlükdə açılıb.</translation>
+<translation id="309381737510736393">Təşkilatınız Google Hesabınızda yadda saxlamağı məhdudlaşdırdıqda tabları paylaşa və ya başqaları ilə əməkdaşlıq edə bilməzsiniz</translation>
 <translation id="3094051226187213523">Bu təkliflə Sİ rejimini açın.</translation>
 <translation id="3095940652251934233">Bəyanat</translation>
 <translation id="3098513225387949945">Deaktiv siyahısında siyasətin deaktiv edilməsinə bərabər olan '*' işarəsinə bərabər model olduğu üçün nəzərə alınmayıb.</translation>
@@ -1694,6 +1696,7 @@
 <translation id="3784372983762739446">Bluetooth cihazları</translation>
 <translation id="3785246317262748285">Adətən saytlara təhlükəsiz qoşulursunuz, lakin Chrome bu dəfə güvənli bağlantıdan istifadə edə bilmədi. Hücumçu şəbəkə bağlantısını izləməyə və ya dəyişdirməyə cəhd edə bilər. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" üzrə ən yaxşı uyğunluqlar</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> və ya <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3791118028061680614">Tətbiqləri dəyişmədən ödəyin</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> düym)</translation>
@@ -2675,6 +2678,7 @@
 <translation id="5412040515238827314">Yanlış format: Model siyahısı gözlənilir.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Yığıcı 4</translation>
+<translation id="5414306071315087019">Google Pay ilə indi ala, daha sonra ödəyə bilərsiniz</translation>
 <translation id="5414446060143308245">Ötürməzdən əvvəl nəzərdən keçirilməlidir</translation>
 <translation id="5414511064953050917">İstənilən halda köçürün</translation>
 <translation id="5418700249417444482">Daxil olduğunuz səhifələrin URL-ləri təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir və administratorunuza görünə bilər. Məsələn, administrator tərəfindən müəyyən edilmiş qaydalara əsasən təhlükəli saytları aşkar etmək və ya saytları filtrləmək üçün skan edilə bilər.</translation>
@@ -2795,6 +2799,7 @@
 <translation id="5595485650161345191">Ünvana düzəliş edin</translation>
 <translation id="5596939519753369075">2 x 3,5 düym</translation>
 <translation id="5597254438174353289">Mavi 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> və ya <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">İdarəetmə dəstəklənmir</translation>
 <translation id="5605249000617390290">Qiymət izlənməsi haqqında ətraflı</translation>
 <translation id="5605670050355397069">Qeyd Kitabçası</translation>

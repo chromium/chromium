@@ -32,6 +32,7 @@
 <translation id="1345251407431278948">Angepinnt! Über die neue Schaltfläche in der Symbolleiste kannst du wieder auf die Bildersuche zugreifen.</translation>
 <translation id="1356661055722410047">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen lassen</translation>
 <translation id="1383876407941801731">Suchen</translation>
+<translation id="1397530502368084401">&amp;Chromium-Profile verwalten</translation>
 <translation id="1414495520565016063">Du bist in Chromium angemeldet.</translation>
 <translation id="141901961143729572">Lass uns wissen, was du denkst</translation>
 <translation id="1465192221147974788">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
@@ -70,6 +71,7 @@
 <translation id="1896836275755235458">In Chromium wird der Akkuverbrauch reduziert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen zum Energiesparmodus<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Fragen zu dieser Seite stellen</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
+<translation id="1911666947158375684">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chromium verwenden. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="1911763535808217981">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne dich auch in Chromium anmelden zu müssen</translation>
 <translation id="1916451563296275579">Daten dieser App aus Chromium entfernen</translation>
 <translation id="1929939181775079593">Chromium reagiert nicht. Jetzt neu starten?</translation>
@@ -492,6 +494,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="6877155553248388166">Rechte untere Ecke des Suchbereichs: rechts <ph name="RIGHT" /> %, unten <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6901631050894301805">Chromium als Standardbrowser festlegen und an die Taskleiste anheften</translation>
+<translation id="6909503629704372277">&amp;Chromium-Profile verwalten</translation>
 <translation id="6934579572334859869">Bildersuche nach Infos zu diesem Bild fragen</translation>
 <translation id="6964305034639999644">Link in Chromium-Inkognitofenster öffnen</translation>
 <translation id="6965382102122355670">OK</translation>

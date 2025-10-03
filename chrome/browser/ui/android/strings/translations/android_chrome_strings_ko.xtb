@@ -9,11 +9,13 @@
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />에 보내는 중...</translation>
 <translation id="103269572468856066">아래 사이트 및 앱의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1034259925032978114">창이 열려 있습니다.</translation>
+<translation id="1035113036584565771">팁 알림 프로모션 닫힘</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1052842760770519282">일부 비밀번호에 액세스할 수 없습니다</translation>
 <translation id="1058669287135776095">현재 오프라인 상태입니다. 인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
+<translation id="1066338698580889414">팁 알림 프로모션이 전체 높이로 열림</translation>
 <translation id="1070689840697074178">여기에서 PDF를 다운로드할 수 있습니다.</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1087799850623149508">길게 터치하여 주소 표시줄을 하단으로 이동할 수 있습니다.</translation>
@@ -151,6 +153,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
 <translation id="1702543251015153180">어두운 테마 설정을 변경하시겠습니까?</translation>
 <translation id="1702907158640575240">관리 브라우저</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, 시크릿 탭 고정</translation>
 <translation id="1718835860248848330">지난 1시간</translation>
 <translation id="1726477445370128854">사용자가 방문할 것으로 생각되는 페이지를 Chrome에서 미리 로드하면 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="1728803206919861584">시크릿 모드 외부에서 패스키를 저장하시겠습니까?</translation>
@@ -439,6 +442,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3027950907978057636">출처: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">미리 로드 안함</translation>
 <translation id="3029704984691124060">암호가 일치하지 않습니다.</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, 선택된 탭 고정</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />도움 받기<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037517125981011456">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
@@ -626,6 +630,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="397583555483684758">동기화가 중지되었습니다.</translation>
 <translation id="3976396876660209797">이 바로가기 삭제하고 다시 만들기</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, 탭 고정</translation>
 <translation id="3985022125189960801">내가 원하는 콘텐츠를 추측할 수 있는 사이트 풀에 원하는 사이트를 다시 추가하세요.</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> 파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="3987993985790029246">링크 복사</translation>
@@ -1413,6 +1418,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7375125077091615385">유형:</translation>
 <translation id="7376560087009844242">페이지 텍스트를 더 많이 포함하면 터치하여 검색 기능을 사용할 때 더 나은 검색결과를 확인할 수 있습니다. 이를 변경하려면 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 방문하세요.</translation>
 <translation id="7379900596734708416">사이트에 어두운 테마 적용 가능</translation>
+<translation id="7384486627147155832">팁 알림 프로모션이 절반 높이로 열림</translation>
 <translation id="7388615499319468910">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{목록에 있는 기타 파일 1개}other{목록에 있는 기타 파일 #개}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8090732854597034573">도움이 필요하면 부모님께 요청하세요</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> 동안의 탭 없음</translation>
 <translation id="8103578431304235997">시크릿 탭</translation>
+<translation id="810433609302852">팁 알림 기능 프로모션 및 사용 단계 하단 시트</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">정렬 옵션 닫기</translation>
 <translation id="8110024788458304985">Chrome의 기능 및 성능 개선에 참여</translation>
@@ -1825,6 +1832,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
 <translation id="9189607089796819144">그래도 "<ph name="FILE_NAME" />"(<ph name="FILE_SIZE" />) 파일을 다운로드하시겠습니까?</translation>
 <translation id="9190276265094487094">동기화된 모든 기기에 방문 기록이 유지되므로 전에 하던 작업을 이어서 할 수 있습니다.</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, 선택된 시크릿 탭 고정</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1분 전에 확인됨}other{#분 전에 확인됨}}</translation>
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>
 <translation id="9205933215779845960">페이지를 찾을 수 없습니다. 철자를 확인하거나 <ph name="SEARCH_ENGINE" />에서 검색해 보세요.</translation>

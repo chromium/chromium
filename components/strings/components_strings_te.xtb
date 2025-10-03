@@ -985,6 +985,7 @@
 <translation id="2610561535971892504">కాపీ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="2612676031748830579">కార్డ్ నంబర్</translation>
 <translation id="2612993535136743634">మీ పరికరంలో, Google ఖాతాలో సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లన్నీ తొలగించబడతాయి</translation>
+<translation id="2614835674900828050">ఈ కొనుగోలు కోసం అందుబాటులో లేదు</translation>
 <translation id="2616412942031748191">సెర్చ్ ఇంజిన్ ఆప్టిమైజేషన్ &amp; మార్కెటింగ్</translation>
 <translation id="2618206371527040026">అకడమిక్ కాన్ఫరెన్సులు &amp; పబ్లికేషన్స్</translation>
 <translation id="2619052155095999743">చొప్పించండి</translation>
@@ -1248,6 +1249,7 @@
 <translation id="3087734570205094154">దిగువ</translation>
 <translation id="3090667236485488075">గ్లాస్</translation>
 <translation id="3093122472063815077">'ఇప్పుడు కొనండి, పేమెంట్ తర్వాత చేయండి' ప్రోగ్రెస్, హాఫ్ స్క్రీన్‌లో తెరవబడింది.</translation>
+<translation id="309381737510736393">మీ సంస్థ మీ Google ఖాతాకు డేటా సేవింగ్‌ను పరిమితం చేసినప్పుడు, మీరు ట్యాబ్‌లను షేర్ చేయలేరు లేదా ఇతరులతో సహకరించలేరు</translation>
 <translation id="3094051226187213523">ఈ సూచనతో AI మోడ్‌ను తెరవండి.</translation>
 <translation id="3095940652251934233">స్టేట్‌మెంట్</translation>
 <translation id="3098513225387949945">'*'కు సమానమైన ఆకృతి డిజేబుల్ లిస్ట్‌లో ఉంది, ఇది పాలసీని డిజేబుల్ చేయడానికి సమానం, అందుకే ఇది విస్మరించబడింది.</translation>
@@ -1693,6 +1695,7 @@
 <translation id="3784372983762739446">బ్లూటూత్ పరికరాలు</translation>
 <translation id="3785246317262748285">మీరు సాధారణంగా సైట్‌లకు సురక్షితంగా కనెక్ట్ అవుతుంటారు, కానీ Chrome ఈసారి సురక్షితమైన కనెక్షన్‌ను ఉపయోగించలేకపోతోంది. అటాకర్ మీ నెట్‌వర్క్ కనెక్షన్‌పై ఓ కన్నేసి ఉంచడానికి లేదా దాన్ని మార్చడానికి ట్రై చేస్తూ ఉండవచ్చు. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"కు సంబంధించిన బెస్ట్ మ్యాచ్‌లు</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" />, లేదా <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3791118028061680614">యాప్‌లను స్విచ్ చేయకుండానే పేమెంట్ చేయండి</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> అంగుళాలు)</translation>
@@ -2674,6 +2677,7 @@
 <translation id="5412040515238827314">చెల్లని ఫార్మాట్: ఈ ఆకృతుల లిస్ట్‌లో ఒకటి అయి ఉంటుందని ఊహించాము.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">స్టాకర్ 4</translation>
+<translation id="5414306071315087019">Google Payలో ఇప్పుడు కొనండి, పేమెంట్ తర్వాత చేయండి ఫీచర్ అందుబాటులో ఉంది</translation>
 <translation id="5414446060143308245">బదిలీ చేసే ముందు, రివ్యూ చేయడం ముఖ్యం</translation>
 <translation id="5414511064953050917">ఏదైమైనా తరలించండి</translation>
 <translation id="5418700249417444482">మీరు చూసే పేజీలకు సంబంధించిన URLలు విశ్లేషణ కోసం Google Cloud లేదా థర్డ్-పార్టీ యాప్‌లకు పంపబడతాయి, అవి మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు. ఉదాహరణకు, సురక్షితం కాని వెబ్‌సైట్‌లను గుర్తించడం కోసం వాటిని స్కాన్ చేయడం జరుగుతుంది లేదా అడ్మినిస్ట్రేటర్ సెట్ చేసిన నియమాల ఆధారంగా వెబ్‌సైట్‌లను ఫిల్టర్ చేయవచ్చు.</translation>
@@ -2794,6 +2798,7 @@
 <translation id="5595485650161345191">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5596939519753369075">2 x 3.5 అంగుళాలు</translation>
 <translation id="5597254438174353289">నీలం రంగు 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> లేదా <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">నిర్వహణకు మద్దతు లేదు</translation>
 <translation id="5605249000617390290">ధర ట్రాకింగ్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="5605670050355397069">లెడ్జర్</translation>

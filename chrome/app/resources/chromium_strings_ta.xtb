@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">பின் செய்யப்பட்டது! கருவிப்பட்டியில் உள்ள புதிய பட்டன் மூலம் படத் தேடலை மீண்டும் அணுகலாம்</translation>
 <translation id="1356661055722410047">புதிது! திரையில் உள்ள வார்த்தைகளையும் படங்களையும் மொழிபெயர்க்கலாம்</translation>
 <translation id="1383876407941801731">தேடுக</translation>
+<translation id="1397530502368084401">&amp;Chromium சுயவிவரங்களை நிர்வகியுங்கள்</translation>
 <translation id="1414495520565016063">Chromium இல் உள்நுழைந்துள்ளீர்கள்!</translation>
 <translation id="141901961143729572">உங்கள் கருத்துகளைப் பகிருங்கள்</translation>
 <translation id="1465192221147974788">சாளரத்தைப் பகிர, சிஸ்டம் அமைப்புகளில் Chromiumமிற்கு ஸ்கிரீன் ரெக்கார்டிங்கை அனுமதிக்கவும்.</translation>
@@ -399,7 +400,7 @@
 <translation id="5941711191222866238">சிறிதாக்கு</translation>
 <translation id="5949225980829865667">இந்தப் புக்மார்க்கையும் மேலும் பலவற்றையும் உங்கள் சாதனங்கள் எல்லாவற்றிலும் பெற Chromiumமில் உள்நுழையுங்கள்</translation>
 <translation id="5953657885167112863">Chromiumமை உங்களுக்கானதாக மாற்றுங்கள்</translation>
-<translation id="5968400720580217226">AI மோடு</translation>
+<translation id="5968400720580217226">AI மோட்</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium ஒரு நிமிடத்திற்குப் பயன்படுத்தப்படாமல் இருந்தால் உங்கள் நிறுவனம் அதைத் தானாக மூடிவிடும்.}other{Chromium # நிமிடங்களுக்குப் பயன்படுத்தப்படாமல் இருந்தால் உங்கள் நிறுவனம் அதைத் தானாக மூடிவிடும்.}}</translation>
 <translation id="5987687638152509985">ஒத்திசைவைத் தொடங்க, Chromiumஐப் புதுப்பிக்கவும்</translation>
 <translation id="6003112304606738118">பதிவிறக்குகிறது... <ph name="HOURS" /> மணிநேரம் மீதமுள்ளது</translation>
@@ -494,6 +495,7 @@
 <translation id="6877155553248388166">தேடல் பகுதியின் கீழ் வலது மூலை: வலது <ph name="RIGHT" />%, கீழ் <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">நகலெடு</translation>
 <translation id="6901631050894301805">Chromiumமை இயல்பு பிரவுசராக அமைத்து செயல் பட்டியில் பின் செய்யுங்கள்</translation>
+<translation id="6909503629704372277">&amp;Chromium சுயவிவரங்களை நிர்வகியுங்கள்</translation>
 <translation id="6934579572334859869">இந்தப் படம் பற்றி படத் தேடல் அம்சத்திடம் கேளுங்கள்</translation>
 <translation id="6964305034639999644">Chromium மறை&amp;நிலை சாளரத்தில் இணைப்பைத் திற</translation>
 <translation id="6965382102122355670">சரி</translation>

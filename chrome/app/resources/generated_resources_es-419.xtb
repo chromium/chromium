@@ -1380,6 +1380,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1931152874660185993">No hay componentes instalados.</translation>
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">No antes</translation>
+<translation id="1932125073382155239">¿Quieres crear una copia de seguridad de tu contenido?</translation>
 <translation id="1933070475689690969">Actividad en las Apps con Gemini</translation>
 <translation id="1933489278505808700">Puede leer y modificar</translation>
 <translation id="1935303383381416800">Puede ver tu ubicación</translation>
@@ -1843,6 +1844,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="225614027745146050">Bienvenido</translation>
 <translation id="2257053455312861282">Si agregas la cuenta de una institución educativa, el estudiante podrá acceder fácilmente a sitios web, extensiones y apps, mientras se siguen aplicando los controles parentales.</translation>
 <translation id="225716114209817872">Máximo</translation>
+<translation id="2259337945538989999">Para obtener las pestañas de tus otros dispositivos, verifica tu identidad. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2261323523305321874">Tu administrador hizo un cambio que afecta todo el sistema e inhabilita algunos perfiles antiguos.</translation>
 <translation id="22614517036276112">Este documento o tu dispositivo no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.</translation>
 <translation id="2262477216570151239">Tiempo para repetición</translation>
@@ -2050,6 +2052,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2393313392064891208">Contenido de las Condiciones de ChromeOS Flex</translation>
 <translation id="2393944685985256805">Se ocultó <ph name="MODULE_NAME" /></translation>
 <translation id="2395616325548404795">Tu dispositivo <ph name="DEVICE_TYPE" /> se inscribió correctamente para la administración empresarial, pero se produjo un error al intentar enviar la información de la ubicación y del recurso. Ingresa los datos manualmente en la Consola del administrador del dispositivo.</translation>
+<translation id="2396593617786425274">¿Quieres sincronizar el historial?</translation>
 <translation id="2396783860772170191">Ingresa un PIN de 4 dígitos (0000-9999)</translation>
 <translation id="2398546389094871088">Si aplicas la función Powerwash en el dispositivo, no se quitarán los perfiles de eSIM. Para quitarlos de forma manual, va a <ph name="LINK_BEGIN" />Configuración de los dispositivos móviles<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Se activaron las Notificaciones</translation>
@@ -6722,6 +6725,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
+<translation id="565461030474814383">¿Quieres guardarla en la cuenta?</translation>
 <translation id="5654669866168491665">Más información sobre los sitios que podrían no funcionar cuando se bloquean las cookies de terceros</translation>
 <translation id="5654751240928365405">Se desactivó esta extensión porque ya no es compatible</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger tu privacidad, se quitaron los permisos de un sitio}other{Para proteger tu privacidad, se quitaron los permisos de algunos sitios}}</translation>
@@ -7026,6 +7030,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
 <translation id="5870086504539785141">Cerrar menú de accesibilidad</translation>
 <translation id="5870155679953074650">Fallos graves</translation>
+<translation id="587234395549708302">¿Quieres limpiar los Favoritos?</translation>
 <translation id="5875534259258494936">Se dejó de compartir la pantalla</translation>
 <translation id="5876851302954717356">Nueva pestaña a la derecha</translation>
 <translation id="5877064549588274448">Se cambió el canal. Reinicia el dispositivo para aplicar los cambios.</translation>

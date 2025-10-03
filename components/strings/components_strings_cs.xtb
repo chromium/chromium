@@ -990,6 +990,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2610561535971892504">Kliknutím zkopírujte</translation>
 <translation id="2612676031748830579">Číslo karty</translation>
 <translation id="2612993535136743634">Všechny bezpečnostní kódy uložené v zařízení a v účtu Google budou smazány</translation>
+<translation id="2614835674900828050">Pro tento nákup není k dispozici</translation>
 <translation id="2616412942031748191">Optimalizace pro vyhledávače a marketing</translation>
 <translation id="2618206371527040026">Akademické konference a publikace</translation>
 <translation id="2619052155095999743">Vložit</translation>
@@ -1253,6 +1254,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3087734570205094154">Až dolů</translation>
 <translation id="3090667236485488075">Sklo</translation>
 <translation id="3093122472063815077">Obrazovka s ukazatelem průběhu procesu „Koupit teď, zaplatit později“ je otevřená na polovinu výšky.</translation>
+<translation id="309381737510736393">Když vaše organizace omezuje ukládání do vašeho účtu Google, nemůžete sdílet karty ani spolupracovat s ostatními</translation>
 <translation id="3094051226187213523">Otevřít režim AI s tímto návrhem.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorováno, protože seznam k deaktivování obsahuje vzorec odpovídající znaku hvězdička (*), což je ekvivalent k deaktivování zásady.</translation>
@@ -1694,6 +1696,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3784372983762739446">Zařízení Bluetooth</translation>
 <translation id="3785246317262748285">K webům se obvykle připojujete zabezpečeně, ale tentokrát Chrome zabezpečené připojení použít nemohl. Je možné, že se nějaký útočník pokouší sledovat nebo upravovat vaše připojení k síti. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Nejlepší shody pro dotaz „<ph name="SEARCH_QUERY" />“</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> nebo <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="3791118028061680614">Plaťte bez přepínání mezi aplikacemi</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> palců)</translation>
@@ -2675,6 +2678,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5412040515238827314">Neplatný formát: Očekáván seznam vzorů.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />–<ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stohovač 4</translation>
+<translation id="5414306071315087019">Prostřednictvím Google Pay je k dispozici funkce Koupit teď, zaplatit později</translation>
 <translation id="5414446060143308245">Před přesunutím je vyžadována kontrola</translation>
 <translation id="5414511064953050917">Přesto přesunout</translation>
 <translation id="5418700249417444482">Adresy URL navštívených stránek se odesílají do služby Google Cloud nebo třetím stranám k analýze a mohou být viditelné pro vašeho administrátora. Může se u nich například kontrolovat, zda neodkazují na nebezpečné weby, nebo mohou být filtrovány podle pravidel nastavených administrátorem.</translation>
@@ -2795,6 +2799,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
 <translation id="5596939519753369075">2 × 3,5″</translation>
 <translation id="5597254438174353289">Modrá 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> nebo <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Správa není podporována</translation>
 <translation id="5605249000617390290">Další informace o sledování cen</translation>
 <translation id="5605670050355397069">Ledger</translation>

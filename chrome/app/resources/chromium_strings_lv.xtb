@@ -32,6 +32,7 @@
 <translation id="1345251407431278948">Piesprausts! Varat atkal piekļūt funkcijai Attēlu meklēšana, izmantojot jauno pogu rīkjoslā.</translation>
 <translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
+<translation id="1397530502368084401">&amp;Pārvaldīt Chromium profilus</translation>
 <translation id="1414495520565016063">Esat pierakstījies operētājsistēmā Chromium!</translation>
 <translation id="141901961143729572">Dalieties domās!</translation>
 <translation id="1465192221147974788">Lai kopīgotu logu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
@@ -70,6 +71,7 @@
 <translation id="1896836275755235458">Pārlūkā Chromium tiek taupīta akumulatora enerģija, ierobežojot darbības fonā un vizuālos efektus, piemēram, vienmērīgu ritināšanu un video kadru nomaiņas ātrumu. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par enerģijas taupīšanas režīmu<ph name="END_LINK" />.</translation>
 <translation id="1898804291554630487">Jautājiet par šo lapu</translation>
 <translation id="1900969832270057921">Chromium atjauninātāja pakalpojums</translation>
+<translation id="1911666947158375684">Kamēr esat pierakstījies, pārlūkā Chromium varat izmantot savas paroles un citu saturu no Google konta. Iestatījumos varat jebkurā laikā mainīt šo iespēju.</translation>
 <translation id="1911763535808217981">Ja izslēgsiet šo iestatījumu, varēsiet pierakstīties Google vietnēs, piemēram, pakalpojumā Gmail, nepierakstoties pārlūkā Chromium.</translation>
 <translation id="1916451563296275579">Noņemt šo lietotņu datus no Chromium</translation>
 <translation id="1929939181775079593">Chromium nereaģē. Vai restartēt to tūlīt?</translation>
@@ -492,6 +494,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="6877155553248388166">meklēšanas apgabala apakšējais labais stūris: <ph name="RIGHT" />% pa labi, <ph name="BOTTOM" />% apakšdaļā</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6901631050894301805">Iestatiet Chromium kā noklusējuma pārlūku un piespraudiet to uzdevumjoslai</translation>
+<translation id="6909503629704372277">&amp;Pārvaldīt Chromium profilus</translation>
 <translation id="6934579572334859869">Jautāt attēlu meklēšanas funkcijai par šo attēlu</translation>
 <translation id="6964305034639999644">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="6965382102122355670">Labi</translation>

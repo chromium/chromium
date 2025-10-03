@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">Kiinnitetty! Voit käyttää kuvahakua jatkossa yläpalkin uudella painikkeella</translation>
 <translation id="1356661055722410047">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat</translation>
 <translation id="1383876407941801731">Haku</translation>
+<translation id="1397530502368084401">&amp;Ylläpidä Chromium-profiileja</translation>
 <translation id="1414495520565016063">Olet kirjautunut Chromiumiin!</translation>
 <translation id="141901961143729572">Kerro mielipiteesi</translation>
 <translation id="1465192221147974788">Jos haluat jakaa ikkunan, salli Chromiumin näytön tallennus järjestelmäasetuksista.</translation>
@@ -493,6 +494,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="6877155553248388166">hakualueen oikea alakulma: oikea <ph name="RIGHT" /> %, ala <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6901631050894301805">Valitse Chromium oletusselaimeksi ja kiinnitä se tehtäväpalkkiin</translation>
+<translation id="6909503629704372277">&amp;Ylläpidä Chromium-profiileja</translation>
 <translation id="6934579572334859869">Kysy tästä kuvasta kuvahausta</translation>
 <translation id="6964305034639999644">Avaa linkki Chromiumin inco&amp;gnito-ikkunassa</translation>
 <translation id="6965382102122355670">OK</translation>

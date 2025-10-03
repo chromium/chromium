@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">Prikvačeno! Pretraživanju slika možete ponovo pristupiti pomoću novog gumba na alatnoj traci</translation>
 <translation id="1356661055722410047">Novo! Možete prevesti tekst i slike na zaslonu</translation>
 <translation id="1383876407941801731">Traži</translation>
+<translation id="1397530502368084401">&amp;Upravljajte profilima na Chromiumu</translation>
 <translation id="1414495520565016063">Prijavljeni ste na Chromium!</translation>
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chromium.</translation>
@@ -71,6 +72,7 @@
 <translation id="1896836275755235458">Chromium štedi bateriju ograničavajući pozadinsku aktivnost i vizualne efekte, kao što je glatko pomicanje i broj sličica u sekundi videozapisa. <ph name="BEGIN_LINK" />Saznajte više o štednji energije<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Postavite pitanje o ovoj stranici</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
+<translation id="1911666947158375684">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svog Google računa u Chromiumu. To uvijek možete promijeniti u postavkama.</translation>
 <translation id="1911763535808217981">Ako isključite tu opciju, možete se prijaviti na Googleove web-lokacije kao što je Gmail bez prijavljivanja u Chromium</translation>
 <translation id="1916451563296275579">Uklonite podatke ove aplikacije iz Chromiuma</translation>
 <translation id="1929939181775079593">Chromium ne reagira. Ponovo pokrenuti sada?</translation>
@@ -493,6 +495,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6877155553248388166">donji desni kut područja za pretraživanje: desno <ph name="RIGHT" />%, dno <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6901631050894301805">Postavite Chromium kao zadani preglednik i prikvačite ga na traku sa zadacima</translation>
+<translation id="6909503629704372277">&amp;Upravljajte profilima na Chromiumu</translation>
 <translation id="6934579572334859869">Postavite pitanja Google slikama o toj slici</translation>
 <translation id="6964305034639999644">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
 <translation id="6965382102122355670">U redu</translation>

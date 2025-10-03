@@ -337,6 +337,7 @@
 <translation id="4816495437032298535">Zoom guardado para sitios</translation>
 <translation id="4836046166855586901">Permitir que los sitios pregunten en qué momento estás usando activamente este dispositivo</translation>
 <translation id="483914009762354899">Incluir todos los sitios en este dominio</translation>
+<translation id="4852997963351138624">Valor hexadecimal del color de fondo</translation>
 <translation id="4882919381756638075">Por lo general, los sitios utilizan el micrófono para habilitar funciones de comunicación, como videochat.</translation>
 <translation id="4883854917563148705">No puede restablecerse la configuración administrada</translation>
 <translation id="4887024562049524730">Preguntar antes de permitir que los sitios utilicen tus datos y dispositivos de realidad virtual (recomendado)</translation>
@@ -500,6 +501,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="662080504995468778">Permanecer aquí</translation>
+<translation id="6630443592285535486">Escribe el valor hexadecimal aquí</translation>
 <translation id="6635327442719709864">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar puertos en serie. Cuando está desactivada, los sitios no pueden usar puertos en serie.</translation>
 <translation id="6678072580827808850">Revisar la Verificación de seguridad</translation>
 <translation id="6682057173375416470">Obtén artículos sugeridos en la página Nueva pestaña</translation>
@@ -557,6 +559,7 @@
 <translation id="7399802613464275309">Verificación de seguridad</translation>
 <translation id="7406113532070524618">Esta configuración no necesita identificarte ni permitir que los sitios vean tu historial de navegación. No obstante, los sitios pueden compartir una pequeña cantidad de información como parte de la verificación.</translation>
 <translation id="7409735910987429903">Es posible que los sitios abran ventanas emergentes para mostrar anuncios o usen redireccionamientos para que accedas a sitios web que posiblemente no quieras visitar.</translation>
+<translation id="7412160840120117304">Valor hexadecimal del color principal</translation>
 <translation id="7423098979219808738">Preguntar primero</translation>
 <translation id="7423538860840206698">Se impidió la lectura del portapapeles</translation>
 <translation id="7425915948813553151">Tema oscuro para los sitios</translation>

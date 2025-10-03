@@ -252,7 +252,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1406812885827747674">Autoriser cette fois-ci</translation>
 <translation id="14070772729708640">Les fichiers ont bien été importés dans <ph name="FOLDER_NAME" /> sur <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
-<translation id="1408696301184924537">Pour que cet IBAN soit indiqué automatiquement la prochaine fois, enregistrez-le dans votre compte Google</translation>
+<translation id="1408696301184924537">Pour que cet IBAN soit renseigné automatiquement la prochaine fois, enregistrez-le dans votre compte Google</translation>
 <translation id="1408787208417187241">Triple agrafe en haut</translation>
 <translation id="1410365862999780287">Vous pouvez naviguer plus en privé, car les autres utilisateurs de cet appareil ne voient pas votre activité. Cela ne change pas comment les sites Web et les services qu'ils utilisent, y compris Google, collectent les données. Les téléchargements, favoris et éléments de la liste de lecture sont enregistrés.</translation>
 <translation id="1410941016594047814">Enveloppe d'invitation</translation>
@@ -990,6 +990,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2610561535971892504">Cliquer pour copier</translation>
 <translation id="2612676031748830579">Numéro de carte</translation>
 <translation id="2612993535136743634">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
+<translation id="2614835674900828050">Non disponible pour cet achat</translation>
 <translation id="2616412942031748191">Marketing et référencement naturel</translation>
 <translation id="2618206371527040026">Publications et conférences universitaires</translation>
 <translation id="2619052155095999743">Insérer</translation>

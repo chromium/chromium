@@ -33,6 +33,7 @@
 <translation id="1345251407431278948">S-a fixat! Poți să accesezi din nou Căutarea de imagini folosind noul buton din bara de instrumente</translation>
 <translation id="1356661055722410047">Nou! Poți traduce atât textul, cât și imaginile de pe ecran</translation>
 <translation id="1383876407941801731">Caută</translation>
+<translation id="1397530502368084401">&amp;Gestionează profilurile Chromium</translation>
 <translation id="1414495520565016063">V-ați conectat la Chromium!</translation>
 <translation id="141901961143729572">Spune-ți părerea</translation>
 <translation id="1465192221147974788">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Setări de sistem.</translation>
@@ -71,6 +72,7 @@
 <translation id="1896836275755235458">Chromium economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre video. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea energiei<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Întreabă despre această pagină</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
+<translation id="1911666947158375684">După ce te conectezi, poți folosi parolele și alte date din Contul Google în Chromium. Poți modifica oricând opțiunea din setări.</translation>
 <translation id="1911763535808217981">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chromium</translation>
 <translation id="1916451563296275579">Elimină datele aplicațiilor din Chromium</translation>
 <translation id="1929939181775079593">Chromium nu mai răspunde. Îl reporniți acum?</translation>
@@ -493,6 +495,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6877155553248388166">colțul din dreapta jos al zonei de căutare: dreapta <ph name="RIGHT" /> %, jos <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6901631050894301805">Setează Chromium ca browser prestabilit și fixează-l în bara de activități</translation>
+<translation id="6909503629704372277">&amp;Gestionează profilurile Chromium</translation>
 <translation id="6934579572334859869">Întreabă Căutarea de imagini despre această imagine</translation>
 <translation id="6964305034639999644">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
 <translation id="6965382102122355670">OK</translation>

@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Überblick dank Tabgruppen</translation>
 <translation id="2597457036804169544">Dunkles Design nicht auf Websites anwenden</translation>
 <translation id="2606760465469169465">Automatische Bestätigung</translation>
+<translation id="2610903128639500624">In den <ph name="BEGIN_LINK1" />Android-Einstellungen<ph name="END_LINK1" /> verwalten
+
+Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm gesteuert:
+• „Immer verschlüsselte Verbindungen verwenden“ ist aktiviert.
+• „JavaScript-Optimierungstool“ ist deaktiviert. <ph name="BEGIN_LINK2" />Ausnahmen für Websites verwalten<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">JavaScript für eine bestimmte Website zulassen.</translation>
 <translation id="2626708220538466178">Ansicht am unteren Rand des Standardbrowsers geschlossen</translation>
 <translation id="2653659639078652383">Senden</translation>
@@ -339,6 +344,7 @@
 <translation id="4816495437032298535">Gespeicherter Zoom für Websites</translation>
 <translation id="4836046166855586901">Nachfragen, wenn eine Website Informationen zu deiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
 <translation id="483914009762354899">Alle Websites unter dieser Domain einschließen</translation>
+<translation id="4852997963351138624">Hintergrundfarbe (Hex-Code)</translation>
 <translation id="4882919381756638075">Websites verwenden normalerweise dein Mikrofon für Kommunikationsfunktionen wie Videochats</translation>
 <translation id="4883854917563148705">Verwaltete Einstellungen können nicht zurückgesetzt werden</translation>
 <translation id="4887024562049524730">Nachfragen, bevor Websites erlaubt wird, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden (empfohlen)</translation>
@@ -502,6 +508,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Geschützte Inhalte</translation>
 <translation id="662080504995468778">Bleiben</translation>
+<translation id="6630443592285535486">Hex-Code eingeben</translation>
 <translation id="6635327442719709864">Wenn diese Funktion aktiviert ist, können Websites anfragen, ob sie serielle Ports verwenden dürfen. Ist sie deaktiviert, können Websites keine seriellen Ports verwenden.</translation>
 <translation id="6678072580827808850">Sicherheitscheck aufrufen</translation>
 <translation id="6682057173375416470">Vorgeschlagene Artikel auf der Seite „Neuer Tab“ abrufen</translation>
@@ -559,6 +566,7 @@
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7406113532070524618">Diese Einstellung funktioniert, ohne dass dabei deine Identität preisgegeben oder Websites erlaubt wird, deinen Browserverlauf einzusehen; allerdings können Websites bei der Überprüfung eine kleine Datenmenge weitergeben</translation>
 <translation id="7409735910987429903">Websites senden möglicherweise Pop-ups zum Anzeigen von Werbung oder bringen dich mithilfe von Weiterleitungen zu Websites, die du möglicherweise gar nicht besuchen möchtest</translation>
+<translation id="7412160840120117304">Primäre Farbe (Hex-Code)</translation>
 <translation id="7423098979219808738">Zuerst fragen</translation>
 <translation id="7423538860840206698">Es dürfen keine Dateien aus der Zwischenablage abgerufen werden</translation>
 <translation id="7425915948813553151">Dunkles Design für Websites</translation>

@@ -1393,6 +1393,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1931152874660185993">Ei asennettuja osia.</translation>
 <translation id="1931410639376954712">Asennetaan <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Ei aiemmin kuin</translation>
+<translation id="1932125073382155239">Varmuuskopioidaanko sisältö?</translation>
 <translation id="1933070475689690969">Gemini-sovellustoiminta</translation>
 <translation id="1933489278505808700">Lukeminen ja muuttaminen sallittu</translation>
 <translation id="1935303383381416800">Sijainnin tarkastelu sallittu</translation>
@@ -1856,6 +1857,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="225614027745146050">Tervetuloa</translation>
 <translation id="2257053455312861282">Kun oppilaitostili lisätään, kirjautuminen sivustoille, laajennuksiin ja sovelluksiin on helppoa oppilaille lapsilukon asettamissa rajoissa.</translation>
 <translation id="225716114209817872">Enimmäistaso</translation>
+<translation id="2259337945538989999">Vahvista henkilöllisyytesi, niin voit käyttää välilehtiä muilta laitteiltasi. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="2261323523305321874">Järjestelmänvalvoja on tehnyt koko järjestelmän laajuisen muutoksen, joka poistaa vanhoja profiileja käytöstä.</translation>
 <translation id="22614517036276112">Dokumentti tai laite ei noudata kaikkia organisaatiosi tietoturvakäytäntöjä. Tarkista järjestelmänvalvojalta, mitä on korjattava.</translation>
 <translation id="2262477216570151239">Viive ennen toistoa</translation>
@@ -2066,6 +2068,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2393313392064891208">Google ChromeOS Flexin käyttöehtojen sisältö</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> piilotettu</translation>
 <translation id="2395616325548404795">Yrityshallinta on otettu käyttöön laitteessa <ph name="DEVICE_TYPE" />, mutta laitetunnuksen ja sijaintitietojen lähettäminen epäonnistui. Lisää nämä laitetta koskevat tiedot hallintakonsolista manuaalisesti.</translation>
+<translation id="2396593617786425274">Synkronoidaanko historia?</translation>
 <translation id="2396783860772170191">Lisää nelinumeroinen PIN-koodi (0000–9999)</translation>
 <translation id="2398546389094871088">Laitteen powerwash ei poista eSIM-profiileitasi. Voit poistaa profiilit manuaalisesti <ph name="LINK_BEGIN" />Mobiiliasetuksista<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Ilmoitukset laitettu päälle</translation>
@@ -6736,6 +6739,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
 <translation id="5651308944918885595">Lähijakaminen löydettävyys</translation>
 <translation id="5653154844073528838">Sinulla on <ph name="PRINTER_COUNT" /> tallennettua tulostinta</translation>
+<translation id="565461030474814383">Tallennetaanko tilille?</translation>
 <translation id="5654669866168491665">Lue lisää sivustoista, jotka eivät välttämättä toimi kolmannen osapuolen evästeitä estettäessä</translation>
 <translation id="5654751240928365405">Tämä laajennus on laitettu pois päältä, koska sitä ei enää tueta</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Yksityisyytesi suojaamiseksi luvat on poistettu sivustolta}other{Yksityisyytesi suojaamiseksi luvat on poistettu joiltakin sivustoilta}}</translation>
@@ -7040,6 +7044,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5869522115854928033">Tallennetut salasanat</translation>
 <translation id="5870086504539785141">Sulje käytettävyysvalikko</translation>
 <translation id="5870155679953074650">Levyn sivuvirheet</translation>
+<translation id="587234395549708302">Poistetaanko kirjanmerkit?</translation>
 <translation id="5875534259258494936">Näytön jakaminen on loppunut</translation>
 <translation id="5876851302954717356">Uusi välilehti oikealle</translation>
 <translation id="5877064549588274448">Kanava vaihdettiin. Ota muutokset käyttöön käynnistämällä laite uudelleen.</translation>

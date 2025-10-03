@@ -35,6 +35,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1345251407431278948">Fäst! Du kan komma åt Bildsökning igen från den nya knappen i verktygsfältet</translation>
 <translation id="1356661055722410047">Nyhet! Du kan översätta både text och bilder på skärmen</translation>
 <translation id="1383876407941801731">Sök</translation>
+<translation id="1397530502368084401">&amp;Hantera Chromium-profiler</translation>
 <translation id="1414495520565016063">Du är inloggad i Chromium.</translation>
 <translation id="141901961143729572">Dela dina tankar</translation>
 <translation id="1465192221147974788">För att dela fönstret tillåter du skärminspelning för Chromium i systeminställningarna.</translation>
@@ -495,6 +496,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6877155553248388166">nedre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="BOTTOM" /> % nedåt</translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6901631050894301805">Ställ in Chromium som standardwebbläsare och fäst den på aktivitetsfältet</translation>
+<translation id="6909503629704372277">&amp;Hantera Chromium-profiler</translation>
 <translation id="6934579572334859869">Fråga bildsökning om den här bilden</translation>
 <translation id="6964305034639999644">Öppna länken i ett inko&amp;gnitofönster i Chromium.</translation>
 <translation id="6965382102122355670">OK</translation>

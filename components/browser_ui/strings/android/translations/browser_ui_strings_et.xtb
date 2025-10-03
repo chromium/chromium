@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Korrastatum ilme vahelehegruppide abil</translation>
 <translation id="2597457036804169544">Saitidele ei rakendata tumedat teemat</translation>
 <translation id="2606760465469169465">Automaatne kinnitamine</translation>
+<translation id="2610903128639500624">Hallake <ph name="BEGIN_LINK1" />Androidi seadetes<ph name="END_LINK1" />
+
+Täiustatud kaitse reguleerib neid Chrome’i seadeid:
+• „Kasuta alati turvalist ühendust“ on sisse lülitatud.
+• „JavaScripti optimeerija“ on välja lülitatud. <ph name="BEGIN_LINK2" />Saidi erandite haldamine<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Lubage JavaScript konkreetse saidi jaoks.</translation>
 <translation id="2626708220538466178">Vaikebrauseri alumine leht on suletud</translation>
 <translation id="2653659639078652383">Esita</translation>

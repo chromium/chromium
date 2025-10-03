@@ -9,11 +9,13 @@
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />-д илгээж байна...</translation>
 <translation id="103269572468856066">Эдгээр сайт, аппаас мөн өгөгдөл арилгах уу?</translation>
 <translation id="1034259925032978114">Цонх нээлттэй байна</translation>
+<translation id="1035113036584565771">Зөвлөгөөний мэдэгдлийн сурталчилгааг хаасан</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1045899828449635435">Эдгээр сайтаас мөн өгөгдөл арилгах уу?</translation>
 <translation id="1049743911850919806">Нууцлал</translation>
 <translation id="1052842760770519282">Таны зарим нууц үгэнд хандах боломжгүй байна</translation>
 <translation id="1058669287135776095">Та офлайн байна. Интернэт холболтоо шалгаад, дахин оролдоно уу.</translation>
+<translation id="1066338698580889414">Зөвлөгөөний мэдэгдлийн сурталчилгааг бүтэн өндрөөр нээсэн</translation>
 <translation id="1070689840697074178">Та эндээс PDF татах боломжтой</translation>
 <translation id="107147699690128016">Хэрэв та файлын өргөтгөлийг өөрчилбөл файлыг өөр хэрэглээний программ дээр нээж болох бөгөөд таны төхөөрөмжид аюултай байж болзошгүй.</translation>
 <translation id="1087799850623149508">Та хаяг оруулах хэсгийг доош зөөхийн тулд хүрээд удаан дарах боломжтой</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973">Та <ph name="SITE_ETLD_PLUS_ONE" />-д үргэлжлүүлэх бусад аргыг турших боломжтой.</translation>
 <translation id="1702543251015153180">Бараан загварын тохиргоогоо өөрчлөх үү?</translation>
 <translation id="1702907158640575240">Удирддаг хөтөч</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, Бэхэлсэн нууцлалтай таб</translation>
 <translation id="1718835860248848330">Сүүлийн цаг</translation>
 <translation id="1726477445370128854">Chrome таныг зочилж магадгүй гэж бодсон хуудаснуудыг урьдчилан ачаалсан үед та илүү хурдан үзэж, хайх боломжтой</translation>
 <translation id="1728803206919861584">Нууцлалтай горимоос гадуур нэвтрэх түлхүүрийг хадгалах уу?</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636"><ph name="APP_LABEL" />-с</translation>
 <translation id="3029276696788198026">Урьдчилан ачаалахгүй</translation>
 <translation id="3029704984691124060">Нэвтрэх хэллэг тохирохгүй байна</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, Бэхэлсэн сонгогдсон таб</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Тусламж авах<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Үнийг хянаж байна</translation>
 <translation id="3037517125981011456">Chrome-д нэвтрэх сануулгыг харуулна</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="397583555483684758">Синк ажиллахаа больсон</translation>
 <translation id="3976396876660209797">Энэ товчлолыг устгаад дахин үүсгэх</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, Бэхэлсэн таб</translation>
 <translation id="3985022125189960801">Хэрэв та сайтыг таны дуртай зүйлийг таамаглах боломжтой сайтуудын санд оруулахыг хүсвэл буцааж нэмнэ үү</translation>
 <translation id="3985215325736559418">Та <ph name="FILE_NAME" />-г дахиж татах уу?</translation>
 <translation id="3987993985790029246">Холбоосыг хуулах</translation>
@@ -1413,6 +1418,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7375125077091615385">Бичих:</translation>
 <translation id="7376560087009844242">Хайхын тулд хүрэхийг ашиглаж байхдаа хуудасны текстээс илүү ихийг багтааснаар та илүү сайн илэрцүүд харж магадгүй. Та үүнийг өөрчлөхийн тулд хүссэн үедээ <ph name="BEGIN_LINK" />тохиргоонд<ph name="END_LINK" /> зочлох боломжтой.</translation>
 <translation id="7379900596734708416">Сайтуудад зориулсан Бараан загвар боломжтой байна</translation>
+<translation id="7384486627147155832">Зөвлөгөөний мэдэгдлийн сурталчилгааг тал өндрөөр нээсэн</translation>
 <translation id="7388615499319468910">Сайтууд болон сурталчлагчид зарын гүйцэтгэлийг ойлгох боломжтой. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Бусад, жагсаалтад 1 файл байна}other{Бусад, жагсаалтад # файл байна}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8090732854597034573">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ хүснэ үү</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />-н ямар ч таб байхгүй</translation>
 <translation id="8103578431304235997">Нууцлалын таб</translation>
+<translation id="810433609302852">Зөвлөгөөний мэдэгдлийн онцлогийн сурталчилгаа, ашиглах алхмуудын доод хүснэгт</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Эрэмбэлэх сонголтыг хаах</translation>
 <translation id="8110024788458304985">Chrome-н онцлогууд болон гүйцэтгэлийг сайжруулахад туслах</translation>
@@ -1825,6 +1832,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9169507124922466868">Навигацын түүхийг хагас нээлээ</translation>
 <translation id="9189607089796819144">Та ямартай ч "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)-г татмаар байна уу?</translation>
 <translation id="9190276265094487094">Таны синк хийсэн бүх төхөөрөмж дээр таны түүхийг хадгална. Ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, Бэхэлсэн нууцлалтай сонгогдсон таб</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 минутын өмнө шалгасан}other{# минутын өмнө шалгасан}}</translation>
 <translation id="9204836675896933765">1 файл үлдсэн</translation>
 <translation id="9205933215779845960">Тухайн хуудсыг олох боломжгүй. Зөв бичсэн эсэхээ шалгах эсвэл <ph name="SEARCH_ENGINE" /> дээр хайж үзнэ үү.</translation>

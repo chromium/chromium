@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Verzenden naar <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Ook gegevens van deze sites en apps wissen?</translation>
 <translation id="1034259925032978114">Venster is geopend</translation>
+<translation id="1035113036584565771">Promotie voor meldingen met tips gesloten</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1045899828449635435">Ook gegevens van deze sites wissen?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Sommige van je wachtwoorden zijn niet toegankelijk</translation>
 <translation id="1058669287135776095">Je bent offline. Check de internetverbinding en probeer het opnieuw.</translation>
+<translation id="1066338698580889414">Promotie voor meldingen met tips is op volledige hoogte geopend</translation>
 <translation id="1070689840697074178">Je kunt hier pdf's downloaden</translation>
 <translation id="107147699690128016">Als je de bestandsextensie wijzigt, wordt het bestand mogelijk in een andere app geopend. Daardoor kan het een gevaar vormen voor je apparaat.</translation>
 <translation id="1087799850623149508">Je kunt de adresbalk naar beneden verplaatsen door je vinger erop te houden</translation>
@@ -151,6 +153,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1696555181932908973">Je kunt andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Instellingen voor donker thema wijzigen?</translation>
 <translation id="1702907158640575240">Beheerde browser</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, vastgezet incognitotabblad</translation>
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1726477445370128854">Je kunt sneller browsen en zoeken als Chrome pagina's vooraf laadt waarvan Chrome denkt dat je ze misschien gaat bezoeken</translation>
 <translation id="1728803206919861584">Toegangssleutel buiten de incognitomodus opslaan?</translation>
@@ -439,6 +442,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3027950907978057636">Van <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Niet vooraf laden</translation>
 <translation id="3029704984691124060">Wachtwoordzinnen komen niet overeen</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, geselecteerd vastgezet tabblad</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Hulp krijgen<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037517125981011456">Toont prompts om in te loggen bij Chrome</translation>
@@ -626,6 +630,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="397583555483684758">Synchronisatie werkt niet meer</translation>
 <translation id="3976396876660209797">Verwijder de snelkoppeling en maak deze opnieuw</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, vastgezet tabblad</translation>
 <translation id="3985022125189960801">Voeg een site weer toe als je deze wilt opnemen in de groep met sites die mogen raden wat je leuk vindt</translation>
 <translation id="3985215325736559418">Wil je <ph name="FILE_NAME" /> opnieuw downloaden?</translation>
 <translation id="3987993985790029246">Link kopiëren</translation>
@@ -1413,6 +1418,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7375125077091615385">Type:</translation>
 <translation id="7376560087009844242">Door meer tekst van een pagina op te nemen, krijg je misschien betere resultaten als je Tikken om te zoeken gebruikt. Je kunt dit altijd wijzigen in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Donker thema voor sites is beschikbaar</translation>
+<translation id="7384486627147155832">Promotie voor meldingen met tips is op halve hoogte geopend</translation>
 <translation id="7388615499319468910">Sites en adverteerders krijgen inzicht in de prestaties van advertenties. Deze instelling staat uit.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Anders, 1 bestand in lijst}other{Anders, # bestanden in lijst}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8090732854597034573">Vraag zo nodig je ouder om hulp</translation>
 <translation id="8101414242770404289">Geen tabbladen in <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Incognitotabblad</translation>
+<translation id="810433609302852">Promotie van de functie voor meldingen met tips en stappen voor gebruik in het onderste blad</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Sorteeropties sluiten</translation>
 <translation id="8110024788458304985">Help de functies en prestaties van Chrome te verbeteren</translation>
@@ -1825,6 +1832,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="9189607089796819144">Wil je <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) toch downloaden?</translation>
 <translation id="9190276265094487094">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, vastgezet geselecteerd incognitotabblad</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
 <translation id="9204836675896933765">1 bestand over</translation>
 <translation id="9205933215779845960">Kan die pagina niet vinden. Check je spelling of voer een zoekopdracht uit met <ph name="SEARCH_ENGINE" />.</translation>

@@ -1254,6 +1254,7 @@
 <translation id="3087734570205094154">پایین</translation>
 <translation id="3090667236485488075">شیشه</translation>
 <translation id="3093122472063815077">صفحه پیشرفت «حالا خرید کنید، بعداً بپردازید» به‌صورت نیمه باز شده است.</translation>
+<translation id="309381737510736393">‏وقتی‌که سازمانتان ذخیره‌سازی در «حساب Google» شما را محدود می‌کند، نمی‌توانید زبانه‌ها را هم‌رسانی کنید یا با دیگران مشارکت کنید</translation>
 <translation id="3094051226187213523">«حالت هوش مصنوعی» با این پیشنهاد باز می‌شود.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">نادیده گرفته شد زیرا فهرستِ غیرفعال کردن حاوی الگویی مساوی با «*» است؛ این الگو معادل غیرفعال کردن خط‌مشی است.</translation>
@@ -1699,6 +1700,7 @@
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
 <translation id="3785246317262748285">‏معمولاً ازطریق اتصال ایمن به سایت‌ها متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">منطبق‌ترین نتایج برای «<ph name="SEARCH_QUERY" />»</translation>
+<translation id="3787887386289385215">‫<ph name="ISSUER_1_NAME" />،‏ <ph name="ISSUER_2_NAME" />، یا <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3791118028061680614">پرداخت بدون عوض کردن برنامه</translation>
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> اینچ)</translation>
@@ -2569,7 +2571,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5233071178832586743">سرپرستتان می‌تواند به نمایه مدیریت‌شده، مرورگر، و برخی‌از اطلاعات دستگاه دسترسی داشته باشد. او می‌تواند اطلاعاتی مانند موارد زیر را ببیند:</translation>
-<translation id="5234764350956374838">رد کردن</translation>
+<translation id="5234764350956374838">بستن</translation>
 <translation id="5238301240406177137">ذخیره در حساب</translation>
 <translation id="5239119062986868403">قیمت معمول</translation>
 <translation id="5239623327352565343">مکان مجاز است</translation>
@@ -2680,6 +2682,7 @@
 <translation id="5412040515238827314">قالب نامعتبر است: انتظار می‌رود فهرستی از الگوها وجود داشته باشد.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">پشته‌ساز ۴</translation>
+<translation id="5414306071315087019">‏«حالا خرید کنید، بعداً بپردازید» در Google Pay دردسترس است</translation>
 <translation id="5414446060143308245">قبل‌از انتقال باید بررسی شود</translation>
 <translation id="5414511064953050917">درهرصورت منتقل شود</translation>
 <translation id="5418700249417444482">‏نشانی وب صفحه‌هایی که بازدید می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود و ممکن است برای سرپرستتان قابل‌مشاهده باشد. برای مثال، این نشانی‌ها ممکن است برای شناسایی وب‌سایت‌های غیرایمن اسکن شوند یا وب‌سایت‌ها براساس قوانینی که سرپرست تنظیم می‌کند فیلتر شوند.</translation>
@@ -2800,6 +2803,7 @@
 <translation id="5595485650161345191">ویرایش نشانی</translation>
 <translation id="5596939519753369075">۳٫۵ × ۲ اینچ</translation>
 <translation id="5597254438174353289">آبی ۳</translation>
+<translation id="5603469469737324249">‫<ph name="ISSUER_1_NAME" /> یا <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">مدیریت پشتیبانی نمی‌شود</translation>
 <translation id="5605249000617390290">درباره پیگیری قیمت بیشتر بدانید</translation>
 <translation id="5605670050355397069">Ledger</translation>

@@ -339,6 +339,7 @@
 <translation id="4816495437032298535">已儲存的網站縮放比例</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
 <translation id="483914009762354899">包括這個網域中的所有網站</translation>
+<translation id="4852997963351138624">背景顏色 (十六進位)</translation>
 <translation id="4882919381756638075">網站通常會使用你的麥克風，以提供視訊通訊等通訊功能</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">系統必須先詢問你，才能允許網站使用你的虛擬實境裝置和資料 (建議設定)</translation>
@@ -502,6 +503,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
+<translation id="6630443592285535486">在這裡輸入十六進位值</translation>
 <translation id="6635327442719709864">如果啟用，網站就可以要求使用序列埠。如果停用，網站將無法使用序列埠。</translation>
 <translation id="6678072580827808850">查看安全檢查</translation>
 <translation id="6682057173375416470">在新分頁顯示推薦文章</translation>
@@ -559,6 +561,7 @@
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7406113532070524618">你不必提供身分識別資訊或授權讓網站查看瀏覽記錄，這項設定也能完成驗證。不過，網站在驗證時，可能會分享少量資訊</translation>
 <translation id="7409735910987429903">網站可能會傳送彈出式視窗以顯示廣告，或是透過重新導向將你帶往不想造訪的網站</translation>
+<translation id="7412160840120117304">主要顏色 (十六進位)</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7425915948813553151">網站的深色主題</translation>

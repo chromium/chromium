@@ -2771,6 +2771,7 @@ La crittografia della cache del browser potrebbe influire sulle prestazioni.</tr
 
           È possibile inviare più override; viene applicata la voce valida più recente.</translation>
 <translation id="2901725272378498025">Attiva gli avvisi sulla sicurezza per i flag della riga di comando</translation>
+<translation id="2901969573658712576">Preferisci le crittografie che soddisfano i requisiti della CNSA 1.0 e 2.0</translation>
 <translation id="2905984450136807296">Durata dei dati di autenticazione nella cache</translation>
 <translation id="2906874737073861391">Elenco di estensioni AppPack</translation>
 <translation id="2908277604670530363">Numero massimo di connessioni simultanee al server proxy</translation>
@@ -5612,6 +5613,7 @@ Se la policy viene disattivata, <ph name="PRODUCT_OS_NAME" /> disattiva il Bluet
 <translation id="4860900625632464759">Consenti agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
 <translation id="486146220825734683">Non consentire agli utenti di memorizzare le password Kerberos</translation>
 <translation id="4861767323695239729">Configura i metodi di immissione consentiti in una sessione utente</translation>
+<translation id="4872597029876646534">Preferisci algoritmi di crittografia specifici per TLS</translation>
 <translation id="4872803921706580974">Attiva la visualizzazione della schermata del sensore della presenza di persone durante l'accesso</translation>
 <translation id="4873380469296842901">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono inviare e ricevere notifiche del loro telefono su ChromeOS.
 
@@ -6399,6 +6401,7 @@ Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearl
 <translation id="5337869685871558036">Consenti il precaricamento di SpeculationRules per gli URL controllati da ServiceWorkers</translation>
 <translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
 <translation id="5340008866815063393">Attiva la generazione di report sui dati delle policy</translation>
+<translation id="5342379224047377786">Utilizza l'ordine di crittografia predefinito di <ph name="PRODUCT_NAME" /></translation>
 <translation id="5345892164332459671">Disattiva il servizio SSO mobile e non trasferire le autenticazioni del web service dell'utente su un nuovo dispositivo</translation>
 <translation id="5345910753471481870">Non mostrare il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
@@ -7705,6 +7708,21 @@ Se la policy non viene configurata, viene utilizzato il valore predefinito globa
 <translation id="6207607210601267301">Disattiva l'autenticazione senza PIN per l'host di accesso remoto</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
+<translation id="6214712395769944855">Questa policy configura <ph name="PRODUCT_NAME" /> in modo che ordini le proprie crittografie preferite in TLS 1.3, allo scopo di riflettere una preferenza per gli algoritmi approvati da un regime di conformità specifico.
+
+L'impostazione di questa policy non garantisce che verranno negoziati algoritmi specifici.
+
+Questa policy consente agli operatori dei server che vogliono supportare client, con e senza requisiti di conformità, di distinguere tra questi client e di utilizzare solo determinati algoritmi non predefiniti con maggiore robustezza crittografica per quelli esplicitamente configurati, in modo da preferirli.
+
+Se imposti la policy su "<ph name="CNSA_NAME" />", <ph name="PRODUCT_NAME" /> viene configurato in modo da preferire le crittografie necessarie per la conformità con le versioni 1.0 e 2.0 della Commercial National Security Algorithm Suite (CNSA 1.0 e 2.0)
+
+Se la policy non viene impostata, o se viene impostata su "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilizza le crittografie predefinite.
+
+L'impostazione di questa policy non è necessaria per la sicurezza. La crittografia predefinita utilizzata da <ph name="PRODUCT_NAME" /> è abbastanza forte da resistere a un attacco di forza bruta impiegando l'intera potenza solare.
+
+Se configuri questa policy, <ph name="PRODUCT_NAME" /> sarà più lento quando accedi ai siti web.
+
+Questa policy riguarda solo TLS 1.3 e QUIC, non le versioni precedenti di TLS.</translation>
 <translation id="6215023506958127056">Consente di controllare l'installazione delle estensioni esterne.
 
 Se questa policy viene attivata, le estensioni esterne non possono essere installate.
@@ -8120,6 +8138,23 @@ Vedi anche la policy <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Se questa policy viene disattivata, il dispositivo <ph name="PRODUCT_OS_NAME" /> non può recuperare eventi <ph name="GOOGLE_CALENDAR_NAME" /> per completare il widget calendario di <ph name="PRODUCT_OS_NAME" /> nella barra di stato del sistema per l'utente che ha eseguito l'accesso.
 
           Se questa policy non viene configurata, la funzionalità <ph name="GOOGLE_CALENDAR_NAME" /> è attiva per impostazione predefinita per gli utenti aziendali.</translation>
+<translation id="6450557649904429321">Questa policy configura <ph name="PRODUCT_NAME" /> in modo che ordini i suoi algoritmi di accordo chiave preferiti (gruppi supportati) in TLS 1.3, allo scopo di riflettere una preferenza per gli algoritmi approvati da un regime di conformità specifico.
+
+L'impostazione di questa policy non garantisce che verranno negoziati algoritmi specifici.
+
+Questa policy consente agli operatori dei server che vogliono supportare client, con e senza requisiti di conformità, di distinguere tra questi client e di utilizzare solo determinati algoritmi non predefiniti con maggiore robustezza crittografica per quelli esplicitamente configurati, in modo da preferirli.
+
+Se imposti la policy su "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_NAME" /> viene configurato in modo da preferire i metodi di scambio di chiavi necessari per la conformità con la Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Se la policy non viene impostata, o se viene impostata su "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilizza i metodi di scambio di chiavi predefiniti.
+
+Se la policy viene impostata su un valore che configurerebbe <ph name="PRODUCT_NAME" /> in modo da preferire un algoritmo di accordo chiave post-quantistico, ma <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> risulta disattivato, l'impostazione di <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> ha la precedenza.
+
+L'impostazione di questa policy non è necessaria per la sicurezza. La crittografia predefinita utilizzata da <ph name="PRODUCT_NAME" /> è abbastanza forte da resistere a un attacco di forza bruta impiegando l'intera potenza solare.
+
+Se configuri questa policy, <ph name="PRODUCT_NAME" /> sarà più lento quando accedi ai siti web.
+
+Questa policy riguarda solo TLS 1.3 e QUIC, non le versioni precedenti di TLS.</translation>
 <translation id="6452882999388592166">Se impostata su Attivata, l'estensione del componente CryptoToken integrata viene caricata all'avvio. Se impostata su Disattivata o se non viene configurata, CryptoToken non viene caricato all'avvio del browser. Questa policy è intesa come soluzione alternativa temporanea per i siti non funzionanti perché "chrome.runtime" non è definito come effetto collaterale della rimozione di CryptoToken nella versione M106. I siti web non devono dipendere dalla definizione senza condizioni di "chrome.runtime".</translation>
 <translation id="6453641799812499182">Attiva le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" /></translation>
 <translation id="645425387487868471">Attiva l'accesso forzato per <ph name="PRODUCT_NAME" /></translation>
@@ -9797,6 +9832,7 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando la policy di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
 <translation id="7588140323025689972">Abilita i log a livello di applicazione Kiosk</translation>
+<translation id="7593286371155131669">Utilizza i gruppi supportati predefiniti di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7595074040612182185">Se la policy viene configurata, puoi impostare un elenco di pattern URL che specificano i siti che possono mostrare immagini.
 
       Se la policy non viene configurata, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> si applica per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.

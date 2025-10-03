@@ -990,6 +990,7 @@
 <translation id="2610561535971892504">לחיצה להעתקה</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2612993535136743634">‏כל קודי האבטחה שנשמרו במכשיר ובחשבון ה-Google יימחקו</translation>
+<translation id="2614835674900828050">האפשרות הזאת לא זמינה לרכישה הזו</translation>
 <translation id="2616412942031748191">שיווק ואופטימיזציה למנועי חיפוש</translation>
 <translation id="2618206371527040026">כנסים ופרסומים אקדמיים</translation>
 <translation id="2619052155095999743">הוסף</translation>
@@ -4242,7 +4243,7 @@ Del</translation>
 <translation id="79682505114836835">הערך "<ph name="VALUE" />" הוא צבע הקסדצימלי לא חוקי.</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7975858430722947486">התווסף להשוואה</translation>
-<translation id="7976053965094442846">‏מנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" שזמינים כדי לשלם בתשלומים המקלדת מוסתרת.</translation>
+<translation id="7976053965094442846">‏מנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" שזמינים כדי לשלם בתשלומים. המקלדת מוסתרת.</translation>
 <translation id="7976214039405368314">יותר מדי בקשות</translation>
 <translation id="7977538094055660992">מכשיר פלט</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{לפני <ph name="TIME_COUNT" /> דק‘}=1{לפני שעה (<ph name="TIME_COUNT" />)}one{לפני יום אחד (<ph name="TIME_COUNT" />)}two{לפני יומיים (<ph name="TIME_COUNT" />)}other{לפני <ph name="TIME_COUNT" /> ימים}}</translation>

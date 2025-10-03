@@ -34,6 +34,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1345251407431278948">Pripnuté! K vyhľadávaniu podľa obrázkov máte opäť prístup pomocou nového tlačidla na paneli s nástrojmi.</translation>
 <translation id="1356661055722410047">Novinka! Môžete prekladať text aj obrázky na obrazovke.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
+<translation id="1397530502368084401">&amp;Spravovať profily prehliadača Chromium</translation>
 <translation id="1414495520565016063">Ste prihlásený/-á do prehliadača Chromium.</translation>
 <translation id="141901961143729572">Zdieľajte svoje názory</translation>
 <translation id="1465192221147974788">Ak chcete zdieľať okno, povoľte prehliadaču Chromium nahrávať obrazovku v nastaveniach systému.</translation>
@@ -495,6 +496,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6877155553248388166">pravý dolný roh oblasti vyhľadávania: vpravo <ph name="RIGHT" /> %, dole <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6901631050894301805">Nastavte si Chromium ako predvolený prehliadač a pripnite ho na panel aplikácií</translation>
+<translation id="6909503629704372277">&amp;Spravovať profily prehliadača Chromium</translation>
 <translation id="6934579572334859869">Spýtať sa vyhľadávania podľa obrázkov otázku o tomto obrázku</translation>
 <translation id="6964305034639999644">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>
 <translation id="6965382102122355670">OK</translation>

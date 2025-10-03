@@ -990,6 +990,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2610561535971892504">Fes clic per copiar</translation>
 <translation id="2612676031748830579">Número de targeta</translation>
 <translation id="2612993535136743634">Se suprimiran tots els codis de seguretat desats al teu dispositiu i al Compte de Google</translation>
+<translation id="2614835674900828050">No disponible per a aquesta compra</translation>
 <translation id="2616412942031748191">Optimització de motors de cerca i màrqueting</translation>
 <translation id="2618206371527040026">Conferències i publicacions acadèmiques</translation>
 <translation id="2619052155095999743">Insereix</translation>
@@ -1253,6 +1254,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3090667236485488075">Vidre</translation>
 <translation id="3093122472063815077">La pantalla de progrés de Compra ara, paga després està oberta a mitja alçada.</translation>
+<translation id="309381737510736393">Si la teva organització limita el que pots desar al teu Compte de Google, no podràs compartir pestanyes ni col·laborar amb altres persones</translation>
 <translation id="3094051226187213523">Obre el mode IA amb aquest suggeriment.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">S'ha ignorat perquè la llista "disable" conté un patró igual a "*", que equival a la desactivació de la política.</translation>
@@ -1698,6 +1700,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3784372983762739446">Dispositius Bluetooth</translation>
 <translation id="3785246317262748285">Normalment et connectes a llocs web de manera segura, però aquesta vegada Chrome no ha pogut utilitzar una connexió segura. És possible que un atacant estigui provant d'espiar o de modificar la connexió a la xarxa. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Millors coincidències per a "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> o <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Instal·la</translation>
 <translation id="3791118028061680614">Paga sense canviar d'aplicació</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> polzades)</translation>
@@ -2679,6 +2682,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5412040515238827314">Format no vàlid: s'espera una llista de patrons.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Apiladora 4</translation>
+<translation id="5414306071315087019">Compra ara, paga després està disponible amb Google Pay</translation>
 <translation id="5414446060143308245">Abans de transferir-los, cal dur a terme una revisió</translation>
 <translation id="5414511064953050917">Mou igualment</translation>
 <translation id="5418700249417444482">Els URL de les pàgines que visites s'envien a Google Cloud o a tercers perquè s'analitzin i és possible que l'administrador els vegi. Per exemple, pot ser que s'analitzin per detectar llocs web no segurs o que filtrin els llocs web en funció de les regles que hagi establert l'administrador.</translation>
@@ -2799,6 +2803,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="5596939519753369075">2 x 3,5 polzades</translation>
 <translation id="5597254438174353289">Blau 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestió no compatible</translation>
 <translation id="5605249000617390290">Més informació sobre el seguiment de preus</translation>
 <translation id="5605670050355397069">Ledger</translation>

@@ -252,7 +252,7 @@
 <translation id="1406812885827747674">今回のみ許可</translation>
 <translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> の <ph name="FOLDER_NAME" /> にファイルが正常にアップロードされました</translation>
 <translation id="1407135791313364759">すべて開く</translation>
-<translation id="1408696301184924537">次回からこの IBAN を自動入力するには、Google アカウントに保存してください</translation>
+<translation id="1408696301184924537">Google アカウントに保存すると、次回からこの IBAN を自動入力できます</translation>
 <translation id="1408787208417187241">3 か所のステープル（上）</translation>
 <translation id="1410365862999780287">あなたのアクティビティはこのデバイスを使用する他のユーザーに表示されないため、プライバシーを守りながらブラウジングできます。アクセスしたウェブサイトと、そのウェブサイトが使用するサービス（Google を含む）のデータ収集方法は変更されません。ダウンロードしたファイル、ブックマーク、リーディング リストは保存されます。</translation>
 <translation id="1410941016594047814">Invite 封筒</translation>
@@ -1611,7 +1611,7 @@
 <translation id="3647286794400715637">各 urls 文字列エントリには 1 つまたは 2 つの URL を含める必要があります。</translation>
 <translation id="3647400963805615193">Chrome のヒントの閉じるボタンです。閉じるには Enter キーを押します。<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">検証が正常に完了しました</translation>
-<translation id="3650594806107685466">カードの安全を守るために、<ph name="SIDE_OF_CARD" />に記載されている CVC を入力してください</translation>
+<translation id="3650594806107685466">カードを不正利用から守るために、<ph name="SIDE_OF_CARD" />に記載されている CVC を入力してください</translation>
 <translation id="3650917416636556301">ハイキング、キャンプ</translation>
 <translation id="3655241534245626312">権限の設定に移動します</translation>
 <translation id="3655670868607891010">このエラーが頻繁に表示される場合は、こちらの<ph name="HELP_LINK" />をお試しください。</translation>
@@ -3308,7 +3308,7 @@
 <translation id="6433490469411711332">連絡先情報の編集</translation>
 <translation id="6433501201775827830">検索エンジンの選択</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> で接続が拒否されました。</translation>
-<translation id="6433797564277305076">今後はデバイスのロック解除を使用して、カードの確認をより迅速に行います</translation>
+<translation id="6433797564277305076">デバイスのロック解除を使用すると、カードを素早く確認できます</translation>
 <translation id="6437647869369934905">Google 図形描画</translation>
 <translation id="643917412048333145">ドレス</translation>
 <translation id="6440503408713884761">除外されました</translation>
