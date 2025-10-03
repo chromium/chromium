@@ -43,11 +43,11 @@
   align-items: center;
   border-radius: 8px;
   display: flex;
-  height: 52px;
+  height: 36px;
   justify-content: center;
   overflow: hidden;
   position: relative;
-  width: 52px;
+  width: 36px;
 }
 
 .img-overlay {
@@ -76,13 +76,16 @@
   border-radius: 10px;
   display: flex;
   gap: 8px;
-  height: 40px;
+  height: 36px;
   padding: 0px 0px 0px 4px;
   width: 156px;
 }
 
 .thumbnail {
+  align-items: center;
+  display: flex;
   flex-shrink: 0;
+  justify-content: center;
   height: 33px;
   position: relative;
   width: 33px;
@@ -142,6 +145,6 @@
 
 #tabThumbnail composebox-tab-favicon {
   border-radius: 10px;
-  height: 100%;
-  width: 100%;
+  height: 24px;
+  width: 24px;
 }

@@ -1661,14 +1661,6 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
     {"ShowComposeboxZps", "true"},
     {"ShowContextMenu", "true"},
 };
-const FeatureEntry::FeatureParam kShowNextRealboxTall[] = {
-    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTall},
-    {"CyclingPlaceholders", "true"},
-};
-const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
-    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
-    {"CyclingPlaceholders", "true"},
-};
 const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
     {"MaxNumFiles", "5"},
     {"ShowComposeboxZps", "true"},
@@ -1685,7 +1677,6 @@ const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
     {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
 };
-
 const FeatureEntry::FeatureParam kShowCreateImageTool[] = {
     {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
@@ -1715,6 +1706,15 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      std::size(kShowToolsAndModels), nullptr},
     {"- Show Create Image in Context Menu", kShowCreateImageTool,
      std::size(kShowCreateImageTool), nullptr},
+};
+
+const FeatureEntry::FeatureParam kShowNextRealboxTall[] = {
+    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTall},
+    {"CyclingPlaceholders", "true"},
+};
+const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
+    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
+    {"CyclingPlaceholders", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {

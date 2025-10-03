@@ -9,6 +9,7 @@
 
 :host {
   display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   width: 100%;
-  gap: 8px;
 }

@@ -10,9 +10,11 @@
  * #css_wrapper_metadata_end */
 
 #carousel {
-  padding-inline-start: var(--text-input-inline-start-spacing);
+  box-sizing: border-box;
   margin-bottom: 12px;
   margin-top: 13px;
+  padding-inline-end: var(--context-carousel-inline-end-spacing, 50px);
+  padding-inline-start: var(--context-carousel-inline-start-spacing, 50px);
 }
 
 #contextMenuContainer {
