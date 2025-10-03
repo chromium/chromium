@@ -4777,19 +4777,20 @@ std::unique_ptr<test_server::HttpResponse> HandleZippedRequest(
     size_t uncompressed_length,
     const test_server::HttpRequest& request) {
   GURL url = request.GetURL();
-  if (url.path_piece() != "/compressedfiles/BullRunSpeech.txt")
+  if (url.path() != "/compressedfiles/BullRunSpeech.txt") {
     return nullptr;
+  }
 
   size_t length;
-  if (url.query_piece() == kZippedContentLengthCompressed) {
+  if (url.query() == kZippedContentLengthCompressed) {
     length = compressed_content.size();
-  } else if (url.query_piece() == kZippedContentLengthUncompressed) {
+  } else if (url.query() == kZippedContentLengthUncompressed) {
     length = uncompressed_length;
-  } else if (url.query_piece() == kZippedContentLengthShort) {
+  } else if (url.query() == kZippedContentLengthShort) {
     length = compressed_content.size() / 2;
-  } else if (url.query_piece() == kZippedContentLengthMedium) {
+  } else if (url.query() == kZippedContentLengthMedium) {
     length = (compressed_content.size() + uncompressed_length) / 2;
-  } else if (url.query_piece() == kZippedContentLengthLong) {
+  } else if (url.query() == kZippedContentLengthLong) {
     length = compressed_content.size() + uncompressed_length;
   } else {
     return nullptr;

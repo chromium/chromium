@@ -35,7 +35,7 @@ bool IOSContentBrowserClient::IsHandledURL(const GURL& url) {
       url::kFileScheme,
   };
   for (const char* supported_protocol : kProtocolList) {
-    if (url.scheme_piece() == supported_protocol) {
+    if (url.scheme() == supported_protocol) {
       return true;
     }
   }

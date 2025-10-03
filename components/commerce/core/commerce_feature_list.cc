@@ -383,7 +383,7 @@ bool IsNoDiscountMerchant(const GURL& url) {
   if (!pattern_from_component) {
     return true;
   }
-  return RE2::PartialMatch(url.host_piece(), *pattern_from_component);
+  return RE2::PartialMatch(url.host(), *pattern_from_component);
 }
 #endif
 }  // namespace commerce

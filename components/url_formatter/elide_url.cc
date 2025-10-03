@@ -373,8 +373,8 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   }
 
   const GURL origin = url.DeprecatedGetOriginAsURL();
-  std::string_view scheme = origin.scheme_piece();
-  std::string_view host = origin.host_piece();
+  std::string_view scheme = origin.scheme();
+  std::string_view host = origin.host();
 
   std::u16string result;
   if (ShouldShowScheme(scheme, scheme_display)) {
@@ -386,7 +386,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   const int port = origin.IntPort();
   const int default_port = url::DefaultPortForScheme(scheme);
   if (port != url::PORT_UNSPECIFIED && port != default_port) {
-    result += base::StrCat({colon, base::UTF8ToUTF16(origin.port_piece())});
+    result += base::StrCat({colon, base::UTF8ToUTF16(origin.port())});
   }
 
   return result;

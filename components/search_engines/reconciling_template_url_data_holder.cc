@@ -46,7 +46,7 @@ ReconcilingTemplateURLDataHolder::GetOrComputeKeyword() const {
   // Extract the Country Code from the Yahoo domain name and use it to
   // construct a keyword that we may find in PrepopulatedEngines.
   GURL yahoo_search_url(search_engine_->url());
-  std::string_view yahoo_search_host = yahoo_search_url.host_piece();
+  std::string_view yahoo_search_host = yahoo_search_url.host();
   std::string_view country_code =
       yahoo_search_host.substr(0, yahoo_search_host.find('.'));
   keyword = base::UTF8ToUTF16(country_code) + u".yahoo.com";

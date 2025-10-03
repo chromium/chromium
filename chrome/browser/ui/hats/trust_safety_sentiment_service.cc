@@ -607,7 +607,7 @@ void TrustSafetySentimentService::SettingsWatcher::TimerComplete() {
   const bool stayed_on_settings =
       web_contents_ &&
       web_contents_->GetVisibility() == content::Visibility::VISIBLE &&
-      web_contents_->GetLastCommittedURL().host_piece() ==
+      web_contents_->GetLastCommittedURL().host() ==
           chrome::kChromeUISettingsHost;
   if (stayed_on_settings) {
     std::move(success_callback_).Run();

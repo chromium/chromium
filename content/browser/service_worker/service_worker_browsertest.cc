@@ -1268,16 +1268,15 @@ IN_PROC_BROWSER_TEST_F(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
         }
 
         std::string path = "content/test/data/service_worker";
-        path.append(std::string(params->url_request.url.path_piece()));
+        path.append(std::string(params->url_request.url.path()));
 
         std::string headers = "HTTP/1.1 200 OK\n";
-        base::StrAppend(
-            &headers,
-            {"Content-Type: text/",
-             base::EndsWith(params->url_request.url.path_piece(), ".js")
-                 ? "javascript"
-                 : "html",
-             "\n"});
+        base::StrAppend(&headers,
+                        {"Content-Type: text/",
+                         base::EndsWith(params->url_request.url.path(), ".js")
+                             ? "javascript"
+                             : "html",
+                         "\n"});
 
         URLLoaderInterceptor::WriteResponse(
             path, params->client.get(), &headers, std::optional<net::SSLInfo>(),

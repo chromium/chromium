@@ -868,8 +868,8 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest, NoValidAlpns) {
       request_info.upload_data_stream = &upload;
 
       Initialize(request_info);
-      AlternativeService alternative_service(
-          NextProto::kProtoQUIC, request_info.url.host_piece(), 443);
+      AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                             request_info.url.host(), 443);
       SetAlternativeService(request_info, alternative_service);
 
       if (no_h2_reason == NoH2Reason::kRequiresHttp11) {

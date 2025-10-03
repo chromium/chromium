@@ -27,7 +27,7 @@ constexpr int kMaxValueLen = 2048;
 bool GetQueryValue(const GURL& url,
                    std::string_view key_to_find,
                    std::u16string* out) {
-  const std::string_view str = url.query_piece();
+  const std::string_view str = url.query();
 
   url::Component query(0, str.length());
   url::Component key;

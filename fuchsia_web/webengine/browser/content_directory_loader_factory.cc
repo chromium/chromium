@@ -372,7 +372,7 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
 
   // Fuchsia paths do not support the notion of absolute paths, so strip the
   // leading slash from the URL's path fragment.
-  std::string_view requested_path = request.url.path_piece();
+  std::string_view requested_path = request.url.path();
   DCHECK(base::StartsWith(requested_path, "/"));
   requested_path.remove_prefix(1);
 

@@ -498,7 +498,7 @@ void MimeHandlerViewGuest::ReadyToCommitNavigation(
 #if BUILDFLAG(ENABLE_PDF)
   const GURL& url = navigation_handle->GetURL();
   if (url.SchemeIs(kExtensionScheme) &&
-      url.host_piece() == extension_misc::kPdfExtensionId) {
+      url.host() == extension_misc::kPdfExtensionId) {
     // The PDF viewer will navigate to the stream URL (using
     // PdfNavigtionThrottle), rather than using it as a subresource.
     return;

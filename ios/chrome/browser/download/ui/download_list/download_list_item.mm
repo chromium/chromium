@@ -205,7 +205,7 @@ NSString* const kStatusTextEmptyString = @"";
     return kHostEmptyString;
   }
 
-  std::string_view host = downloadURL.host_piece();
+  std::string_view host = downloadURL.host();
   if (host.empty()) {
     return kHostEmptyString;
   }

@@ -21,8 +21,8 @@ bool HistoryMatch::EqualsGURL(const HistoryMatch& h, const GURL& url) {
 
 // static
 bool HistoryMatch::IsHostOnly(const GURL& gurl) {
-  return (!gurl.has_path() || (gurl.path_piece() == "/")) &&
-         !gurl.has_query() && !gurl.has_ref();
+  return (!gurl.has_path() || (gurl.path() == "/")) && !gurl.has_query() &&
+         !gurl.has_ref();
 }
 
 size_t HistoryMatch::EstimateMemoryUsage() const {

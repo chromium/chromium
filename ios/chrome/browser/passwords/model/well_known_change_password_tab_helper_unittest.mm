@@ -182,7 +182,7 @@ WellKnownChangePasswordTabHelperTest::HandleRequest(
     const HttpRequest& request) {
   GURL absolute_url = test_server_->GetURL(request.relative_url);
   std::string path = absolute_url.GetPath();
-  auto it = path_response_map_.find(absolute_url.path_piece());
+  auto it = path_response_map_.find(absolute_url.path());
   if (it == path_response_map_.end()) {
     return nullptr;
   }

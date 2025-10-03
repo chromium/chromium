@@ -48,7 +48,7 @@ std::string RedactURL(const GURL& url) {
   if (!redacted_url.empty() && redacted_url.back() == '/') {
     redacted_url.pop_back();
   }
-  base::StrAppend(&redacted_url, {url.path_piece()});
+  base::StrAppend(&redacted_url, {url.path()});
   return redacted_url;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -714,8 +714,8 @@ TEST_P(QuicSessionPoolProxyJobTest, RequestSessionAgainInCallback) {
   socket_factory_->AddSocketDataProvider(&successful_request_socket_data);
 
   auto proxy_chain = ProxyChain::ForIpProtection({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                         proxy.host_piece(), 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, proxy.host(),
+                                         443),
   });
   ASSERT_TRUE(proxy_chain.IsValid());
 

@@ -774,8 +774,7 @@ std::string GetConsoleMessage(const GURL& lookalike_url,
                               bool is_new_heuristic) {
   const char* const kNewHeuristicMessage =
       "Future Chrome versions will show a warning on this domain name.\n";
-  return base::StrCat({"Chrome has determined that ",
-                       lookalike_url.host_piece(),
+  return base::StrCat({"Chrome has determined that ", lookalike_url.host(),
                        " could be fake or fraudulent.\n\n",
                        is_new_heuristic ? kNewHeuristicMessage : "",
                        "If you believe this is shown in error please visit "

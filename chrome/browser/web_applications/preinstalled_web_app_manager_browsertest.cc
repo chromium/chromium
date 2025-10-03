@@ -168,8 +168,8 @@ class PreinstalledWebAppManagerBrowserTestBase
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             [](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-              std::string relative_request = base::StrCat(
-                  {kBaseDataDir, params->url_request.url.path_piece()});
+              std::string relative_request =
+                  base::StrCat({kBaseDataDir, params->url_request.url.path()});
               base::FilePath relative_path =
                   base::FilePath().AppendASCII(relative_request);
 

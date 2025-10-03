@@ -388,7 +388,7 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
       url::kFileScheme,
   });
 
-  return kProtocolList.contains(url.scheme_piece());
+  return kProtocolList.contains(url.scheme());
 }
 
 bool ShellContentBrowserClient::AreIsolatedWebAppsEnabled(

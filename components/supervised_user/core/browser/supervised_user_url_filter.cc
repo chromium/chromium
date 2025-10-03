@@ -219,7 +219,7 @@ bool IsAlwaysAllowedHost(const GURL& effective_url) {
        "myaccount.google.com", "ogs.google.com", "policies.google.com",
        "support.google.com", "myactivity.google.com"});
 
-  return base::Contains(kAllowedHosts, effective_url.host_piece());
+  return base::Contains(kAllowedHosts, effective_url.host());
 }
 
 bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
@@ -251,8 +251,8 @@ bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
   // like https://play.google.com/intl/pt-BR_pt/about/play-terms/ or
   // https://play.google/intl/pt-BR_pt/play-terms/.
   return effective_url.SchemeIs(url::kHttpsScheme) &&
-         (effective_url.host_piece() == kPlayStoreHost &&
-          (effective_url.path_piece().find(kPlayTermsPath) !=
+         (effective_url.host() == kPlayStoreHost &&
+          (effective_url.path().find(kPlayTermsPath) !=
            std::string_view::npos));
 }
 

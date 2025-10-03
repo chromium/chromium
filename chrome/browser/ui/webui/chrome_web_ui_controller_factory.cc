@@ -380,77 +380,77 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return nullptr;
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIComponentsHost) {
+  if (page_url.host() == chrome::kChromeUIComponentsHost) {
     return ComponentsUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (page_url.host_piece() == chrome::kChromeUIConflictsHost) {
+  if (page_url.host() == chrome::kChromeUIConflictsHost) {
     return ConflictsUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif
 
-  if (page_url.host_piece() == chrome::kChromeUICrashesHost) {
+  if (page_url.host() == chrome::kChromeUICrashesHost) {
     return CrashesUI::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIFlagsHost) {
+  if (page_url.host() == chrome::kChromeUIFlagsHost) {
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   // The chrome://apps page is not available on Android or ChromeOS.
-  if (page_url.host_piece() == chrome::kChromeUIAppLauncherPageHost) {
+  if (page_url.host() == chrome::kChromeUIAppLauncherPageHost) {
     return webapps::AppHomeUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  if (page_url.host_piece() == chrome::kChromeUINewTabPageHost) {
+  if (page_url.host() == chrome::kChromeUINewTabPageHost) {
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (page_url.host_piece() == chrome::kChromeUIWhatsNewHost) {
+  if (page_url.host() == chrome::kChromeUIWhatsNewHost) {
     return WhatsNewUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Bookmarks are part of NTP on Android.
-  if (page_url.host_piece() == chrome::kChromeUIBookmarksHost) {
+  if (page_url.host() == chrome::kChromeUIBookmarksHost) {
     return BookmarksUI::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIHistoryHost) {
+  if (page_url.host() == chrome::kChromeUIHistoryHost) {
     return HistoryUI::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == password_manager::kChromeUIPasswordManagerHost) {
+  if (page_url.host() == password_manager::kChromeUIPasswordManagerHost) {
     return PasswordManagerUI::GetFaviconResourceBytes(scale_factor);
   }
 
   // Android uses the native download manager.
-  if (page_url.host_piece() == chrome::kChromeUIDownloadsHost) {
+  if (page_url.host() == chrome::kChromeUIDownloadsHost) {
     return DownloadsUI::GetFaviconResourceBytes(scale_factor);
   }
 
   // Android doesn't use the Options/Settings pages.
-  if (page_url.host_piece() == chrome::kChromeUISettingsHost) {
+  if (page_url.host() == chrome::kChromeUISettingsHost) {
     return settings_utils::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIManagementHost) {
+  if (page_url.host() == chrome::kChromeUIManagementHost) {
     return ManagementUI::GetFaviconResourceBytes(scale_factor);
   }
 
   // Tab Search hosts the split tab NTP and so leveraging the NTP favicon.
-  if (page_url.host_piece() == chrome::kChromeUITabSearchHost) {
+  if (page_url.host() == chrome::kChromeUITabSearchHost) {
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (page_url.host_piece() == commerce::kChromeUICompareHost) {
+  if (page_url.host() == commerce::kChromeUICompareHost) {
     return commerce::ProductSpecificationsUI::GetFaviconResourceBytes(
         scale_factor);
   }
@@ -459,13 +459,13 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (page_url.host_piece() == chrome::kChromeUIExtensionsHost) {
+  if (page_url.host() == chrome::kChromeUIExtensionsHost) {
     return extensions::ExtensionsUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (page_url.host_piece() == chrome::kChromeUIOSSettingsHost) {
+  if (page_url.host() == chrome::kChromeUIOSSettingsHost) {
     return settings_utils::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

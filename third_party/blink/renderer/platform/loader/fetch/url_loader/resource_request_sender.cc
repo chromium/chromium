@@ -135,7 +135,7 @@ bool RedirectRequiresLoaderRestart(const GURL& original_url,
 
   // If URL wasn't originally handled by network service, restart is needed if
   // schemes are different.
-  return original_url.scheme_piece() != redirect_url.scheme_piece();
+  return original_url.scheme() != redirect_url.scheme();
 }
 
 }  // namespace

@@ -621,16 +621,15 @@ RunAttributionInteropSimulation(
 void MaybeAdjustReportBody(const GURL& url,
                            base::Value& payload,
                            ReportBodyAdjuster& adjuster) {
-  if (base::EndsWith(url.path_piece(), "/report-aggregate-attribution")) {
+  if (base::EndsWith(url.path(), "/report-aggregate-attribution")) {
     if (base::Value::Dict* dict = payload.GetIfDict()) {
       adjuster.AdjustAggregatable(*dict);
     }
-  } else if (base::EndsWith(url.path_piece(), "/report-event-attribution")) {
+  } else if (base::EndsWith(url.path(), "/report-event-attribution")) {
     if (base::Value::Dict* dict = payload.GetIfDict()) {
       adjuster.AdjustEventLevel(*dict);
     }
-  } else if (url.path_piece() ==
-             "/.well-known/attribution-reporting/debug/verbose") {
+  } else if (url.path() == "/.well-known/attribution-reporting/debug/verbose") {
     if (base::Value::List* list = payload.GetIfList()) {
       for (auto& item : *list) {
         base::Value::Dict* dict = item.GetIfDict();
@@ -645,7 +644,7 @@ void MaybeAdjustReportBody(const GURL& url,
         }
       }
     }
-  } else if (url.path_piece() ==
+  } else if (url.path() ==
              "/.well-known/attribution-reporting/debug/"
              "report-aggregate-debug") {
     if (base::Value::Dict* dict = payload.GetIfDict()) {

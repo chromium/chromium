@@ -43,9 +43,9 @@ namespace {
 GURL ConstructProxyUrl(const IwaSourceProxy& proxy,
                        const GURL& resource_request_url) {
   GURL::Replacements replacements;
-  replacements.SetPathStr(resource_request_url.path_piece());
+  replacements.SetPathStr(resource_request_url.path());
   if (resource_request_url.has_query()) {
-    replacements.SetQueryStr(resource_request_url.query_piece());
+    replacements.SetQueryStr(resource_request_url.query());
   }
   return proxy.proxy_url().GetURL().ReplaceComponents(replacements);
 }

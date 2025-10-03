@@ -51,7 +51,7 @@ ExtensionId ExtensionNotificationHandler::GetExtensionId(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIs(kExtensionScheme)) {
     return "";
   }
-  return ExtensionId(url.DeprecatedGetOriginAsURL().host_piece());
+  return ExtensionId(url.DeprecatedGetOriginAsURL().host());
 }
 
 void ExtensionNotificationHandler::OnClose(

@@ -86,10 +86,10 @@ bool UseDefaultFontSize(const GURL& url) {
     return true;
 
   if (url.SchemeIs(content::kChromeUIScheme))
-    return chrome::IsSystemWebUIHost(url.host_piece());
+    return chrome::IsSystemWebUIHost(url.host());
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    std::string_view extension_id = url.host_piece();
+    std::string_view extension_id = url.host();
     return extension_misc::IsSystemUIApp(extension_id);
   }
   return false;

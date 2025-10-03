@@ -33,7 +33,7 @@ bool IsWebUIScheme(std::string_view scheme) {
 }  // namespace
 
 bool HasWebUIScheme(const GURL& url) {
-  return IsWebUIScheme(url.scheme_piece());
+  return IsWebUIScheme(url.scheme());
 }
 
 bool HasWebUIOrigin(const url::Origin& origin) {
@@ -94,8 +94,9 @@ bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url) {
       });
   if (HasWebUIScheme(to_url))
     return false;
-  if (!kUnsafeSchemes.contains(to_url.scheme_piece()))
+  if (!kUnsafeSchemes.contains(to_url.scheme())) {
     return true;
+  }
   if (from_url.is_empty())
     return false;
   if (from_url.SchemeIsFile() && to_url.SchemeIsFile())

@@ -419,7 +419,7 @@ TEST_F(DefaultSearchManagerTest,
   const auto& builtin_engine =
       *std::ranges::find_if(all_engines, [](const auto& engine) {
         GURL url(engine->url());
-        return url.is_valid() && url.host_piece() == "emea.search.yahoo.com";
+        return url.is_valid() && url.host() == "emea.search.yahoo.com";
       });
 
   auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");

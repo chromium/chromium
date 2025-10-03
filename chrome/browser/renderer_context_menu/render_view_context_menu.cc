@@ -4984,8 +4984,7 @@ bool RenderViewContextMenu::IsLinkToIsolatedWebApp() const {
   // Using `unfiltered_link_url`, because `link_url` is being replaced with
   // about:blank#blocked if the source is a normal site.
   return params_.unfiltered_link_url.has_scheme() &&
-         params_.unfiltered_link_url.scheme_piece() ==
-             webapps::kIsolatedAppScheme;
+         params_.unfiltered_link_url.scheme() == webapps::kIsolatedAppScheme;
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

@@ -187,7 +187,7 @@ class Delivery {
       // Report origin is equal to, or a subdomain of, the endpoint
       // configuration's origin.
       DCHECK(IsSubdomainOf(
-          (*report_it)->url.host_piece() /* subdomain */,
+          (*report_it)->url.host() /* subdomain */,
           endpoint.group_key.origin.value().host() /* superdomain */));
       DCHECK_EQ((*report_it)->target_type, target_.target_type);
     }

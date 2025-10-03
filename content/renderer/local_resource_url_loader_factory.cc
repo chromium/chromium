@@ -95,7 +95,7 @@ bool LocalResourceURLLoaderFactory::CanServe(
 
   // Get the resource ID corresponding to the URL path.
   const blink::mojom::LocalResourceSourcePtr& source = it->second.source;
-  std::string_view path = request.url.path_piece().substr(1);
+  std::string_view path = request.url.path().substr(1);
   auto resource_it = source->path_to_resource_id_map.find(path);
   // The path-to-ID map may not have an entry for the given path. This can
   // happen for resources that are generated on-the-fly in the browser process.
@@ -157,7 +157,7 @@ void LocalResourceURLLoaderFactory::GetResourceAndRespond(
       it->second.replacement_strings;
 
   // Get resource id.
-  std::string_view path = request.url.path_piece().substr(1);
+  std::string_view path = request.url.path().substr(1);
   auto resource_it = source->path_to_resource_id_map.find(path);
   // CanServe should have been called before this point, which would have
   // confirmed that there exists a resource ID corresponding to the URL path.

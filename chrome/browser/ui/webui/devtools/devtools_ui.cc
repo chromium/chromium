@@ -46,7 +46,7 @@ GURL DevToolsUI::GetRemoteBaseURL() {
 
 // static
 bool DevToolsUI::IsFrontendResourceURL(const GURL& url) {
-  if (url.host_piece() == kRemoteFrontendDomain) {
+  if (url.host() == kRemoteFrontendDomain) {
     return true;
   }
 
@@ -55,10 +55,10 @@ bool DevToolsUI::IsFrontendResourceURL(const GURL& url) {
     GURL custom_frontend_url =
         GURL(cmd_line->GetSwitchValueASCII(switches::kCustomDevtoolsFrontend));
     if (custom_frontend_url.is_valid() &&
-        custom_frontend_url.scheme_piece() == url.scheme_piece() &&
-        custom_frontend_url.host_piece() == url.host_piece() &&
+        custom_frontend_url.scheme() == url.scheme() &&
+        custom_frontend_url.host() == url.host() &&
         custom_frontend_url.EffectiveIntPort() == url.EffectiveIntPort() &&
-        base::StartsWith(url.path_piece(), custom_frontend_url.path_piece(),
+        base::StartsWith(url.path(), custom_frontend_url.path(),
                          base::CompareCase::SENSITIVE)) {
       return true;
     }

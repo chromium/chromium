@@ -43,7 +43,7 @@ MappedHostResolver::CreateRequest(
   switch (result) {
     case HostMappingRules::RewriteResult::kRewritten:
       DCHECK(rewritten_url.is_valid());
-      DCHECK_NE(rewritten_url.host_piece(), "^NOTFOUND");
+      DCHECK_NE(rewritten_url.host(), "^NOTFOUND");
       return impl_->CreateRequest(url::SchemeHostPort(rewritten_url),
                                   std::move(network_anonymization_key),
                                   std::move(source_net_log),
@@ -90,7 +90,7 @@ MappedHostResolver::CreateServiceEndpointRequest(
   switch (result) {
     case HostMappingRules::RewriteResult::kRewritten:
       DCHECK(rewritten_url.is_valid());
-      DCHECK_NE(rewritten_url.host_piece(), "^NOTFOUND");
+      DCHECK_NE(rewritten_url.host(), "^NOTFOUND");
       return impl_->CreateServiceEndpointRequest(
           Host(url::SchemeHostPort(rewritten_url)),
           std::move(network_anonymization_key), std::move(net_log),

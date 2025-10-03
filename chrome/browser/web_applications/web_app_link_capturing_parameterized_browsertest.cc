@@ -905,7 +905,7 @@ class NavCaptureParameterizedBrowserTest
     // redirection happening on the way from a source to a destination url.
     // Prevent multiple redirections from being triggered which causes a Chrome
     // error page to show up, cancelling the navigation.
-    if (base::Contains(request.GetURL().query_piece(), "redirect")) {
+    if (base::Contains(request.GetURL().query(), "redirect")) {
       return nullptr;
     }
 
@@ -935,10 +935,10 @@ class NavCaptureParameterizedBrowserTest
     // destination url.
     GURL::Replacements destination_replacements;
     GURL request_url = request.GetURL();
-    destination_replacements.SetRefStr(request_url.ref_piece());
+    destination_replacements.SetRefStr(request_url.ref());
     std::string new_query =
         request_url.has_query()
-            ? base::StrCat({request_url.query_piece(), "&did_redirect"})
+            ? base::StrCat({request_url.query(), "&did_redirect"})
             : "did_redirect";
     destination_replacements.SetQueryStr(new_query);
     redirect_to = redirect_to.ReplaceComponents(destination_replacements);

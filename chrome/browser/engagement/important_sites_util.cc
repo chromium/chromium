@@ -317,7 +317,7 @@ ImportantDomainInfo& ImportantDomainInfo::operator=(ImportantDomainInfo&&) =
     default;
 
 std::string ImportantSitesUtil::GetRegisterableDomainOrIP(const GURL& url) {
-  return GetRegisterableDomainOrIPFromHost(url.host_piece());
+  return GetRegisterableDomainOrIPFromHost(url.host());
 }
 
 std::string ImportantSitesUtil::GetRegisterableDomainOrIPFromHost(

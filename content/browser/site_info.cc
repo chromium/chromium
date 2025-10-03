@@ -40,7 +40,7 @@ using WebUIDomains = std::vector<std::string>;
 // chrome://foo.bar/. Domains are returned in the same order they appear in the
 // host.
 WebUIDomains GetWebUIDomains(const GURL& url) {
-  return base::SplitString(url.host_piece(), ".", base::TRIM_WHITESPACE,
+  return base::SplitString(url.host(), ".", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_ALL);
 }
 

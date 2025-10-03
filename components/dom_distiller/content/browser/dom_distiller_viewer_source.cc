@@ -278,7 +278,7 @@ void DomDistillerViewerSource::StartDataRequest(
 }
 
 std::string DomDistillerViewerSource::GetMimeType(const GURL& url) {
-  const std::string_view path = url.path_piece().substr(1);
+  const std::string_view path = url.path().substr(1);
   if (kViewerCssPath == path)
     return "text/css";
   if (kViewerLoadingImagePath == path)

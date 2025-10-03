@@ -132,10 +132,9 @@ bool IsUrlInSyntheticResponseAllowList(const GURL& client_url,
   //
   // We intentionally ignore port matching as the port is dynamically decided
   // in tests, which is not predictable at the browser launch phase.
-  if (client_url.scheme_piece() == url.scheme_piece() &&
-      client_url.host_piece() == url.host_piece() &&
-      client_url.path_piece() == url.path_piece() &&
-      client_url.query_piece().starts_with(url.query_piece())) {
+  if (client_url.scheme() == url.scheme() && client_url.host() == url.host() &&
+      client_url.path() == url.path() &&
+      client_url.query().starts_with(url.query())) {
     is_allowed = true;
   }
 

@@ -726,8 +726,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAdditionalBids(
     return nullptr;
   }
   std::vector<std::string> pieces =
-      base::SplitString(request.GetURL().query_piece(), "&",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      base::SplitString(request.GetURL().query(), "&", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
   if (pieces.size() < 2u) {
     return nullptr;
   }
@@ -1459,7 +1459,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
     auto result = RunAuctionAndWait(auction_config_json, execution_target);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
-    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
     TestFencedFrameURLMappingResultObserver observer;
     ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -1494,7 +1494,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
                                     /*execution_target=*/std::nullopt);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid()) << result;
-    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece()) << result;
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme()) << result;
 
     TestFencedFrameURLMappingResultObserver observer;
     ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -2248,7 +2248,7 @@ try {
         GetAdAuctionComponentsInJS(ad_frame, 1);
     ASSERT_TRUE(components);
     ASSERT_EQ(1u, components->size());
-    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme());
     if (component_ad_urn) {
       *component_ad_urn = (*components)[0];
     }
@@ -2313,7 +2313,7 @@ try {
     ASSERT_EQ(kMaxAdAuctionAdComponents, all_component_urls->size());
     for (size_t i = 0; i < all_component_urls->size(); ++i) {
       // All ad component URLs should use the URN scheme.
-      EXPECT_EQ(url::kUrnScheme, (*all_component_urls)[i].scheme_piece());
+      EXPECT_EQ(url::kUrnScheme, (*all_component_urls)[i].scheme());
 
       // All ad component URLs should be unique.
       for (size_t j = 0; j < i; ++j) {
@@ -10857,7 +10857,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsDisabledTest,
                                     /*execution_target=*/std::nullopt);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
-    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
     NavigateIframeAndCheckURL(web_contents(), urn_url, ad_url);
   }
 }
@@ -10931,7 +10931,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
     auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
-    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
     NavigateIframeAndCheckURL(web_contents(), urn_url, expected_ad_url);
   }
 }
@@ -10985,7 +10985,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
     auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
-    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
     NavigateIframeAndCheckURL(web_contents(), urn_url, expected_ad_url);
   }
 }
@@ -11162,7 +11162,7 @@ IN_PROC_BROWSER_TEST_F(
     auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
-    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
     NavigateIframeAndCheckURL(web_contents(), urn_url, expected_ad_url);
   }
 }
@@ -11472,7 +11472,7 @@ IN_PROC_BROWSER_TEST_F(
   auto result = RunAuctionAndWait(auction_config);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   TestFencedFrameURLMappingResultObserver observer;
   ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -11562,7 +11562,7 @@ IN_PROC_BROWSER_TEST_F(
   auto result = RunAuctionAndWait(auction_config);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   TestFencedFrameURLMappingResultObserver observer;
   ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -11656,7 +11656,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
   auto result = RunAuctionAndWait(auction_config);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
   {
     TestFencedFrameURLMappingResultObserver observer;
     ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -11874,7 +11874,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
   auto result = RunAuctionAndWait(auction_config);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   TestFencedFrameURLMappingResultObserver observer;
   ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -11920,7 +11920,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
   auto result = RunAuctionAndWait(auction_config);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   TestFencedFrameURLMappingResultObserver observer;
   ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -11967,7 +11967,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
   auto result = RunAuctionAndWait(auction_config);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   TestFencedFrameURLMappingResultObserver observer;
   ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -12016,7 +12016,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
   auto result = RunAuctionAndWait(auction_config);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   {
     TestFencedFrameURLMappingResultObserver observer;
@@ -12109,7 +12109,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                   /*execution_target=*/std::nullopt);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   {
     TestFencedFrameURLMappingResultObserver observer;
@@ -12166,7 +12166,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                   /*execution_target=*/std::nullopt);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   {
     TestFencedFrameURLMappingResultObserver observer;
@@ -12348,7 +12348,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelLate) {
   auto result = EvalJs(shell(), auction_script);
   GURL urn_url = GURL(result.ExtractString());
   EXPECT_TRUE(urn_url.is_valid());
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   TestFencedFrameURLMappingResultObserver observer;
   ConvertFencedFrameURNToURL(urn_url, &observer);
@@ -13085,7 +13085,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   GURL urn_url(urn_url_string.ExtractString());
   ASSERT_TRUE(urn_url.is_valid())
       << "URL is not valid: " << urn_url_string.ExtractString();
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   EXPECT_TRUE(
       ReplaceInURNInJS(urn_url, {{"%%LOADING_MODE%%", "fenced-frame"}}));
@@ -15138,7 +15138,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   GURL urn_url(urn_url_string.ExtractString());
   ASSERT_TRUE(urn_url.is_valid())
       << "URL is not valid: " << urn_url_string.ExtractString();
-  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
 
   // Repeatedly load the URN in fenced frames.  The first two iterations use the
   // original fenced frame, the next two use a new one that replaces the first.
@@ -15157,7 +15157,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
         GetAdAuctionComponentsInJS(ad_frame, 1);
     ASSERT_TRUE(components);
     ASSERT_EQ(1u, components->size());
-    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme());
     NavigateFencedFrameAndWait((*components)[0], ad_component_url, ad_frame);
   }
 }
@@ -19993,7 +19993,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
     auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
-    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme());
     EXPECT_EQ(ad_url,
               ConvertFencedFrameURNToURLInJS(urn_url, test_case.send_reports));
     histogram_tester.ExpectTotalCount(
@@ -21600,7 +21600,7 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
         GetAdAuctionComponentsInJS(ad_frame, 1);
     ASSERT_TRUE(components);
     ASSERT_EQ(1u, components->size());
-    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme_piece());
+    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme());
 
     // Load the ad component.
     if (IsAdComponentLoadedInFencedFrame()) {
@@ -22153,8 +22153,7 @@ class BiddingAndAuctionServerAPIsOriginTrialBrowserTest
         std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
             [&](URLLoaderInterceptor::RequestParams* params) -> bool {
               URLLoaderInterceptor::WriteResponse(
-                  base::StrCat(
-                      {kBaseDataDir, params->url_request.url.path_piece()}),
+                  base::StrCat({kBaseDataDir, params->url_request.url.path()}),
                   params->client.get());
 
               return true;

@@ -103,12 +103,12 @@ DeduplicateGoogleCorpGotoDomains(
     }
     const GURL& url = link_data->url;
     if (!url.has_host() || !url.has_path() ||
-        !kGoogleCorpGotoHosts.contains(url.host_piece())) {
+        !kGoogleCorpGotoHosts.contains(url.host())) {
       deduped_results.push_back(std::move(link));
       continue;
     }
 
-    auto [it, inserted] = seen.emplace(url.path_piece());
+    auto [it, inserted] = seen.emplace(url.path());
     if (inserted) {
       deduped_results.push_back(std::move(link));
     }

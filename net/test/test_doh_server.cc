@@ -149,7 +149,7 @@ int TestDohServer::QueriesServedForSubdomains(std::string_view domain) {
 std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     const test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  if (request_url.path_piece() != kPath) {
+  if (request_url.path() != kPath) {
     return nullptr;
   }
 

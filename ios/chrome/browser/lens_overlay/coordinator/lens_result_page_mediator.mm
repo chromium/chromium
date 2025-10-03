@@ -49,21 +49,21 @@
 namespace {
 
 BOOL URLIsFlights(const GURL& URL) {
-  std::string_view path = URL.path_piece();
+  std::string_view path = URL.path();
   BOOL pathIsFlights = path.rfind("/travel/flights", 0) == 0;
 
   return lens::IsGoogleHostURL(URL) && pathIsFlights;
 }
 
 BOOL URLIsFinance(const GURL& URL) {
-  std::string_view path = URL.path_piece();
+  std::string_view path = URL.path();
   BOOL pathIsFinance = path.rfind("/finance", 0) == 0;
 
   return lens::IsGoogleHostURL(URL) && pathIsFinance;
 }
 
 BOOL URLIsShopping(const GURL& URL) {
-  std::string_view query = URL.query_piece();
+  std::string_view query = URL.query();
   BOOL queryMatchesShoppingParam = query.find("udm=28") != std::string::npos;
 
   return lens::IsGoogleHostURL(URL) && queryMatchesShoppingParam;
@@ -111,7 +111,7 @@ BOOL IsMinimizeBottomSheetURL(const GURL& URL) {
   if (!URL.SchemeIs("ae-action")) {
     return NO;
   }
-  std::string_view host = URL.host_piece();
+  std::string_view host = URL.host();
   return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-show");
 }
 
@@ -120,7 +120,7 @@ BOOL IsMaximizeBottomSheetURL(const GURL& URL) {
   if (!URL.SchemeIs("ae-action")) {
     return NO;
   }
-  std::string_view host = URL.host_piece();
+  std::string_view host = URL.host();
   return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-hide");
 }
 

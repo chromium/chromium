@@ -53,12 +53,12 @@ PaymentLinkValidator::Scheme PaymentLinkValidator::GetScheme(
   if (payment_link_url.SchemeIs("momo")) {
     return Scheme::kMomo;
   }
-  if (payment_link_url.path_piece() == "/facilitated-payment/prompt-pay" &&
+  if (payment_link_url.path() == "/facilitated-payment/prompt-pay" &&
       spec.starts_with(
           "https://www.itmx.co.th/facilitated-payment/prompt-pay")) {
     return Scheme::kPromptPay;
   }
-  if (payment_link_url.path_piece() == "/facilitated-payment/dana" &&
+  if (payment_link_url.path() == "/facilitated-payment/dana" &&
       spec.starts_with("https://api.doku.com/facilitated-payment/dana")) {
     return Scheme::kDana;
   }

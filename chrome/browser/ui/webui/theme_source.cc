@@ -161,7 +161,7 @@ void ThemeSource::StartDataRequest(
 }
 
 std::string ThemeSource::GetMimeType(const GURL& url) {
-  const std::string_view file_path = url.path_piece();
+  const std::string_view file_path = url.path();
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/css";

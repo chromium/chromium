@@ -294,7 +294,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   if (hls_fallback_ || (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
-                        loaded_url_.path_piece().ends_with(".m3u8"))) {
+                        loaded_url_.path().ends_with(".m3u8"))) {
     std::unique_ptr<Demuxer> demuxer;
     std::tie(data_source_info_, demuxer) = CreateHlsDemuxer();
     SetDemuxer(std::move(demuxer));

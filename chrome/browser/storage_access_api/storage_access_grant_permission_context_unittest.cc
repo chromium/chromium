@@ -88,7 +88,7 @@ MATCHER_P2(DwaEntryMatches, outcome, requester, "") {
   return testing::ExplainMatchResult(
       AllOf(Field("event_hash", &DwaEntry::event_hash, kDwaEventNameHash),
             Field("content_hash", &DwaEntry::content_hash,
-                  base::HashMetricName(requester.GetURL().host_piece())),
+                  base::HashMetricName(requester.GetURL().host())),
             Field("metrics", &DwaEntry::metrics,
                   testing::UnorderedElementsAre(testing::Pair(
                       kDwaMetricsHash, static_cast<int64_t>(outcome))))),

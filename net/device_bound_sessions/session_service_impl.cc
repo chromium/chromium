@@ -136,7 +136,7 @@ void SessionServiceImpl::RegisterBoundSession(
     const std::optional<url::Origin>& original_request_initiator) {
   Session* federated_provider_session = nullptr;
   bool is_google_subdomain_for_histograms = IsSubdomainOf(
-      registration_params.registration_endpoint().host_piece(), "google.com");
+      registration_params.registration_endpoint().host(), "google.com");
   if (registration_params.provider_session_id().has_value()) {
     if (!base::FeatureList::IsEnabled(
             features::kDeviceBoundSessionsFederatedRegistration)) {

@@ -22,7 +22,7 @@ const char kCancelURLParameterName[] = "x-cancel";
 }  // namespace
 
 bool IsXCallbackURL(const GURL& url) {
-  return url.is_valid() && url.host_piece() == kXCallbackURLHost;
+  return url.is_valid() && url.host() == kXCallbackURLHost;
 }
 
 GURL CreateXCallbackURL(std::string_view scheme, std::string_view action) {
