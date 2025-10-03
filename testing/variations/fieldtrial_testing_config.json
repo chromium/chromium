@@ -24325,6 +24325,9 @@
                     },
                     "enable_features": [
                         "SuppressMemoryListeners"
+                    ],
+                    "disable_features": [
+                        "SuppressMemoryMonitor"
                     ]
                 }
             ]
