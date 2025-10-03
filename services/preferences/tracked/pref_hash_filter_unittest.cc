@@ -1674,6 +1674,30 @@ TEST_P(PrefHashFilterTest, RecordTrackedPreferenceResetCount_WithResets) {
                                       2, 1);
 }
 
+TEST_P(PrefHashFilterTest, TrackedSplitPreferenceResetMissingDict) {
+  // This test is only relevant for platforms where ENFORCE_ON_LOAD applies.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  ASSERT_FALSE(pref_store_contents_.contains(kSplitPref));
+
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"z", "a", "c", "k"});
+
+  // This the code should run without crashing.
+  DoFilterOnLoad(true);
+
+  // The preference should still be missing, as it was reset from a non existent
+  // state.
+  ASSERT_FALSE(pref_store_contents_.contains(kSplitPref));
+
+  // Since the original value was missing, nothing should be stored.
+  const base::Value::Dict* reset_prefs =
+      pref_store_contents_.FindDict(user_prefs::kTrackedPreferencesReset);
+  ASSERT_FALSE(reset_prefs && reset_prefs->contains(kSplitPref));
+}
+
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
                          PrefHashFilterTest,
                          testing::Values(EnforcementLevel::NO_ENFORCEMENT,
