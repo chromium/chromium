@@ -230,7 +230,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       ->GetManagedAccountsSigninRestriction(
           identity_manager,
           identity_manager->PickAccountIdForAccount(
-              identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail)),
+              GaiaId(identity.gaiaID),
+              base::SysNSStringToUTF8(identity.userEmail)),
           std::move(callback));
 }
 
@@ -244,7 +245,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()
-          ->FindProfileNameForGaiaID(identity.gaiaId);
+          ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
   if (!profileName.has_value()) {
     __weak __typeof(_delegate) weakDelegate = _delegate;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -280,7 +281,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {
   GetApplicationContext()
       ->GetAccountProfileMapper()
-      ->MakePersonalProfileManagedWithGaiaID(identity.gaiaId);
+      ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
   [_delegate didMakePersonalProfileManaged];
 }
 

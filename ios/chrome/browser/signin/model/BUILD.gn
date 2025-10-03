@@ -348,7 +348,6 @@ source_set("fake_system_identity") {
   deps = [
     ":system_identity",
     "//base",
-    "//google_apis",
   ]
 }
 

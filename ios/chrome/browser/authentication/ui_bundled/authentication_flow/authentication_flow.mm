@@ -680,11 +680,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   std::vector<AccountInfo> accountsOnDevice =
       identityManager->GetAccountsOnDevice();
   BOOL isValidIdentityOnDevice = base::Contains(
-      accountsOnDevice, _identityToSignIn.gaiaId, &AccountInfo::gaia);
+      accountsOnDevice, GaiaId(_identityToSignIn.gaiaID), &AccountInfo::gaia);
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
-  BOOL isValidIdentityInProfile = base::Contains(
-      accountsInProfile, _identityToSignIn.gaiaId, &CoreAccountInfo::gaia);
+  BOOL isValidIdentityInProfile =
+      base::Contains(accountsInProfile, GaiaId(_identityToSignIn.gaiaID),
+                     &CoreAccountInfo::gaia);
   if (!isValidIdentityOnDevice ||
       (!isValidIdentityInProfile &&
        !AreSeparateProfilesForManagedAccountsEnabled())) {
@@ -909,7 +910,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     (BOOL)browsingDataSeparate {
   // Only show the dialog once per account.
   signin::GaiaIdHash gaiaIDHash =
-      signin::GaiaIdHash::FromGaiaId(_identityToSignIn.gaiaId);
+      signin::GaiaIdHash::FromGaiaId(GaiaId(_identityToSignIn.gaiaID));
   syncer::SetAccountKeyedPrefValue([self prefs],
                                    prefs::kSigninHasAcceptedManagementDialog,
                                    gaiaIDHash, base::Value(true));

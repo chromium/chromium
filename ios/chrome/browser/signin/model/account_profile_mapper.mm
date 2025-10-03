@@ -86,7 +86,7 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
           // Note: In this case (with the feature flag disabled), the profile
           // name in the mapping isn't used - every identity is considered
           // assigned to every profile.
-          result[std::string()].insert(identity.gaiaId);
+          result[std::string()].insert(GaiaId(identity.gaiaID));
           return SystemIdentityManager::IteratorResult::kContinueIteration;
         },
         std::ref(result)));
@@ -683,7 +683,7 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     std::set<GaiaId>& processed_gaia_ids,
     id<SystemIdentity> identity) {
   CHECK(identity, base::NotFatalUntil::M147);
-  processed_gaia_ids.insert(identity.gaiaId);
+  processed_gaia_ids.insert(GaiaId(identity.gaiaID));
 
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     if (!local_pref_service_) {
@@ -1108,8 +1108,8 @@ void AccountProfileMapper::IdentitiesOnDeviceChanged() {
 
 void AccountProfileMapper::IdentityUpdated(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyIdentityUpdated(identity,
-                        assigner_->FindProfileNameForGaiaID(identity.gaiaId));
+  NotifyIdentityUpdated(
+      identity, assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)));
 }
 
 void AccountProfileMapper::IdentityRefreshTokenUpdated(
@@ -1117,7 +1117,7 @@ void AccountProfileMapper::IdentityRefreshTokenUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyRefreshTokenUpdated(
-      identity, assigner_->FindProfileNameForGaiaID(identity.gaiaId));
+      identity, assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)));
 }
 
 void AccountProfileMapper::IdentityAccessTokenRefreshFailed(
@@ -1127,8 +1127,8 @@ void AccountProfileMapper::IdentityAccessTokenRefreshFailed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyAccessTokenRefreshFailed(
-      identity, error, assigner_->FindProfileNameForGaiaID(identity.gaiaId),
-      scopes);
+      identity, error,
+      assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)), scopes);
 }
 
 SystemIdentityManager::IteratorResult
@@ -1142,7 +1142,7 @@ AccountProfileMapper::FilterIdentitiesForProfile(
     ProfileAttributesIOS attr =
         profile_manager_->GetProfileAttributesStorage()
             ->GetAttributesForProfileWithName(profile_name);
-    if (!attr.GetAttachedGaiaIds().contains(identity.gaiaId)) {
+    if (!attr.GetAttachedGaiaIds().contains(GaiaId(identity.gaiaID))) {
       // The identity doesn't belong to this profile; skip over it.
       return SystemIdentityManager::IteratorResult::kContinueIteration;
     }

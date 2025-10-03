@@ -152,7 +152,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
       // personal profile again.
       GetApplicationContext()
           ->GetAccountProfileMapper()
-          ->MakePersonalProfileManagedWithGaiaID(managed_identity_.gaiaId);
+          ->MakePersonalProfileManagedWithGaiaID(
+              GaiaId(managed_identity_.gaiaID));
 
       authentication_service()->SignIn(managed_identity_,
                                        signin_metrics::AccessPoint::kUnknown);

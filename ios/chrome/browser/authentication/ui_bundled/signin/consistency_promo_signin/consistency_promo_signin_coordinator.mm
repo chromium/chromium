@@ -289,7 +289,7 @@
 - (void)startReauthFlowWithIdentity:(id<SystemIdentity>)identity {
   // TODO(crbug.com/391342053): Add logging.
   CoreAccountInfo account;
-  account.gaia = identity.gaiaId;
+  account.gaia = GaiaId(identity.gaiaID);
   account.email = base::SysNSStringToUTF8(identity.userEmail);
   if (self.reauthCoordinator.viewWillPersist) {
     // In case of double tap, let the first reauth proceed.

@@ -371,7 +371,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
 
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail));
+      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
 
   // Ensure that the account the user is trying to sign into has been loaded
   // from the SSO library.
@@ -657,7 +657,7 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
 
 void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail));
+      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
   if (!identity_manager_->HasAccountWithRefreshToken(account_id)) {
     return;
   }

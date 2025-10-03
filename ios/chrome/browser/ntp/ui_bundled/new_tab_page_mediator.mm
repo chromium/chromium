@@ -503,7 +503,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (info.gaia != _signedInIdentity.gaiaId) {
+  if (info.gaia != GaiaId(_signedInIdentity.gaiaID)) {
     return;
   }
   [self updateAccountImage];

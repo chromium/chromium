@@ -111,7 +111,7 @@
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
       IdentityManagerFactory::GetForProfile(profile)->PickAccountIdForAccount(
-          identity.gaiaId, userEmail);
+          GaiaId(identity.gaiaID), userEmail);
 
   policy::UserPolicySigninService* userPolicyService =
       policy::UserPolicySigninServiceFactory::GetForProfile(profile);
@@ -181,7 +181,7 @@
   const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
   AccountId accountID = AccountId::FromUserEmailGaiaId(
-      gaia::CanonicalizeEmail(userEmail), identity.gaiaId);
+      gaia::CanonicalizeEmail(userEmail), GaiaId(identity.gaiaID));
 
   std::vector<std::string> userAffiliationIDsVector;
   for (NSString* userAffiliationID in userAffiliationIDs) {

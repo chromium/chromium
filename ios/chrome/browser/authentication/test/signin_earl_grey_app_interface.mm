@@ -167,7 +167,7 @@
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     GetApplicationContext()
         ->GetAccountProfileMapper()
-        ->MakePersonalProfileManagedWithGaiaID(identity.gaiaId);
+        ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
   }
 
   chrome_test_util::SignIn(identity);

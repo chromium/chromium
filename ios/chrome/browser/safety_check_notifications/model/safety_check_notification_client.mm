@@ -601,12 +601,13 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
         AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    const GaiaId gaiaID(identity.gaiaID);
     if (!push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kSafetyCheck, identity.gaiaId)) {
+                PushNotificationClientId::kSafetyCheck, gaiaID)) {
       PushNotificationService* service =
           GetApplicationContext()->GetPushNotificationService();
-      service->SetPreference(identity.gaiaID,
+      service->SetPreference(gaiaID.ToNSString(),
                              PushNotificationClientId::kSafetyCheck, true);
     }
   }

@@ -117,8 +117,8 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // necessary. This likely means either adding plumbing towards
     // SystemIdentityManager to FakeProfileOAuth2TokenService, or alternatively
     // using the real ProfileOAuth2TokenServiceIOSDelegate here.
-    auto options =
-        signin::AccountAvailabilityOptionsBuilder().WithGaiaId(identity.gaiaId);
+    auto options = signin::AccountAvailabilityOptionsBuilder().WithGaiaId(
+        GaiaId(identity.gaiaID));
     if (as_primary) {
       options = options.AsPrimary(signin::ConsentLevel::kSignin);
     }
@@ -142,7 +142,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // using the real ProfileOAuth2TokenServiceIOSDelegate here.
     signin::RemoveRefreshTokenForAccount(
         IdentityManagerFactory::GetForProfile(profile_.get()),
-        CoreAccountId::FromGaiaId(identity.gaiaId));
+        CoreAccountId::FromGaiaId(GaiaId(identity.gaiaID)));
   }
 
   // Creates a SaveToPhotosSettingsMediator with services from the test browser

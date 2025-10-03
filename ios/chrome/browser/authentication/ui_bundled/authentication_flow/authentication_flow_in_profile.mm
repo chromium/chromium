@@ -302,8 +302,9 @@ enum class AuthenticationFlowInProfileState {
       IdentityManagerFactory::GetForProfile(profile);
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
-  BOOL isValidIdentityInProfile = base::Contains(
-      accountsInProfile, _identityToSignIn.gaiaId, &CoreAccountInfo::gaia);
+  BOOL isValidIdentityInProfile =
+      base::Contains(accountsInProfile, GaiaId(_identityToSignIn.gaiaID),
+                     &CoreAccountInfo::gaia);
   if (!isValidIdentityInProfile) {
     [self handleAuthenticationError:ios::provider::
                                         CreateMissingIdentitySigninError()];
