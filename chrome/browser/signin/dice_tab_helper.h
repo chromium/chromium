@@ -35,8 +35,11 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                                    const CoreAccountInfo&)>;
   // Callback starting the History syncing. This is a repeating callback,
   // because multiple `ProcessDiceHeaderDelegateImpl` may make copies of it.
-  using EnableHistorySyncOptinCallback = base::RepeatingCallback<
-      void(Profile*, content::WebContents*, const CoreAccountInfo&)>;
+  using EnableHistorySyncOptinCallback =
+      base::RepeatingCallback<void(Profile*,
+                                   content::WebContents*,
+                                   const CoreAccountInfo&,
+                                   signin_metrics::AccessPoint)>;
 
   // Callback displaying a signin error to the user. This is a repeating
   // callback, because multiple `ProcessDiceHeaderDelegateImpl` may make copies

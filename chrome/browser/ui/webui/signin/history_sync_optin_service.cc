@@ -65,7 +65,8 @@ HistorySyncOptinService::~HistorySyncOptinService() = default;
 
 bool HistorySyncOptinService::StartHistorySyncOptinFlow(
     const AccountInfo& account_info,
-    std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate) {
+    std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
+    signin_metrics::AccessPoint access_point) {
   if (history_sync_optin_helper_) {
     // Another flow is already in progress, abort the new flow.
     return false;
@@ -78,7 +79,7 @@ bool HistorySyncOptinService::StartHistorySyncOptinFlow(
   history_sync_optin_helper_ = HistorySyncOptinHelper::Create(
       identity_manager, profile_, account_info,
       history_sync_optin_delegate_.get(),
-      HistorySyncOptinHelper::LaunchContext::kInBrowser);
+      HistorySyncOptinHelper::LaunchContext::kInBrowser, access_point);
   history_sync_optin_observation_.Observe(history_sync_optin_helper_.get());
   history_sync_optin_helper_->StartHistorySyncOptinFlow();
   return true;

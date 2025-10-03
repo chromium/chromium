@@ -366,7 +366,7 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
       return;
     }
     std::move(history_sync_optin_callback_)
-        .Run(&profile_.get(), web_contents, account_info);
+        .Run(&profile_.get(), web_contents, account_info, access_point_);
     Redirect();
     return;
   }

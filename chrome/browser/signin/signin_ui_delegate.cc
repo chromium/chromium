@@ -33,8 +33,10 @@ void SigninUiDelegate::ShowTurnSyncOnUI(
                        is_sync_promo, user_already_signed_in);
 }
 
-void SigninUiDelegate::ShowHistorySyncOptinUI(Profile* profile,
-                                              const CoreAccountId& account_id) {
+void SigninUiDelegate::ShowHistorySyncOptinUI(
+    Profile* profile,
+    const CoreAccountId& account_id,
+    signin_metrics::AccessPoint access_point) {
   CHECK(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
   HistorySyncOptinService* history_sync_optin_service =
@@ -48,7 +50,7 @@ void SigninUiDelegate::ShowHistorySyncOptinUI(Profile* profile,
 
   history_sync_optin_service->StartHistorySyncOptinFlow(
       extended_account_info,
-      std::make_unique<HistorySyncOptinServiceDefaultDelegate>());
+      std::make_unique<HistorySyncOptinServiceDefaultDelegate>(), access_point);
 }
 
 // static

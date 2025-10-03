@@ -84,7 +84,8 @@ DiceTabHelper::EnableHistorySyncOptinCallback
 DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
   return base::BindRepeating([](Profile* profile,
                                 content::WebContents* web_contents,
-                                const CoreAccountInfo& account_info) {
+                                const CoreAccountInfo& account_info,
+                                signin_metrics::AccessPoint access_point) {
     CHECK(base::FeatureList::IsEnabled(
         syncer::kReplaceSyncPromosWithSignInPromos));
     CHECK(profile);
@@ -112,7 +113,8 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
               .account_id == account_info.account_id);
     history_sync_optin_service->StartHistorySyncOptinFlow(
         extended_account_info,
-        std::make_unique<HistorySyncOptinServiceDefaultDelegate>());
+        std::make_unique<HistorySyncOptinServiceDefaultDelegate>(),
+        access_point);
   });
 }
 

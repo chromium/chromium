@@ -45,7 +45,8 @@ class HistorySyncOptinService : public KeyedService,
   // Starts the history sync opt-in flow.
   bool StartHistorySyncOptinFlow(
       const AccountInfo& account_info,
-      std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate);
+      std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
+      signin_metrics::AccessPoint access_point);
 
  private:
   // KeyedService implementation:

@@ -129,7 +129,8 @@ class HistorySyncOptinHelper {
       Profile* profile,
       const AccountInfo& account_info,
       Delegate* delegate,
-      LaunchContext launch_context);
+      LaunchContext launch_context,
+      signin_metrics::AccessPoint access_point);
 
   virtual ~HistorySyncOptinHelper();
 
@@ -151,7 +152,8 @@ class HistorySyncOptinHelper {
   HistorySyncOptinHelper(signin::IdentityManager* identity_manager,
                          Profile* profile,
                          const AccountInfo& account_info,
-                         Delegate* delegate);
+                         Delegate* delegate,
+                         signin_metrics::AccessPoint access_point);
 
   void ResumeShowHistorySyncOptinScreenFlow(
       signin::Tribool maybe_managed_account);
@@ -174,6 +176,7 @@ class HistorySyncOptinHelper {
   signin::Tribool maybe_managed_account() const {
     return maybe_managed_account_;
   }
+  signin_metrics::AccessPoint access_point() { return access_point_; }
 
  private:
   signin::Tribool AccountIsManaged(const AccountInfo& account_info);
@@ -183,6 +186,7 @@ class HistorySyncOptinHelper {
   const AccountInfo account_info_;
   raw_ptr<Delegate> delegate_;
   std::unique_ptr<AccountStateFetcher> account_state_fetcher_;
+  signin_metrics::AccessPoint access_point_;
 
   std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
   signin::Tribool maybe_managed_account_ = signin::Tribool::kUnknown;
@@ -196,7 +200,8 @@ class HistorySyncOptinHelperInBrowser : public HistorySyncOptinHelper {
   HistorySyncOptinHelperInBrowser(signin::IdentityManager* identity_manager,
                                   Profile* profile,
                                   const AccountInfo& account_info,
-                                  Delegate* delegate);
+                                  Delegate* delegate,
+                                  signin_metrics::AccessPoint access_point);
   ~HistorySyncOptinHelperInBrowser() override;
 
  private:
@@ -220,7 +225,8 @@ class HistorySyncOptinHelperInProfilePicker : public HistorySyncOptinHelper {
       signin::IdentityManager* identity_manager,
       Profile* profile,
       const AccountInfo& account_info,
-      Delegate* delegate);
+      Delegate* delegate,
+      signin_metrics::AccessPoint access_point);
   ~HistorySyncOptinHelperInProfilePicker() override;
 
  private:
