@@ -1,6 +1,4 @@
 include_rules = [
-  "+components/leveldb_proto/public",
   "+components/sync/protocol",
   "+components/sync/test",
 ]
-

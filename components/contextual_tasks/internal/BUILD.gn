@@ -11,6 +11,8 @@ source_set("internal") {
   sources = [
     "ai_thread_sync_bridge.cc",
     "ai_thread_sync_bridge.h",
+    "contextual_task_sync_bridge.cc",
+    "contextual_task_sync_bridge.h",
     "contextual_tasks_service_impl.cc",
     "contextual_tasks_service_impl.h",
   ]
@@ -31,6 +33,7 @@ source_set("unit_tests") {
 
   sources = [
     "ai_thread_sync_bridge_unittest.cc",
+    "contextual_task_sync_bridge_unittest.cc",
     "contextual_tasks_service_impl_unittest.cc",
   ]
 
@@ -41,6 +44,7 @@ source_set("unit_tests") {
     "//components/contextual_tasks/public",
     "//components/sessions:session_id",
     "//components/sync:test_support",
+    "//components/sync/model",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

@@ -1,0 +1,85 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/contextual_tasks/internal/contextual_task_sync_bridge.h"
+
+#include <memory>
+#include <vector>
+
+#include "base/test/task_environment.h"
+#include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace contextual_tasks {
+
+namespace {
+
+using testing::_;
+
+class ContextualTaskSyncBridgeTest : public testing::Test {
+ public:
+  ContextualTaskSyncBridgeTest() {
+    bridge_ = std::make_unique<ContextualTaskSyncBridge>(
+        mock_processor_.CreateForwardingProcessor(),
+        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<ContextualTaskSyncBridge> bridge_;
+};
+
+TEST_F(ContextualTaskSyncBridgeTest, GetClientTagAndStorageKey) {
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_contextual_task()->set_guid("guid_1");
+  syncer::EntityData entity_data;
+  entity_data.specifics = specifics;
+
+  EXPECT_EQ(bridge_->GetClientTag(entity_data), "guid_1");
+  EXPECT_EQ(bridge_->GetStorageKey(entity_data), "guid_1");
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, IsEntityDataValid) {
+  syncer::EntityData valid_data;
+  valid_data.specifics.mutable_contextual_task()->mutable_contextual_task();
+  EXPECT_TRUE(bridge_->IsEntityDataValid(valid_data));
+
+  syncer::EntityData valid_data_url;
+  valid_data_url.specifics.mutable_contextual_task()->mutable_url_resource();
+  EXPECT_TRUE(bridge_->IsEntityDataValid(valid_data_url));
+
+  syncer::EntityData invalid_data;
+  invalid_data.specifics.mutable_web_app();
+  EXPECT_FALSE(bridge_->IsEntityDataValid(invalid_data));
+}
+
+TEST_F(ContextualTaskSyncBridgeTest,
+       TrimAllSupportedFieldsFromRemoteSpecifics) {
+  sync_pb::EntitySpecifics specifics;
+  auto* task_specifics = specifics.mutable_contextual_task();
+  task_specifics->set_guid("guid_1");
+  task_specifics->set_version(123);
+  auto* task = task_specifics->mutable_contextual_task();
+  task->set_title("Test Title");
+  task->set_thread_id("thread_id_1");
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(specifics);
+
+  EXPECT_FALSE(trimmed_specifics.contextual_task().has_guid());
+  EXPECT_FALSE(trimmed_specifics.contextual_task().has_version());
+  EXPECT_TRUE(trimmed_specifics.contextual_task().has_contextual_task());
+  EXPECT_FALSE(
+      trimmed_specifics.contextual_task().contextual_task().has_title());
+  EXPECT_FALSE(
+      trimmed_specifics.contextual_task().contextual_task().has_thread_id());
+}
+
+}  // namespace
+
+}  // namespace contextual_tasks
