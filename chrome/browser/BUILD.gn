@@ -258,12 +258,6 @@ static_library("browser") {
     "browsing_data/site_data_size_collector.h",
     "browsing_topics/browsing_topics_service_factory.cc",
     "browsing_topics/browsing_topics_service_factory.h",
-    "btm/btm_browser_signin_detector.cc",
-    "btm/btm_browser_signin_detector.h",
-    "btm/btm_browser_signin_detector_factory.cc",
-    "btm/btm_browser_signin_detector_factory.h",
-    "btm/stateful_bounce_counter.cc",
-    "btm/stateful_bounce_counter.h",
     "chained_back_navigation_tracker.cc",
     "chained_back_navigation_tracker.h",
     "child_process_host_flags.h",
@@ -1821,6 +1815,11 @@ static_library("browser") {
     # - c/b/engagement/site_engagement_service_factory.h
     # - c/b/webapps/installable/installable_utils.h
     "//chrome/browser/background_sync:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
+    # headers get componentized:
+    # - c/b/chrome_content_browser_client.h
+    "//chrome/browser/btm:impl",
   ]
 
   public_deps = [
@@ -1888,6 +1887,8 @@ static_library("browser") {
     "//chrome/browser/bluetooth:impl",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/btm",
+    "//chrome/browser/btm:impl",
     "//chrome/browser/chooser_controller",
     "//chrome/browser/commerce",
     "//chrome/browser/commerce:impl",

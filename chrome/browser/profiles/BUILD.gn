@@ -241,6 +241,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bluetooth",
     "//chrome/browser/breadcrumbs",
+    "//chrome/browser/btm",
     "//chrome/browser/commerce",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/contextual_tasks",
