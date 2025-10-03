@@ -1690,10 +1690,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean isInteractiveOmniboxEnabled() {
-        return ChromeFeatureList.sSearchInCCT.isEnabled()
-                && isPackageNameInList(
-                        getClientPackageName(),
-                        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.getValue());
+        return ChromeFeatureList.sSearchInCCT.isEnabled();
     }
 
     @Override

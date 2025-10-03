@@ -1697,14 +1697,6 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sSearchinCctApplyReferrerId =
             newBooleanCachedFeatureParam(SEARCH_IN_CCT, "apply_referrer_id", false);
 
-    /** Pipe ("|") separated list of package names allowed to use the interactive Omnibox. */
-    // TODO(crbug.com/40239922): remove default value when no longer relevant.
-    public static final StringCachedFeatureParam sSearchinCctOmniboxAllowedPackageNames =
-            newStringCachedFeatureParam(
-                    SEARCH_IN_CCT,
-                    "omnibox_allowed_package_names",
-                    BuildConfig.ENABLE_DEBUG_LOGS ? "org.chromium.customtabsclient" : "");
-
     public static final IntCachedFeatureParam sStartSurfaceReturnTimeTabletSecs =
             newIntCachedFeatureParam(
                     START_SURFACE_RETURN_TIME,
@@ -1820,7 +1812,6 @@ public abstract class ChromeFeatureList {
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,
                     sReadAloudReadabilityDelayMsAfterPageLoad,
                     sSearchinCctApplyReferrerId,
-                    sSearchinCctOmniboxAllowedPackageNames,
                     sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabGroupListContainment,

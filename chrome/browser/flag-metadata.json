@@ -9127,7 +9127,7 @@
   {
     "name": "search-in-cct",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 300
   },
   {
     "name": "search-in-cct-alternate-tap-handling",
