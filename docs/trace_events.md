@@ -42,7 +42,7 @@ analysis.
 ## Trace Event Usage
 
 ### Trace Event Macros
-  * Most use cases are served by `#include "base/trace_event/track_event.h"`
+  * Most use cases are served by `#include "base/trace_event/trace_event.h"`
   * **Use Perfetto Macros:** Employ the modern macros documented in
     [`perfetto/include/perfetto/tracing/track_event.h`](https://cs.chromium.org/chromium/src/third_party/perfetto/include/perfetto/tracing/track_event.h).
       *   `TRACE_EVENT()`
