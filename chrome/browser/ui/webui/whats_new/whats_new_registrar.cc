@@ -40,6 +40,14 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(WhatsNewModule(::features::kSideBySide,
                                           "agale@google.com",
                                           BrowserCommand::kOpenSplitView));
+  // M142
+  registry->RegisterModule(WhatsNewModule(::features::kGlicIntro,
+                                          "birnie@google.com",
+                                          BrowserCommand::kOpenGlic));
+  // M142
+  registry->RegisterModule(WhatsNewModule(::features::kGlicLearnMore,
+                                          "birnie@google.com",
+                                          BrowserCommand::kOpenGlicSettings));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
