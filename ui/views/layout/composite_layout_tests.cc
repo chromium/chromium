@@ -76,6 +76,7 @@ class SimulatedToolbarElement : public View {
         .SetAnimationDuration(kDefaultAnimationDuration);
     animating_layout->SetTargetLayoutManager(std::make_unique<FlexLayout>())
         ->SetOrientation(LayoutOrientation::kHorizontal);
+    animating_layout->disable_widget_check_for_testing();
   }
 
   void SetAnimationDuration(base::TimeDelta animation_duration) {
