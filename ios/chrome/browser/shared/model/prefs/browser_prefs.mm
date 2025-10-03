@@ -220,6 +220,8 @@ inline constexpr char kFRESourceTrial[] = "FileMetricsProviderFRESourceTrial";
 // Deprecated 10/2025
 inline constexpr char kTipsInMagicStackDisabledPref[] =
     "tips_magic_stack.disabled";
+inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
+    "ios.home_customization.magic_stack.set_up_list.enabled";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -956,8 +958,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
                                 true);
   registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackSetUpListEnabled, true);
-  registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
@@ -1104,6 +1104,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 10/2025
   registry->RegisterBooleanPref(kTipsInMagicStackDisabledPref, false);
+  registry->RegisterBooleanPref(kHomeCustomizationMagicStackSetUpListEnabled,
+                                true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1280,6 +1282,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 10/2025
   prefs->ClearPref(kTipsInMagicStackDisabledPref);
+  prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
 }
 
 void MigrateObsoleteUserDefault() {
