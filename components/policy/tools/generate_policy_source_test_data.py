@@ -97,7 +97,7 @@ import "policy_common_definitions.proto";
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;
@@ -107,7 +107,7 @@ message ExampleStringPolicyProto {
 //
 // ExampleBoolPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleBoolPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolPolicy = 2;
@@ -177,7 +177,7 @@ message UnsupportedPolicyProto {
 //
 // ChunkZeroLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkZeroLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkZeroLastFieldBooleanPolicy = 2;
@@ -187,7 +187,7 @@ message ChunkZeroLastFieldBooleanPolicyProto {
 //
 // ChunkOneFirstFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneFirstFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneFirstFieldBooleanPolicy = 2;
@@ -197,7 +197,7 @@ message ChunkOneFirstFieldBooleanPolicyProto {
 //
 // ChunkOneLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneLastFieldBooleanPolicy = 2;
@@ -207,7 +207,7 @@ message ChunkOneLastFieldBooleanPolicyProto {
 //
 // ChunkTwoFirstFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoFirstFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoFirstFieldStringPolicy = 2;
@@ -217,7 +217,7 @@ message ChunkTwoFirstFieldStringPolicyProto {
 //
 // ChunkTwoLastFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoLastFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoLastFieldStringPolicy = 2;
@@ -227,7 +227,7 @@ message ChunkTwoLastFieldStringPolicyProto {
 //
 // SensitivePolicyForMultiplePlatforms desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message SensitivePolicyForMultiplePlatformsProto {
   optional PolicyOptions policy_options = 1;
   optional bool SensitivePolicyForMultiplePlatforms = 2;
@@ -331,7 +331,7 @@ import "policy_common_definitions.proto";
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;
@@ -341,7 +341,7 @@ message ExampleStringPolicyProto {
 //
 // ExampleBoolPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleBoolPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolPolicy = 2;
@@ -411,7 +411,7 @@ message UnsupportedPolicyProto {
 //
 // ChunkZeroLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkZeroLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkZeroLastFieldBooleanPolicy = 2;
@@ -421,7 +421,7 @@ message ChunkZeroLastFieldBooleanPolicyProto {
 //
 // ChunkOneFirstFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneFirstFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneFirstFieldBooleanPolicy = 2;
@@ -431,7 +431,7 @@ message ChunkOneFirstFieldBooleanPolicyProto {
 //
 // ChunkOneLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneLastFieldBooleanPolicy = 2;
@@ -441,7 +441,7 @@ message ChunkOneLastFieldBooleanPolicyProto {
 //
 // ChunkTwoFirstFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoFirstFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoFirstFieldStringPolicy = 2;
@@ -451,7 +451,7 @@ message ChunkTwoFirstFieldStringPolicyProto {
 //
 // ChunkTwoLastFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoLastFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoLastFieldStringPolicy = 2;
@@ -461,7 +461,7 @@ message ChunkTwoLastFieldStringPolicyProto {
 //
 // SensitivePolicyForMultiplePlatforms desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message SensitivePolicyForMultiplePlatformsProto {
   optional PolicyOptions policy_options = 1;
   optional bool SensitivePolicyForMultiplePlatforms = 2;
@@ -537,7 +537,7 @@ EXPECTED_POLICY_PROTO = '''\
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;
@@ -1352,12 +1352,6 @@ EXPECTED_APP_RESTRICTIONS_XML = '''
         android:title="@string/ExampleStringPolicyTitle"
         android:description="@string/ExampleStringPolicyDesc"
         android:restrictionType="string"/>
-
-    <restriction
-        android:key="SensitivePolicyForChromeOSOnly"
-        android:title="@string/SensitivePolicyForChromeOSOnlyTitle"
-        android:description="@string/SensitivePolicyForChromeOSOnlyDesc"
-        android:restrictionType="bool"/>
 
     <restriction
         android:key="SensitivePolicyForMultiplePlatforms"
