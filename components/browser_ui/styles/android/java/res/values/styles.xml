@@ -146,9 +146,24 @@ found in the LICENSE file.
 
     <!-- Expressive styling for an icon in an app menu icon row. -->
     <style name="OverflowMenuButton.Expressive" parent="Widget.Material3Expressive.Button.IconButton.Tonal">
-        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small</item>
+        <item name="materialSizeOverlay">?attr/iconRowButtonSizeOverlay</item>
         <item name="backgroundTint">@color/tonal_button_bg_list</item>
         <item name="iconTint">@color/tonal_button_icon_tint_list</item>
+    </style>
+
+    <style name="SizeOverlay.BrowserUI.IconRowButton" parent="SizeOverlay.Material3Expressive.Button.IconButton.Small">
+        <item name="containerIconSize">?attr/listItemIconSize</item>
+    </style>
+
+    <style name="SizeOverlay.BrowserUI.IconRowButton.DesktopDensity">
+        <item name="containerPaddingStart">8dp</item>
+        <item name="containerPaddingEnd">8dp</item>
+        <item name="containerPaddingTop">8dp</item>
+        <item name="containerPaddingBottom">8dp</item>
+        <item name="containerInsetTop">0dp</item>
+        <item name="containerInsetBottom">0dp</item>
+        <item name="containerInsetLeft">0dp</item>
+        <item name="containerInsetRight">0dp</item>
     </style>
 
     <!-- Checkbox styles. -->

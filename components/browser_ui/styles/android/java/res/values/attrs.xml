@@ -9,4 +9,6 @@ found in the LICENSE file.
     <declare-styleable name="ChromeDialog">
         <attr name="isDialogFullscreen" format="boolean" />
     </declare-styleable>
+
+    <attr name="iconRowButtonSizeOverlay" format="reference" />
 </resources>

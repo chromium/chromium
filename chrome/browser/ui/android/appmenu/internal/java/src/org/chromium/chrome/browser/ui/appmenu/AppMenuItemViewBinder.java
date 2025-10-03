@@ -10,14 +10,12 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.button.MaterialButton;
@@ -194,23 +192,14 @@ class AppMenuItemViewBinder {
 
     public static void bindIconRowItem(PropertyModel model, View view, PropertyKey key) {
         if (key == AppMenuItemProperties.ADDITIONAL_ICONS) {
-            ViewGroup root = (ViewGroup) view;
-
             // Obtain from the current theme a typed array containing all the attributes.
             TypedArray typedArray =
                     view.getContext().getTheme().obtainStyledAttributes(R.styleable.AppMenuIconRow);
-            int paddingPx =
-                    typedArray.getDimensionPixelSize(
-                            R.styleable.AppMenuIconRow_appMenuIconRowPadding, 0);
             int drawableResId =
                     typedArray.getResourceId(
                             R.styleable.AppMenuIconRow_overflowMenuActionBarBgDrawable, 0);
 
             typedArray.recycle();
-
-            // The padding applied will be 0 for the baseline theme.
-            ViewCompat.setPaddingRelative(
-                    root, paddingPx, paddingPx, paddingPx, root.getPaddingBottom());
 
             // Set the background by resolving it from the current theme.
             if (drawableResId != 0) {
