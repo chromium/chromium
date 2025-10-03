@@ -293,11 +293,9 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
   [self.mutator loadFirstPage];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.class ])
-                       withAction:@selector(userInterfaceStyleDidChange)];
-  }
+  [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                    @[ UITraitUserInterfaceStyle.class ])
+                     withAction:@selector(userInterfaceStyleDidChange)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -313,21 +311,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     [self.delegate viewControllerDidDisappear:self];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  // Dark/Light mode change ocurred.
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    [self userInterfaceStyleDidChange];
-  }
-}
-#endif
 
 #pragma mark - UI actions
 

@@ -37,19 +37,17 @@
     self.userInteractionEnabled = NO;
     [self updateColors];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = @[
-        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
-        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
-        UITraitUserInterfaceLevel.class
-      ];
-      __weak __typeof(self) weakSelf = self;
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        [weakSelf updateColorsOnTraitChange:previousCollection];
-      };
-      [self registerForTraitChanges:traits withHandler:handler];
-    }
+    NSArray<UITrait>* traits = @[
+      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+      UITraitUserInterfaceLevel.class
+    ];
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateColorsOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -65,17 +63,6 @@
 - (CAGradientLayer*)gradientLayer {
   return base::apple::ObjCCastStrict<CAGradientLayer>(self.layer);
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateColorsOnTraitChange:previousTraitCollection];
-}
-#endif
 
 - (void)setStartColor:(UIColor*)startColor endColor:(UIColor*)endColor {
   self.startColor = startColor;

@@ -59,12 +59,10 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
       [_rightImageView.leftAnchor constraintEqualToAnchor:self.leftAnchor],
     ]];
 
-    if (@available(iOS 17, *)) {
-      [self registerForTraitChanges:@[
-        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
-      ]
-                         withAction:@selector(updateImagesOnNextFrame)];
-    }
+    [self registerForTraitChanges:@[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
+    ]
+                       withAction:@selector(updateImagesOnNextFrame)];
   }
   return self;
 }
@@ -77,17 +75,6 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
     [self updateImages];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateImagesOnNextFrame];
-}
-#endif
 
 #pragma mark - Private
 
