@@ -43,6 +43,7 @@ class OmniboxActionInSuggest : public OmniboxAction {
 
   omnibox::SuggestTemplateInfo::TemplateAction template_action;
   std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args;
+  int tab_id = 0;
 
  private:
   ~OmniboxActionInSuggest() override;

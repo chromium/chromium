@@ -152,7 +152,7 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
     j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
         env, reinterpret_cast<intptr_t>(this), strings_.hint,
         strings_.accessibility_hint, template_action.action_type(),
-        template_action.action_uri(), show_as_action_button_));
+        template_action.action_uri(), tab_id, show_as_action_button_));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

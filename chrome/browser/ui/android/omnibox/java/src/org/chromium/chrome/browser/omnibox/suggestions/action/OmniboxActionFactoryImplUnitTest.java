@@ -89,6 +89,7 @@ public class OmniboxActionFactoryImplUnitTest {
                                         "accessibility",
                                         1,
                                         "url",
+                                        /* tabId= */ 0,
                                         /* showAsActionButton= */ false)));
     }
 
@@ -103,6 +104,7 @@ public class OmniboxActionFactoryImplUnitTest {
                                 "accessibility",
                                 SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "url",
+                                /* tabId= */ 0,
                                 /* showAsActionButton= */ false));
     }
 
@@ -117,6 +119,7 @@ public class OmniboxActionFactoryImplUnitTest {
                                 "accessibility",
                                 SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "url",
+                                /* tabId= */ 0,
                                 /* showAsActionButton= */ false));
     }
 }

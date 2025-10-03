@@ -42,4 +42,12 @@ public interface OmniboxActionDelegate {
 
     /** Handles opening the CBD or the quick deleted dialog. */
     void handleClearBrowsingData();
+
+    /**
+     * Switch to an existing tab that is identified by tabId.
+     *
+     * @param identifier for the {@link Tab}.
+     * @return whether the switch was successful.
+     */
+    boolean switchToTab(int tabId);
 }

@@ -376,7 +376,8 @@ public class AutocompleteController {
      * @param match the AutocompleteMatch to retrieve Tab info for
      * @return tab that hosts matching URL
      */
-    @Nullable Tab getMatchingTabForSuggestion(AutocompleteMatch match) {
+    @Nullable
+    public Tab getMatchingTabForSuggestion(AutocompleteMatch match) {
         if (mNativeController == 0) return null;
         if (!hasValidNativeObjectRef(match, VerificationPoint.GET_MATCHING_TAB)) return null;
         return AutocompleteControllerJni.get()

@@ -116,6 +116,7 @@ public class OmniboxActionsTest {
                             "accessibility",
                             type.getNumber(),
                             "https://www.google.com",
+                            /* tabId= */ 0,
                             /* showAsActionButton= */ false));
         }
 

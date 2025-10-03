@@ -366,7 +366,9 @@ public class SearchActivity extends AsyncInitializationActivity
                                                 () -> getModalDialogManager(),
                                                 /* managePasskeys= */ false),
                                 // Open Quick Delete Dialog callback:
-                                null),
+                                null,
+                                TabWindowManagerSingleton::getInstance,
+                                this::bringTabToFront),
                         null,
                         backPressManager,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,

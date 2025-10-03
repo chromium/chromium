@@ -43,6 +43,7 @@ public interface OmniboxActionFactory {
             String accessibilityHint,
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
             String actionUri,
+            int tabId,
             boolean showAsActionButton);
 
     @NativeMethods

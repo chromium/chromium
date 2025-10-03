@@ -413,6 +413,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     "accessibility",
                                     SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
                                     "https://google.com",
+                                    /* tabId= */ 0,
                                     /* showAsActionButton= */ false)));
 
             var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
@@ -432,6 +433,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     "accessibility",
                                     SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
                                     "https://google.com",
+                                    /* tabId= */ 0,
                                     /* showAsActionButton= */ false),
                             new OmniboxActionInSuggest(
                                     0,
@@ -439,6 +441,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     "accessibility2",
                                     SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
                                     "https://google.com",
+                                    /* tabId= */ 0,
                                     /* showAsActionButton= */ true),
                             new OmniboxActionInSuggest(
                                     0,
@@ -446,6 +449,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     "accessibility3",
                                     SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
                                     "https://google.com",
+                                    /* tabId= */ 0,
                                     /* showAsActionButton= */ true)));
 
             var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);

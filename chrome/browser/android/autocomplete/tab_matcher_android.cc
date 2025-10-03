@@ -209,6 +209,7 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
     TabInfo info;
     info.has_matching_tab = true;
     info.android_tab = JavaObjectWeakGlobalRef(env, tab->GetJavaObject());
+    info.android_tab_id = tab->GetAndroidId();
     tab_infos[tab_stripped_url] = info;
   }
 

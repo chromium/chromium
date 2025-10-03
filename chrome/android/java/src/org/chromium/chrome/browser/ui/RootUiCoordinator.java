@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -1615,7 +1616,9 @@ public class RootUiCoordinator
                                         ArchivedTabModelOrchestrator.getForProfile(
                                                         mProfileSupplier.get())
                                                 .getTabModelSelector());
-                            });
+                            },
+                            TabWindowManagerSingleton::getInstance,
+                            IntentHandler::bringTabToFront);
 
             mToolbarManager =
                     new ToolbarManager(

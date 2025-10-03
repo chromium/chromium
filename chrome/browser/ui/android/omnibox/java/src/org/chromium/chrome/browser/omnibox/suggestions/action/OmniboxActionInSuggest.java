@@ -28,6 +28,8 @@ public class OmniboxActionInSuggest extends OmniboxAction {
     /** The details about the underlying action. */
     public final /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType;
 
+    public final int tabId;
+
     private final String mActionUri;
 
     public OmniboxActionInSuggest(
@@ -36,6 +38,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
             String accessibilityHint,
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
             String actionUri,
+            int tabId,
             boolean showAsActionButton) {
         super(
                 OmniboxActionId.ACTION_IN_SUGGEST,
@@ -46,6 +49,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 R.style.TextAppearance_ChipText,
                 showAsActionButton);
         this.actionType = actionType;
+        this.tabId = tabId;
         mActionUri = actionUri;
     }
 

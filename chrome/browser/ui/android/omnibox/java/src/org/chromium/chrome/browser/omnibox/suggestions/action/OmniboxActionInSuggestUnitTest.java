@@ -69,6 +69,7 @@ public class OmniboxActionInSuggestUnitTest {
                             "accessibility",
                             kesemActionType,
                             "",
+                            /* tabId= */ 0,
                             /* showAsActionButton= */ false);
             assertNotEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
@@ -85,6 +86,7 @@ public class OmniboxActionInSuggestUnitTest {
                             "accessibility",
                             kesemActionType.getNumber(),
                             "",
+                            /* tabId= */ 0,
                             /* showAsActionButton= */ false);
             assertEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
@@ -101,6 +103,7 @@ public class OmniboxActionInSuggestUnitTest {
                                 "",
                                 SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "",
+                                /* tabId= */ 0,
                                 /* showAsActionButton= */ false));
     }
 
@@ -115,6 +118,7 @@ public class OmniboxActionInSuggestUnitTest {
                                 "",
                                 SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "",
+                                /* tabId= */ 0,
                                 /* showAsActionButton= */ false));
     }
 
@@ -152,6 +156,7 @@ public class OmniboxActionInSuggestUnitTest {
                                 "accessibility",
                                 SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
                                 "",
+                                /* tabId= */ 0,
                                 /* showAsActionButton= */ false));
     }
 
@@ -160,7 +165,13 @@ public class OmniboxActionInSuggestUnitTest {
             SuggestTemplateInfo.TemplateAction.ActionType type, Intent intent) {
         var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
         return new OmniboxActionInSuggest(
-                0, "wink", "accessibility", type.getNumber(), uri, /* showAsActionButton= */ false);
+                0,
+                "wink",
+                "accessibility",
+                type.getNumber(),
+                uri,
+                /* tabId= */ 0,
+                /* showAsActionButton= */ false);
     }
 
     @Test

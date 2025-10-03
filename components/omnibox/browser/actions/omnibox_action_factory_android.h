@@ -33,6 +33,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     const std::u16string& accessibility_hint,
     int action_type,
     const std::string& action_uri,
+    int tab_id,
     bool show_as_action_button);
 
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(

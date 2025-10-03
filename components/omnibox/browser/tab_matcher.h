@@ -29,6 +29,7 @@ class TabMatcher {
 #if BUILDFLAG(IS_ANDROID)
     // Weak pointer to an Android Tab for the supplied GURL.
     JavaObjectWeakGlobalRef android_tab{};
+    int android_tab_id{};
 #endif
   };
 
