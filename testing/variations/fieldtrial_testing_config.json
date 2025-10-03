@@ -28116,6 +28116,26 @@
             ]
         }
     ],
+    "WhatsNewRefresh": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "p5xavcMU50ugnJ3q1cK0R26c3Tsi"
+                    },
+                    "enable_features": [
+                        "WhatsNewDesktopRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "WhatsNewSparkEdition": [
         {
             "platforms": [

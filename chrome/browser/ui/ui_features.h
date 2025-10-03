@@ -446,6 +446,9 @@ BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInBrowser);
 bool IsAndroidAnimatedProgressBarInBrowserEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Controls whether the updated What's New page is enabled.
+BASE_DECLARE_FEATURE(kWhatsNewDesktopRefresh);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

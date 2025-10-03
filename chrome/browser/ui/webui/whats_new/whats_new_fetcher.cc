@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_version.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -36,16 +37,36 @@
 
 namespace whats_new {
 const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
+const char kChromeWhatsNewRefreshURL[] =
+    "https://www.google.com/chrome/wn-2025/whats-new/";
 const char kChromeWhatsNewStagingURL[] =
     "https://chrome-staging.corp.google.com/chrome/whats-new/";
+const char kChromeWhatsNewRefreshStagingURL[] =
+    "https://chrome-staging.corp.google.com/chrome/wn-2025/whats-new/";
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
-GURL GetServerURL(bool is_staging) {
-  const GURL base_url =
-      is_staging ? GURL(kChromeWhatsNewStagingURL) : GURL(kChromeWhatsNewURL);
+GURL AddVersionParameter(const GURL& base_url) {
   return net::AppendQueryParameter(base_url, "version",
                                    base::NumberToString(CHROME_VERSION_MAJOR));
+}
+
+GURL GetServerLegacyURL(bool is_staging) {
+  const GURL base_url =
+      is_staging ? GURL(kChromeWhatsNewStagingURL) : GURL(kChromeWhatsNewURL);
+  return AddVersionParameter(base_url);
+}
+
+GURL GetServerRefreshURL(bool is_staging) {
+  const GURL base_url = is_staging ? GURL(kChromeWhatsNewRefreshStagingURL)
+                                   : GURL(kChromeWhatsNewRefreshURL);
+  return AddVersionParameter(base_url);
+}
+
+GURL GetServerURL(bool is_staging) {
+  return base::FeatureList::IsEnabled(features::kWhatsNewDesktopRefresh)
+             ? GetServerRefreshURL(is_staging)
+             : GetServerLegacyURL(is_staging);
 }
 
 GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
