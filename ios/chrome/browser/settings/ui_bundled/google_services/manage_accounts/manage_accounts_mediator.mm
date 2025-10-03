@@ -123,6 +123,12 @@
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  if (!identity) {
+    DUMP_WILL_BE_NOTREACHED();
+    // If the user is signed-out, the view may currently be dismissed. No need
+    // to update the view.
+    return;
+  }
   [self handleIdentityUpdated:identity];
 }
 
