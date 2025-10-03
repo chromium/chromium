@@ -226,12 +226,9 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   const auto old_body_end = body_end_;
   body_end_ = new_body_end;
 
-  // TODO(crbug.com/422065015): Consider implementing optimistic writes, similar
-  // to Simple Cache (see https://chromiumcodereview.appspot.com/13907009). This
-  // would allow returning synchronously if no other operations are pending.
-  backend_->WriteEntryData(key_, res_id_or_error_, old_body_end, body_end_,
-                           offset, buf, buf_len, truncate, std::move(callback));
-  return net::ERR_IO_PENDING;
+  return backend_->WriteEntryData(key_, res_id_or_error_, old_body_end,
+                                  body_end_, offset, buf, buf_len, truncate,
+                                  std::move(callback));
 }
 
 int SqlEntryImpl::ReadSparseData(int64_t offset,

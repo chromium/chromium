@@ -779,6 +779,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // exceeds this value and the browser is idle, a checkpoint is executed.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kSqlDiskCacheIdleCheckpointThreshold);
+// While the memory usage for the buffer doesn't exceed the number of bytes
+// specified by this param, the SQL backend executes optimistic writes.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                      kSqlDiskCacheOptimisticWriteBufferSize);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.

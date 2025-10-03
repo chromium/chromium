@@ -68,7 +68,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kInvalidArgument = 14,
     kBodyEndMismatch = 15,
     kFailedForTesting = 16,
-    kMaxValue = kFailedForTesting
+    kAborted = 17,
+    kMaxValue = kAborted
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 

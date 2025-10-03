@@ -150,15 +150,15 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // serialization.
   // If the backend is deleted during execution, the callback will be called
   // with net::ERR_ABORTED.
-  void WriteEntryData(const CacheEntryKey& key,
-                      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-                      int64_t old_body_end,
-                      int64_t body_end,
-                      int64_t offset,
-                      scoped_refptr<net::IOBuffer> buffer,
-                      int buf_len,
-                      bool truncate,
-                      CompletionOnceCallback callback);
+  int WriteEntryData(const CacheEntryKey& key,
+                     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+                     int64_t old_body_end,
+                     int64_t body_end,
+                     int64_t offset,
+                     scoped_refptr<net::IOBuffer> buffer,
+                     int buf_len,
+                     bool truncate,
+                     CompletionOnceCallback callback);
 
   // Reads data from an entry's body (stream 1). The operation is scheduled via
   // the `ExclusiveOperationCoordinator`. `sparse_reading` controls whether
@@ -207,6 +207,10 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // This is for testing purposes only.
   size_t GetSizeOfInFlightEntryModificationsMapForTesting() {
     return in_flight_entry_modifications_.size();
+  }
+
+  int64_t GetOptimisticWriteBufferTotalSizeForTesting() {
+    return optimistic_write_buffer_total_size_;
   }
 
  private:
@@ -371,9 +375,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
-  // Handles the backend logic for `WriteEntryData()`. This method is scheduled
-  // as a normal operation via the `ExclusiveOperationCoordinator` and forwards
-  // the call to the persistent store.
+  // Handles the backend logic for a non-optimistic write operation. This method
+  // is scheduled as a normal operation via the `ExclusiveOperationCoordinator`
+  // and forwards the call to the persistent store.
   void HandleWriteEntryDataOperation(
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
@@ -385,6 +389,32 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       SqlPersistentStore::ErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the backend logic for an optimistic write operation. This method is
+  // scheduled as a normal operation via the `ExclusiveOperationCoordinator` and
+  // forwards the write to the persistent store.
+  void HandleOptimisticWriteEntryDataOperation(
+      const CacheEntryKey& key,
+      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      int64_t old_body_end,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      bool truncate,
+      SqlPersistentStore::ErrorCallback maybe_update_res_id_or_error_callback,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Called when an optimistic write is finished. `buf_len` is the memory usage
+  // consumed for the optimistic write.
+  void OnOptimisticWriteFinished(
+      const CacheEntryKey& key,
+      SqlPersistentStore::ResId res_id,
+      int buf_len,
+      SqlPersistentStore::ErrorCallback maybe_update_res_id_or_error_callback,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
+      SqlPersistentStore::Error result);
 
   // Handles the backend logic for `ReadEntryData()`. This method is scheduled
   // as a normal operation via the `ExclusiveOperationCoordinator` and forwards
@@ -488,6 +518,11 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // even if `MaybeTriggerEviction()` is called multiple times while an eviction
   // task is pending, only one will be in the queue at any time.
   bool eviction_operation_queued_ = false;
+
+  // The memory usage consumed for optimistic writes. Optimistic writes are
+  // performed as long as this value does not exceed
+  // `kSqlDiskCacheOptimisticWriteBufferSize`.
+  int64_t optimistic_write_buffer_total_size_ = 0;
 
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};

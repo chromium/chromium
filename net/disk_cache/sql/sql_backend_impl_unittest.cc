@@ -16,9 +16,11 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache_test_util.h"
@@ -93,6 +95,18 @@ class SqlBackendImplTest : public testing::Test {
     backend->Init(future.GetCallback());
     CHECK_EQ(future.Get(), net::OK);
     return backend;
+  }
+  void WaitUntilInitialized(
+      SqlBackendImpl& backend,
+      const scoped_refptr<SqlBackendImpl::ResIdOrErrorHolder>&
+          res_id_or_error) {
+    CHECK(res_id_or_error);
+    while (!res_id_or_error->data.has_value()) {
+      base::RunLoop run_loop;
+      backend.GetBackgroundTaskRunnerForTest()->PostTask(
+          FROM_HERE, run_loop.QuitClosure());
+      run_loop.Run();
+    }
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -1093,18 +1107,34 @@ TEST_F(SqlBackendImplTest, AbortPendingWriteData) {
   ASSERT_THAT(create_result.net_error(), IsOk());
   auto* entry = create_result.ReleaseEntry();
 
+  net::TestCompletionCallback flush_cb;
+  backend->FlushQueueForTest(flush_cb.callback());
+  EXPECT_THAT(flush_cb.WaitForResult(), IsOk());
+
   // Initiate a WriteData operation, which will be pending.
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
   base::test::TestFuture<int> write_future;
   int rv = entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
                             write_future.GetCallback(), false);
-  ASSERT_THAT(rv, IsError(net::ERR_IO_PENDING));
+  ASSERT_THAT(rv, write_buffer->size());
+
+  auto task_runner = backend->GetBackgroundTaskRunnerForTest();
 
   // Destroy the backend while the write is in flight.
   backend.reset();
 
-  // The callback should be aborted.
-  EXPECT_EQ(write_future.Get(), net::ERR_ABORTED);
+  auto res_id_or_error = static_cast<SqlEntryImpl*>(entry)->res_id_or_error();
+  while (!(res_id_or_error->data.has_value() &&
+           std::holds_alternative<SqlPersistentStore::Error>(
+               *res_id_or_error->data))) {
+    base::RunLoop run_loop;
+    task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // The res_id_or_error should have been set to aborted.
+  EXPECT_EQ(std::get<SqlPersistentStore::Error>(*res_id_or_error->data),
+            SqlPersistentStore::Error::kAborted);
 
   entry->Close();
 }
@@ -1150,8 +1180,8 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
   auto* entry1 = CreateEntryAndWriteData(backend.get(), kKey1, kData);
   auto* entry2 = CreateEntryAndWriteData(backend.get(), kKey2, kData);
   auto* entry3 = CreateEntryAndWriteData(backend.get(), kKey3, kData);
-  CHECK(std::holds_alternative<SqlPersistentStore::ResId>(
-      static_cast<SqlEntryImpl*>(entry3)->res_id_or_error()->data.value()));
+  WaitUntilInitialized(*backend,
+                       static_cast<SqlEntryImpl*>(entry3)->res_id_or_error());
   auto res_id = std::get<SqlPersistentStore::ResId>(
       static_cast<SqlEntryImpl*>(entry3)->res_id_or_error()->data.value());
   entry1->Close();
@@ -1237,12 +1267,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntry) {
   EXPECT_FALSE(sql_entry->res_id_or_error()->data.has_value());
 
   // 3. Wait for the database operation to complete.
-  while (!sql_entry->res_id_or_error()->data.has_value()) {
-    base::RunLoop run_loop;
-    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
-                                                        run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
 
   // 4. Now the res_id should be available.
   ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
@@ -1362,12 +1387,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryWithDbFailure) {
   EXPECT_FALSE(sql_entry->res_id_or_error()->data.has_value());
 
   // 3. Wait for the database operation to complete.
-  while (!sql_entry->res_id_or_error()->data.has_value()) {
-    base::RunLoop run_loop;
-    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
-                                                        run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
 
   // 4. Now the res_id should be available and hold a kFailedForTesting.
   ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
@@ -1400,11 +1420,11 @@ TEST_F(SqlBackendImplTest,
   auto* entry = entry_result.ReleaseEntry();
   ASSERT_TRUE(entry);
 
-  net::TestCompletionCallback write_cb;
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
-  EXPECT_EQ(entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
-                             write_cb.callback(), false),
-            net::ERR_IO_PENDING);
+  EXPECT_EQ(
+      entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
+                       base::BindOnce([](int rv) { NOTREACHED(); }), false),
+      write_buffer->size());
 
   net::TestCompletionCallback read_cb;
   auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
@@ -1417,7 +1437,6 @@ TEST_F(SqlBackendImplTest,
       entry->GetAvailableRange(0, 10, range_future.GetCallback()).net_error,
       net::ERR_IO_PENDING);
 
-  EXPECT_THAT(write_cb.WaitForResult(), IsError(net::ERR_FAILED));
   EXPECT_THAT(read_cb.WaitForResult(), IsError(net::ERR_FAILED));
   EXPECT_THAT(range_future.Get().net_error, IsError(net::ERR_FAILED));
   entry->Close();
@@ -1435,22 +1454,17 @@ TEST_F(SqlBackendImplTest,
   ASSERT_TRUE(entry);
 
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
-  while (!sql_entry->res_id_or_error()->data.has_value()) {
-    base::RunLoop run_loop;
-    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
-                                                        run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
   EXPECT_EQ(entry->WriteData(0, 0, write_buffer.get(), write_buffer->size(),
                              base::DoNothing(), false),
             static_cast<int>(write_buffer->size()));
 
   net::TestCompletionCallback write_cb;
-  EXPECT_EQ(entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
-                             write_cb.callback(), false),
-            net::ERR_IO_PENDING);
-  EXPECT_THAT(write_cb.WaitForResult(), IsError(net::ERR_FAILED));
+  EXPECT_EQ(
+      entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
+                       base::BindOnce([](int rv) { NOTREACHED(); }), false),
+      net::ERR_FAILED);
 
   net::TestCompletionCallback read_cb;
   auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
@@ -1480,12 +1494,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureDoom) {
   ASSERT_TRUE(entry);
 
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
-  while (!sql_entry->res_id_or_error()->data.has_value()) {
-    base::RunLoop run_loop;
-    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
-                                                        run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
 
   entry->Doom();
   EXPECT_TRUE(static_cast<SqlEntryImpl*>(entry)->doomed());
@@ -1496,6 +1505,233 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureDoom) {
   disk_cache::EntryResult open_result = cb_open.GetResult(
       backend->OpenEntry("key", net::HIGHEST, cb_open.callback()));
   EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
+TEST_F(SqlBackendImplTest, OptimisticWriteBufferSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"}});
+
+  auto backend = CreateBackendAndInit();
+  TestEntryResultCompletionCallback cb;
+  disk_cache::EntryResult entry_result =
+      backend->CreateEntry("key", net::HIGHEST, cb.callback());
+  ASSERT_THAT(entry_result.net_error(), IsOk());
+  auto* entry = entry_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // First write is smaller than the buffer size, should be optimistic.
+  auto write_buffer1 = base::MakeRefCounted<net::StringIOBuffer>("data1");
+  EXPECT_EQ(entry->WriteData(1, 0, write_buffer1.get(), write_buffer1->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(write_buffer1->size()));
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer1->size());
+
+  // Second write exceeds the buffer size, should be pending.
+  auto write_buffer2 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(100, 'a'));
+  net::TestCompletionCallback write_cb;
+  EXPECT_EQ(entry->WriteData(1, write_buffer1->size(), write_buffer2.get(),
+                             write_buffer2->size(), write_cb.callback(), false),
+            net::ERR_IO_PENDING);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer1->size());
+
+  EXPECT_EQ(write_cb.WaitForResult(), static_cast<int>(write_buffer2->size()));
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, OptimisticWriteBufferLifecycle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"}});
+
+  auto backend = CreateBackendAndInit();
+  TestEntryResultCompletionCallback cb;
+  disk_cache::EntryResult entry_result =
+      backend->CreateEntry("key", net::HIGHEST, cb.callback());
+  ASSERT_THAT(entry_result.net_error(), IsOk());
+  auto* entry = entry_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // This write should be optimistic.
+  auto write_buffer1 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(50, 'a'));
+  EXPECT_EQ(entry->WriteData(1, 0, write_buffer1.get(), write_buffer1->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(write_buffer1->size()));
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer1->size());
+
+  // This write should also be optimistic, filling the buffer.
+  auto write_buffer2 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(50, 'b'));
+  EXPECT_EQ(entry->WriteData(1, 50, write_buffer2.get(), write_buffer2->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(write_buffer2->size()));
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer1->size() + write_buffer2->size());
+
+  // This write should be pending as the buffer is full.
+  auto write_buffer3 = base::MakeRefCounted<net::StringIOBuffer>("c");
+  net::TestCompletionCallback write_cb3;
+  EXPECT_EQ(entry->WriteData(1, 100, write_buffer3.get(), write_buffer3->size(),
+                             write_cb3.callback(), false),
+            net::ERR_IO_PENDING);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer1->size() + write_buffer2->size());
+
+  // Flush the queue. This will ensure the first two optimistic writes complete
+  // on the background thread, which will free up the buffer and allow the
+  // pending write to proceed.
+  net::TestCompletionCallback flush_cb1;
+  backend->FlushQueueForTest(flush_cb1.callback());
+  EXPECT_THAT(flush_cb1.WaitForResult(), IsOk());
+
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+
+  // Now that the queue is flushed, the pending write should have completed.
+  EXPECT_EQ(write_cb3.WaitForResult(), static_cast<int>(write_buffer3->size()));
+
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+  // The buffer should be free again, so this write should be optimistic.
+  auto write_buffer4 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(50, 'd'));
+  EXPECT_EQ(entry->WriteData(1, 101, write_buffer4.get(), write_buffer4->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(write_buffer4->size()));
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer4->size());
+
+  entry->Close();
+
+  net::TestCompletionCallback flush_cb2;
+  backend->FlushQueueForTest(flush_cb2.callback());
+  EXPECT_THAT(flush_cb2.WaitForResult(), IsOk());
+
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+}
+
+TEST_F(SqlBackendImplTest, OptimisticWriteFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"}});
+
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+  const std::string kInitialData = "initial data";
+
+  // 1. Create an entry with some data.
+  auto* entry = CreateEntryAndWriteData(backend.get(), kKey, kInitialData);
+  entry->Close();
+
+  // 2. Re-open the entry.
+  TestEntryResultCompletionCallback open_cb;
+  disk_cache::EntryResult open_result = open_cb.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, open_cb.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  entry = open_result.ReleaseEntry();
+  auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
+
+  // 3. Simulate a database failure for subsequent operations.
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+
+  // 4. Perform an optimistic write, which should fail in the background.
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("new data");
+  EXPECT_EQ(entry->WriteData(1, kInitialData.size(), write_buffer.get(),
+                             write_buffer->size(), base::DoNothing(), false),
+            static_cast<int>(write_buffer->size()));
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer->size());
+
+  // 5. Disable failure simulation.
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(false);
+
+  // 6. Wait for the background write to fail and update the entry's state.
+  net::TestCompletionCallback flush_cb1;
+  backend->FlushQueueForTest(flush_cb1.callback());
+  EXPECT_THAT(flush_cb1.WaitForResult(), IsOk());
+
+  // 7. Verify that the entry is now in an error state.
+  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
+  ASSERT_TRUE(std::holds_alternative<SqlPersistentStore::Error>(
+      sql_entry->res_id_or_error()->data.value()));
+  EXPECT_EQ(std::get<SqlPersistentStore::Error>(
+                sql_entry->res_id_or_error()->data.value()),
+            SqlPersistentStore::Error::kFailedForTesting);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+
+  // 8. Subsequent writes should fail immediately.
+  EXPECT_EQ(entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
+                             base::DoNothing(), false),
+            net::ERR_FAILED);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+
+  entry->Close();
+
+  // 9. Since the entry should have been deleted from storage, OpenEntry will
+  //    fail.
+  TestEntryResultCompletionCallback open_cb2;
+  open_result = open_cb2.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, open_cb2.callback()));
+  ASSERT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
+TEST_F(SqlBackendImplTest, OptimisticWriteAfterSpeculativeCreateEntry) {
+  auto backend = CreateBackendAndInit();
+
+  // 1. Enable failure simulation.
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+
+  const std::string kKey = "my-key";
+
+  // 2. Create an entry. This should return immediately with a speculatively
+  //    created entry.
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // 2. Disable failure simulation.
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(false);
+
+  // 3. This write should be optimistic, filling the buffer.
+  auto write_buffer1 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(50, 'a'));
+  EXPECT_EQ(entry->WriteData(1, 0, write_buffer1.get(), write_buffer1->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(write_buffer1->size()));
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            write_buffer1->size());
+
+  // 4. Wait for the background creation and write to fail and update the
+  //    entry's state.
+  net::TestCompletionCallback flush_cb;
+  backend->FlushQueueForTest(flush_cb.callback());
+  EXPECT_THAT(flush_cb.WaitForResult(), IsOk());
+
+  auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
+
+  // 6. Verify that the entry is now in an error state.
+  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
+  ASSERT_TRUE(std::holds_alternative<SqlPersistentStore::Error>(
+      sql_entry->res_id_or_error()->data.value()));
+  EXPECT_EQ(std::get<SqlPersistentStore::Error>(
+                sql_entry->res_id_or_error()->data.value()),
+            SqlPersistentStore::Error::kFailedForTesting);
+
+  // 7. The buffer size should be set to 0.
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+
+  entry->Close();
 }
 
 }  // namespace

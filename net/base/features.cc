@@ -655,6 +655,11 @@ BASE_FEATURE_PARAM(int,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheIdleCheckpointThreshold",
                    1000);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheOptimisticWriteBufferSize,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheOptimisticWriteBufferSize",
+                   32 * 1024 * 1024);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);

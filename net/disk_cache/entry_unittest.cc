@@ -3903,15 +3903,11 @@ void DiskCacheEntryTest::EvictOldEntries() {
   EXPECT_EQ(kWriteSize,
             WriteData(entry, 1, 0, buffer.get(), kWriteSize, false));
   entry->Close();
-  AddDelay();
 
   std::string key2("the key prefix");
   for (int i = 0; i < kNumExtraEntries; i++) {
-    if (i == kNumExtraEntries - 2) {
-      // Create a distinct timestamp for the last two entries. These entries
-      // will be checked for outliving the eviction.
-      AddDelay();
-    }
+    // Create a distinct timestamp for the each entries.
+    AddDelay();
     ASSERT_THAT(CreateEntry(key2 + base::NumberToString(i), &entry), IsOk());
     ScopedEntryPtr entry_closer(entry);
     EXPECT_EQ(kWriteSize,
