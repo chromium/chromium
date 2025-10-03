@@ -383,11 +383,11 @@ BASE_FEATURE(kGlicActorIncrementalTyping, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kGlicActorKeyDownDuration{
     &kGlicActorIncrementalTyping,
-    "glic-actor-incremental-typing-key-down-duration", base::Milliseconds(5)};
+    "glic-actor-incremental-typing-key-down-duration", base::Milliseconds(25)};
 
 const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration{
     &kGlicActorIncrementalTyping,
-    "glic-actor-incremental-typing-key-up-duration", base::Milliseconds(5)};
+    "glic-actor-incremental-typing-key-up-duration", base::Milliseconds(25)};
 
 // If the TypeTool is invoked with followed_by_enter, the enter key is
 // dispatched with this delay.
