@@ -487,8 +487,8 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
         color_space = display::GetColorSpaceFromEdid(edid_parser);
       }
 
-      display.SetColorSpaces(
-          gfx::DisplayColorSpaces(color_space, gfx::BufferFormat::BGRA_8888));
+      display.SetColorSpaces(gfx::DisplayColorSpaces(
+          color_space, viz::SinglePlaneFormat::kBGRA_8888));
     }
 
     display.set_color_depth(depth);
