@@ -966,11 +966,6 @@ extern const char kLensOverlayEnableLandscapeCompatibilityName[] =
 extern const char kLensOverlayEnableLandscapeCompatibilityDescription[] =
     "When enabled, it allows Lens Overlay to run in landscape orientation";
 
-extern const char kLensOverlayEnableLVFEscapeHatchName[] =
-    "Escape hatch to LVF in the overflow menu in Lens Overlay";
-extern const char kLensOverlayEnableLVFEscapeHatchDescription[] =
-    "When enabled, the escape hatch to LVF is presented in the overflow menu";
-
 extern const char kLensOverlayEnableSameTabNavigationName[] =
     "Lens overlay same tab navigation";
 extern const char kLensOverlayEnableSameTabNavigationDescription[] =

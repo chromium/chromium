@@ -277,9 +277,6 @@ BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
 // Feature to allow landscape support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableLandscapeCompatibility);
 
-// Feature to enable LVF escape hatch in the overflow menu in Lens overlay.
-BASE_DECLARE_FEATURE(kLensOverlayEnableLVFEscapeHatch);
-
 // Feature to open lens overlay navigation in the same tab.
 BASE_DECLARE_FEATURE(kLensOverlayEnableSameTabNavigation);
 

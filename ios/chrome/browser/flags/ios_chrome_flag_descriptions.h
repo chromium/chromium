@@ -565,9 +565,6 @@ extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 extern const char kLensOverlayEnableLandscapeCompatibilityName[];
 extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
 
-extern const char kLensOverlayEnableLVFEscapeHatchName[];
-extern const char kLensOverlayEnableLVFEscapeHatchDescription[];
-
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];
 
