@@ -334,8 +334,45 @@ TEST_F(WaylandPointerTest, Axis) {
       ASSERT_TRUE(event->IsMouseWheelEvent());
       auto* mouse_wheel_event = event->AsMouseWheelEvent();
       EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL
-                    ? gfx::Vector2d(0, -MouseWheelEvent::kWheelDelta)
-                    : gfx::Vector2d(-MouseWheelEvent::kWheelDelta, 0),
+                    ? gfx::Vector2d(0, -10) : gfx::Vector2d(-10, 0),
+                mouse_wheel_event->offset());
+      EXPECT_EQ(gfx::PointF(), mouse_wheel_event->location_f());
+      EXPECT_EQ(gfx::PointF(), mouse_wheel_event->root_location_f());
+    }
+  }
+}
+
+TEST_F(WaylandPointerTest, Axis120) {
+  SendEnter();
+
+  for (uint32_t axis :
+       {WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_HORIZONTAL_SCROLL}) {
+    for (bool send_axis_source : {false, true}) {
+      std::unique_ptr<Event> event;
+      EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
+
+      PostToServerAndWait([axis, send_axis_source](
+                              wl::TestWaylandServerThread* server) {
+        auto* const pointer = server->seat()->pointer()->resource();
+
+        if (send_axis_source) {
+          // The axis source event is optional.  When it is not set within the
+          // event frame, we assume the mouse wheel.
+          wl_pointer_send_axis_source(pointer, WL_POINTER_AXIS_SOURCE_WHEEL);
+        }
+
+        // Mouse wheels generate both axis and axis_value120 events.  The value
+        // of the axis event is ignored.
+        wl_pointer_send_axis(pointer, 1003, axis, 10);
+        wl_pointer_send_axis_value120(pointer, axis, 120);
+        wl_pointer_send_frame(pointer);
+      });
+
+      ASSERT_TRUE(event);
+      ASSERT_TRUE(event->IsMouseWheelEvent());
+      auto* mouse_wheel_event = event->AsMouseWheelEvent();
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL
+                    ? gfx::Vector2d(0, -120) : gfx::Vector2d(-120, 0),
                 mouse_wheel_event->offset());
       EXPECT_EQ(gfx::PointF(), mouse_wheel_event->location_f());
       EXPECT_EQ(gfx::PointF(), mouse_wheel_event->root_location_f());
