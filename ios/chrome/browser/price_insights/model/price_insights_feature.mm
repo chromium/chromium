@@ -23,14 +23,6 @@ bool IsPriceInsightsRegionEnabled() {
 }
 
 bool IsPriceInsightsEnabled(ProfileIOS* profile) {
-  // Allow Lens overlay to disable price insights because the price insights
-  // entrypoint trumps lens overlay in the location bar. This is only used for
-  // experimentation in coordination with the price insight owner.
-  if (base::FeatureList::IsEnabled(kLensOverlayDisablePriceInsights) &&
-      !base::FeatureList::IsEnabled(kLensOverlayPriceInsightsCounterfactual)) {
-    return false;
-  }
-
   DCHECK(profile);
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForProfile(profile);

@@ -166,9 +166,6 @@ const base::NotFatalUntil kLensOverlayNotFatalUntil = base::NotFatalUntil::M200;
 
 BASE_FEATURE(kLensLoadAIMInLensResultPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayDisablePriceInsights,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlayPriceInsightsCounterfactual,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -943,13 +943,6 @@ extern const char kLensOverlayDisableIPHPanGestureDescription[] =
     "Disable the pan gesture that dismisses Lens Overlay IPH. The IPH can "
     "still be dismissed with a tap.";
 
-extern const char kLensOverlayDisablePriceInsightsName[] =
-    "Allow Lens overlay to disable price insights";
-extern const char kLensOverlayDisablePriceInsightsDescription[] =
-    "When enabled, price insights is disabled. The price insight entrypoint "
-    "trumps lens overlay entrypoint in the location bar. This should only be "
-    "used for experiments.";
-
 extern const char kLensOverlayPriceInsightsCounterfactualName[] =
     "Lens overlay disable price insights counterfactual.";
 extern const char kLensOverlayPriceInsightsCounterfactualDescription[] =

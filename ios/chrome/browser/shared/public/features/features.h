@@ -261,11 +261,6 @@ BASE_DECLARE_FEATURE(kEnableLensViewFinderUnifiedExperience);
 BASE_DECLARE_FEATURE(kLensLoadAIMInLensResultPage);
 
 
-// Feature flag to disable price insights for a lens overlay experiment. As the
-// price insights entrypoint trumps the lens overlay entrypoint. This flag
-// should only be used for experiment.
-BASE_DECLARE_FEATURE(kLensOverlayDisablePriceInsights);
-
 // Feature flag to enable lens overlay location bar entrypoint only when price
 // insights should trigger. This is used as counterfactual for
 // kLensOverlayDisablePriceInsights.
