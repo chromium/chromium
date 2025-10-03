@@ -1440,32 +1440,8 @@ TabDragController::Detach(ReleaseCapture release_capture) {
 
   std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
                            std::unique_ptr<DetachedTabCollection>>>
-      owned_tabs_and_collections;
-  for (TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
-    const int index =
-        attached_model->GetIndexOfWebContents(tab_drag_datum.contents);
-
-    if (index == TabStripModel::kNoTab) {
-      // If this is a tab, we already moved it as part of its group.
-      // If this is a header, we will move it when we get to its first tab.
-      continue;
-    }
-
-    const std::optional<tab_groups::TabGroupId> group =
-        attached_model->GetTabGroupForTab(index);
-    if (std::find(groups_to_move.begin(), groups_to_move.end(), group) !=
-        groups_to_move.end()) {
-      owned_tabs_and_collections.emplace_back(
-          attached_model->DetachTabGroupForInsertion(group.value()));
-    } else if (attached_model->GetTabAtIndex(index)->IsSplit()) {
-      owned_tabs_and_collections.emplace_back(
-          attached_model->DetachSplitTabForInsertion(
-              attached_model->GetTabAtIndex(index)->GetSplit().value()));
-    } else {
-      owned_tabs_and_collections.emplace_back(
-          attached_model->DetachTabAtForInsertion(index));
-    }
-  }
+      owned_tabs_and_collections =
+          attached_model->DetachTabsAndCollectionsForInsertion(dragged_indices);
 
   // If we've removed the last Tab from the TabDragContext, hide the
   // frame now.

@@ -395,6 +395,47 @@ void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
                         tabs::TabInterface::DetachReason::kDelete);
 }
 
+std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+                         std::unique_ptr<DetachedTabCollection>>>
+TabStripModel::DetachTabsAndCollectionsForInsertion(
+    const std::vector<int>& tab_indices) {
+  const std::vector<tab_groups::TabGroupId> groups_to_move =
+      GetGroupsDestroyedFromRemovingIndices(tab_indices);
+
+  std::vector<tabs::TabInterface*> tab_interfaces;
+  for (const int index : tab_indices) {
+    tab_interfaces.push_back(GetTabAtIndex(index));
+  }
+
+  std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+                           std::unique_ptr<DetachedTabCollection>>>
+      owned_tabs_and_collections;
+
+  for (const tabs::TabInterface* tab_interface : tab_interfaces) {
+    const int index = GetIndexOfTab(tab_interface);
+    if (index == TabStripModel::kNoTab) {
+      // If this is a tab, we already moved it as part of its group.
+      // If this is a header, we will move it when we get to its first tab.
+      continue;
+    }
+
+    const std::optional<tab_groups::TabGroupId> group =
+        tab_interface->GetGroup();
+    if (std::find(groups_to_move.begin(), groups_to_move.end(), group) !=
+        groups_to_move.end()) {
+      owned_tabs_and_collections.emplace_back(
+          DetachTabGroupForInsertion(group.value()));
+    } else if (tab_interface->IsSplit()) {
+      owned_tabs_and_collections.emplace_back(
+          DetachSplitTabForInsertion(tab_interface->GetSplit().value()));
+    } else {
+      owned_tabs_and_collections.emplace_back(DetachTabAtForInsertion(index));
+    }
+  }
+
+  return owned_tabs_and_collections;
+}
+
 std::unique_ptr<DetachedTab> TabStripModel::DetachTabWithReasonAt(
     int index,
     TabStripModelChange::RemoveReason web_contents_remove_reason,
