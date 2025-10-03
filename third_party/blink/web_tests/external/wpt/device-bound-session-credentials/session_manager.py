@@ -53,6 +53,7 @@ class SessionManager:
         self.provider_key = None
         self.use_empty_response = False
         self.registration_extra_cookies = []
+        self.has_custom_query_param = False
 
     def next_session_id(self):
         return len(self.session_to_key_map)
@@ -164,6 +165,10 @@ class SessionManager:
             for detail in registration_extra_cookies:
                 self.registration_extra_cookies.append(CookieDetail(detail.get("nameAndValue"), detail.get("attributes")))
 
+        has_custom_query_param = configuration.get("hasCustomQueryParam")
+        if has_custom_query_param is not None:
+            self.has_custom_query_param = has_custom_query_param
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -188,6 +193,9 @@ class SessionManager:
     def set_has_called_refresh(self, has_called_refresh):
         self.has_called_refresh = has_called_refresh
 
+    def get_has_custom_query_param(self):
+        return self.has_custom_query_param
+
     def pull_server_state(self):
         return {
             "hasCalledRefresh": self.has_called_refresh
@@ -204,6 +212,11 @@ class SessionManager:
 
     def get_early_challenge(self, session_id):
         return self.session_to_early_challenge_map.get(session_id)
+
+    def get_refresh_url(self):
+        if not self.has_custom_query_param:
+            return self.refresh_url
+        return self.refresh_url + "?refreshQueryParam=456"
 
     def get_sessions_instructions_response_credentials(self, session_id, request):
         return list(map(lambda cookie_detail: {
@@ -230,7 +243,7 @@ class SessionManager:
 
         response_body = {
             "session_identifier": str(response_session_id),
-            "refresh_url": self.refresh_url,
+            "refresh_url": self.get_refresh_url(),
             "scope": {
                 "origin": scope_origin,
                 "include_site": self.include_site,

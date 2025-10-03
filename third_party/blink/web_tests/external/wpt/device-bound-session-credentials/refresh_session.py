@@ -1,5 +1,6 @@
 import importlib
 import json
+from urllib.parse import parse_qs
 jwt_helper = importlib.import_module('device-bound-session-credentials.jwt_helper')
 session_manager = importlib.import_module('device-bound-session-credentials.session_manager')
 
@@ -22,6 +23,9 @@ def main(request, response):
             "continue": False
         }
         return (200, response.headers, json.dumps(response_body))
+
+    if test_session_manager.get_has_custom_query_param() and 'refreshQueryParam' not in parse_qs(request.url_parts.query):
+        return (400, response.headers, "")
 
     session_key = test_session_manager.get_session_key(session_id)
     if session_key == None:
