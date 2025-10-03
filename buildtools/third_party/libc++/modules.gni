@@ -5,6 +5,7 @@
 import("//build/config/apple/apple_sdk.gni")
 import("//build/config/c++/modules.gni")
 import("//build/config/clang/clang.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/sysroot.gni")
 if (use_xcode_symlinks) {
   import("//build/config/apple/mobile_config.gni")
@@ -90,6 +91,16 @@ if (use_clang_modules) {
       # The module needs to use the same version of -std that is used by the
       # libraries depending on it. Otherwise we get a module config mismatch.
       configs += configs_to_add - [ "//buildtools/third_party/libc++:stdver" ]
+
+      # Any complex target-specific logic needs to go in here.
+      # The modularize tool supports simple attributes, but not conditional
+      # logic.
+      if (target_name == "std_stdatomic_h" && use_cxx23) {
+        # In cxx23, stdatomic.h uses libcxx's stdatomic rather than the
+        # builtin.
+        public_deps -= [ ":_Builtin_stdatomic" ]
+        public_deps += [ ":std" ]
+      }
     }
   }
 
