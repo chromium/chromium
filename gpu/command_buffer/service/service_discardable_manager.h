@@ -94,14 +94,6 @@ class GPU_GLES2_EXPORT ServiceDiscardableManager
   using EntryCache = base::LRUCache<GpuDiscardableEntryKey,
                                     GpuDiscardableEntry,
                                     GpuDiscardableEntryKeyCompare>;
-  EntryCache entries_;
-
-  // Total size of all |entries_|. The same as summing
-  // GpuDiscardableEntry::size for each entry.
-  size_t total_size_ = 0;
-
-  // The limit above which the cache will start evicting resources.
-  size_t cache_size_limit_ = 0;
 };
 
 }  // namespace gpu

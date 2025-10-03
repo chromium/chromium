@@ -82,11 +82,7 @@ ServiceDiscardableManager::GpuDiscardableEntry::~GpuDiscardableEntry() =
     default;
 
 ServiceDiscardableManager::ServiceDiscardableManager(
-    const GpuPreferences& preferences)
-    : entries_(EntryCache::NO_AUTO_EVICT),
-      cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
-                            ? preferences.force_gpu_mem_discardable_limit_bytes
-                            : DiscardableCacheSizeLimit()) {
+    const GpuPreferences& preferences) {
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -97,11 +93,6 @@ ServiceDiscardableManager::ServiceDiscardableManager(
 }
 
 ServiceDiscardableManager::~ServiceDiscardableManager() {
-#if DCHECK_IS_ON()
-  for (const auto& entry : entries_) {
-    DCHECK(nullptr == entry.second.unlocked_texture_ref);
-  }
-#endif
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
@@ -118,27 +109,10 @@ bool ServiceDiscardableManager::OnMemoryDump(
                            reinterpret_cast<uintptr_t>(this));
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes, total_size_);
-
-    if (!entries_.empty()) {
-      MemoryAllocatorDump* dump_avg_size =
-          pmd->CreateAllocatorDump(dump_name + "/avg_image_size");
-      dump_avg_size->AddScalar("average_size", MemoryAllocatorDump::kUnitsBytes,
-                               total_size_ / entries_.size());
-    }
+                    MemoryAllocatorDump::kUnitsBytes, 0);
 
     // Early out, no need for more detail in a BACKGROUND dump.
     return true;
-  }
-
-  for (const auto& entry : entries_) {
-    std::string dump_name = base::StringPrintf(
-        "gpu/discardable_cache/cache_0x%" PRIXPTR "/entry_0x%" PRIXPTR,
-        reinterpret_cast<uintptr_t>(this),
-        reinterpret_cast<uintptr_t>(entry.second.unlocked_texture_ref.get()));
-    MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
-    dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes, entry.second.size);
   }
 
   return true;
@@ -146,85 +120,27 @@ bool ServiceDiscardableManager::OnMemoryDump(
 
 void ServiceDiscardableManager::OnTextureManagerDestruction(
     gles2::TextureManager* texture_manager) {
-  for (auto& entry : entries_) {
-    if (entry.first.texture_manager == texture_manager &&
-        entry.second.unlocked_texture_ref) {
-      texture_manager->ReturnTexture(
-          std::move(entry.second.unlocked_texture_ref));
-    }
-  }
 }
 
 void ServiceDiscardableManager::OnTextureDeleted(
     uint32_t texture_id,
     gles2::TextureManager* texture_manager) {
-  auto found = entries_.Get({texture_id, texture_manager});
-  if (found == entries_.end())
-    return;
-
-  found->second.handle.ForceDelete();
-  total_size_ -= found->second.size;
-  entries_.Erase(found);
 }
 
 void ServiceDiscardableManager::OnContextLost() {
-  auto iter = entries_.begin();
-  while (iter != entries_.end()) {
-    iter->second.handle.ForceDelete();
-    if (iter->second.unlocked_texture_ref)
-      iter->second.unlocked_texture_ref->ForceContextLost();
-
-    total_size_ -= iter->second.size;
-    iter = entries_.Erase(iter);
-  }
 }
 
 void ServiceDiscardableManager::OnTextureSizeChanged(
     uint32_t texture_id,
     gles2::TextureManager* texture_manager,
     size_t new_size) {
-  auto found = entries_.Get({texture_id, texture_manager});
-  if (found == entries_.end())
-    return;
-
-  total_size_ -= found->second.size;
-  found->second.size = new_size;
-  total_size_ += found->second.size;
-
-  EnforceCacheSizeLimit(cache_size_limit_);
 }
 
 void ServiceDiscardableManager::HandleMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  size_t limit = DiscardableCacheSizeLimitForPressure(cache_size_limit_,
-                                                      memory_pressure_level);
-  EnforceCacheSizeLimit(limit);
 }
 
 void ServiceDiscardableManager::EnforceCacheSizeLimit(size_t limit) {
-  for (auto it = entries_.rbegin(); it != entries_.rend();) {
-    if (total_size_ <= limit) {
-      return;
-    }
-    if (!it->second.handle.Delete()) {
-      ++it;
-      continue;
-    }
-
-    total_size_ -= it->second.size;
-
-    gles2::TextureManager* texture_manager = it->first.texture_manager;
-    uint32_t texture_id = it->first.texture_id;
-
-    // While unlocked, we hold the texture ref. Return this to the texture
-    // manager for cleanup.
-    texture_manager->ReturnTexture(std::move(it->second.unlocked_texture_ref));
-
-    // Erase before calling texture_manager->RemoveTexture, to avoid attempting
-    // to remove the texture from entries_ twice.
-    it = entries_.Erase(it);
-    texture_manager->RemoveTexture(texture_id);
-  }
 }
 
 }  // namespace gpu
