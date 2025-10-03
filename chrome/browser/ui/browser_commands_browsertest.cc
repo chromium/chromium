@@ -429,8 +429,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithGroup) {
 
   // New browser has two tabs with the tab group.
   ASSERT_EQ(2, second_browser->GetTabStripModel()->count());
-  // TODO(crbug.com/424479430): Implement fix.
-  // CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 2u);
+  CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithSplitView) {
@@ -453,12 +452,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithSplitView) {
 
   // Original browser has one tab and no split view.
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
-  EXPECT_FALSE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+  EXPECT_FALSE(browser()->GetTabStripModel()->ContainsSplit(split_id));
 
   // New browser has two tabs with the split view.
   ASSERT_EQ(2, second_browser->GetTabStripModel()->count());
-  // TODO(crbug.com/424479430): Implement fix.
-  // EXPECT_TRUE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+  EXPECT_TRUE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
@@ -484,15 +482,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Original browser has three tabs and no split view or group.
   ASSERT_EQ(3, browser()->GetTabStripModel()->count());
-  EXPECT_FALSE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+  EXPECT_FALSE(browser()->GetTabStripModel()->ContainsSplit(split_id));
   EXPECT_FALSE(
       browser()->GetTabStripModel()->group_model()->ContainsTabGroup(group_id));
 
   // New browser has 4 tabs with a split and group.
   ASSERT_EQ(4, second_browser->GetTabStripModel()->count());
-  // TODO(crbug.com/424479430): Implement fix.
-  // EXPECT_TRUE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
-  // CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 2u);
+  EXPECT_TRUE(second_browser->GetTabStripModel()->ContainsSplit(split_id));
+  CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 3u);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {
@@ -661,8 +658,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // New browser has three tabs with the tab group.
   ASSERT_EQ(3, target_browser->GetTabStripModel()->count());
-  // TODO(crbug.com/424479430): Implement fix.
-  // CheckBrowserContainsTabGroupWithSize(target_browser, group_id, 2u);
+  CheckBrowserContainsTabGroupWithSize(target_browser, group_id, 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
@@ -688,12 +684,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Original browser has one tab and no split view.
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
-  EXPECT_FALSE(target_browser->GetTabStripModel()->ContainsSplit(split_id));
+  EXPECT_FALSE(browser()->GetTabStripModel()->ContainsSplit(split_id));
 
   // New browser has three tabs with the split view.
   ASSERT_EQ(3, target_browser->GetTabStripModel()->count());
-  // TODO(crbug.com/424479430): Implement fix.
-  // EXPECT_TRUE(target_browser->GetTabStripModel()->ContainsSplit(split_id));
+  EXPECT_TRUE(target_browser->GetTabStripModel()->ContainsSplit(split_id));
 }
 
 // Tests IDC_MOVE_TAB_TO_NEW_WINDOW. This is a browser test and not a unit test

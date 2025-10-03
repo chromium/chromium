@@ -218,6 +218,9 @@ class BrowserTabStripController::TabContextMenuContents
     // `controller_`. So stop the highlights before executing the command.
     controller_->ExecuteCommandForTab(
         static_cast<TabStripModel::ContextMenuCommand>(command_id), tab_);
+    // Clearing reference to `tab_` avoids dangling pointers when executing
+    // commands results in the tab being destroyed.
+    tab_ = nullptr;
   }
 
  private:

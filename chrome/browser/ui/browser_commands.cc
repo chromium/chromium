@@ -8,6 +8,7 @@
 #include <numeric>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -160,7 +161,9 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -415,25 +418,44 @@ void MoveTabsToWindowImpl(Browser* source,
     return;
   }
 
-  int indices_size = tab_indices.size();
-  int active_index = source->tab_strip_model()->active_index();
-  for (int i = 0; i < indices_size; i++) {
-    // Adjust tab index to account for tabs already moved.
-    int adjusted_index = tab_indices[i] - i;
-    bool pinned = source->tab_strip_model()->IsTabPinned(adjusted_index);
-    std::unique_ptr<tabs::TabModel> tab_model =
-        source->tab_strip_model()->DetachTabAtForInsertion(adjusted_index);
+  TabStripModel* source_model = source->tab_strip_model();
+  TabStripModel* target_model = target->tab_strip_model();
 
-    int add_types = pinned ? AddTabTypes::ADD_PINNED : 0;
-    // The last tab made active takes precedence, so activate the last active
-    // tab, with a fallback for the first tab (i == 0) if the active tab isn’t
-    // in the set of tabs being moved.
-    if (i == 0 || tab_indices[i] == active_index) {
-      add_types = add_types | AddTabTypes::ADD_ACTIVE;
+  // Store the active tab from the source tab strip since this will change as
+  // tabs are detached. If the active tab from `source_model` isn't moving,
+  // default to activating the first tab being moved.
+  const tabs::TabInterface* active_tab =
+      std::find(tab_indices.begin(), tab_indices.end(),
+                source_model->active_index()) != tab_indices.end()
+          ? source_model->GetActiveTab()
+          : source_model->GetTabAtIndex(tab_indices[0]);
+
+  for (auto& tab_or_collection :
+       source_model->DetachTabsAndCollectionsForInsertion(tab_indices)) {
+    if (auto tab =
+            std::get_if<std::unique_ptr<DetachedTab>>(&tab_or_collection)) {
+      bool active = active_tab == tab->get()->tab.get();
+      bool pinned = tab->get()->was_pinned_at_time_of_removal;
+      int add_types = (active ? AddTabTypes::ADD_ACTIVE : 0) |
+                      (pinned ? AddTabTypes::ADD_PINNED : 0);
+      target_model->InsertDetachedTabAt(target_model->count(),
+                                        std::move(tab->get()->tab), add_types);
+    } else if (auto collection =
+                   std::get_if<std::unique_ptr<DetachedTabCollection>>(
+                       &tab_or_collection)) {
+      if (std::holds_alternative<std::unique_ptr<tabs::TabGroupTabCollection>>(
+              collection->get()->collection_)) {
+        target_model->InsertDetachedTabGroupAt(std::move(*collection),
+                                               target_model->count());
+      } else {
+        bool pinned = collection->get()->pinned_;
+        target_model->InsertDetachedSplitTabAt(
+            std::move(*collection),
+            pinned ? target_model->IndexOfFirstNonPinnedTab()
+                   : target_model->count(),
+            pinned);
+      }
     }
-
-    target->tab_strip_model()->AddTab(std::move(tab_model), -1,
-                                      ui::PAGE_TRANSITION_TYPED, add_types);
   }
   target->window()->Show();
 }
