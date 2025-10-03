@@ -410,13 +410,18 @@ class BackgroundURLLoader::Context
       return;
     }
 
+    // Keep the refptr of WebBackgroundResourceFetchAssets to ensure it survives
+    // for the duration of the request.
+    cross_thread_background_resource_fetch_context_ =
+        std::move(background_resource_fetch_context);
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     URLLoaderThrottleProvider* throttle_provider =
-        background_resource_fetch_context->GetThrottleProvider();
+        cross_thread_background_resource_fetch_context_->GetThrottleProvider();
     if (throttle_provider) {
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> web_throttles =
           throttle_provider->CreateThrottles(
-              background_resource_fetch_context->GetLocalFrameToken(),
+              cross_thread_background_resource_fetch_context_
+                  ->GetLocalFrameToken(),
               *request);
       throttles.reserve(base::checked_cast<wtf_size_t>(web_throttles.size()));
       for (auto& throttle : web_throttles) {
@@ -444,7 +449,7 @@ class BackgroundURLLoader::Context
             background_response_processor_factory
                 ? std::move(*background_response_processor_factory).Create()
                 : nullptr),
-        background_resource_fetch_context->GetLoaderFactory(),
+        cross_thread_background_resource_fetch_context_->GetLoaderFactory(),
         std::move(throttles), std::move(resource_load_info_notifier_wrapper),
         should_use_code_cache_host && background_code_cache_host_
             ? &background_code_cache_host_->GetCodeCacheHost(
@@ -460,6 +465,7 @@ class BackgroundURLLoader::Context
     if (request_id_ != -1) {
       resource_request_sender_->Cancel(background_task_runner_);
       resource_request_sender_.reset();
+      cross_thread_background_resource_fetch_context_.reset();
       request_id_ = -1;
     }
   }
@@ -687,6 +693,10 @@ class BackgroundURLLoader::Context
 
   scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host_
       GUARDED_BY_CONTEXT(background_sequence_checker_);
+
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+      cross_thread_background_resource_fetch_context_
+          GUARDED_BY_CONTEXT(background_sequence_checker_);
 
   Deque<CrossThreadOnceFunction<void(void)>> tasks_ GUARDED_BY(tasks_lock_);
   base::Lock tasks_lock_;
