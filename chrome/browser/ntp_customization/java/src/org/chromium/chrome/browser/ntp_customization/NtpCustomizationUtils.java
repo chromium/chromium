@@ -20,7 +20,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Browser;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.ui.util.ColorUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -498,6 +501,48 @@ public class NtpCustomizationUtils {
         // 2) No top padding was added and none is needed now.
         return ((appliedTopPadding == systemTopInset) && consumeTopInset)
                 || ((appliedTopPadding == 0) && !consumeTopInset);
+    }
+
+    /**
+     * Sets tint color for the default Google logo.
+     *
+     * @param context Used to look up current day/night mode status.
+     */
+    public static void setTintForDefaultGoogleLogo(
+            Context context, Drawable defaultGoogleLogoDrawable) {
+        // Check the mode before applying a tinted color. A transparent tint in light mode will
+        // cause the logo's color to disappear.
+        boolean isNightMode = ColorUtils.inNightMode(context);
+        @NtpBackgroundImageType
+        int defaultBackgroundType =
+                NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
+
+        // The colorful Google logo is shown for default theme in light mode.
+        if (!isNightMode && defaultBackgroundType == NtpBackgroundImageType.DEFAULT) {
+            return;
+        }
+
+        @ColorInt int tintColor;
+        if (defaultBackgroundType == NtpBackgroundImageType.CHROME_COLOR) {
+            @ColorInt
+            Integer primaryColor = NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor();
+            if (primaryColor != null) {
+                tintColor = primaryColor.intValue();
+            } else if (!isNightMode) {
+                // When primary color is missing, falls back to colorful Google logo in light mode.
+                return;
+            } else {
+                // When primary color is missing, falls back to white Google logo in light mode.
+                tintColor = Color.WHITE;
+            }
+        } else {
+            // For all other cases, white color is used. This includes: Ntps with a customized
+            // background image in either light or dark mode; or Ntps without any theme in dark
+            // mode.
+            tintColor = Color.WHITE;
+        }
+
+        defaultGoogleLogoDrawable.setTint(tintColor);
     }
 
     /**

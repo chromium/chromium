@@ -15,11 +15,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.util.ColorUtils;
 
 /** Coordinator used to fetch and load logo image for Start surface and NTP. */
 @NullMarked
@@ -62,12 +62,7 @@ public class LogoCoordinator {
         if (ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) {
             defaultGoogleLogoDrawable =
                     ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
-            boolean isNightMode = ColorUtils.inNightMode(context);
-            if (isNightMode) {
-                // Check the mode before applying a tinted color. A transparent tint in light mode
-                // will cause the logo's color to disappear.
-                defaultGoogleLogoDrawable.setTint(context.getColor(R.color.google_logo_tint_color));
-            }
+            NtpCustomizationUtils.setTintForDefaultGoogleLogo(context, defaultGoogleLogoDrawable);
         }
 
         mMediator =
