@@ -1127,17 +1127,17 @@
     {
         "name": "window",
         "group": "androidx.window",
-        "version": "1.5.0"
+        "version": "1.6.0-SNAPSHOT"
     },
     {
         "name": "window-core",
         "group": "androidx.window",
-        "version": "1.5.0"
+        "version": "1.6.0-SNAPSHOT"
     },
     {
         "name": "window-core-android",
         "group": "androidx.window",
-        "version": "1.5.0"
+        "version": "1.6.0-SNAPSHOT"
     },
     {
         "name": "window-extensions",
@@ -1172,7 +1172,7 @@
     {
         "name": "lottie",
         "group": "com.airbnb.android",
-        "version": "6.6.9"
+        "version": "6.6.10"
     },
     {
         "name": "sqlite4java",
