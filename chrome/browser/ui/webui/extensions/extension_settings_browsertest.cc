@@ -29,6 +29,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 // TODO(crbug.com/439448148): Enable on desktop android.
@@ -46,6 +47,8 @@
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
 // TODO(crbug.com/439448148): Enable on desktop android.
