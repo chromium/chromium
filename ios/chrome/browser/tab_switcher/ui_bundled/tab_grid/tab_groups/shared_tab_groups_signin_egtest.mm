@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/feature_list.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/collaboration/public/features.h"
@@ -336,6 +337,10 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Tests joining a group when sign in is disabled.
 - (void)testJoinGroupSignedInDisabled {
+  // TODO(crbug.com/449215049): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test flaky on iOS 26.");
+  }
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
 
   [TabGroupAppInterface mockSharedEntitiesPreview];
