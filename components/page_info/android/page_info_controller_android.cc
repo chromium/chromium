@@ -107,7 +107,15 @@ void PageInfoControllerAndroid::SetIdentityInfo(
       GetSecurityDescription(identity_info);
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
-    if (security_description->summary_style == SecuritySummaryColor::GREEN) {
+    if (PageInfo::IsFileOrInternalPage(url_)) {
+      // On Desktop, when PageInfo::IsFileOrInternalPage returns true, an
+      // InternalPageInfoBubbleView is used rather than the regular
+      // PageInfoBubbleView. That view displays only an info icon and a summary
+      // string.
+      Java_PageInfoController_showConnectionSecurityInfo(env,
+                                                         controller_jobject_);
+    } else if (security_description->summary_style ==
+               SecuritySummaryColor::GREEN) {
       // Have the controller set up the button that will show the connection
       // security subpage.
       Java_PageInfoController_showOpenSecurityPageButton(
