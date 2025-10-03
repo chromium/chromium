@@ -29,10 +29,6 @@ enum class ToolbarTabGroupState;
 - (void)setShareMenuEnabled:(BOOL)enabled;
 // Sets whether the toolbar is displaying for an NTP.
 - (void)setIsNTP:(BOOL)isNTP;
-// Sets the page theme color.
-- (void)setPageThemeColor:(UIColor*)themeColor;
-// Sets the under page background color.
-- (void)setUnderPageBackgroundColor:(UIColor*)underPageBackgroundColor;
 // Updates the toolbar for the given TabGroup state.
 - (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState;
 // Adds or removes a blue dot in the ToolbarTabGridButton.

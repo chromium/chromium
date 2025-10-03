@@ -59,10 +59,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 // The last progress of fullscreen registered. The progress range is between 0
 // and 1.
 @property(nonatomic, assign) CGFloat previousFullscreenProgress;
-// The page's theme color.
-@property(nonatomic, strong) UIColor* pageThemeColor;
-// The under page background color.
-@property(nonatomic, strong) UIColor* underPageBackgroundColor;
 
 @end
 
@@ -339,22 +335,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 - (void)setIsNTP:(BOOL)isNTP {
   _isNTP = isNTP;
-}
-
-- (void)setPageThemeColor:(UIColor*)pageThemeColor {
-  if ([_pageThemeColor isEqual:pageThemeColor]) {
-    return;
-  }
-  _pageThemeColor = pageThemeColor;
-  [self updateBackgroundColor];
-}
-
-- (void)setUnderPageBackgroundColor:(UIColor*)underPageBackgroundColor {
-  if ([_underPageBackgroundColor isEqual:underPageBackgroundColor]) {
-    return;
-  }
-  _underPageBackgroundColor = underPageBackgroundColor;
-  [self updateBackgroundColor];
 }
 
 - (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState {
