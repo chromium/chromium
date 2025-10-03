@@ -170,6 +170,12 @@ _BANNED_JAVA_IMPORTS: Sequence[BanRule] = (
          'might take more than 20 ms to complete.', ),
         True,
     ),
+    BanRule(
+        'import java.util.Optional',
+        ('Prefer @Nullable over Optional/OptionalInt/OptionalDouble/etc. See '
+         '//styleguide/java/java.md',),
+        False,
+    ),
 )
 
 _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
