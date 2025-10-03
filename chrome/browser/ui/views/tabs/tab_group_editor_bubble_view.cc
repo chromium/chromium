@@ -171,7 +171,7 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
 }
 
 std::u16string GetAcceleratorText(int command_id, const Browser* browser) {
-  if (!browser || !tabs::AreTabGroupShortcutsEnabled()) {
+  if (!browser) {
     return std::u16string();
   }
 

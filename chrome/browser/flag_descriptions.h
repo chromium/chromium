@@ -2341,10 +2341,6 @@ extern const char kToolbarTabletResizeRefactorDescription[];
 extern const char kDataSharingDebugLogsName[];
 extern const char kDataSharingDebugLogsDescription[];
 
-extern const char kTabGroupShorcutsId[];
-extern const char kTabGroupShorcutsName[];
-extern const char kTabGroupShorcutsDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kTabGroupMenuImprovementsName[];
 extern const char kTabGroupMenuImprovementsDescription[];

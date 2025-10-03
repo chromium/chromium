@@ -153,18 +153,16 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
     });
     // clang-format on
 
-    if (tabs::AreTabGroupShortcutsEnabled()) {
-      keys.push_back(
-          {true, false, true, false, kVK_ANSI_C, IDC_ADD_NEW_TAB_TO_GROUP});
-      keys.push_back(
-          {true, false, true, false, kVK_ANSI_P, IDC_CREATE_NEW_TAB_GROUP});
-      keys.push_back(
-          {true, false, true, false, kVK_ANSI_W, IDC_CLOSE_TAB_GROUP});
-      keys.push_back(
-          {true, false, true, false, kVK_ANSI_X, IDC_FOCUS_NEXT_TAB_GROUP});
-      keys.push_back(
-          {true, false, true, false, kVK_ANSI_Z, IDC_FOCUS_PREV_TAB_GROUP});
-    }
+    // Tab Group Shortcuts
+    keys.push_back(
+        {true, false, true, false, kVK_ANSI_C, IDC_ADD_NEW_TAB_TO_GROUP});
+    keys.push_back(
+        {true, false, true, false, kVK_ANSI_P, IDC_CREATE_NEW_TAB_GROUP});
+    keys.push_back({true, false, true, false, kVK_ANSI_W, IDC_CLOSE_TAB_GROUP});
+    keys.push_back(
+        {true, false, true, false, kVK_ANSI_X, IDC_FOCUS_NEXT_TAB_GROUP});
+    keys.push_back(
+        {true, false, true, false, kVK_ANSI_Z, IDC_FOCUS_PREV_TAB_GROUP});
 
     if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
       keys.push_back(

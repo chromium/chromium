@@ -4076,11 +4076,6 @@ const char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "
     "that can be shown in the internals page.";
 
-const char kTabGroupShorcutsId[] = "tab-group-shortcuts";
-const char kTabGroupShorcutsName[] = "Tab Group Keyboard Shortcuts";
-const char kTabGroupShorcutsDescription[] =
-    "Adds a few keyboard shortcuts for some tab group interactions.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kTabGroupMenuImprovementsName[] =
     "Add context menu when left-clicking a tab group";

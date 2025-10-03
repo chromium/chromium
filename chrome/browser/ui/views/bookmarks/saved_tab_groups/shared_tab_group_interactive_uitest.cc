@@ -70,8 +70,8 @@ class SharedTabGroupInteractiveUiTest
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {data_sharing::features::kDataSharingFeature, {}},
     };
-    std::vector<base::test::FeatureRef> disabled_features = {
-        tabs::kTabGroupShortcuts};
+
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     if (GetParam().page_actions_migration_enabled) {
       enabled_features.push_back({

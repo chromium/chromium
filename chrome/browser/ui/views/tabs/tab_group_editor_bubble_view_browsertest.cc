@@ -40,8 +40,7 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
   TabGroupEditorBubbleViewDialogBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {}, {data_sharing::features::kDataSharingFeature,
-             data_sharing::features::kDataSharingJoinOnly,
-             tabs::kTabGroupShortcuts});
+             data_sharing::features::kDataSharingJoinOnly});
   }
 
  protected:

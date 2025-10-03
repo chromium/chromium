@@ -28,14 +28,11 @@ extern const char kScrollableTabStripOverflowModeName[];
 
 BASE_DECLARE_FEATURE(kTabSearchPositionSetting);
 
-BASE_DECLARE_FEATURE(kTabGroupShortcuts);
-
 BASE_DECLARE_FEATURE(kVerticalTabs);
 
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
 bool CanShowTabSearchPositionSetting();
-bool AreTabGroupShortcutsEnabled();
 bool IsVerticalTabsFeatureEnabled();
 
 }  // namespace tabs

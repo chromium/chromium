@@ -1249,10 +1249,7 @@ class TabGroupShortcutsInteractiveTest
   TabGroupShortcutsInteractiveTest() = default;
   ~TabGroupShortcutsInteractiveTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({tabs::kTabGroupShortcuts}, {});
-    SavedTabGroupInteractiveTestBase::SetUp();
-  }
+  void SetUp() override { SavedTabGroupInteractiveTestBase::SetUp(); }
 
   StepBuilder WaitForIndexToBecomeActiveTab(int index) {
     return Do([=, this]() {
@@ -1261,9 +1258,6 @@ class TabGroupShortcutsInteractiveTest
       }));
     });
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,

@@ -342,11 +342,9 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
     // Prevent conflicts with global_keyboard_shortcuts_mac.mm and chromeos
     // accelerators.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
-    if (tabs::AreTabGroupShortcutsEnabled()) {
-      accelerators->insert(accelerators->end(),
-                           std::begin(kTabGroupAcceleratorMap),
-                           std::end(kTabGroupAcceleratorMap));
-    }
+    accelerators->insert(accelerators->end(),
+                         std::begin(kTabGroupAcceleratorMap),
+                         std::end(kTabGroupAcceleratorMap));
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
   }
 
