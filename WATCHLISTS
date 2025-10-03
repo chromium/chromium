@@ -93,6 +93,14 @@
                   '|ui/accessibility/platform/.*android' \
                   '|ui/accessibility/android/java/src/org/chromium/ui/accessibility/' \
     },
+    'android_bookmark_bar': {
+      'filepath': 'BookmarkBar' \
+                  'bookmark_bar_scene_layer' \
+                  'AppearanceSettingsFragment' \
+                  'chrome/android/java/res/layout/bookmark_bar.*' \
+                  'chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/' \
+
+    },
     'android_browser_controls': {
       'filepath': 'chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/fullscreen/' \
@@ -2525,6 +2533,8 @@
     'android_accessibility': ['cambickel+watcha11y@google.com',
                               'michaelcheco+watcha11y@google.com',
                               'yongshun+watcha11y@google.com'],
+    'android_bookmark_bar': ['eleanorlee@google.com',
+                             'mschillaci@google.com'],
     'android_browser_controls': ['peilinwang+watch@google.com'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
