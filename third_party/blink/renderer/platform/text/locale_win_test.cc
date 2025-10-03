@@ -89,7 +89,7 @@ class LocaleWinTest : public testing::Test {
   }
 
   double MsForDate(int year, int month, int day) {
-    return DateToDaysFrom1970(year, month, day) * kMsPerDay;
+    return base::Days(DateToDaysFrom1970(year, month, day)).InMillisecondsF();
   }
 
   String FormatDate(LCID lcid, int year, int month, int day) {

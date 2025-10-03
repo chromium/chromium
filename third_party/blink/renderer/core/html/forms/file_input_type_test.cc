@@ -61,7 +61,9 @@ TEST(FileInputTypeTest, createFileList) {
   // Non-native file.
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
   files.push_back(CreateFileChooserFileInfoFileSystem(
-      url, base::Time::FromMillisecondsSinceUnixEpoch(1.0 * kMsPerDay + 3),
+      url,
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          base::Time::kMillisecondsPerDay + 3),
       64));
 
   ScopedNullExecutionContext execution_context;
@@ -78,7 +80,7 @@ TEST(FileInputTypeTest, createFileList) {
   EXPECT_EQ("non-native-file", list->item(1)->name());
   EXPECT_EQ(url, list->item(1)->FileSystemURL());
   EXPECT_EQ(64u, list->item(1)->size());
-  EXPECT_EQ(1.0 * kMsPerDay + 3, list->item(1)->lastModified());
+  EXPECT_EQ(base::Time::kMillisecondsPerDay + 3, list->item(1)->lastModified());
 }
 
 #if BUILDFLAG(IS_ANDROID)

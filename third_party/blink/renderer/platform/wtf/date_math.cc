@@ -140,13 +140,14 @@ static inline double DaysFrom1970ToYear(int year) {
 }
 
 static double MsToDays(double ms) {
-  return floor(ms / kMsPerDay);
+  return base::Milliseconds(ms).InDaysFloored();
 }
 
 int MsToYear(double ms) {
   DCHECK(std::isfinite(ms));
   DCHECK_GE(ms, kMinimumECMADateInMs);
   DCHECK_LE(ms, kMaximumECMADateInMs);
+  static constexpr double kMsPerDay = base::Time::kMillisecondsPerDay;
   int approx_year = static_cast<int>(floor(ms / (kMsPerDay * 365.2425)) + 1970);
   double ms_from_approx_year_to1970 =
       kMsPerDay * DaysFrom1970ToYear(approx_year);

@@ -82,15 +82,16 @@ class LocaleMacTest : public testing::Test {
                                    int minute,
                                    int second,
                                    int millisecond) {
+    base::TimeDelta time = base::Hours(hour) + base::Minutes(minute) +
+                           base::Seconds(second) +
+                           base::Milliseconds(millisecond);
     DateComponents date;
-    date.SetMillisecondsSinceMidnight(hour * kMsPerHour +
-                                      minute * kMsPerMinute +
-                                      second * kMsPerSecond + millisecond);
+    date.SetMillisecondsSinceMidnight(time.InMillisecondsF());
     return date;
   }
 
   double MsForDate(int year, int month, int day) {
-    return DateToDaysFrom1970(year, month, day) * kMsPerDay;
+    return base::Days(DateToDaysFrom1970(year, month, day)).InMillisecondsF();
   }
 
   String FormatWeek(const String& locale_string, const String& iso_string) {

@@ -48,13 +48,6 @@
 
 namespace blink {
 
-const double kMinutesPerHour = 60.0;
-const double kSecondsPerMinute = 60.0;
-const double kMsPerSecond = 1000.0;
-const double kMsPerMinute = 60.0 * 1000.0;
-const double kMsPerHour = 60.0 * 60.0 * 1000.0;
-const double kMsPerDay = 24.0 * 60.0 * 60.0 * 1000.0;
-
 WTF_EXPORT bool IsLeapYear(int year);
 
 // Returns the number of days from 1970-01-01 to the specified date.
