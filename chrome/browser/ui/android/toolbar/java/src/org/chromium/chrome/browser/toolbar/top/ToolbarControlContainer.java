@@ -385,7 +385,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             Toolbar toolbar,
             ViewGroup toolbarView,
             boolean isIncognito,
-            ObservableSupplier<Integer> constraintsSupplier,
+            ObservableSupplier<@Nullable Integer> constraintsSupplier,
             Supplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
@@ -487,7 +487,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      *
      * @param toolbarContainerDragListener Listener to set.
      */
-    public void setToolbarContainerDragListener(OnDragListener toolbarContainerDragListener) {
+    public void setToolbarContainerDragListener(
+            @Nullable OnDragListener toolbarContainerDragListener) {
         mToolbarContainerDragListener = toolbarContainerDragListener;
         mToolbarContainer.setOnDragListener(mToolbarContainerDragListener);
     }
@@ -520,7 +521,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         @Initializer
         public void setPostInitializationDependencies(
                 Toolbar toolbar,
-                ObservableSupplier<Integer> constraintsSupplier,
+                ObservableSupplier<@Nullable Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
@@ -629,7 +630,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         @Initializer
         public void setPostInitializationDependencies(
                 Toolbar toolbar,
-                ObservableSupplier<Integer> constraintsSupplier,
+                ObservableSupplier<@Nullable Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate

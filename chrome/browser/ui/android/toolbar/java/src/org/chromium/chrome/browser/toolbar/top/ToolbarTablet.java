@@ -359,7 +359,7 @@ public class ToolbarTablet extends ToolbarLayout {
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
-            ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
+            @Nullable ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
@@ -371,6 +371,7 @@ public class ToolbarTablet extends ToolbarLayout {
             @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider) {
+        assert tabSwitcherButtonCoordinator != null;
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -435,7 +436,8 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     @Override
-    void setBookmarkClickHandler(OnClickListener listener) {
+    void setBookmarkClickHandler(@Nullable OnClickListener listener) {
+        assert listener != null;
         mLocationBar.setBookmarkClickListener(listener);
     }
 

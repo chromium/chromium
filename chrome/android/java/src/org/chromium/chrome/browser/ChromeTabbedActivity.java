@@ -340,6 +340,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.edge_to_edge.TabbedSystemBarColorHelper;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionInitializer;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
@@ -2976,6 +2977,15 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 getEdgeToEdgeManager(),
                 mBookmarkManagerOpenerSupplier,
                 getXrSpaceModeObservableSupplier());
+    }
+
+    /**
+     * Guaranteed to supply a non-null ModalDialogManager since {@link #createModalDialogManager()}
+     * returns non-null.
+     */
+    @Override
+    public ObservableSupplier<ModalDialogManager> getModalDialogManagerSupplier() {
+        return (ObservableSupplier<ModalDialogManager>) super.getModalDialogManagerSupplier();
     }
 
     @Override

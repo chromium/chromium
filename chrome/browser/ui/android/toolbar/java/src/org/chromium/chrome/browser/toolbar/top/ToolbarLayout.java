@@ -95,7 +95,7 @@ public abstract class ToolbarLayout extends FrameLayout
     protected MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
 
-    private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
+    private @Nullable ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
 
     private @Nullable TopToolbarOverlayCoordinator mOverlayCoordinator;
 
@@ -151,7 +151,7 @@ public abstract class ToolbarLayout extends FrameLayout
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
-            ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
+            @Nullable ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
@@ -435,7 +435,7 @@ public abstract class ToolbarLayout extends FrameLayout
         return mMenuButtonCoordinator;
     }
 
-    ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinator() {
+    @Nullable ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinator() {
         return mTabSwitcherButtonCoordinator;
     }
 
@@ -482,13 +482,14 @@ public abstract class ToolbarLayout extends FrameLayout
      *
      * @param listener The callback that will be notified when the bookmark button is pressed.
      */
-    void setBookmarkClickHandler(OnClickListener listener) {}
+    void setBookmarkClickHandler(@Nullable OnClickListener listener) {}
 
     /**
      * Sets the OnClickListener to notify when the close button is pressed in a custom tab.
+     *
      * @param listener The callback that will be notified when the close button is pressed.
      */
-    protected void setCustomTabCloseClickHandler(OnClickListener listener) {}
+    protected void setCustomTabCloseClickHandler(@Nullable OnClickListener listener) {}
 
     /** Sets whether the urlbar should be hidden on first page load. */
     protected void setUrlBarHidden(boolean hide) {}

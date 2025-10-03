@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * thread.
  */
 @NullMarked
-public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Profile>
+public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<@Nullable Profile>
         implements Destroyable {
     private final TabModelSelectorObserver mSelectorObserver;
     private final ObservableSupplier<TabModelSelector> mSelectorSupplier;
@@ -102,7 +102,8 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
     }
 
     @Override
-    public void set(Profile profile) {
+    public void set(@Nullable Profile profile) {
+        assert profile != null : "Cannot set a null Profile";
         // TODO(365814339): Convert to checked exception once all callsites are fixed.
         assert !profile.shutdownStarted() : "Attempting to set an already destroyed Profile";
         super.set(profile);

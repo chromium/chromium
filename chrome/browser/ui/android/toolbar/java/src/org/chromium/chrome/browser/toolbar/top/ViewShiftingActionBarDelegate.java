@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.appcompat.app.ActionBar;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An {@link ActionModeController.ActionBarDelegate} that shifts a view as the action bar appears.
@@ -17,7 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class ViewShiftingActionBarDelegate implements ActionModeController.ActionBarDelegate {
     /** The action bar which this delegate works for. */
-    private final ActionBar mActionBar;
+    private final @Nullable ActionBar mActionBar;
 
     /** The view that will be shifted as the action bar appears. */
     private final View mShiftingView;
@@ -31,7 +32,7 @@ public class ViewShiftingActionBarDelegate implements ActionModeController.Actio
      * @param backgroundView Background view for shadow effect.
      */
     public ViewShiftingActionBarDelegate(
-            ActionBar actionBar, View shiftingView, View backgroundView) {
+            @Nullable ActionBar actionBar, View shiftingView, View backgroundView) {
         mActionBar = actionBar;
         mShiftingView = shiftingView;
         mBackgroundView = backgroundView;
@@ -53,7 +54,7 @@ public class ViewShiftingActionBarDelegate implements ActionModeController.Actio
     }
 
     @Override
-    public ActionBar getSupportActionBar() {
+    public @Nullable ActionBar getSupportActionBar() {
         return mActionBar;
     }
 

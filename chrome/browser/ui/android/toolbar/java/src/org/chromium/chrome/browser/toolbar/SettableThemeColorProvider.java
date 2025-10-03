@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
@@ -31,7 +32,7 @@ class SettableThemeColorProvider extends ThemeColorProvider {
     }
 
     /** Sets the tint to the specified value. */
-    public void setTint(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
+    public void setTint(@Nullable ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
         updateTint(tint, tint, brandedColorScheme);
     }
 }

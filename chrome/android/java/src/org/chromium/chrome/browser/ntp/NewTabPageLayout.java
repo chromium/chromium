@@ -1003,7 +1003,7 @@ public class NewTabPageLayout extends LinearLayout
      *
      * @param listener The listener to be notified on changes.
      */
-    void setSearchBoxScrollListener(OnSearchBoxScrollListener listener) {
+    void setSearchBoxScrollListener(@Nullable OnSearchBoxScrollListener listener) {
         mSearchBoxScrollListener = listener;
         if (mSearchBoxScrollListener != null) updateSearchBoxOnScroll();
     }

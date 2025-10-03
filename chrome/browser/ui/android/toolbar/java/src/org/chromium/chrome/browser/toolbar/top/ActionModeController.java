@@ -68,7 +68,7 @@ public class ActionModeController {
         /**
          * @return The action bar that will be animated in and out.
          */
-        ActionBar getSupportActionBar();
+        @Nullable ActionBar getSupportActionBar();
 
         /**
          * Change the background visibility for the action bar.
