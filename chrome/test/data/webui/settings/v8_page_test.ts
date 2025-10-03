@@ -7,6 +7,8 @@ import 'chrome://settings/lazy_load.js';
 
 import type {SettingsCollapseRadioButtonElement, V8PageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -16,30 +18,23 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
-function createPage(safeBrowsingSetting: SafeBrowsingSetting) {
+function createPage(settingsPrefs: SettingsPrefsElement,
+                    safeBrowsingSetting: SafeBrowsingSetting) {
   const page = document.createElement('settings-v8-page');
-  const isSafeBrowsingDisabled =
-      safeBrowsingSetting === SafeBrowsingSetting.DISABLED;
-  page.prefs = {
-    generated: {
-      safe_browsing: {
-        value: safeBrowsingSetting,
-      },
-      javascript_optimizer: {
-        type: chrome.settingsPrivate.PrefType.NUMBER,
-        key: 'test',
-        value: ContentSetting.ALLOW,
-        enforcement: isSafeBrowsingDisabled ?
-            chrome.settingsPrivate.Enforcement.ENFORCED :
-            undefined,
-        controlledBy: isSafeBrowsingDisabled ?
-            chrome.settingsPrivate.ControlledBy.SAFE_BROWSING_OFF :
-            undefined,
-      },
-    },
-  };
+  page.prefs = settingsPrefs.prefs;
 
   document.body.appendChild(page);
+
+  page.setPrefValue('generated.safe_browsing', safeBrowsingSetting);
+  page.setPrefValue('generated.javascript_optimizer', ContentSetting.ALLOW);
+  if (safeBrowsingSetting === SafeBrowsingSetting.DISABLED) {
+    page.set(
+        'prefs.generated.javascript_optimizer.enforcement',
+        chrome.settingsPrivate.Enforcement.ENFORCED);
+    page.set(
+        'prefs.generated.javascript_optimizer.controlledBy',
+        chrome.settingsPrivate.ControlledBy.SAFE_BROWSING_OFF);
+  }
   return page;
 }
 
@@ -51,6 +46,12 @@ function queryBlockOnUnfamiliarSitesRadioButton(page: HTMLElement) {
 suite('V8Page_BlockOnUnfamiliarSitesFeatureDisabled', function() {
   let page: V8PageElement;
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -60,7 +61,7 @@ suite('V8Page_BlockOnUnfamiliarSitesFeatureDisabled', function() {
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
-    page = createPage(SafeBrowsingSetting.STANDARD);
+    page = createPage(settingsPrefs, SafeBrowsingSetting.STANDARD);
     return flushTasks();
   });
 
@@ -72,6 +73,12 @@ suite('V8Page_BlockOnUnfamiliarSitesFeatureDisabled', function() {
 suite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled', function() {
   let page: V8PageElement;
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -83,7 +90,7 @@ suite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled', function() {
   });
 
   test('CheckRadioButtons_SafeBrowsingEnabled', async function() {
-    page = createPage(SafeBrowsingSetting.STANDARD);
+    page = createPage(settingsPrefs, SafeBrowsingSetting.STANDARD);
     await flushTasks();
     const radioButton = queryBlockOnUnfamiliarSitesRadioButton(page);
     assertTrue(!!radioButton);
@@ -92,7 +99,7 @@ suite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled', function() {
   });
 
   test('CheckRadioButtons_SafeBrowsingDisabled', async function() {
-    page = createPage(SafeBrowsingSetting.DISABLED);
+    page = createPage(settingsPrefs, SafeBrowsingSetting.DISABLED);
     await flushTasks();
     const radioButton = queryBlockOnUnfamiliarSitesRadioButton(page);
     assertTrue(!!radioButton);
