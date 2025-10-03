@@ -650,6 +650,10 @@ TEST_F(HistorySyncBridgeTest, Applies404sWhen404sEligibleForHistory) {
       CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
                       remote_url, {}, kTestAppId);
   remote_entity.set_http_response_code(404);
+  // Set a cluster ID. In practice, 404s shouldn't be in clusters, but we want
+  // to make sure that if a 404 visit gets into a foreign cluster, it doesn't
+  // get added to a local cluster.
+  remote_entity.set_originator_cluster_id(12345);
 
   // Sync the 404 visit.
   ApplyInitialSyncChanges({remote_entity});
@@ -657,6 +661,8 @@ TEST_F(HistorySyncBridgeTest, Applies404sWhen404sEligibleForHistory) {
   // The visit should be saved locally.
   EXPECT_EQ(backend()->GetURLs().size(), 1u);
   EXPECT_EQ(backend()->GetVisits().size(), 1u);
+  // But the visit shouldn't get added to any local clusters.
+  EXPECT_EQ(backend()->add_visit_to_synced_cluster_count(), 0);
 }
 
 TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {

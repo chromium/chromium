@@ -1159,9 +1159,12 @@ bool HistorySyncBridge::AddEntityInBackend(
     referring_visit_id = added_visit_id;
 
     // If the sending client supports syncing its clusters, add the appropriate
-    // details to history.
+    // details to history. 404s shouldn't make their way into clusters in
+    // general, but if they do, that's a mistake we don't want to replicate on
+    // sync.
     DCHECK(!specifics.originator_cache_guid().empty());
-    if (specifics.originator_cluster_id() > 0) {
+    if (specifics.originator_cluster_id() > 0 &&
+        specifics.http_response_code() != 404) {
       // Populate the visit to a synced cluster.
       history::ClusterVisit cluster_visit;
       cluster_visit.annotated_visit.visit_row = visit_row;
