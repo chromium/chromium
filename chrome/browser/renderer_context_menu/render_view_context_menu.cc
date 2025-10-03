@@ -4963,8 +4963,8 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
         params_.link_url, params_.frame_url, params_.frame_origin,
         WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
         /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
-    const WebContents* new_web_contents =
-        browser->OpenURL(params, /*navigation_handle_callback=*/{});
+    const WebContents* new_web_contents = source_web_contents_->OpenURL(
+        params, /*navigation_handle_callback=*/{});
     const int new_tab_index =
         tab_strip_model->GetIndexOfWebContents(new_web_contents);
 
