@@ -89,7 +89,7 @@ base::flat_map<std::string, std::string> RefreshAndGetFieldTrialOverrides(
 // associated with the study is active, it will be available to force.
 COMPONENT_EXPORT(VARIATIONS)
 std::vector<StudyGroupNames> GetStudiesAvailableToForce(
-    VariationsSeed seed,
+    const VariationsSeed& seed,
     const EntropyProviders& entropy_providers,
     const ClientFilterableState& client_filterable_state);
 

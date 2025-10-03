@@ -174,7 +174,7 @@
 <div class="header-box">
   <form>
     <div>
-      <input id="filter" placeholder="Search 'MyStudy.Group'" autocomplete="on" name="experiment-filter">
+      <input id="filter" placeholder="Search 'MyStudy.Group'" autocomplete="on" name="experiment-filter" disabled>
       <div>
         <span id="filter-status"></span>
       </div>
@@ -190,6 +190,9 @@
 
     Changes here apply only after restart, and are reverted after 3 restarts. Visit this page again to re-apply.
   </span>
+</div>
+<div id="waiting-for-trial-list">
+  Loading field trials...
 </div>
 <div id="field-trial-list"></div>
 <div id="needs-restart">

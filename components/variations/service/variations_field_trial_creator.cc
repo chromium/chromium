@@ -693,8 +693,9 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   const bool run_in_safe_mode = seed_type_ == SeedType::kSafeSeed;
   const bool seed_loaded =
       run_in_safe_mode
-          ? GetSeedStore()->LoadSafeSeed(&seed, client_state.get())
-          : GetSeedStore()->LoadSeed(&seed, &seed_data, &base64_seed_signature);
+          ? GetSeedStore()->LoadSafeSeedSync(&seed, client_state.get())
+          : GetSeedStore()->LoadSeedSync(&seed, &seed_data,
+                                         &base64_seed_signature);
   if (!seed_loaded) {
     // If Chrome should run in safe mode but the safe seed was not successfully
     // loaded, then do not apply a seed. Fall back to client-side defaults.

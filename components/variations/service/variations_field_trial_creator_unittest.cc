@@ -353,17 +353,17 @@ class TestVariationsSeedStore : public VariationsSeedStore {
 
   ~TestVariationsSeedStore() override = default;
 
-  bool LoadSeed(VariationsSeed* seed,
-                std::string* seed_data,
-                std::string* base64_signature) override {
+  bool LoadSeedSync(VariationsSeed* seed,
+                    std::string* seed_data,
+                    std::string* base64_signature) override {
     *seed = CreateTestSeed();
     *seed_data = kTestSeedSerializedData;
     *base64_signature = kTestSeedSignature;
     return true;
   }
 
-  bool LoadSafeSeed(VariationsSeed* seed,
-                    ClientFilterableState* client_state) override {
+  bool LoadSafeSeedSync(VariationsSeed* seed,
+                        ClientFilterableState* client_state) override {
     if (has_unloadable_safe_seed_) {
       return false;
     }
@@ -949,7 +949,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       variations::switches::kVariationsTestSeedJsonPath, test_seed_file);
 
   // Use a real VariationsFieldTrialCreator and VariationsSeedStore to exercise
-  // the VariationsSeedStore::LoadSeed() logic.
+  // the VariationsSeedStore::LoadSeedSync() logic.
   TestVariationsServiceClient variations_service_client;
   auto seed_store = CreateSeedStore(local_state(), seed_file_path());
   VariationsFieldTrialCreator field_trial_creator(

@@ -241,14 +241,39 @@ VariationsSeedStore::VariationsSeedStore(
 
 VariationsSeedStore::~VariationsSeedStore() = default;
 
-bool VariationsSeedStore::LoadSeed(VariationsSeed* seed,
-                                   std::string* seed_data,
-                                   std::string* base64_seed_signature) {
-  LoadSeedResult result =
-      LoadSeedImpl(SeedType::LATEST, seed, seed_data, base64_seed_signature);
-  RecordLoadSeedResult(result);
-  if (result != LoadSeedResult::kSuccess)
+void VariationsSeedStore::LoadSeed(LoadSeedCallback done_callback,
+                                   bool require_synchronous) {
+  auto verify_and_parse_seed_cb =
+      base::BindOnce(&VariationsSeedStore::VerifyAndParseSeedAndRunCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
+                     SeedType::LATEST);
+  ReadSeedData(std::move(verify_and_parse_seed_cb), SeedType::LATEST,
+               require_synchronous);
+}
+
+bool VariationsSeedStore::LoadSeedSync(VariationsSeed* seed,
+                                       std::string* seed_data,
+                                       std::string* base64_seed_signature) {
+  std::optional<bool> success;
+  // It's safe to pass pointers here because the callback runs synchronously.
+  LoadSeed(base::BindOnce(
+               [](std::string* seed_data, std::string* seed_signature,
+                  std::optional<bool>* success, VariationsSeed* seed,
+                  std::string cb_seed_data, std::string cb_seed_signature,
+                  bool cb_success, VariationsSeed cb_seed) {
+                 *success = cb_success;
+                 *seed = std::move(cb_seed);
+                 *seed_data = std::move(cb_seed_data);
+                 *seed_signature = std::move(cb_seed_signature);
+               },
+               seed_data, base64_seed_signature, &success, seed),
+           /*require_synchronous=*/true);
+  CHECK(success.has_value())
+      << "LoadSeed callback should have run synchronously.";
+
+  if (!success.value()) {
     return false;
+  }
 
   // TODO(crbug.com/437811262): Remove after milestone M146. This code is used
   // to populate the pref with the serial number of the latest seed. This value
@@ -300,15 +325,39 @@ void VariationsSeedStore::StoreSeedData(
   }
 }
 
-bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
-                                       ClientFilterableState* client_state) {
+void VariationsSeedStore::LoadSafeSeed(LoadSeedCallback done_callback,
+                                       bool require_synchronous) {
+  auto verify_and_parse_seed_cb = base::BindOnce(
+      &VariationsSeedStore::VerifyAndParseSeedAndRunCallback,
+      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback), SeedType::SAFE);
+  ReadSeedData(std::move(verify_and_parse_seed_cb), SeedType::SAFE,
+               require_synchronous);
+}
+
+bool VariationsSeedStore::LoadSafeSeedSync(
+    VariationsSeed* seed,
+    ClientFilterableState* client_state) {
   std::string unused_seed_data;
   std::string unused_base64_seed_signature;
-  LoadSeedResult result = LoadSeedImpl(SeedType::SAFE, seed, &unused_seed_data,
-                                       &unused_base64_seed_signature);
-  RecordLoadSafeSeedResult(result);
-  if (result != LoadSeedResult::kSuccess)
+  std::optional<bool> success;
+  LoadSafeSeed(
+      base::BindOnce(
+          [](std::string* seed_data, std::string* seed_signature,
+             std::optional<bool>* success, VariationsSeed* seed,
+             std::string cb_seed_data, std::string cb_seed_signature,
+             bool cb_success, VariationsSeed cb_seed) {
+            *success = cb_success;
+            *seed = std::move(cb_seed);
+            *seed_data = std::move(cb_seed_data);
+            *seed_signature = std::move(cb_seed_signature);
+          },
+          &unused_seed_data, &unused_base64_seed_signature, &success, seed),
+      /*require_synchronous=*/true);
+  CHECK(success.has_value())
+      << "LoadSafeSeed callback should have run synchronously.";
+  if (!success.value()) {
     return false;
+  }
 
   // TODO(crbug.com/40202311): While it's not immediately obvious,
   // |client_state| is not used for successfully loaded safe seeds that are
@@ -611,7 +660,12 @@ void VariationsSeedStore::SetSafeSeedReaderWriterForTesting(
       std::move(seed_reader_writer));
 }
 
-LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
+void VariationsSeedStore::StoreLatestSerialNumber(
+    std::string_view serial_number) {
+  local_state_->SetString(prefs::kVariationsSeedSerialNumber, serial_number);
+}
+
+LoadSeedResult VariationsSeedStore::VerifyAndParseSeedImpl(
     VariationsSeed* seed,
     const std::string& seed_data,
     const std::string& base64_seed_signature,
@@ -634,25 +688,24 @@ LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
   return LoadSeedResult::kSuccess;
 }
 
-void VariationsSeedStore::StoreLatestSerialNumber(
-    std::string_view serial_number) {
-  local_state_->SetString(prefs::kVariationsSeedSerialNumber, serial_number);
-}
-
-LoadSeedResult VariationsSeedStore::LoadSeedImpl(
+// TODO: crbug.com/447171999 - Verification and parse of the seed can be done in
+// a background thread after startup.
+void VariationsSeedStore::VerifyAndParseSeedAndRunCallback(
+    LoadSeedCallback done_callback,
     SeedType seed_type,
-    VariationsSeed* seed,
-    std::string* seed_data,
-    std::string* base64_seed_signature) {
-  LoadSeedResult read_result =
-      ReadSeedData(seed_type, seed_data, base64_seed_signature);
-  if (read_result != LoadSeedResult::kSuccess) {
-    return read_result;
+    SeedReaderWriter::ReadSeedDataResult read_result) {
+  if (read_result.result != LoadSeedResult::kSuccess) {
+    LogLoadSeedResult(seed_type, read_result.result);
+    std::move(done_callback)
+        .Run(/*seed_data=*/"",
+             /*seed_signature=*/"", /*success=*/false, VariationsSeed());
+    return;
   }
-
+  VariationsSeed seed;
   std::optional<VerifySignatureResult> verify_signature_result;
-  LoadSeedResult result = VerifyAndParseSeed(
-      seed, *seed_data, *base64_seed_signature, &verify_signature_result);
+  LoadSeedResult result =
+      VerifyAndParseSeedImpl(&seed, read_result.seed_data,
+                             read_result.signature, &verify_signature_result);
   if (verify_signature_result.has_value()) {
     VerifySignatureResult signature_result = verify_signature_result.value();
     if (seed_type == SeedType::LATEST) {
@@ -668,12 +721,22 @@ LoadSeedResult VariationsSeedStore::LoadSeedImpl(
       ClearPrefs(seed_type);
     }
   }
-
   if (result == LoadSeedResult::kCorruptProtobuf) {
     ClearPrefs(seed_type);
   }
+  LogLoadSeedResult(seed_type, result);
+  std::move(done_callback)
+      .Run(std::move(read_result.seed_data), std::move(read_result.signature),
+           /*success=*/result == LoadSeedResult::kSuccess, std::move(seed));
+}
 
-  return result;
+void VariationsSeedStore::LogLoadSeedResult(SeedType seed_type,
+                                            LoadSeedResult result) {
+  if (seed_type == SeedType::LATEST) {
+    RecordLoadSeedResult(result);
+  } else {
+    RecordLoadSafeSeedResult(result);
+  }
 }
 
 LoadSeedResult VariationsSeedStore::ReadSeedData(
@@ -745,8 +808,9 @@ void VariationsSeedStore::OnSeedDataProcessed(
 
   if (result.validate_result != StoreSeedResult::kSuccess) {
     RecordStoreSeedResult(result.validate_result);
-    if (result.seed_data.is_delta_compressed)
+    if (result.seed_data.is_delta_compressed) {
       RecordStoreSeedResult(StoreSeedResult::kFailedDeltaStore);
+    }
     std::move(done_callback).Run(false, VariationsSeed());
     return;
   }

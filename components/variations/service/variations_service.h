@@ -233,9 +233,10 @@ class VariationsService
       std::unique_ptr<base::FeatureList> feature_list,
       PlatformFieldTrials* platform_field_trials);
 
-  // Returns the names of studies and their groups which could possibly be
-  // forced.
-  std::vector<StudyGroupNames> GetStudiesAvailableToForce();
+  // Calls to the callback with the studies and their groups which could
+  // possibly be forced.
+  void GetStudiesAvailableToForce(
+      base::OnceCallback<void(std::vector<StudyGroupNames>)> done_callback);
 
   // The seed type used.
   SeedType GetSeedType() const;
@@ -389,6 +390,13 @@ class VariationsService
   // |encrypted|. Returns true on success, false on failure. The encryption can
   // be done in-place.
   bool EncryptString(const std::string& plaintext, std::string* encrypted);
+
+  // Calls `done_callback` with the studies and their groups which could
+  // possibly be forced from the given `seed`.
+  void GetStudiesAvailableToForceFromSeed(
+      base::OnceCallback<void(std::vector<StudyGroupNames>)> done_callback,
+      bool success,
+      VariationsSeed seed);
 
   std::unique_ptr<VariationsServiceClient> client_;
 
