@@ -507,9 +507,14 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
 void CanvasResourceSharedImage::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
-    if (auto* interface_base = InterfaceBase()) {
-      interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-    }
+    acquire_sync_token_ = sync_token;
+    WaitSyncToken();
+  }
+}
+
+void CanvasResourceSharedImage::WaitSyncToken() {
+  if (auto* interface_base = InterfaceBase()) {
+    interface_base->WaitSyncTokenCHROMIUM(acquire_sync_token_.GetConstData());
   }
 }
 

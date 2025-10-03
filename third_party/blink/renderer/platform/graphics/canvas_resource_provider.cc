@@ -535,12 +535,12 @@ void CanvasResourceProviderSharedImage::WillDrawInternal() {
     }
     resource_ = NewOrRecycledResource();
     DCHECK(IsResourceUsable(resource_.get()));
-
+    resource_->WaitSyncToken();
     if (mode_ == SkSurface::kRetain_ContentChangeMode) {
       auto old_mailbox =
           old_resource_shared_image->GetClientSharedImage()->mailbox();
       auto mailbox = resource()->GetClientSharedImage()->mailbox();
-
+      old_resource->WaitSyncToken();
       RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
                                          Size().width(), Size().height());
     } else {
@@ -552,6 +552,8 @@ void CanvasResourceProviderSharedImage::WillDrawInternal() {
     UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
                           mode_ == SkSurface::kRetain_ContentChangeMode);
     mode_ = SkSurface::kRetain_ContentChangeMode;
+  } else {
+    resource_->WaitSyncToken();
   }
 }
 
