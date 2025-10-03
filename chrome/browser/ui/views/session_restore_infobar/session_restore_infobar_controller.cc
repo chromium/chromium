@@ -55,16 +55,14 @@ void SessionRestoreInfobarController::MaybeShowInfoBar(
   model_ = std::make_unique<SessionRestoreInfobarModel>(profile, was_restarted,
                                                         is_post_crash_launch);
 
-  if (features::kSetDefaultToContinueSession.Get()) {
-    SessionStartupPref::SetStartupPref(
-        &profile, SessionStartupPref(SessionStartupPref::LAST));
-  }
 
   if (InfoBarShownMaxTimes(profile.GetPrefs())) {
     return;
   }
 
-  if (UserInteractedWithSessionRestorePref(profile.GetPrefs())) {
+  if (!profile.GetPrefs()
+           ->FindPreference(prefs::kRestoreOnStartup)
+           ->IsDefaultValue()) {
     return;
   }
 
