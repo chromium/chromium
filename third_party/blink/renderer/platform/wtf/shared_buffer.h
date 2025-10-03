@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 
@@ -229,9 +224,10 @@ inline std::vector<char> SegmentedBuffer::CopyAs() const {
   std::vector<char> buffer;
   buffer.reserve(size_);
 
-  for (const auto& span : *this)
-    buffer.insert(buffer.end(), span.data(), span.data() + span.size());
-
+  for (const auto& span : *this) {
+    buffer.insert(buffer.end(), span.data(),
+                  UNSAFE_TODO(span.data() + span.size()));
+  }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
 }
@@ -243,7 +239,8 @@ inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
 
   for (const auto& span : *this) {
     buffer.insert(buffer.end(), reinterpret_cast<const uint8_t*>(span.data()),
-                  reinterpret_cast<const uint8_t*>(span.data() + span.size()));
+                  reinterpret_cast<const uint8_t*>(
+                      UNSAFE_TODO(span.data() + span.size())));
   }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
