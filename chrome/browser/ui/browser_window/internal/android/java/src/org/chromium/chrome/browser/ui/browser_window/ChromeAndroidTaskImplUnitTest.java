@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.Arrays;
 
@@ -1186,6 +1187,235 @@ public class ChromeAndroidTaskImplUnitTest {
         var pendingActionManager = task.getPendingActionManagerForTesting();
         assertEquals(
                 PendingAction.SET_BOUNDS, pendingActionManager.getPendingActionsForTesting()[0]);
-        assertEquals(taskBounds, pendingActionManager.getPendingBoundsForTesting());
+        assertEquals(taskBounds, pendingActionManager.getPendingBoundsInDp());
+    }
+
+    @Test
+    public void isActive_whenPending_withNoPendingShowOrActivate_returnsFalse() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertFalse(task.isActive());
+    }
+
+    @Test
+    public void isActive_whenPending_withPendingShow_returnsTrue() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request SHOW in pending state.
+        task.show();
+
+        // Act and Assert.
+        assertTrue(task.isActive());
+    }
+
+    @Test
+    public void isActive_whenPending_withPendingActivate_returnsTrue() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request ACTIVATE in pending state.
+        task.activate();
+
+        // Act and Assert.
+        assertTrue(task.isActive());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void isMaximized_whenPending_withPendingMaximize_returnsTrue() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request MAXIMIZE in pending state.
+        task.maximize();
+
+        // Act and Assert.
+        assertTrue(task.isMaximized());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void isMaximized_whenPending_withMaximizedStateInCreateParams_returnsTrue() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MAXIMIZED);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertTrue(task.isMaximized());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void
+            isMaximized_whenPending_withDefaultStateInCreateParams_withoutPendingMaximize_returnsFalse() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertFalse(task.isMaximized());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void isMinimized_whenPending_withPendingMinimize_returnsTrue() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request MINIMIZE in pending state.
+        task.minimize();
+
+        // Act and Assert.
+        assertTrue(task.isMinimized());
+    }
+
+    @Test
+    public void isMinimized_whenPending_withMinimizedStateInCreateParams_returnsTrue() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MINIMIZED);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertTrue(task.isMinimized());
+    }
+
+    @Test
+    public void
+            isMinimized_whenPending_withDefaultStateInCreateParams_withoutPendingMinimize_returnsFalse() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertFalse(task.isMinimized());
+    }
+
+    @Test
+    public void isFullscreen_whenPending_returnsFalse() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertFalse(task.isFullscreen());
+    }
+
+    @Test
+    public void getRestoredBoundsInDp_whenPending_withPendingSetBounds_returnsPendingBounds() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request SET_BOUNDS in pending state.
+        var bounds = new Rect(100, 100, 600, 800);
+        task.setBoundsInDp(bounds);
+
+        // Act and Assert.
+        assertEquals(bounds, task.getRestoredBoundsInDp());
+    }
+
+    @Test
+    public void
+            getRestoredBoundsInDp_whenPending_withNonEmptyInitialBoundsInCreateParams_returnsInitialBounds() {
+        // Arrange.
+        var bounds = new Rect(100, 100, 600, 800);
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, bounds, WindowShowState.DEFAULT);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertEquals(bounds, task.getRestoredBoundsInDp());
+    }
+
+    @Test
+    public void
+            getRestoredBoundsInDp_whenPending_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertTrue(task.getRestoredBoundsInDp().isEmpty());
+    }
+
+    @Test
+    public void getBoundsInDp_whenPending_withPendingSetBounds_returnsPendingBounds() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request SET_BOUNDS in pending state.
+        var bounds = new Rect(100, 100, 600, 800);
+        task.setBoundsInDp(bounds);
+
+        // Act and Assert.
+        assertEquals(bounds, task.getBoundsInDp());
+    }
+
+    @Test
+    public void
+            getBoundsInDp_whenPending_withNonEmptyInitialBoundsInCreateParams_returnsInitialBounds() {
+        // Arrange.
+        var bounds = new Rect(100, 100, 600, 800);
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, bounds, WindowShowState.DEFAULT);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertEquals(bounds, task.getBoundsInDp());
+    }
+
+    @Test
+    public void
+            getBoundsInDp_whenPending_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertTrue(task.getBoundsInDp().isEmpty());
+    }
+
+    @Test
+    public void isVisible_whenPending_withMinimizedStateInCreateParams_returnsFalse() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MINIMIZED);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertFalse(task.isVisible());
+    }
+
+    @Test
+    public void isVisible_whenPending_withNonMinimizedStateInCreateParams_returnsTrue() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act and Assert.
+        assertTrue(task.isVisible());
     }
 }

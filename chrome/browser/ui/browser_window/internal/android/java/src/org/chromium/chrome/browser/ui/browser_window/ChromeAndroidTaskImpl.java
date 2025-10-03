@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -46,6 +47,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
+import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -129,6 +131,8 @@ final class ChromeAndroidTaskImpl
     @GuardedBy("mActivityWindowAndroidLock")
     private @Nullable Rect mRestoredBoundsInPx;
 
+    private @Nullable AndroidBrowserWindowCreateParams mCreateParams;
+
     /**
      * Listener for window insets animation.
      *
@@ -209,6 +213,7 @@ final class ChromeAndroidTaskImpl
     }
 
     ChromeAndroidTaskImpl(int pendingId, AndroidBrowserWindowCreateParams createParams) {
+        mCreateParams = createParams;
         mBrowserWindowType = createParams.getWindowType();
         mId = null;
         mPendingId = pendingId;
@@ -296,6 +301,11 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isActive() {
+        if (mState.get() == State.PENDING) {
+            return mPendingActionManager.isActionRequested(PendingAction.SHOW)
+                    || mPendingActionManager.isActionRequested(PendingAction.ACTIVATE);
+        }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -311,6 +321,12 @@ final class ChromeAndroidTaskImpl
             return false;
         }
 
+        if (mState.get() == State.PENDING) {
+            return mPendingActionManager.isActionRequested(PendingAction.MAXIMIZE)
+                    || assumeNonNull(mCreateParams).getInitialShowState()
+                            == WindowShowState.MAXIMIZED;
+        }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -320,6 +336,12 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isMinimized() {
+        if (mState.get() == State.PENDING) {
+            return mPendingActionManager.isActionRequested(PendingAction.MINIMIZE)
+                    || assumeNonNull(mCreateParams).getInitialShowState()
+                            == WindowShowState.MINIMIZED;
+        }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -329,6 +351,10 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isFullscreen() {
+        if (mState.get() == State.PENDING) {
+            return false;
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             Log.w(TAG, "isFullscreen() requires Android R+; returning false");
             return false;
@@ -343,6 +369,13 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public Rect getRestoredBoundsInDp() {
+        if (mState.get() == State.PENDING) {
+            if (mPendingActionManager.isActionRequested(PendingAction.SET_BOUNDS)) {
+                return assertNonNull(mPendingActionManager.getPendingBoundsInDp());
+            }
+            return assumeNonNull(mCreateParams).getInitialBounds();
+        }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -373,6 +406,13 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public Rect getBoundsInDp() {
+        if (mState.get() == State.PENDING) {
+            if (mPendingActionManager.isActionRequested(PendingAction.SET_BOUNDS)) {
+                return assertNonNull(mPendingActionManager.getPendingBoundsInDp());
+            }
+            return assumeNonNull(mCreateParams).getInitialBounds();
+        }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -409,6 +449,10 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isVisible() {
+        if (mState.get() == State.PENDING) {
+            return assumeNonNull(mCreateParams).getInitialShowState() != WindowShowState.MINIMIZED;
+        }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);

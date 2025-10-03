@@ -27,6 +27,7 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -40,6 +41,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
@@ -48,6 +50,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.mojom.WindowShowState;
 
 /** Unit tests for {@link ChromeAndroidTaskTrackerImpl}. */
@@ -118,6 +121,40 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> mChromeAndroidTaskTracker.createPendingTask(mockParams));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void createPendingTask_requestsMaximizedShowState_createsPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MAXIMIZED);
+
+        // Act.
+        var task = (ChromeAndroidTaskImpl) mChromeAndroidTaskTracker.createPendingTask(mockParams);
+
+        // Assert.
+        var pendingActionManager = task.getPendingActionManagerForTesting();
+        assertTrue(pendingActionManager.isActionRequested(PendingAction.MAXIMIZE));
+        assertEquals(PendingAction.MAXIMIZE, pendingActionManager.getPendingActionsForTesting()[0]);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void createPendingTask_requestsMinimizedShowState_createsPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MINIMIZED);
+
+        // Act.
+        var task = (ChromeAndroidTaskImpl) mChromeAndroidTaskTracker.createPendingTask(mockParams);
+
+        // Assert.
+        var pendingActionManager = task.getPendingActionManagerForTesting();
+        assertTrue(pendingActionManager.isActionRequested(PendingAction.MINIMIZE));
+        assertEquals(PendingAction.MINIMIZE, pendingActionManager.getPendingActionsForTesting()[0]);
     }
 
     @Test

@@ -130,6 +130,21 @@ final class PendingActionManager {
         }
     }
 
+    /**
+     * Determines whether a pending request exists for the given action.
+     *
+     * @param action The {@link PendingAction} that will be checked.
+     * @return {@code true} if a request for {@code action} is pending, {@code false} otherwise.
+     */
+    boolean isActionRequested(@PendingAction int action) {
+        synchronized (mPendingActionsLock) {
+            if (isPrimaryAction(action)) {
+                return mPendingActions[0] == action;
+            }
+            return mPendingActions[1] == action;
+        }
+    }
+
     private void requestShow() {
         synchronized (mPendingActionsLock) {
             // Clear lower precedence secondary action.
@@ -237,7 +252,7 @@ final class PendingActionManager {
         }
     }
 
-    @Nullable Rect getPendingBoundsForTesting() {
+    @Nullable Rect getPendingBoundsInDp() {
         synchronized (mPendingActionsLock) {
             return mPendingBoundsInDp;
         }

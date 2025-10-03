@@ -284,8 +284,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
     private static void setInitialShowState(
             ChromeAndroidTask pendingTask, @WindowShowState.EnumType int showState) {
-        // TODO (crbug.com/444743853): Add test coverage for initiating actions MAXIMIZED and
-        // MINIMIZED on a pending Task.
         switch (showState) {
             case WindowShowState.MAXIMIZED:
                 pendingTask.maximize();
