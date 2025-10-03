@@ -392,6 +392,15 @@ void NotificationPlatformBridgeAndroid::Display(
   if (!scope_url.is_valid())
     scope_url = origin_url;
 
+  bool skip_ua_buttons = persistent_notification_metadata
+                             ? persistent_notification_metadata->skip_ua_buttons
+                             : false;
+  // Extension notifications never show UA buttons like "Unsubscribe" or
+  // "Site Settings".
+  if (notification_type == NotificationHandler::Type::EXTENSION) {
+    skip_ua_buttons = true;
+  }
+
   ScopedJavaLocalRef<jobject> android_profile = profile->GetJavaObject();
 
   SkBitmap image_bitmap = notification.image().AsBitmap();
@@ -422,9 +431,7 @@ void NotificationPlatformBridgeAndroid::Display(
           : (persistent_notification_metadata
                  ? persistent_notification_metadata->is_suspicious
                  : false),
-      persistent_notification_metadata
-          ? persistent_notification_metadata->skip_ua_buttons
-          : false);
+      skip_ua_buttons);
 
   regenerated_notification_infos_[notification.id()] =
       RegeneratedNotificationInfo(scope_url, std::nullopt);
