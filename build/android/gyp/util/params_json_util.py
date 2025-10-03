@@ -438,7 +438,7 @@ class ParamsJson(dict):
     """Returns True if the target requires the Android platform."""
     if self.type.startswith('android') or self.type == 'dist_aar':
       return True
-    return self.is_resource_type or self.get('requires_android', False)
+    return self.is_resource_type() or self.get('requires_android', False)
 
   def supports_android(self):
     """Returns True if the target supports the Android platform."""

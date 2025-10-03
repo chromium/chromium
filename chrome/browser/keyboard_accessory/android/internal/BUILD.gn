@@ -189,7 +189,7 @@ android_library("test_java") {
 }
 
 # TODO(crbug.com): Make this the `robolectric_binary` instead.
-android_library("junit_tests") {
+robolectric_library("junit_tests") {
   testonly = true
 
   sources = [ "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetControllerTest.java" ]
