@@ -51,6 +51,12 @@ class RendererExtensionRegistry {
   ExtensionId GetExtensionOrAppIDByURL(const GURL& url) const;
   const Extension* GetExtensionOrAppByURL(const GURL& url,
                                           bool include_guid = false) const;
+  // A thread-safe version of GetExtensionOrAppByURL() that returns a
+  // `scoped_refptr`. The ref-count is incremented under `lock_` to prevent the
+  // extension from being unloaded while in use.
+  scoped_refptr<const Extension> GetRefCountedExtensionOrAppByURL(
+      const GURL& url,
+      bool include_guid = false) const;
   const Extension* GetHostedAppByURL(const GURL& url) const;
   const Extension* GetByID(const ExtensionId& id) const;
   ExtensionIdSet GetIDs() const;
