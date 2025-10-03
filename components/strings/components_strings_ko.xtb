@@ -1601,7 +1601,7 @@
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
 <translation id="3647400963805615193">Chrome 도움말 닫기 버튼, Enter 키를 눌러 닫기, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">유효성 검사 성공</translation>
-<translation id="3650594806107685466">카드의 안전성을 유지하려면 <ph name="SIDE_OF_CARD" />의 CVC를 입력하세요.</translation>
+<translation id="3650594806107685466">카드의 보안을 위해 <ph name="SIDE_OF_CARD" />의 CVC를 입력하세요.</translation>
 <translation id="3650917416636556301">하이킹 및 캠핑</translation>
 <translation id="3655241534245626312">권한 설정으로 이동</translation>
 <translation id="3655670868607891010">이 메시지가 자주 표시된다면 다음을 시도해 보세요. <ph name="HELP_LINK" /></translation>
@@ -3285,7 +3285,7 @@
 <translation id="6433490469411711332">연락처 정보 수정</translation>
 <translation id="6433501201775827830">검색엔진 선택</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />에서 연결을 거부했습니다.</translation>
-<translation id="6433797564277305076">이제부터 기기 잠금 해제를 사용하여 빠르게 카드를 확인하세요</translation>
+<translation id="6433797564277305076">앞으로는 기기 잠금 해제를 사용하여 빠르게 카드를 확인합니다</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">드레스</translation>
 <translation id="6440503408713884761">무시됨</translation>
