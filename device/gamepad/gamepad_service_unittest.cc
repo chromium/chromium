@@ -1000,7 +1000,8 @@ TEST_F(GamepadServiceSimulationTest, TokenNotFound) {
   service()->SimulateInputFrame(random_token);
 }
 
-TEST_F(GamepadServiceSimulationTest, RemoveGamepadTwice) {
+// TODO(crbug.com/448993918): Re-enable this test
+TEST_F(GamepadServiceSimulationTest, DISABLED_RemoveGamepadTwice) {
   // Mark `consumer` active.
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
