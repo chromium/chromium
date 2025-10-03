@@ -61,7 +61,11 @@ TEST_P(HistorySignInStateWatcherTest, NullServices) {
   StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
   HistorySignInStateWatcher watcher(nullptr, nullptr, callback.Get());
 
-  EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  if (GetParam()) {
+    EXPECT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+  } else {
+    EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  }
 }
 
 class HistorySignInStateWatcherSyncToSigninTest
@@ -70,6 +74,27 @@ class HistorySignInStateWatcherSyncToSigninTest
   HistorySignInStateWatcherSyncToSigninTest()
       : HistorySignInStateWatcherTestBase(/*replace_sync_with_signin=*/true) {}
 };
+
+// Sync is disabled by policy, should be reflected in the sign-in state.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest, SyncDisabledByPolicy) {
+  CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+  sync_service_.SetAllowedByEnterprisePolicy(false);
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_, base::DoNothing());
+  ASSERT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+}
+
+// Tabs sync is disabled by policy and there is no account info, should result
+// in a sync disabled state.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest, TabsSyncDisabled) {
+  sync_service_.GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kTabs, true);
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_, base::DoNothing());
+  ASSERT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+}
 
 // Signing in to web only, should change the state and trigger a notification.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnWebOnlySignIn) {
