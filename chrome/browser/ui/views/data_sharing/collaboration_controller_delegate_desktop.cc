@@ -27,6 +27,7 @@
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
@@ -523,13 +524,35 @@ void CollaborationControllerDelegateDesktop::
                 .SetEnabled(true));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    AccountInfo account_for_promo = signin_ui_util::GetSingleAccountForPromos(
+        IdentityManagerFactory::GetForProfile(browser_->profile()));
+
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       dialog_builder.SetFootnote(ui::DialogModelLabel(dialog_text.footnote));
+
+      // Record metrics about signin and history sync opt in being offered.
+      switch (status.signin_status) {
+        case collaboration::SigninStatus::kSigninDisabled:
+          break;
+        case collaboration::SigninStatus::kNotSignedIn:
+          signin_metrics::LogSignInOffered(
+              signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+              account_for_promo.IsEmpty()
+                  ? signin_metrics::PromoAction::
+                        PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+                  : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+          signin_metrics::LogHistorySyncOptInOffered(
+              signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+          break;
+        case collaboration::SigninStatus::kSignedInPaused:
+        case collaboration::SigninStatus::kSignedIn:
+          signin_metrics::LogHistorySyncOptInOffered(
+              signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+          break;
+      }
     }
 
-    AccountInfo account_for_promo = signin_ui_util::GetSingleAccountForPromos(
-        IdentityManagerFactory::GetForProfile(browser_->profile()));
 #else
     AccountInfo account_for_promo =
         GetAccountInfoFromProfile(browser_->profile());

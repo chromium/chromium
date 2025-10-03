@@ -2790,10 +2790,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
 
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // `Signin.SyncOptIn.Offered` is still recorded if
-    // `kReplaceSyncPromosWithSignInPromos` is enabled.
-    // TODO(crbug.com/418145883): This should not be recorded.
     histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
+                                        explicit_access_point,
+                                        /*expected_bucket_count=*/0);
+    histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Offered",
                                         explicit_access_point,
                                         /*expected_bucket_count=*/1);
     EXPECT_CALL(

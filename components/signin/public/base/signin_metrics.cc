@@ -191,6 +191,11 @@ void LogSyncOptInOffered(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SyncOptIn.Offered", access_point);
 }
 
+void LogHistorySyncOptInOffered(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Offered",
+                                access_point);
+}
+
 void LogSyncSettingsOpened(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SyncOptIn.OpenedSyncSettings",
                                 access_point);

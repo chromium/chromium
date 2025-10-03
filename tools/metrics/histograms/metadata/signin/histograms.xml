@@ -1777,6 +1777,9 @@ prefs when the profile is loaded.  -->
     <variant name="Declined"
         summary="the user declined the flow to enable history sync by tapping
                  on the decline button in the history sync screen"/>
+    <variant name="Offered"
+        summary="the user was shown a button that would start the flow to
+                 enable history sync (only recorded on Desktop)"/>
     <variant name="Skipped"
         summary="the history sync screen has been skipped (due to enterprise
                  policies disabling sync, history sync, or tabs sync; or if

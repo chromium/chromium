@@ -402,8 +402,6 @@ void ProfileMenuView::OnSigninButtonClicked(
   }
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 
-  // TODO(crbug.com/418145883): Trigger the history sync optin
-  // screen for the case of a signed in with history sync off.
   // Pending while the HistorySyncPillExperiment is in progress.
   if (button_type == ActionableItem::kSigninReauthButton) {
     // The reauth button does not trigger a sync opt in.
@@ -769,6 +767,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             params.button_text = l10n_util::GetStringUTF16(
                 IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
             button_type = ActionableItem::kHistorySyncButton;
+            signin_metrics::LogHistorySyncOptInOffered(
+                explicit_signin_access_point_.value_or(access_point));
             break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::
               kBatchUploadPromo:
