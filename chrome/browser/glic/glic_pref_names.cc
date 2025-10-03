@@ -38,6 +38,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Boolean pref for the closed captioning setting.
   registry->RegisterBooleanPref(prefs::kGlicClosedCaptioningEnabled, false);
+
+  registry->RegisterIntegerPref(
+      prefs::kGlicActuationOnWeb,
+      static_cast<int>(prefs::GlicActuationOnWebPolicyState::kEnabled));
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

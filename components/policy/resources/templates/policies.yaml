@@ -1400,6 +1400,7 @@ policies:
   1399: DeveloperToolsAvailabilityAllowlist
   1400: DeveloperToolsAvailabilityBlocklist
   1401: LocalNetworkAccessRestrictionsTemporaryOptOut
+  1402: GeminiActOnWebSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

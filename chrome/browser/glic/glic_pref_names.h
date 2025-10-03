@@ -92,6 +92,19 @@ inline constexpr char kGlicPreviousPositionY[] = "glic.previous_bounds.y";
 inline constexpr char kGlicClosedCaptioningEnabled[] =
     "glic.closed_captioning_enabled";
 
+// Value enums for the "glic.actuation_on_web" pref. Integer pref that
+// determines if glic actuation is enabled. This is controlled from the
+// enterprise policy.
+enum class GlicActuationOnWebPolicyState {
+  kMinValue = 0,
+
+  kEnabled = kMinValue,
+  kDisabled = 1,
+
+  kMaxValue = kDisabled
+};
+inline constexpr char kGlicActuationOnWeb[] = "glic.actuation_on_web";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

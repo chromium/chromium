@@ -50,6 +50,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
+using glic::prefs::GlicActuationOnWebPolicyState;
+using glic::prefs::kGlicActuationOnWeb;
 using glic::prefs::SettingsPolicyState;
 using ::prefs::kGeminiSettings;
 
@@ -60,6 +62,10 @@ namespace glic {
 class GlicButton;
 
 namespace {
+
+int ToInt(GlicActuationOnWebPolicyState state) {
+  return static_cast<int>(state);
+}
 
 // An observer of the GlicWindowController's panel state. Fires the given
 // callback when the state changes to the given kind.
@@ -643,6 +649,40 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest,
   EXPECT_EQ(kGlicSettingsUrl,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
+
+using GlicActuationOnWebPolicyTest = GlicPolicyTest;
+
+IN_PROC_BROWSER_TEST_F(GlicActuationOnWebPolicyTest, DefaultToEnabled) {
+  // By default the pref should start off unmanaged and defaulted to kEnabled.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  EXPECT_FALSE(prefs->IsManagedPreference(kGlicActuationOnWeb));
+  EXPECT_EQ(prefs->GetInteger(kGlicActuationOnWeb),
+            ToInt(GlicActuationOnWebPolicyState::kEnabled));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActuationOnWebPolicyTest, PrefControlledByPolicy) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_EQ(prefs->GetInteger(kGlicActuationOnWeb),
+            ToInt(GlicActuationOnWebPolicyState::kEnabled));
+
+  // Set the policy to kDisabled. The pref value should be updated.
+  policy::PolicyMap policies;
+  policies.Set(
+      policy::key::kGeminiActOnWebSettings, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+      base::Value(ToInt(GlicActuationOnWebPolicyState::kDisabled)), nullptr);
+  UpdateProviderPolicy(policies);
+  EXPECT_TRUE(prefs->IsManagedPreference(kGlicActuationOnWeb));
+  EXPECT_EQ(prefs->GetInteger(kGlicActuationOnWeb),
+            ToInt(GlicActuationOnWebPolicyState::kDisabled));
+
+  // Verify the policy value cannot be overridden.
+  prefs->SetInteger(kGlicActuationOnWeb,
+                    ToInt(GlicActuationOnWebPolicyState::kEnabled));
+  EXPECT_EQ(prefs->GetInteger(kGlicActuationOnWeb),
+            ToInt(GlicActuationOnWebPolicyState::kDisabled));
+}
+
 }  // namespace
 
 }  // namespace glic

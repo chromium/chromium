@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "glic.actuation_on_web",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
+  }
+]
