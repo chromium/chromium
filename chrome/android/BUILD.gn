@@ -1065,6 +1065,7 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.search_engines",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.searchwidget",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.segmentation_platform",
+      "junit:chrome_junit_tests_org.chromium.chrome.browser.settings",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.share",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.signin",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.suggestions",

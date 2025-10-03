@@ -37,12 +37,14 @@ chromium-metrics-reviews@google.com.
   <int value="-1752194986" label="SingleWebsiteSettings"/>
   <int value="-1696636734" label="EnhancedProtectionSettingsFragment"/>
   <int value="-1583431738" label="FledgeLearnMoreFragment"/>
+  <int value="-1481342482" label="LocationPermissionSubpageSettings"/>
   <int value="-1467975767" label="StandardPreloadingSettingsFragment"/>
   <int value="-1422587744" label="DownloadLocationPreferenceDialog"/>
   <int value="-1413642316" label="TopicsFragment"/>
   <int value="-1285374344" label="TopicsBlockedFragment"/>
   <int value="-1200678803" label="SearchEngineSettings"/>
   <int value="-1122629733" label="HttpsFirstModeSettingsFragment"/>
+  <int value="-1091584228" label="NonCardPaymentMethodsManagementFragment"/>
   <int value="-1035378917" label="PrivacySettingsFragment"/>
   <int value="-1022730020" label="AutofillOptionsFragment"/>
   <int value="-988526347" label="RWSCookieSettings"/>
@@ -73,6 +75,7 @@ chromium-metrics-reviews@google.com.
   <int value="51577713" label="AccessibilitySettings"/>
   <int value="91451948" label="ContextualSearchSettingsFragment"/>
   <int value="96645902" label="PersonalizeGoogleServicesSettings"/>
+  <int value="168428260" label="PrivacyGuideFragment"/>
   <int value="217285687" label="AppearanceSettingsFragment"/>
   <int value="323758419" label="TrackingProtectionSettings"/>
   <int value="383093746" label="PrivacySandboxSettingsFragment"/>
@@ -99,6 +102,7 @@ chromium-metrics-reviews@google.com.
   <int value="1322563897" label="TopicsManageFragment"/>
   <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>
   <int value="1370406966" label="AutofillLocalCardEditor"/>
+  <int value="1409846592" label="TabArchiveSettingsFragment"/>
   <int value="1421890558" label="PasswordSettings"/>
   <int value="1505293227" label="PrivacySettings"/>
   <int value="1603955025" label="SafetyHubPermissionsFragment"/>
@@ -111,6 +115,7 @@ chromium-metrics-reviews@google.com.
   <int value="1968319616" label="(Obsolete) ClearBrowsingDataFragmentBasic"/>
   <int value="1969661266" label="AddressBarSettingsFragment"/>
   <int value="2070921964" label="(Obsolete) ClearBrowsingDataTabsFragment"/>
+  <int value="2084696263" label="IncognitoTrackingProtectionsFragment"/>
 </enum>
 
 <enum name="BooleanRedirected">
