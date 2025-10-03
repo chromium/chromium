@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
-#include "chrome/browser/glic/widget/blurred_screenshot_view_controller.h"
+#include "chrome/browser/glic/widget/inactive_view_controller.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -44,7 +44,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
   std::unique_ptr<views::View> CreateView(
       base::WeakPtr<tabs::TabInterface> tab);
 
-  BlurredScreenshotViewController blurred_screenshot_view_controller_;
+  InactiveViewController inactive_view_controller_;
   base::WeakPtr<tabs::TabInterface> tab_;
   bool is_showing_ = false;
 

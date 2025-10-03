@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/widget/blurred_screenshot_view_controller.h"
+#include "chrome/browser/glic/widget/inactive_view_controller.h"
 
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -37,10 +37,10 @@ gfx::ImageSkia BlurImage(gfx::ImageSkia image) {
 }
 }  // namespace
 
-BlurredScreenshotViewController::BlurredScreenshotViewController() = default;
-BlurredScreenshotViewController::~BlurredScreenshotViewController() = default;
+InactiveViewController::InactiveViewController() = default;
+InactiveViewController::~InactiveViewController() = default;
 
-std::unique_ptr<views::View> BlurredScreenshotViewController::CreateView() {
+std::unique_ptr<views::View> InactiveViewController::CreateView() {
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -52,7 +52,7 @@ std::unique_ptr<views::View> BlurredScreenshotViewController::CreateView() {
   return container;
 }
 
-void BlurredScreenshotViewController::CaptureScreenshot(
+void InactiveViewController::CaptureScreenshot(
     content::WebContents* glic_webui_contents) {
   if (!glic_webui_contents) {
     OnScreenshotCaptured(gfx::Image());
@@ -69,7 +69,7 @@ void BlurredScreenshotViewController::CaptureScreenshot(
   render_widget_host_view->CopyFromSurface(
       gfx::Rect(), gfx::Size(),
       base::BindOnce(
-          [](base::WeakPtr<BlurredScreenshotViewController> weak_ptr,
+          [](base::WeakPtr<InactiveViewController> weak_ptr,
              const SkBitmap& bitmap) {
             if (weak_ptr) {
               weak_ptr->OnScreenshotCaptured(
@@ -79,29 +79,25 @@ void BlurredScreenshotViewController::CaptureScreenshot(
           GetWeakPtr()));
 }
 
-void BlurredScreenshotViewController::OnScreenshotCaptured(
-    gfx::Image screenshot) {
+void InactiveViewController::OnScreenshotCaptured(gfx::Image screenshot) {
   screenshot_ = screenshot.AsImageSkia();
   UpdateImageView();
 }
 
-base::WeakPtr<BlurredScreenshotViewController>
-BlurredScreenshotViewController::GetWeakPtr() {
+base::WeakPtr<InactiveViewController> InactiveViewController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void BlurredScreenshotViewController::OnViewBoundsChanged(
-    views::View* observed_view) {
+void InactiveViewController::OnViewBoundsChanged(views::View* observed_view) {
   UpdateImageView();
 }
 
-void BlurredScreenshotViewController::OnViewIsDeleting(
-    views::View* observed_view) {
+void InactiveViewController::OnViewIsDeleting(views::View* observed_view) {
   image_view_observation_.Reset();
   image_view_ = nullptr;
 }
 
-void BlurredScreenshotViewController::UpdateImageView() {
+void InactiveViewController::UpdateImageView() {
   if (!image_view_ || screenshot_.isNull()) {
     return;
   }

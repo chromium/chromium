@@ -5,8 +5,8 @@
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 
 #include "base/notimplemented.h"
-#include "chrome/browser/glic/widget/blurred_screenshot_view_controller.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
+#include "chrome/browser/glic/widget/inactive_view_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/views/view.h"
@@ -23,7 +23,7 @@ GlicInactiveSidePanelUi::CreateForVisibleTab(
   inactive_side_panel->VisibilityChanged(/*visible=*/true);
 
   // Capture screenshot asynchronously and update the inactive panel.
-  inactive_side_panel->blurred_screenshot_view_controller_.CaptureScreenshot(
+  inactive_side_panel->inactive_view_controller_.CaptureScreenshot(
       glic_webui_contents);
 
   return inactive_side_panel;
@@ -60,7 +60,7 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
 
 std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView(
     base::WeakPtr<tabs::TabInterface> tab) {
-  return blurred_screenshot_view_controller_.CreateView();
+  return inactive_view_controller_.CreateView();
 }
 
 GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
