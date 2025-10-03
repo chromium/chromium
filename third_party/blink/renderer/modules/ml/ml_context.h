@@ -153,7 +153,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.
-  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNContext> context_remote_;
+  HeapMojoRemote<webnn::mojom::blink::WebNNContext> context_remote_;
   webnn::ContextProperties properties_;
 
   mojo::ScopedDataPipeProducerHandle write_tensor_producer_;

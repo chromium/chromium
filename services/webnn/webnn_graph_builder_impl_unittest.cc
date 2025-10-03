@@ -77,7 +77,7 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
 class FakeWebNNContextImpl final : public WebNNContextImpl {
  public:
   FakeWebNNContextImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
       WebNNContextProviderImpl* context_provider,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
@@ -166,9 +166,9 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
       override {
-    mojo::PendingAssociatedRemote<mojom::WebNNContext> remote;
+    mojo::PendingRemote<mojom::WebNNContext> remote;
     auto context_impl = base::MakeRefCounted<FakeWebNNContextImpl>(
-        remote.InitWithNewEndpointAndPassReceiver(), context_provider_impl,
+        remote.InitWithNewPipeAndPassReceiver(), context_provider_impl,
         command_buffer_id, std::move(sequence),
         std::move(scheduler_task_runner), std::move(memory_tracker),
         std::move(owning_task_runner));
@@ -234,7 +234,7 @@ class WebNNGraphBuilderImplTest : public testing::Test {
 
   test::WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
-  mojo::AssociatedRemote<mojom::WebNNContext> webnn_context_;
+  mojo::Remote<mojom::WebNNContext> webnn_context_;
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote_;
 };
 

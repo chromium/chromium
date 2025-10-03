@@ -23,7 +23,7 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
   ContextImplCoreml(
-      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
       WebNNContextProviderImpl* context_provider,
       mojom::CreateContextOptionsPtr options,
       gpu::CommandBufferId command_buffer_id,

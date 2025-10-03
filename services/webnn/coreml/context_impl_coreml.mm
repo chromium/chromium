@@ -22,7 +22,7 @@
 namespace webnn::coreml {
 
 ContextImplCoreml::ContextImplCoreml(
-    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     gpu::CommandBufferId command_buffer_id,

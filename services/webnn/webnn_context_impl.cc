@@ -38,7 +38,7 @@
 namespace webnn {
 
 WebNNContextImpl::WebNNContextImpl(
-    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties,
     mojom::CreateContextOptionsPtr options,
@@ -49,7 +49,9 @@ WebNNContextImpl::WebNNContextImpl(
     scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner)
-    : WebNNObjectImpl<mojom::WebNNContext, blink::WebNNContextToken>(
+    : WebNNObjectImpl<mojom::WebNNContext,
+                      blink::WebNNContextToken,
+                      mojo::Receiver<mojom::WebNNContext>>(
           std::move(receiver),
           scheduler_task_runner,
           std::move(owning_task_runner)),

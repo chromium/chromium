@@ -50,7 +50,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
 base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
 CreateDmlContext(
     scoped_refptr<Adapter> adapter,
-    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -102,7 +102,7 @@ CreateContextFromOptions(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::SharedContextState* shared_context_state,
-    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,

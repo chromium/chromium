@@ -40,7 +40,7 @@ CreateContextFromOptions(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::SharedContextState* shared_context_state,
-    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,

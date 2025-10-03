@@ -17,7 +17,9 @@ WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info)
-    : WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken>(
+    : WebNNObjectImpl<mojom::WebNNTensor,
+                      blink::WebNNTensorToken,
+                      mojo::AssociatedReceiver<mojom::WebNNTensor>>(
           std::move(receiver),
           context->scheduler_task_runner(),
           context->owning_task_runner()),
@@ -30,7 +32,9 @@ WebNNTensorImpl::WebNNTensorImpl(
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     std::unique_ptr<gpu::WebNNTensorRepresentation> representation)
-    : WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken>(
+    : WebNNObjectImpl<mojom::WebNNTensor,
+                      blink::WebNNTensorToken,
+                      mojo::AssociatedReceiver<mojom::WebNNTensor>>(
           std::move(receiver),
           context->scheduler_task_runner(),
           context->owning_task_runner()),

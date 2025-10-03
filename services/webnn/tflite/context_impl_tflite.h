@@ -21,7 +21,7 @@ namespace tflite {
 class ContextImplTflite final : public WebNNContextImpl {
  public:
   ContextImplTflite(
-      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
       WebNNContextProviderImpl* context_provider,
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,

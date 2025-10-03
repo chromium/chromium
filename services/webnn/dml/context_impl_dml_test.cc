@@ -130,7 +130,7 @@ struct CreateTensorSuccess {
 };
 
 CreateTensorSuccess CreateWebNNTensor(
-    mojo::AssociatedRemote<mojom::WebNNContext>& webnn_context_remote,
+    mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
     OperandDataType data_type,
     std::vector<uint32_t> shape) {
   base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
@@ -185,7 +185,7 @@ class WebNNContextDMLImplTest : public TestBase {
 
  protected:
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
-  mojo::AssociatedRemote<mojom::WebNNContext> webnn_context_remote_;
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

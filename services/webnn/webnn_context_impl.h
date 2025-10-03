@@ -46,14 +46,21 @@ class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 class ScopedSequence;
 
+// A WebNNContextImpl owns a collection of graphs and tensors and may be bound
+// to a device such as a GPU or NPU. It is created and destroyed on its
+// `owning_task_runner()`. Mojo messages are dispatched on
+// `scheduler_task_runner()`, which is a distinct task runner but runs on the
+// same thread.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
-    : public WebNNObjectImpl<mojom::WebNNContext, blink::WebNNContextToken> {
+    : public WebNNObjectImpl<mojom::WebNNContext,
+                             blink::WebNNContextToken,
+                             mojo::Receiver<mojom::WebNNContext>> {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
   WebNNContextImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
       WebNNContextProviderImpl* context_provider,
       ContextProperties properties,
       mojom::CreateContextOptionsPtr options,
@@ -207,7 +214,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // by the lifetime of the tensors it contains.
   base::flat_set<
       scoped_refptr<WebNNTensorImpl>,
-      WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken>::Comparator>
+      WebNNObjectImpl<mojom::WebNNTensor,
+                      blink::WebNNTensorToken,
+                      mojo::AssociatedReceiver<mojom::WebNNTensor>>::Comparator>
       tensor_impls_;
 
  private:
@@ -221,7 +230,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // context during operations.
   base::flat_set<
       scoped_refptr<WebNNGraphImpl>,
-      WebNNObjectImpl<mojom::WebNNGraph, blink::WebNNGraphToken>::Comparator>
+      WebNNObjectImpl<mojom::WebNNGraph,
+                      blink::WebNNGraphToken,
+                      mojo::AssociatedReceiver<mojom::WebNNGraph>>::Comparator>
       graph_impls_;
 
   const gpu::CommandBufferId command_buffer_id_;

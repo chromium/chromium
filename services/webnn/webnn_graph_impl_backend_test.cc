@@ -75,7 +75,7 @@ struct TensorRemoteAndHandle {
 };
 
 TensorRemoteAndHandle CreateTensor(
-    mojo::AssociatedRemote<mojom::WebNNContext>& context_remote,
+    mojo::Remote<mojom::WebNNContext>& context_remote,
     mojom::TensorInfoPtr tensor_info) {
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
 
@@ -95,7 +95,7 @@ TensorRemoteAndHandle CreateTensor(
 }
 
 TensorRemoteAndHandle CreateTensorWithValues(
-    mojo::AssociatedRemote<mojom::WebNNContext>& context_remote,
+    mojo::Remote<mojom::WebNNContext>& context_remote,
     mojom::TensorInfoPtr tensor_info,
     base::span<const uint8_t> data) {
   auto remote_and_handle = CreateTensor(context_remote, std::move(tensor_info));
@@ -115,7 +115,7 @@ enum class BuildAndComputeExpectation { kSuccess, kCreateGraphFailure };
 template <typename InputDataType, typename OutputDataType = InputDataType>
 [[nodiscard]] base::flat_map<std::string, std::vector<OutputDataType>>
 BuildAndCompute(
-    mojo::AssociatedRemote<mojom::WebNNContext>& context_remote,
+    mojo::Remote<mojom::WebNNContext>& context_remote,
     mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote,
     mojom::GraphInfoPtr graph_info,
     base::flat_map<std::string, base::span<const InputDataType>> named_inputs,
@@ -300,9 +300,7 @@ class WebNNGraphImplBackendTest : public dml::TestBase {
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
-  mojo::AssociatedRemote<mojom::WebNNContext>& context() {
-    return webnn_context_;
-  }
+  mojo::Remote<mojom::WebNNContext>& context() { return webnn_context_; }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -310,7 +308,7 @@ class WebNNGraphImplBackendTest : public dml::TestBase {
 
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
-  mojo::AssociatedRemote<mojom::WebNNContext> webnn_context_;
+  mojo::Remote<mojom::WebNNContext> webnn_context_;
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
@@ -393,16 +391,14 @@ class WebNNGraphImplBackendTest : public testing::Test {
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
-  mojo::AssociatedRemote<mojom::WebNNContext>& context() {
-    return webnn_context_;
-  }
+  mojo::Remote<mojom::WebNNContext>& context() { return webnn_context_; }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
-  mojo::AssociatedRemote<mojom::WebNNContext> webnn_context_;
+  mojo::Remote<mojom::WebNNContext> webnn_context_;
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
@@ -442,16 +438,14 @@ class WebNNGraphImplBackendTest : public testing::Test {
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
-  mojo::AssociatedRemote<mojom::WebNNContext>& context() {
-    return webnn_context_;
-  }
+  mojo::Remote<mojom::WebNNContext>& context() { return webnn_context_; }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
-  mojo::AssociatedRemote<mojom::WebNNContext> webnn_context_;
+  mojo::Remote<mojom::WebNNContext> webnn_context_;
 };
 
 void WebNNGraphImplBackendTest::SetUp() {

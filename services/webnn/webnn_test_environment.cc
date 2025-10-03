@@ -4,6 +4,8 @@
 
 #include "services/webnn/webnn_test_environment.h"
 
+#include "base/run_loop.h"
+
 namespace webnn::test {
 
 WebNNTestEnvironment::WebNNTestEnvironment(
@@ -48,6 +50,23 @@ void WebNNTestEnvironment::BindWebNNContextProvider(
   context_provider_->BindWebNNContextProvider(std::move(pending_receiver));
 }
 
-WebNNTestEnvironment::~WebNNTestEnvironment() = default;
+WebNNTestEnvironment::~WebNNTestEnvironment() {
+  // Destroy all WebNNContextImpls on their owning sequences before destroying
+  // the gpu::Scheduler, since the contexts may post tasks to the same
+  // sequences.
+  auto pending_runners =
+      context_provider_->GetAllContextTaskRunnersForTesting();
+
+  // Drop all references to the contexts so their destructors run.
+  context_provider_.reset();
+
+  // Drain each task runner to ensure all tasks posted by contexts have
+  // completed.
+  for (auto& runner : pending_runners) {
+    base::RunLoop loop;
+    runner->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();  // Blocks until all previously posted tasks complete
+  }
+}
 
 }  // namespace webnn::test

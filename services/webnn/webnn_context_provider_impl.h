@@ -82,10 +82,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   base::optional_ref<WebNNContextImpl> GetWebNNContextImplForTesting(
       const blink::WebNNContextToken& handle);
 
-  using WebNNContextImplSet =
-      base::flat_set<scoped_refptr<WebNNContextImpl>,
-                     WebNNObjectImpl<mojom::WebNNContext,
-                                     blink::WebNNContextToken>::Comparator>;
+  using WebNNContextImplSet = base::flat_set<
+      scoped_refptr<WebNNContextImpl>,
+      WebNNObjectImpl<mojom::WebNNContext,
+                      blink::WebNNContextToken,
+                      mojo::Receiver<mojom::WebNNContext>>::Comparator>;
 
   // The test cases can override the context creating behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
@@ -118,6 +119,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   gpu::SharedImageManager* shared_image_manager() const {
     return shared_image_manager_;
   }
+
+  // For tests: ensure that all WebNNContextImpls have been destroyed on their
+  // owning task runners, since they may post tasks to the gpu::Scheduler.
+  base::flat_set<scoped_refptr<base::SequencedTaskRunner>>
+  GetAllContextTaskRunnersForTesting();
 
  protected:
   // SequenceChecker for WebNNContextProviderImpl. It attaches to the sequence
@@ -163,7 +169,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   // Contexts created by this provider. When a context disconnects,
   // it will destroy itself by removing itself from this set.
-  WebNNContextImplSet impls_;
+  WebNNContextImplSet context_impls_;
 
   // Specifies the thread on which the GPU scheduler should run tasks.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
