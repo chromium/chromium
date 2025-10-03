@@ -389,8 +389,7 @@ class HistoryService : public KeyedService,
       QueryMostVisitedURLsCallback callback,
       base::CancelableTaskTracker* tracker,
       const std::optional<std::string>& recency_factor_name = std::nullopt,
-      std::optional<size_t> recency_window_days = std::nullopt,
-      bool check_visual_deduplication_flag = false);
+      std::optional<size_t> recency_window_days = std::nullopt);
 
   // Request `result_count` of the most repeated queries for the given keyword.
   // Used by TopSites.

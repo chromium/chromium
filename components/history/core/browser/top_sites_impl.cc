@@ -291,8 +291,7 @@ void TopSitesImpl::StartQueryForMostVisited() {
                      base::Unretained(this), request),
       &cancelable_task_tracker_,
       /*recency_factor_name=*/std::nullopt,
-      /*recency_window_days=*/std::nullopt,
-      /*check_visual_deduplication_flag=*/true);
+      /*recency_window_days=*/std::nullopt);
 
   // Request the most repeated queries if the corresponding feature is enabled
   // and the default search provider is available.

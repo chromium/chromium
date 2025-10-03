@@ -42,10 +42,6 @@ COMPONENT_EXPORT(HISTORY_FEATURES) BASE_DECLARE_FEATURE(kVisitedLinksOn404);
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kMostVisitedTilesNewScoring);
 
-// Most Visited Tiles Visual Deduplication.
-COMPONENT_EXPORT(HISTORY_FEATURES)
-BASE_DECLARE_FEATURE(kMostVisitedTilesVisualDeduplication);
-
 // List of values for |kMvtScoringParamRecencyFactor|
 COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const char kMvtScoringParamRecencyFactor_Classic[];

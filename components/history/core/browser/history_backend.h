@@ -331,15 +331,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // `recency_window_days` is the number of days of history to consider
   // when scoring segments. A result older than this window will not add to a
   // segment's score.
-  // `check_visual_deduplication_flag` if true, it will check if the flag
-  // gurading an additional filter is enabled. If so, it will filter out URLs
-  // with the same hostname and first N digits of the title, keeping the one
-  // with the highest score.
   MostVisitedURLList QueryMostVisitedURLs(
       int result_count,
       const std::optional<std::string>& recency_factor_name = std::nullopt,
-      std::optional<size_t> recency_window_days = std::nullopt,
-      bool check_visual_deduplication_flag = false);
+      std::optional<size_t> recency_window_days = std::nullopt);
 
   // Request `result_count` of the most repeated queries for the given keyword.
   // Used by TopSites.

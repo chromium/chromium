@@ -266,8 +266,7 @@ VisitSegmentDatabase::QuerySegmentUsage(
     int max_result_count,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     const std::optional<std::string>& recency_factor_name,
-    std::optional<size_t> recency_window_days,
-    bool visual_deduplication_enabled) {
+    std::optional<size_t> recency_window_days) {
   // Phase 1: Gather all segments and compute scores.
   std::vector<std::unique_ptr<PageUsageData>> segments;
   base::Time now = base::Time::Now();
@@ -347,8 +346,7 @@ VisitSegmentDatabase::QuerySegmentUsage(
                                  title.substr(0, kTitleDedupLength));
         // If `!visual_deduplication_enabled` then it's okay to skip insert(),
         // since `added_host_titles` won't be used anyway.
-        if (!visual_deduplication_enabled ||
-            added_host_titles.insert(current_key).second) {
+        if (added_host_titles.insert(current_key).second) {
           pud->SetURL(url);
           pud->SetTitle(title);
           results.push_back(std::move(pud));
@@ -362,7 +360,7 @@ VisitSegmentDatabase::QuerySegmentUsage(
     }
     statement2.Reset(true);
   }
-  if (visual_deduplication_enabled && !histogram_recorded_) {
+  if (!histogram_recorded_) {
     base::UmaHistogramCounts100("History.MostVisitedTilesVisualDeduplication",
                                 duplicate_tiles);
     histogram_recorded_ = true;

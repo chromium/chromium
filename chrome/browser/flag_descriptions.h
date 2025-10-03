@@ -1585,9 +1585,6 @@ extern const char kMostVisitedTilesNewScoringDescription[];
 extern const char kMostVisitedTilesReselectName[];
 extern const char kMostVisitedTilesReselectDescription[];
 
-extern const char kMostVisitedTilesVisualDeduplicationName[];
-extern const char kMostVisitedTilesVisualDeduplicationDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kMulticastInDirectSocketsName[];
 extern const char kMulticastInDirectSocketsDescription[];

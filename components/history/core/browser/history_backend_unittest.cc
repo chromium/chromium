@@ -4021,53 +4021,15 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs_VisualDeduplicationLogic) {
     backend_->AddPage(args);
     backend_->SetPageTitle(data.url, data.title);
   }
-  // Test Case 1: Deduplication Enabled.
-  {
-    SCOPED_TRACE("Deduplication Enabled");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        history::kMostVisitedTilesVisualDeduplication);
 
+  {
     MostVisitedURLList results =
-        backend_->QueryMostVisitedURLs(100, std::nullopt, std::nullopt, true);
+        backend_->QueryMostVisitedURLs(100, std::nullopt, std::nullopt);
 
     ASSERT_EQ(3u, results.size());
     EXPECT_THAT(results, ElementsAre(MvuMatches(site1.url, site1.title),
                                      MvuMatches(site3.url, site3.title),
                                      MvuMatches(site5.url, site5.title)));
-  }
-  // Helper lambda for asserting when all sites are expected (no deduplication).
-  auto expect_all_sites_ordered_by_score = [&](const MostVisitedURLList& res) {
-    ASSERT_EQ(5u, res.size());
-    EXPECT_THAT(res, testing::ElementsAre(MvuMatches(site1.url, site1.title),
-                                          MvuMatches(site3.url, site3.title),
-                                          MvuMatches(site2.url, site2.title),
-                                          MvuMatches(site5.url, site5.title),
-                                          MvuMatches(site4.url, site4.title)));
-  };
-
-  // Test Case 2: Deduplication Disabled (because feature flag is off).
-  {
-    SCOPED_TRACE("Deduplication Disabled by Feature Flag");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        history::kMostVisitedTilesVisualDeduplication);
-
-    MostVisitedURLList results =
-        backend_->QueryMostVisitedURLs(100, std::nullopt, std::nullopt, true);
-    expect_all_sites_ordered_by_score(results);
-  }
-
-  // Test Case 3: Deduplication Disabled (because boolean parameter is false).
-  {
-    SCOPED_TRACE("Deduplication Disabled by Boolean Parameter");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        history::kMostVisitedTilesVisualDeduplication);
-
-    MostVisitedURLList results =
-        backend_->QueryMostVisitedURLs(100, std::nullopt, std::nullopt, false);
-    expect_all_sites_ordered_by_score(results);
   }
 }
 

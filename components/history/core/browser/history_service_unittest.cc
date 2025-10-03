@@ -572,11 +572,11 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
 
   ASSERT_TRUE(history_service_.get());
 
-  const GURL url0("http://www.google.com/url0/");
-  const GURL url1("http://www.google.com/url1/");
-  const GURL url2("http://www.google.com/url2/");
-  const GURL url3("http://www.google.com/url3/");
-  const GURL url4("http://www.google.com/url4/");
+  const GURL url0("http://www.google0.com/");
+  const GURL url1("http://www.google1.com/");
+  const GURL url2("http://www.google2.com/");
+  const GURL url3("http://www.google3.com/");
+  const GURL url4("http://www.google4.com/");
 
   const ContextID context_id = 1;
 
