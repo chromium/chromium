@@ -42,6 +42,8 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShopCard:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return YES;
     default:
       return NO;
@@ -74,18 +76,17 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
     }
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_TITLE);
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      return @"";
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
-    case ContentSuggestionsModuleType::kPriceTrackingPromo:
-    case ContentSuggestionsModuleType::kSendTabPromo:
-
-      return @"";
-    case ContentSuggestionsModuleType::kTipsWithProductImage:
-    case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return l10n_util::GetNSString(
           IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_DESCRIPTION);
     case ContentSuggestionsModuleType::kMostVisited:
@@ -136,6 +137,8 @@ NSString* GetContextMenuHideDescriptionForType(
               l10n_util::GetNSString(IDS_IOS_SEND_TAB_PROMO_TITLE)));
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return l10n_util::GetNSStringF(
           IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_HIDE_CHROME_TIPS,
           base::SysNSStringToUTF16(
@@ -315,7 +318,7 @@ NSString* GetContextMenuHideDescriptionForType(
 /// and Safety Check modules.
 - (PushNotificationClientId)pushNotificationClientId:
     (ContentSuggestionsModuleType)type {
-  /// This is only supported for Set Up List and Safety Check modules.
+  /// This is only supported for Tips and Safety Check modules.
   CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
@@ -335,7 +338,7 @@ NSString* GetContextMenuHideDescriptionForType(
 /// notifications are exclusively supported by the Set Up List and Safety Check
 /// modules.
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
-  /// This is only supported for Set Up List and Safety Check modules.
+  /// This is only supported for Tips and Safety Check modules.
   CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 

@@ -929,7 +929,9 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
-    case ContentSuggestionsModuleType::kTips: {
+    case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser: {
       // Disable all cards with "Chrome Tips" header.
       [self disableTipsModules];
       break;
@@ -948,7 +950,7 @@ using segmentation_platform::TipIdentifier;
 // and Safety Check modules.
 - (PushNotificationClientId)pushNotificationClientId:
     (ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
   CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
@@ -974,7 +976,7 @@ using segmentation_platform::TipIdentifier;
 // notifications are exclusively supported by the Set Up List, Send Tab, and
 // Safety Check modules.
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
   CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
@@ -1010,6 +1012,8 @@ using segmentation_platform::TipIdentifier;
       return NotificationOptInAccessPoint::kSetUpList;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return NotificationOptInAccessPoint::kTips;
     default:
       NOTREACHED();
@@ -1018,7 +1022,7 @@ using segmentation_platform::TipIdentifier;
 
 - (void)enableNotifications:(ContentSuggestionsModuleType)type
              viaContextMenu:(BOOL)viaContextMenu {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
   CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
@@ -1053,7 +1057,7 @@ using segmentation_platform::TipIdentifier;
 
 - (void)disableNotifications:(ContentSuggestionsModuleType)type
               viaContextMenu:(BOOL)viaContextMenu {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
   CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
