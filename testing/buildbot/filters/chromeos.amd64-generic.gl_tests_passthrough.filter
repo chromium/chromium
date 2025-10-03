@@ -29,3 +29,6 @@
 
 # crbug.com/1518651
 -GLReadbackTest.ReadPixelsFloat
+
+# crbug.com/404905709
+-OzoneImageBackingFactoryTest.CreateGpuMemoryBufferHandle
