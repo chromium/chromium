@@ -5308,7 +5308,10 @@ public class StripLayoutHelper
         @StringRes
         int resId =
                 getTabAccessibilityLabelRes(
-                        stripTab.getIsPinned(), stripTab.getNotificationBubbleShown(), isHidden);
+                        stripTab.getIsPinned(),
+                        stripTab.getNotificationBubbleShown(),
+                        isHidden,
+                        stripTab.getIsMultiSelected());
 
         if (!stripTab.needsAccessibilityDescriptionUpdate(title, resId)) {
             // The resulting accessibility description would be the same as the current description,
@@ -5326,9 +5329,13 @@ public class StripLayoutHelper
      * @param isPinned Whether the tab is pinned.
      * @param notificationShown Whether the tab has notification shown.
      * @param isHidden Current visibility state of the Tab.
+     * @param isMultiSelected Whether the tab is multi-selected.
      */
     private @StringRes int getTabAccessibilityLabelRes(
-            boolean isPinned, boolean notificationShown, boolean isHidden) {
+            boolean isPinned,
+            boolean notificationShown,
+            boolean isHidden,
+            boolean isMultiSelected) {
         if (notificationShown) {
             return R.string.accessibility_tabstrip_tab_notification;
         }
@@ -5354,9 +5361,41 @@ public class StripLayoutHelper
                         ? R.string.accessibility_tabstrip_tab_selected_incognito
                         : R.string.accessibility_tabstrip_tab_selected;
 
-        return isPinned
-                ? (isHidden ? pinnedUnselected : pinnedSelected)
-                : (isHidden ? unpinnedUnselected : unpinnedSelected);
+        @StringRes
+        int multiselected =
+                mIncognito
+                        ? R.string.accessibility_tabstrip_tab_multiselected_incognito
+                        : R.string.accessibility_tabstrip_tab_multiselected;
+
+        @StringRes
+        int multiselectedPinned =
+                mIncognito
+                        ? R.string.accessibility_tabstrip_tab_multiselected_pinned_incognito
+                        : R.string.accessibility_tabstrip_tab_multiselected_pinned;
+
+        // A selected tab is always considered part of multi-selection. and so does not need to have
+        // a separate string.
+        if (isHidden) {
+            if (isPinned) {
+                if (isMultiSelected) {
+                    return multiselectedPinned;
+                } else {
+                    return pinnedUnselected;
+                }
+            } else {
+                if (isMultiSelected) {
+                    return multiselected;
+                } else {
+                    return unpinnedUnselected;
+                }
+            }
+        } else {
+            if (isPinned) {
+                return pinnedSelected;
+            } else {
+                return unpinnedSelected;
+            }
+        }
     }
 
     // ============================================================================================
