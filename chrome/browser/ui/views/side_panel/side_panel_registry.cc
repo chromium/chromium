@@ -50,10 +50,11 @@ void SidePanelRegistry::ResetActiveEntryFor(SidePanelEntry::PanelType type) {
   active_entries_[type].reset();
 }
 
-void SidePanelRegistry::ClearCachedEntryViews() {
+void SidePanelRegistry::ClearCachedEntryViews(SidePanelEntry::PanelType type) {
   for (auto const& entry : entries_) {
-    if (!active_entries_[entry->type()].has_value() ||
-        entry.get() != active_entries_[entry->type()].value()) {
+    if (entry->type() == type &&
+        (!active_entries_[type].has_value() ||
+         entry.get() != active_entries_[type].value())) {
       entry.get()->ClearCachedView();
     }
   }

@@ -556,13 +556,14 @@ void SidePanelCoordinator::PopulateSidePanel(
   shown_callback_list_.Notify();
 }
 
-void SidePanelCoordinator::ClearCachedEntryViews() {
-  window_registry_->ClearCachedEntryViews();
+void SidePanelCoordinator::ClearCachedEntryViews(
+    SidePanelEntry::PanelType type) {
+  window_registry_->ClearCachedEntryViews(type);
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
   for (int index = 0; index < model->count(); ++index) {
     auto* tab =
         browser_view_->browser()->tab_strip_model()->GetTabAtIndex(index);
-    tab->GetTabFeatures()->side_panel_registry()->ClearCachedEntryViews();
+    tab->GetTabFeatures()->side_panel_registry()->ClearCachedEntryViews(type);
   }
 }
 
@@ -874,6 +875,11 @@ void SidePanelCoordinator::OnActionItemChanged(const UniqueKey key) {
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
                                                    views::View* starting_from,
                                                    bool visible) {
+  SidePanelEntry::PanelType type =
+      observed_view == browser_view_->contents_height_side_panel()
+          ? SidePanelEntry::PanelType::kContent
+          : SidePanelEntry::PanelType::kToolbar;
+
   // This method is called in 3 situations:
   //   (1) The SidePanel was previously invisible, and Show() is called. This is
   //   independent of the /*suppress_animations*/ parameter, and is re-entrant.
@@ -903,11 +909,10 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // everything except remaining active entries (i.e. if another tab has an
   // active contextual entry).
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    contextual_registry->ResetActiveEntryFor(
-        SidePanelEntry::PanelType::kContent);
+    contextual_registry->ResetActiveEntryFor(type);
   }
-  window_registry_->ResetActiveEntryFor(SidePanelEntry::PanelType::kContent);
-  ClearCachedEntryViews();
+  window_registry_->ResetActiveEntryFor(type);
+  ClearCachedEntryViews(type);
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may
   // already have deleted the content container, so check that it still

@@ -129,9 +129,9 @@ class SidePanelCoordinator final : public SidePanelUIBase,
       SidePanelRegistry* old_contextual_registry,
       SidePanelRegistry* new_contextual_registry) override;
 
-  // Clear cached views for registry entries for global and contextual
-  // registries.
-  void ClearCachedEntryViews();
+  // Clear cached views with the corresponding panel type for registry entries
+  // for global and contextual registries.
+  void ClearCachedEntryViews(SidePanelEntry::PanelType type);
 
   void UpdatePanelIconAndTitle(const ui::ImageModel& icon,
                                std::u16string_view text,
