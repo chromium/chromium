@@ -35,6 +35,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -165,8 +166,6 @@ class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
       : MessagingApiTest(/*enable_back_forward_cache=*/false) {}
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect", {.custom_arg = "bfcache"}))
       << message_;
@@ -175,6 +174,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
 IN_PROC_BROWSER_TEST_F(MessagingApiWithoutBackForwardCacheTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect")) << message_;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingCrash) {
   ExtensionTestMessageListener ready_to_crash("ready_to_crash");
@@ -189,6 +190,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingCrash) {
   CrashTab(tab);
   EXPECT_TRUE(catcher.GetNextResult());
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests sendMessage cases where the listener gets disconnected before it is
 // able to reply with a message it said it would send. This is achieved by
@@ -259,8 +262,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, SendMessageDisconnect) {
   ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {}, {}));
 }
 
-#endif
-
 // Tests that message passing from one extension to another works.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
   ASSERT_TRUE(LoadExtension(
@@ -271,8 +272,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
       << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Tests that a content script can exchange messages with a tab even if there is
 // no background page.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
@@ -280,8 +279,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
                                {.extension_url = "page_in_main_frame.html"}))
       << message_;
 }
-
-#endif
 
 // Tests that messages with event_urls are only passed to extensions with
 // appropriate permissions.
@@ -555,6 +552,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnPagehide) {
   EXPECT_EQ(1, content::EvalJs(background_contents, "window.messageCount;"));
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Tests that messages over a certain size are not sent.
 // https://crbug.com/766713.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
@@ -741,6 +740,8 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
       << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // See above.
 IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
                        SendMessageListenerBehavior_Asynchronous) {
@@ -786,6 +787,8 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
     EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
   }
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test class that supports running tests with the
 // extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport feature
@@ -950,10 +953,7 @@ class ServiceWorkerMessagingApiTest : public MessagingApiTest {
 
   size_t GetWorkerRefCount(const blink::StorageKey& key) {
     content::ServiceWorkerContext* sw_context =
-        browser()
-            ->profile()
-            ->GetDefaultStoragePartition()
-            ->GetServiceWorkerContext();
+        profile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
     return sw_context->CountExternalRequestsForTest(key);
   }
 };
@@ -1057,8 +1057,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiFencedFrameTest, Load) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect_fenced_frames", {}))
       << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
