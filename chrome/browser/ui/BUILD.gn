@@ -5358,7 +5358,10 @@ static_library("ui") {
   }
 
   if (enable_session_service) {
-    deps += [ "//chrome/browser/ui/webui/tab_strip_internals" ]
+    deps += [
+      "//chrome/browser/ui/webui/tab_strip_internals",
+      "//chrome/browser/ui/webui/tab_strip_internals:impl",
+    ]
   }
 }
 

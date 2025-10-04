@@ -9,17 +9,35 @@ assert(enable_session_service)
 
 source_set("tab_strip_internals") {
   sources = [
-    "tab_strip_internals_handler.cc",
     "tab_strip_internals_handler.h",
-    "tab_strip_internals_ui.cc",
     "tab_strip_internals_ui.h",
+    "tab_strip_internals_util.h",
   ]
 
   deps = [
     ":mojo_bindings",
-    "//chrome/browser/resources/tab_strip_internals:resources_grit",
-    "//chrome/browser/ui/tabs",
     "//chrome/common",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "tab_strip_internals_handler.cc",
+    "tab_strip_internals_ui.cc",
+    "tab_strip_internals_util.cc",
+  ]
+
+  deps = [
+    ":tab_strip_internals",
+    "//base",
+    "//chrome/browser/resources/tab_strip_internals:resources",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/sessions:session_id",
+    "//components/tabs:public",
     "//content/public/browser",
     "//ui/webui",
   ]

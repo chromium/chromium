@@ -9,7 +9,126 @@ import "url/mojom/url.mojom";
 
 // Root level data structure.
 struct Container {
-// TODO (crbug.com/427204855): Add required fields.
+  TabStripTree tabstrip_tree;
+  // TODO (crbug.com/427204855): Add tab restore and session restore data.
+};
+
+// A tree structure representing the TabStrip.
+// It contains a collection of windows, each with its own TabStripModel.
+struct TabStripTree {
+  array<WindowNode> windows;
+};
+
+// Represents a single browser window's TabStripModel.
+struct WindowNode {
+  NodeId id;
+  TabStripModel tabstrip_model;
+  SelectionModel selection_model;
+};
+
+// Represents an opaque identifier for a node in the TabStripTree.
+// Ensures that all ids are represented as strings.
+struct NodeId {
+  // The type of node referenced by the id.
+  enum Type {
+    // A tab.
+    kTab,
+    // A collection of tabs.
+    kCollection,
+    // A browser window.
+    kWindow,
+  };
+
+  // An opaque string that uniquely identifies the underlying resource.
+  string node_id;
+
+  // The type of resource referenced by this id.
+  Type type;
+};
+
+// Represents the TabStripModel for a single window.
+struct TabStripModel {
+  // Root of the TabStripModel is always a TabStripCollection.
+  Node root;
+};
+
+// Represents a node in the TabStripModel.
+struct Node {
+  Data data;
+  array<Node> children;
+};
+
+// Represents actual data inside a TabStripModel node.
+// Using a union enforces that a node must be exactly one of the types below.
+union Data {
+  Tab tab;
+  TabStripCollection tab_strip_collection;
+  PinnedCollection pinned_tab_collection;
+  UnpinnedCollection unpinned_tab_collection;
+  GroupCollection tab_group_collection;
+  SplitCollection split_tab_collection;
+};
+
+// Metadata for an individual tab.
+struct Tab {
+  NodeId id;
+  string title;
+  url.mojom.Url url;
+  // TODO (crbum.com/427204855): Add more tab metadata as needed.
+};
+
+// Specific tab collections.
+
+// The root of the TabStripModel.
+struct TabStripCollection {
+ NodeId id;
+};
+
+// Collection for Pinned tabs.
+struct PinnedCollection {
+  NodeId id;
+};
+
+// Collection for Unpinned tabs.
+struct UnpinnedCollection {
+  NodeId id;
+};
+
+// Collection for tab groups.
+struct GroupCollection {
+  NodeId id;
+  TabGroupVisualData visualData;
+};
+
+// Additional metadata for group tabs.
+struct TabGroupVisualData {
+  string title;
+  tab_groups.mojom.Color color;
+  bool is_collapsed;
+};
+
+// Collection for split tabs.
+struct SplitCollection {
+  NodeId id;
+  SplitTabVisualData visualData;
+};
+
+// Additional metadata for split tabs.
+struct SplitTabVisualData {
+  enum Layout {
+    kVertical,
+    kHorizontal,
+  };
+
+  Layout layout;
+  double split_ratio;
+};
+
+// Details about selected tabs.
+struct SelectionModel {
+  int32 active_index;
+  int32 anchor_index;
+  array<int32> selected_indices;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication
