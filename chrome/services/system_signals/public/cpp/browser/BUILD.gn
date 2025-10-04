@@ -20,6 +20,25 @@ source_set("browser") {
   deps = [
     "//base",
     "//chrome:strings",
+    "//components/device_signals/core/common:features",
     "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "system_signals_service_host_impl_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/browser:test_support",
+    "//components/device_signals/core/common:features",
+    "//components/device_signals/core/common/mojom",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

@@ -10169,6 +10169,7 @@ test("unit_tests") {
     deps += [
       "../browser/enterprise/connectors/test:test_support",
       "../services/system_signals:unit_tests",
+      "../services/system_signals/public/cpp/browser:unit_tests",
     ]
   }
   if (enable_on_device_translation) {

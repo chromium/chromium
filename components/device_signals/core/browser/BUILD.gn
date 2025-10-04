@@ -124,6 +124,7 @@ static_library("test_support") {
     "//base",
     "//components/device_signals/core/common/mojom",
     "//components/signin/public/identity_manager",
+    "//services/network/public/cpp",
     "//testing/gmock",
   ]
 }

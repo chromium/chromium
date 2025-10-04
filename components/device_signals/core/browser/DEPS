@@ -13,4 +13,5 @@ include_rules = [
   "+content/public/test",
   "+services/data_decoder/public/cpp",
   "+net",
+  "+mojo/public/cpp/bindings",
 ]
