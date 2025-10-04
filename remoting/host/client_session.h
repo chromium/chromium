@@ -468,6 +468,8 @@ class ClientSession : public protocol::HostStub,
   // be called.
   base::CallbackListSubscription local_session_policy_update_subscription_;
 
+  bool send_cursor_position_to_client_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to disable callbacks to |this| once DisconnectSession() has been

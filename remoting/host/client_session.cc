@@ -770,6 +770,8 @@ void ClientSession::OnConnectionChannelsConnected() {
       connection_->client_stub());
   mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
   mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
+  mouse_shape_pump_->SetSendCursorPositionToClient(
+      send_cursor_position_to_client_);
 
   // Create KeyboardLayoutMonitor to send keyboard layout.
   // Unretained is sound because callback will never be called after
@@ -928,7 +930,11 @@ void ClientSession::SetComposeEnabled(bool enabled) {
   for (const auto& [_, video_stream] : video_streams_) {
     video_stream->SetComposeEnabled(enabled);
   }
-  mouse_shape_pump_->SetSendCursorPositionToClient(enabled);
+  send_cursor_position_to_client_ = enabled;
+  if (mouse_shape_pump_) {
+    mouse_shape_pump_->SetSendCursorPositionToClient(
+        send_cursor_position_to_client_);
+  }
 }
 
 void ClientSession::OnMouseCursor(webrtc::MouseCursor* mouse_cursor) {
