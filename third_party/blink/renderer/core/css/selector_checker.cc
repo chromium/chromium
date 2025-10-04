@@ -1364,9 +1364,7 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
         selector.GetPseudoType() != CSSSelector::kPseudoScope) {
       return false;
     }
-    if (RuntimeEnabledFeatures::CSSNegatedFeaturelessEnabled()) {
-      return MatchShadowHost(context, result) == kFeaturelessMatches;
-    }
+    return MatchShadowHost(context, result) == kFeaturelessMatches;
   }
   if (RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
     if (context.pseudo_id != kPseudoIdNone) {
@@ -2877,11 +2875,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
               : WebFeature::kCSSSelectorHostContextInLiveProfile);
       [[fallthrough]];
     case CSSSelector::kPseudoHost:
-      if (RuntimeEnabledFeatures::CSSNegatedFeaturelessEnabled()) {
-        DCHECK(!IsAtShadowHost(context));
-        return false;
-      }
-      return CheckPseudoHost(context, result);
+      DCHECK(!IsAtShadowHost(context));
+      return false;
     case CSSSelector::kPseudoSpatialNavigationFocus:
       DCHECK(is_ua_rule_);
       return MatchesSpatialNavigationFocusPseudoClass(element);
