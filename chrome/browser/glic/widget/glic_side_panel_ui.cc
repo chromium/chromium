@@ -137,7 +137,7 @@ void GlicSidePanelUi::ClosePanel() {
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
   return GlicInactiveSidePanelUi::CreateForVisibleTab(
-      tab_, delegate_->host().webui_contents());
+      tab_, delegate_->host().webui_contents(), delegate_.get());
 }
 
 views::View* GlicSidePanelUi::GetViewForTesting() {

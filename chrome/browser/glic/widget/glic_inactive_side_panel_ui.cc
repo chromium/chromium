@@ -9,6 +9,12 @@
 #include "chrome/browser/glic/widget/inactive_view_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace glic {
@@ -17,9 +23,11 @@ namespace glic {
 std::unique_ptr<GlicInactiveSidePanelUi>
 GlicInactiveSidePanelUi::CreateForVisibleTab(
     base::WeakPtr<tabs::TabInterface> tab,
-    content::WebContents* glic_webui_contents) {
+    content::WebContents* glic_webui_contents,
+    GlicUiEmbedder::Delegate& delegate) {
   // Using `new` to access a private constructor.
-  auto inactive_side_panel = base::WrapUnique(new GlicInactiveSidePanelUi(tab));
+  auto inactive_side_panel =
+      base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
   inactive_side_panel->VisibilityChanged(/*visible=*/true);
 
   // Capture screenshot asynchronously and update the inactive panel.
@@ -32,17 +40,20 @@ GlicInactiveSidePanelUi::CreateForVisibleTab(
 // static
 std::unique_ptr<GlicInactiveSidePanelUi>
 GlicInactiveSidePanelUi::CreateForBackgroundTab(
-    base::WeakPtr<tabs::TabInterface> tab) {
+    base::WeakPtr<tabs::TabInterface> tab,
+    GlicUiEmbedder::Delegate& delegate) {
   // Using `new` to access a private constructor.
-  auto inactive_side_panel = base::WrapUnique(new GlicInactiveSidePanelUi(tab));
+  auto inactive_side_panel =
+      base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
   // Mark the side panel for showing next time the tab becomes active.
   inactive_side_panel->Show();
   return inactive_side_panel;
 }
 
 GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
-    base::WeakPtr<tabs::TabInterface> tab)
-    : tab_(tab) {
+    base::WeakPtr<tabs::TabInterface> tab,
+    GlicUiEmbedder::Delegate& delegate)
+    : tab_(tab), delegate_(delegate) {
   if (!tab_ || !tab_->GetTabFeatures()) {
     return;
   }
@@ -55,15 +66,25 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
           base::BindRepeating(&GlicInactiveSidePanelUi::VisibilityChanged,
                               weak_ptr_factory_.GetWeakPtr()));
 
-  glic_side_panel_coordinator->SetContentsView(CreateView(tab_));
-}
-
-std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView(
-    base::WeakPtr<tabs::TabInterface> tab) {
-  return inactive_view_controller_.CreateView();
+  auto view = inactive_view_controller_.CreateView();
+  scoped_view_observation_.Observe(view.get());
+  glic_side_panel_coordinator->SetContentsView(std::move(view));
 }
 
 GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
+
+// When the user clicks on the inactive panel, the FocusableView requests focus,
+// which triggers this method and activates the Glic side panel for the current
+// tab.
+void GlicInactiveSidePanelUi::OnViewFocused(views::View* observed_view) {
+  if (tab_) {
+    delegate_->Attach(tab_.get());
+  }
+}
+
+void GlicInactiveSidePanelUi::OnViewIsDeleting(views::View* observed_view) {
+  scoped_view_observation_.Reset();
+}
 
 Host::EmbedderDelegate* GlicInactiveSidePanelUi::GetHostEmbedderDelegate() {
   // This should not be called for an inactive embedder. The delegate is managed

@@ -375,7 +375,19 @@ std::optional<std::string> GlicInstanceImpl::conversation_id() const {
   return std::nullopt;
 }
 
+// Automatic activation should be suppressed if a floating embedder is active.
+// The floating UI is a more deliberate user choice, and we don't want a
+// tab switch to unexpectedly close the floating UI.
+bool GlicInstanceImpl::ShouldDoAutomaticActivation() const {
+  return !active_embedder_key_.has_value() ||
+         !std::holds_alternative<FloatingEmbedderKey>(
+             active_embedder_key_.value());
+}
+
 void GlicInstanceImpl::OnBrowserSetLastActive(Browser* browser) {
+  if (!ShouldDoAutomaticActivation()) {
+    return;
+  }
   tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
   if (!active_tab) {
     return;
@@ -450,7 +462,7 @@ void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
     tabs::TabInterface* tab) {
   auto& entry = BindTab(tab);
   entry.embedder =
-      GlicInactiveSidePanelUi::CreateForBackgroundTab(tab->GetWeakPtr());
+      GlicInactiveSidePanelUi::CreateForBackgroundTab(tab->GetWeakPtr(), *this);
 }
 
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
@@ -507,6 +519,9 @@ void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
 }
 
 void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
+  if (!ShouldDoAutomaticActivation()) {
+    return;
+  }
   auto* embedder = GetEmbedderForTab(tab);
   if (embedder && embedder->IsShowing()) {
     // Ensure that the side panel in this tab becomes the active embedder.
@@ -562,7 +577,13 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
 }
 
 void GlicInstanceImpl::WillCloseFor(tabs::TabInterface* tab) {
-  MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey(tab));
+  auto key = GetEmbedderKey(
+      tab ? EmbedderType::kSidePanel : EmbedderType::kFloating, tab);
+  MaybeDeactivateEmbedderAndCloseHostUi(key);
+}
+
+void GlicInstanceImpl::Attach(tabs::TabInterface* tab) {
+  Show(EmbedderType::kSidePanel, tab);
 }
 
 }  // namespace glic

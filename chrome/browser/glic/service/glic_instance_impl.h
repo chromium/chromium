@@ -141,6 +141,7 @@ class GlicInstanceImpl : public GlicInstance,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void WillCloseFor(tabs::TabInterface* tab) override;
+  void Attach(tabs::TabInterface* tab) override;
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
@@ -185,6 +186,7 @@ class GlicInstanceImpl : public GlicInstance,
   void OnBoundTabDestroyed(tabs::TabInterface* tab,
                            const InstanceId& instance_id);
   void OnBoundTabActivated(tabs::TabInterface* tab);
+  bool ShouldDoAutomaticActivation() const;
   void OnZeroStateSuggestionsFetched(
       mojom::ZeroStateSuggestionsPtr suggestions,
       mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
