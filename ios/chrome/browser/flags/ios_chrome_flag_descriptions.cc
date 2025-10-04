@@ -943,12 +943,6 @@ extern const char kLensOverlayDisableIPHPanGestureDescription[] =
     "Disable the pan gesture that dismisses Lens Overlay IPH. The IPH can "
     "still be dismissed with a tap.";
 
-extern const char kLensOverlayPriceInsightsCounterfactualName[] =
-    "Lens overlay disable price insights counterfactual.";
-extern const char kLensOverlayPriceInsightsCounterfactualDescription[] =
-    "When enabled, show the lens overlay location bar entrypoint only when "
-    "price insights should have triggered.";
-
 extern const char kLensOverlayEnableIPadCompatibilityName[] =
     "Allow Lens overlay to also run on iPad devices if the feature is enabled";
 extern const char kLensOverlayEnableIPadCompatibilityDescription[] =

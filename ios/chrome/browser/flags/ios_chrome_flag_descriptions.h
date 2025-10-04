@@ -553,9 +553,6 @@ extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 extern const char kLensOverlayDisableIPHPanGestureName[];
 extern const char kLensOverlayDisableIPHPanGestureDescription[];
 
-extern const char kLensOverlayPriceInsightsCounterfactualName[];
-extern const char kLensOverlayPriceInsightsCounterfactualDescription[];
-
 extern const char kLensOverlayEnableIPadCompatibilityName[];
 extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 

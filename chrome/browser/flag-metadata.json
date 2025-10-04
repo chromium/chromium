@@ -3865,11 +3865,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "enable-lens-overlay-price-insights-counterfactual",
-    "owners": [ "christianxu@chromium.org", "stkhapugin@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-lens-overlay-side-panel-open-in-new-tab",
     "owners": [ "nguyenbryan@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 139

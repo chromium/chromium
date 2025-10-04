@@ -239,17 +239,6 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
       (self.badgeView && !self.badgeView.hidden) ||
       (self.readerModeChipView && !self.readerModeChipView.hidden);
 
-  if (base::FeatureList::IsEnabled(kLensOverlayPriceInsightsCounterfactual)) {
-    // Show the lens overlay entrypoint only when the price insights entrypoint
-    // should have been shown.
-    BOOL placeholderVisible = _contextualPanelEntrypointShouldBeVisible &&
-                              (self.badgeView && self.badgeView.hidden);
-    placeholderHidden = !placeholderVisible;
-    if (placeholderVisible) {
-      SetViewHiddenIfNecessary(self.contextualPanelEntrypointView, YES);
-    }
-  }
-
   if (!_placeholderView || placeholderHidden == _placeholderView.hidden) {
     return;
   }
