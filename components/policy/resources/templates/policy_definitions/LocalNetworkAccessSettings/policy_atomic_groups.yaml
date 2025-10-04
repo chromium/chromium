@@ -4,3 +4,4 @@ LocalNetworkAccessSettings:
   - LocalNetworkAccessAllowedForUrls
   - LocalNetworkAccessBlockedForUrls
   - LocalNetworkAccessRestrictionsEnabled
+  - LocalNetworkAccessRestrictionsTemporaryOptOut

@@ -354,9 +354,7 @@ AddressSpace CalculateIPAddressSpace(
   return IPAddressSpaceForSpecialScheme(url, client);
 }
 
-// TODO(crbug.com/395895368): rename to be more clear about functionality (as
-// its not overriding block with warn, but the other way around).
-network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
+network::mojom::PrivateNetworkRequestPolicy OverrideToBlockInsteadOfWarn(
     network::mojom::PrivateNetworkRequestPolicy policy) {
   switch (policy) {
     case network::mojom::PrivateNetworkRequestPolicy::kWarn:
@@ -365,7 +363,27 @@ network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
       return network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
     case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
       return network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-    default:
+    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
+    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
+      return policy;
+  }
+}
+
+network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
+    network::mojom::PrivateNetworkRequestPolicy policy) {
+  switch (policy) {
+    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
+      return network::mojom::PrivateNetworkRequestPolicy::kWarn;
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:
+      return network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
+      return network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn;
+    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
+    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
       return policy;
   }
 }

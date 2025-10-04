@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       CheckSecurityStatePolicySet) {
+                       CheckEnterprisePolicyEnableLNA) {
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kLocalNetworkAccessRestrictionsEnabled,
             std::optional<base::Value>(true));
@@ -467,6 +467,32 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                   content::JsReplace("fetch($1).then(response => response.ok)",
                                      https_server().GetURL("b.com", kLnaPath))),
               content::EvalJsResult::IsError());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       CheckEnterprisePolicyOptOut) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies,
+            policy::key::kLocalNetworkAccessRestrictionsTemporaryOptOut,
+            std::optional<base::Value>(true));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
+
+  // Enable auto-denial of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  // Expect LNA fetch to succeed.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,

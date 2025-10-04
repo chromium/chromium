@@ -5554,7 +5554,14 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
     case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
         kBlockInsteadOfWarn:
       private_network_request_policy_ =
-          OverrideBlockWithWarn(DerivePrivateNetworkRequestPolicy(
+          OverrideToBlockInsteadOfWarn(DerivePrivateNetworkRequestPolicy(
+              policy_container_host_->policies(),
+              PrivateNetworkRequestContext::kSubresource));
+      break;
+    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+        kWarnInsteadOfBlock:
+      private_network_request_policy_ =
+          OverrideToWarnInsteadOfBlock(DerivePrivateNetworkRequestPolicy(
               policy_container_host_->policies(),
               PrivateNetworkRequestContext::kSubresource));
       break;

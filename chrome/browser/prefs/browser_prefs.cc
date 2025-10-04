@@ -2440,6 +2440,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(
       prefs::kManagedLocalNetworkAccessRestrictionsEnabled, false);
 
+  registry->RegisterBooleanPref(
+      prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut, false);
+
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kVirtualKeyboardResizesLayoutByDefault,
                                 false);
