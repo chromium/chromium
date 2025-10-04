@@ -78,6 +78,8 @@ class AllUrlsApiTest : public ExtensionApiTest {
   scoped_refptr<const Extension> execute_script_;
 };
 
+// TODO(crbug.com/371432155): Port to desktop Android once chrome.tabs is more
+// fully supported.
 IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, AllowlistedExtension) {
   AllowlistExtensions();
 
@@ -99,6 +101,8 @@ IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, AllowlistedExtension) {
 
 // Test that an extension NOT allowlisted for scripting can ask for <all_urls>
 // and run scripts on non-restricted all pages.
+// TODO(crbug.com/371432155): Port to desktop Android once chrome.tabs is more
+// fully supported.
 IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, RegularExtensions) {
   // Now verify we can script a regular http page.
   ASSERT_TRUE(StartEmbeddedTestServer());
