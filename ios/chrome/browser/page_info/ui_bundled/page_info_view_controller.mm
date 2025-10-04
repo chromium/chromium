@@ -248,8 +248,11 @@ const char kTrackingProtectionSettingsURL[] =
       [self.pageInfoPresentationHandler showLastVisitedPage];
       break;
     case ItemIdentifierTrackingProtection: {
-      // TODO(crbug.com/442799468): Implement tap functionality for the info
-      // cell.
+      if (_trackingProtectionInfo.hasTrackingProtectionException) {
+        [self.pageInfoPresentationHandler
+            showSendFeedbackPageForSender:UserFeedbackSender::
+                                              TrackingProtections];
+      }
       break;
     }
     case ItemIdentifierTrackingProtectionButton: {

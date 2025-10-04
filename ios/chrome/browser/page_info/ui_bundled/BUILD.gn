@@ -49,6 +49,7 @@ source_set("ui_bundled") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/components/webui:url_constants",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/public/permissions",
     "//ui/base",
     "//ui/gfx",

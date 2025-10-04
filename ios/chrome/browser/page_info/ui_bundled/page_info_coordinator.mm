@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -258,6 +259,13 @@
                               hostName:_siteSecurityDescription.siteURL];
   self.lastVisitedCoordinator.delegate = self;
   [self.lastVisitedCoordinator start];
+}
+
+- (void)showSendFeedbackPageForSender:(UserFeedbackSender)sender {
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler showReportAnIssueFromViewController:self.viewController
+                                                   sender:sender];
 }
 
 #pragma mark - HistoryCoordinatorDelegate
