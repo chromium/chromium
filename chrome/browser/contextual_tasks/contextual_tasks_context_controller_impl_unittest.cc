@@ -307,8 +307,8 @@ TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
   EXPECT_EQ(context->GetTaskId(), expected_context.GetTaskId());
   const auto& attachments = context->GetUrlAttachments();
   ASSERT_EQ(attachments.size(), 2u);
-  EXPECT_EQ(attachments[0].url, url1);
-  EXPECT_EQ(attachments[1].url, url2);
+  EXPECT_EQ(attachments[0].GetURL(), url1);
+  EXPECT_EQ(attachments[1].GetURL(), url2);
 }
 
 TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask_NotFound) {

@@ -1,0 +1,46 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXT_DECORATOR_H_
+#define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXT_DECORATOR_H_
+
+#include <memory>
+
+#include "base/functional/callback.h"
+
+namespace contextual_tasks {
+
+struct ContextualTaskContext;
+struct UrlAttachment;
+struct UrlAttachmentDecoratorData;
+
+// Abstract interface for a decorator that enriches a ContextualTaskContext
+// with additional metadata. The enrichment process is asynchronous.
+class ContextDecorator {
+ public:
+  virtual ~ContextDecorator();
+
+  // Asynchronously enriches the given |context|. Invokes |context_callback|
+  // with the updated ContextualTaskContext on the original sequence when the
+  // operation is complete, regardless of success or failure.
+  virtual void DecorateContext(
+      std::unique_ptr<ContextualTaskContext> context,
+      base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+          context_callback) = 0;
+
+ protected:
+  // Provides subclasses with access to mutable URL attachments for a given
+  // ContextualTaskContext.
+  std::vector<UrlAttachment>& GetMutableUrlAttachments(
+      ContextualTaskContext& task);
+
+  // Provides subclasses with access to the decorator data block for a given
+  // URL attachment.
+  UrlAttachmentDecoratorData& GetUrlAttachmentDecoratorData(
+      UrlAttachment& attachment);
+};
+
+}  // namespace contextual_tasks
+
+#endif  // COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXT_DECORATOR_H_

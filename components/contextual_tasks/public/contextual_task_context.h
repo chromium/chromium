@@ -16,16 +16,44 @@ namespace contextual_tasks {
 
 class ContextualTask;
 
-// Represents a URL that is attached to a `ContextualTask`.
+// Data block for UrlAttachment, intended to be modified only by
+// ContextDecorator implementations.
+struct UrlAttachmentDecoratorData {
+  std::u16string title;
+};
+
+// Represents a URL that is attached to a `ContextualTask`. This struct contains
+// the URL itself and a data block that can be populated by decorators.
 struct UrlAttachment {
+ public:
+  explicit UrlAttachment(const GURL& url);
+  ~UrlAttachment();
+
+  // Accessor methods.
+  GURL GetURL() const;
+  std::u16string GetTitle() const;
+
+ private:
+  friend class ContextDecorator;
+  friend class ContextualTasksServiceImplTest;
+
+  // ContextDecorator implementation can access this method through a protected
+  // method.
+  UrlAttachmentDecoratorData& GetDecoratorData();
+
   // The URL that is attached.
-  GURL url;
+  GURL url_;
+
+  // A data block that can be populated by decorators with additional metadata
+  // about the URL.
+  UrlAttachmentDecoratorData decorator_data_;
 };
 
 // Represents the context associated with a `ContextualTask`. This is a
 // snapshot of the context at a given point in time and is not kept in sync
-// with the `ContextualTask`.
-class ContextualTaskContext {
+// with the `ContextualTask`. It is passed through a chain of decorators to be
+// enriched with additional metadata.
+struct ContextualTaskContext {
  public:
   // Constructs a `ContextualTaskContext` from a `ContextualTask`.
   explicit ContextualTaskContext(const ContextualTask& task);
@@ -43,6 +71,11 @@ class ContextualTaskContext {
   const std::vector<UrlAttachment>& GetUrlAttachments() const;
 
  private:
+  friend class ContextDecorator;
+
+  // Returns a mutable version of the URL attachments for the task.
+  std::vector<UrlAttachment>& GetMutableUrlAttachments();
+
   // The unique ID of the task this context is for.
   base::Uuid task_id_;
 

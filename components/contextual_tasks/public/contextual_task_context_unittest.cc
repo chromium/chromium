@@ -22,10 +22,10 @@ TEST(ContextualTaskContextTest, ConstructFromContextualTask) {
   ContextualTaskContext context(task);
 
   EXPECT_EQ(context.GetTaskId(), task_id);
-  const auto& attachments = context.GetUrlAttachments();
+  auto& attachments = context.GetUrlAttachments();
   ASSERT_EQ(attachments.size(), 2u);
-  EXPECT_EQ(attachments[0].url, url1);
-  EXPECT_EQ(attachments[1].url, url2);
+  EXPECT_EQ(attachments[0].GetURL(), url1);
+  EXPECT_EQ(attachments[1].GetURL(), url2);
 }
 
 }  // namespace contextual_tasks

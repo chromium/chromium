@@ -8,10 +8,26 @@
 
 namespace contextual_tasks {
 
+UrlAttachment::UrlAttachment(const GURL& url) : url_(url) {}
+
+UrlAttachment::~UrlAttachment() = default;
+
+GURL UrlAttachment::GetURL() const {
+  return url_;
+}
+
+std::u16string UrlAttachment::GetTitle() const {
+  return decorator_data_.title;
+}
+
+UrlAttachmentDecoratorData& UrlAttachment::GetDecoratorData() {
+  return decorator_data_;
+}
+
 ContextualTaskContext::ContextualTaskContext(const ContextualTask& task)
     : task_id_(task.GetTaskId()) {
   for (const auto& url : task.GetUrls()) {
-    urls_.push_back({url});
+    urls_.emplace_back(url);
   }
 }
 
@@ -35,6 +51,10 @@ const base::Uuid& ContextualTaskContext::GetTaskId() const {
 
 const std::vector<UrlAttachment>& ContextualTaskContext::GetUrlAttachments()
     const {
+  return urls_;
+}
+
+std::vector<UrlAttachment>& ContextualTaskContext::GetMutableUrlAttachments() {
   return urls_;
 }
 
