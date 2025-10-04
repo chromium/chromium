@@ -46,6 +46,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/icc_profile.h"
+#include "ui/gfx/switches.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 
 namespace display::win {
@@ -577,10 +578,25 @@ gfx::PointF ScreenToDIPPoint(const gfx::PointF& screen_point,
 gfx::Point DIPToScreenPoint(const gfx::Point& dip_point,
                             const ScreenWinDisplay& screen_win_display) {
   const Display display = screen_win_display.display();
-  return gfx::ToFlooredPoint(
+  const gfx::PointF scaled_point =
       ScalePointRelative(gfx::PointF(dip_point), display.bounds().origin(),
                          screen_win_display.pixel_bounds().origin(),
-                         display.device_scale_factor()));
+                         display.device_scale_factor());
+  if (base::FeatureList::IsEnabled(::features::kUseRoundedPointConversion)) {
+    // Using `round()` instead of `floor()` prevents the systematic downward
+    // bias that causes layout drift.
+    //
+    // Assume we have value d in DIP and scale factor p > 1.
+    // Let d' = screen_to_dip(dip_to_screen(d)), then
+    //     d' == screen_to_dip(round(d*p))
+    //        == screen_to_dip(d*p + eps), where |eps| <= 0.5. Then,
+    //     d' == round( (d*p+eps) / p)
+    //        == round(d + eps/p).
+    // Since |eps / p| < 0.5 and d is an integer, round(d + eps/p) == d,
+    // therefore d' == d. QED.
+    return ToRoundedPoint(scaled_point);
+  }
+  return ToFlooredPoint(scaled_point);
 }
 
 // Create a fake FHD display used in case no displays are ever conneceted.
@@ -699,10 +715,17 @@ gfx::Rect ScreenWin::ScreenToDIPRect(HWND hwnd,
       ? GetScreenWinDisplayVia(&ScreenWin::GetScreenWinDisplayNearestHWND, hwnd)
       : GetScreenWinDisplayVia(
             &ScreenWin::GetScreenWinDisplayNearestScreenRect, pixel_bounds);
-  const gfx::Point origin = gfx::ToFlooredPoint(display::win::ScreenToDIPPoint(
-      gfx::PointF(pixel_bounds.origin()), screen_win_display));
   const float scale_factor =
       1.0f / screen_win_display.display().device_scale_factor();
+  const gfx::Point origin =
+      // Using `round()` instead of `floor()` prevents the systematic downward
+      // bias that causes layout drift.
+      // See comment in `DIPToScreenPoint()` for proof.
+      base::FeatureList::IsEnabled(::features::kUseRoundedPointConversion)
+          ? ToRoundedPoint(display::win::ScreenToDIPPoint(
+                gfx::PointF(pixel_bounds.origin()), screen_win_display))
+          : ToFlooredPoint(display::win::ScreenToDIPPoint(
+                gfx::PointF(pixel_bounds.origin()), screen_win_display));
   return {origin, ScaleToEnclosingRect(pixel_bounds, scale_factor).size()};
 }
 

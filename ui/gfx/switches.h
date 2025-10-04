@@ -31,7 +31,7 @@ namespace features {
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddHeightMultiPlanarBuffers);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddWidthMultiPlanarBuffers);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kUseSmartRefForGPUFenceHandle);
-
+GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kUseRoundedPointConversion);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kHdrAgtm);
 
 // Workaround for an issue in Windows where icons with fully transparent
