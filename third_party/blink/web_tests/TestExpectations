@@ -785,7 +785,6 @@ crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-ancho
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/scrollable-containing-block-validity.html [ Pass ]
 # Regressions with the flag enabled.
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-011.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-005.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-006.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-007.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-fallbacks-003.html [ Failure ]
