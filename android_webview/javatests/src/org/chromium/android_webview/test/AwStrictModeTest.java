@@ -17,13 +17,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 
 /** Tests ensuring that starting up WebView does not cause any diskRead StrictMode violations. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@DisabledTest(message = "crbug.com/449229043")
 public class AwStrictModeTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
