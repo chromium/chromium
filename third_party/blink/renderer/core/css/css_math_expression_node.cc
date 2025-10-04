@@ -4078,6 +4078,8 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kHypot:
       case CSSValueID::kLog:
       case CSSValueID::kExp:
+      case CSSValueID::kSiblingCount:
+      case CSSValueID::kSiblingIndex:
         return true;
       case CSSValueID::kAbs:
       case CSSValueID::kSign:
@@ -4088,9 +4090,6 @@ class CSSMathExpressionNodeParser {
         return RuntimeEnabledFeatures::CSSMediaProgressNotationEnabled();
       case CSSValueID::kContainerProgress:
         return RuntimeEnabledFeatures::CSSContainerProgressNotationEnabled();
-      case CSSValueID::kSiblingCount:
-      case CSSValueID::kSiblingIndex:
-        return RuntimeEnabledFeatures::CSSSiblingFunctionsEnabled();
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return false;
@@ -4378,11 +4377,9 @@ class CSSMathExpressionNodeParser {
       context_.Count(WebFeature::kCSSCalcSizeFunction);
       return calc_size;
     }
-    if (RuntimeEnabledFeatures::CSSSiblingFunctionsEnabled()) {
-      if (CSSMathExpressionNode* sibling_function =
-              ParseSiblingIndexOrCount(function_id, stream, state)) {
-        return sibling_function;
-      }
+    if (CSSMathExpressionNode* sibling_function =
+            ParseSiblingIndexOrCount(function_id, stream, state)) {
+      return sibling_function;
     }
 
     // "arguments" refers to comma separated ones.

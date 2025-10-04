@@ -87,10 +87,7 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
   }
   bool SupportsRange() const override { return true; }
   bool SupportsStyleRange() const override { return false; }
-  bool SupportsElementDependent() const override {
-    return RuntimeEnabledFeatures::
-        CSSSiblingFunctionsInContainerQueriesEnabled();
-  }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 class StateFeatureSet : public MediaQueryParser::FeatureSet {
@@ -116,10 +113,7 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
   }
   bool SupportsRange() const override { return false; }
   bool SupportsStyleRange() const override { return false; }
-  bool SupportsElementDependent() const override {
-    return RuntimeEnabledFeatures::
-        CSSSiblingFunctionsInContainerQueriesEnabled();
-  }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
@@ -141,10 +135,7 @@ class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
   }
   bool SupportsRange() const override { return false; }
   bool SupportsStyleRange() const override { return false; }
-  bool SupportsElementDependent() const override {
-    return RuntimeEnabledFeatures::
-        CSSSiblingFunctionsInContainerQueriesEnabled();
-  }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 }  // namespace

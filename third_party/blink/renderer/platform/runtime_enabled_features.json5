@@ -1610,16 +1610,6 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
-      // sibling-index() and sibling-count()
-      name: "CSSSiblingFunctions",
-      status: "stable",
-    },
-    {
-      // Allow sibling-index() and sibling-count() in @container queries
-      name: "CSSSiblingFunctionsInContainerQueries",
-      status: "stable",
-    },
-    {
       name: "CSSSignRelatedFunctions",
       status: "stable",
     },
