@@ -167,7 +167,6 @@ void InitGlobalNt() {
   INIT_RTL(RtlFreeHeap);
   INIT_RTL(RtlNtStatusToDosError);
   INIT_RTL(_strnicmp);
-  INIT_RTL(strlen);
   INIT_RTL(memcpy);
   sandbox::g_nt.Initialized = true;
 }

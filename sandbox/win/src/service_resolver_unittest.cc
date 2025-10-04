@@ -38,16 +38,14 @@ class ServiceResolverTest : public sandbox::ServiceResolverThunk {
  protected:
   // Overrides Resolver::Init
   NTSTATUS Init(const void* target_module,
-                const void* interceptor_module,
                 const char* target_name,
-                const char* interceptor_name,
                 const void* interceptor_entry_point,
                 void* thunk_storage,
                 size_t storage_bytes) final {
     NTSTATUS ret = STATUS_SUCCESS;
-    ret = sandbox::ServiceResolverThunk::Init(
-        target_module, interceptor_module, target_name, interceptor_name,
-        interceptor_entry_point, thunk_storage, storage_bytes);
+    ret = sandbox::ServiceResolverThunk::Init(target_module, target_name,
+                                              interceptor_entry_point,
+                                              thunk_storage, storage_bytes);
     EXPECT_EQ(STATUS_SUCCESS, ret);
 
     this->target_ = fake_target_;
@@ -87,9 +85,8 @@ NTSTATUS PatchNtdllWithResolver(const char* function,
 
   // TODO(crbug.com/40285824): Eventually, `Setup` should just take a span<char>
   // instead of a pointer and a size.
-  NTSTATUS ret =
-      resolver.Setup(ntdll_base, nullptr, function, nullptr, function_entry,
-                     thunk.data(), thunk_size, &used);
+  NTSTATUS ret = resolver.Setup(ntdll_base, function, function_entry,
+                                thunk.data(), thunk_size, &used);
   if (NT_SUCCESS(ret)) {
     const BYTE kJump32 = 0xE9;
     EXPECT_EQ(thunk_size, used);
@@ -99,8 +96,8 @@ NTSTATUS PatchNtdllWithResolver(const char* function,
     if (relaxed) {
       // It's already patched, let's patch again, and simulate a direct patch.
       service[0] = kJump32;
-      ret = resolver.Setup(ntdll_base, nullptr, function, nullptr,
-                           function_entry, thunk.data(), thunk.size(), &used);
+      ret = resolver.Setup(ntdll_base, function, function_entry, thunk.data(),
+                           thunk.size(), &used);
       EXPECT_TRUE(resolver.VerifyJumpTargetForTesting(thunk.data()));
     }
   }
@@ -204,14 +201,14 @@ TEST(ServiceResolverTest, LocalPatchesAllowed) {
   NTSTATUS ret = STATUS_UNSUCCESSFUL;
 
   // First try patching without having allowed local patches.
-  ret = resolver.Setup(ntdll_base, nullptr, kFunctionName, nullptr,
-                       function_entry, thunk.data(), thunk_size, &used);
+  ret = resolver.Setup(ntdll_base, kFunctionName, function_entry, thunk.data(),
+                       thunk_size, &used);
   EXPECT_FALSE(NT_SUCCESS(ret));
 
   // Now allow local patches and check that things work.
   resolver.AllowLocalPatches();
-  ret = resolver.Setup(ntdll_base, nullptr, kFunctionName, nullptr,
-                       function_entry, thunk.data(), thunk_size, &used);
+  ret = resolver.Setup(ntdll_base, kFunctionName, function_entry, thunk.data(),
+                       thunk_size, &used);
   EXPECT_EQ(STATUS_SUCCESS, ret);
 }
 
