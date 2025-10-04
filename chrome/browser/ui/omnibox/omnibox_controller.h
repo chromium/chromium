@@ -38,8 +38,7 @@ class OmniboxController : public AutocompleteController::Observer {
   // Starts an autocomplete prefetch request so that zero-prefix providers can
   // optionally start a prefetch request to warm up the their underlying
   // service(s) and/or optionally cache their otherwise async response.
-  // Virtual for testing.
-  virtual void StartZeroSuggestPrefetch();
+  void StartZeroSuggestPrefetch();
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
@@ -69,11 +68,6 @@ class OmniboxController : public AutocompleteController::Observer {
   // Turns off keyword mode for the current match.
   void ClearPopupKeywordMode() const;
 
-  // Returns the header string associated with `suggestion_group_id`, or an
-  // empty string if `suggestion_group_id` is not found in the results.
-  std::u16string GetHeaderForSuggestionGroup(
-      omnibox::GroupId suggestion_group_id) const;
-
   // Returns whether or not the row for a particular match should be hidden in
   // the UI. This is currently used to hide suggestions in the 'Gemini' scope
   // when the starter pack expansion feature is enabled.
@@ -87,7 +81,7 @@ class OmniboxController : public AutocompleteController::Observer {
                                const GURL& icon_url,
                                const SkBitmap& bitmap);
 
-  std::unique_ptr<OmniboxClient> client_;
+  const std::unique_ptr<OmniboxClient> client_;
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 

@@ -157,12 +157,6 @@ void OmniboxController::ClearPopupKeywordMode() const {
   }
 }
 
-std::u16string OmniboxController::GetHeaderForSuggestionGroup(
-    omnibox::GroupId suggestion_group_id) const {
-  return autocomplete_controller_->result().GetHeaderForSuggestionGroup(
-      suggestion_group_id);
-}
-
 bool OmniboxController::IsSuggestionHidden(
     const AutocompleteMatch& match) const {
   if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
