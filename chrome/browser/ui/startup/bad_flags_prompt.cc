@@ -73,6 +73,11 @@ const char* const kBadFlags[] = {
     network::switches::kHostResolverRules,
     network::switches::kHostRules,
 
+    // These flags, which can expose network data, are considered potentially
+    // dangerous.
+    network::switches::kLogNetLog,
+    network::switches::kNetLogCaptureMode,
+
     // These flags disable sandbox-related security.
     sandbox::policy::switches::kDisableGpuSandbox,
     sandbox::policy::switches::kDisableLandlockSandbox,
