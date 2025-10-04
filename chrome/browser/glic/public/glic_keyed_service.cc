@@ -853,14 +853,14 @@ HostManager& GlicKeyedService::host_manager() {
   return window_controller().host_manager();
 }
 
+GlicInstance* GlicKeyedService::GetInstanceForTab(tabs::TabInterface* tab) {
+  return window_controller().GetInstanceForTab(tab);
+}
+
 GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
     BrowserWindowInterface* bwi) {
   return window_controller().GetInstanceForTab(
       bwi ? bwi->GetActiveTabInterface() : nullptr);
-}
-
-GlicInstance* GlicKeyedService::GetInstanceForTab(tabs::TabInterface* tab) {
-  return window_controller().GetInstanceForTab(tab);
 }
 
 void GlicKeyedService::SendAdditionalContext(

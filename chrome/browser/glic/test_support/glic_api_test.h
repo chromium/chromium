@@ -251,7 +251,7 @@ class GlicApiTestBase : public T {
   }
 
   void WaitForWebUiState(mojom::WebUiState state) {
-    WebUIStateListener listener(T::GetHostForActiveTab());
+    WebUIStateListener listener(T::GetHost());
     listener.WaitForWebUiState(state);
   }
 

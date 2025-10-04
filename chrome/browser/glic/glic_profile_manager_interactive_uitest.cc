@@ -180,7 +180,7 @@ class GlicProfileManagerUiTest
       if (ShouldWarmFRE()) {
         web_client_contents_ = service->fre_controller().GetWebContents();
       } else {
-        web_client_contents_ = GetHostForActiveTab()->webui_contents();
+        web_client_contents_ = GetHost()->webui_contents();
       }
     });
   }
@@ -193,9 +193,8 @@ class GlicProfileManagerUiTest
                   service->fre_controller().GetWebContents());
         EXPECT_NE(nullptr, service->fre_controller().GetWebContents());
       } else {
-        EXPECT_EQ(web_client_contents_,
-                  GetHostForActiveTab()->webui_contents());
-        EXPECT_NE(nullptr, GetHostForActiveTab()->webui_contents());
+        EXPECT_EQ(web_client_contents_, GetHost()->webui_contents());
+        EXPECT_NE(nullptr, GetHost()->webui_contents());
       }
       web_client_contents_ = nullptr;
     });

@@ -45,6 +45,8 @@ class GlicUiEmbedder {
   // Close the glic UI (keeps webclient alive for now)
   virtual void Close() = 0;
 
+  virtual views::View* GetViewForTesting() = 0;
+
   // Creates the inactive version of this embedder.
   virtual std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const = 0;
 };
