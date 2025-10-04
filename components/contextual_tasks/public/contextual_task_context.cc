@@ -17,7 +17,7 @@ GURL UrlAttachment::GetURL() const {
 }
 
 std::u16string UrlAttachment::GetTitle() const {
-  return decorator_data_.title;
+  return decorator_data_.fallback_title_data.title;
 }
 
 UrlAttachmentDecoratorData& UrlAttachment::GetDecoratorData() {

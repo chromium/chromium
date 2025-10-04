@@ -3,5 +3,7 @@ include_rules = [
   "+components/sessions/core",
   "+components/sync/base",
   "+components/sync/model",
+  "+components/url_formatter",
+  "+ui/gfx",
   "+url",
 ]
