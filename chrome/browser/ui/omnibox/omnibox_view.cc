@@ -80,7 +80,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   }
 
   gfx::Image favicon;
-  AutocompleteMatch match = model()->CurrentMatch(nullptr);
+  AutocompleteMatch match = model()->CurrentMatch();
   if (!match.icon_url.is_empty()) {
     const SkBitmap* bitmap = model()->GetIconBitmap(match.icon_url);
     if (bitmap) {

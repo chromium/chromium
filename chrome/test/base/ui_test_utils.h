@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -364,7 +365,7 @@ void WaitForBrowserSetLastActive(
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
     BrowserWindowInterface* browser,
-    const std::string& input,
+    std::string_view input,
     base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
 // Gets the first browser that is not in the specified set.

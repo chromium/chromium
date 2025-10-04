@@ -22,7 +22,8 @@ class TestOmniboxEditModel : public OmniboxEditModel {
 
   // OmniboxEditModel:
   bool PopupIsOpen() const override;
-  AutocompleteMatch CurrentMatch(GURL* alternate_nav_url) const override;
+  AutocompleteMatch CurrentMatchAndAlternateNavUrl(
+      GURL* alternate_nav_url) const override;
   void OnPopupDataChanged(const std::u16string& temporary_text,
                           bool is_temporary_text,
                           const std::u16string& inline_autocompletion,

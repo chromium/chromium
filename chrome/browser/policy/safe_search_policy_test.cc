@@ -60,7 +60,7 @@ void SafeSearchPolicyTest::CheckSafeSearch(Browser* browser,
   observer.Wait();
   OmniboxEditModel* model =
       browser->window()->GetLocationBar()->GetOmniboxView()->model();
-  EXPECT_TRUE(model->CurrentMatch(nullptr).destination_url.is_valid());
+  EXPECT_TRUE(model->CurrentMatch().destination_url.is_valid());
   EXPECT_EQ(GetExpectedSearchURL(expect_safe_search),
             web_contents->GetLastCommittedURL());
 }

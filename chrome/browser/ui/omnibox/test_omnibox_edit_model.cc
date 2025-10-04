@@ -23,13 +23,13 @@ bool TestOmniboxEditModel::PopupIsOpen() const {
   return popup_is_open_;
 }
 
-AutocompleteMatch TestOmniboxEditModel::CurrentMatch(
+AutocompleteMatch TestOmniboxEditModel::CurrentMatchAndAlternateNavUrl(
     GURL* alternate_nav_url) const {
   if (override_current_match_) {
     return *override_current_match_;
   }
 
-  return OmniboxEditModel::CurrentMatch(alternate_nav_url);
+  return OmniboxEditModel::CurrentMatchAndAlternateNavUrl(alternate_nav_url);
 }
 
 void TestOmniboxEditModel::OpenMatchForTesting(

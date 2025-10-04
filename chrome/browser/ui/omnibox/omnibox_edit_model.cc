@@ -333,7 +333,7 @@ void OmniboxEditModel::RestoreState(const State* state) {
   }
 }
 
-AutocompleteMatch OmniboxEditModel::CurrentMatch(
+AutocompleteMatch OmniboxEditModel::CurrentMatchAndAlternateNavUrl(
     GURL* alternate_nav_url) const {
   // If we have a valid match use it. Otherwise get one for the current text.
   AutocompleteMatch match = current_match_;
@@ -416,7 +416,7 @@ void OmniboxEditModel::OnChanged() {
   // never actually use it.  This avoids running the autocomplete providers (and
   // any systems they then spin up) during startup.
   const AutocompleteMatch& current_match =
-      user_input_in_progress_ ? CurrentMatch(nullptr) : AutocompleteMatch();
+      user_input_in_progress_ ? CurrentMatch() : AutocompleteMatch();
 
   controller_->client()->OnTextChanged(
       current_match, user_input_in_progress_, user_text_,
@@ -426,7 +426,7 @@ void OmniboxEditModel::OnChanged() {
 void OmniboxEditModel::GetDataForURLExport(GURL* url,
                                            std::u16string* title,
                                            gfx::Image* favicon) {
-  *url = CurrentMatch(nullptr).destination_url;
+  *url = CurrentMatch().destination_url;
   if (*url == controller_->client()->GetURL()) {
     *title = controller_->client()->GetTitle();
     *favicon = controller_->client()->GetFavicon();
@@ -437,7 +437,7 @@ bool OmniboxEditModel::CurrentTextIsURL() const {
   // If !user_input_in_progress_, we can determine if the text is a URL without
   // starting the autocomplete system. This speeds browser startup.
   return !user_input_in_progress_ ||
-         !AutocompleteMatch::IsSearchType(CurrentMatch(nullptr).type);
+         !AutocompleteMatch::IsSearchType(CurrentMatch().type);
 }
 
 void OmniboxEditModel::AdjustTextForCopy(int sel_min,
@@ -449,7 +449,7 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
       /*has_user_modified_text=*/user_input_in_progress_ ||
           (*text != display_text_ && *text != url_for_editing_),
       is_keyword_selected(),
-      PopupIsOpen() ? std::optional<AutocompleteMatch>(CurrentMatch(nullptr))
+      PopupIsOpen() ? std::optional<AutocompleteMatch>(CurrentMatch())
                     : std::nullopt,
       controller_->client(), url_from_text, write_url);
 }
@@ -1584,7 +1584,7 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
   }
 
   if (view_) {
-    const AutocompleteMatch& match = CurrentMatch(nullptr);
+    AutocompleteMatch match = CurrentMatch();
     view_->OnRevertTemporaryText(match.fill_into_edit, match);
   }
 }
@@ -2288,7 +2288,7 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
                                    base::TimeTicks match_selection_timestamp) {
   // Get the URL and transition type for the selected entry.
   GURL alternate_nav_url;
-  AutocompleteMatch match = CurrentMatch(&alternate_nav_url);
+  AutocompleteMatch match = CurrentMatchAndAlternateNavUrl(&alternate_nav_url);
 
   // If CTRL is down it means the user wants to append ".com" to the text they
   // typed. If we can successfully generate a URL_WHAT_YOU_TYPED match doing

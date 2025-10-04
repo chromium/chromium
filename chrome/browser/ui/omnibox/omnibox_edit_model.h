@@ -103,7 +103,14 @@ class OmniboxEditModel {
   // this is the match corresponding to the permanent text. Returns the
   // alternate nav URL, if |alternate_nav_url| is non-NULL and there is such a
   // URL. Virtual for testing.
-  virtual AutocompleteMatch CurrentMatch(GURL* alternate_nav_url) const;
+  virtual AutocompleteMatch CurrentMatchAndAlternateNavUrl(
+      GURL* alternate_nav_url) const;
+
+  // Provided for convenience, since most CurrentMatchAndAlternateNavUrl()
+  // callers do not need the alternate navigation URL.
+  AutocompleteMatch CurrentMatch() const {
+    return CurrentMatchAndAlternateNavUrl(nullptr);
+  }
 
   // Called when the user wants to export the entire current text as a URL.
   // Sets the url, and if known, the title and favicon.

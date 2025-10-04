@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "stuff to search for");
   OmniboxEditModel* model =
       browser()->window()->GetLocationBar()->GetOmniboxView()->model();
-  EXPECT_TRUE(model->CurrentMatch(nullptr).destination_url.is_valid());
+  EXPECT_TRUE(model->CurrentMatch().destination_url.is_valid());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL expected("http://search.example/search?q=stuff+to+search+for");
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   EXPECT_FALSE(service->GetDefaultSearchProvider());
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "should not work");
   // This means that submitting won't trigger any action.
-  EXPECT_FALSE(model->CurrentMatch(nullptr).destination_url.is_valid());
+  EXPECT_FALSE(model->CurrentMatch().destination_url.is_valid());
   EXPECT_EQ(GURL(url::kAboutBlankURL), web_contents->GetLastCommittedURL());
 }
 
