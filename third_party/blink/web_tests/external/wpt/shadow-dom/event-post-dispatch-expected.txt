@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Event properties post dispatch when target get moved into the shadow tree by event listener
-  assert_equals: Target should not have been cleared expected Element node <trala></trala> but got null
-Harness: the test ran to completion.
-

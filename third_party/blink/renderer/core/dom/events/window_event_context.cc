@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/events/node_event_context.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -42,9 +43,14 @@ WindowEventContext::WindowEventContext(
   if (event.type() == event_type_names::kLoad)
     return;
   auto* document = DynamicTo<Document>(top_node_event_context.GetNode());
-  if (!document)
+  if (RuntimeEnabledFeatures::ClearTargetOnlyIfInShadowTreeEnabled()
+          ? top_node_event_context.GetNode().IsInShadowTree()
+          : !document) {
     return;
-  window_ = document->domWindow();
+  }
+  if (document) {
+    window_ = document->domWindow();
+  }
   target_ = top_node_event_context.Target();
   related_target_ = top_node_event_context.RelatedTarget();
 }

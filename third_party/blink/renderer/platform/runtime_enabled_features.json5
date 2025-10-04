@@ -969,6 +969,15 @@
       status: "stable",
     },
     {
+      // Determine clearing of target and relatedTarget by checking
+      // if the top node is in shadow tree.
+      // This was added in M142 and can be removed after M144.
+      // https://issues.chromium.org/issues/373655918
+      // https://issues.chromium.org/issues/40253359
+      name: "ClearTargetOnlyIfInShadowTree",
+      status: "stable",
+    },
+    {
       // Allows top-level sites to restrict collection of high-entropy UA client
       // hints (from 3Ps, or itself) via the getHighEntropyValues API.
       // crbug.com/385161047
