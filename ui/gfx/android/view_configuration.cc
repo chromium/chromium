@@ -19,7 +19,15 @@ namespace gfx {
 namespace {
 
 struct ViewConfigurationData {
-  ViewConfigurationData() {
+  ViewConfigurationData()
+      : double_tap_timeout_in_ms_(0),
+        long_press_timeout_in_ms_(0),
+        tap_timeout_in_ms_(0),
+        max_fling_velocity_in_dips_s_(0),
+        min_fling_velocity_in_dips_s_(0),
+        touch_slop_in_dips_(0),
+        double_tap_slop_in_dips_(0),
+        min_scaling_span_in_dips_(0) {
     JNIEnv* env = AttachCurrentThread();
     j_view_configuration_helper_.Reset(
         Java_ViewConfigurationHelper_createWithListener(env));
@@ -39,8 +47,6 @@ struct ViewConfigurationData {
            Java_ViewConfigurationHelper_getDoubleTapSlop(
                env, j_view_configuration_helper_),
            Java_ViewConfigurationHelper_getMinScalingSpan(
-               env, j_view_configuration_helper_),
-           Java_ViewConfigurationHelper_getTextCursorBlinkInterval(
                env, j_view_configuration_helper_));
   }
 
@@ -53,11 +59,10 @@ struct ViewConfigurationData {
                           float minimum_fling_velocity,
                           float touch_slop,
                           float double_tap_slop,
-                          float min_scaling_span,
-                          int text_cursor_blink_interval) {
+                          float min_scaling_span) {
     base::AutoLock autolock(lock_);
     Update(maximum_fling_velocity, minimum_fling_velocity, touch_slop,
-           double_tap_slop, min_scaling_span, text_cursor_blink_interval);
+           double_tap_slop, min_scaling_span);
   }
 
   int double_tap_timeout_in_ms() const { return double_tap_timeout_in_ms_; }
@@ -89,26 +94,18 @@ struct ViewConfigurationData {
     return min_scaling_span_in_dips_;
   }
 
-  base::TimeDelta text_cursor_blink_interval() {
-    base::AutoLock autolock(lock_);
-    return text_cursor_blink_interval_;
-  }
-
  private:
   void Update(float maximum_fling_velocity,
               float minimum_fling_velocity,
               float touch_slop,
               float double_tap_slop,
-              float min_scaling_span,
-              int text_cursor_blink_interval) {
+              float min_scaling_span) {
     DCHECK_LE(minimum_fling_velocity, maximum_fling_velocity);
     max_fling_velocity_in_dips_s_ = maximum_fling_velocity;
     min_fling_velocity_in_dips_s_ = minimum_fling_velocity;
     touch_slop_in_dips_ = touch_slop;
     double_tap_slop_in_dips_ = double_tap_slop;
     min_scaling_span_in_dips_ = min_scaling_span;
-    text_cursor_blink_interval_ =
-        base::Milliseconds(text_cursor_blink_interval);
   }
 
   base::Lock lock_;
@@ -116,18 +113,17 @@ struct ViewConfigurationData {
 
   // These values will remain constant throughout the lifetime of the app, so
   // read-access needn't be synchronized.
-  int double_tap_timeout_in_ms_ = 0;
-  int long_press_timeout_in_ms_ = 0;
-  int tap_timeout_in_ms_ = 0;
+  int double_tap_timeout_in_ms_;
+  int long_press_timeout_in_ms_;
+  int tap_timeout_in_ms_;
 
   // These values may vary as view-specific parameters change, so read/write
   // access must be synchronized.
-  int max_fling_velocity_in_dips_s_ = 0;
-  int min_fling_velocity_in_dips_s_ = 0;
-  int touch_slop_in_dips_ = 0;
-  int double_tap_slop_in_dips_ = 0;
-  int min_scaling_span_in_dips_ = 0;
-  base::TimeDelta text_cursor_blink_interval_ = base::Milliseconds(500);
+  int max_fling_velocity_in_dips_s_;
+  int min_fling_velocity_in_dips_s_;
+  int touch_slop_in_dips_;
+  int double_tap_slop_in_dips_;
+  int min_scaling_span_in_dips_;
 };
 
 ViewConfigurationData& GetViewConfigurationData() {
@@ -143,11 +139,10 @@ static void JNI_ViewConfigurationHelper_UpdateSharedViewConfiguration(
     jfloat minimum_fling_velocity,
     jfloat touch_slop,
     jfloat double_tap_slop,
-    jfloat min_scaling_span,
-    jint text_cursor_blink_interval) {
+    jfloat min_scaling_span) {
   GetViewConfigurationData().SynchronizedUpdate(
       maximum_fling_velocity, minimum_fling_velocity, touch_slop,
-      double_tap_slop, min_scaling_span, text_cursor_blink_interval);
+      double_tap_slop, min_scaling_span);
 }
 
 int ViewConfiguration::GetDoubleTapTimeoutInMs() {
@@ -180,10 +175,6 @@ int ViewConfiguration::GetDoubleTapSlopInDips() {
 
 int ViewConfiguration::GetMinScalingSpanInDips() {
   return GetViewConfigurationData().min_scaling_span_in_dips();
-}
-
-base::TimeDelta ViewConfiguration::GetTextCursorBlinkInterval() {
-  return GetViewConfigurationData().text_cursor_blink_interval();
 }
 
 }  // namespace gfx

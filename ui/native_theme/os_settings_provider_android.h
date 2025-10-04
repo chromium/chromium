@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "ui/accessibility/android/accessibility_state.h"
 #include "ui/native_theme/os_settings_provider.h"
 
@@ -27,13 +26,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderAndroid
   NativeTheme::PreferredContrast PreferredContrast() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
-  base::TimeDelta CaretBlinkInterval() const override;
 
   // AccessibilityState::AccessibilityStateObserver:
   void OnDisplayInversionEnabledChanged(bool enabled) override;
   void OnContrastLevelChanged(bool high_contrast_enabled) override;
-  void OnTextCursorBlinkIntervalChanged(
-      base::TimeDelta new_interval) override;
 
  private:
   base::ScopedObservation<AccessibilityState,
@@ -42,7 +38,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderAndroid
 
   bool high_contrast_enabled_ = false;
   bool display_inversion_enabled_ = false;
-  base::TimeDelta text_cursor_blink_interval_ = kDefaultCaretBlinkInterval;
 };
 
 }  // namespace ui

@@ -35,13 +35,6 @@ void JNI_AccessibilityState_OnContrastLevelChanged(
       static_cast<bool>(highContrastEnabled));
 }
 
-void JNI_AccessibilityState_OnTextCursorBlinkIntervalChanged(
-    JNIEnv* env,
-    jint newIntervalMs) {
-  AccessibilityState::Get()->NotifyTextCursorBlinkIntervalObservers(
-      base::Milliseconds(newIntervalMs));
-}
-
 void JNI_AccessibilityState_RecordAccessibilityServiceInfoHistograms(
     JNIEnv* env) {
   AccessibilityState::Get()->NotifyRecordAccessibilityServiceInfoHistogram();
@@ -75,13 +68,6 @@ void AccessibilityState::NotifyContrastLevelObservers(
     bool high_contrast_enabled) {
   observers_.Notify(&AccessibilityStateObserver::OnContrastLevelChanged,
                     high_contrast_enabled);
-}
-
-void AccessibilityState::NotifyTextCursorBlinkIntervalObservers(
-    base::TimeDelta new_interval_ms) {
-  observers_.Notify(
-      &AccessibilityStateObserver::OnTextCursorBlinkIntervalChanged,
-      new_interval_ms);
 }
 
 void AccessibilityState::NotifyRecordAccessibilityServiceInfoHistogram() {
@@ -121,12 +107,6 @@ std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
       env, Java_AccessibilityState_getAccessibilityServiceIds(env),
       &service_ids);
   return service_ids;
-}
-
-// static
-base::TimeDelta AccessibilityState::GetTextCursorBlinkInterval() {
-  return base::Milliseconds(Java_AccessibilityState_getTextCursorBlinkInterval(
-      base::android::AttachCurrentThread()));
 }
 
 // static
