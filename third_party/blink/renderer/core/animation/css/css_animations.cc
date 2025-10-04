@@ -2905,8 +2905,7 @@ const ComputedStyle& CSSAnimations::CalculateBeforeChangeStyle(
   bool is_starting_style = state.old_style.IsStartingStyle();
   if (state.before_change_style) {
     if (!is_starting_style ||
-        state.before_change_style_is_accurate_for_starting_style ||
-        !RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled()) {
+        state.before_change_style_is_accurate_for_starting_style) {
       // The cached before_change_style is valid.
       return *state.before_change_style;
     }
@@ -2922,8 +2921,7 @@ const ComputedStyle& CSSAnimations::CalculateBeforeChangeStyle(
   // to the base computed style.
   const ComputedStyle* base_style =
       state.old_style.GetBaseComputedStyleOrThis();
-  if (is_starting_style &&
-      RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled()) {
+  if (is_starting_style) {
     // before-change style for @starting-style inherits from the after-change
     // style of the parent.
     if (const ComputedStyle* after_change_style =
@@ -3128,8 +3126,7 @@ const ComputedStyle* CSSAnimations::EnsureAfterChangeStyleIfNecessary(
 const ComputedStyle& CSSAnimations::CalculateAfterChangeStyle(
     TransitionUpdateState& state,
     const PropertyHandle& transitioning_property) {
-  if (!RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled() ||
-      !state.style_recalc_context.has_animating_ancestor) {
+  if (!state.style_recalc_context.has_animating_ancestor) {
     return state.base_style;
   }
   if (!state.after_change_style) {

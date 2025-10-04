@@ -942,10 +942,6 @@
       status: "stable",
     },
     {
-      name: "CascadedAfterChangeStyle",
-      status: "stable",
-    },
-    {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
       // Signals. See https://crrev.com/c/4544201 and https://crbug.com/1458640.
       name: "CCTNewRFMPushBehavior",
