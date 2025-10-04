@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">使用分頁群組，分頁有條不紊</translation>
 <translation id="2597457036804169544">不要對網站套用深色主題</translation>
 <translation id="2606760465469169465">自動驗證</translation>
+<translation id="2610903128639500624">前往 <ph name="BEGIN_LINK1" />Android 設定<ph name="END_LINK1" />管理
+
+進階保護功能可控管以下 Chrome 設定：
+• 開啟「一律使用安全連線」。
+• 關閉「JavaScript 最佳化工具」。<ph name="BEGIN_LINK2" />管理網站例外狀況<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
 <translation id="2626708220538466178">預設瀏覽器底部功能表已關閉</translation>
 <translation id="2653659639078652383">提交</translation>

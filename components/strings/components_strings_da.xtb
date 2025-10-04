@@ -1254,6 +1254,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3090667236485488075">Glas</translation>
 <translation id="3093122472063815077">Statusskærmen for Køb nu, betal senere er åbnet i halv højde.</translation>
+<translation id="309381737510736393">Når din organisation begrænser muligheden for at gemme på din Google-konto, kan du ikke dele faner eller samarbejde med andre</translation>
 <translation id="3094051226187213523">Åbn AI-tilstand med dette forslag.</translation>
 <translation id="3095940652251934233">Erklæring</translation>
 <translation id="3098513225387949945">Ignoreret, fordi deaktiveringslisten indeholder et mønster, der svarer til "*", hvilket er ækvivalent til deaktivering af politikken.</translation>
@@ -1699,6 +1700,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3784372983762739446">Bluetooth-enheder</translation>
 <translation id="3785246317262748285">Du opretter normalt forbindelse til websites på en sikker måde, men Chrome kunne ikke anvende en sikker forbindelse denne gang. Det kan skyldes, at en hacker prøver at opfange eller ændre din netværksforbindelse. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Bedste match for "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> eller <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3791118028061680614">Betal uden at skifte app</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
@@ -2680,6 +2682,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5412040515238827314">Ugyldigt format: Der blev forventet en liste over mønstre.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stabler 4</translation>
+<translation id="5414306071315087019">Betalingsmetoden køb nu, betal senere er tilgængelig med Google Pay</translation>
 <translation id="5414446060143308245">Gennemgang er påkrævet før overførsel</translation>
 <translation id="5414511064953050917">Flyt alligevel</translation>
 <translation id="5418700249417444482">Webadresserne for de sider, du besøger, sendes til analyse hos Google Cloud eller tredjeparter og kan muligvis ses af din administrator. De kan f.eks. undersøge, om nogen af de tilhørende websites er usikre, eller filtrere websites baseret på de regler, som administratoren har angivet.</translation>
@@ -2800,6 +2803,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="5596939519753369075">2 x 3,5 tommer</translation>
 <translation id="5597254438174353289">Blå 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> eller <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Administration er ikke understøttet</translation>
 <translation id="5605249000617390290">Få flere oplysninger om prissporing</translation>
 <translation id="5605670050355397069">Ledger</translation>

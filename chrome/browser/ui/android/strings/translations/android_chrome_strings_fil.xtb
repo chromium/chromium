@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">I-clear ang data sa mga site at app?</translation>
 <translation id="1034259925032978114">Bukas ang window</translation>
+<translation id="1035113036584565771">Isinara ang promo na mga notification tungkol sa mga tip</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1045899828449635435">I-clear ang data sa mga site?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Hindi ma-access ang ilan sa iyong mga password</translation>
 <translation id="1058669287135776095">Offline ka. Suriin ang iyong koneksyon sa internet at subukan ulit.</translation>
+<translation id="1066338698580889414">Binuksan nang buo ang promo na mga notification tungkol sa mga tip</translation>
 <translation id="1070689840697074178">Puwede kang mag-download ng mga PDF dito</translation>
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
 <translation id="1087799850623149508">Puwede mong pindutin nang matagal para ilipat ang address bar sa ibaba</translation>
@@ -151,6 +153,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1696555181932908973">Puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Baguhin ang mga setting ng iyong madilim na tema?</translation>
 <translation id="1702907158640575240">Pinapamahalaang browser</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, Naka-pin na Tab na Incognito</translation>
 <translation id="1718835860248848330">Huling oras</translation>
 <translation id="1726477445370128854">Makakapag-browse at makakapaghanap ka nang mas mabilis kapag nag-preload ang Chrome ng mga page na sa palagay nito ay posibleng bisitahin mo</translation>
 <translation id="1728803206919861584">I-save ang passkey sa labas ng Incognito?</translation>
@@ -439,6 +442,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3027950907978057636">Mula sa <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Walang pag-preload</translation>
 <translation id="3029704984691124060">Hindi nagtutugma ang mga passphrase</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, Naka-pin na Napiling Tab</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Humingi ng tulong<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Sinusubaybayan ang presyo</translation>
 <translation id="3037517125981011456">Nagpapakita ng mga prompt na mag-sign in sa Chrome</translation>
@@ -626,6 +630,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="397583555483684758">Huminto ang pag-sync</translation>
 <translation id="3976396876660209797">Alisin at gawing muli ang shortcut na ito</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, Naka-pin na Tab</translation>
 <translation id="3985022125189960801">Idagdag pabalik ang isang site kung gusto mo na nasa pool ito ng mga site na nakakahula ng gusto mo</translation>
 <translation id="3985215325736559418">Gusto mo bang muling i-download ang <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopyahin ang link</translation>
@@ -1413,6 +1418,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7375125077091615385">Uri:</translation>
 <translation id="7376560087009844242">Kapag nagsama ka ng mas maraming text ng isang page, posibleng makakita ka ng mas magagandang resulta kapag ginagamit mo ang Pindutin para Maghanap. Puwede mong bisitahin ang <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" /> anumang oras para baguhin ito.</translation>
 <translation id="7379900596734708416">Available ang Madilim na tema para sa mga site</translation>
+<translation id="7384486627147155832">Binuksan nang kalahati ang promo na mga notification tungkol sa mga tip</translation>
 <translation id="7388615499319468910">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-off ang setting na ito.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Iba pa, may 1 file sa listahan}one{Iba pa, may # file sa listahan}other{Iba pa, may # na file sa listahan}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8090732854597034573">Kung kailangan mo ng tulong, magpatulong sa iyong magulang</translation>
 <translation id="8101414242770404289">Walang tab mula sa <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Tab na Incognito</translation>
+<translation id="810433609302852">Bottom sheet ng feature na promo na mga notification tungkol sa mga tip at mga hakbang sa paggamit</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Isara ang mga opsyon sa pagbubukod-bukod</translation>
 <translation id="8110024788458304985">Tumulong na pahusayin ang mga feature at performance ng Chrome</translation>
@@ -1825,6 +1832,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9169507124922466868">Nakabukas nang kalahati ang history ng pag-navigate</translation>
 <translation id="9189607089796819144">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Makikita mo ang iyong history sa lahat ng naka-sync mong device, para maipagpatuloy mo ang iyong ginagawa</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, Naka-pin na Napiling Tab na Incognito</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Nagsuri 1 minuto ang nakalipas}one{Nagsuri # minuto ang nakalipas}other{Nagsuri # na minuto ang nakalipas}}</translation>
 <translation id="9204836675896933765">1 file ang natitira</translation>
 <translation id="9205933215779845960">Hindi makita ang page na iyon. Suriin ang iyong spelling o subukang maghanap sa <ph name="SEARCH_ENGINE" />.</translation>

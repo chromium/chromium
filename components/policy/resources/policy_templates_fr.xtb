@@ -1233,6 +1233,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>
 <translation id="1838910874018595451">Configuration préremplie pour les demandes Kerberos</translation>
 <translation id="1839042185432919430">Autoriser l'appli Web kiosque à afficher une invite réseau au lancement de l'appli si l'appareil est hors connexion</translation>
+<translation id="1839711547980672664">Liste des formats d'URL pour lesquels les <ph name="CHROME_DEVTOOLS_NAME" /> peuvent être ouverts</translation>
 <translation id="1843102210803941014">Activer uniquement les données et les cookies essentiels dans la recherche</translation>
 <translation id="1843117931376765605">Fréquence d'actualisation des règles relatives aux utilisateurs</translation>
 <translation id="1844616986352942647">Autoriser Créer des thèmes avec l'IA et améliorer les modèles d'IA.</translation>
@@ -3366,6 +3367,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides (depuis la v
 
 Si cette règle est définie sur "False" ou n'est pas configurée, les touches sont des touches multimédias par défaut. Elles deviennent des touches de fonction lorsque la touche de recherche est maintenue enfoncée.</translation>
 <translation id="3351835664671920945">Utiliser par défaut un clavier standard pour la saisie du mot de passe</translation>
+<translation id="3356374145373094294">Liste des formats d'URL pour lesquels les <ph name="CHROME_DEVTOOLS_NAME" /> sont bloqués</translation>
 <translation id="3359186795130278362">Activer la session Invité gérée restreinte.</translation>
 <translation id="33592541385181121">Ne pas inclure de port dans le SPN Kerberos généré</translation>
 <translation id="3360093276083825336">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
@@ -4833,6 +4835,17 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 <translation id="4408428864159735559">Liste de partages de fichiers sur le réseau préconfigurés.</translation>
 <translation id="4410236409016356088">Activer la limitation de la bande passante réseau</translation>
 <translation id="4410361389637971319">Autoriser les origines d'applis Web isolées à utiliser Direct Sockets</translation>
+<translation id="4410792459434637140">Cette règle peut être utilisée pour autoriser les <ph name="CHROME_DEVTOOLS_NAME" /> sur des URL spécifiques.
+
+Les formats d'URL sont mis en correspondance avec l'URL de la page inspectée. Si une correspondance est trouvée, les <ph name="CHROME_DEVTOOLS_NAME" /> sont autorisés. Cela s'applique même si l'URL correspond également à la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, et même si la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est définie sur "Interdire" (valeur 2). Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si cette règle n'est pas configurée, cette liste d'autorisation n'a aucun effet. Étant donné que les <ph name="CHROME_DEVTOOLS_NAME" /> sont disponibles par défaut, ils ne seront bloqués que si la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> le spécifie.
+
+Les URL pour lesquelles aucune correspondance n'est trouvée seront soumises à la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Cette règle s'applique également aux <ph name="CHROME_DEVTOOLS_NAME" /> ouverts pour les extensions et les applis Web.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="4411734231900934213">Différence autorisée, en secondes, entre l'horloge de l'appareil de l'enfant et celle de l'appareil des parents.</translation>
 <translation id="441217499641439905">Désactiver Google Drive en cas de connexion au réseau mobile dans l'application "Fichiers" de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Si cette règle est activée, la visionneuse de PDF interne est désactivée dans <ph name="PRODUCT_NAME" />, les fichiers PDF sont téléchargés, et les utilisateurs peuvent les ouvrir avec l'application par défaut.
@@ -7290,6 +7303,17 @@ Si vous définissez cette valeur sur <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIEN
 
 Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="5962271004971310788">Extensions dont l'utilisateur doit autoriser l'exécution en mode navigation privée pour utiliser ce même mode</translation>
+<translation id="5962401339101255719">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf dans le cas d'extensions installées dans le cadre des règles de l'entreprise ou, depuis la version 114 et s'il s'agit d'un utilisateur géré, d'extensions intégrées au navigateur. Si elle est définie sur 1, vous pouvez accéder à ces outils et à cette console dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si elle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
+
+En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.
+
+Depuis <ph name="PRODUCT_NAME" /> version 99, ce paramètre contrôle également les points d'entrée de la fonctionnalité "Afficher le code source de la page". Si cette règle est définie sur "DeveloperToolsDisallowed" (valeur 2), les utilisateurs ne peuvent pas accéder à l'affichage du code source via le raccourci clavier ni le menu contextuel. Pour empêcher complètement l'affichage du code source, vous devez également ajouter "view-source:*" à la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Depuis <ph name="PRODUCT_NAME" /> version 119, ce paramètre contrôle également si le mode développeur peut être activé et utilisé pour les applis Web isolées.
+
+Depuis <ph name="PRODUCT_NAME" /> version 128, ce paramètre ne contrôle plus le mode développeur sur la page des extensions si la règle <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est configurée.
+
+Si vous souhaitez limiter l'accès aux outils pour les développeurs en fonction de l'URL de la page, utilisez les règles <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> et <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5963752574792883406">port 990 (peut être débloqué jusqu'au 01/02/2022)</translation>
 <translation id="596523880465577341">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="5966615072639944554">Extensions autorisées à utiliser l'API d'attestation à distance</translation>
@@ -7988,6 +8012,15 @@ Si cette règle est désactivée ou n'est pas configurée, la recherche du CNAME
 La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter que cette fonctionnalité mette à niveau des noms d'hôte ou des modèles du nom d'hôte spécifiques vers HTTPS.
 
 Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
+<translation id="6439002087726312326">Les formats d'URL sont mis en correspondance avec l'URL de la page inspectée. Si une correspondance est trouvée, les <ph name="CHROME_DEVTOOLS_NAME" /> sont bloqués. Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+La règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> prévaut sur la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Les URL pour lesquelles aucune correspondance n'est trouvée seront soumises à la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Cette règle s'applique également aux <ph name="CHROME_DEVTOOLS_NAME" /> ouverts pour les extensions et les applis Web.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="6440051664870270040">Autoriser les sites à parcourir et à ouvrir des pop-up simultanément</translation>
 <translation id="6441781723322254041">Autoriser les cookies tronqués</translation>
 <translation id="6446366416439249472">Désactiver la synchronisation de Google Drive via des connexions au réseau mobile</translation>

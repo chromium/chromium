@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Invio a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Vuoi cancellare anche i dati di questi siti e app?</translation>
 <translation id="1034259925032978114">La finestra è aperta</translation>
+<translation id="1035113036584565771">Notifica di promozione suggerita chiusa</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1045899828449635435">Vuoi cancellare anche i dati di questi siti?</translation>
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="1052842760770519282">Alcune delle tue password non sono accessibili</translation>
 <translation id="1058669287135776095">Sei offline. Controlla la connessione a internet e riprova.</translation>
+<translation id="1066338698580889414">Notifica di promozione suggerita aperta a schermo intero</translation>
 <translation id="1070689840697074178">Puoi scaricare i file PDF qui</translation>
 <translation id="107147699690128016">Se cambi l'estensione del file, il file potrebbe essere aperto in un'altra applicazione e costituire un pericolo per il dispositivo.</translation>
 <translation id="1087799850623149508">Puoi toccare e tenere premuta la barra degli indirizzi per spostarla in basso</translation>
@@ -151,6 +153,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1696555181932908973">Puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Vuoi cambiare le impostazioni del tema scuro?</translation>
 <translation id="1702907158640575240">Browser gestito</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, scheda Incognito fissata</translation>
 <translation id="1718835860248848330">Ultima ora</translation>
 <translation id="1726477445370128854">Puoi eseguire ricerche e navigare più rapidamente quando Chrome precarica le pagine che ritiene tu possa visitare</translation>
 <translation id="1728803206919861584">Vuoi salvare la passkey al di fuori della modalità di navigazione in incognito?</translation>
@@ -439,6 +442,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3027950907978057636">Da <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Nessun precaricamento</translation>
 <translation id="3029704984691124060">Le passphrase non corrispondono</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, scheda selezionata fissata</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
 <translation id="3037517125981011456">Mostra le richieste di accesso a Chrome</translation>
@@ -626,6 +630,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="397583555483684758">La sincronizzazione si è interrotta</translation>
 <translation id="3976396876660209797">Rimuovi e ricrea la scorciatoia</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, scheda fissata</translation>
 <translation id="3985022125189960801">Aggiungi di nuovo un sito se vuoi che faccia parte del pool di siti che possono stabilire i tuoi interessi</translation>
 <translation id="3985215325736559418">Scaricare di nuovo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copia link</translation>
@@ -1413,6 +1418,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Se includi più testo di una pagina, potresti vedere risultati migliori quando utilizzi Tocca per cercare. Puoi andare alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" /> per modificare questa scelta in qualsiasi momento.</translation>
 <translation id="7379900596734708416">Il tema scuro per i siti è disponibile</translation>
+<translation id="7384486627147155832">Notifica di promozione suggerita aperta nella parte inferiore dello schermo</translation>
 <translation id="7388615499319468910">Siti e inserzionisti possono conoscere il rendimento degli annunci. Questa impostazione non è attiva.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Altro, 1 file nell'elenco}other{Altro, # file nell'elenco}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8090732854597034573">Se hai bisogno di aiuto, rivolgiti al tuo genitore</translation>
 <translation id="8101414242770404289">Nessuna scheda: <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Scheda di navigazione in incognito</translation>
+<translation id="810433609302852">Riquadro inferiore con notifica di promozione della funzionalità suggerita e passaggi per l'utilizzo</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Chiudi opzioni di ordinamento</translation>
 <translation id="8110024788458304985">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
@@ -1825,6 +1832,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
 <translation id="9189607089796819144">Scaricare comunque "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati per poter continuare ciò che stavi facendo</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, scheda Incognito selezionata fissata</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
 <translation id="9204836675896933765">1 file rimanente</translation>
 <translation id="9205933215779845960">Impossibile trovare la pagina. Controlla l'ortografia o prova a effettuare una ricerca su <ph name="SEARCH_ENGINE" />.</translation>

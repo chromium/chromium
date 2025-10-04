@@ -392,6 +392,7 @@
 <translation id="125097549534200450">清除</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">正在掃描行動數據網路…</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
 <translation id="125220115284141797">預設值</translation>
 <translation id="1252219782845132919">隱藏群組</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
@@ -3255,6 +3256,7 @@
 <translation id="3239373508713281971">已解除「<ph name="APP_NAME" />」的時間限制</translation>
 <translation id="3240299564104448052">你似乎處於離線狀態。</translation>
 <translation id="3240426699337459095">連結已複製</translation>
+<translation id="3240718227457961717">如要存取其他裝置的分頁，請將歷史記錄和分頁同步到 <ph name="ACCOUNT_EMAIL" />。你隨時可以前往設定停止同步。Google 可根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="3241638166094654466">各行儲存格數目：</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的秘密金鑰。</translation>
 <translation id="3241810535741601486">這項變更無法復原。延展的更新會套用到這部裝置的所有使用者。<ph name="LINK_START" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -4123,6 +4125,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">新增其他指紋</translation>
 <translation id="3812525830114410218">錯誤的憑證</translation>
+<translation id="3813275565773644111">貴機構已關閉在 Google 帳戶中儲存歷史記錄和分頁的功能</translation>
 <translation id="3813296892522778813">如果你找不到需要的資訊，請參閱 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 說明<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">網頁譯文和快速解答功能所用語言</translation>
 <translation id="3813458570141926987">這份網站清單是 Chrome 根據近期瀏覽記錄推測的網站</translation>
@@ -6183,6 +6186,7 @@
 <translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5271578170655641944">要移除 Google 雲端硬碟存取權嗎？</translation>
+<translation id="5272198173084686007">沒有其他裝置的分頁</translation>
 <translation id="527335345740023523">你目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />、<ph name="NUMBERED_ITEM_3" />及其他資料。貴機構 (<ph name="ACCOUNT_MANAGER" />) 將可查看及管理這些資料</translation>
 <translation id="5273806377963980154">編輯網站網址</translation>
 <translation id="5275084684151588738">使用者字典</translation>
@@ -6262,6 +6266,7 @@
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5327570636534774768">這個裝置的標記狀態是由其他網域管理。請先從該網域取消佈建裝置，再設定展示模式。</translation>
 <translation id="5327912693242073631">需要傳送通知的功能將無法運作</translation>
+<translation id="5328551442597731838">查看其他裝置的分頁</translation>
 <translation id="532943162177641444">在 <ph name="PHONE_NAME" /> 上輕觸通知，即可設定可供這個裝置使用的可攜式無線基地台。</translation>
 <translation id="5329858601952122676">刪除(&amp;D)</translation>
 <translation id="5331568967879689647">Chrome OS 系統應用程式</translation>
@@ -7457,6 +7462,7 @@
 <translation id="6184868291074982484">Chrome 會自動限制第三方 Cookie</translation>
 <translation id="6185132558746749656">裝置位置</translation>
 <translation id="6185151644843671709">已儲存密碼金鑰並建立 PIN 碼</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
 <translation id="6186177419203903310">這麼做會啟用系統中所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6192333916571137726">下載檔案</translation>
@@ -7591,6 +7597,7 @@
 <translation id="6274089201566806618">正在連線至「<ph name="HOST_DEVICE_NAME" />」</translation>
 <translation id="6274108044476515407">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK1" />網站建議廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK3" />管理廣告隱私權<ph name="LINK_END3" />。</translation>
 <translation id="6274202259872570803">螢幕側錄</translation>
+<translation id="627581157848786026">查看其他裝置的分頁</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求你提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網路逾時</translation>
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
@@ -8521,6 +8528,7 @@
 <translation id="6922763095098248079">這部裝置是由貴機構管理。管理員可以存取此裝置上任一設定檔中的資料。</translation>
 <translation id="6923633482430812883">掛接共用裝置時發生錯誤。請檢查你要連接的檔案伺服器是否支援 SMBv2 以上版本。</translation>
 <translation id="6924109527536857168">需要同步處理</translation>
+<translation id="6927200998271693557">如要快速重新造訪瀏覽過的網站，請將歷史記錄和分頁同步到 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">自動移除未使用網站的權限</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監護功能。如要新增學校帳戶，以便從家裡存取 Google Classroom 和其他學校作業用的網站，請先使用孩子的個人帳戶登入。你稍後可在設定過程中新增學校帳戶。</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{已拒絕擴充功能}other{已拒絕 # 個擴充功能}}</translation>
@@ -10209,6 +10217,7 @@
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{這個檔案已加密。請要求檔案擁有者解密。}other{部分檔案已加密。請要求檔案擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
 <translation id="8090234456044969073">讀取最常造訪的網站清單</translation>
 <translation id="8090513782447872344">你可以日後隨時返回查看</translation>
 <translation id="8090686009202681725">使用 AI 建立主題</translation>
@@ -10342,6 +10351,7 @@
 <translation id="8184288427634747179">切換成<ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
+<translation id="8185614942934189676">已自動完成電子郵件地址驗證</translation>
 <translation id="8186013737729037962">進一步瞭解企業註冊的裝置</translation>
 <translation id="8186047833733689201">重音符號選單已開啟。按向左鍵、向右鍵或數字鍵即可瀏覽，按下 Enter 鍵則可插入重音符號。</translation>
 <translation id="8186609076106987817">伺服器找不到檔案。</translation>
@@ -11258,6 +11268,7 @@
 <translation id="8809147117840417135">淺藍綠色</translation>
 <translation id="8811862054141704416">Crostini 麥克風存取權</translation>
 <translation id="8811923271770626905">這項擴充功能可能會在背景執行</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 個密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
 <translation id="8813199641941291474">已禁止控制及重設 MIDI 裝置的程式</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">要求家長核准安裝「<ph name="EXTENSION_NAME" />」</translation>
@@ -11301,6 +11312,7 @@
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="8838841425230629509">將群組從書籤列上取消固定</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {ITEM_COUNT} 個項目只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
 <translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
 <translation id="8841884135319684422">結束工作</translation>
 <translation id="8842594465773264717">刪除這個指紋</translation>

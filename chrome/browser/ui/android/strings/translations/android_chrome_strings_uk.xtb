@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Надсилання на пристрій "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Видалити дані з цих сайтів і додатків?</translation>
 <translation id="1034259925032978114">Вікно відкрито</translation>
+<translation id="1035113036584565771">Пропозицію отримувати сповіщення з порадами закрито</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1045899828449635435">Видалити дані з цих сайтів?</translation>
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1052842760770519282">Деякі паролі недоступні</translation>
 <translation id="1058669287135776095">Ви не в мережі. Перевірте інтернет-з’єднання та повторіть спробу.</translation>
+<translation id="1066338698580889414">Пропозицію отримувати сповіщення з порадами відкрито на всю висоту</translation>
 <translation id="1070689840697074178">Тут можна завантажувати файли PDF</translation>
 <translation id="107147699690128016">Якщо ви зміните розширення файлу, він може відкритися в іншому додатку або зашкодити пристрою.</translation>
 <translation id="1087799850623149508">Щоб перемістити адресний рядок у нижню частину екрана, натисніть і утримуйте його</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973">Ви можете спробувати інші способи ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Змінити налаштування темної теми?</translation>
 <translation id="1702907158640575240">Керований веб-переглядач</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка)</translation>
 <translation id="1718835860248848330">Остання година</translation>
 <translation id="1726477445370128854">Ви можете шукати й переглядати контент швидше, коли Chrome попередньо завантажує сторінки, які ви, імовірно, захочете відвідати</translation>
 <translation id="1728803206919861584">Зберегти ключ доступу не в анонімному режимі?</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636">З додатка <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Без попереднього завантаження</translation>
 <translation id="3029704984691124060">Парольні фрази не збігаються</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" /> (закріплена вибрана вкладка)</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Довідка<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037517125981011456">Показувати сповіщення для входу в Chrome</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="397583555483684758">Синхронізація перестала працювати</translation>
 <translation id="3976396876660209797">Вилучити й знову створити цей ярлик</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" /> (закріплена вкладка)</translation>
 <translation id="3985022125189960801">Ви можете будь-коли знову включити сайт у список тих, які можуть визначати ваші інтереси</translation>
 <translation id="3985215325736559418">Завантажити файл "<ph name="FILE_NAME" />" повторно?</translation>
 <translation id="3987993985790029246">Копіювати</translation>
@@ -1413,6 +1418,7 @@
 <translation id="7375125077091615385">Тип:</translation>
 <translation id="7376560087009844242">Урахування контексту на сторінці може покращити результати, які надаватиме функція Пошуку дотиком. Щоб змінити параметри, можна будь-коли перейти в <ph name="BEGIN_LINK" />налаштування<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Доступна темна тема для сайтів</translation>
+<translation id="7384486627147155832">Пропозицію отримувати сповіщення з порадами відкрито на половину висоти</translation>
 <translation id="7388615499319468910">Власники сайтів і рекламодавці можуть оцінювати ефективність своїх оголошень. Це налаштування вимкнено.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Інше (1 файл у списку)}one{Інше (# файл у списку)}few{Інше (# файли в списку)}many{Інше (# файлів у списку)}other{Інше (# файлу в списку)}}</translation>
 <translation id="7400418766976504921">URL-адреса</translation>
@@ -1584,6 +1590,7 @@
 <translation id="8090732854597034573">Якщо тобі потрібна допомога, звернися до батьків</translation>
 <translation id="8101414242770404289">Немає вкладок за <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Анонімна вкладка</translation>
+<translation id="810433609302852">Пропозиція отримувати сповіщення з порадами й посилання на покрокові інструкції на нижньому екрані</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Закрити параметри сортування</translation>
 <translation id="8110024788458304985">Допомагати покращувати ефективність і функції Chrome</translation>
@@ -1825,6 +1832,7 @@
 <translation id="9169507124922466868">Історію навігації відкрито на половину висоти</translation>
 <translation id="9189607089796819144">Усе одно завантажити файл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Історія зберігатиметься на всіх синхронізованих пристроях, щоб ви могли продовжувати робити те, на чому зупинилися</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" /> (закріплена вибрана анонімна вкладка)</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Перевірено 1 хвилину тому}one{Перевірено # хвилину тому}few{Перевірено # хвилини тому}many{Перевірено # хвилин тому}other{Перевірено # хвилини тому}}</translation>
 <translation id="9204836675896933765">Залишився 1 файл</translation>
 <translation id="9205933215779845960">Не вдається знайти цю сторінку. Перевірте написання або спробуйте шукати в <ph name="SEARCH_ENGINE" />.</translation>

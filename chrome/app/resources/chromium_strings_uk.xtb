@@ -72,6 +72,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1896836275755235458">Chromium зберігає заряд акумулятора, обмежуючи фонову активність і візуальні ефекти, як-от плавне прокручування й частоту кадрів відео. <ph name="BEGIN_LINK" />Докладніше про режим енергозбереження.<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Поставити запитання про цю сторінку</translation>
 <translation id="1900969832270057921">Сервіс оновлення Chromium</translation>
+<translation id="1911666947158375684">Увійшовши в Chromium, ви можете використовувати паролі й інші дані з облікового запису Google. Це можна будь-коли змінити в налаштуваннях.</translation>
 <translation id="1911763535808217981">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chromium</translation>
 <translation id="1916451563296275579">Видалити дані цього додатка з Chromium</translation>
 <translation id="1929939181775079593">Chromium не відповідає. Перезапустити зараз?</translation>

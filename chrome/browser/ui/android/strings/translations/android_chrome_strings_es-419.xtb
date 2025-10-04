@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">¿Borrar estos datos?</translation>
 <translation id="1034259925032978114">La ventana está abierta</translation>
+<translation id="1035113036584565771">Se cerró a promoción de notificaciones de sugerencias</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1045899828449635435">¿Borrar estos datos?</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1052842760770519282">No se puede acceder a algunas de tus contraseñas</translation>
 <translation id="1058669287135776095">No tienes conexión. Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
+<translation id="1066338698580889414">La promoción de notificaciones de sugerencias está totalmente abierta</translation>
 <translation id="1070689840697074178">Puedes descargar los archivos PDF aquí</translation>
 <translation id="107147699690128016">Si cambias la extensión de archivo, es posible que el archivo se abra en una app diferente y dañe el dispositivo.</translation>
 <translation id="1087799850623149508">Puedes mantener presionada la barra de direcciones para moverla a la parte inferior</translation>
@@ -151,6 +153,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">¿Quieres cambiar la configuración del Tema oscuro?</translation>
 <translation id="1702907158640575240">Navegador administrado</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, pestaña de incógnito fijada</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1726477445370128854">Puedes navegar y realizar búsquedas de manera más rápida cuando Chrome precarga las páginas que considera que puedes visitar</translation>
 <translation id="1728803206919861584">¿Quieres guardar la llave de acceso fuera del modo Incógnito?</translation>
@@ -439,6 +442,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Sin precarga</translation>
 <translation id="3029704984691124060">Las frases de contraseña no coinciden.</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, pestaña seleccionada fijada</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037517125981011456">Muestra mensajes para acceder a Chrome</translation>
@@ -626,6 +630,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397583555483684758">La sincronización dejó de funcionar</translation>
 <translation id="3976396876660209797">Quita y vuelve a crear este acceso directo</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, pestaña fijada</translation>
 <translation id="3985022125189960801">Vuelve a agregar un sitio si quieres que aparezca en el grupo de sitios que pueden descubrir lo que te gusta</translation>
 <translation id="3985215325736559418">¿No quieres descargar <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="3987993985790029246">Copiar vínculo</translation>
@@ -1413,6 +1418,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Si incluyes más texto de la página, obtendrás mejores resultados cuando uses la función Tocar para buscar. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> en cualquier momento.</translation>
 <translation id="7379900596734708416">El Tema oscuro está disponible para los sitios</translation>
+<translation id="7384486627147155832">Se abrió la promoción de notificaciones de sugerencias a media altura</translation>
 <translation id="7388615499319468910">Los sitios y anunciantes pueden entender el rendimiento de los anuncios. Esta configuración está desactivada.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Otro, 1 archivo en la lista}other{Otro, # archivos en la lista}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8090732854597034573">Si necesitas ayuda, pídele a tu madre o padre</translation>
 <translation id="8101414242770404289">No hay pestañas de <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Pestaña de incógnito</translation>
+<translation id="810433609302852">Hoja inferior de las instrucciones de uso y la promoción de notificaciones de sugerencias</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Cerrar opciones de orden</translation>
 <translation id="8110024788458304985">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
@@ -1825,6 +1832,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9169507124922466868">El historial de navegación está abierto a la mitad</translation>
 <translation id="9189607089796819144">¿Quieres descargar "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) de todos modos?</translation>
 <translation id="9190276265094487094">Verás tu historial en todos los dispositivos sincronizados para que puedas retomar la navegación</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestaña de incógnito seleccionada y fijada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Se verificó hace 1 minuto}other{Se verificó hace # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 archivo</translation>
 <translation id="9205933215779845960">No se puede encontrar la página. Revisa la ortografía o intenta buscar en <ph name="SEARCH_ENGINE" />.</translation>

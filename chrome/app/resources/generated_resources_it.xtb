@@ -392,6 +392,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="125097549534200450">cancella</translation>
 <translation id="1251366534849411931">Parentesi graffa aperta prevista: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Ricerca di reti di dati mobili in corso…</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 preferito e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}other{{BOOKMARK_COUNT} preferiti e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}}</translation>
 <translation id="125220115284141797">Predefiniti</translation>
 <translation id="1252219782845132919">Nascondi gruppo</translation>
 <translation id="1252987234827889034">Errore con il profilo</translation>
@@ -3258,6 +3259,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3239373508713281971">Limite di tempo per l'app <ph name="APP_NAME" /> rimosso</translation>
 <translation id="3240299564104448052">Sembra che tu sia offline.</translation>
 <translation id="3240426699337459095">Link copiato</translation>
+<translation id="3240718227457961717">Per recuperare le schede dagli altri tuoi dispositivi, sincronizza la cronologia e le schede con <ph name="ACCOUNT_EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="3241638166094654466">Celle in ogni riga:</translation>
 <translation id="3241680850019875542">Seleziona la directory principale dell'estensione di cui creare il pacchetto. Per aggiornare un'estensione, seleziona anche il file delle chiave privata da riutilizzare.</translation>
 <translation id="3241810535741601486">Questa modifica è definitiva e irreversibile. Gli aggiornamenti estesi vengono applicati a tutti gli utenti di questo dispositivo. <ph name="LINK_START" />Scopri di più<ph name="LINK_END" /></translation>
@@ -4126,6 +4128,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="381202950560906753">Aggiungine un'altra</translation>
 <translation id="3812525830114410218">Certificato non valido</translation>
+<translation id="3813275565773644111">La tua organizzazione ha disattivato il salvataggio della cronologia e delle schede nel tuo Account Google</translation>
 <translation id="3813296892522778813">Visita la <ph name="BEGIN_LINK_CHROMIUM" />guida di Google Chrome<ph name="END_LINK_CHROMIUM" /> se non riesci a trovare quello che cerchi</translation>
 <translation id="3813358687923336574">Lingua utilizzata per la traduzione di pagine e Risposte rapide</translation>
 <translation id="3813458570141926987">Elenco di argomenti stimati da Chrome in base alla tua cronologia di navigazione recente</translation>
@@ -6190,6 +6193,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
 <translation id="5271578170655641944">Vuoi rimuovere l'accesso a Google Drive?</translation>
+<translation id="5272198173084686007">Nessuna scheda di altri dispositivi</translation>
 <translation id="527335345740023523">Attualmente hai <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> e altro. La tua organizzazione, <ph name="ACCOUNT_MANAGER" />, potrà visualizzare e gestire questi dati.</translation>
 <translation id="5273806377963980154">Modifica l'URL del sito</translation>
 <translation id="5275084684151588738">Dizionari utente</translation>
@@ -6270,6 +6274,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5327570636534774768">Questo dispositivo è stato contrassegnato per la gestione da un altro dominio. Esegui il deprovisioning del dispositivo dal dominio in questione prima di configurare la modalità demo.</translation>
 <translation id="5327912693242073631">Le funzionalità che richiedono notifiche non funzioneranno</translation>
+<translation id="5328551442597731838">Visualizza le schede di altri dispositivi</translation>
 <translation id="532943162177641444">Tocca la notifica sul tuo <ph name="PHONE_NAME" /> per configurare l'hotspot mobile che può essere utilizzato per questo dispositivo.</translation>
 <translation id="5329858601952122676">&amp;Elimina</translation>
 <translation id="5331568967879689647">App sistema operativo ChromeOS</translation>
@@ -7466,6 +7471,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6184868291074982484">Chrome limita automaticamente i cookie di terze parti</translation>
 <translation id="6185132558746749656">Posizione del dispositivo</translation>
 <translation id="6185151644843671709">Passkey salvata e PIN creato</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 password e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}other{{PASSWORD_COUNT} password e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}}</translation>
 <translation id="6186177419203903310">Verranno attivate le notifiche per tutte le nuove periferiche USB del sistema. Continuare?</translation>
 <translation id="6190953336330058278">App di Phone Hub</translation>
 <translation id="6192333916571137726">Scarica file</translation>
@@ -7600,6 +7606,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6274089201566806618">Connessione a <ph name="HOST_DEVICE_NAME" /> in corso</translation>
 <translation id="6274108044476515407">La visualizzazione di un annuncio personalizzato può dipendere da molti fattori, tra cui questa impostazione, gli <ph name="BEGIN_LINK1" />annunci suggeriti dal sito<ph name="LINK_END1" />, le <ph name="BEGIN_LINK2" />impostazioni dei cookie<ph name="LINK_END2" /> e il fatto che il sito che stai visualizzando possa personalizzare gli annunci. Scopri di più sulla <ph name="BEGIN_LINK3" />gestione della privacy per gli annunci<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="627581157848786026">Visualizza le schede di altri dispositivi</translation>
 <translation id="6276210637549544171">Il proxy <ph name="PROXY_SERVER" /> richiede un nome utente e una password.</translation>
 <translation id="6277105963844135994">Timeout di rete</translation>
 <translation id="6277518330158259200">&amp;Acquisisci screenshot</translation>
@@ -8530,6 +8537,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6922763095098248079">Il dispositivo è gestito dalla tua organizzazione. Gli amministratori possono accedere ai dati in qualsiasi profilo su questo dispositivo.</translation>
 <translation id="6923633482430812883">Errore durante il montaggio della condivisione. Verifica che il file server a cui vuoi collegarti supporti SMBv2 o versioni successive.</translation>
 <translation id="6924109527536857168">È necessaria la sincronizzazione</translation>
+<translation id="6927200998271693557">Per tornare rapidamente ai siti che hai visitato, sincronizza la cronologia e le schede con <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Rimuovi automaticamente le autorizzazioni dei siti inutilizzati</translation>
 <translation id="6929126689972602640">La funzionalità Controllo genitori non è supportata per gli account della scuola. Per aggiungere un account della scuola e accedere a Google Classroom e ad altri siti web per svolgere i compiti a casa, accedi prima con l'account personale del bambino. Puoi aggiungere l'account della scuola in un secondo momento nelle impostazioni.</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Un'estensione è stata rifiutata}other{# estensioni sono state rifiutate}}</translation>
@@ -10219,6 +10227,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8086610718778464681">Impossibile eseguire il backup delle app e dei file di Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Questo file è criptato. Chiedi al proprietario di decriptarlo.}other{Alcuni di questi file sono criptati. Chiedi al proprietario di decriptarli.}}</translation>
 <translation id="808894953321890993">Cambia password</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 preferito è salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}other{{BOOKMARK_COUNT} preferiti sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}}</translation>
 <translation id="8090234456044969073">Lettura di un elenco di siti web più visitati</translation>
 <translation id="8090513782447872344">Puoi tornare a consultarla in qualsiasi momento</translation>
 <translation id="8090686009202681725">Crea tema con l'AI</translation>
@@ -10352,6 +10361,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8184288427634747179">Passa al profilo <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Ulteriori informazioni</translation>
 <translation id="8184472985242519288">Uniforme</translation>
+<translation id="8185614942934189676">Email verificata automaticamente</translation>
 <translation id="8186013737729037962">Scopri di più sui dispositivi con registrazione aziendale</translation>
 <translation id="8186047833733689201">Menu degli accenti aperto. Premi i tasti Freccia sinistra, destra o numero per spostarti e Invio per inserire.</translation>
 <translation id="8186609076106987817">Impossibile trovare il file sul server.</translation>
@@ -11268,6 +11278,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8809147117840417135">Verde acqua</translation>
 <translation id="8811862054141704416">Accesso al microfono su Crostini</translation>
 <translation id="8811923271770626905">Questa estensione potrebbe essere eseguita in background</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 password è salvata solo su questo dispositivo. Per usarla sugli altri dispositivi, salvala nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}other{{PASSWORD_COUNT} password sono salvate solo su questo dispositivo. Per usarle sugli altri dispositivi, salvale nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}}</translation>
 <translation id="8813199641941291474">Controllo e riprogrammazione dei dispositivi MIDI bloccati</translation>
 <translation id="8813698869395535039">Impossibile accedere a <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Chiedi a un genitore di approvare "<ph name="EXTENSION_NAME" />"</translation>
@@ -11311,6 +11322,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838841425230629509">Sblocca gruppo dalla barra dei preferiti</translation>
 <translation id="883924185304953854">Ricerca tramite immagine</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 elemento è salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}other{{ITEM_COUNT} elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}}</translation>
 <translation id="8841843049738266382">Leggi e modifica gli utenti nella lista consentita</translation>
 <translation id="8841884135319684422">Termina attività</translation>
 <translation id="8842594465773264717">Elimina questa impronta</translation>

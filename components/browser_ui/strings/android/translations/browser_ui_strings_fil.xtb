@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Mag-ayos gamit ang mga grupo ng tab</translation>
 <translation id="2597457036804169544">Huwag ilapat ang madilim na tema sa mga site</translation>
 <translation id="2606760465469169465">Awtomatikong pag-verify</translation>
+<translation id="2610903128639500624">Pamahalaan sa <ph name="BEGIN_LINK1" />mga setting ng Android<ph name="END_LINK1" />
+
+Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
+• Naka-on ang "Palaging gumamit ng mga secure na koneksyon."
+• Naka-off ang "JavaScript optimizer." <ph name="BEGIN_LINK2" />Pamahalaan ang mga exception sa Site<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Payagan ang JavaScript para sa isang partikular na site.</translation>
 <translation id="2626708220538466178">Isinara ang bottom sheet ng default browser</translation>
 <translation id="2653659639078652383">Isumite</translation>

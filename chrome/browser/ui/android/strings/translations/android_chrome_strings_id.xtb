@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Mengirim ke <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Hapus data dari situs dan aplikasi ini juga?</translation>
 <translation id="1034259925032978114">Jendela terbuka</translation>
+<translation id="1035113036584565771">Promo notifikasi tips ditutup</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1045899828449635435">Hapus data dari situs ini juga?</translation>
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1052842760770519282">Beberapa sandi Anda tidak dapat diakses</translation>
 <translation id="1058669287135776095">Anda offline. Periksa koneksi internet Anda, lalu coba lagi.</translation>
+<translation id="1066338698580889414">Promo notifikasi tips terbuka sepenuhnya</translation>
 <translation id="1070689840697074178">Anda dapat mendownload PDF di sini</translation>
 <translation id="107147699690128016">Jika ekstensi file diubah, file dapat terbuka di aplikasi lain dan berpotensi membahayakan perangkat Anda.</translation>
 <translation id="1087799850623149508">Anda dapat menyentuh lama untuk memindahkan kolom URL ke bawah</translation>
@@ -151,6 +153,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1696555181932908973">Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Ubah setelan tema gelap?</translation>
 <translation id="1702907158640575240">Browser terkelola</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, Tab Samaran Tersemat</translation>
 <translation id="1718835860248848330">Sejam terakhir</translation>
 <translation id="1726477445370128854">Anda dapat menjelajah dan menelusuri lebih cepat saat Chrome melakukan pramuat halaman yang menurutnya mungkin akan Anda buka</translation>
 <translation id="1728803206919861584">Simpan kunci sandi di luar mode Samaran?</translation>
@@ -439,6 +442,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3027950907978057636">Dari <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Tidak ada pramuat</translation>
 <translation id="3029704984691124060">Frasa sandi tidak cocok</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, Tab Tersemat yang Dipilih</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Memantau harga</translation>
 <translation id="3037517125981011456">Menampilkan perintah untuk login ke Chrome</translation>
@@ -626,6 +630,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="397583555483684758">Sinkronisasi berhenti berfungsi</translation>
 <translation id="3976396876660209797">Hapus dan buat ulang pintasan ini</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, Tab Tersemat</translation>
 <translation id="3985022125189960801">Tambahkan situs kembali jika Anda menginginkannya berada di kumpulan situs yang dapat menebak hal-hal yang Anda sukai</translation>
 <translation id="3985215325736559418">Ingin mendownload <ph name="FILE_NAME" /> lagi?</translation>
 <translation id="3987993985790029246">Salin link</translation>
@@ -1413,6 +1418,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7375125077091615385">Jenis:</translation>
 <translation id="7376560087009844242">Dengan menyertakan lebih banyak teks halaman, Anda dapat melihat hasil yang lebih baik saat menggunakan fitur Sentuh untuk Menelusuri. Anda dapat membuka <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja untuk mengubahnya.</translation>
 <translation id="7379900596734708416">Tema gelap untuk situs tersedia</translation>
+<translation id="7384486627147155832">Promo notifikasi tips dibuka setengah</translation>
 <translation id="7388615499319468910">Situs dan pengiklan dapat memahami performa iklan. Setelan ini nonaktif.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Lainnya, 1 file dalam daftar}other{Lainnya, # file dalam daftar}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8090732854597034573">Jika kamu perlu bantuan, minta kepada orang tuamu</translation>
 <translation id="8101414242770404289">Tidak ada tab dari <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Tab Samaran</translation>
+<translation id="810433609302852">Panel bawah langkah penggunaan dan promo fitur notifikasi tips</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Tutup opsi pengurutan</translation>
 <translation id="8110024788458304985">Bantu tingkatkan fitur dan performa Chrome</translation>
@@ -1825,6 +1832,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
 <translation id="9189607089796819144">Ingin tetap mendownload "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, Tab Samaran Tersemat yang Dipilih</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Diperiksa 1 menit yang lalu}other{Diperiksa # menit yang lalu}}</translation>
 <translation id="9204836675896933765">1 file tersisa</translation>
 <translation id="9205933215779845960">Tidak dapat menemukan halaman tersebut. Periksa ejaan Anda atau coba telusuri di <ph name="SEARCH_ENGINE" />.</translation>

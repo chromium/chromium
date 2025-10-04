@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Envoi sur <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Effacer ces données ?</translation>
 <translation id="1034259925032978114">Fenêtre ouverte</translation>
+<translation id="1035113036584565771">Promotion des notifications de conseils fermée</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1045899828449635435">Effacer les données de ces sites ?</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1052842760770519282">Certains de vos mots de passe ne sont pas accessibles</translation>
 <translation id="1058669287135776095">Vous êtes hors connexion. Vérifiez votre connexion Internet, puis réessayez.</translation>
+<translation id="1066338698580889414">Promotion des notifications de conseils ouverte à pleine hauteur</translation>
 <translation id="1070689840697074178">Vous pouvez télécharger les PDF ici</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, celui-ci pourrait s'ouvrir dans une application différente et potentiellement endommager votre appareil.</translation>
 <translation id="1087799850623149508">Vous pouvez appuyer de manière prolongée pour déplacer la barre d'adresse vers le bas</translation>
@@ -151,6 +153,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1696555181932908973">Vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Modifier les paramètres du thème sombre ?</translation>
 <translation id="1702907158640575240">Navigateur géré</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1726477445370128854">Le préchargement de pages que vous êtes susceptible de consulter selon Chrome permet de les parcourir et d'effectuer des recherches plus rapidement</translation>
 <translation id="1728803206919861584">Enregistrer la clé d'accès en dehors de la navigation privée ?</translation>
@@ -439,6 +442,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3027950907978057636">À partir de <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Aucun préchargement</translation>
 <translation id="3029704984691124060">Les phrases secrètes ne correspondent pas.</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, onglet sélectionné épinglé</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtenir de l'aide<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Suivi du prix activé</translation>
 <translation id="3037517125981011456">Permet d'afficher des invites de connexion à Chrome</translation>
@@ -626,6 +630,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="397105322502079400">Calcul en cours…</translation>
 <translation id="397583555483684758">La synchronisation s'est arrêtée.</translation>
 <translation id="3976396876660209797">Supprimez et recréez ce raccourci</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, onglet épinglé</translation>
 <translation id="3985022125189960801">Ajoutez de nouveau un site si vous souhaitez l'autoriser à estimer vos centres d'intérêt</translation>
 <translation id="3985215325736559418">Voulez-vous télécharger <ph name="FILE_NAME" /> de nouveau ?</translation>
 <translation id="3987993985790029246">Copier lien</translation>
@@ -1413,6 +1418,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7375125077091615385">Type :</translation>
 <translation id="7376560087009844242">En incluant plus de texte d'une page, vous pourriez avoir de meilleurs résultats quand vous utilisez Appuyer pour rechercher. Vous pouvez toujours changer cela dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Le thème sombre pour les sites est disponible</translation>
+<translation id="7384486627147155832">Promotion des notifications de conseils ouverte à mi-hauteur</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est désactivé.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Autres, un fichier dans la liste}one{Autres, # fichier dans la liste}other{Autres, # fichiers dans la liste}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8090732854597034573">Si tu as besoin d'aide, demande à ton parent</translation>
 <translation id="8101414242770404289">Aucun onglet sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
+<translation id="810433609302852">Bottom sheet avec promotion de la fonctionnalité de notifications de conseils et étapes d'utilisation</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Fermer les options de tri</translation>
 <translation id="8110024788458304985">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
@@ -1825,6 +1832,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="9189607089796819144">Voulez-vous quand même télécharger "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ?</translation>
 <translation id="9190276265094487094">Comme vous aurez votre historique sur tous vos appareils synchronisés, vous pourrez continuer vos activités</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, onglet de navigation privée sélectionné épinglé</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Vérification effectuée il y a 1 minute}one{Vérification effectuée il y a # minute}other{Vérification effectuée il y a # minutes}}</translation>
 <translation id="9204836675896933765">1 fichier restant</translation>
 <translation id="9205933215779845960">Page introuvable. Vérifiez l'orthographe ou effectuez une recherche sur <ph name="SEARCH_ENGINE" />.</translation>

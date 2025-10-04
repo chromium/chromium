@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Упорядкуйте вкладки в групи</translation>
 <translation id="2597457036804169544">Не використовувати темну тему для сайтів</translation>
 <translation id="2606760465469169465">Автоматичне підтвердження</translation>
+<translation id="2610903128639500624">Можна керувати в <ph name="BEGIN_LINK1" />налаштуваннях Android<ph name="END_LINK1" />
+
+Додатковий захист керує такими налаштуваннями Chrome:
+• опцію "Завжди використовувати надійні з’єднання" ввімкнено;
+• оптимізатор JavaScript вимкнено. <ph name="BEGIN_LINK2" />Керувати виключеннями для сайтів<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Увімкнути JavaScript на певному сайті.</translation>
 <translation id="2626708220538466178">Нижній екран вибору вебпереглядача за умовчанням закрито</translation>
 <translation id="2653659639078652383">Надіслати</translation>

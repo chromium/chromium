@@ -1254,6 +1254,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3090667236485488075">Glass</translation>
 <translation id="3093122472063815077">Binuksan nang kalahati ang screen ng pag-usad ng Buy-Now-Pay-Later.</translation>
+<translation id="309381737510736393">Kapag nilimitahan ng iyong organisasyon ang pag-save sa Google Account mo, hindi mo magagawang mag-share ng mga tab o makipag-collaborate sa iba</translation>
 <translation id="3094051226187213523">Buksan ang AI Mode sa suhestyong ito.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Binalewala ito dahil naglalaman ang listahan ng naka-disable ng pattern na katumbas ng '*', na katumbas ng pag-disable sa patakaran.</translation>
@@ -1699,6 +1700,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3784372983762739446">Mga device ng bluetooth</translation>
 <translation id="3785246317262748285">Kadalasang secure kang nakakakonekta sa mga site, pero hindi makagamit ng secure na koneksyon ang Chrome sa ngayon. Posibleng may attacker na sumusubok na alamin o baguhin ang iyong koneksyon ng network. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Pinakamahuhusay na tugma para sa "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" />, o <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3791118028061680614">Magbayad nang hindi lumilipat ng app</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -2680,6 +2682,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5412040515238827314">Invalid na format: May inaasahang listahan ng mga pattern.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />, <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stacker 4</translation>
+<translation id="5414306071315087019">Available ang Buy now, pay later sa Google Pay</translation>
 <translation id="5414446060143308245">Kinakailangan ang pagsusuri bago ilipat</translation>
 <translation id="5414511064953050917">Ilipat pa rin</translation>
 <translation id="5418700249417444482">Ipinapadala ang mga URL ng mga page na binibisita mo sa Google Cloud o mga third party para sa pagsusuri, at posibleng nakikita ito ng iyong administrator. Halimbawa, posibleng i-scan ang mga ito para ma-detect ang mga hindi ligtas na website o ma-filter ang mga website batay sa mga panuntunang itinakda ng administrator.</translation>
@@ -2800,6 +2803,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5595485650161345191">Mag-edit ng address</translation>
 <translation id="5596939519753369075">2 x 3.5 in</translation>
 <translation id="5597254438174353289">Asul 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Hindi sinusuportahan ang pamamahala</translation>
 <translation id="5605249000617390290">Matuto pa tungkol sa pagsubaybay sa presyo</translation>
 <translation id="5605670050355397069">Ledger</translation>

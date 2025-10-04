@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Skickar till <ph name="DEVICE_NAME" /> …</translation>
 <translation id="103269572468856066">Vill du även rensa data?</translation>
 <translation id="1034259925032978114">Fönstret är öppet</translation>
+<translation id="1035113036584565771">Kampanjen för tipsaviseringar har stängts</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1045899828449635435">Vill du även rensa data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Vissa av dina lösenord är inte tillgängliga</translation>
 <translation id="1058669287135776095">Du är offline. Kontrollera internetanslutningen och försök igen.</translation>
+<translation id="1066338698580889414">Kampanjen för tipsaviseringar har öppnats över hela skärmen</translation>
 <translation id="1070689840697074178">Du kan ladda ned PDF-filer här</translation>
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
 <translation id="1087799850623149508">Du kan trycka länge för att flytta adressfältet längst ned</translation>
@@ -151,6 +153,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1696555181932908973">Du kan testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Vill du ändra inställningarna för mörkt tema?</translation>
 <translation id="1702907158640575240">Hanterad webbläsare</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />: fäst inkognitoflik</translation>
 <translation id="1718835860248848330">Senaste timmen</translation>
 <translation id="1726477445370128854">Du kan surfa och söka snabbare när Chrome läser in sidor som du kanske vill besöka i förväg</translation>
 <translation id="1728803206919861584">Vill du spara nyckeln utanför inkognitoläget?</translation>
@@ -439,6 +442,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3027950907978057636">Från <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Ingen förinläsning</translation>
 <translation id="3029704984691124060">Lösenfraserna matchar inte</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />: vald fäst flik</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037517125981011456">Visar meddelanden om att logga in i Chrome</translation>
@@ -627,6 +631,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="397583555483684758">Synkroniseringen har slutat fungera</translation>
 <translation id="3976396876660209797">Ta bort och återskapa den här genvägen</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />: fäst flik</translation>
 <translation id="3985022125189960801">Lägg till en webbplats igen om du vill att den ingår i en grupp av webbplatser som kan gissa vad du gillar</translation>
 <translation id="3985215325736559418">Vill du ladda ned <ph name="FILE_NAME" /> igen?</translation>
 <translation id="3987993985790029246">Kopiera länk</translation>
@@ -1414,6 +1419,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7375125077091615385">Typ:</translation>
 <translation id="7376560087009844242">Om du tar med mer av sidans text kanske du får bättre resultat när du använder Tryck för att söka. Du kan alltid öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill ändra detta.</translation>
 <translation id="7379900596734708416">Mörkt tema för webbplatser är tillgängligt</translation>
+<translation id="7384486627147155832">Kampanjen för tipsaviseringar har öppnats över halva skärmen</translation>
 <translation id="7388615499319468910">Webbplatser och annonsörer kan mäta annonsernas resultat. Inställningen är inaktiverad.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annat, 1 fil i listan}other{Annat, # filer i listan}}</translation>
 <translation id="7400418766976504921">Webbadress</translation>
@@ -1585,6 +1591,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8090732854597034573">Prata med din förälder om du behöver hjälp</translation>
 <translation id="8101414242770404289">Inga flikar från <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Inkognitoflik</translation>
+<translation id="810433609302852">Kampanj för tipsaviseringar och användningssteg i ark på nedre delen av skärmen</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Stäng sorteringsalternativ</translation>
 <translation id="8110024788458304985">Hjälp oss att förbättra funktioner och prestanda i Chrome</translation>
@@ -1826,6 +1833,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="9189607089796819144">Vill du ladda ned <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ändå?</translation>
 <translation id="9190276265094487094">Historiken visas på alla synkroniserade enheter, så att du kan fortsätta där du slutade</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />: vald fäst inkognitoflik</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Genomsöktes för 1 minut sedan}other{Genomsöktes för # minuter sedan}}</translation>
 <translation id="9204836675896933765">1 fil återstår</translation>
 <translation id="9205933215779845960">Sidan hittades inte. Kontrollera stavningen eller testa att söka på <ph name="SEARCH_ENGINE" />.</translation>
