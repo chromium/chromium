@@ -90,6 +90,14 @@ constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
 #endif  // !BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+bool ButtonOwnsAnimation() {
+#if BUILDFLAG(ENABLE_GLIC)
+  return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 TabStripActionContainer::TabStripNudgeAnimationSession::
@@ -653,7 +661,6 @@ void TabStripActionContainer::OnHideGlicNudgeUI() {
 
   CHECK(glic_button_);
   HideTabStripNudge(glic_button_);
-  glic_button_->RestoreDefaultLabel();
 
 #else
   NOTREACHED();
@@ -894,12 +901,14 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
   scoped_tab_strip_modal_ui_.reset();
   scoped_tab_strip_modal_ui_ = tab_strip_controller_->ShowModalUI();
 
-  animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
-      button, this, TabStripNudgeAnimationSession::AnimationSessionType::SHOW,
-      base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
-                     base::Unretained(this)),
-      (button != glic_button_ && button != glic_actor_task_icon_));
-  animation_session_->Start();
+  if (!ButtonOwnsAnimation()) {
+    animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
+        button, this, TabStripNudgeAnimationSession::AnimationSessionType::SHOW,
+        base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
+                       base::Unretained(this)),
+        (button != glic_button_ && button != glic_actor_task_icon_));
+    animation_session_->Start();
+  }
 
   if (button == tab_declutter_button_) {
     LogDeclutterTriggerBucket(false);
@@ -934,12 +943,14 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
   // Stop the timer since the chip might be getting hidden on user actions like
   // dismissal or click and not timeout.
   hide_tab_strip_nudge_timer_.Stop();
-  animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
-      button, this, TabStripNudgeAnimationSession::AnimationSessionType::HIDE,
-      base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
-                     base::Unretained(this)),
-      (button != glic_button_ && button != glic_actor_task_icon_));
-  animation_session_->Start();
+  if (!ButtonOwnsAnimation()) {
+    animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
+        button, this, TabStripNudgeAnimationSession::AnimationSessionType::HIDE,
+        base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
+                       base::Unretained(this)),
+        (button != glic_button_ && button != glic_actor_task_icon_));
+    animation_session_->Start();
+  }
 }
 
 void TabStripActionContainer::SetLockedExpansionMode(
