@@ -174,12 +174,6 @@ void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
   }
 }
 
-void TabStripNudgeButton::SetCloseButtonVisible(bool visible) {
-  close_button_->SetVisible(visible);
-  label()->SetProperty(views::kMarginsKey,
-                       GetLabelInsets(/*show_close_button=*/visible));
-}
-
 void TabStripNudgeButton::SetCloseButtonFocusBehavior(
     views::View::FocusBehavior focus_behavior) {
   close_button_->SetFocusBehavior(focus_behavior);
