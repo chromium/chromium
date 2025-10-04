@@ -4,15 +4,22 @@
 
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 
-#include <string>
+#include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
+#include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,12 +46,26 @@ class MockContextualTasksObserver : public ContextualTasksService::Observer {
               (override));
 };
 
+class MockContextDecorator : public ContextDecorator {
+ public:
+  MOCK_METHOD(void,
+              DecorateContext,
+              (std::unique_ptr<ContextualTaskContext> context,
+               base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                   context_callback),
+              (override));
+};
+
 class ContextualTasksServiceImplTest : public testing::Test {
  public:
   ContextualTasksServiceImplTest() {
+    auto mock_decorator =
+        std::make_unique<testing::NiceMock<MockContextDecorator>>();
+    mock_decorator_ = mock_decorator.get();
     service_ = std::make_unique<ContextualTasksServiceImpl>(
         version_info::Channel::UNKNOWN,
-        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
+        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        std::move(mock_decorator));
   }
   ~ContextualTasksServiceImplTest() override = default;
 
@@ -78,26 +99,37 @@ class ContextualTasksServiceImplTest : public testing::Test {
     return task;
   }
 
-  std::optional<ContextualTaskContext> GetContextForTask(
+  std::unique_ptr<ContextualTaskContext> GetContextForTask(
       const base::Uuid& task_id) {
-    std::optional<ContextualTaskContext> context;
+    std::unique_ptr<ContextualTaskContext> result;
     base::RunLoop run_loop;
     service_->GetContextForTask(
         task_id, base::BindOnce(
-                     [](std::optional<ContextualTaskContext>* out_context,
+                     [](std::unique_ptr<ContextualTaskContext>* out_context,
                         base::OnceClosure quit_closure,
-                        std::optional<ContextualTaskContext> result) {
-                       *out_context = std::move(result);
+                        std::unique_ptr<ContextualTaskContext> context) {
+                       *out_context = std::move(context);
                        std::move(quit_closure).Run();
                      },
-                     &context, run_loop.QuitClosure()));
+                     &result, run_loop.QuitClosure()));
     run_loop.Run();
-    return context;
+    return result;
+  }
+
+  std::vector<UrlAttachment>& GetMutableUrlAttachments(
+      ContextualTaskContext& task) {
+    return task.GetMutableUrlAttachments();
+  }
+
+  UrlAttachmentDecoratorData& GetUrlAttachmentDecoratorData(
+      UrlAttachment& url_attachment) {
+    return url_attachment.GetDecoratorData();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ContextualTasksServiceImpl> service_;
+  raw_ptr<testing::NiceMock<MockContextDecorator>> mock_decorator_;
   testing::NiceMock<MockContextualTasksObserver> observer_;
 };
 
@@ -445,19 +477,57 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {
   GURL url("https://www.google.com");
   service_->AttachUrlToTask(task.GetTaskId(), url);
 
-  std::optional<ContextualTaskContext> context =
+  EXPECT_CALL(*mock_decorator_, DecorateContext(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::unique_ptr<ContextualTaskContext> context,
+             base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                 callback) {
+            // Mock decorator just passes the context through.
+            std::move(callback).Run(std::move(context));
+          }));
+
+  std::unique_ptr<ContextualTaskContext> context =
       GetContextForTask(task.GetTaskId());
-  ASSERT_TRUE(context.has_value());
+  ASSERT_TRUE(context.get());
   EXPECT_EQ(context->GetTaskId(), task.GetTaskId());
   const auto& attachments = context->GetUrlAttachments();
   ASSERT_EQ(attachments.size(), 1u);
   EXPECT_EQ(attachments[0].GetURL(), url);
+  EXPECT_TRUE(attachments[0].GetTitle().empty());
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetContextForTask_WithTitle) {
+  ContextualTask task = service_->CreateTask();
+  GURL url("https://www.google.com");
+  service_->AttachUrlToTask(task.GetTaskId(), url);
+
+  EXPECT_CALL(*mock_decorator_, DecorateContext(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [this](std::unique_ptr<ContextualTaskContext> context,
+                 base::OnceCallback<void(
+                     std::unique_ptr<ContextualTaskContext>)> callback) {
+            // Mock decorator adds a title.
+            GetUrlAttachmentDecoratorData(GetMutableUrlAttachments(*context)[0])
+                .fallback_title_data.title = u"Hardcoded Title";
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(context)));
+          }));
+
+  std::unique_ptr<ContextualTaskContext> context =
+      GetContextForTask(task.GetTaskId());
+  ASSERT_TRUE(context.get());
+  EXPECT_EQ(context->GetTaskId(), task.GetTaskId());
+  const auto& attachments = context->GetUrlAttachments();
+  ASSERT_EQ(attachments.size(), 1u);
+  EXPECT_EQ(attachments[0].GetURL(), url);
+  EXPECT_EQ(attachments[0].GetTitle(), u"Hardcoded Title");
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetContextForTask_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  std::optional<ContextualTaskContext> context = GetContextForTask(task_id);
-  EXPECT_FALSE(context.has_value());
+  std::unique_ptr<ContextualTaskContext> context = GetContextForTask(task_id);
+  EXPECT_FALSE(context.get());
 }
 
 }  // namespace contextual_tasks

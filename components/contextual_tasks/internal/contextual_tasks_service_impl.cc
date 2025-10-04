@@ -4,13 +4,16 @@
 
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 
-#include <map>
-#include <vector>
+#include <optional>
+#include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
+#include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -21,7 +24,9 @@ namespace contextual_tasks {
 
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     version_info::Channel channel,
-    syncer::OnceDataTypeStoreFactory data_type_store_factory) {
+    syncer::OnceDataTypeStoreFactory data_type_store_factory,
+    std::unique_ptr<ContextDecorator> context_decorator)
+    : context_decorator_(std::move(context_decorator)) {
   auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::AI_THREAD,
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
@@ -185,16 +190,19 @@ ContextualTasksServiceImpl::GetMostRecentContextualTaskForSessionID(
 
 void ContextualTasksServiceImpl::GetContextForTask(
     const base::Uuid& task_id,
-    base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+    base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   auto it = tasks_.find(task_id);
-  std::optional<ContextualTaskContext> result;
-  if (it != tasks_.end()) {
-    result = ContextualTaskContext(it->second);
+  if (it == tasks_.end()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(context_callback),
+                                  std::unique_ptr<ContextualTaskContext>()));
+    return;
   }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(context_callback), std::move(result)));
+
+  context_decorator_->DecorateContext(
+      std::make_unique<ContextualTaskContext>(it->second),
+      std::move(context_callback));
 }
 
 void ContextualTasksServiceImpl::AddObserver(

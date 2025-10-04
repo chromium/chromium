@@ -85,10 +85,10 @@ class ContextualTasksService : public KeyedService {
                                  const GURL& url) = 0;
 
   // Gets the context for a given task. The `context_callback` will receive the
-  // context if the task is found, or `std::nullopt` otherwise.
+  // context if the task is found, or `nullptr`.
   virtual void GetContextForTask(
       const base::Uuid& task_id,
-      base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+      base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) = 0;
 
   // Methods related to attaching tabs to tasks using their SessionID.

@@ -12,6 +12,7 @@
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
+#include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sync/model/data_type_store_service.h"
@@ -51,9 +52,11 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   return std::make_unique<ContextualTasksServiceImpl>(
-      chrome::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(
-                                Profile::FromBrowserContext(context))
-                                ->GetStoreFactory());
+      chrome::GetChannel(),
+      DataTypeStoreServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context))
+          ->GetStoreFactory(),
+      CreateDefaultContextDecorator());
 }
 
 }  // namespace contextual_tasks

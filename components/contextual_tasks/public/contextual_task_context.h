@@ -75,6 +75,7 @@ struct ContextualTaskContext {
 
  private:
   friend class ContextDecorator;
+  friend class ContextualTasksServiceImplTest;
 
   // Returns a mutable version of the URL attachments for the task.
   std::vector<UrlAttachment>& GetMutableUrlAttachments();

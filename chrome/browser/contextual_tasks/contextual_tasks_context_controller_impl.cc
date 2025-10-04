@@ -64,7 +64,7 @@ void ContextualTasksContextControllerImpl::DetachUrlFromTask(
 
 void ContextualTasksContextControllerImpl::GetContextForTask(
     const base::Uuid& task_id,
-    base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+    base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   service_->GetContextForTask(task_id, std::move(context_callback));
 }

@@ -15,6 +15,14 @@
 
 namespace contextual_tasks {
 
+std::unique_ptr<ContextDecorator> CreateDefaultContextDecorator() {
+  auto fallback_title_decorator =
+      std::make_unique<FallbackTitleContextDecorator>();
+  std::vector<std::unique_ptr<ContextDecorator>> decorators;
+  decorators.push_back(std::move(fallback_title_decorator));
+  return std::make_unique<CompositeContextDecorator>(std::move(decorators));
+}
+
 CompositeContextDecorator::CompositeContextDecorator(
     std::vector<std::unique_ptr<ContextDecorator>> decorators)
     : decorators_(std::move(decorators)) {}

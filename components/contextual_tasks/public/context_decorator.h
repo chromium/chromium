@@ -11,9 +11,14 @@
 
 namespace contextual_tasks {
 
+class ContextDecorator;
 struct ContextualTaskContext;
 struct UrlAttachment;
 struct UrlAttachmentDecoratorData;
+
+// Factory function to create a ContextDecorator pre-configured with a
+// default set of multiple other ContextDecorators.
+std::unique_ptr<ContextDecorator> CreateDefaultContextDecorator();
 
 // Abstract interface for a decorator that enriches a ContextualTaskContext
 // with additional metadata. The enrichment process is asynchronous.
