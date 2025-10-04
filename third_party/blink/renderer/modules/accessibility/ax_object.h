@@ -1589,7 +1589,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   ax::mojom::blink::Role ButtonRoleType() const;
 
   bool CanSetSelectedAttribute() const;
-  const AXObject* InertRoot() const;
 
   // Finds table, table row, and table cell parents and children
   // skipping over generic containers.

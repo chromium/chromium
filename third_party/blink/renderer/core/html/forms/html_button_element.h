@@ -60,12 +60,6 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
       ExecutionContext* execution_context);
   static void HandleCommandForActivation(Event& event, HTMLElement& element);
 
-  // Override for inertness in order to make customizable <select> button inert.
-  // TODO(crbug.com/1511354): Replace this with interactivity:inert in
-  // UA stylesheet after CSSInert feature has been enabled by default and remove
-  // virtual from HTMLElement::IsInertRoot.
-  bool IsInertRoot() const override;
-
  private:
   // The type attribute of HTMLButtonElement is an enumerated attribute:
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type

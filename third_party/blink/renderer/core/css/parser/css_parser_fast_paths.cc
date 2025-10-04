@@ -1692,7 +1692,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kTrimEnd ||
              value_id == CSSValueID::kTrimBoth;
     case CSSPropertyID::kInteractivity:
-      DCHECK(RuntimeEnabledFeatures::CSSInertEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kInert;
     case CSSPropertyID::kContinue:
       return value_id == CSSValueID::kAuto ||

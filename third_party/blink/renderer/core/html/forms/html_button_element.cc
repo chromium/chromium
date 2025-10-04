@@ -542,11 +542,4 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
   return nullptr;
 }
 
-bool HTMLButtonElement::IsInertRoot() const {
-  if (OwnerSelect() && !RuntimeEnabledFeatures::CSSInertEnabled()) {
-    return true;
-  }
-  return HTMLFormControlElement::IsInertRoot();
-}
-
 }  // namespace blink

@@ -1362,11 +1362,6 @@
       status: "test",
     },
     {
-      // Support making elements inert through the interactivity property.
-      name: "CSSInert",
-      status: "stable",
-    },
-    {
       // CSS if() function for custom properties. Flag is used only for media
       // queries support in conditions.
       // https://drafts.csswg.org/css-values-5/#if-notation.
