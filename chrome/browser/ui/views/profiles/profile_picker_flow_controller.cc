@@ -176,6 +176,12 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
 
   // ProfilePickerPostSignInAdapter:
   void Init(StepSwitchFinishedCallback step_switch_callback) override {
+    // Listen for extended account info getting fetched.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile());
+    profile_name_resolver_ =
+        std::make_unique<ProfileNameResolver>(identity_manager, account_info());
+
     // Stop with the sign-in navigation and show a spinner instead. The spinner
     // will be shown until TurnSyncOnHelper figures out whether it's a
     // managed account and whether sync is disabled by policies (which in some
@@ -184,12 +190,6 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
                        base::OnceClosure());
 
     ProfilePickerPostSignInAdapter::Init(std::move(step_switch_callback));
-
-    // Listen for extended account info getting fetched.
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile());
-    profile_name_resolver_ =
-        std::make_unique<ProfileNameResolver>(identity_manager, account_info());
   }
 
   void Cancel() override {
