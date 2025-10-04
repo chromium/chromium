@@ -2128,8 +2128,6 @@ static_library("browser") {
     "//components/browsing_topics",
     "//components/browsing_topics/mojom:mojo_bindings",
     "//components/captive_portal/content",
-    "//components/captive_portal/core",
-    "//components/captive_portal/core:buildflags",
     "//components/certificate_matching",
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto",
@@ -7468,10 +7466,7 @@ static_library("browser") {
   }
 
   if (enable_captive_portal_detection) {
-    sources += [
-      "captive_portal/captive_portal_service_factory.cc",
-      "captive_portal/captive_portal_service_factory.h",
-    ]
+    deps += [ "//chrome/browser/captive_portal" ]
   }
 
   if (enable_dice_support) {

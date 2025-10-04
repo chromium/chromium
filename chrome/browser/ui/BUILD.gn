@@ -10,6 +10,7 @@ import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
@@ -420,7 +421,6 @@ static_library("ui") {
     "//components/browsing_topics",
     "//components/browsing_topics/mojom:mojo_bindings",
     "//components/captive_portal/content",
-    "//components/captive_portal/core:buildflags",
     "//components/client_hints/browser",
     "//components/commerce/content/browser",
     "//components/commerce/core:feature_list",
@@ -690,6 +690,10 @@ static_library("ui") {
   if (is_chrome_branded) {
     deps +=
         [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
+  }
+
+  if (enable_captive_portal_detection) {
+    deps += [ "//chrome/browser/captive_portal" ]
   }
 
   # TODO(crbug.com/41437292): Remove this circular dependency.
@@ -2465,7 +2469,6 @@ static_library("ui") {
       "//components/app_restore",
       "//components/assist_ranker",
       "//components/assist_ranker/proto",
-      "//components/captive_portal/core",
       "//components/component_updater/ash",
       "//components/consent_auditor",
       "//components/content_relationship_verification",

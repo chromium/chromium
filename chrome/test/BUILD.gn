@@ -597,7 +597,6 @@ static_library("test_support") {
     "//chrome/utility",
     "//components/bookmarks/test",
     "//components/browsing_topics:test_support",
-    "//components/captive_portal/core:test_support",
     "//components/consent_auditor:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
@@ -2634,9 +2633,6 @@ if (!is_android) {
       "//components/browsing_data/core",
       "//components/browsing_topics",
       "//components/captive_portal/content",
-      "//components/captive_portal/core",
-      "//components/captive_portal/core:buildflags",
-      "//components/captive_portal/core:test_support",
       "//components/cbor",
       "//components/cdm/common:buildflags",
       "//components/certificate_transparency",
@@ -4456,6 +4452,7 @@ if (!is_android) {
     if (enable_captive_portal_detection) {
       sources +=
           [ "../browser/ssl/captive_portal_blocking_page_browsertest.cc" ]
+      deps += [ "//chrome/browser/captive_portal" ]
     }
 
     if (is_chromeos) {
@@ -5788,7 +5785,7 @@ if (!is_android) {
     }
 
     if (enable_captive_portal_detection) {
-      sources += [ "../browser/captive_portal/captive_portal_browsertest.cc" ]
+      deps += [ "//chrome/browser/captive_portal:browser_tests" ]
     }
 
     if (is_mac || is_win) {
@@ -7050,7 +7047,6 @@ test("unit_tests") {
     "//components/browsing_data/core",
     "//components/browsing_topics",
     "//components/captive_portal/content",
-    "//components/captive_portal/core:buildflags",
     "//components/cbor",
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto",
@@ -7421,6 +7417,10 @@ test("unit_tests") {
     "//chrome/browser/usb",
     "//chrome/browser/webdata_services",
   ]
+
+  if (enable_captive_portal_detection) {
+    deps += [ "//chrome/browser/captive_portal" ]
+  }
 
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
