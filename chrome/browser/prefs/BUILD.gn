@@ -103,6 +103,7 @@ source_set("impl") {
     "//components/custom_handlers",
     "//components/domain_reliability:prefs",
     "//components/enterprise/browser/identifiers",
+    "//components/enterprise/browser/promotion:prefs",
     "//components/enterprise/connectors/core",
     "//components/feature_engagement/public:prefs",
     "//components/fingerprinting_protection_filter/common",

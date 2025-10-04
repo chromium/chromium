@@ -4874,11 +4874,13 @@ message FmRegistrationTokenUploadResponse {}
 // Request body for determining enterprise promotion eligibility.
 message DeterminePromotionEligibilityRequest {}
 
+// LINT.IfChange(PromotionType)
 enum PromotionType {
   PROMOTION_TYPE_UNSPECIFIED = 0;
   CHROME_ENTERPRISE_CORE = 1;
   CHROME_ENTERPRISE_PREMIUM = 2;
 }
+// LINT.ThenChange(//components/enterprise/promotion_types.h:PromotionType)
 
 // The list of CEC, CEP promotions that the user is eligible for.
 message PromotionEligibilityList {

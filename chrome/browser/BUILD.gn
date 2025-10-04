@@ -2192,6 +2192,7 @@ static_library("browser") {
     "//components/enterprise",
     "//components/enterprise/browser/data_region",
     "//components/enterprise/browser/identifiers",
+    "//components/enterprise/browser/promotion:prefs",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:extensions_workflow_events_proto",
     "//components/enterprise/content",

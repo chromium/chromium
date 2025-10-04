@@ -1,0 +1,15 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  sources = [
+    "promotion_prefs.cc",
+    "promotion_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/policy/proto",
+    "//components/pref_registry",
+  ]
+}

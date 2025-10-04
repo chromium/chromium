@@ -163,6 +163,17 @@ inline constexpr char kGlobalShortcutsUuid[] =
 inline constexpr char kExtensionInstallCloudPolicyChecksEnabled[] =
     "extensions.install.cloud_policy_checks_enabled";
 
+// A pref that stores the expiration time for the enterprise promotion banner
+// on the Chrome Web Store. After this time, the banner will not be shown
+// anymore.
+inline constexpr char kEnterprisePromotionExpirationTime[] =
+    "extensions.enterprise_promotion.expiration_time";
+
+// A pref that stores whether the enterprise promotion banner on the Chrome
+// Web Store has been dismissed by the user by clicking the banner button.
+inline constexpr char kHasDismissedEnterprisePromotion[] =
+    "extensions.has_dismissed_enterprise_promotion";
+
 }  // namespace pref_names
 }  // namespace extensions
 
