@@ -10,11 +10,15 @@
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_frame_host.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/common/mojom/frame.mojom-test-utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -479,6 +483,90 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, OneTimeChannel) {
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
   EXPECT_TRUE(content::TriggerTimeoutAndCheckRunningState(context, version_id));
+}
+
+namespace {
+// Helper class to intercept `OpenChannelToExtension` call.
+class ExtensionFrameHostHelper
+    : public mojom::LocalFrameHostInterceptorForTesting {
+ public:
+  ExtensionFrameHostHelper(content::WebContents* web_contents,
+                           base::OnceClosure open_channel_to_extension_cb)
+      : scoped_swap_impl_(
+            ExtensionWebContentsObserver::GetForWebContents(web_contents)
+                ->extension_frame_host_for_testing()
+                ->receivers_for_testing(),
+            this),
+        open_channel_to_extension_cb_(std::move(open_channel_to_extension_cb)) {
+  }
+
+ private:
+  mojom::LocalFrameHost* GetForwardingInterface() override {
+    return scoped_swap_impl_.old_impl();
+  }
+
+  // mojom::LocalFrameHostInterceptorForTesting:
+  void OpenChannelToExtension(
+      mojom::ExternalConnectionInfoPtr info,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      const PortId& port_id,
+      mojo::PendingAssociatedRemote<mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<mojom::MessagePortHost> port_host)
+      override {
+    GetForwardingInterface()->OpenChannelToExtension(
+        std::move(info), channel_type, channel_name, port_id, std::move(port),
+        std::move(port_host));
+
+    if (open_channel_to_extension_cb_) {
+      std::move(open_channel_to_extension_cb_).Run();
+    }
+  }
+
+  const mojo::test::ScopedSwapImplForTesting<mojom::LocalFrameHost>
+      scoped_swap_impl_;
+  base::OnceClosure open_channel_to_extension_cb_;
+};
+}  // namespace
+
+// Tests that removing a MV3 extension with a pending message from incognito
+// does not crash. See https://crbug.com/443038597
+IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, RemoveWithPending) {
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
+      profile());
+  auto* extension = LoadExtension(
+      test_data_dir_.AppendASCII("service_worker/remove_with_pending"),
+      {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+  const int64_t version_id = observer.WaitForWorkerStarted();
+
+  // Simulate idle timeout to terminate the service worker.
+  content::ServiceWorkerContext* context =
+      util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
+  content::TriggerTimeoutAndCheckRunningState(context, version_id);
+  observer.WaitForWorkerStopped();
+
+  // Open the test page in an incognito window.
+  ExtensionTestMessageListener ready("ready", ReplyBehavior::kWillReply);
+  content::WebContents* const contents = PlatformOpenURLOffTheRecord(
+      profile(), extension->GetResourceURL("test.html"));
+  ASSERT_TRUE(ready.WaitUntilSatisfied());
+
+  base::RunLoop wait_for_open;
+  ExtensionFrameHostHelper helper(contents, wait_for_open.QuitClosure());
+
+  // Triggers a `chrome.runtime.sendMessage` while the service worker is not
+  // active.
+  ready.Reply("go");
+
+  // Wait for `OpenChannelToExtension`.
+  wait_for_open.Run();
+
+  // Unload the extension with a pending connection. No crash should happen.
+  ASSERT_TRUE(
+      MessageService::Get(profile())->HasPendingLazyContextChannelsForExtension(
+          extension->id()));
+  UnloadExtension(extension->id());
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

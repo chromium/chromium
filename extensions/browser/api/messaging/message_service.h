@@ -157,6 +157,9 @@ class MessageService : public BrowserContextKeyedAPI,
   // Returns the number of open channels for test.
   size_t GetChannelCountForTest() { return channels_.size(); }
 
+  bool HasPendingLazyContextChannelsForExtension(
+      const ExtensionId& extension_id) const;
+
   base::WeakPtr<MessagePort::ChannelDelegate> GetChannelDelegate() {
     return weak_factory_.GetWeakPtr();
   }

@@ -75,8 +75,7 @@ ServiceWorkerTaskQueue* GetServiceWorkerTaskQueueForExtensionId(
   }
 
   const Extension* extension = ExtensionRegistry::Get(browser_context)
-                                   ->enabled_extensions()
-                                   .GetByID(extension_id);
+                                   ->GetInstalledExtension(extension_id);
   DCHECK(extension);
   return GetServiceWorkerTaskQueueForExtension(browser_context, extension);
 }

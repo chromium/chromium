@@ -1217,6 +1217,14 @@ void MessageService::NotifyResponsePending(const PortId& port_id) {
   it->second->receiver->NotifyResponsePending();
 }
 
+bool MessageService::HasPendingLazyContextChannelsForExtension(
+    const ExtensionId& extension_id) const {
+  return std::ranges::any_of(
+      pending_lazy_context_channels_, [&extension_id](const auto& pair) {
+        return pair.second.extension_id() == extension_id;
+      });
+}
+
 bool MessageService::MaybeAddPendingLazyContextOpenChannelTask(
     BrowserContext* context,
     const Extension* extension,
