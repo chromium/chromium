@@ -16,6 +16,15 @@ class PrefService;
 
 namespace dom_distiller {
 
+inline constexpr float kMinFontScale = 0.4f;
+inline constexpr float kMaxFontScale = 3.0f;
+
+// Custom values for Android reader mode font scaling boundaries.
+inline constexpr float kMinFontScaleAndroidInApp = 1.0f;
+inline constexpr float kMaxFontScaleAndroidInApp = 2.5f;
+inline constexpr float kMinFontScaleAndroidCCT = 0.5f;
+inline constexpr float kMaxFontScaleAndroidCCT = 2.0f;
+
 // The source for updates to the distiller theme settings.
 enum class ThemeSettingsUpdateSource {
   kSystem,
@@ -74,6 +83,12 @@ class DistilledPagePrefs {
   void RemoveObserver(Observer* obs);
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  // Clamps the default font scaling to properly follow min and max font scaling
+  // for whether the distillation is in-app or CCT.
+  void ClampDefaultFontScaling();
+#endif
+
   // Notifies all Observers of new font family.
   void NotifyOnChangeFontFamily();
   // Notifies all Observers of new theme.

@@ -19,14 +19,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8.h"
 
-namespace {
-
-// These values should agree with those in distilled_page_prefs.cc.
-const float kMinFontScale = 0.4f;
-const float kMaxFontScale = 3.0f;
-
-}  // namespace
-
 namespace dom_distiller {
 
 DistillerNativeJavaScript::DistillerNativeJavaScript(

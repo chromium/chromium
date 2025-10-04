@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -17,10 +18,6 @@
 namespace {
 
 const float kDefaultFontScale = 1.0f;
-
-// These values should agree with those in distiller_native_javascript.cc.
-const float kMinFontScale = 0.4f;
-const float kMaxFontScale = 3.0f;
 
 }  // namespace
 
@@ -121,7 +118,12 @@ void DistilledPagePrefs::SetUserPrefFontScaling(float scaling) {
 void DistilledPagePrefs::SetDefaultFontScaling(float scaling) {
   // Default zoom level pref is outside of the distilled page prefs font
   // scaling range, so set it to the closest boundary.
+  default_font_scaling_ = scaling;
+#if BUILDFLAG(IS_ANDROID)
+  ClampDefaultFontScaling();
+#else
   default_font_scaling_ = std::clamp(scaling, kMinFontScale, kMaxFontScale);
+#endif
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeFontScaling,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -133,6 +135,7 @@ float DistilledPagePrefs::GetFontScaling() {
     scaling = pref_service_->GetDouble(prefs::kFontScale);
   } else {
 #if BUILDFLAG(IS_ANDROID)
+    ClampDefaultFontScaling();
     scaling = default_font_scaling_;
 #else
     scaling = kDefaultFontScale;
@@ -154,6 +157,22 @@ void DistilledPagePrefs::AddObserver(Observer* obs) {
 void DistilledPagePrefs::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void DistilledPagePrefs::ClampDefaultFontScaling() {
+  float min_font_scale;
+  float max_font_scale;
+  if (base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp)) {
+    min_font_scale = kMinFontScaleAndroidInApp;
+    max_font_scale = kMaxFontScaleAndroidInApp;
+  } else {
+    min_font_scale = kMinFontScaleAndroidCCT;
+    max_font_scale = kMaxFontScaleAndroidCCT;
+  }
+  default_font_scaling_ =
+      std::clamp(default_font_scaling_, min_font_scale, max_font_scale);
+}
+#endif
 
 void DistilledPagePrefs::NotifyOnChangeFontFamily() {
   mojom::FontFamily new_font_family = GetFontFamily();

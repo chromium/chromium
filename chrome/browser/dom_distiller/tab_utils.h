@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_
 
 #include "base/functional/callback_forward.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -33,5 +34,9 @@ void DistillAndView(content::WebContents* source_web_contents,
 void RunReadabilityHeuristicsOnWebContents(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback);
+
+// Overrides the default zoom level for a reader mode page.
+void OverrideDefaultZoomForReaderModePage(content::WebContents* web_contents,
+                                          const GURL& url);
 
 #endif  // CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_

@@ -71,6 +71,18 @@ public class DomDistillerTabUtils {
     }
 
     /**
+     * Override the default zoom for a reader mode page. This allows reader mode font scaling
+     * preferences to be applied to a page without having conflicting with the default zoom which
+     * may be set by the accessibility zoom setting.
+     *
+     * @param webContents the WebContents that is distilled.
+     * @param url the distiller view URL for the reader mode page.
+     */
+    public static void overrideDefaultZoomForReaderModePage(WebContents webContents, String url) {
+        DomDistillerTabUtilsJni.get().overrideDefaultZoomForReaderModePage(webContents, url);
+    }
+
+    /**
      * Returns the formatted version of the original URL of a distillation, given the original URL.
      *
      * @param url The original URL.
@@ -172,6 +184,8 @@ public class DomDistillerTabUtils {
     public interface Natives {
         void distillCurrentPageAndViewIfSuccessful(
                 WebContents webContents, Callback<Boolean> callback);
+
+        void overrideDefaultZoomForReaderModePage(WebContents webContents, String url);
 
         void distillCurrentPage(WebContents webContents);
 

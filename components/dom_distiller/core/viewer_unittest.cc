@@ -188,13 +188,30 @@ TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinZoom_Default) {
                           "this\\.clampedScale\\s*=\\s*Math\\.max\\(0\\.5,"));
 }
 
-TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinZoom_DistillInApp) {
+TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinMaxZoom_DistillInApp) {
 #if BUILDFLAG(IS_ANDROID)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kReaderModeDistillInApp);
   std::string output = viewer::GetJavaScript();
-  EXPECT_THAT(output, testing::ContainsRegex(
-                          "this\\.clampedScale\\s*=\\s*Math\\.max\\(1\\.0,"));
+  EXPECT_THAT(
+      output,
+      testing::ContainsRegex(
+          "this\\.clampedScale\\s*=\\s*Math\\.max\\(1, Math\\.min\\(2.5"));
+#else
+  SUCCEED();
+#endif
+}
+
+TEST_F(DomDistillerViewerTest,
+       TestGetJavaScriptPinchMinMaxZoom_DistillInCustomTab) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kReaderModeDistillInApp);
+  std::string output = viewer::GetJavaScript();
+  EXPECT_THAT(
+      output,
+      testing::ContainsRegex(
+          "this\\.clampedScale\\s*=\\s*Math\\.max\\(0.5, Math\\.min\\(2"));
 #else
   SUCCEED();
 #endif

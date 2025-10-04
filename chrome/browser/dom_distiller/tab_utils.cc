@@ -169,14 +169,8 @@ void StartNavigationToDistillerViewer(content::WebContents* web_contents,
   params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   web_contents->GetController().LoadURLWithParams(params);
 #if BUILDFLAG(IS_ANDROID)
-  // Ensure that the distilled page does not apply the default accessibility
-  // zoom by setting explicit zoom for the distiller URL.
-  content::HostZoomMap* host_zoom_map =
-      content::HostZoomMap::GetForWebContents(web_contents);
-  if (host_zoom_map) {
-    host_zoom_map->SetZoomLevelForHostAndScheme(viewer_url.GetScheme(),
-                                                viewer_url.GetHost(), 0.0);
-  }
+  // Override default accessibility zoom for in-app distillation.
+  OverrideDefaultZoomForReaderModePage(web_contents, viewer_url);
 #endif
 }
 
@@ -276,4 +270,18 @@ void RunReadabilityHeuristicsOnWebContents(
       base::UTF8ToUTF16(script),
       base::BindOnce(OnReadabilityHeuristicResult, std::move(callback)),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
+}
+
+void OverrideDefaultZoomForReaderModePage(content::WebContents* web_contents,
+                                          const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  // Ensure that the distilled page does not apply the default accessibility
+  // zoom by setting explicit zoom for the distiller URL.
+  content::HostZoomMap* host_zoom_map =
+      content::HostZoomMap::GetForWebContents(web_contents);
+  if (host_zoom_map) {
+    host_zoom_map->SetZoomLevelForHostAndScheme(url.GetScheme(), url.GetHost(),
+                                                0.0);
+  }
+#endif
 }

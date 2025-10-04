@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -375,6 +377,22 @@ TEST_F(DistilledPagePrefsTest, SetDefaultFontScalingWithUserPref) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+class DistilledPagePrefsFeatureTest
+    : public DistilledPagePrefsTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DistilledPagePrefsFeatureTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(kReaderModeDistillInApp);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kReaderModeDistillInApp);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 TEST_F(DistilledPagePrefsTest, SetDefaultFontScalingNoUserPref) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
@@ -440,6 +458,40 @@ TEST_F(DistilledPagePrefsTest,
 
   distilled_page_prefs_->RemoveObserver(&obs);
 }
+
+TEST_P(DistilledPagePrefsFeatureTest, TestClampDefaultFontScaling) {
+  TestingObserver obs;
+  distilled_page_prefs_->AddObserver(&obs);
+
+  float min_font_scale = kMinFontScaleAndroidCCT;
+  float max_font_scale = kMaxFontScaleAndroidCCT;
+  if (GetParam()) {
+    min_font_scale = kMinFontScaleAndroidInApp;
+    max_font_scale = kMaxFontScaleAndroidInApp;
+  }
+
+  // Test clamping for values smaller than the minimum.
+  distilled_page_prefs_->SetDefaultFontScaling(min_font_scale - 0.5f);
+  base::RunLoop run_loop1;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop1.QuitClosure());
+  run_loop1.Run();
+  ASSERT_FLOAT_EQ(min_font_scale, obs.GetFontScaling());
+  ASSERT_FLOAT_EQ(min_font_scale, distilled_page_prefs_->GetFontScaling());
+
+  // Test clamping for values larger than the maximum.
+  distilled_page_prefs_->SetDefaultFontScaling(max_font_scale + 0.5f);
+  base::RunLoop run_loop2;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop2.QuitClosure());
+  run_loop2.Run();
+  ASSERT_FLOAT_EQ(max_font_scale, obs.GetFontScaling());
+  ASSERT_FLOAT_EQ(max_font_scale, distilled_page_prefs_->GetFontScaling());
+
+  distilled_page_prefs_->RemoveObserver(&obs);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, DistilledPagePrefsFeatureTest, ::testing::Bool());
 #endif
 
 }  // namespace dom_distiller
