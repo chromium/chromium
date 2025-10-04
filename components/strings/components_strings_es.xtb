@@ -1252,6 +1252,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3087734570205094154">Abajo</translation>
 <translation id="3090667236485488075">Cristal</translation>
 <translation id="3093122472063815077">La pantalla de progreso de pago aplazado está abierta a media altura.</translation>
+<translation id="309381737510736393">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir pestañas ni colaborar con otros usuarios</translation>
 <translation id="3094051226187213523">Abrir Modo IA con esta sugerencia.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Se ignora porque la lista inhabilitada contiene un patrón igual a "*", lo que equivale a inhabilitar la política.</translation>
@@ -1697,6 +1698,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
 <translation id="3785246317262748285">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Mejores coincidencias para "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> o <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3791118028061680614">Paga sin cambiar de aplicación</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -2678,6 +2680,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5412040515238827314">Formato no válido: se esperaba una lista de patrones.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Apilador 4</translation>
+<translation id="5414306071315087019">El pago aplazado está disponible con Google Pay</translation>
 <translation id="5414446060143308245">Los archivos deben revisarse antes de transferirse</translation>
 <translation id="5414511064953050917">Mover de todos modos</translation>
 <translation id="5418700249417444482">Las URLs de las páginas que visites se enviarán a Google Cloud o a terceros para analizarlas, y tu administrador podrá verlas. Por ejemplo, puede que se analicen para detectar sitios web no seguros o para filtrar sitios web de acuerdo con las reglas que haya definido el administrador.</translation>
@@ -2798,6 +2801,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="5596939519753369075">2 x 3,5 pulgadas</translation>
 <translation id="5597254438174353289">Azul 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Administración no admitida</translation>
 <translation id="5605249000617390290">Más información sobre el seguimiento de precios</translation>
 <translation id="5605670050355397069">Ledger</translation>

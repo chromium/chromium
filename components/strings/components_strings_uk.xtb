@@ -1252,6 +1252,7 @@
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3090667236485488075">Скло</translation>
 <translation id="3093122472063815077">Екран придбання з оплатою пізніше відкрито на половину висоти.</translation>
+<translation id="309381737510736393">Якщо ваша організація дозволяє зберігати в обліковому записі Google не всі дані, ви не зможете ділитися вкладками чи працювати разом з іншими користувачами</translation>
 <translation id="3094051226187213523">Відкрити режим ШІ із цієї пропозиції.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ігнорується, оскільки список деактивації містить шаблон "*", який означає те саме, що й вимкнути правило.</translation>
@@ -1697,6 +1698,7 @@
 <translation id="3784372983762739446">Пристрої з Bluetooth</translation>
 <translation id="3785246317262748285">Зазвичай ви безпечно підключаєтеся до сайтів, проте цього разу Chrome не може застосувати захищене підключення. Можливо, зловмисник намагається підслухати або змінити ваше з’єднання з мережею. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Найкращі результати для запиту "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> або <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3791118028061680614">Платіть, не перемикаючись між додатками</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм.)</translation>
@@ -2678,6 +2680,7 @@
 <translation id="5412040515238827314">Недійсний формат: має бути список шаблонів.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Накопичувач 4</translation>
+<translation id="5414306071315087019">Спосіб оплати "Купуйте зараз, платіть пізніше" (BNPL) доступний у Google Pay</translation>
 <translation id="5414446060143308245">Перевірте файли, перш ніж переносити їх</translation>
 <translation id="5414511064953050917">Усе одно перемістити</translation>
 <translation id="5418700249417444482">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google Cloud або стороннім сервісам на аналіз, і ваш адміністратор може їх бачити. Наприклад, їх можуть сканувати, щоб виявляти небезпечні вебсайти або фільтрувати вебсайти за правилами, визначеними адміністратором.</translation>
@@ -2798,6 +2801,7 @@
 <translation id="5595485650161345191">Редагувати адресу</translation>
 <translation id="5596939519753369075">2 x 3,5 дюйм.</translation>
 <translation id="5597254438174353289">Синій 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> або <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Керування не підтримується</translation>
 <translation id="5605249000617390290">Докладніше про відстеження цін</translation>
 <translation id="5605670050355397069">Ledger</translation>

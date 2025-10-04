@@ -1307,6 +1307,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
 <translation id="1838910874018595451">Konfigurasi yang diisi otomatis untuk tiket Kerberos</translation>
 <translation id="1839042185432919430">Mengizinkan aplikasi web kios menampilkan perintah jaringan saat peluncuran aplikasi jika perangkat sedang offline</translation>
+<translation id="1839711547980672664">Daftar pola URL yang diizinkan untuk dibuka dengan <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="1843102210803941014">Hanya mengaktifkan cookie dan data penting di penelusuran</translation>
 <translation id="1843117931376765605">Segarkan peringkat untuk kebijakan pengguna</translation>
 <translation id="1844616986352942647">Izinkan Buat Tema dan tingkatkan kualitas model AI.</translation>
@@ -3531,6 +3532,7 @@ Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yan
 
 Jika kebijakan disetel ke Salah (False) atau tidak disetel, default keyboard adalah membuat perintah tombol media. Jika menekan tombol Penelusuran, tombol tersebut akan berubah menjadi tombol fungsi.</translation>
 <translation id="3351835664671920945">Setel default ke keyboard standar untuk input sandi</translation>
+<translation id="3356374145373094294">Daftar pola URL yang <ph name="CHROME_DEVTOOLS_NAME" />-nya diblokir</translation>
 <translation id="3359186795130278362">Aktifkan sesi tamu terkelola yang dibatasi.</translation>
 <translation id="33592541385181121">Jangan sertakan port di SPN Kerberos yang dibuat</translation>
 <translation id="3360093276083825336">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -5050,6 +5052,17 @@ Hal ini dihapus di M112.</translation>
 <translation id="4408428864159735559">Daftar berbagi file jaringan yang telah dikonfigurasikan sebelumnya.</translation>
 <translation id="4410236409016356088">Aktifkan pembatasan bandwidth jaringan</translation>
 <translation id="4410361389637971319">Izinkan origin Aplikasi Web Terisolasi menggunakan Direct Sockets</translation>
+<translation id="4410792459434637140">Kebijakan ini dapat digunakan untuk mengizinkan <ph name="CHROME_DEVTOOLS_NAME" /> di URL tertentu.
+
+Pola URL dicocokkan dengan URL halaman yang diperiksa. Jika ditemukan kecocokan, <ph name="CHROME_DEVTOOLS_NAME" /> akan diizinkan. Hal ini berlaku meskipun URL juga cocok dengan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, bahkan jika kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> disetel ke tidak diizinkan (nilai 2). Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Jika kebijakan ini tidak disetel, daftar yang diizinkan ini tidak akan berpengaruh. Karena <ph name="CHROME_DEVTOOLS_NAME" /> tersedia secara default, mereka hanya akan diblokir jika ditentukan dalam kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+URL yang tidak cocok akan mengikuti kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Kebijakan ini juga berlaku untuk <ph name="CHROME_DEVTOOLS_NAME" /> yang dibuka untuk ekstensi dan aplikasi web.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="4411734231900934213">Perbedaan yang diizinkan antara jam di perangkat anak dan orang tua (dalam detik).</translation>
 <translation id="441217499641439905">Nonaktifkan Google Drive melalui koneksi seluler di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Jika kebijakan disetel ke Aktif, penampil PDF internal di <ph name="PRODUCT_NAME" /> akan dinonaktifkan, file PDF akan dianggap sebagai hasil download, dan pengguna akan diizinkan membuka PDF dengan aplikasi default.
@@ -7559,6 +7572,17 @@ Jika kebijakan ini disetel ke <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE
 
 Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="5962271004971310788">Ekstensi yang harus diizinkan berjalan dalam mode Samaran oleh pengguna agar dapat menavigasi dalam mode Samaran</translation>
+<translation id="5962401339101255719">Jika kebijakan ini disetel ke 0 (default), Anda akan dapat mengakses alat developer dan konsol JavaScript, tetapi tidak dalam konteks ekstensi yang diinstal oleh kebijakan perusahaan atau, sejak versi 114 dan jika ini adalah pengguna terkelola, ekstensi akan disertakan dalam browser. Jika kebijakan disetel ke 1, Anda akan dapat mengakses alat developer dan konsol JavaScript di semua konteks, termasuk yang berasal dari ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan disetel ke 2, Anda tidak akan dapat mengakses alat developer, dan Anda tidak dapat memeriksa elemen situs.
+
+Setelan ini juga menonaktifkan pintasan keyboard dan entri menu atau menu konteks untuk membuka alat developer atau konsol JavaScript.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 99, setelan ini juga mengontrol titik entri untuk fitur 'Lihat sumber halaman'. Jika Anda menyetel kebijakan ini ke 'DeveloperToolsDisallowed' (nilai 2), pengguna tidak dapat mengakses tampilan sumber melalui pintasan keyboard atau menu konteks. Untuk memblokir tampilan sumber sepenuhnya, Anda juga harus menambahkan 'view-source:*' ke kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 119, setelan ini juga mengontrol apakah mode developer untuk Aplikasi Web Terisolasi (IWA) dapat diaktifkan dan digunakan.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 128, setelan ini tidak akan mengontrol mode developer di halaman ekstensi jika kebijakan <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> disetel.
+
+Jika Anda ingin membatasi akses Developer Tools berdasarkan URL halaman, gunakan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5963752574792883406">port 990 (blokir dapat dibatalkan hingga 01/02/2022)</translation>
 <translation id="596523880465577341">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />'.</translation>
 <translation id="5966615072639944554">Ekstensi yang diizinkan untuk menggunakan API pengesahan jarak jauh</translation>
@@ -8337,6 +8361,15 @@ dapat digunakan untuk mengecualikan nama host atau pola nama host tertentu agar 
 diupgrade ke HTTPS oleh fitur ini.
 
 Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
+<translation id="6439002087726312326">Pola URL dicocokkan dengan URL halaman yang diperiksa. Jika ditemukan kecocokan, <ph name="CHROME_DEVTOOLS_NAME" /> akan diblokir. Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+URL yang tidak cocok akan mengikuti kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Kebijakan ini juga berlaku untuk <ph name="CHROME_DEVTOOLS_NAME" /> yang dibuka untuk ekstensi dan aplikasi web.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="6440051664870270040">Izinkan situs menavigasi dan membuka (jendela) pop-up sekaligus</translation>
 <translation id="6441781723322254041">Izinkan cookie yang terpotong</translation>
 <translation id="6446366416439249472">Nonaktifkan sinkronisasi Google Drive melalui koneksi seluler</translation>

@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">ドライブをインストール</translation>
 <translation id="5067540696062462445">ダウンロード</translation>
+<translation id="5070314445039955096">「<ph name="SITE_DOMAIN" />」の権限は、このサイトから離れるとオフにリセットされます</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} 件中 {position} 件目のお支払い方法}other{{count} 件中 {position} 件目のお支払い方法}}</translation>
 <translation id="5075939510584558547">暗号化せずに保存</translation>
 <translation id="5076534614343816664">価格の追跡</translation>

@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Stuur tans na <ph name="DEVICE_NAME" /> toe …</translation>
 <translation id="103269572468856066">Vee ook dié data uit?</translation>
 <translation id="1034259925032978114">Venster is oop</translation>
+<translation id="1035113036584565771">Wenkekennisgewingspromosie toegemaak</translation>
 <translation id="1036348656032585052">Skakel af</translation>
 <translation id="1045899828449635435">Vee ook dié data uit?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Sommige van jou wagwoorde is nie toeganklik nie</translation>
 <translation id="1058669287135776095">Jy is vanlyn. Gaan jou internetverbinding na en probeer weer.</translation>
+<translation id="1066338698580889414">Wenkekennisgewingspromosie teen volle hoogte oopgemaak</translation>
 <translation id="1070689840697074178">Jy kan PDF’s hier aflaai</translation>
 <translation id="107147699690128016">As jy die lêeruitbreiding verander, sal die lêer dalk in 'n ander app oopmaak en sal dit potensieel skadelik wees vir jou toestel.</translation>
 <translation id="1086486568852410168">Soek met Google Lens</translation>
@@ -152,6 +154,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1696555181932908973">Jy kan ander maniere probeer om voort te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Verander jou donkertema-instellings?</translation>
 <translation id="1702907158640575240">Bestuurde blaaier</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, vasgespelde Incognito-oortjie</translation>
 <translation id="1718835860248848330">Afgelope uur</translation>
 <translation id="1726477445370128854">Jy kan vinniger blaai en soek wanneer Chrome bladsye vooraf laai wat dit dink jy dalk gaan besoek</translation>
 <translation id="1728803206919861584">Stoor toegangsleutel buite Incognito?</translation>
@@ -440,6 +443,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3027950907978057636">Vanaf <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Geen vooraflaai nie</translation>
 <translation id="3029704984691124060">Wagwoordfrases stem nie ooreen nie</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, vagespelde gekose oortjie</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kry hulp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Spoor tans prys na</translation>
 <translation id="3037517125981011456">Wys porboodskappe om by Chrome aan te meld.</translation>
@@ -627,6 +631,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="397105322502079400">Bereken tans …</translation>
 <translation id="397583555483684758">Sinkronisering het ophou werk</translation>
 <translation id="3976396876660209797">Verwyder hierdie kortpad en skep dit weer</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, vasgespelde oortjie</translation>
 <translation id="3985022125189960801">Voeg ’n werf weer by as jy dit in die poel werwe wil hê wat kan raai waarvan jy hou</translation>
 <translation id="3985215325736559418">Wil jy <ph name="FILE_NAME" /> weer aflaai?</translation>
 <translation id="3987993985790029246">Kopieer skakel</translation>
@@ -1418,6 +1423,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7375125077091615385">Tipe:</translation>
 <translation id="7376560087009844242">As jy meer van 'n bladsy se teks insluit, sal jy dalk beter resultate sien wanneer jy Raak om te Soek gebruik. Jy kan altyd <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> besoek om dit te verander.</translation>
 <translation id="7379900596734708416">Donkertema vir werwe is beskikbaar</translation>
+<translation id="7384486627147155832">Wenkekennisgewingspromosie teen halwe hoogte oopgemaak</translation>
 <translation id="7388615499319468910">Werwe en adverteerders kan verstaan hoe advertensies vaar. Hierdie instelling is af.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Ander, 1 lêer in lys}other{Ander, # lêers in lys}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1589,6 +1595,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8090732854597034573">Vra jou ouer as jy hulp benodig</translation>
 <translation id="8101414242770404289">Geen oortjies vanaf die <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Incognito-oortjie</translation>
+<translation id="810433609302852">Wenkekennisgewingskenmerkpromosie en gebruikstappe se onderste blad</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Maak rangskikopsies toe</translation>
 <translation id="8110024788458304985">Help om Chrome se kenmerke en -werkverrigting beter te maak</translation>
@@ -1831,6 +1838,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9169507124922466868">Navigasiegeskiedenis is half oopgemaak</translation>
 <translation id="9189607089796819144">Wil jy in elk geval “<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />) aflaai?</translation>
 <translation id="9190276265094487094">Jy sal jou geskiedenis op al jou gesinkroniseerde toestelle hê sodat jy kan voortgaan met dit waarmee jy besig was</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, vasgespelde gekose Incognito-oortjie</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut gelede nagegaan}other{# minute gelede nagegaan}}</translation>
 <translation id="9204836675896933765">1 lêer oor</translation>
 <translation id="9205933215779845960">Kan nie daardie bladsy kry nie. Gaan jou spelling na of probeer ’n soektog op <ph name="SEARCH_ENGINE" />.</translation>

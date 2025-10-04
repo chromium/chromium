@@ -1000,6 +1000,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="166278006618318542">Algoritmo de chave pública do requerente</translation>
 <translation id="1662801900924515589">App <ph name="APP" /> instalada</translation>
 <translation id="1663698992894057019">Atualize para um novo Chromebook para obter as atualizações de segurança e software mais recentes</translation>
+<translation id="1664497218584335032">O Website quer abrir este link numa app.</translation>
 <translation id="166454475160289583">Sem autorização para substituir a entrada de teclado</translation>
 <translation id="1665328953287874063">Use uma palavra-passe ou um PIN para desbloquear o <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionismo</translation>
@@ -2872,6 +2873,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2950666755714083615">Inscrever-me</translation>
 <translation id="2953210795988451570">As atualizações de segurança terminaram. Atualize para um novo Chromebook.</translation>
 <translation id="2953218713108551165">Não são permitidas notificações de <ph name="SITE" />. Vamos perguntar-lhe novamente na sua próxima visita.</translation>
+<translation id="2955048943983973430">Serviços Google relacionados</translation>
 <translation id="2956070239128776395">Secção aninhada no grupo: <ph name="ERROR_LINE" />.</translation>
 <translation id="2957124229512318478">Ative o modo de programador para usar esta extensão, que não pode ser revista pela Web Store do Chrome.</translation>
 <translation id="2958721676848865875">Aviso de extensão do pacote</translation>
@@ -4629,6 +4631,7 @@ Quer pará-lo?</translation>
 <translation id="4151503145138736576">Não existe armazenamento offline para limpar</translation>
 <translation id="4152011295694446843">Os seus marcadores serão apresentados aqui</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 separador}other{# separadores}}</translation>
+<translation id="4153858337812834972">Separadores mais recentes</translation>
 <translation id="4154658846204884961">Cometa</translation>
 <translation id="4154664944169082762">Impressões digitais</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – Vista esquerda</translation>
@@ -6550,10 +6553,12 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5517304475148761050">Esta aplicação precisa de acesso à Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Abrir sempre links <ph name="PROTOCOL_SCHEME" /> nesta app</translation>
 <translation id="5520605865175417976">Remover ação <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">É esta a página inicial de que estava à espera?</translation>
 <translation id="5522156646677899028">Esta extensão contém uma vulnerabilidade de segurança grave.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Uma extensão foi instalada pelo seu administrador}other{# extensões foram instaladas pelo seu administrador}}</translation>
+<translation id="5523203511530504754">Abra links <ph name="PROTOCOL_SCHEME" /> na app <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Os sites que adicionar permanecem sempre ativos e a respetiva memória não é libertada</translation>
 <translation id="5523558474028191231">O nome pode utilizar letras, números e carateres especiais e tem de ter, no máximo, <ph name="MAX_CHARACTER_COUNT" /> carateres</translation>
 <translation id="5526745900034778153">Iniciar sessão novamente para retomar a sincronização</translation>
@@ -7105,6 +7110,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5919305207330938913">Todos os dados recolhidos são usados em conformidade com a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> da Google.</translation>
 <translation id="5919486630433391408">O seu administrador desativou as atualizações de firmware.</translation>
 <translation id="5920543303088087579">O gestor desativou a ligação a esta rede</translation>
+<translation id="5922493635960054020">Bloqueie o acesso ao otimizador do JavaScript em sites visitados recentemente. Requer a Navegação Segura</translation>
 <translation id="5922963926582976524">Desligar rede da zona Wi-Fi instantânea</translation>
 <translation id="5924047253200400718">Obter ajuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Perguntar antes de copiar ou mover ficheiros da Microsoft para o Google Drive</translation>
@@ -7407,6 +7413,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6135826623269483856">Sem autorização para gerir janelas em todos os seus ecrãs</translation>
 <translation id="6136285399872347291">retrocesso</translation>
 <translation id="6136287496450963112">A sua chave de segurança não está protegida com um PIN. Para gerir impressões digitais, crie primeiro um PIN.</translation>
+<translation id="6136637346277431354">Adicione separadores e muito mais</translation>
 <translation id="6138680304137685902">Assinatura X9.62 ECDSA com SHA-384</translation>
 <translation id="6140948187512243695">Mostrar detalhes</translation>
 <translation id="6141988275892716286">Confirmar transferência</translation>
@@ -9583,6 +9590,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7663859337051362114">Adicionar perfil do eSIM</translation>
 <translation id="76641554187607347">Nenhum teclado ligado</translation>
 <translation id="7664442418269614729">Use este cartão no seu iPhone</translation>
+<translation id="7664822217939981459">Escolha uma app para abrir o link <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Reservar tamanho</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
 <translation id="7665445336029073980">Histórico de transferências completo</translation>
@@ -11205,6 +11213,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8750786237117206586">Gerir definições de áudio do ChromeOS Flex</translation>
 <translation id="8751034568832412184">Escola</translation>
 <translation id="8751329102746373229">Do seu administrador</translation>
+<translation id="875242763254084885">O site <ph name="ORIGIN" /> quer abrir este link numa app.</translation>
 <translation id="8752451679755290210">Mova-se entre os itens automaticamente</translation>
 <translation id="8753948258138515839">A app Files fornece um acesso rápido aos ficheiros que guardou no Google Drive, armazenamento externo ou dispositivo com ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Ao executar o <ph name="PRODUCT_NAME" /> num ambiente de trabalho suportado, são utilizadas as definições de proxy do sistema. No entanto, o seu sistema não é suportado ou ocorreu um problema no início da configuração do sistema.&lt;/p&gt;

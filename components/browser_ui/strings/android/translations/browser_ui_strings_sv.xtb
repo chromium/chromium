@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Få mer ordning med flikgrupper</translation>
 <translation id="2597457036804169544">Använd inte mörkt tema på webbplatser</translation>
 <translation id="2606760465469169465">Verifiera automatiskt</translation>
+<translation id="2610903128639500624">Hantera i <ph name="BEGIN_LINK1" />Android-inställningarna<ph name="END_LINK1" />
+
+Avancerat skydd styr följande Chrome-inställningar:
+• Använd alltid en säker anslutning aktiveras.
+• JavaScript-optimering är inaktiverat. <ph name="BEGIN_LINK2" />Hantera webbplatsundantag<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Tillåt JavaScript på en specifik webbplats.</translation>
 <translation id="2626708220538466178">Ark på nedre delen av standardwebbläsaren har stängts</translation>
 <translation id="2653659639078652383">Skicka</translation>

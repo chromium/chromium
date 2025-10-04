@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">ປະຫວັດ Chrome Remote Desktop, ຮວມທັງເວລາ, ID ເຊດຊັນຂອງໂຮສ ແລະ ລູກຂ່າຍ</translation>
 <translation id="3052868890529250114">ໂດຍປົກກະຕິແລ້ວທ່ານຈະເຊື່ອມຕໍ່ກັບເວັບໄຊຕ່າງໆຢ່າງປອດໄພ, ແຕ່ Chrome ບໍ່ສາມາດໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພໄດ້ໃນເວລານີ້. ຜູ້ໂຈມຕີອາດກຳລັງພະຍາຍາມລັກຟັງ ຫຼື ແກ້ໄຂການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ຫຼຸດລາຄາ <ph name="PRICE_DROP" /></translation>
+<translation id="3056660797732519147">ໜ້າຈໍຄວາມຜິດພາດຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງ. ແປ້ນພິມເຊື່ອງຢູ່.</translation>
 <translation id="3061707000357573562">ການບໍລິການແກ້ບັນຫາ</translation>
 <translation id="3062655045399308513">ລຶບຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="3063453392496098461">ການຕິດຕັ້ງການບໍລິການ VPN ໃນພື້ນຫຼັງບໍ່ສໍາເລັດ.</translation>
@@ -1991,6 +1992,7 @@
 <translation id="4242981939686657948">ສຳລັບວິທີທີ່ມີປະສິດທິພາບເພີ່ມຂຶ້ນເພື່ອຊອກຫາປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ໃຫ້ເປີດ</translation>
 <translation id="4244926541863471678">ຟີມ</translation>
 <translation id="4246517972543675653">ການສຶກສາຢູ່ຕ່າງປະເທດ</translation>
+<translation id="4250343410682686342">ໜ້າຈໍຄວາມຜິດພາດຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ.</translation>
 <translation id="4250431568374086873">ການເຊື່ອມຕໍ່ຂອງທ່ານກັບເວັບໄຊນີ້ບໍ່ປອດໄພເຕັມສ່ວນ</translation>
 <translation id="4250680216510889253">ບໍ່ແມ່ນ</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@
 <translation id="5122786942953798871">ຊອງ (ເຈ້ຍໃຍຝ້າຍ)</translation>
 <translation id="5123063207673082822">ທ້າຍອາທິດ</translation>
 <translation id="5123433949759960244">ບານບ້ວງ</translation>
+<translation id="5124797626438336458">ໜ້າຈໍຄວາມຜິດພາດຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜຶ່ງຂອງໜ້າຈໍ.</translation>
 <translation id="5125575917473813637">ແກ້ໄຂບັດປະຈຳຕົວ</translation>
 <translation id="5125751979347152379">URL ໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="512592033764059484">ບານເຕະ</translation>
@@ -4174,6 +4177,7 @@
 <translation id="7860345425589240791">ປ້ອນວັນທີໝົດອາຍຸໃໝ່ ແລະ CVC ຢູ່ <ph name="SIDE_OF_CARD" /> ຂອງທ່ານໃສ່</translation>
 <translation id="7862185352068345852">ອອກຈາກເວັບໄຊບໍ?</translation>
 <translation id="7865448901209910068">ຄວາມໄວດີສຸດ</translation>
+<translation id="7865482168955081228">ໜ້າຈໍຄວາມຜິດພາດຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງປິດຢູ່.</translation>
 <translation id="7870281855125116701">ພົບສ່ວນຫຼຸດ</translation>
 <translation id="7871445724586827387">ປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="787226752901403048">ເຂົ້າສູ່ລະບົບ Chrome ເພື່ອແບ່ງປັນ ແລະ ເຂົ້າຮ່ວມກຸ່ມແຖບ, ຮວມທັງເຮັດວຽກຮ່ວມກັນກ່ຽວກັບແນວຄິດຕ່າງໆ</translation>

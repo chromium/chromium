@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">Chrome リモート デスクトップの履歴（タイムスタンプ、ホスト、クライアント セッション ID を含む）</translation>
 <translation id="3052868890529250114">通常はサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
+<translation id="3056660797732519147">後払い決済のエラー画面。キーボードは非表示です。</translation>
 <translation id="3061707000357573562">サービスへのパッチの適用</translation>
 <translation id="3062655045399308513">閲覧履歴データを削除...</translation>
 <translation id="3063453392496098461">VPN バックグラウンド サービスをインストールできませんでした。</translation>
@@ -1991,6 +1992,7 @@
 <translation id="4242981939686657948">閲覧履歴をより効率的に検索するには、次をオンにします:</translation>
 <translation id="4244926541863471678">フィルム</translation>
 <translation id="4246517972543675653">留学</translation>
+<translation id="4250343410682686342">後払い決済のエラー画面が画面全体に表示されています。</translation>
 <translation id="4250431568374086873">このサイトへの接続は完全には保護されていません</translation>
 <translation id="4250680216510889253">いいえ</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@
 <translation id="5122786942953798871">封筒（コットン）</translation>
 <translation id="5123063207673082822">週末</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
+<translation id="5124797626438336458">後払い決済のエラー画面が画面の下半分に表示されています。</translation>
 <translation id="5125575917473813637">ID カードを編集</translation>
 <translation id="5125751979347152379">URL が無効です。</translation>
 <translation id="512592033764059484">サッカー</translation>
@@ -4176,6 +4179,7 @@
 <translation id="7860345425589240791">新しい有効期限と <ph name="SIDE_OF_CARD" /> に記載されている CVC を入力してください</translation>
 <translation id="7862185352068345852">このサイトを離れますか？</translation>
 <translation id="7865448901209910068">最高速度</translation>
+<translation id="7865482168955081228">後払い決済のエラー画面が閉じられました。</translation>
 <translation id="7870281855125116701">割引が見つかりました</translation>
 <translation id="7871445724586827387">Google アカウントのパスワードを変更します</translation>
 <translation id="787226752901403048">Chrome にログインして、タブグループの共有や参加、アイデアの出し合いなどを行うことができます</translation>

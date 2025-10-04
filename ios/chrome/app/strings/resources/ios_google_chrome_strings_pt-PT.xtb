@@ -87,6 +87,9 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="2940565985148833945">Sugestão do Chrome: pesquise com o Lens</translation>
 <translation id="2957447865124070833">Selecione <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="2986402782150919988">Adicione marcadores ao Chrome</translation>
+<translation id="3027236223714901838">Para manter as suas chaves de acesso seguras, primeiro tem de criar um PIN de recuperação.
+
+        As chaves de acesso são guardadas no Gestor de Palavras-passe da Google, o que lhe permite usá-las no Chrome em qualquer dispositivo.</translation>
 <translation id="3030414234702425231">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chrome serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
 <translation id="3042447686908081308">Importar para Chrome</translation>
 <translation id="3051521853355903257">Faça a gestão das palavras-passe no Chrome</translation>

@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Rapikan tab dengan grup tab</translation>
 <translation id="2597457036804169544">Jangan terapkan tema gelap ke situs</translation>
 <translation id="2606760465469169465">Verifikasi otomatis</translation>
+<translation id="2610903128639500624">Kelola di <ph name="BEGIN_LINK1" />setelan Android<ph name="END_LINK1" />
+
+Perlindungan Lanjutan mengontrol setelan Chrome berikut:
+• "Selalu gunakan koneksi aman" aktif.
+• "Pengoptimal JavaScript" nonaktif. <ph name="BEGIN_LINK2" />Kelola Pengecualian situs<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Izinkan JavaScript untuk situs tertentu.</translation>
 <translation id="2626708220538466178">Sheet bawah browser default ditutup</translation>
 <translation id="2653659639078652383">Kirim</translation>

@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Ordena con grupos de pestañas</translation>
 <translation id="2597457036804169544">El tema oscuro no se aplica a los sitios</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
+<translation id="2610903128639500624">Gestiónalo en los <ph name="BEGIN_LINK1" />ajustes de Android<ph name="END_LINK1" />.
+
+Protección Avanzada controla estos ajustes de Chrome:
+• La opción "Usar siempre conexiones seguras" está activada.
+• La opción "Optimizador de JavaScript" está desactivada. <ph name="BEGIN_LINK2" />Gestionar excepciones de sitios<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Habilita JavaScript en un sitio específico.</translation>
 <translation id="2626708220538466178">Hoja inferior del navegador predeterminado cerrada</translation>
 <translation id="2653659639078652383">Enviar</translation>

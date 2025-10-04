@@ -159,6 +159,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1726477445370128854">Galite sparčiau naršyti ir ieškoti, kai „Chrome“ iš anksto įkelia puslapius, kuriuose, jos manymu, galėtumėte apsilankyti</translation>
 <translation id="1728803206919861584">Išsaugoti prieigos raktą ne inkognito režimu?</translation>
 <translation id="1732514748744806741">Jei jūsų slaptažodžiai bus pažeisti, informuosime jus apie tai</translation>
+<translation id="1737694586321018892">Gaukite patikimiausią „Chrome“ apsaugą</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Viena svetainė neseniai išsiuntė daug pranešimų}one{# svetainė neseniai išsiuntė daug pranešimų}few{# svetainės neseniai išsiuntė daug pranešimų}many{# svetainės neseniai išsiuntė daug pranešimų}other{# svetainių neseniai išsiuntė daug pranešimų}}</translation>
 <translation id="1749561566933687563">Sinchronizuokite žymes</translation>
 <translation id="1750238553597293878">Toliau naudokite slaptažodžius „Google“ paskyroje</translation>
@@ -414,6 +415,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2909615210195135082">„Google“ pranešimų platforma</translation>
 <translation id="2912345083818861431">Naudokite ekrano užraktą, kad peržiūrėtumėte atidarytus inkognito skirtukus</translation>
 <translation id="2918484639460781603">Eiti į nustatymus</translation>
+<translation id="2920776558188188922">Perjunkite adreso juostos poziciją į viršutinę arba apatinę, kad galėtumėte tinkinti naršymo funkcijas</translation>
 <translation id="2923908459366352541">Netinkamas pavadinimas</translation>
 <translation id="2932150158123903946">„Google <ph name="APP_NAME" />“ saugykla</translation>
 <translation id="2932222164150889403">Klaviatūra nebus pakeista</translation>
@@ -973,6 +975,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="549660026907543296">Prisijungti kaip <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Naujausios veiklos apatinis lapas</translation>
 <translation id="5526281268548144413">Negalima uždaryti keliuose languose</translation>
+<translation id="5532536403031755365">Užtikrinkite didesnę apsaugą nuo grėsmių internete naudodami sustiprintą apsaugą</translation>
 <translation id="5548606607480005320">Saugos patikra</translation>
 <translation id="5554520618550346933">Kai naudojate slaptažodį, „Chrome“ įspėja jus, jei jis paskelbtas internete. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
 <translation id="5555525474779371165">Saugaus naršymo apsaugos lygio pasirinkimas</translation>
@@ -1830,6 +1833,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9133397713400217035">Naršyti neprisijungus</translation>
 <translation id="9143389653531441385">Prisiregistruokite naudodami <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Prisijungti dar kartą</translation>
+<translation id="9148564897242852377">Perjungti skirtuko pasirinkimą</translation>
 <translation id="9157212632995922070">Pasirinkite paskyrą, kad pereitumėte prie „<ph name="SITE_ETLD_PLUS_ONE" />“</translation>
 <translation id="9158770349521403363">Bendrinti tik turinį</translation>
 <translation id="9161172953291434881">Ar pasitikite šia svetaine ir norite jai patikėti savo duomenis?</translation>

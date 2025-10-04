@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" /> …</translation>
 <translation id="103269572468856066">Vil du også slette data fra disse nettstedene og appene?</translation>
 <translation id="1034259925032978114">Et vindu er åpent</translation>
+<translation id="1035113036584565771">Promoteringen av varsler med tips er lukket</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1045899828449635435">Vil du også slette data fra disse nettstedene?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Noen av passordene dine er ikke tilgjengelige</translation>
 <translation id="1058669287135776095">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
+<translation id="1066338698580889414">Promoteringen av tipsvarsler er åpnet i full høyde</translation>
 <translation id="1070689840697074178">Du kan laste ned PDF-filer her</translation>
 <translation id="107147699690128016">Hvis du endrer filetternavnet, kan filen bli åpnet i et annet program og muligens utgjøre en fare for enheten.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
@@ -152,6 +154,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1696555181932908973">Du kan prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="1702543251015153180">Vil du endre innstillingene for mørkt tema?</translation>
 <translation id="1702907158640575240">Administrert nettleser</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, festet inkognitofane</translation>
 <translation id="1718835860248848330">Siste time</translation>
 <translation id="1726477445370128854">Du kan surfe og søke raskere når Chrome forhåndslaster sider du kanskje kommer til å besøke</translation>
 <translation id="1728803206919861584">Vil du lagre passnøkkelen utenfor Inkognito?</translation>
@@ -440,6 +443,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3027950907978057636">Fra <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Ingen forhåndslasting</translation>
 <translation id="3029704984691124060">Passordfrasene stemmer ikke overens</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, festet valgt fane</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037517125981011456">Viser beskjeder om å logge på Chrome</translation>
@@ -627,6 +631,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="397105322502079400">Beregner …</translation>
 <translation id="397583555483684758">Synkroniseringen har sluttet å fungere</translation>
 <translation id="3976396876660209797">Fjern denne snarveien, og opprett den på nytt</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, festet fane</translation>
 <translation id="3985022125189960801">Legg til et nettsted igjen hvis du vil ha det i gruppen med nettsteder som kan gjette hva du liker</translation>
 <translation id="3985215325736559418">Vil du laste ned <ph name="FILE_NAME" /> igjen?</translation>
 <translation id="3987993985790029246">Kopiér link</translation>
@@ -1418,6 +1423,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7375125077091615385">Type:</translation>
 <translation id="7376560087009844242">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater når du bruker Trykk for å søke. Du kan når som helst gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å endre dette.</translation>
 <translation id="7379900596734708416">Mørkt tema for nettsteder er tilgjengelig</translation>
+<translation id="7384486627147155832">Promoteringen av tipsvarsler er åpnet i halv høyde</translation>
 <translation id="7388615499319468910">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er av.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annet, 1 fil på listen}other{Annet, # filer på listen}}</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
@@ -1589,6 +1595,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8090732854597034573">Spør forelderen din hvis du trenger hjelp</translation>
 <translation id="8101414242770404289">Ingen faner fra <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Inkognitofane</translation>
+<translation id="810433609302852">Felt nederst med informasjon om promotering og bruk av funksjonen for tipsvarsler</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Lukk sorteringsalternativer</translation>
 <translation id="8110024788458304985">Bidra til å gjøre funksjonene og ytelsen til Chrome bedre</translation>
@@ -1831,6 +1838,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9169507124922466868">Navigasjonshistorikken er halvveis åpnet</translation>
 <translation id="9189607089796819144">Vil du laste ned «<ph name="FILE_NAME" />» (<ph name="FILE_SIZE" />) likevel?</translation>
 <translation id="9190276265094487094">Du får loggen din på alle synkroniserte enheter, slik at du kan fortsette med det du holdt på med</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, festet valgt inkognitofane</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sjekket for ett minutt siden}other{Sjekket for # minutter siden}}</translation>
 <translation id="9204836675896933765">1 fil gjenstår</translation>
 <translation id="9205933215779845960">Finner ikke den siden. Kontroller stavemåten, eller prøv et søk på <ph name="SEARCH_ENGINE" />.</translation>

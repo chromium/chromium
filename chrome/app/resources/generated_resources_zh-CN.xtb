@@ -2372,7 +2372,7 @@
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”</translation>
 <translation id="2613747923081026172">创建分组</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{在此扩展程序中打开并修改 <ph name="FILE1" />}other{在此应用中打开并修改 <ph name="FILE1" />…}}</translation>
-<translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
+<translation id="2616366145935564096">读取和更改您在 <ph name="WEBSITE_1" /> 上的数据</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" /> 未命名分组 - <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">播放/暂停</translation>
@@ -4921,6 +4921,7 @@
 <translation id="437809255587011096">播报文本样式</translation>
 <translation id="4378154925671717803">电话</translation>
 <translation id="4378308539633073595">向前滚动</translation>
+<translation id="4378363201814870400">管理密码、支付方式、地址和身份证件等自动填充信息，加快浏览速度</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4378556263712303865">设备申请</translation>
 <translation id="4378589147979399051">使用主键盘控制鼠标光标</translation>

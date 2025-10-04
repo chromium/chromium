@@ -393,6 +393,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="125097549534200450">effacez</translation>
 <translation id="1251366534849411931">Accolade ouvrante attendue : <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Recherche de réseaux de données mobiles…</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 favori et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}one{{BOOKMARK_COUNT} favori et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}other{{BOOKMARK_COUNT} favoris et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}}</translation>
 <translation id="125220115284141797">Par défaut</translation>
 <translation id="1252219782845132919">Masquer le groupe</translation>
 <translation id="1252987234827889034">Erreur au niveau du profil</translation>
@@ -3257,6 +3258,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3239373508713281971">Limite de temps supprimée pour <ph name="APP_NAME" /></translation>
 <translation id="3240299564104448052">Vous semblez être hors connexion.</translation>
 <translation id="3240426699337459095">Lien copié</translation>
+<translation id="3240718227457961717">Pour récupérer vos onglets depuis vos autres appareils, synchronisez votre historique et vos onglets avec <ph name="ACCOUNT_EMAIL" />. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google pourra personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3241638166094654466">Cellules sur chaque ligne :</translation>
 <translation id="3241680850019875542">Sélectionnez le répertoire racine de l'extension à empaqueter. Pour mettre à jour une extension, sélectionnez également le fichier de clé privée à réutiliser.</translation>
 <translation id="3241810535741601486">Cette modification est définitive et irréversible. Les mises à jour étendues s'appliquent à tous les utilisateurs de cet appareil. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
@@ -4124,6 +4126,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="381202950560906753">Ajouter une autre empreinte</translation>
 <translation id="3812525830114410218">Certificat non fiable</translation>
+<translation id="3813275565773644111">Votre organisation a désactivé l'enregistrement de l'historique et des onglets dans votre compte Google</translation>
 <translation id="3813296892522778813">Si vous ne trouvez pas ce que vous recherchez, consultez l'<ph name="BEGIN_LINK_CHROMIUM" />Aide Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="3813358687923336574">Langue utilisée pour la traduction des pages et les Réponses rapides</translation>
 <translation id="3813458570141926987">Liste des thèmes estimés par Chrome en fonction de votre historique de navigation récent</translation>
@@ -6188,6 +6191,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5267572070504076962">Activez la navigation sécurisée pour vous protéger contre les sites dangereux</translation>
 <translation id="5269977353971873915">Échec de l'impression</translation>
 <translation id="5271578170655641944">Supprimer l'accès à Google Drive ?</translation>
+<translation id="5272198173084686007">Aucun onglet issu d'autres appareils</translation>
 <translation id="527335345740023523">Vous avez actuellement <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> et plus. Votre organisation (<ph name="ACCOUNT_MANAGER" />) pourra voir et gérer ces données.</translation>
 <translation id="5273806377963980154">Modifier l'URL du site</translation>
 <translation id="5275084684151588738">Dictionnaires personnels</translation>
@@ -6267,6 +6271,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5327570636534774768">Cet appareil est géré par un autre domaine. Annulez sa gestion pour ce domaine avant de configurer le mode de démonstration.</translation>
 <translation id="5327912693242073631">Les fonctionnalités qui utilisent les notifications ne seront pas disponibles</translation>
+<translation id="5328551442597731838">Voir les onglets d'autres appareils</translation>
 <translation id="532943162177641444">Appuyez sur la notification sur votre <ph name="PHONE_NAME" /> pour configurer le point d'accès mobile qui sera utilisé par cet appareil.</translation>
 <translation id="5329858601952122676">&amp;Supprimer</translation>
 <translation id="5331568967879689647">Appli système Chrome OS</translation>
@@ -7467,6 +7472,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6184868291074982484">Chrome limite automatiquement les cookies tiers</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
 <translation id="6185151644843671709">Clé d'accès enregistrée et code créé</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}one{{PASSWORD_COUNT} mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}other{{PASSWORD_COUNT} mots de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}}</translation>
 <translation id="6186177419203903310">Cette option activera les notifications pour tous les nouveaux appareils USB du système. Voulez-vous vraiment continuer ?</translation>
 <translation id="6190953336330058278">Applis Phone Hub</translation>
 <translation id="6192333916571137726">Télécharger le fichier</translation>
@@ -7601,6 +7607,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6274089201566806618">Connexion à <ph name="HOST_DEVICE_NAME" />…</translation>
 <translation id="6274108044476515407">La personnalisation des annonces dépend de nombreux facteurs, y compris de ce paramètre, des <ph name="BEGIN_LINK1" />annonces suggérées par les sites<ph name="LINK_END1" />, des <ph name="BEGIN_LINK2" />paramètres des cookies<ph name="LINK_END2" /> et du fait que le site que vous consultez personnalise ou non les annonces. Découvrez comment <ph name="BEGIN_LINK3" />gérer la confidentialité des annonces<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="627581157848786026">Voir les onglets d'autres appareils</translation>
 <translation id="6276210637549544171">Le proxy <ph name="PROXY_SERVER" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="6277105963844135994">Délai d'expiration du réseau dépassé.</translation>
 <translation id="6277518330158259200">F&amp;aire une capture d'écran</translation>
@@ -8534,6 +8541,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6922763095098248079">Votre appareil est géré par votre organisation. Les administrateurs ont accès aux données de tous les profils de cet appareil.</translation>
 <translation id="6923633482430812883">Erreur lors de l'installation du partage. Veuillez vérifier que le serveur de fichiers auquel vous vous connectez est compatible avec le protocole SMB (version 2 ou ultérieure).</translation>
 <translation id="6924109527536857168">Synchronisation requise</translation>
+<translation id="6927200998271693557">Pour revenir rapidement aux sites que vous avez consultés, synchronisez votre historique et vos onglets avec <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Supprimer automatiquement les autorisations des sites inutilisés</translation>
 <translation id="6929126689972602640">Il n'est pas possible de définir un contrôle parental pour les comptes scolaires. Pour ajouter un compte scolaire afin d'accéder à Google Classroom et à d'autres sites Web pour les devoirs à la maison, connectez-vous d'abord avec le compte personnel de l'enfant. Vous pourrez ajouter le compte scolaire ultérieurement dans les paramètres.</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Une extension a été refusée}one{# extension a été refusée}other{# extensions ont été refusées}}</translation>
@@ -10222,6 +10230,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8086610718778464681">Impossible de sauvegarder les applis et fichiers Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.}one{Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers étant chiffrés, demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 favori n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela supprimera aussi les doublons.}one{{BOOKMARK_COUNT} favori n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela supprimera aussi les doublons.}other{{BOOKMARK_COUNT} favoris ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}}</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous consultez le plus souvent</translation>
 <translation id="8090513782447872344">Vous pourrez revenir à tout moment pour relire le guide</translation>
 <translation id="8090686009202681725">Créer un thème avec l'IA</translation>
@@ -10355,6 +10364,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8184288427634747179">Passer à <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Plus d'infos</translation>
 <translation id="8184472985242519288">Uniforme</translation>
+<translation id="8185614942934189676">Adresse e-mail validée automatiquement</translation>
 <translation id="8186013737729037962">En savoir plus sur les appareils enregistrés auprès de l'entreprise</translation>
 <translation id="8186047833733689201">Menu d'accentuation ouvert. Appuyez sur les flèches vers la gauche ou vers la droite ou sur les touches numériques pour naviguer et sur Entrée pour insérer un caractère.</translation>
 <translation id="8186609076106987817">Impossible de trouver le fichier sur le serveur.</translation>
@@ -11272,6 +11282,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8809147117840417135">Turquoise clair</translation>
 <translation id="8811862054141704416">Accès au micro sur Crostini</translation>
 <translation id="8811923271770626905">Cette extension peut s'exécuter en arrière-plan</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela supprimera aussi les doublons.}one{{PASSWORD_COUNT} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela supprimera aussi les doublons.}other{{PASSWORD_COUNT} mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}}</translation>
 <translation id="8813199641941291474">Contrôle et reprogrammation bloqués pour les appareils MIDI</translation>
 <translation id="8813698869395535039">Impossible de se connecter au compte <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Demande à un parent d'approuver l'extension "<ph name="EXTENSION_NAME" />"</translation>
@@ -11315,6 +11326,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838841425230629509">Retirer le groupe de la barre de favoris</translation>
 <translation id="883924185304953854">Rechercher par image</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 élément n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela supprimera aussi les doublons.}one{{ITEM_COUNT} élément n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google. Cela supprimera aussi les doublons.}other{{ITEM_COUNT} éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela supprimera aussi les doublons.}}</translation>
 <translation id="8841843049738266382">Accéder aux comptes utilisateur sur liste d'autorisation et les modifier</translation>
 <translation id="8841884135319684422">Arrêter la tâche</translation>
 <translation id="8842594465773264717">Supprimer cette empreinte digitale</translation>

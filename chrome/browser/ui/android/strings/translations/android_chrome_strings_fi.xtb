@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Lähetetään: <ph name="DEVICE_NAME" /></translation>
 <translation id="103269572468856066">Poistetaanko data?</translation>
 <translation id="1034259925032978114">Ikkuna on auki</translation>
+<translation id="1035113036584565771">Vinkki-ilmoituskampanja suljettu</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1045899828449635435">Poistetaanko data?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Joitakin salasanojasi ei ole saatavilla</translation>
 <translation id="1058669287135776095">Et ole yhteydessä verkkoon. Tarkista internetyhteys ja yritä uudelleen.</translation>
+<translation id="1066338698580889414">Vinkki-ilmoitusten tarjous avattu koko näytön kokoisena</translation>
 <translation id="1070689840697074178">Täältä voit ladata PDF-tiedostoja</translation>
 <translation id="107147699690128016">Jos vaihdat tiedostotunnisteen, tiedosto voi avautua eri sovelluksessa ja mahdollisesti vahingoittaa laitetta.</translation>
 <translation id="1086486568852410168">Hae Google Lensilla</translation>
@@ -152,6 +154,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1696555181932908973">Voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Muutetaanko tumman teeman asetuksia?</translation>
 <translation id="1702907158640575240">Hallinnoitu selain</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, kiinnitetty incognito-välilehti</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1726477445370128854">Voit selata ja hakea nopeammin, kun Chrome esilataa sivuja, joita saatat sen mukaan avata</translation>
 <translation id="1728803206919861584">Tallennetaanko avainkoodi incognito-tilan ulkopuolella?</translation>
@@ -440,6 +443,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3027950907978057636">Lähde: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Ei esilatausta</translation>
 <translation id="3029704984691124060">Tunnuslauseet eivät vastaa toisiaan.</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, kiinnitetty valittu välilehti</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Tutustu ohjeisiin<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Hintaa seurataan</translation>
 <translation id="3037517125981011456">Näytä kehotteet kirjautua Chromeen</translation>
@@ -627,6 +631,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="397583555483684758">Synkronointi on lakannut toimimasta.</translation>
 <translation id="3976396876660209797">Poista tämä pikakuvake ja luo se uudelleen.</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, kiinnitetty välilehti</translation>
 <translation id="3985022125189960801">Lisää sivusto takaisin, jos se saa arvata, mistä pidät</translation>
 <translation id="3985215325736559418">Haluatko ladata tiedoston <ph name="FILE_NAME" /> uudelleen?</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
@@ -1418,6 +1423,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7375125077091615385">Tyyppi:</translation>
 <translation id="7376560087009844242">Voit saada parempia tuloksia käyttäessäsi Koskettamalla hakemista, jos sisällytät enemmän tekstiä sivulta. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Sivustojen tumma teema on saatavilla</translation>
+<translation id="7384486627147155832">Vinkki-ilmoitusten mainos avattu puolen näytön kokoisena</translation>
 <translation id="7388615499319468910">Sivustot ja mainostajat saavat tietoa mainostuloksista. Tämä asetus on poissa päältä.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Muu, 1 tiedosto listassa}other{Muu, # tiedostoa listalla}}</translation>
 <translation id="7400418766976504921">URL-osoite</translation>
@@ -1589,6 +1595,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8090732854597034573">Kysy tarvittaessa vanhemmaltasi apua</translation>
 <translation id="8101414242770404289">Ei välilehtiä: <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Incognito-välilehti</translation>
+<translation id="810433609302852">Vinkki-ilmoitusominaisuuden mainos- ja käyttöohjesivu</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Sulje lajitteluvaihtoehdot</translation>
 <translation id="8110024788458304985">Auta parantamaan Chromen ominaisuuksia ja suorituskykyä</translation>
@@ -1831,6 +1838,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
 <translation id="9189607089796819144">Ladataanko "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) silti?</translation>
 <translation id="9190276265094487094">Historia löytyy kaikilta synkronoiduilta laitteilta, joten voit jatkaa samasta kohdasta</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, kiinnitetty valittu incognito-välilehti</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tarkistettu 1 minuutti sitten}other{Tarkistettu # minuuttia sitten}}</translation>
 <translation id="9204836675896933765">1 tiedosto jäljellä</translation>
 <translation id="9205933215779845960">Sivua ei löydy. Tarkista oikeinkirjoitus tai kokeile hakea tällä: <ph name="SEARCH_ENGINE" />.</translation>

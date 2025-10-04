@@ -1237,6 +1237,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="305162504811187366">A Chrome távoliasztal-szolgáltatás előzményei, beleértve az időbélyegeket, a gazdagépeket és az ügyfelek munkamenet-azonosítóit is</translation>
 <translation id="3052868890529250114">Ön általában biztonságosan csatlakozik a webhelyekhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">A Késleltetett fizetés hibajelző képernyője. A billentyűzet el van rejtve.</translation>
 <translation id="3061707000357573562">Javítókészlet szolgáltatás</translation>
 <translation id="3062655045399308513">Böngészési adatok törlése…</translation>
 <translation id="3063453392496098461">Nem sikerült telepíteni a VPN-háttérszolgáltatásokat.</translation>
@@ -1988,6 +1989,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4242981939686657948">A böngészési előzményekben való hatékonyabb keresés érdekében kapcsolja be a következőt:</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Külföldi tanulás</translation>
+<translation id="4250343410682686342">A Késleltetett fizetés hibajelző képernyője teljes magasságban meg van nyitva.</translation>
 <translation id="4250431568374086873">Kapcsolata a webhellyel nem teljesen biztonságos</translation>
 <translation id="4250680216510889253">Nem</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2504,6 +2506,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5122786942953798871">Boríték (karton)</translation>
 <translation id="5123063207673082822">Hétvége</translation>
 <translation id="5123433949759960244">Kosárlabda</translation>
+<translation id="5124797626438336458">A Késleltetett fizetés hibajelző képernyője félmagasságban van megnyitva.</translation>
 <translation id="5125575917473813637">Személyazonosító okmány szerkesztése</translation>
 <translation id="5125751979347152379">Érvénytelen URL</translation>
 <translation id="512592033764059484">Labdarúgás</translation>
@@ -4172,6 +4175,7 @@ További részletek:
 <translation id="7860345425589240791">Adja meg az új lejárati dátumot és a CVC-számot, amelyet itt talál: <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Elhagyja a webhelyet?</translation>
 <translation id="7865448901209910068">Legjobb sebesség</translation>
+<translation id="7865482168955081228">A Késleltetett fizetés hibajelző képernyője be van zárva.</translation>
 <translation id="7870281855125116701">Kedvezményt találtunk</translation>
 <translation id="7871445724586827387">Google-fiók jelszavának módosítása</translation>
 <translation id="787226752901403048">Jelentkezzen be a Chrome-ba, hogy megoszthasson lapcsoportokat, csatlakozhasson hozzájuk, és együtt dolgozhasson másokkal ötleteken</translation>

@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Rangez vos onglets en groupes</translation>
 <translation id="2597457036804169544">Le thème sombre n'est pas appliqué aux sites</translation>
 <translation id="2606760465469169465">Validation automatique</translation>
+<translation id="2610903128639500624">Gérer dans les <ph name="BEGIN_LINK1" />paramètres Android<ph name="END_LINK1" />
+
+La Protection Avancée contrôle les paramètres Chrome suivants :
+• "Toujours utiliser une connexion sécurisée" est activé.
+• "Optimiseur JavaScript" est désactivé. <ph name="BEGIN_LINK2" />Gérer les exceptions de site<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Autorisez le langage JavaScript pour un site spécifique.</translation>
 <translation id="2626708220538466178">Bottom sheet du navigateur par défaut fermé</translation>
 <translation id="2653659639078652383">Envoyer</translation>

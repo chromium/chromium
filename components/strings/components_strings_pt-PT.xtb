@@ -814,6 +814,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2321291402658100099">Gerir informações</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 janela}other{# janelas}}</translation>
 <translation id="232390861414237658">Preencha automaticamente este cartão para compras feitas no Chrome quando este estiver guardado para utilização com o Google Pay</translation>
+<translation id="2326283484705860548">Agora, pode preencher automaticamente mais informações da Carteira do Google</translation>
 <translation id="2328651992442742497">Permitido (predefinição)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira a <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2346319942568447007">Imagem que copiou</translation>
 <translation id="2347764072711098973">Use a Affirm, a Zip ou a Klarna para pagar em prestações</translation>
 <translation id="2348509731468399833">Acompanhamento de preço parado.</translation>
+<translation id="2348836501965732644">Faça a gestão das suas informações ou desative estas sugestões nas Definições</translation>
 <translation id="2349957959687031096">Botão Abrir separador de navegação anónima; ative para abrir um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="2350796302381711542">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />, em vez de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" /> porque está a usar um certificado de segurança que não é considerado fidedigno pelo Chromium nem pela configuração do sistema para a encriptação do tráfego Web. Isto pode ser o resultado de uma configuração incorreta ou de um atacante que intercetou a sua ligação.</translation>
@@ -1453,6 +1455,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="340924996148642843">De momento, a funcionalidade Compare não está disponível</translation>
 <translation id="3409896703495473338">Gerir definições de segurança</translation>
 <translation id="3411091017011773343">Carregar dentro de <ph name="HOURS" /> h</translation>
+<translation id="341134412449102894">As suas informações são guardadas na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">É mais seguro visitar este site mais tarde se estiver a usar uma rede pública. O risco de usar uma rede fidedigna, como o Wi-Fi doméstico ou do trabalho, é menor.</translation>
 <translation id="3414275587143250384">Computação na nuvem e distribuída</translation>
 <translation id="3414952576877147120">Tamanho:</translation>

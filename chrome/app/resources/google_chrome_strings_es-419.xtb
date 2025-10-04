@@ -249,6 +249,9 @@
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="383928141529488001">Google Chrome necesita acceso a la conexión Bluetooth para explorar 
  los dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Resumir:** Describe el tema y el propósito principales del contenido de la captura de pantalla en una oración de menos de 30 palabras.
+
+          **Sugerir preguntas:** Genera una lista con viñetas de 3 a 5 preguntas que inviten a la reflexión que un usuario podría hacer para comprender mejor la captura de pantalla. Estas preguntas deben incluir al menos una que sea específicamente sobre un objeto visual, su diseño o su ubicación.</translation>
 <translation id="386202838227397562">Cierra todas las ventanas de Google Chrome e intenta nuevamente.</translation>
 <translation id="3873044882194371212">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chrome</translation>
 <translation id="3885770153807205175">Selector de idioma</translation>
@@ -508,6 +511,7 @@
 <translation id="6885412569789873916">Apps de Chrome Beta</translation>
 <translation id="6893363893008038481">Quitar la cuenta de Chrome</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6927941417289800361">Mientras tengas acceso, puedes usar las contraseñas y otros elementos de tu Cuenta de Google en Chrome. Puedes cambiar este parámetro cuando lo desees en la configuración.</translation>
 <translation id="6930294499209825">Mantiene actualizado tu software de Google. Si este servicio se desactiva o se detiene, tu software de Google no se mantendrá actualizado, lo que implica que las vulnerabilidades de seguridad que puedan aparecer no podrán solucionarse y es posible que no se puedan usar algunas funciones. Este servicio se desinstalará automáticamente si ningún software de Google lo utiliza.</translation>
 <translation id="6933858244219479645">Sistema de ChromeOS</translation>
 <translation id="6938166777909186039">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 8.1.</translation>
@@ -520,6 +524,7 @@
 <translation id="7024536598735240744">Error al momento de desempaquetar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Se detuvo la instalación.</translation>
 <translation id="7025800014283535195">Puedes alternar entre los perfiles de Chrome aquí</translation>
+<translation id="7047386856539490735">¿Te parecen útiles estos resultados?</translation>
 <translation id="7051685429025310665">No lo visitaste recientemente. Chrome quitó los permisos <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu medida</translation>
 <translation id="7060643578009939353">Buscar este video con Google Lens</translation>

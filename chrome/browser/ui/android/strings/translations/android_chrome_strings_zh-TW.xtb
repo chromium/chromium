@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">正在傳送到「<ph name="DEVICE_NAME" />」...</translation>
 <translation id="103269572468856066">要一併清除這些網站和應用程式中的資料嗎？</translation>
 <translation id="1034259925032978114">視窗已開啟</translation>
+<translation id="1035113036584565771">提示通知宣傳內容已關閉</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1045899828449635435">要一併清除這些網站中的資料嗎？</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1052842760770519282">無法存取部分密碼</translation>
 <translation id="1058669287135776095">你已離線。請檢查網際網路連線，然後再試一次。</translation>
+<translation id="1066338698580889414">提示通知的宣傳內容已開啟，並顯示在整個畫面</translation>
 <translation id="1070689840697074178">你可以在這裡下載 PDF</translation>
 <translation id="107147699690128016">如果變更副檔名，這個檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
 <translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
@@ -152,6 +154,7 @@
 <translation id="1696555181932908973">你可以在「<ph name="SITE_ETLD_PLUS_ONE" />」上試著透過其他方法繼續操作。</translation>
 <translation id="1702543251015153180">要變更深色主題設定嗎？</translation>
 <translation id="1702907158640575240">受管理的瀏覽器</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />，固定的無痕分頁</translation>
 <translation id="1718835860248848330">過去 1 小時</translation>
 <translation id="1726477445370128854">Chrome 會預先載入你可能造訪的網頁，加快你瀏覽及搜尋的速度</translation>
 <translation id="1728803206919861584">要脫離無痕模式儲存密碼金鑰嗎？</translation>
@@ -440,6 +443,7 @@
 <translation id="3027950907978057636">來自「<ph name="APP_LABEL" />」</translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">通關密語不符</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />，已選取的固定分頁</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的提示</translation>
@@ -627,6 +631,7 @@
 <translation id="397105322502079400">計算中…</translation>
 <translation id="397583555483684758">同步處理功能已停止運作</translation>
 <translation id="3976396876660209797">移除這個捷徑後再重新建立</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />，固定分頁</translation>
 <translation id="3985022125189960801">你重新新增的網站可再次推斷你的興趣喜好</translation>
 <translation id="3985215325736559418">你要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
@@ -1418,6 +1423,7 @@
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用輕觸搜尋功能時，納入較多網頁文字也許能找到更相關的結果。你隨時可以前往<ph name="BEGIN_LINK" />設定頁面<ph name="END_LINK" />調整設定。</translation>
 <translation id="7379900596734708416">現已推出網站的深色主題</translation>
+<translation id="7384486627147155832">提示通知的宣傳內容已開啟，並顯示在畫面下半部</translation>
 <translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{其他，清單中有 1 個檔案}other{其他，清單中有 # 個檔案}}</translation>
 <translation id="7400418766976504921">網址</translation>
@@ -1589,6 +1595,7 @@
 <translation id="8090732854597034573">如需協助，請找家長幫忙</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />期間沒有要關閉的分頁</translation>
 <translation id="8103578431304235997">無痕式分頁</translation>
+<translation id="810433609302852">提示通知功能宣傳內容和使用步驟的底部功能表</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">關閉排序選項</translation>
 <translation id="8110024788458304985">協助改善 Chrome 的功能與效能</translation>
@@ -1831,6 +1838,7 @@
 <translation id="9169507124922466868">已在畫面下半部顯示瀏覽記錄</translation>
 <translation id="9189607089796819144">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="9190276265094487094">所有已同步的裝置上都會有你的歷史記錄，方便你繼續執行先前的工作</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />，選取的固定無痕分頁</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{已在 1 分鐘前檢查}other{已在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">還剩 1 個檔案</translation>
 <translation id="9205933215779845960">找不到該頁面。請檢查錯別字或嘗試使用 <ph name="SEARCH_ENGINE" /> 搜尋。</translation>

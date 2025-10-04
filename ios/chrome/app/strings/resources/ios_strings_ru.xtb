@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">ОК</translation>
 <translation id="5062321486222145940">Установить Google Диск</translation>
 <translation id="5067540696062462445">Скачанные файлы</translation>
+<translation id="5070314445039955096">Когда вы покинете сайт <ph name="SITE_DOMAIN" />, все разрешения для него будут отключены.</translation>
 <translation id="507187271399539513">{count,plural, =1{Способ оплаты {position} из {count}}one{Способ оплаты {position} из {count}}few{Способ оплаты {position} из {count}}many{Способ оплаты {position} из {count}}other{Способ оплаты {position} из {count}}}</translation>
 <translation id="5075939510584558547">Сохранение без шифрования</translation>
 <translation id="5076534614343816664">Отслеживание цен</translation>

@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
+<translation id="113098737392899175">连接键盘时，使用文本光标浏览网页</translation>
 <translation id="1178015372320901893">“我的快捷方式”底部动作条</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -699,6 +700,7 @@
 <translation id="8803526663383843427">开启时</translation>
 <translation id="8805385115381080995">由于网站要求您验证自己是真实用户的情况随之减少，浏览体验将变得更加流畅。</translation>
 <translation id="8816026460808729765">禁止网站使用传感器</translation>
+<translation id="884765916894384048">转为后台播放</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的浏览保护措施，但网站功能更有可能会按预期运行。</translation>
 <translation id="8889294078294184559">随着您继续浏览，所访问的网站可从 Chrome 中获取上一个网站提供的相关信息来验证您可能是真实的用户</translation>

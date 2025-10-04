@@ -1046,6 +1046,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Diski quraşdırın</translation>
 <translation id="5067540696062462445">Endirmələr</translation>
+<translation id="5070314445039955096">Bu saytdan çıxdığınız zaman "<ph name="SITE_DOMAIN" />" icazələri sıfırlanaraq deaktiv olacaq</translation>
 <translation id="507187271399539513">{count,plural, =1{Ödəniş metodu {position}/{count}}other{Ödəniş metodu {position}/{count}}}</translation>
 <translation id="5075939510584558547">Şifrələmədən yadda saxlayın</translation>
 <translation id="5076534614343816664">Qiymət izləmə</translation>

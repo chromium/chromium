@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> 个标签页分组已不可用}other{<ph name="TAB_GROUPS_COUNT_MANY" /> 个标签页分组已不可用}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">已将 <ph name="TABS_COUNT_ONE" /> 个标签页合为一组</translation>
+<translation id="1844381456014878100">闲置 7 天后</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="1909810060368225529">注意：对此共享标签页分组所做的更改对所有人均可见。所有人都可以更改您的共享标签页分组</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{固定标签页}other{固定标签页}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{添加到包含 <ph name="TAB_COUNT1" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组}other{添加到包含 <ph name="TAB_COUNT1" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组}}</translation>
 <translation id="6818926723028410516">选择内容</translation>
 <translation id="6856809498882026482">隐藏多选模式</translation>
+<translation id="6957436309971790274">闲置 21 天后</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分享标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分享标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="709473454666962555">选择标签页分组</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享标签页}other{分享标签页}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">此商店的相关信息已全屏打开</translation>
 <translation id="8053770993984522566">标签页分组列表，以一半高度显示</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
+<translation id="8138067144082174140">闲置 14 天后</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="8205266828577616993">上移标签页</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分钟前更新}other{<ph name="NUM_MINS_MANY" /> 分钟前更新}}</translation>

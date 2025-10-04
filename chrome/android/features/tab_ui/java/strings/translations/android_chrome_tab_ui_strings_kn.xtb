@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="1844381456014878100">7 ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="1909810060368225529">ಗಮನಿಸಿ: ಈ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿನ ಬದಲಾವಣೆಗಳು ಎಲ್ಲರಿಗೂ ಗೋಚರಿಸುತ್ತವೆ. ನಿಮ್ಮ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ ಗುಂಪುಗಳಿಗೆ ಪ್ರತಿಯೊಬ್ಬರೂ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಿನ್ ಮಾಡಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಿನ್ ಮಾಡಿ}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> ಟ್ಯಾಬ್‌ನೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಎಂದು ಹೆಸರಿಸಲಾದ ಗುಂಪಿಗೆ ಸೇರಿಸಿ}one{<ph name="TAB_COUNT1" /> ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಎಂದು ಹೆಸರಿಸಲಾದ ಗುಂಪಿಗೆ ಸೇರಿಸಿ}other{<ph name="TAB_COUNT1" /> ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಎಂದು ಹೆಸರಿಸಲಾದ ಗುಂಪಿಗೆ ಸೇರಿಸಿ}}</translation>
 <translation id="6818926723028410516">ಐಟಂಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6856809498882026482">ಬಹು ಆಯ್ಕೆ ಮೋಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="6957436309971790274">21 ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}}</translation>
 <translation id="709473454666962555">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="8053770993984522566">ಟ್ಯಾಬ್ ಗುಂಪು ಪಟ್ಟಿ, ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
+<translation id="8138067144082174140">14 ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}}</translation>
 <translation id="8205266828577616993">ಟ್ಯಾಬ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ನಿಮಿಷದ ಹಿಂದೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ}one{<ph name="NUM_MINS_MANY" /> ನಿಮಿಷಗಳ ಹಿಂದೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ}other{<ph name="NUM_MINS_MANY" /> ನಿಮಿಷಗಳ ಹಿಂದೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ}}</translation>

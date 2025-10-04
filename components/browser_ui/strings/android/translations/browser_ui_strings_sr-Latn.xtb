@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete da zatražite da vidite verziju sajtova za računare</translation>
 <translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
+<translation id="113098737392899175">Krećite se stranicama pomoću kursora za tekst kada je priključena tastatura</translation>
 <translation id="1178015372320901893">Donja tabela Moje prečice</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -699,6 +700,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8805385115381080995">Pregledanje je brže jer je manja verovatnoća da će sajt zatražiti da potvrdite da ste stvarna osoba</translation>
 <translation id="8816026460808729765">Ne dozvoljavaj sajtovima da pristupaju senzorima</translation>
+<translation id="884765916894384048">Idi u pozadinu</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Probajte privremeno da dozvolite kolačiće treće strane, što znači slabiju zaštitu pregledanja, ali veću verovatnoću da će funkcije sajta raditi na očekivani način.</translation>
 <translation id="8889294078294184559">Dok nastavljate sa pregledanjem, sajtovi mogu da proveravaju u Chrome-u i da od prethodnog sajta koji ste posetili dobiju potvrdu da ste verovatno stvarna osoba</translation>

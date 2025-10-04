@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
 <translation id="5067540696062462445">Спампоўкі</translation>
+<translation id="5070314445039955096">Пасля пераходу з сайта "<ph name="SITE_DOMAIN" />" яго дазволы будуць скінуты</translation>
 <translation id="507187271399539513">{count,plural, =1{Спосаб аплаты {position} з {count}}one{Спосаб аплаты {position} з {count}}few{Спосаб аплаты {position} з {count}}many{Спосаб аплаты {position} з {count}}other{Спосаб аплаты {position} з {count}}}</translation>
 <translation id="5075939510584558547">Захоўванне без шыфравання</translation>
 <translation id="5076534614343816664">Адсочванне цэн</translation>
@@ -1678,6 +1679,7 @@
 <translation id="7437712592381799950">Каб убачыць больш змесціва, падабранага для вас, правядзіце трыма пальцамі ўверх.</translation>
 <translation id="7438473148803748807">Усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />", а ўсе спасылкі з запрашэннем будуць адключаны</translation>
 <translation id="7438481509621345350">Цяпер пры адкрыцці новай укладкі вы будзеце бачыць змесціва з сайта "<ph name="CHANNEL_NAME" />".</translation>
+<translation id="7445682342344043969">Усплывальныя вокны заблакіраваны</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладка захавана ў "{title}"}one{Закладкі захаваны ў "{title}"}few{Закладкі захаваны ў "{title}"}many{Закладак захавана ў "{title}"}other{Закладак захавана ў "{title}"}}</translation>
 <translation id="7451404862887877229">Націсніце "Прыватнасць і бяспека", а потым – "Бяспечны прагляд"</translation>
 <translation id="7452393099119876789">Увесці PIN-код трэба толькі адзін раз.</translation>

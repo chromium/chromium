@@ -1046,6 +1046,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5059136629401106827">Potvrdi</translation>
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
 <translation id="5067540696062462445">Preuzimanja</translation>
+<translation id="5070314445039955096">Dozvole za <ph name="SITE_DOMAIN" /> će se resetovati i isključiti kada napustite ovaj sajt</translation>
 <translation id="507187271399539513">{count,plural, =1{{position}. od {count} načina plaćanja}one{{position}. od {count} načina plaćanja}few{{position}. od {count} načina plaćanja}other{{position}. od {count} načina plaćanja}}</translation>
 <translation id="5075939510584558547">Sačuvajte bez šifrovanja</translation>
 <translation id="5076534614343816664">Praćenje cena</translation>

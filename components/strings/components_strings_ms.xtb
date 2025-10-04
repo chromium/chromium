@@ -814,6 +814,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2321291402658100099">Urus maklumat</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 tetingkap}other{# tetingkap}}</translation>
 <translation id="232390861414237658">Autolengkap kad ini untuk pembelian yang dibuat dalam Chrome apabila kad tersebut disimpan untuk digunakan dengan Google Pay</translation>
+<translation id="2326283484705860548">Kini anda boleh membuat autolengkap lebih banyak maklumat daripada Google Wallet</translation>
 <translation id="2328651992442742497">Dibenarkan (lalai)</translation>
 <translation id="2328955282645810595">Peralatan Berkuasa &amp; Pembinaan</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, tamat tempoh pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2346319942568447007">Imej yang anda salin</translation>
 <translation id="2347764072711098973">Gunakan Affirm, Zip atau Klarna untuk membuat bayaran ansuran</translation>
 <translation id="2348509731468399833">Penjejakan harga dihentikan.</translation>
+<translation id="2348836501965732644">Urus maklumat anda atau matikan cadangan ini dalam Tetapan</translation>
 <translation id="2349957959687031096">Butang buka tab Inkognito, aktifkan untuk membuka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
 <translation id="2350796302381711542">Benarkan <ph name="HANDLER_HOSTNAME" /> untuk membuka semua <ph name="PROTOCOL" /> pautan  dan bukannya <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Pelayan ini tidak dapat membuktikan bahawa perkara itu ialah <ph name="DOMAIN" /> kerana sijil keselamatan yang digunakan tidak dipercayai oleh Chromium atau konfigurasi sistem anda untuk penyulitan trafik web. Hal ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda.</translation>

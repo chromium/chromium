@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Hold orden med fanegrupper</translation>
 <translation id="2597457036804169544">Anvend ikke Mørkt tema på websites</translation>
 <translation id="2606760465469169465">Automatisk verificering</translation>
+<translation id="2610903128639500624">Administrer i <ph name="BEGIN_LINK1" />Android-indstillingerne<ph name="END_LINK1" />
+
+Avanceret beskyttelse styrer disse Chrome-indstillinger:
+• "Brug altid sikre forbindelser" er aktiveret.
+• "JavaScript-optimering" er deaktiveret. <ph name="BEGIN_LINK2" />Administrer websiteundtagelser<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
 <translation id="2626708220538466178">Feltet i bunden med standardbrowseren er lukket</translation>
 <translation id="2653659639078652383">Send</translation>

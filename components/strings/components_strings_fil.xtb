@@ -1237,6 +1237,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="305162504811187366">History ng Remote na Desktop ng Chrome, kabilang ang mga timestamp, host, at client session id</translation>
 <translation id="3052868890529250114">Kadalasang secure kang nakakakonekta sa mga site, pero hindi makagamit ng secure na koneksyon ang Chrome sa ngayon. Posibleng may attacker na sumusubok na alamin o baguhin ang iyong koneksyon ng network. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Screen ng error ng Buy-Now-Pay-Later. Naka-hide ang keyboard.</translation>
 <translation id="3061707000357573562">Serbisyo sa Pag-patch</translation>
 <translation id="3062655045399308513">I-delete ang Data mula sa Pag-browse...</translation>
 <translation id="3063453392496098461">Hindi na-install ang mga serbisyo sa background ng VPN.</translation>
@@ -1252,6 +1253,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3090667236485488075">Glass</translation>
 <translation id="3093122472063815077">Binuksan nang kalahati ang screen ng pag-usad ng Buy-Now-Pay-Later.</translation>
+<translation id="309381737510736393">Kapag nilimitahan ng iyong organisasyon ang pag-save sa Google Account mo, hindi mo magagawang mag-share ng mga tab o makipag-collaborate sa iba</translation>
 <translation id="3094051226187213523">Buksan ang AI Mode sa suhestyong ito.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Binalewala ito dahil naglalaman ang listahan ng naka-disable ng pattern na katumbas ng '*', na katumbas ng pag-disable sa patakaran.</translation>
@@ -1697,6 +1699,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3784372983762739446">Mga device ng bluetooth</translation>
 <translation id="3785246317262748285">Kadalasang secure kang nakakakonekta sa mga site, pero hindi makagamit ng secure na koneksyon ang Chrome sa ngayon. Posibleng may attacker na sumusubok na alamin o baguhin ang iyong koneksyon ng network. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Pinakamahuhusay na tugma para sa "<ph name="SEARCH_QUERY" />"</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" />, o <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3791118028061680614">Magbayad nang hindi lumilipat ng app</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -1989,6 +1992,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4242981939686657948">Para sa mas mahusay na paraan para maghanap sa iyong history ng pag-browse, i-on ang</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Mag-aral sa Ibang Bansa</translation>
+<translation id="4250343410682686342">Binuksan nang buo ang screen ng error ng Buy-Now-Pay-Later.</translation>
 <translation id="4250431568374086873">Hindi ganap na ligtas ang iyong koneksyon sa site na ito</translation>
 <translation id="4250680216510889253">Hindi</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2505,6 +2509,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5124797626438336458">Binuksan nang kalahati ang screen ng error ng Buy-Now-Pay-Later.</translation>
 <translation id="5125575917473813637">I-edit ang identity card</translation>
 <translation id="5125751979347152379">Di-wastong URL.</translation>
 <translation id="512592033764059484">Soccer</translation>
@@ -2678,6 +2683,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5412040515238827314">Invalid na format: May inaasahang listahan ng mga pattern.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />, <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stacker 4</translation>
+<translation id="5414306071315087019">Available ang Buy now, pay later sa Google Pay</translation>
 <translation id="5414446060143308245">Kinakailangan ang pagsusuri bago ilipat</translation>
 <translation id="5414511064953050917">Ilipat pa rin</translation>
 <translation id="5418700249417444482">Ipinapadala ang mga URL ng mga page na binibisita mo sa Google Cloud o mga third party para sa pagsusuri, at posibleng nakikita ito ng iyong administrator. Halimbawa, posibleng i-scan ang mga ito para ma-detect ang mga hindi ligtas na website o ma-filter ang mga website batay sa mga panuntunang itinakda ng administrator.</translation>
@@ -2798,6 +2804,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5595485650161345191">Mag-edit ng address</translation>
 <translation id="5596939519753369075">2 x 3.5 in</translation>
 <translation id="5597254438174353289">Asul 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Hindi sinusuportahan ang pamamahala</translation>
 <translation id="5605249000617390290">Matuto pa tungkol sa pagsubaybay sa presyo</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -4171,6 +4178,7 @@ Mga karagdagang detalye:
 <translation id="7860345425589240791">Ilagay ang iyong bagong petsa ng pag-expire at CVC sa <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Umalis sa site?</translation>
 <translation id="7865448901209910068">Pinakamabilis</translation>
+<translation id="7865482168955081228">Isinara ang screen ng error ng Buy-Now-Pay-Later.</translation>
 <translation id="7870281855125116701">May Nakitang Diskwento</translation>
 <translation id="7871445724586827387">Palitan ang password ng iyong Google Account</translation>
 <translation id="787226752901403048">Mag-sign in sa Chrome para mag-share ng at sumali sa mga grupo ng tab, at makipagtulungan sa mga ideya</translation>

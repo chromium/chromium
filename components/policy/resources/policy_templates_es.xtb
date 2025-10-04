@@ -1234,6 +1234,7 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 <translation id="1837165432382702436">Altura de la página en micrómetros</translation>
 <translation id="1838910874018595451">Configuración rellenada previamente de los tickets de Kerberos</translation>
 <translation id="1839042185432919430">Permitir que la aplicación web de kiosco muestre un mensaje de red al iniciar la aplicación si el dispositivo no tiene conexión</translation>
+<translation id="1839711547980672664">Lista de patrones de URL para los que se permite abrir las <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="1843102210803941014">Habilitar solo las cookies y los datos esenciales en la búsqueda</translation>
 <translation id="1843117931376765605">Frecuencia con la que se actualiza la política de usuario</translation>
 <translation id="1844616986352942647">Permitir la función Crear temas y mejorar los modelos de IA.</translation>
@@ -3366,6 +3367,7 @@ Si quieres obtener información detallada sobre los patrones de <ph name="URL_LA
 
 Si se le asigna el valor False o no se define, las teclas del teclado vuelven a producir comandos de teclas multimedia. Cuando se pulsa la tecla de búsqueda, su comportamiento cambia al de teclas de funciones.</translation>
 <translation id="3351835664671920945">Usar un teclado estándar de forma predeterminada para escribir contraseñas</translation>
+<translation id="3356374145373094294">Lista de patrones de URL para los que se bloquean las <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="3359186795130278362">Habilitar sesión de invitado administrada y restringida.</translation>
 <translation id="33592541385181121">No incluir el puerto en el SPN de Kerberos generado</translation>
 <translation id="3360093276083825336">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
@@ -4840,6 +4842,17 @@ Se eliminó en la versión M112.</translation>
 <translation id="4408428864159735559">Lista de sistemas de archivos de red compartidos preconfigurados.</translation>
 <translation id="4410236409016356088">Habilitar la limitación de ancho de banda</translation>
 <translation id="4410361389637971319">Permitir que los orígenes de aplicaciones web aisladas usen Direct Sockets</translation>
+<translation id="4410792459434637140">Esta política se puede usar para permitir las <ph name="CHROME_DEVTOOLS_NAME" /> en URLs específicas.
+
+Los patrones de URL se comparan con la URL de la página que se está inspeccionando. Si se encuentra una coincidencia, se permiten las <ph name="CHROME_DEVTOOLS_NAME" />. Esto se aplica aunque la URL también coincida con la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, incluso si la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> se ha definido para no permitirlo (valor 2). Para obtener información sobre el formato de URL, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si no se define la política, esta lista de permitidos no tendrá ningún efecto. Como las <ph name="CHROME_DEVTOOLS_NAME" /> están disponibles de forma predeterminada, solo se bloquearán si se especifica en la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Las URLs sin coincidencias se regirán por la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Esta política también se aplica a las <ph name="CHROME_DEVTOOLS_NAME" /> que se abran para extensiones y aplicaciones web.
+
+Esta política está limitada a 1000 entradas.</translation>
 <translation id="4411734231900934213">La diferencia permitida entre el reloj de los dispositivos del niño/a y del padre o madre (en segundos).</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Si se habilita esta política, se desactivará el visor interno de PDF en <ph name="PRODUCT_NAME" />, los archivos PDF se tratarán como descargas y los usuarios podrán abrir PDFs con la aplicación predeterminada.
@@ -7295,6 +7308,17 @@ Si se le asigna el valor <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> 
 
 Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="5962271004971310788">Extensiones que el usuario debe permitir que se ejecuten en Incógnito para navegar en modo Incógnito</translation>
+<translation id="5962401339101255719">Si se asigna el valor "0" (predeterminado) a esta política, podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript, pero no en extensiones instaladas por políticas de empresa o, desde la versión 114 y si se trata de un usuario gestionado, no podrás acceder a las herramientas para desarrolladores ni a la consola de JavaScript en extensiones integradas en el navegador. Si se le asigna el valor "1", podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript sin excepciones, incluso en extensiones instaladas por políticas de empresa. Si se le asigna el valor "2", no podrás acceder a las herramientas para desarrolladores ni tampoco podrás inspeccionar elementos de sitios web.
+
+Este ajuste también desactiva las combinaciones de teclas y las entradas de menús o menús contextuales que permiten abrir las herramientas para desarrolladores y la consola de JavaScript.
+
+A partir de la versión 99 de <ph name="PRODUCT_NAME" />, este ajuste también controla los puntos de entrada de la función Ver código fuente de la página. Si se asigna el valor "DeveloperToolsDisallowed" (valor 2) a esta política, los usuarios no podrán visualizar el código fuente a través de una combinación de teclas ni mediante el menú contextual. Para bloquear completamente la visualización del código fuente, también debes añadir "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+A partir de la versión 119 de <ph name="PRODUCT_NAME" />, este ajuste también controla si se puede activar y usar el modo Desarrollador para aplicaciones web aisladas.
+
+A partir de la versión 128 de <ph name="PRODUCT_NAME" />, este ajuste no controlará el modo Desarrollador en la página de extensiones si se define la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />.
+
+Si quieres restringir el acceso a las herramientas para desarrolladores en función de la URL de la página, usa las políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> y <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5963752574792883406">puerto 990 (puede desbloquearse hasta el 01/02/2022)</translation>
 <translation id="596523880465577341">Esta política está obsoleta y no se admite. Usa la política <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="5966615072639944554">Extensiones con permiso para utilizar la API de confirmación remota</translation>
@@ -8009,6 +8033,15 @@ Si se inhabilita esta política o no se define, se hará una consulta de CNAME p
 La política independiente <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> puede usarse para impedir que esta función cambie a HTTPS algunos nombres de host o patrones de nombre de host concretos.
 
 Consulta también la política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
+<translation id="6439002087726312326">Los patrones de URL se comparan con la URL de la página que se está inspeccionando. Si se encuentra una coincidencia, se bloquean las herramientas <ph name="CHROME_DEVTOOLS_NAME" />. Para obtener información sobre el formato de URL, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+La política <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> prevalece frente a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Las URLs sin coincidencias se regirán por la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Esta política también se aplica a las <ph name="CHROME_DEVTOOLS_NAME" /> que se abran para extensiones y aplicaciones web.
+
+Esta política está limitada a 1000 entradas.</translation>
 <translation id="6440051664870270040">Permitir que los sitios abran ventanas emergentes y naveguen de forma simultánea</translation>
 <translation id="6441781723322254041">Permitir cookies truncadas</translation>
 <translation id="6446366416439249472">Inhabilitar la sincronización de Google Drive mediante conexiones de datos móviles</translation>

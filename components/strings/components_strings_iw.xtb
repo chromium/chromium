@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">‏ההיסטוריה של Chrome Remote Desktop, כולל חותמות זמן, מארחים ומזהי סשנים של לקוחות</translation>
 <translation id="3052868890529250114">‏לרוב החיבור לאתרים מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">‏מסך השגיאה של "קונים עכשיו, משלמים אחר כך (BNPL)". המקלדת מוסתרת.</translation>
 <translation id="3061707000357573562">שירות תיקון</translation>
 <translation id="3062655045399308513">מחיקת נתוני הגלישה מתבצעת…</translation>
 <translation id="3063453392496098461">‏ההתקנה של שירותי ה-VPN שפועלים ברקע נכשלה.</translation>
@@ -1991,6 +1992,7 @@
 <translation id="4242981939686657948">כדי לחפש בהיסטוריית הגלישה בצורה יעילה יותר, צריך להפעיל את</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">לימודים בחו"ל</translation>
+<translation id="4250343410682686342">‏מסך השגיאה של "קונים עכשיו, משלמים אחר כך (BNPL)" נפתח במסך מלא.</translation>
 <translation id="4250431568374086873">החיבור שלך לאתר הזה לא מאובטח בצורה מלאה</translation>
 <translation id="4250680216510889253">לא</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2511,6 +2513,7 @@ Del</translation>
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">סוף השבוע</translation>
 <translation id="5123433949759960244">כדורסל</translation>
+<translation id="5124797626438336458">‏מסך השגיאה של "קונים עכשיו, משלמים אחר כך (BNPL)" נפתח בחצי מגובה המסך.</translation>
 <translation id="5125575917473813637">עריכת תעודת הזהות</translation>
 <translation id="5125751979347152379">כתובת אתר לא חוקית.</translation>
 <translation id="512592033764059484">כדורגל</translation>
@@ -4180,6 +4183,7 @@ Del</translation>
 <translation id="7860345425589240791">‏יש להזין את תאריך התפוגה הנכון ואת קוד האימות (CVC) שמופיע ב<ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">לצאת מהאתר?</translation>
 <translation id="7865448901209910068">המהירות הטובה ביותר</translation>
+<translation id="7865482168955081228">‏מסך השגיאה של "קונים עכשיו, משלמים אחר כך (BNPL)" סגור.</translation>
 <translation id="7870281855125116701">נמצאה הנחה</translation>
 <translation id="7871445724586827387">‏שינוי הסיסמה לחשבון Google</translation>
 <translation id="787226752901403048">‏כדי לשתף קבוצות של כרטיסיות, להצטרף אליהן ולעבוד יחד על רעיונות, צריך להיכנס ל-Chrome</translation>

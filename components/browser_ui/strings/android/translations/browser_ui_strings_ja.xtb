@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">サイトの PC 版を表示するようリクエストできます</translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
+<translation id="113098737392899175">キーボードが接続されているときにテキスト カーソルを使ってページ間を移動する</translation>
 <translation id="1178015372320901893">カスタム ショートカットのボトムシート</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -699,6 +700,7 @@
 <translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8805385115381080995">サイトであなたが実在のユーザーであることを確認する頻度が減るため、ブラウジングが高速化されます</translation>
 <translation id="8816026460808729765">サイトによるセンサーへのアクセスをブロックする</translation>
+<translation id="884765916894384048">バックグラウンド再生に移動</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
 <translation id="8889294078294184559">それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>

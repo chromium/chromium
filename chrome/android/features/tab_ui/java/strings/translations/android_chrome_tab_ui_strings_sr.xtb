@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група картица више није доступна}one{<ph name="TAB_GROUPS_COUNT_MANY" /> група картица више није доступна}few{<ph name="TAB_GROUPS_COUNT_MANY" /> групе картица више нису доступне}other{<ph name="TAB_GROUPS_COUNT_MANY" /> група картица више није доступно}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> картица је груписана</translation>
+<translation id="1844381456014878100">После 7 дана неактивности</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картица}one{<ph name="TABS_COUNT_MANY" /> картица}few{<ph name="TABS_COUNT_MANY" /> картице}other{<ph name="TABS_COUNT_MANY" /> картица}}</translation>
 <translation id="1909810060368225529">Обавештење: Промене у вези са дељеном групом картица су видљиве свима. Сви могу да уносе промене у дељене групе картица</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Закачи картицу}one{Закачи картице}few{Закачи картице}other{Закачи картице}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картицом}one{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картицом}few{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картице}other{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картица}}</translation>
 <translation id="6818926723028410516">Изаберите ставке</translation>
 <translation id="6856809498882026482">Сакријте режим вишеструког избора</translation>
+<translation id="6957436309971790274">После 21 дан неактивности</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Изаберите групу картица</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Дели картицу}one{Дели картице}few{Дели картице}other{Дели картице}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Информације о овој продавници су отворене на целом екрану</translation>
 <translation id="8053770993984522566">Листа група картица, отворена до половине екрана</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Додај картицу у групу}one{Додај картице у групу}few{Додај картице у групу}other{Додај картице у групу}}</translation>
+<translation id="8138067144082174140">После 14 дана неактивности</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Премести картицу нагоре</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Ажурирано је пре <ph name="NUM_MINS_ONE" /> минут}one{Ажурирано је пре <ph name="NUM_MINS_MANY" /> минут}few{Ажурирано је пре <ph name="NUM_MINS_MANY" /> минута}other{Ажурирано је пре <ph name="NUM_MINS_MANY" /> минута}}</translation>

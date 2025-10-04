@@ -9,11 +9,13 @@
 <translation id="1028699632127661925">Wthi'n anfon i <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Clirio'r data o'r gwefannau ac apiau hyn hefyd?</translation>
 <translation id="1034259925032978114">Mae'r ffenestr ar agor</translation>
+<translation id="1035113036584565771">Hyrwyddiad hysbysiadau awgrymiadau wedi'i gau</translation>
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1045899828449635435">Clirio data o'r gwefannau hyn hefyd?</translation>
 <translation id="1049743911850919806">Anhysbys</translation>
 <translation id="1052842760770519282">Nid yw rhai o'ch cyfrineiriau yn hygyrch</translation>
 <translation id="1058669287135776095">Rydych chi all-lein. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
+<translation id="1066338698580889414">Hyrwyddiad hysbysiadau awgrymiadau wedi'i agor ar uchder llawn</translation>
 <translation id="1070689840697074178">Gallwch lawrlwytho PDFs yma</translation>
 <translation id="107147699690128016">Os byddwch yn newid yr estyniad ffeil, gall y ffeil agor mewn apiau gwahanol ac mae'n bosib y bydd yn berygl i'ch dyfais.</translation>
 <translation id="1086486568852410168">Chwilio â Google Lens</translation>
@@ -152,6 +154,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1696555181932908973">Gallwch roi cynnig ar ffyrdd eraill o barhau ar <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Newid eich gosodiadau thema dywyll?</translation>
 <translation id="1702907158640575240">Porwr a reolir</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, Tab Anhysbys wedi'i Binio</translation>
 <translation id="1718835860248848330">Awr ddiwethaf</translation>
 <translation id="1726477445370128854">Gallwch bori a chwilio'n gyflymach pan fydd Chrome yn rhaglwytho tudalennau y mae'n credu y byddwch yn ymweld â nhw</translation>
 <translation id="1728803206919861584">Cadw'r cod pas y tu allan i Anhysbys?</translation>
@@ -440,6 +443,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3027950907978057636">O <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Dim rhaglwytho</translation>
 <translation id="3029704984691124060">Nid yw'r cyfrinymadroddion yn cyfateb</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, Tab Dewisiedig wedi'i Binio</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Cael help<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Yn dilyn y pris</translation>
 <translation id="3037517125981011456">Dangos anogwyr i fewngofnodi i Chrome</translation>
@@ -628,6 +632,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
 <translation id="397583555483684758">Mae cysoni wedi stopio gweithio</translation>
 <translation id="3976396876660209797">Tynnwch ac ail-grëwch y llwybr byr hwn</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, Tab wedi'i Binio</translation>
 <translation id="3985022125189960801">Ychwanegu gwefan yn ôl os ydych ei heisiau yn y gronfa o wefannau sy'n gallu dyfalu beth rydych yn ei hoffi</translation>
 <translation id="3985215325736559418">Ydych chi am lawrlwytho <ph name="FILE_NAME" /> eto?</translation>
 <translation id="3987993985790029246">Copïo'r ddolen</translation>
@@ -1419,6 +1424,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7375125077091615385">Math:</translation>
 <translation id="7376560087009844242">Drwy gynnwys mwy o destun tudalen, gallech weld canlyniadau gwell wrth ddefnyddio Cyffwrdd i Chwilio. I newid hyn, gallwch bob amser fynd i'r <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Mae'r thema dywyll ar gyfer gwefannau ar gael</translation>
+<translation id="7384486627147155832">Hyrwyddiad hysbysiadau awgrymiadau wedi'i agor ar hanner uchder</translation>
 <translation id="7388615499319468910">Gall gwefannau a hysbysebwyr ddeall sut mae hysbysebion yn perfformio. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 ffeil arall yn y rhestr}zero{# ffeiliau eraill yn y rhestr}two{# ffeil arall yn y rhestr}few{# ffeil arall yn y rhestr}many{# ffeil arall yn y rhestr}other{# ffeil arall yn y rhestr}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1590,6 +1596,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8090732854597034573">Os oes angen help arnat, gofynna i dy riant</translation>
 <translation id="8101414242770404289">Dim tabiau o'r <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Tab Anhysbys</translation>
+<translation id="810433609302852">Dalen waelod hyrwyddiad nodwedd hysbysiadau awgrymiadau, a chamau defnyddio</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Cau opsiynau didoli</translation>
 <translation id="8110024788458304985">Helpu i wella nodweddion a pherfformiad Chrome</translation>
@@ -1832,6 +1839,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="9169507124922466868">Mae hanes llywio wedi'i hanner agor</translation>
 <translation id="9189607089796819144">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) beth bynnag?</translation>
 <translation id="9190276265094487094">Bydd gennych eich hanes ar eich holl ddyfeisiau sydd wedi'u cysoni felly gallwch barhau â'r hyn yr oeddech yn ei wneud</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, Tab Anhysbys Dewisiedig wedi'i Binio</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Gwiriwyd 1 funud yn ôl}zero{Gwiriwyd # munud yn ôl}two{Gwiriwyd # funud yn ôl}few{Gwiriwyd # munud yn ôl}many{Gwiriwyd # munud yn ôl}other{Gwiriwyd # munud yn ôl}}</translation>
 <translation id="9204836675896933765">1 ffeil yn weddill</translation>
 <translation id="9205933215779845960">Methu â dod o hyd i'r dudalen honno. Gwiriwch eich sillafu neu rhowch gynnig ar chwilio ar <ph name="SEARCH_ENGINE" />.</translation>

@@ -1237,6 +1237,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="305162504811187366">Istorija Chrome udaljenog računara, uključujući vremenske oznake, ID-eve sesija hostova i klijenata</translation>
 <translation id="3052868890529250114">Obično se bezbedno povezujete sa sajtovima, ali Chrome ovog puta ne može da koristi bezbednu vezu. Napadač možda pokušava da špijunira ili izmeni mrežnu vezu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Sniženje od <ph name="PRICE_DROP" /> za:<ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Ekran sa greškom za opciju Kupite odmah, platite kasnije. Tastatura je skrivena.</translation>
 <translation id="3061707000357573562">Usluga krpljenja</translation>
 <translation id="3062655045399308513">Izbriši podatke pregledanja…</translation>
 <translation id="3063453392496098461">Instaliranje VPN usluga u pozadini nije uspelo.</translation>
@@ -1991,6 +1992,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4242981939686657948">Da biste omogućili efikasniji način pretrage istorije pregledanja, uključite</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Školovanje u inostranstvu</translation>
+<translation id="4250343410682686342">Ekran sa greškom za opciju Kupite odmah, platite kasnije otvoren je na celom ekranu.</translation>
 <translation id="4250431568374086873">Veza sa ovim sajtom nije potpuno bezbedna</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5122786942953798871">Koverta (pamuk)</translation>
 <translation id="5123063207673082822">Vikend</translation>
 <translation id="5123433949759960244">Košarkaška lopta</translation>
+<translation id="5124797626438336458">Ekran sa greškom za opciju Kupite odmah, platite kasnije otvoren je do polovine ekrana.</translation>
 <translation id="5125575917473813637">Izmenite identifikacioni dokument</translation>
 <translation id="5125751979347152379">Nevažeća URL adresa.</translation>
 <translation id="512592033764059484">Fudbal</translation>
@@ -4174,6 +4177,7 @@ Dodatni detalji:
 <translation id="7860345425589240791">Unesite novi datum isteka i CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="7862185352068345852">Želite li da napustite sajt?</translation>
 <translation id="7865448901209910068">Najbolja brzina</translation>
+<translation id="7865482168955081228">Ekran sa greškom za opciju Kupite odmah, platite kasnije je zatvoren.</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promenite lozinku za Google nalog</translation>
 <translation id="787226752901403048">Prijavite se u Chrome da biste delili grupe kartica, pridruživali im se i sarađivali na idejama</translation>

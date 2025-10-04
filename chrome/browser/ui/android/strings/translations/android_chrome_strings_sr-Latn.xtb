@@ -159,6 +159,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1726477445370128854">Možete da pregledate i pretražujete brže kada Chrome predučita stranice za koje smatra da ćete ih možda posetiti</translation>
 <translation id="1728803206919861584">Želite da sačuvate pristupni ključ van režima bez arhiviranja?</translation>
 <translation id="1732514748744806741">Ako su vam lozinke ugrožene, obavestićemo vas o tome</translation>
+<translation id="1737694586321018892">Nabavite najjaču Chrome zaštitu</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sajt je nedavno poslao mnogo obaveštenja}one{# sajt je nedavno poslao mnogo obaveštenja}few{# sajta su nedavno poslala mnogo obaveštenja}other{# sajtova je nedavno poslalo mnogo obaveštenja}}</translation>
 <translation id="1749561566933687563">Sinhronizujte obeleživače</translation>
 <translation id="1750238553597293878">Nastavite da koristite lozinke na Google nalogu</translation>
@@ -414,6 +415,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2909615210195135082">Google platforma za obaveštenja</translation>
 <translation id="2912345083818861431">Koristite otključavanje ekrana da biste videli otvorene kartice bez arhiviranja</translation>
 <translation id="2918484639460781603">Idi na podešavanja</translation>
+<translation id="2920776558188188922">Premestite traku za adresu na vrh ili dno da biste imali prilagođeni doživljaj pregledanja</translation>
 <translation id="2923908459366352541">Naziv je nevažeći</translation>
 <translation id="2932150158123903946">Memorijski prostor za Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tastatura se neće promeniti</translation>
@@ -973,6 +975,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="549660026907543296">Pridružite se kao <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Donja tabela sa nedavnim aktivnostima</translation>
 <translation id="5526281268548144413">Ne možete da zatvorite u više prozora</translation>
+<translation id="5532536403031755365">Dodajte još jedan nivo zaštite od onlajn pretnji pomoću poboljšane zaštite</translation>
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="5555525474779371165">Odaberite zaštitu pomoću Bezbednog pregledanja</translation>

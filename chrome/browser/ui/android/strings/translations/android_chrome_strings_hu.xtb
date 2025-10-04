@@ -159,6 +159,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1726477445370128854">Gyorsabban böngészhet és kereshet, ha a Chrome betölti előre azokat az oldalakat, amelyeket a böngésző szerint Ön már felkeresett.</translation>
 <translation id="1728803206919861584">Menti az azonosítókulcsot az inkognitó módon kívül?</translation>
 <translation id="1732514748744806741">Ha jelszavaihoz illetéktelenül fértek hozzá, értesítjük Önt</translation>
+<translation id="1737694586321018892">A Chrome legerősebb védelme</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Az utóbbi időben 1 webhely sok értesítést küldött}other{Az utóbbi időben # webhely sok értesítést küldött}}</translation>
 <translation id="1749561566933687563">Könyvjelzők szinkronizálása</translation>
 <translation id="1750238553597293878">Továbbra is használhatja a Google-fiókjában lévő jelszavakat</translation>
@@ -414,6 +415,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912345083818861431">A képernyőzár használata a megnyitott inkognitó lapok megtekintéséhez</translation>
 <translation id="2918484639460781603">Ugrás a beállításokhoz</translation>
+<translation id="2920776558188188922">A személyre szabott böngészési élmény érdekében módosíthatja a címsáv pozícióját: felülre vagy alulra is helyezheti.</translation>
 <translation id="2923908459366352541">A név érvénytelen</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-tárhely</translation>
 <translation id="2932222164150889403">A billentyűzet ugyanaz marad</translation>
@@ -973,6 +975,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="549660026907543296">Csatlakozás mint <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Legutóbbi tevékenységek alsó lapja</translation>
 <translation id="5526281268548144413">Nem zárható be több ablakban</translation>
+<translation id="5532536403031755365">A Speciális védelem segítségével plusz biztonsági réteget adhat hozzá az internetes fenyegetések elleni védelemhez.</translation>
 <translation id="5548606607480005320">Biztonsági ellenőrzés</translation>
 <translation id="5554520618550346933">Amikor Ön jelszavakat használ, a Chrome figyelmezteti, ha közzé lettek téve az interneten. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
 <translation id="5555525474779371165">Válassza ki, hogy milyen védelmet nyújtson a Biztonságos Böngészés</translation>

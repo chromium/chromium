@@ -1251,6 +1251,7 @@
 <translation id="3087734570205094154">置底</translation>
 <translation id="3090667236485488075">玻璃</translation>
 <translation id="3093122472063815077">「先買後付」進度畫面已開啟，顯示在畫面下半部。</translation>
+<translation id="309381737510736393">如果貴機構限制儲存內容到 Google 帳戶，你就無法分享分頁或與他人協作</translation>
 <translation id="3094051226187213523">使用這項建議開啟 AI 模式。</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">這項政策的停用清單中包含了等於「*」的模式，其效用等同於停用政策，因此系統予以忽略。</translation>
@@ -1695,6 +1696,7 @@
 <translation id="3784372983762739446">藍牙裝置</translation>
 <translation id="3785246317262748285">你通常可以透過安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">與「<ph name="SEARCH_QUERY" />」最相符的結果</translation>
+<translation id="3787887386289385215">「<ph name="ISSUER_1_NAME" />」、「<ph name="ISSUER_2_NAME" />」或「<ph name="ISSUER_3_NAME" />」</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3791118028061680614">不必切換應用程式就能付款</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
@@ -2676,6 +2678,7 @@
 <translation id="5412040515238827314">格式無效：輸入的值必須是模式清單。</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">堆疊出紙器 4</translation>
+<translation id="5414306071315087019">Google Pay 現已支援先買後付服務</translation>
 <translation id="5414446060143308245">轉移檔案前請務必確認</translation>
 <translation id="5414511064953050917">仍要移動</translation>
 <translation id="5418700249417444482">你造訪的網頁網址會傳送到 Google Cloud 或第三方進行分析，因此你的系統管理員可能會看到這些資料。舉例來說，前述公司組織可能會掃描網址，偵測網站是否不安全或根據系統管理員設定的規則篩選網站。</translation>
@@ -2796,6 +2799,7 @@
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5596939519753369075">2 x 3.5 吋</translation>
 <translation id="5597254438174353289">藍色 3</translation>
+<translation id="5603469469737324249">「<ph name="ISSUER_1_NAME" />」或「<ph name="ISSUER_2_NAME" />」</translation>
 <translation id="560412284261940334">系統不支援管理</translation>
 <translation id="5605249000617390290">進一步瞭解價格追蹤功能</translation>
 <translation id="5605670050355397069">Ledger</translation>

@@ -642,6 +642,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Este valor deja de estar disponible a partir de M121. A partir de la versión M121, los valores se      tratarán como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Inhabilitar el corrector ortográfico</translation>
+<translation id="1434936032334586168">Habilitar la impresión silenciosa</translation>
 <translation id="1435031247649241006">En la pantalla de bloqueo, los usuarios tienen la opción de abrir una ventana de reautenticación
 en línea y usarla para volver a ingresar a su sesión. Esta
 política se puede usar para abrir la ventana automáticamente si
@@ -1989,6 +1990,7 @@ Si no estableces la política, los usuarios podrán cambiar la lista de apps fij
 <translation id="2306505001667207184">Solicitarle al usuario que seleccione el certificado de cliente cada vez que la política de selección automática coincida con múltiples certificados</translation>
 <translation id="230713790688681130">Habilitar el diseño InScript Hindi</translation>
 <translation id="2307496301287881990">Informa los estados de la tarjeta gráfica y la pantalla</translation>
+<translation id="2308899582897965249">Inhabilitar la impresión silenciosa</translation>
 <translation id="2309284543927494965">Bloquear las actualizaciones</translation>
 <translation id="2309341709647905294">No informar datos sobre los periféricos que están conectados al dispositivo</translation>
 <translation id="2309390639296060546">Configuración de geolocalización predeterminada</translation>
@@ -2183,6 +2185,14 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2439733504887695659">Habilitar la opción de descartar las alertas de contraseña hackeada para las credenciales que hayas ingresado</translation>
 <translation id="2446029789419870019">Permitir el uso de la función y mejorar los modelos de IA</translation>
 <translation id="2446244536806499267">No considerar al usuario como inactivo mientras se reproduce un audio</translation>
+<translation id="2450392422484526374">Si estableces esta política como verdadera, se habilitará la impresión silenciosa, que cierra de inmediato
+la ventana de vista previa de impresión cuando se abre y que imprime en la impresora predeterminada con
+las opciones predeterminadas. Si la impresora predeterminada es "Guardar como PDF", el archivo se
+guardará en la carpeta Descargas.
+
+Si no estableces esta política o la estableces como falsa, se inhabilitará la impresión
+silenciosa, que no cierra automáticamente la ventana de vista previa de impresión y requiere
+que el usuario realice una selección como de costumbre.</translation>
 <translation id="2452225615952836461">Usar mayúsculas siempre en los métodos de solicitud</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
 <translation id="2455033019778127130">Utiliza el comportamiento predeterminado del navegador, muestra las Condiciones del Servicio y espera a que el usuario las acepte</translation>

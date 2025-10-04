@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{Hindi na available ang <ph name="TAB_GROUPS_COUNT_ONE" /> grupo ng tab}one{Hindi na available ang <ph name="TAB_GROUPS_COUNT_MANY" /> grupo ng tab}other{Hindi na available ang <ph name="TAB_GROUPS_COUNT_MANY" /> na grupo ng tab}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Matuto pa<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab ang naigrupo</translation>
+<translation id="1844381456014878100">Pagkalipas ng 7 araw na hindi aktibo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="1909810060368225529">Paunawa: Nakikita ng lahat ang mga pagbabago sa naka-share na Grupo ng Tab na ito. Makakagawa ang lahat ng mga pagbabago sa iyong mga naka-share na grupo ng tab</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{I-pin ang tab}one{I-pin ang mga tab}other{I-pin ang mga tab}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Idagdag sa grupong pinangalanang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> tab}one{Idagdag sa grupong pinangalanang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> tab}other{Idagdag sa grupong pinangalanang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> na tab}}</translation>
 <translation id="6818926723028410516">Pumili ng mga item</translation>
 <translation id="6856809498882026482">Itago ang multi-select mode</translation>
+<translation id="6957436309971790274">Pagkalipas ng 21 araw na hindi aktibo</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Piliin ang grupo ng tab</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{I-share ang tab}one{I-share ang mga tab}other{I-share ang mga tab}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
 <translation id="8053770993984522566">Listahan ng grupo ng tab, na binuksan nang kalahati</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Magdagdag ng tab sa grupo}one{Magdagdag ng mga tab sa grupo}other{Magdagdag ng mga tab sa grupo}}</translation>
+<translation id="8138067144082174140">Pagkalipas ng 14 na araw na hindi aktibo</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Na-update <ph name="NUM_MINS_ONE" /> minuto ang nakalipas}one{Na-update <ph name="NUM_MINS_MANY" /> minuto ang nakalipas}other{Na-update <ph name="NUM_MINS_MANY" /> na minuto ang nakalipas}}</translation>

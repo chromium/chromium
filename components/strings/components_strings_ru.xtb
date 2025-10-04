@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">историю Удаленного рабочего стола Chrome, в том числе временные метки, хосты и идентификаторы сеансов клиентов.</translation>
 <translation id="3052868890529250114">Обычно подключение к сайтам защищено, но в этот раз Chrome не удалось установить безопасное соединение. Возможно, злоумышленник пытается перехватить или изменить ваше сетевое подключение. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
+<translation id="3056660797732519147">Экран с ошибкой покупки в рассрочку. Клавиатура скрыта.</translation>
 <translation id="3061707000357573562">Исправление сервиса</translation>
 <translation id="3062655045399308513">Удалить данные браузера…</translation>
 <translation id="3063453392496098461">Не удалось установить фоновые службы VPN.</translation>
@@ -1990,6 +1991,7 @@
 <translation id="4242981939686657948">Чтобы ещё эффективнее искать информацию в истории браузера, включите параметр</translation>
 <translation id="4244926541863471678">Пленка</translation>
 <translation id="4246517972543675653">Обучение за рубежом</translation>
+<translation id="4250343410682686342">Экран с ошибкой покупки в рассрочку открыт полностью.</translation>
 <translation id="4250431568374086873">Подключение к сайту защищено не полностью</translation>
 <translation id="4250680216510889253">Нет</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2506,6 +2508,7 @@
 <translation id="5122786942953798871">Конверт (хлопковая бумага)</translation>
 <translation id="5123063207673082822">До выходных</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
+<translation id="5124797626438336458">Экран с ошибкой покупки в рассрочку открыт наполовину.</translation>
 <translation id="5125575917473813637">Изменить информацию об удостоверении личности</translation>
 <translation id="5125751979347152379">Недопустимый URL.</translation>
 <translation id="512592033764059484">Футбол</translation>
@@ -4174,6 +4177,7 @@
 <translation id="7860345425589240791">Введите новый срок действия карты, а также CVC-код (<ph name="SIDE_OF_CARD" />).</translation>
 <translation id="7862185352068345852">Закрыть сайт?</translation>
 <translation id="7865448901209910068">Лучшая скорость</translation>
+<translation id="7865482168955081228">Экран с ошибкой покупки в рассрочку закрыт.</translation>
 <translation id="7870281855125116701">Доступна скидка</translation>
 <translation id="7871445724586827387">Изменить пароль аккаунта Google</translation>
 <translation id="787226752901403048">Чтобы делиться группами вкладок, присоединяться к ним и обсуждать идеи с другими пользователями, войдите в Chrome.</translation>

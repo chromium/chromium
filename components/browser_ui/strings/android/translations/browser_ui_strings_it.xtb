@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Organizza con i gruppi di schede</translation>
 <translation id="2597457036804169544">Non applicare il tema scuro ai siti</translation>
 <translation id="2606760465469169465">Verifica automatica</translation>
+<translation id="2610903128639500624">Gestisci nelle <ph name="BEGIN_LINK1" />Impostazioni Android<ph name="END_LINK1" />
+
+La protezione avanzata controlla queste impostazioni di Chrome:
+• L'opzione "Utilizza sempre connessioni sicure" è attiva.
+• Lo "Strumento di ottimizzazione di JavaScript" è disattivato. <ph name="BEGIN_LINK2" />Gestisci le eccezioni del sito<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Consenti JavaScript per un sito specifico.</translation>
 <translation id="2626708220538466178">Riquadro inferiore del browser predefinito chiuso</translation>
 <translation id="2653659639078652383">Invia</translation>

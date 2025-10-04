@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">知道了</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
 <translation id="5067540696062462445">下载内容</translation>
+<translation id="5070314445039955096">您离开“<ph name="SITE_DOMAIN" />”后，这个网站的权限将重置为停用</translation>
 <translation id="507187271399539513">{count,plural, =1{第 {position} 种建议支付方式，共 {count} 种}other{第 {position} 种建议支付方式，共 {count} 种}}</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
 <translation id="5076534614343816664">价格跟踪</translation>

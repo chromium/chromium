@@ -814,6 +814,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2321291402658100099">Tvarkyti informaciją</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{vieno lango}one{# lango}few{# langų}many{# lango}other{# langų}}</translation>
 <translation id="232390861414237658">Automatiškai užpildyti šios kortelės duomenis „Chrome“ atliekamiems pirkiniams, kai ji išsaugoma naudoti su „Google Pay“</translation>
+<translation id="2326283484705860548">Dabar galite automatiškai pildyti daugiau informacijos iš „Google Wallet“</translation>
 <translation id="2328651992442742497">Leidžiama (numatytasis nustatymas)</translation>
 <translation id="2328955282645810595">Statyba ir elektriniai įrankiai</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, baigia galioti <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2346319942568447007">Nukopijuotas vaizdas</translation>
 <translation id="2347764072711098973">Naudokite „Affirm“, „Zip“ arba „Klarna“ ir mokėkite per tam tikrą laiką</translation>
 <translation id="2348509731468399833">Kainų stebėjimas sustabdytas.</translation>
+<translation id="2348836501965732644">Tvarkykite informaciją arba išjunkite šiuos pasiūlymus skiltyje „Nustatymai“</translation>
 <translation id="2349957959687031096">Mygtukas „Atidaryti inkognito skirtuką“; suaktyvinkite, kad būtų atidarytas naujas privataus naršymo inkognito skirtukas</translation>
 <translation id="2350796302381711542">Leisti „<ph name="HANDLER_HOSTNAME" />“ atidaryti visas <ph name="PROTOCOL" /> nuorodas vietoje „<ph name="REPLACED_HANDLER_TITLE" />“?</translation>
 <translation id="2351718832234620840">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />, nes jis naudoja saugos sertifikatą, kuris nėra patikimas naršyklėje „Chromium“ arba jūsų žiniatinklio srauto šifruotės sistemos konfigūracijoje. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo.</translation>
@@ -1237,6 +1239,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="305162504811187366">„Chrome“ nuotolinio kompiuterio valdymo istorija, įskaitant laiko žymes, prieglobas ir klientų seansų ID</translation>
 <translation id="3052868890529250114">Paprastai saugiai prisijungiate prie svetainių, bet šį kartą „Chrome“ nepavyko naudoti saugaus ryšio. Atakos vykdytojas gali bandyti stebėti arba keisti tinklo ryšį. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138">„<ph name="PRODUCT_NAME" />“ <ph name="PRICE_DROP" /> kainos sumažėjimas</translation>
+<translation id="3056660797732519147">Funkcijos „Pirkite dabar, mokėkite vėliau“ klaidos ekranas. Klaviatūra paslėpta.</translation>
 <translation id="3061707000357573562">Pataisos paslauga</translation>
 <translation id="3062655045399308513">Ištrinti naršymo duomenis...</translation>
 <translation id="3063453392496098461">Nepavyko įdiegti VPN foninių paslaugų.</translation>
@@ -1992,6 +1995,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4242981939686657948">Kad galėtumėte efektyviau ieškoti naršymo istorijoje, įjunkite</translation>
 <translation id="4244926541863471678">Juosta</translation>
 <translation id="4246517972543675653">Studijos užsienyje</translation>
+<translation id="4250343410682686342">Funkcijos „Pirkite dabar, mokėkite vėliau“ klaidos ekranas atidarytas per visą aukštį.</translation>
 <translation id="4250431568374086873">Ryšys su šia svetaine nėra visiškai saugus</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2508,6 +2512,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5122786942953798871">Vokas (medvilninis)</translation>
 <translation id="5123063207673082822">Savaitgalis</translation>
 <translation id="5123433949759960244">Krepšinis</translation>
+<translation id="5124797626438336458">Funkcijos „Pirkite dabar, mokėkite vėliau“ klaidos ekranas atidarytas per pusę ekrano aukščio.</translation>
 <translation id="5125575917473813637">Asmens tapatybės kortelės redagavimas</translation>
 <translation id="5125751979347152379">Negaliojantis URL.</translation>
 <translation id="512592033764059484">Futbolas</translation>
@@ -4176,6 +4181,7 @@ Papildoma išsami informacija:
 <translation id="7860345425589240791">Įveskite naują galiojimo laiko pabaigos datą ir kortelės saugos kodą (CVC), pateiktą <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Išeiti iš svetainės?</translation>
 <translation id="7865448901209910068">Geriausias greitis</translation>
+<translation id="7865482168955081228">Funkcijos „Pirkite dabar, mokėkite vėliau“ klaidos ekranas uždarytas.</translation>
 <translation id="7870281855125116701">Rasta nuolaida</translation>
 <translation id="7871445724586827387">Pakeiskite „Google“ paskyros slaptažodį</translation>
 <translation id="787226752901403048">Prisijunkite prie „Chrome“, kad galėtumėte bendrinti skirtukų grupes ir prie jų prisijungti bei kartu kurti idėjas</translation>

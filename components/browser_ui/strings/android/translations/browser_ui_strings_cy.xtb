@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Tacluso gyda grwpiau tab</translation>
 <translation id="2597457036804169544">Peidio â defnyddio'r thema dywyll ar gyfer gwefannau</translation>
 <translation id="2606760465469169465">Awtoddilysu</translation>
+<translation id="2610903128639500624">Rheoli yn y <ph name="BEGIN_LINK1" />gosodiadau Android<ph name="END_LINK1" />
+
+Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
+• Mae "Defnyddio cysylltiadau diogel bob amser" ymlaen.
+• Mae "optimeiddiwr JavaScript" wedi'i ddiffodd. <ph name="BEGIN_LINK2" />Rheoli eithriadau gwefan<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Caniatáu JavaScript ar wefan benodol.</translation>
 <translation id="2626708220538466178">Taflen waelod porwr diofyn wedi'i gau</translation>
 <translation id="2653659639078652383">Danfon</translation>

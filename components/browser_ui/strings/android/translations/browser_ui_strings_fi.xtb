@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Laita asiat järjestykseen välilehtiryhmillä</translation>
 <translation id="2597457036804169544">Älä käytä tummaa teemaa sivustoilla</translation>
 <translation id="2606760465469169465">Vahvista automaattisesti</translation>
+<translation id="2610903128639500624">Muuta valintaa <ph name="BEGIN_LINK1" />Android-asetuksista<ph name="END_LINK1" />
+
+Lisäsuojaus ohjaa näitä Chromen asetuksia:
+• "Käytä aina suojattuja yhteyksiä" on päällä.
+• "JavaScript-optimoija" on pois päältä. <ph name="BEGIN_LINK2" />Muokkaa sivustoja koskevia poikkeuksia<ph name="END_LINK2" />.</translation>
 <translation id="2621115761605608342">Salli JavaScript tietyllä sivustolla.</translation>
 <translation id="2626708220538466178">Oletusselaimen alapaneeli suljettu</translation>
 <translation id="2653659639078652383">Lähetä</translation>
