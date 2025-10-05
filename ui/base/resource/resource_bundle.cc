@@ -496,6 +496,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   }
 
   auto data_pack = std::make_unique<DataPack>(k100Percent);
+
   if (auto result = data_pack->LoadFromPathWithError(locale_file_path);
       !result.has_value() && crash_on_failure) {
     DataPack::ErrorState& error = result.error();
