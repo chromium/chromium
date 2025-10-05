@@ -1158,8 +1158,14 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     num_columns = next_column_token->SequenceNumber() + 1;
   }
 
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    cross_gaps_.reserve(cross_gaps_.size() + new_columns.size() - 1);
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() && has_wrapped &&
+      Style().HasGapRule() && row_gap_size_ > LayoutUnit()) {
+    // This is right after a column wrap. Since we're here, we're finally
+    // positive that another line of columns is created. Add the preceding row
+    // gap to allow for a row rule before this new row, and also so that column
+    // rules belonging to the previous row are properly terminated.
+    main_gaps_.emplace_back(line_offset - row_gap_size_);
+    CommitRangeOfCrossGapsBeforeCurrentMainGap();
   }
 
   wtf_size_t column_index_in_row = 0;
@@ -1189,29 +1195,18 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
 
     if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
         Style().HasGapRule()) {
-      // As described in third_party/blink/renderer/core/layout/gap/README.md,
-      // we create a `MainGap` when we have a row gap.
-      if (column_index_in_row == 0 && has_wrapped &&
-          row_gap_size_ > LayoutUnit()) {
-        // If this `MainGap` is not for a spanner, the offset will be the
-        // start of the row gap. Otherwise, it will
-        // be the start of the spanner.
-        main_gaps_.emplace_back(column_logical_rect.BlockStartOffset() -
-                                row_gap_size_);
-        CommitRangeOfCrossGapsBeforeCurrentMainGap();
-      }
-
       // The first column in a row has no associated column intersections.
       if (column_index_in_row > 0) {
-        // We add a cross gap at the start of for every column in a
-        // row, after the first column, since there is no gap before the first
-        // column.
-        //
-        // See third_party/blink/renderer/core/layout/gap/README.md for more
-        // information.
-        AddCrossGapForColumn(
-            column_logical_rect.InlineStartOffset() - (column_gap_size_ / 2),
-            column_logical_rect.BlockStartOffset());
+        LayoutUnit gap_center =
+            column_logical_rect.InlineStartOffset() - (column_gap_size_ / 2);
+        cross_gaps_.emplace_back(
+            LogicalOffset(gap_center, column_logical_rect.BlockStartOffset()),
+            CrossGap::EdgeIntersectionState::kBoth);
+        // Increment the range of cross gaps associated with the current gap
+        // whenever we add a new cross gap. This range is then
+        // "flushed"/"committed" to the main gap each time we process a row.
+        range_of_cross_gaps_before_current_main_gap_.Increment(
+            cross_gaps_.size() - 1);
       }
 
       if (!first_column_offset_.has_value()) {
@@ -1315,20 +1310,6 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   }
 
   return BreakStatus::kContinue;
-}
-
-void ColumnLayoutAlgorithm::AddCrossGapForColumn(LayoutUnit inline_offset,
-                                                 LayoutUnit block_offset) {
-  CrossGap::EdgeIntersectionState state =
-      CrossGap::EdgeIntersectionState::kBoth;
-
-  cross_gaps_.emplace_back(LogicalOffset(inline_offset, block_offset), state);
-
-  // We increment the range of cross gaps associated with the current gap
-  // whenever we add a new cross gap. This range is then "flushed"/"committed"
-  // to the main gap each time we process a row.
-  range_of_cross_gaps_before_current_main_gap_.Increment(cross_gaps_.size() -
-                                                         1);
 }
 
 void ColumnLayoutAlgorithm::AddMainGapForSpanner(

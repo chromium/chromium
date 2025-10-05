@@ -125,10 +125,6 @@ class CORE_EXPORT ColumnLayoutAlgorithm
                             const BlockBreakToken* break_token,
                             MarginStrut*);
 
-  // Add an inline-direction gap, caused by column gaps. The presence of a
-  // spanner will create a new `CrossGap` for each column gap.
-  void AddCrossGapForColumn(LayoutUnit inline_offset, LayoutUnit block_offset);
-
   // Add a block-direction gap, which are caused by row gaps when columns wrap
   // (controlled by the `column-wrap` property), and also by column spanners.
   void AddMainGapForSpanner(LayoutUnit block_offset,
