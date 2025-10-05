@@ -249,8 +249,10 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
   CrossGapRange range_of_cross_gaps_before_current_main_gap_;
 
-  std::optional<LayoutUnit> content_inline_start_;
-  std::optional<LayoutUnit> content_block_start_;
+  // Offset to the first column (in the first row), from the start border edge
+  // of the resulting multicol fragment. Will only be set if needed, i.e. for
+  // gap decorations.
+  std::optional<LogicalOffset> first_column_offset_;
 
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check

@@ -354,60 +354,49 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   container_builder_.HandleOofsAndSpecialDescendants();
 
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule()) {
-    bool has_column_gaps = !cross_gaps_.empty();
-    bool has_row_gaps = !main_gaps_.empty();
-    if (has_column_gaps || has_row_gaps) {
-      GapGeometry* gap_geometry =
-          MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
-      LayoutUnit applicable_border_scrollbar_padding_block_end =
-          container_builder_.ApplicableBorders().block_end +
-          container_builder_.ApplicableScrollbar().block_end +
-          container_builder_.ApplicablePadding().block_end;
-      LayoutUnit fragment_block_size = container_builder_.FragmentBlockSize();
+      Style().HasGapRule() && (!cross_gaps_.empty() || !main_gaps_.empty())) {
+    auto* gap_geometry =
+        MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
 
-      // For the content inline and block ends, we must take the max of where
-      // the fragment starts and ends and where the last cross gap and main
-      // gap are. This is so that when content overflows the container, we
-      // still paint the gap decorations.
-      LayoutUnit content_inline_end =
-          !cross_gaps_.empty()
-              ? std::max(cross_gaps_.back().GetGapOffset().inline_offset,
-                         container_builder_.FragmentInlineSize() -
-                             BorderScrollbarPadding().inline_end)
-              : container_builder_.FragmentInlineSize() -
-                    BorderScrollbarPadding().inline_end;
-      LayoutUnit content_block_end =
-          !main_gaps_.empty()
-              ? std::max(main_gaps_.back().GetGapOffset(),
-                         fragment_block_size -
-                             applicable_border_scrollbar_padding_block_end)
-              : fragment_block_size -
-                    applicable_border_scrollbar_padding_block_end;
-      // TODO(crbug.com/440123087): Risky since they could in theory be used
-      // after moved. Clean up to not move members. Change members to
-      // unique_ptrs.
-      if (has_column_gaps) {
-        gap_geometry->SetCrossGaps(std::move(cross_gaps_));
-        gap_geometry->SetInlineGapSize(column_gap_size_);
-      }
-      if (has_row_gaps) {
-        gap_geometry->SetMainGaps(std::move(main_gaps_));
-        gap_geometry->SetBlockGapSize(row_gap_size_);
-      }
-
-      CHECK(content_inline_start_.has_value());
-      CHECK(content_block_start_.has_value());
-      gap_geometry->SetContentInlineOffsets(*content_inline_start_,
-                                            content_inline_end);
-      gap_geometry->SetContentBlockOffsets(*content_block_start_,
-                                           content_block_end);
-
-      // For multicol, the main direction will always be the rows.
-      gap_geometry->SetMainDirection(kForRows);
-
-      container_builder_.SetGapGeometry(gap_geometry);
+    // For the content inline and block ends, we must take the max of where the
+    // fragment starts and ends and where the last cross gap and main gap are.
+    // This is so that when content overflows the container, we still paint the
+    // gap decorations.
+    LayoutUnit content_inline_end = container_builder_.FragmentInlineSize() -
+                                    BorderScrollbarPadding().inline_end;
+    if (!cross_gaps_.empty()) {
+      content_inline_end = std::max(
+          content_inline_end, cross_gaps_.back().GetGapOffset().inline_offset);
+      gap_geometry->SetCrossGaps(std::move(cross_gaps_));
+      gap_geometry->SetInlineGapSize(column_gap_size_);
     }
+
+    LayoutUnit content_block_end =
+        container_builder_.FragmentBlockSize() -
+        container_builder_.ApplicableBorders().block_end -
+        container_builder_.ApplicableScrollbar().block_end -
+        container_builder_.ApplicablePadding().block_end;
+    if (!main_gaps_.empty()) {
+      // TODO(crbug.com/357648037): There is content beyond the last main gap,
+      // so using this as the offset isn't right. The bug here is that if the
+      // multicol container is overflowed, the column gaps in the last row will
+      // be missing.
+      content_block_end =
+          std::max(content_block_end, main_gaps_.back().GetGapOffset());
+      gap_geometry->SetMainGaps(std::move(main_gaps_));
+      gap_geometry->SetBlockGapSize(row_gap_size_);
+    }
+
+    CHECK(first_column_offset_.has_value());
+    gap_geometry->SetContentInlineOffsets(first_column_offset_->inline_offset,
+                                          content_inline_end);
+    gap_geometry->SetContentBlockOffsets(first_column_offset_->block_offset,
+                                         content_block_end);
+
+    // For multicol, the main direction will always be the rows.
+    gap_geometry->SetMainDirection(kForRows);
+
+    container_builder_.SetGapGeometry(gap_geometry);
   }
 
   return container_builder_.ToBoxFragment();
@@ -1225,10 +1214,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
             column_logical_rect.BlockStartOffset());
       }
 
-      if (!content_inline_start_.has_value() &&
-          !content_block_start_.has_value()) {
-        content_inline_start_ = column_logical_rect.InlineStartOffset();
-        content_block_start_ = column_logical_rect.BlockStartOffset();
+      if (!first_column_offset_.has_value()) {
+        first_column_offset_.emplace(column_logical_rect.InlineStartOffset(),
+                                     column_logical_rect.BlockStartOffset());
       }
     }
 
