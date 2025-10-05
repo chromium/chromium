@@ -8028,6 +8028,14 @@ của chính sách
 sẽ gặp sự cố và chỉ sử dụng độ phân giải vị trí dựa trên <ph name="IP" /> trên màn hình <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Báo cáo thông tin về hệ thống</translation>
 <translation id="6339355882150329269">Không coi người dùng là không hoạt động khi video đang phát</translation>
+<translation id="6347110299837147365">Chính sách này cho phép quản trị viên mã hoá bộ nhớ đệm http của trình duyệt trên ổ đĩa.
+Hiện tại, chính sách này chỉ được hỗ trợ trên Windows.
+
+Khi bạn Bật chính sách này, bộ nhớ đệm của trình duyệt sẽ được mã hoá.
+
+Khi bạn Tắt hoặc không đặt chính sách này, bộ nhớ đệm của trình duyệt sẽ không được mã hoá.
+
+Việc mã hoá bộ nhớ đệm của trình duyệt có thể ảnh hưởng đến hiệu suất.</translation>
 <translation id="6352714113109004581">Nếu đặt chính sách này, thì bạn có thể liệt kê các mẫu URL chỉ định những trang web được phép yêu cầu người dùng cấp quyền truy cập vào thiết bị HID.
 
       Khi bạn không đặt chính sách này, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, các chế độ cài đặt cá nhân của người dùng sẽ được áp dụng.

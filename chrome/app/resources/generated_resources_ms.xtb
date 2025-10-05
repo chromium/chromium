@@ -1001,6 +1001,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="166278006618318542">Algoritma Kekunci Awam Subjek</translation>
 <translation id="1662801900924515589"><ph name="APP" /> dipasang</translation>
 <translation id="1663698992894057019">Tingkatkan kepada Chromebook baharu untuk mendapatkan kemaskinian keselamatan dan perisian terkini</translation>
+<translation id="1664497218584335032">Laman web mahu membuka pautan ini pada apl.</translation>
 <translation id="166454475160289583">Tidak dibenarkan untuk menggantikan input papan kekunci anda</translation>
 <translation id="1665328953287874063">Gunakan kata laluan atau PIN untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1665859804801131136">Ekspresionisme</translation>
@@ -6564,10 +6565,12 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5517304475148761050">Apl ini memerlukan akses kepada Gedung Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Sentiasa buka pautan <ph name="PROTOCOL_SCHEME" /> pada apl ini</translation>
 <translation id="5520605865175417976">Alih keluar tindakan <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Adakah ini halaman utama yang anda jangkakan?</translation>
 <translation id="5522156646677899028">Sambungan ini mengandungi kelemahan keselamatan yang serius.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah dipasang oleh pentadbir anda}other{# sambungan telah dipasang oleh pentadbir anda}}</translation>
+<translation id="5523203511530504754">Buka pautan <ph name="PROTOCOL_SCHEME" /> pada <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Laman yang anda tambahkan akan sentiasa aktif dan memori tidak akan dikosongkan daripada laman tersebut</translation>
 <translation id="5523558474028191231">Nama boleh menggunakan huruf, nombor serta aksara khas dan mestilah tidak melebihi <ph name="MAX_CHARACTER_COUNT" /> aksara</translation>
 <translation id="5526745900034778153">Log masuk sekali lagi untuk menyambung semula penyegerakan</translation>
@@ -9598,6 +9601,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7663859337051362114">Tambah profil eSIM</translation>
 <translation id="76641554187607347">Tiada papan kekunci disambungkan</translation>
 <translation id="7664442418269614729">Gunakan kad ini pada iPhone anda</translation>
+<translation id="7664822217939981459">Pilih apl untuk membuka pautan <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Saiz rizab</translation>
 <translation id="7665369617277396874">Tambah akaun</translation>
 <translation id="7665445336029073980">Sejarah muat turun penuh</translation>
@@ -11221,6 +11225,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8750786237117206586">Urus tetapan audio ChromeOS Flex</translation>
 <translation id="8751034568832412184">Sekolah</translation>
 <translation id="8751329102746373229">Daripada pentadbir anda</translation>
+<translation id="875242763254084885">Laman <ph name="ORIGIN" /> mahu membuka pautan ini pada apl.</translation>
 <translation id="8752451679755290210">Bergerak antara item secara automatik</translation>
 <translation id="8753948258138515839">Apl Fail memberikan akses pantas kepada fail yang telah anda simpan di Google Drive, storan luaran atau peranti Chrome OS Flex anda.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Apabila menjalankan <ph name="PRODUCT_NAME" /> di bawah persekitaran desktop yang disokong, tetapan proksi sistem akan digunakan. Bagaimanapun, sama ada sistem anda tidak disokong atau terdapat masalah melancarkan konfigurasi sistem anda.&lt;/p&gt;

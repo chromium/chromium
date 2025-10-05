@@ -159,6 +159,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1726477445370128854">Bạn có thể duyệt và tìm kiếm nhanh hơn khi Chrome tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập</translation>
 <translation id="1728803206919861584">Lưu khoá truy cập ngoài chế độ Ẩn danh?</translation>
 <translation id="1732514748744806741">Nếu mật khẩu của bạn bị lộ, chúng tôi sẽ thông báo cho bạn</translation>
+<translation id="1737694586321018892">Cấp bảo mật mạnh nhất của Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Gần đây, có 1 trang web đã gửi nhiều thông báo}other{Gần đây, có # trang web đã gửi nhiều thông báo}}</translation>
 <translation id="1749561566933687563">Đồng bộ hóa dấu trang của bạn</translation>
 <translation id="1750238553597293878">Tiếp tục sử dụng mật khẩu trong Tài khoản Google</translation>
@@ -414,6 +415,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
 <translation id="2912345083818861431">Dùng phương thức khóa màn hình để xem các thẻ ẩn danh đang mở</translation>
 <translation id="2918484639460781603">Chuyển đến phần cài đặt</translation>
+<translation id="2920776558188188922">Di chuyển thanh địa chỉ lên trên cùng hoặc xuống dưới cùng để có trải nghiệm duyệt web phù hợp với nhu cầu riêng</translation>
 <translation id="2923908459366352541">Tên không hợp lệ</translation>
 <translation id="2932150158123903946">Bộ nhớ Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Bàn phím của bạn sẽ không thay đổi</translation>
@@ -973,6 +975,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="549660026907543296">Tham gia dưới tên <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Bảng hoạt động gần đây ở dưới cùng</translation>
 <translation id="5526281268548144413">Không đóng được trên nhiều cửa sổ</translation>
+<translation id="5532536403031755365">Bổ sung một lớp bảo vệ trước các mối đe doạ trên mạng bằng chế độ bảo vệ nâng cao</translation>
 <translation id="5548606607480005320">Kiểm tra an toàn</translation>
 <translation id="5554520618550346933">Khi bạn dùng một mật khẩu đã bị công khai trên mạng, Chrome sẽ cảnh báo cho bạn. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
 <translation id="5555525474779371165">Chọn chế độ bảo vệ bằng tính năng Duyệt web an toàn của bạn</translation>
