@@ -1832,17 +1832,17 @@
     {
         "name": "asm",
         "group": "org.ow2.asm",
-        "version": "9.8"
+        "version": "9.9"
     },
     {
         "name": "asm-commons",
         "group": "org.ow2.asm",
-        "version": "9.8"
+        "version": "9.9"
     },
     {
         "name": "asm-tree",
         "group": "org.ow2.asm",
-        "version": "9.8"
+        "version": "9.9"
     },
     {
         "name": "reactive-streams",
