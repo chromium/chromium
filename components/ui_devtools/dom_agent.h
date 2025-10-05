@@ -68,6 +68,8 @@ class UI_DEVTOOLS_EXPORT DOMAgent
       std::unique_ptr<protocol::DOM::Rect>* bounds_in_screen) override;
   protocol::Response getDeviceScaleFactor(int node_id,
                                           double* device_scale_factor) override;
+  protocol::Response getOuterHTML(int node_id,
+                                  protocol::String* outer_html) override;
 
   // UIElementDelegate:
   void OnUIElementAdded(UIElement* parent, UIElement* child) override;

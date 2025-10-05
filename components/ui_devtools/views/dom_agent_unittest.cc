@@ -793,4 +793,41 @@ TEST_F(DOMAgentTest, DomSearchForElementID) {
   EXPECT_TRUE(!node_ids);
 }
 
+TEST_F(DOMAgentTest, GetOuterHTMLWithEmptyAndNonEmptyChildrenAndActiveAttr) {
+  std::unique_ptr<views::Widget> widget = CreateNamedWidget("widget_test");
+  widget->Show();
+
+  // Add a leaf view (no children).
+  widget->GetRootView()->AddChildView(std::make_unique<TestView>("child_leaf"));
+
+  // Add a non-leaf view (has one child).
+  auto child_parent = std::make_unique<TestView>("child_parent");
+  child_parent->AddChildView(std::make_unique<TestView>("child_grand"));
+  widget->GetRootView()->AddChildView(std::move(child_parent));
+
+  std::unique_ptr<DOM::Node> root;
+  dom_agent()->getDocument(&root);
+
+  int widget_node_id = GetIDForBackendElement(widget.get());
+  protocol::String outer_html;
+  protocol::Response resp =
+      dom_agent()->getOuterHTML(widget_node_id, &outer_html);
+
+  EXPECT_TRUE(resp.IsSuccess());
+
+  // Use a regex instead of exact string comparison so that the test remains
+  // robust if UIElement implementations add/modify non-essential attributes
+  // or change attribute order in the future.
+  EXPECT_THAT(outer_html, testing::MatchesRegex(
+                              R"re(<Widget.*name="widget_test".*>
+  <View .*name="RootView".*>
+    <View .*name="child_leaf".*></View>
+    <View .*name="child_parent".*>
+      <View .*name="child_grand".*></View>
+    </View>
+  </View>
+</Widget>
+)re"));
+}
+
 }  // namespace ui_devtools

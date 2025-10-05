@@ -159,6 +159,24 @@
                     ],
                     "description": "Returns the device scale factor for the specified window. Used for converting between logical and physical coordinates.",
                     "experimental": true
+                },
+                {
+                    "name": "getOuterHTML",
+                    "parameters": [
+                        {
+                            "name": "nodeId",
+                            "$ref": "NodeId",
+                            "description": "Id of the UI node to get markup for."
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "name": "outerHTML",
+                            "type": "string",
+                            "description": "Serialized outer markup for the UIElement, including its children."
+                        }
+                    ],
+                    "description": "Returns the serialized markup representation of a UIElement node, matching the structure shown in the UI DevTools panel."
                 }
             ],
             "description": "This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object\nthat has an `id`. This `id` can be used to get additional information on the Node, resolve it into\nthe JavaScript object wrapper, etc. It is important that client receives DOM events only for the\nnodes that are known to the client. Backend keeps track of the nodes that were sent to the client\nand never sends the same node twice. It is client's responsibility to collect information about\nthe nodes that were sent to the client.<p>Note that `iframe` owner elements will return\ncorresponding document elements as their child nodes.</p>",
