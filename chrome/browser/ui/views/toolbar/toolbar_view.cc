@@ -1002,10 +1002,11 @@ void ToolbarView::InitLayout() {
             .WithOrder(kToolbarActionsFlexOrder));
   }
 
-  if (toolbar_divider_) {
-    toolbar_divider_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+  if (toolbar_divider_ && base::CommandLine::ForCurrentProcess()->HasSwitch("compact-ui")) {
+    toolbar_divider_->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 2));
+  } else if (toolbar_divider_)  {
+    toolbar_divider_->SetProperty(views::kMarginsKey,
+                      gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
   }
 
   constexpr int kToolbarFlexOrderStart = 1;
@@ -1056,8 +1057,11 @@ void ToolbarView::LayoutCommon() {
     }
   }
 
-  layout_manager_->SetInteriorMargin(interior_margin);
-
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("compact-ui")) {
+    layout_manager_->SetInteriorMargin(gfx::Insets::VH(3, 0));
+  } else {
+    layout_manager_->SetInteriorMargin(interior_margin);
+  }
   // Extend buttons to the window edge if we're either in a maximized or
   // fullscreen window. This makes the buttons easier to hit, see Fitts' law.
   const bool extend_buttons_to_edge =

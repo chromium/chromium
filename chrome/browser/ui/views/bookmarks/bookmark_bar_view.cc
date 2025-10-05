@@ -643,6 +643,9 @@ gfx::Size BookmarkBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   gfx::Size prefsize;
   int preferred_height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("compact-ui")) {
+    preferred_height = 30;
+  }
   prefsize.set_height(
       static_cast<int>(preferred_height * size_animation_.GetCurrentValue()));
   return prefsize;
@@ -656,8 +659,13 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   int width = GetLeadingMargin();
   int height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
 
-  const int bookmark_bar_button_padding =
+  int bookmark_bar_button_padding =
       GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("compact-ui")) {
+    height = 30;
+    bookmark_bar_button_padding = 0;
+  }
 
   if (managed_bookmarks_button_->GetVisible()) {
     gfx::Size size = managed_bookmarks_button_->GetPreferredSize();
@@ -827,7 +835,8 @@ void BookmarkBarView::Layout(PassKey) {
                                    ? 0
                                    : kSeparatorPadding;
       saved_tab_groups_separator_view_->UpdateBorderAndPreferredSize(
-          gfx::Insets::TLBR(0, left_padding, 0, kSeparatorPadding));
+          gfx::Insets::TLBR(0, left_padding, 0, 
+                            base::CommandLine::ForCurrentProcess()->HasSwitch("compact-ui") ? 0 : kSeparatorPadding));
 
       // Update the bounds for the separator.
       gfx::Size saved_tab_groups_separator_view_pref =
