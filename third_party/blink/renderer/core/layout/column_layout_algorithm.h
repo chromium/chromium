@@ -19,6 +19,57 @@ enum class BreakStatus;
 struct LogicalSize;
 struct MarginStrut;
 
+// Multicol layout algorithm.
+//
+// Establishes a fragmentation context and produces columns as child fragments.
+// Each column is a fragmentainer that contains a portion of the fragmented
+// content.
+//
+// Additionally column spanners are also added as child fragments, if they
+// exist. They are taken out of the fragmentation context and become siblings of
+// column fragments.
+//
+// The multicol spec has the concept of "lines" and "rows". A multicol container
+// contains rows, which contain lines and/or spanners. Lines contain columns.
+// This algorithm obviously needs to be aware of these concepts, but no
+// fragments are created for rows or lines. It's just plain columns that are
+// positioned relatively to the resulting multicol fragment.
+//
+// Gap decorations:
+//
+// This algorithm also sets up gap decorations, i.e. column rules and row rules.
+// Example of a multicol container with a spanner, and a row gap.
+// Gap intersections are given by `X`.
+// +------------------------X-----------------------------------------+
+// | +---------+           Column Gap     +---------+                 |
+// | |         |                          |         |                 |
+// | +---------+                          +---------+                 |
+// |                                                                  |
+// |------------------------X-----------------------------------------|
+// |                    Spanner                                       |
+// |------------------------X-----------------------------------------|
+// |                                                                  |
+// | +---------+           Column Gap     +---------+                 |
+// | |         |                          |         |                 |
+// | +---------+                          +---------+                 |
+// X=========Row Gap========X=========================================X
+// |                                                                  |
+// | +---------+           Column Gap                                 |
+// | |         |                                                      |
+// | +---------+                                                      |
+// +------------------------X-----------------------------------------+
+//
+// To populate the gap intersections, we build them out as we place each column
+// in a row of columns.
+//
+// Each column in a line of columns, except for the first column, can be
+// associated with the following gap intersections:
+// * The column intersection of the column gap with the first or last edge of
+//   the container (in the block direction).
+// * The column intersection of the column gap with any spanner before the
+//   column.
+//
+// See third_party/blink/renderer/core/layout/gap/README.md for more info.
 class CORE_EXPORT ColumnLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
@@ -74,72 +125,12 @@ class CORE_EXPORT ColumnLayoutAlgorithm
                             const BlockBreakToken* break_token,
                             MarginStrut*);
 
-  // GapDecorations:
-  // Example of a multicol container with a spanner, and a row gap.
-  // Gap intersections are given by `X`.
-  // +------------------------X-----------------------------------------+
-  // | +---------+           Column Gap     +---------+                 |
-  // | |         |                          |         |                 |
-  // | +---------+                          +---------+                 |
-  // |                                                                  |
-  // |------------------------X-----------------------------------------|
-  // |                    Spanner                                       |
-  // |------------------------X-----------------------------------------|
-  // |                                                                  |
-  // | +---------+           Column Gap     +---------+                 |
-  // | |         |                          |         |                 |
-  // | +---------+                          +---------+                 |
-  // X=========Row Gap========X=========================================X
-  // |                                                                  |
-  // | +---------+           Column Gap                                 |
-  // | |         |                                                      |
-  // | +---------+                                                      |
-  // +------------------------X-----------------------------------------+
-  // To populate the gap intersections, we build them out as we place each
-  // column in a row of columns. If we run into a spanner, we modify the column
-  // intersections above the spanner to be "blocked after". If we run into a
-  // row gap, we build its intersections and modify the column intersections
-  // right above the row gap so that they fall in the middle of the row gap.
-  //
-  // Each column in a row of columns, except for the first column, can be
-  // associated with the following gap intersections:
-  // * The column intersection of the column gap with the first or last edge of
-  // the container (in the block direction).
-  // * The column intersection of the column gap with any spanner before the
-  // column.
-  void BuildGapIntersectionsForColumn(wtf_size_t column_index_in_row,
-                                      const LogicalRect& column_logical_rect,
-                                      bool has_wrapped,
-                                      bool row_preceeds_spanner);
-
-  // If a row gap exists, this will build the gap intersections for that row
-  // gap. These include:
-  // * Row intersections at the start and end of the row.
-  // * Row intersections of that row gap with any column gaps.
-  // * Column intersections of the row gap with any column gaps.
-  //
-  // We only need to do this once per row of columns.
-  void AdjustEveryColumnLastGapIntersectionsWithRowGap(LayoutUnit row_offset);
-
-  // If we have a row gap, we need to build the intersections of that row gap
-  // with each column gap separately. We need to do this once per row of
-  // columns, since it could be the case that the last row of columns has fewer
-  // columns than the row before it.
-  void BuildRowGapIntersections(const LogicalRect& column_logical_rect,
-                                GapIntersectionList& row_gap_intersections);
-
-  // TODO(crbug.com/436140061): The following are for the optimized version of
-  // GapDecorations. Once the optimized version is implemented, we can remove
-  // all the other unused methods and members from the old version.
-
-  // Gap decorations:
-  // * `CrossGap`s are the column gaps. The presence of a spanner will create a
-  // new `CrossGap` for each column gap.
-  // * `MainGap`s are the row gaps created by `column-wrap: wrap`. We will
-  // also have a `MainGap` for each spanner.
-  // See third_party/blink/renderer/core/layout/gap/README.md for more info.
+  // Add an inline-direction gap, caused by column gaps. The presence of a
+  // spanner will create a new `CrossGap` for each column gap.
   void AddCrossGapForColumn(LayoutUnit inline_offset, LayoutUnit block_offset);
 
+  // Add a block-direction gap, which are caused by row gaps when columns wrap
+  // (controlled by the `column-wrap` property), and also by column spanners.
   void AddMainGapForSpanner(LayoutUnit block_offset,
                             LayoutUnit logical_fragment_block_size);
 
@@ -150,7 +141,6 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // needed by Paint to calculate the intersection points of row gaps and column
   // gaps.
   void CommitRangeOfCrossGapsBeforeCurrentMainGap();
-  void ResetRangeOfCrossGapsBeforeCurrentMainGap();
 
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,
@@ -248,9 +238,15 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   LayoutUnit column_gap_size_;
   LayoutUnit row_gap_size_;
 
-  //`main_gaps_` are the row gaps, while `cross_gaps_` are the column gaps.
+  // One entry for each row gap, and one entry between column content and
+  // spanners. There is no gap between column content and spanners, but column
+  // gaps need to be interrupted, since they shouldn't necessarily overlap with
+  // spanners.
   Vector<MainGap> main_gaps_;
+
+  // One entry for each column gap.
   Vector<CrossGap> cross_gaps_;
+
   CrossGapRange range_of_cross_gaps_before_current_main_gap_;
 
   std::optional<LayoutUnit> content_inline_start_;
