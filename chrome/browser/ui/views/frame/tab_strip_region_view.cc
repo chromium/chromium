@@ -126,7 +126,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         ShouldShowNewTabButton(browser)) {
       tab_strip_combo_button =
           std::make_unique<TabStripComboButton>(browser, tab_strip_);
-    } else if (!features::IsTabSearchMoving()) {
+    } else if (!features::IsTabSearchMoving()  &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch("remove-tabsearch-button")) {
       tab_search_container = std::make_unique<TabSearchContainer>(
           tab_strip_->controller(), browser->GetTabStripModel(),
           render_tab_search_before_tab_strip_, this, browser,

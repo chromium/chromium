@@ -5293,7 +5293,8 @@ void BrowserView::AddedToWidget() {
 
   toolbar_->Init();
 
-  if (GetIsNormalType()) {
+  if (GetIsNormalType() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch("remove-tabsearch-button")) {
     if (features::HasTabSearchToolbarButton()) {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
           toolbar_->tab_search_button(), browser_.get(),
