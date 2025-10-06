@@ -4218,7 +4218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.MemoryCache.TotalTakenTimeForDidLoadResourceFromMemoryCache"
-    enum="RevalidationPolicy" expires_after="2026-02-28">
+    units="microseconds" expires_after="2026-02-28">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
