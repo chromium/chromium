@@ -1508,6 +1508,15 @@ bool ServiceWorkerMainResourceLoader::IsEligibleForRecordingTimingMetrics() {
     return false;
   }
 
+  // When the synthetic response is used, do not record metrics since it neither
+  // starts a service worker nor dispatches a fetch event.
+  //
+  // TODO(crbug.com/448235805): Revisit this to ensure if all metrics are really
+  // not needed for the synthetic response.
+  if (is_synthetic_response_used_) {
+    return false;
+  }
+
   if (!ShouldRecordServiceWorkerFetchStart()) {
     return false;
   }
