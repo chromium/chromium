@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AMOUNT_EXTRACTION_MANAGER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AMOUNT_EXTRACTION_MANAGER_TEST_API_H_
 
+#include <memory>
+
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace autofill::payments {
 
@@ -41,6 +44,12 @@ class AmountExtractionManagerTestApi {
   const optimization_guide::proto::AnnotatedPageContent* GetAiPageContent()
       const {
     return amount_extraction_manager_->ai_page_content_.get();
+  }
+
+  void SetAiPageContent() {
+    amount_extraction_manager_->ai_page_content_ =
+        std::make_unique<optimization_guide::proto::AnnotatedPageContent>(
+            optimization_guide::proto::AnnotatedPageContent());
   }
 
  private:

@@ -20,9 +20,15 @@ class AutofillDriver;
 class BrowserAutofillManager;
 }  // namespace autofill
 
-namespace optimization_guide::proto {
+namespace optimization_guide {
+
+namespace proto {
 class AnnotatedPageContent;
-}
+}  // namespace proto
+
+class ModelQualityLogEntry;
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
 
 namespace autofill::payments {
 
@@ -55,9 +61,13 @@ class AmountExtractionManager {
       delete;
   virtual ~AmountExtractionManager();
 
-  // Timeout limit for the amount extraction in millisecond.
+  // Timeout limit for the regex-base amount extraction in millisecond.
   static constexpr base::TimeDelta kAmountExtractionWaitTime =
       base::Milliseconds(150);
+
+  // Timeout limit for the ai-based amount extraction in millisecond.
+  static constexpr base::TimeDelta kAiBasedAmountExtractionWaitTime =
+      base::Seconds(10);
 
   // This function attempts to convert a string representation of a monetary
   // value in dollars into a uint64_t by parsing it as a double and multiplying
@@ -97,6 +107,9 @@ class AmountExtractionManager {
   // current page.
   virtual void TriggerCheckoutAmountExtraction();
 
+  // Trigger the search for the final checkout amount using server-side AI.
+  virtual void TriggerCheckoutAmountExtractionWithAi();
+
  private:
   friend class AmountExtractionManagerTest;
   friend class AmountExtractionManagerTestApi;
@@ -108,6 +121,11 @@ class AmountExtractionManager {
   virtual void OnCheckoutAmountReceived(
       base::TimeTicks search_request_start_timestamp,
       const std::string& extracted_amount);
+
+  // Invoked once the amount extraction from the model executor is complete.
+  virtual void OnCheckoutAmountReceivedFromAi(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   // Checks whether the current amount search has reached the timeout or not.
   // If so, cancel the ongoing search.

@@ -22,6 +22,8 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/amount_extraction.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -137,6 +139,26 @@ void AmountExtractionManager::OnAiPageContentReceived(
   // TODO(crbug.com/444683986): Log ApcGenerationResult to UMA.
 }
 
+void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {
+  if (!ai_page_content_) {
+    // TODO(crbug.com/444685164) If the member variable `ai_page_content_` is
+    // not initialized, another attempt to fetch it will be made. Retry only
+    // once.
+    return;
+  }
+
+  // Construct request
+  optimization_guide::proto::AmountExtractionRequest request;
+  *request.mutable_annotated_page_content() = std::move(*ai_page_content_);
+  ai_page_content_.reset();
+
+  autofill_manager_->client().GetOptimizationGuideModelExecutor()->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kAmountExtraction,
+      std::move(request), kAiBasedAmountExtractionWaitTime,
+      base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceivedFromAi,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
   if (search_request_pending_) {
     return;
@@ -195,6 +217,13 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
               << latency.InMilliseconds() << " milliseconds.";
     }
   }
+}
+
+void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  // TODO(crbug.com/444685164) Add logic to handle BNPL flow once the model
+  // executor response comes back.
 }
 
 void AmountExtractionManager::OnTimeoutReached() {
