@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
@@ -49,4 +50,12 @@ public interface TopControlLayer {
      * @param topControlsMinHeight The new minimum height of the top controls.
      */
     default void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {}
+
+    /**
+     * Interface method to receive OffsetTag updates. Unlike bottom controls, top controls does not
+     * have layers that has additional height that draws beyond its allocated height.
+     *
+     * @param offsetTagsInfo The latest offset tags info. Null if the layer becomes not scrollable.
+     */
+    default void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
 }

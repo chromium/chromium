@@ -10,7 +10,9 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -56,7 +58,9 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -591,5 +595,31 @@ public class BookmarkBarCoordinatorTest {
                 "Overflow tint should be set for regular light theme.",
                 expectedDarkTint,
                 bookmarBarModel.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
+    }
+
+    @Test
+    public void testOffsetTags_ControlsAtTop() {
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsManager).getControlsPosition();
+        mCoordinator.updateOffsetTag(new BrowserControlsOffsetTagsInfo());
+        assertNotNull(
+                mCoordinator
+                        .getBookmarkBarSceneLayerModelForTesting()
+                        .get(BookmarkBarSceneLayerProperties.OFFSET_TAG));
+
+        mCoordinator.updateOffsetTag(null);
+        assertNull(
+                mCoordinator
+                        .getBookmarkBarSceneLayerModelForTesting()
+                        .get(BookmarkBarSceneLayerProperties.OFFSET_TAG));
+    }
+
+    @Test
+    public void testOffsetTags_ControlsAtBottom() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsManager).getControlsPosition();
+        mCoordinator.updateOffsetTag(new BrowserControlsOffsetTagsInfo());
+        assertNull(
+                mCoordinator
+                        .getBookmarkBarSceneLayerModelForTesting()
+                        .get(BookmarkBarSceneLayerProperties.OFFSET_TAG));
     }
 }

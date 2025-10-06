@@ -297,10 +297,7 @@ public class BookmarkBarCoordinator
 
         mTopControlsStacker = topControlsStacker;
         mTopControlsStacker.addControl(this);
-
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-            updateOffsetTag();
-        }
+        mTopControlsStacker.requestLayerUpdate(false);
     }
 
     /** Destroys the bookmark bar coordinator. */
@@ -532,21 +529,15 @@ public class BookmarkBarCoordinator
     }
 
     @Override
-    public void onOffsetTagsInfoChanged(
-            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-            BrowserControlsOffsetTagsInfo offsetTagsInfo,
-            int constraints,
-            boolean shouldUpdateOffsets) {
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-            updateOffsetTag();
-        }
-    }
-
-    @Override
-    public void onControlsPositionChanged(
-            @BrowserControlsStateProvider.ControlsPosition int controlsPosition) {
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-            updateOffsetTag();
+    public void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        // The Bookmarks Bar will only be present when the control container is at the top.
+        if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.TOP
+                && offsetTagsInfo != null) {
+            mBookmarkBarSceneLayerModel.set(
+                    BookmarkBarSceneLayerProperties.OFFSET_TAG,
+                    offsetTagsInfo.getTopControlsOffsetTag());
+        } else {
+            mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.OFFSET_TAG, null);
         }
     }
 
@@ -592,17 +583,6 @@ public class BookmarkBarCoordinator
         // calculating offset/topMargin in order to bottom align the bookmark bar relative to other
         // top browser controls.
         return mBrowserControlsStateProvider.getTopControlsHeight() - getTopControlHeight();
-    }
-
-    private void updateOffsetTag() {
-        // The Bookmarks Bar will only be present when the control container is at the top.
-        if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.TOP) {
-            mBookmarkBarSceneLayerModel.set(
-                    BookmarkBarSceneLayerProperties.OFFSET_TAG,
-                    mTopControlsStacker.getTopControlsOffsetTag());
-        } else {
-            mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.OFFSET_TAG, null);
-        }
     }
 
     @VisibleForTesting
@@ -671,8 +651,11 @@ public class BookmarkBarCoordinator
         }
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
+    }
+
+    PropertyModel getBookmarkBarSceneLayerModelForTesting() {
+        return mBookmarkBarSceneLayerModel;
     }
 }

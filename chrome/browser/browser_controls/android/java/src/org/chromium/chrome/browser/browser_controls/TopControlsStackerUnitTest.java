@@ -20,6 +20,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
@@ -36,6 +37,8 @@ public class TopControlsStackerUnitTest {
         private final @ScrollBehavior int mScrollBehavior;
         private final boolean mContributesToTotalHeight;
         private final int mHeight;
+
+        private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
         TestLayer(
                 @TopControlType int type,
@@ -73,6 +76,11 @@ public class TopControlsStackerUnitTest {
         @Override
         public int getTopControlHeight() {
             return mHeight;
+        }
+
+        @Override
+        public void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+            mOffsetTagsInfo = offsetTagsInfo;
         }
     }
 
@@ -196,53 +204,32 @@ public class TopControlsStackerUnitTest {
 
     @Test
     public void testMinHeightCalculation() {
+        TestLayer statusIndicator =
+                new TestLayer(
+                        TopControlType.STATUS_INDICATOR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.NEVER_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        10);
         TestLayer toolbar =
                 new TestLayer(
                         TopControlType.TOOLBAR,
                         TopControlVisibility.VISIBLE,
-                        ScrollBehavior.NEVER_SCROLLABLE,
-                        /* contributesToTotalHeight= */ true,
-                        100);
-        TestLayer tabstrip =
-                new TestLayer(
-                        TopControlType.TABSTRIP,
-                        TopControlVisibility.VISIBLE,
                         ScrollBehavior.DEFAULT_SCROLLABLE,
                         /* contributesToTotalHeight= */ true,
-                        50);
+                        100);
+        mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.addControl(tabstrip);
         mTopControlsStacker.requestLayerUpdate(false);
 
         Assert.assertEquals(
                 "Total height should be 150.",
-                150,
+                110,
                 mTopControlsStacker.getVisibleTopControlsTotalHeight());
         Assert.assertEquals(
                 "Min height should be 100.",
-                100,
+                10,
                 mTopControlsStacker.getVisibleTopControlsMinHeight());
-    }
-
-    @Test
-    public void testScrollingDisabled() {
-        TestLayer toolbar =
-                new TestLayer(
-                        TopControlType.TOOLBAR,
-                        TopControlVisibility.VISIBLE,
-                        ScrollBehavior.DEFAULT_SCROLLABLE,
-                        /* contributesToTotalHeight= */ true,
-                        100);
-        mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.onOffsetTagsInfoChanged(
-                new BrowserControlsOffsetTagsInfo(),
-                new BrowserControlsOffsetTagsInfo(),
-                BrowserControlsState.SHOWN,
-                false);
-
-        mTopControlsStacker.setScrollingDisabled(true);
-
-        verify(mBrowserControlsSizer).setTopControlsHeight(100, 100);
     }
 
     @Test(expected = AssertionError.class)
@@ -293,7 +280,28 @@ public class TopControlsStackerUnitTest {
     }
 
     @Test
-    public void testBrowserControlsStateChange() {
+    public void testScrollingDisabled() {
+        TestLayer toolbar =
+                new TestLayer(
+                        TopControlType.TOOLBAR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.DEFAULT_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        100);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.onOffsetTagsInfoChanged(
+                new BrowserControlsOffsetTagsInfo(),
+                new BrowserControlsOffsetTagsInfo(),
+                BrowserControlsState.SHOWN,
+                false);
+
+        mTopControlsStacker.setScrollingDisabled(true);
+
+        verify(mBrowserControlsSizer).setTopControlsHeight(100, 100);
+    }
+
+    @Test
+    public void testScrollingDisabled_HiddenToShown() {
         TestLayer toolbar =
                 new TestLayer(
                         TopControlType.TOOLBAR,
@@ -303,12 +311,14 @@ public class TopControlsStackerUnitTest {
                         100);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.setScrollingDisabled(true);
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
         mTopControlsStacker.onOffsetTagsInfoChanged(
                 new BrowserControlsOffsetTagsInfo(),
-                new BrowserControlsOffsetTagsInfo(),
+                offsetTagsInfo,
                 BrowserControlsState.HIDDEN,
                 false);
         verify(mBrowserControlsSizer).setTopControlsHeight(100, 0);
+        assertHasOffsetTags(toolbar, offsetTagsInfo);
 
         // Simulate a browser controls state change without offset tag update.
         reset(mBrowserControlsSizer);
@@ -316,6 +326,92 @@ public class TopControlsStackerUnitTest {
         verify(mVisibilityDelegate).addObserver(mVisibilityCallbackCaptor.capture());
         mVisibilityCallbackCaptor.getValue().onResult(BrowserControlsState.SHOWN);
         verify(mBrowserControlsSizer).setTopControlsHeight(100, 100);
+        assertHasNoOffsetTags(toolbar);
+    }
+
+    @Test
+    public void testScrollingDisabled_OffsetTagsInfoChanged() {
+        TestLayer toolbar =
+                new TestLayer(
+                        TopControlType.TOOLBAR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.DEFAULT_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        100);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.setScrollingDisabled(true);
+        verify(mBrowserControlsSizer).setTopControlsHeight(100, 100);
+        reset(mBrowserControlsSizer);
+
+        mTopControlsStacker.onOffsetTagsInfoChanged(
+                new BrowserControlsOffsetTagsInfo(),
+                new BrowserControlsOffsetTagsInfo(),
+                BrowserControlsState.BOTH,
+                false);
+        verify(mBrowserControlsSizer).setTopControlsHeight(100, 100);
+        assertHasNoOffsetTags(toolbar);
+    }
+
+    @Test
+    public void testOffsetTagsInfo_MultipleLayers() {
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        mTopControlsStacker.onOffsetTagsInfoChanged(
+                new BrowserControlsOffsetTagsInfo(),
+                offsetTagsInfo,
+                BrowserControlsState.BOTH,
+                false);
+
+        TestLayer statusIndicator =
+                new TestLayer(
+                        TopControlType.STATUS_INDICATOR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.NEVER_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        10);
+        TestLayer toolbar =
+                new TestLayer(
+                        TopControlType.TOOLBAR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.DEFAULT_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        100);
+
+        mTopControlsStacker.addControl(statusIndicator);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
+
+        verify(mBrowserControlsSizer).setTopControlsHeight(110, 10);
+        assertHasNoOffsetTags(statusIndicator);
+        assertHasOffsetTags(toolbar, offsetTagsInfo);
+    }
+
+    @Test
+    public void testOffsetTagsInfo_ChangeConstraints() {
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        mTopControlsStacker.onOffsetTagsInfoChanged(
+                new BrowserControlsOffsetTagsInfo(),
+                offsetTagsInfo,
+                BrowserControlsState.BOTH,
+                false);
+
+        TestLayer toolbar =
+                new TestLayer(
+                        TopControlType.TOOLBAR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.DEFAULT_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        100);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
+
+        verify(mBrowserControlsSizer).setTopControlsHeight(100, 0);
+        assertHasOffsetTags(toolbar, offsetTagsInfo);
+
+        BrowserControlsOffsetTagsInfo newOffsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        mTopControlsStacker.onOffsetTagsInfoChanged(
+                offsetTagsInfo, newOffsetTagsInfo, BrowserControlsState.SHOWN, false);
+        // Assert new offset tags are populated.
+        assertHasOffsetTags(toolbar, newOffsetTagsInfo);
     }
 
     @Test
@@ -358,5 +454,18 @@ public class TopControlsStackerUnitTest {
         Assert.assertFalse(
                 "Layers not in the current stack can never be at the bottom.",
                 mTopControlsStacker.isLayerAtBottom(TopControlType.HAIRLINE));
+    }
+
+    void assertHasOffsetTags(
+            TestLayer layer, @Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        Assert.assertEquals(
+                "Scrollable layer should holds offset tags info.",
+                offsetTagsInfo,
+                layer.mOffsetTagsInfo);
+    }
+
+    void assertHasNoOffsetTags(TestLayer layer) {
+        Assert.assertNull(
+                "Unscrollable layer should not have offset tags info", layer.mOffsetTagsInfo);
     }
 }
