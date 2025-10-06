@@ -18,12 +18,13 @@
 import {
   InvalidArgumentException,
   NoSuchNetworkCollectorException,
+  UnsupportedOperationException,
 } from '../../../protocol/ErrorResponse.js';
 import type {
   Browser,
   BrowsingContext,
-  Network,
 } from '../../../protocol/generated/webdriver-bidi.js';
+import {Network} from '../../../protocol/generated/webdriver-bidi.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 
@@ -33,7 +34,7 @@ type NetworkCollector = Network.AddDataCollectorParameters;
 
 // The default total data size limit in CDP.
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_network_agent.cc;drc=da1f749634c9a401cc756f36c2e6ce233e1c9b4d;l=133
-const MAX_TOTAL_COLLECTED_SIZE = 200 * 1000 * 1000;
+const MAX_TOTAL_COLLECTED_SIZE = 200_000_000;
 
 export class CollectorsStorage {
   readonly #collectors = new Map<string, NetworkCollector>();
@@ -45,6 +46,15 @@ export class CollectorsStorage {
   }
 
   addDataCollector(params: Network.AddDataCollectorParameters) {
+    const unsupportedDataTypes = params.dataTypes.filter(
+      (dataType) => dataType !== Network.DataType.Response,
+    );
+    if (unsupportedDataTypes.length > 0) {
+      throw new UnsupportedOperationException(
+        `Unsupported data type: ${unsupportedDataTypes.join(', ')}`,
+      );
+    }
+
     if (
       params.maxEncodedDataSize < 1 ||
       params.maxEncodedDataSize > MAX_TOTAL_COLLECTED_SIZE
@@ -60,7 +70,7 @@ export class CollectorsStorage {
     return collectorId;
   }
 
-  isCollected(requestId: Network.Request, collectorId?: string) {
+  isResponseCollected(requestId: Network.Request, collectorId?: string) {
     if (collectorId !== undefined && !this.#collectors.has(collectorId)) {
       throw new NoSuchNetworkCollectorException(
         `Unknown collector ${collectorId}`,
@@ -84,7 +94,12 @@ export class CollectorsStorage {
     return true;
   }
 
-  disown(requestId: Network.Request, collectorId?: string) {
+  isRequestCollected(_requestId: Network.Request, _collectorId?: string) {
+    // Request data collectors are not implemented.
+    return false;
+  }
+
+  disownResponse(requestId: Network.Request, collectorId?: string) {
     if (collectorId !== undefined) {
       this.#requestCollectors.get(requestId)?.delete(collectorId);
     }

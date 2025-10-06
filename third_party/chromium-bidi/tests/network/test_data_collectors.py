@@ -22,7 +22,7 @@ from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
 SOME_CONTENT = "some downloadable content"
 NETWORK_RESPONSE_STARTED_EVENT = "network.responseStarted"
 SOME_UNKNOWN_COLLECTOR_ID = "SOME_UNKNOWN_COLLECTOR_ID"
-MAX_TOTAL_COLLECTED_SIZE = 200 * 1000 * 1000  # Default CDP limit.
+MAX_TOTAL_COLLECTED_SIZE = 200_000_000  # Default CDP limit.
 
 
 @pytest.fixture
@@ -37,8 +37,8 @@ def get_url(local_server_http):
 
 
 @pytest_asyncio.fixture
-async def init_request(websocket, read_messages, get_url):
-    async def init_request(context_id, content):
+async def init_response(websocket, read_messages, get_url):
+    async def init_response(context_id, content):
         await subscribe(websocket, NETWORK_RESPONSE_STARTED_EVENT, context_id)
         command_id = await send_JSON_command(
             websocket, {
@@ -75,12 +75,12 @@ async def init_request(websocket, read_messages, get_url):
 
         return request_id
 
-    return init_request
+    return init_response
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_required_params(
-        websocket, context_id, init_request):
+async def test_network_collector_get_data_response_required_params(
+        websocket, context_id, init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -91,7 +91,7 @@ async def test_network_collector_get_data_required_params(
         })
     assert resp == {"collector": ANY_UUID}
 
-    request_id = await init_request(context_id, SOME_CONTENT)
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     # Assert data is collected.
     resp = await execute_command(
@@ -127,8 +127,8 @@ async def test_network_collector_get_data_required_params(
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_collector(websocket, context_id,
-                                                    init_request):
+async def test_network_collector_get_data_response_collector(
+        websocket, context_id, init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -140,7 +140,7 @@ async def test_network_collector_get_data_collector(websocket, context_id,
     assert resp == {"collector": ANY_UUID}
     collector_id = resp["collector"]
 
-    request_id = await init_request(context_id, SOME_CONTENT)
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     # Assert data is collected.
     resp = await execute_command(
@@ -177,9 +177,9 @@ async def test_network_collector_get_data_collector(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_unknown_collector(
-        websocket, context_id, init_request):
-    request_id = await init_request(context_id, SOME_CONTENT)
+async def test_network_collector_get_data_response_unknown_collector(
+        websocket, context_id, init_response):
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     with pytest.raises(
             Exception,
@@ -199,8 +199,8 @@ async def test_network_collector_get_data_unknown_collector(
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_disown_no_collector(
-        websocket, context_id, init_request):
+async def test_network_collector_get_data_response_disown_no_collector(
+        websocket, context_id, init_response):
     await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -210,7 +210,7 @@ async def test_network_collector_get_data_disown_no_collector(
             }
         })
 
-    request_id = await init_request(context_id, SOME_CONTENT)
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     with pytest.raises(
             Exception,
@@ -230,8 +230,8 @@ async def test_network_collector_get_data_disown_no_collector(
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_disown_removes_data(
-        websocket, context_id, init_request):
+async def test_network_collector_get_data_response_disown_removes_data(
+        websocket, context_id, init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -243,7 +243,7 @@ async def test_network_collector_get_data_disown_removes_data(
     assert resp == {"collector": ANY_UUID}
     collector_id = resp["collector"]
 
-    request_id = await init_request(context_id, SOME_CONTENT)
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     # Assert data is collected.
     resp = await execute_command(
@@ -282,7 +282,7 @@ async def test_network_collector_get_data_disown_removes_data(
 
 @pytest.mark.asyncio
 async def test_network_collector_remove_data_collector(websocket, context_id,
-                                                       init_request):
+                                                       init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -294,7 +294,7 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
     assert resp == {"collector": ANY_UUID}
     collector_id = resp["collector"]
 
-    request_id = await init_request(context_id, SOME_CONTENT)
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     # Assert data is collected.
     resp = await execute_command(
@@ -354,7 +354,7 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_network_collector_disown_data(websocket, context_id,
-                                             init_request):
+                                             init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -366,7 +366,7 @@ async def test_network_collector_disown_data(websocket, context_id,
     assert resp == {"collector": ANY_UUID}
     collector_id = resp["collector"]
 
-    request_id = await init_request(context_id, SOME_CONTENT)
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     # Assert data is collected.
     resp = await execute_command(
@@ -414,7 +414,7 @@ async def test_network_collector_disown_data(websocket, context_id,
 @pytest.mark.asyncio
 async def test_network_collector_scoped_to_context(websocket, context_id,
                                                    another_context_id,
-                                                   init_request):
+                                                   init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -426,7 +426,7 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
         })
     assert resp == {"collector": ANY_UUID}
 
-    request_id = await init_request(context_id, SOME_CONTENT)
+    request_id = await init_response(context_id, SOME_CONTENT)
 
     # Assert the data is not collected.
     with pytest.raises(
@@ -446,7 +446,8 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_oopif(websocket, context_id, html):
+async def test_network_collector_get_data_response_oopif(
+        websocket, context_id, html):
     await goto_url(websocket, context_id, html())
 
     await subscribe(websocket, ['network.responseCompleted'])
