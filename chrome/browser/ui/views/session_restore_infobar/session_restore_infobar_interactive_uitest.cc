@@ -106,7 +106,6 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 // are set to continue where they left off.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        InfobarShownForSessionRestore) {
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
 
   CreateInfobar(browser(), true, false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId));
@@ -139,7 +138,9 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 // browser session is restored.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        InfobarMessageValueForRestart) {
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
+  if (!IsDefaultContinueSession()) {
+    return;
+  }
   CreateInfobar(browser(), true, false);
 
   RunTestSequence(

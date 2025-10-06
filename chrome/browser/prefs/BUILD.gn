@@ -404,6 +404,7 @@ source_set("util_impl") {
     ":util",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/startup:startup_tab",
     "//chrome/common:constants",
     "//components/bookmarks/common",

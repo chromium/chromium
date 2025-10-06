@@ -152,11 +152,6 @@ inline constexpr char kSessionExitType[] = "profile.exit_type";
 // 5: open the New Tab Page on startup.
 inline constexpr char kRestoreOnStartup[] = "session.restore_on_startup";
 
-// This pref is set to true when the user changes the kRestoreOnStartup pref.
-// This is used to prevent showing the session restore infobar.
-inline constexpr char kSessionRestorePrefChanged[] =
-    "session.restore_pref_changed";
-
 // The URLs to restore on startup or when the home button is pressed. The URLs
 // are only restored on startup if kRestoreOnStartup is 4.
 inline constexpr char kURLsToRestoreOnStartup[] = "session.startup_urls";

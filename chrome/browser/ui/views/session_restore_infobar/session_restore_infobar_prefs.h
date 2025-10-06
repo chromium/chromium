@@ -20,9 +20,6 @@ void IncrementInfoBarShownCount(PrefService* prefs);
 // number of times allowed.
 bool InfoBarShownMaxTimes(const PrefService* prefs);
 
-// Returns true if the session restore pref was changed.
-bool UserInteractedWithSessionRestorePref(const PrefService* prefs);
-
 }  // namespace session_restore_infobar
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SESSION_RESTORE_INFOBAR_SESSION_RESTORE_INFOBAR_PREFS_H_

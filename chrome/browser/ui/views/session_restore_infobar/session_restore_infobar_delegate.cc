@@ -95,9 +95,6 @@ SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() {
 
 void SessionRestoreInfoBarDelegate::OnSessionRestorePrefChanged() {
   RecordSettingChanged(true, message_type_);
-  // Set the pref to true so that the infobar does not show on the next startup.
-  profile_.get().GetPrefs()->SetBoolean(prefs::kSessionRestorePrefChanged,
-                                        true);
   infobar()->RemoveSelf();
 }
 
@@ -173,10 +170,10 @@ void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
                       SessionRestoreInfoBarDelegate::InfobarAction::kDismissed);
   if (close_cb_) {
     std::move(close_cb_).Run();
-    if (!UserInteractedWithSessionRestorePref(profile_.get().GetPrefs())) {
+    if (profile_->GetPrefs()
+            ->FindPreference(prefs::kRestoreOnStartup)
+            ->IsDefaultValue()) {
       RecordSettingChanged(false, message_type_);
-      profile_.get().GetPrefs()->SetBoolean(prefs::kSessionRestorePrefChanged,
-                                            true);
     }
   }
   ConfirmInfoBarDelegate::InfoBarDismissed();
