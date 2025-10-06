@@ -26,17 +26,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPER_H_
 
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
-#include "third_party/blink/renderer/platform/text/text_run.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
-struct CharacterRange;
 class Font;
-class ShapeCache;
+class TextRun;
 struct GlyphData;
 
 class PLATFORM_EXPORT CachingWordShaper final {
@@ -48,16 +44,9 @@ class PLATFORM_EXPORT CachingWordShaper final {
   CachingWordShaper& operator=(const CachingWordShaper&) = delete;
   ~CachingWordShaper() = default;
 
-  float Width(const TextRun&, gfx::RectF* glyph_bounds);
-
-  void FillResultBuffer(const TextRun&, ShapeResultBuffer*);
-  CharacterRange GetCharacterRange(const TextRun&, unsigned from, unsigned to);
-
   GlyphData EmphasisMarkGlyphData(const TextRun&) const;
 
  private:
-  ShapeCache* GetShapeCache() const;
-
   const Font& font_;
 };
 

@@ -364,28 +364,4 @@ TEST_F(CachingWordShaperTest, SegmentHangulToneMark) {
   ASSERT_FALSE(iterator.Next(&word_result));
 }
 
-TEST_F(CachingWordShaperTest, GlyphBoundsWithSpaces) {
-  Font* font = MakeGarbageCollected<Font>(font_description);
-  CachingWordShaper shaper(*font);
-
-  TextRun periods(base::byte_span_from_cstring(".........."));
-  gfx::RectF periods_glyph_bounds;
-  float periods_width = shaper.Width(periods, &periods_glyph_bounds);
-
-  TextRun periods_and_spaces(
-      base::byte_span_from_cstring(". . . . . . . . . ."));
-  gfx::RectF periods_and_spaces_glyph_bounds;
-  float periods_and_spaces_width =
-      shaper.Width(periods_and_spaces, &periods_and_spaces_glyph_bounds);
-
-  // The total width of periods and spaces should be longer than the width of
-  // periods alone.
-  ASSERT_GT(periods_and_spaces_width, periods_width);
-
-  // The glyph bounds of periods and spaces should be longer than the glyph
-  // bounds of periods alone.
-  ASSERT_GT(periods_and_spaces_glyph_bounds.width(),
-            periods_glyph_bounds.width());
-}
-
 }  // namespace blink
