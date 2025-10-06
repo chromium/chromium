@@ -38,35 +38,45 @@
   <Type Name="std::__Cr::basic_string&lt;*&gt;">
     <Intrinsic Name="is_wide" Expression="sizeof($T1) > 1" />
     <Intrinsic Name="is_long" Expression="__rep_.__s.__is_long_" />
-    <Intrinsic Name="short_size" Expression="__rep_.__s.__size_" />
-    <Intrinsic Name="long_size" Expression="__rep_.__l.__size_" />
-    <Intrinsic Name="long_data" Expression="__rep_.__l.__data_" />
+    <Intrinsic Name="size" Expression="is_long() ? __rep_.__l.__size_ : (size_t)__rep_.__s.__size_" />
     <!-- Mask off the top bit which stores __is_long_. -->
     <Intrinsic Name="long_cap" Expression="__rep_.__l.__cap_ &amp; 0x7FFFFFFFFFFFFFFF" />
-    <!-- Short string capacity is buffer size minus 1 for null terminator -->
+    <!-- Short string capacity is buffer size minus 1 for null terminator. -->
     <Intrinsic Name="short_cap" Expression="sizeof(__rep_.__s.__data_) / sizeof($T1) - 1" />
+    <Intrinsic Name="data" Expression="is_long() ? __rep_.__l.__data_ : __rep_.__s.__data_" />
+    <Intrinsic Name="contains_embedded_nul" Expression="size() != (is_wide() ? wcslen(data()) : strlen(data()))" />
 
-    <DisplayString Condition="!is_wide() &amp;&amp; is_long()">{long_data(),[long_size()]s}</DisplayString>
-    <DisplayString Condition="!is_wide() &amp;&amp; !is_long()">{__rep_.__s.__data_,[short_size()]s}</DisplayString>
-    <DisplayString Condition="is_long()">{long_data(),[long_size()]su}</DisplayString>
-    <DisplayString Condition="!is_long()">{__rep_.__s.__data_,[short_size()]su}</DisplayString>
+    <DisplayString Condition="contains_embedded_nul() &amp;&amp; !is_wide()">{data(),[size()]s} (data after NUL exists)</DisplayString>
+    <DisplayString Condition="contains_embedded_nul()">{data(),[size()]su} (data after NUL exists)</DisplayString>
+    <DisplayString Condition="!is_wide()">{data(),[size()]s}</DisplayString>
+    <DisplayString>{data(),[size()]su}</DisplayString>
 
-    <StringView Condition="is_long()">long_data(),[long_size()]</StringView>
-    <StringView Condition="!is_long()">__rep_.__s.__data_,[short_size()]</StringView>
+    <StringView>data(),[size()]</StringView>
 
     <Expand>
-      <Item Name="[size]" Condition="is_long()" ExcludeView="simple">long_size()</Item>
-      <Item Name="[size]" Condition="!is_long()" ExcludeView="simple">(size_t)short_size()</Item>
+      <Item Name="[size]" ExcludeView="simple">size()</Item>
       <Item Name="[capacity]" Condition="is_long()" ExcludeView="simple">long_cap()</Item>
       <Item Name="[capacity]" Condition="!is_long()" ExcludeView="simple">short_cap()</Item>
-      <ArrayItems Condition="is_long()">
-        <Size>long_size()</Size>
-        <ValuePointer>long_data()</ValuePointer>
+      <Item Name="[data]" Condition="!is_long()" ExcludeView="simple">data()</Item>
+      <ArrayItems>
+        <Size>size()</Size>
+        <ValuePointer>data()</ValuePointer>
       </ArrayItems>
-      <ArrayItems Condition="!is_long()">
-        <Size>short_size()</Size>
-        <ValuePointer>__rep_.__s.__data_</ValuePointer>
-      </ArrayItems>
+      <!-- Offer to show nul-delimited substrings if there are any (the debugger will not show it at all otherwise). -->
+      <Synthetic Name="[nul-delimited substrings]" Condition="contains_embedded_nul()">
+        <Expand>
+          <CustomListItems>
+            <Variable Name="p" InitialValue="is_wide() ? (const wchar*)data() : (const char*)data()" />
+            <Variable Name="end" InitialValue="p + (size())" />
+            <Loop>
+              <Break Condition="p &gt;= end" />
+              <Item>p</Item>
+              <!-- +1 to advance past the nul character. -->
+              <Exec>p += (is_wide() ? wcslen(p) : strlen(p)) + 1</Exec>
+            </Loop>
+          </CustomListItems>
+        </Expand>
+      </Synthetic>
     </Expand>
   </Type>
 
@@ -427,8 +437,6 @@
 
   <Type Name="std::__Cr::unordered_map&lt;*&gt;">
     <AlternativeType Name="std::__Cr::unordered_multimap&lt;*&gt;" />
-    <AlternativeType Name="std::__Cr::unordered_multiset&lt;*&gt;" />
-    <AlternativeType Name="std::__Cr::unordered_set&lt;*&gt;" />
     <Intrinsic Name="size" Expression="__table_.__size_" />
     <Intrinsic Name="bucket_count" Expression="__table_.__bucket_list_.__deleter_.__size_" />
     <Intrinsic Name="max_load_factor" Expression="__table_.__max_load_factor_" />
@@ -438,22 +446,35 @@
       <Item Name="[bucket_count]">bucket_count()</Item>
       <Item Name="[load_factor]">bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
       <Item Name="[max_load_factor]">max_load_factor()</Item>
-      <!-- Use CustomListItems instead of LinkedListItems because we
-        need to cast to __table::__node_pointer and LinkedListItems
-        evaluates <Value> in the context of the node, not of the container,
-        so we'd have to say std::unordered_map<$T1,...>::__table::__node_pointer
-        and then we couldn't share this <Type> between unordered_(multi)map
-        and unordered_(multi)set. -->
-      <CustomListItems>
-        <Variable Name="node" InitialValue="__table_.__first_node_.__next_" />
+      <LinkedListItems>
         <Size>size()</Size>
-        <Loop>
-          <Item>((__table::__node_pointer)node)-&gt;__value_</Item>
-          <Exec>node = node-&gt;__next_</Exec>
-        </Loop>
-      </CustomListItems>
+        <HeadPointer>__table_.__first_node_.__next_</HeadPointer>
+        <NextPointer>__next_</NextPointer>
+        <ValueNode>((std::__Cr::__hash_node&lt;std::__Cr::__hash_value_type&lt;$T1,$T2&gt;,void *&gt; *)this)-&gt;__value_</ValueNode>
+      </LinkedListItems>
     </Expand>
   </Type>
+
+  <Type Name="std::__Cr::unordered_set&lt;*&gt;">
+    <AlternativeType Name="std::__Cr::unordered_multiset&lt;*&gt;" />
+    <Intrinsic Name="size" Expression="__table_.__size_" />
+    <Intrinsic Name="bucket_count" Expression="__table_.__bucket_list_.__deleter_.__size_" />
+    <Intrinsic Name="max_load_factor" Expression="__table_.__max_load_factor_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]">size()</Item>
+      <Item Name="[bucket_count]">bucket_count()</Item>
+      <Item Name="[load_factor]">bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
+      <Item Name="[max_load_factor]">max_load_factor()</Item>
+      <LinkedListItems>
+        <Size>size()</Size>
+        <HeadPointer>__table_.__first_node_.__next_</HeadPointer>
+        <NextPointer>__next_</NextPointer>
+        <ValueNode>((std::__Cr::__hash_node&lt;$T1,void *&gt; *)this)-&gt;__value_</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+
   <!-- This is the node __value_ of an unordered_(multi)map. Expand it through
     a separate formatter instead of in the <Item> expression above so that the
     same <Type> works for unordered_(multi)set and unordered_(multi)map. -->
