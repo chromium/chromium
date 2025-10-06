@@ -665,7 +665,12 @@ bool File::Flush() {
   // underlying storage device, but may return before the device actually writes
   // the data to the medium. When used by database systems, this may result in
   // unexpected data loss. This function uses F_BARRIERFSYNC to provide stronger
-  // guarantees than fsync().
+  // guarantees than fsync(). The default behavior used to be `F_FULLFSYNC`.
+  // Changing it to F_BARRIERFSYNC for greatly reduced latency was extensively
+  // tried via experiment and showed no detectable sign of increased corruption
+  // in mechanisms that make use of this function. For similar discussions
+  // regarding rationale one can refer to the SQLite documentation where the
+  // default is to go directly to fsync. (See PRAGMA fullfsync)
   //
   // See documentation:
   // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
