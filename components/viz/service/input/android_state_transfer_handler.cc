@@ -22,6 +22,17 @@ base::TimeTicks GetEventDowntime(const base::android::ScopedInputEvent& event) {
       base::Time::kNanosecondsPerMillisecond);
 }
 
+// LINT.IfChange(VizSequenceDroppedReason)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class VizSequenceDroppedReason {
+  kOlderSequenceInQueue = 0,
+  kMaxValue = kOlderSequenceInQueue,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason)
+
 }  // namespace
 
 AndroidStateTransferHandler::TransferState::TransferState(
@@ -227,8 +238,17 @@ void AndroidStateTransferHandler::MaybeDropEventsFromEarlierSequences(
   if (events_buffer_.empty()) {
     return;
   }
+
   while (!events_buffer_.empty() &&
          GetEventDowntime(events_buffer_.front()) < state->down_time_ms) {
+    const int action =
+        AMotionEvent_getAction(events_buffer_.front().a_input_event()) &
+        AMOTION_EVENT_ACTION_MASK;
+    if (action == AMOTION_EVENT_ACTION_DOWN) {
+      base::UmaHistogramEnumeration(
+          "Android.InputOnViz.Viz.SequenceDroppedReason",
+          VizSequenceDroppedReason::kOlderSequenceInQueue);
+    }
     events_buffer_.pop();
   }
 }
