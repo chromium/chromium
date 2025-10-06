@@ -15,9 +15,7 @@ class CloudPolicyManager;
 namespace safe_browsing {
 
 enum class VerifyAppsEnabledResult;
-
-using VerifyAppsResponseCallback =
-    base::OnceCallback<void(VerifyAppsEnabledResult)>;
+enum class HasHarmfulAppsResultStatus;
 
 }  // namespace safe_browsing
 
@@ -43,12 +41,17 @@ class AndroidOsSignalsCollector : public BaseSignalsCollector {
                     base::OnceClosure done_closure);
 
   void OnIsVerifyAppsEnabled(
-      UserPermission permission,
-      const SignalsAggregationRequest& request,
       SignalsAggregationResponse& response,
       std::unique_ptr<OsSignalsResponse> os_signals_response,
       base::OnceClosure done_closure,
       safe_browsing::VerifyAppsEnabledResult result);
+
+  void OnHasPotentiallyHarmfulApps(
+      SignalsAggregationResponse& response,
+      std::unique_ptr<OsSignalsResponse> os_signals_response,
+      base::OnceClosure done_closure,
+      safe_browsing::HasHarmfulAppsResultStatus result,
+      int num_of_apps);
 
   const raw_ptr<policy::CloudPolicyManager> device_cloud_policy_manager_;
   base::WeakPtrFactory<AndroidOsSignalsCollector> weak_factory_{this};

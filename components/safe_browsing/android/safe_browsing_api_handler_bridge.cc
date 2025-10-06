@@ -753,6 +753,12 @@ void SafeBrowsingApiHandlerBridge::StartHasPotentiallyHarmfulApps(
     HasHarmfulAppsResponseCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (harmful_apps_result_for_testing_.has_value()) {
+    auto result_for_test = harmful_apps_result_for_testing_.value();
+    std::move(callback).Run(result_for_test.first, result_for_test.second);
+    return;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
     std::move(callback).Run(HasHarmfulAppsResultStatus::FAILED, 0);

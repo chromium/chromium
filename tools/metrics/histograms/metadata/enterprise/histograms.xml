@@ -1010,6 +1010,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.HarmfulApps.Count" units="count"
+    expires_after="2026-10-01">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded the number of potentialy harmful apps when SafetyNet correctly
+    collect this information.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.HarmfulApps.Result"
+    enum="DeviceSignalsHarmfulAppsStatus" expires_after="2026-10-01">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded the success status of SafetyNet API when collecting potentially
+    harmful apps.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceSignals.UserPermission"
     enum="DeviceSignalsUserPermission" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
