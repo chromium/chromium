@@ -1,0 +1,14 @@
+rootWebArea name='Done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++tabPanel
+++++++++++link name='3'
+++++++++++++staticText name='3'
+++++++++++++++inlineTextBox name='3'
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'
+++++++tabList horizontal controlsIds=genericContainer
+++++++++tab selected=false detailsIds=null
+++++++++tab selected=false detailsIds=null
+++++++++tab selected=true detailsIds=tabPanel

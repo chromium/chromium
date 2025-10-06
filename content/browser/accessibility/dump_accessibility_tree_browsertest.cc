@@ -4817,6 +4817,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
+                       CarouselWithTabsDynamic) {
+  RunCSSTest(FILE_PATH_LITERAL("carousel-with-tabs-dynamic.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
                        CarouselWithLinks) {
   RunCSSTest(FILE_PATH_LITERAL("carousel-with-links.html"));
 }

@@ -1022,6 +1022,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AXObject* AncestorMenuListOption() const;
   const AXObject* AncestorMenuList() const;
 
+  // Helper for scroll markers in tabs mode.
+  virtual bool ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() {
+    return false;
+  }
+  bool InsideOriginatingElementForInactiveScrollMarkerInTabsMode() const {
+    return cached_is_ignored_as_inside_inactive_scroll_marker_tab_;
+  }
+
   // ARIA live-region features.
   bool IsLiveRegionRoot() const;  // Any live region, including polite="off".
   bool IsActiveLiveRegionRoot() const;  // Live region that is not polite="off".
@@ -1691,6 +1699,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool cached_is_descendant_of_disabled_node_ : 1 = false;
   bool cached_can_set_focus_attribute_ : 1 = false;
   bool cached_is_in_menu_list_subtree_ : 1 = false;
+  // True if this object is inside the originating element for an inactive
+  // ::scroll-marker in tabs mode.
+  bool cached_is_ignored_as_inside_inactive_scroll_marker_tab_ : 1 = false;
   bool always_load_inline_text_boxes_ : 1 = false;  // Used for Android only.
   std::optional<bool> cached_is_on_screen_;
 

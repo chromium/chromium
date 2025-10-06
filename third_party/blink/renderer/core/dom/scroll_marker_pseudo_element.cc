@@ -6,6 +6,7 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -109,6 +110,19 @@ void ScrollMarkerPseudoElement::SetSelected(bool value,
   }
   is_selected_ = value;
   PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
+  if (ScrollMarkerGroup()) {
+    const bool tabs_mode = ScrollMarkerGroup()->ScrollMarkerGroupMode() ==
+                           ScrollMarkerGroup::ScrollMarkerMode::kTabs;
+    if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() &&
+        tabs_mode) {
+      // Update accessibility tree. Only active ::scroll-marker's ultimate
+      // originating element and its content are in the tree, when in tabs mode.
+      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+        Element* scroller = ScrollMarkerGroup()->parentElement();
+        cache->RemoveSubtree(scroller);
+      }
+    }
+  }
   if (is_selected_ && scroll_marker_group_) {
     if (LayoutBox* group_box = scroll_marker_group_->GetLayoutBox()) {
       // We defer executing the scroll here in case we are in a lifecycle phase

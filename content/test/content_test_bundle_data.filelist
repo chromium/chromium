@@ -2032,6 +2032,8 @@ data/accessibility/css/carousel-positioned-buttons.html
 data/accessibility/css/carousel-with-links-expected-android-external.txt
 data/accessibility/css/carousel-with-links-expected-blink.txt
 data/accessibility/css/carousel-with-links.html
+data/accessibility/css/carousel-with-tabs-dynamic-expected-blink.txt
+data/accessibility/css/carousel-with-tabs-dynamic.html
 data/accessibility/css/carousel-with-tabs-expected-android-assist-data.txt
 data/accessibility/css/carousel-with-tabs-expected-android-external.txt
 data/accessibility/css/carousel-with-tabs-expected-auralinux.txt
