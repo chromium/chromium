@@ -3821,6 +3821,8 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_factory_views.cc",
       "views/frame/immersive_mode_controller_stub.cc",
       "views/frame/immersive_mode_controller_stub.h",
+      "views/frame/main_container_view.cc",
+      "views/frame/main_container_view.h",
       "views/frame/multi_contents_background_view.cc",
       "views/frame/multi_contents_background_view.h",
       "views/frame/multi_contents_drop_target_view.cc",

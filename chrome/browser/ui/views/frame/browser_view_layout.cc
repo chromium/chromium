@@ -359,28 +359,33 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
     LayoutVerticalTabStrip(available_bounds);
   }
 
-  available_bounds.set_y(available_bounds.y() +
-                         delegate_->GetTopInsetInBrowserView());
-  LayoutTitleBarForWebApp(available_bounds);
+  main_container_->SetBoundsRect(available_bounds);
+  gfx::Rect main_container_bounds = main_container_->GetLocalBounds();
+  main_container_bounds.set_y(available_bounds.y() +
+                              delegate_->GetTopInsetInBrowserView());
+
+  LayoutTitleBarForWebApp(main_container_bounds);
+
   if (delegate_->ShouldLayoutTabStrip()) {
-    LayoutTabStripRegion(available_bounds);
+    LayoutTabStripRegion(main_container_bounds);
     if (delegate_->ShouldDrawTabStrip()) {
       tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
                                       browser_view_->GetMirroredX());
     }
-    LayoutWebUITabStrip(available_bounds);
+    LayoutWebUITabStrip(main_container_bounds);
   }
-  LayoutToolbar(available_bounds);
+  LayoutToolbar(main_container_bounds);
 
-  LayoutBookmarkAndInfoBars(available_bounds, browser_view->y());
+  LayoutBookmarkAndInfoBars(main_container_bounds);
 
   // Top container requires updated toolbar and bookmark bar to compute bounds.
-  UpdateTopContainerBounds(available_bounds);
+  UpdateTopContainerBounds(main_container_bounds);
 
   // Layout the contents container in the remaining space.
   // Ensure `available_bounds` has the correct height.
-  available_bounds.set_height(available_bounds.height() - available_bounds.y());
-  LayoutContentsContainerView(available_bounds);
+  main_container_bounds.set_height(main_container_bounds.height() -
+                                   main_container_bounds.y());
+  LayoutContentsContainerView(main_container_bounds);
 
   // This must be done _after_ we lay out the WebContents since this
   // code calls back into us to find the bounding box the find bar
@@ -589,7 +594,7 @@ void BrowserViewLayout::LayoutToolbar(gfx::Rect& available_bounds) {
     toolbar_->SetBoundsRect(toolbar_bounds);
   } else {
     int height = toolbar_visible ? toolbar_->GetPreferredSize().height() : 0;
-    int width = available_bounds.width();
+    int width = toolbar_visible ? available_bounds.width() : 0;
     toolbar_->SetBounds(available_bounds.x(), available_bounds.y(), width,
                         height);
   }
@@ -598,11 +603,10 @@ void BrowserViewLayout::LayoutToolbar(gfx::Rect& available_bounds) {
   available_bounds.set_y(toolbar_->bounds().bottom());
 }
 
-void BrowserViewLayout::LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds,
-                                                  int browser_view_y) {
+void BrowserViewLayout::LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutBookmarkAndInfoBars");
   dialog_top_y_ =
-      available_bounds.y() + browser_view_y - kConstrainedWindowOverlap;
+      available_bounds.y() + main_container_->y() - kConstrainedWindowOverlap;
 
   if (bookmark_bar_) {
     available_bounds.set_y(
@@ -703,7 +707,7 @@ void BrowserViewLayout::LayoutInfoBar(gfx::Rect& available_bounds) {
       (delegate_->IsTopControlsSlideBehaviorEnabled() &&
        delegate_->GetTopControlsSlideBehaviorShownRatio() == 0.f)) {
     // Can be null in tests.
-    top = (browser_view_ ? browser_view_->y() : 0) +
+    top = (main_container_ ? main_container_->y() : 0) +
           immersive_mode_controller->GetMinimumContentOffset();
   }
   // The content usually starts at the bottom of the infobar. When there is an
@@ -845,10 +849,9 @@ void BrowserViewLayout::LayoutContentsContainerView(
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutContentsContainerView");
   // |main_contents_region_| contains web page contents, side panel and
   // devtools. See browser_view.h for details.
-  main_container_->SetBoundsRect(available_bounds);
 
   BrowserViewLayout::ContentsContainerLayoutResult layout_result =
-      CalculateContentsContainerLayout(main_container_->GetLocalBounds());
+      CalculateContentsContainerLayout(available_bounds);
   contents_container_->SetBoundsRect(layout_result.contents_container_bounds);
 
   if (contents_height_side_panel_) {
