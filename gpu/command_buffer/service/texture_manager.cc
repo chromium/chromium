@@ -37,7 +37,6 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_implementation.h"
@@ -1879,8 +1878,7 @@ TextureManager::TextureManager(scoped_refptr<MemoryTracker> memory_tracker,
                                GLint max_3d_texture_size,
                                GLint max_array_texture_layers,
                                bool use_default_textures,
-                               gl::ProgressReporter* progress_reporter,
-                               ServiceDiscardableManager* discardable_manager)
+                               gl::ProgressReporter* progress_reporter)
     : memory_type_tracker_(new MemoryTypeTracker(std::move(memory_tracker))),
       feature_info_(feature_info),
       max_texture_size_(max_texture_size),
@@ -1906,8 +1904,7 @@ TextureManager::TextureManager(scoped_refptr<MemoryTracker> memory_tracker,
       texture_count_(0),
       have_context_(true),
       current_service_id_generation_(0),
-      progress_reporter_(progress_reporter),
-      discardable_manager_(discardable_manager) {
+      progress_reporter_(progress_reporter) {
   for (int ii = 0; ii < kNumDefaultTextures; ++ii) {
     black_texture_ids_[ii] = 0;
   }

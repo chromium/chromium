@@ -145,8 +145,7 @@ GLES2DecoderTestBase::GLES2DecoderTestBase()
       cached_stencil_front_mask_(static_cast<GLuint>(-1)),
       cached_stencil_back_mask_(static_cast<GLuint>(-1)),
       shader_language_version_(100),
-      shader_translator_cache_(gpu_preferences_),
-      discardable_manager_(gpu_preferences_) {
+      shader_translator_cache_(gpu_preferences_) {
   memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_));
 }
 
@@ -214,8 +213,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   group_ = MakeRefCounted<ContextGroup>(
       gpu_preferences_, memory_tracker_, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,
-      /*progress_reporter=*/nullptr, gpu_feature_info, &discardable_manager_,
-      &shared_image_manager_);
+      /*progress_reporter=*/nullptr, gpu_feature_info, &shared_image_manager_);
 
   InSequence sequence;
 
@@ -2283,8 +2281,7 @@ GLES2DecoderPassthroughTestBase::GLES2DecoderPassthroughTestBase(
     ContextType context_type)
     : context_type_(context_type),
       gpu_preferences_(GenerateGpuPreferencesForPassthroughTests()),
-      shader_translator_cache_(gpu_preferences_),
-      discardable_manager_(gpu_preferences_) {}
+      shader_translator_cache_(gpu_preferences_) {}
 
 GLES2DecoderPassthroughTestBase::~GLES2DecoderPassthroughTestBase() = default;
 
@@ -2329,8 +2326,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   group_ = MakeRefCounted<gles2::ContextGroup>(
       gpu_preferences_, /*memory_tracker=*/nullptr, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,
-      /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
-      &shared_image_manager_);
+      /*progress_reporter=*/nullptr, GpuFeatureInfo(), &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));
   context_ = gl::init::CreateGLContext(

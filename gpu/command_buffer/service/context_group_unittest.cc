@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder_mock.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -36,7 +35,7 @@ namespace gles2 {
 
 class ContextGroupTest : public GpuServiceTest {
  public:
-  ContextGroupTest() : discardable_manager_(gpu_preferences_) {}
+  ContextGroupTest() {}
 
  protected:
   void SetUp() override {
@@ -48,12 +47,11 @@ class ContextGroupTest : public GpuServiceTest {
         gpu_preferences_, /*memory_tracker=*/nullptr,
         /*shader_translator_cache=*/nullptr,
         /*framebuffer_completeness_cache=*/nullptr, feature_info,
-        /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
+        /*progress_reporter=*/nullptr, GpuFeatureInfo(),
         &shared_image_manager_));
   }
 
   GpuPreferences gpu_preferences_;
-  ServiceDiscardableManager discardable_manager_;
   SharedImageManager shared_image_manager_;
   FakeCommandBufferServiceBase command_buffer_service_;
   FakeDecoderClient client_;

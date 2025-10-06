@@ -27,7 +27,6 @@
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -157,7 +156,6 @@ class RecordReplayContext : public GpuControl {
   RecordReplayContext()
       : gpu_preferences_(GetGpuPreferences()),
         share_group_(new gl::GLShareGroup),
-        discardable_manager_(gpu::GpuPreferences()),
         translator_cache_(gpu_preferences_) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch("use-stub")) {
       surface_ = new gl::GLSurfaceStub;
@@ -182,7 +180,7 @@ class RecordReplayContext : public GpuControl {
     auto context_group = base::MakeRefCounted<gles2::ContextGroup>(
         gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
         &completeness_cache_, feature_info,
-        /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
+        /*progress_reporter=*/nullptr, GpuFeatureInfo(),
         &shared_image_manager_);
     command_buffer_ = std::make_unique<RecordReplayCommandBuffer>();
 
@@ -308,7 +306,6 @@ class RecordReplayContext : public GpuControl {
   GpuPreferences gpu_preferences_;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
-  ServiceDiscardableManager discardable_manager_;
   SharedImageManager shared_image_manager_;
 
   scoped_refptr<gl::GLSurface> surface_;

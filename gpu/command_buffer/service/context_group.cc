@@ -22,7 +22,6 @@
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -74,7 +73,6 @@ ContextGroup::ContextGroup(
     const scoped_refptr<FeatureInfo>& feature_info,
     gl::ProgressReporter* progress_reporter,
     const GpuFeatureInfo& gpu_feature_info,
-    ServiceDiscardableManager* discardable_manager,
     SharedImageManager* shared_image_manager)
     : gpu_preferences_(gpu_preferences),
       memory_tracker_(std::move(memory_tracker)),
@@ -114,13 +112,11 @@ ContextGroup::ContextGroup(
       passthrough_resources_(new PassthroughResources),
       progress_reporter_(progress_reporter),
       gpu_feature_info_(gpu_feature_info),
-      discardable_manager_(discardable_manager),
       shared_image_representation_factory_(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
               memory_tracker_)),
       shared_image_manager_(shared_image_manager) {
-  DCHECK(discardable_manager);
   DCHECK(feature_info_);
 
   use_passthrough_cmd_decoder_ = gpu_preferences_.use_passthrough_cmd_decoder;
@@ -392,8 +388,7 @@ gpu::ContextResult ContextGroup::Initialize(
         memory_tracker_, feature_info_.get(), max_texture_size,
         max_cube_map_texture_size, max_rectangle_texture_size,
         max_3d_texture_size, max_array_texture_layers,
-        /*use_default_textures=*/false, progress_reporter_,
-        discardable_manager_);
+        /*use_default_textures=*/false, progress_reporter_);
   }
 
   const GLint kMinTextureImageUnits = 8;

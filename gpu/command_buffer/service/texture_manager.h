@@ -38,7 +38,6 @@ class ProgressReporter;
 
 namespace gpu {
 class DecoderContext;
-class ServiceDiscardableManager;
 
 namespace gles2 {
 struct ContextState;
@@ -748,8 +747,7 @@ class GPU_GLES2_EXPORT TextureManager
                  GLsizei max_3d_texture_size,
                  GLsizei max_array_texture_layers,
                  bool use_default_textures,
-                 gl::ProgressReporter* progress_reporter,
-                 ServiceDiscardableManager* discardable_manager);
+                 gl::ProgressReporter* progress_reporter);
 
   TextureManager(const TextureManager&) = delete;
   TextureManager& operator=(const TextureManager&) = delete;
@@ -1248,8 +1246,6 @@ class GPU_GLES2_EXPORT TextureManager
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
   raw_ptr<gl::ProgressReporter> progress_reporter_;
-
-  raw_ptr<ServiceDiscardableManager> discardable_manager_;
 };
 
 }  // namespace gles2

@@ -19,7 +19,6 @@
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_preferences.h"
@@ -49,13 +48,11 @@ const bool kUseDefaultTextures = false;
 class FramebufferManagerTest : public GpuServiceTest {
  public:
   FramebufferManagerTest()
-      : manager_(1, 1, nullptr),
-        feature_info_(new FeatureInfo()),
-        discardable_manager_(GpuPreferences()) {
+      : manager_(1, 1, nullptr), feature_info_(new FeatureInfo()) {
     texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_);
+        kUseDefaultTextures, nullptr);
     renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
         nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
@@ -69,7 +66,6 @@ class FramebufferManagerTest : public GpuServiceTest {
  protected:
   FramebufferManager manager_;
   scoped_refptr<FeatureInfo> feature_info_;
-  ServiceDiscardableManager discardable_manager_;
   std::unique_ptr<TextureManager> texture_manager_;
   std::unique_ptr<RenderbufferManager> renderbuffer_manager_;
 };
@@ -128,12 +124,11 @@ class FramebufferInfoTestBase : public GpuServiceTest {
         manager_(kMaxDrawBuffers,
                  kMaxColorAttachments,
                  &framebuffer_completeness_cache_),
-        feature_info_(new FeatureInfo()),
-        discardable_manager_(GpuPreferences()) {
+        feature_info_(new FeatureInfo()) {
     texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_);
+        kUseDefaultTextures, nullptr);
     renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
         nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
@@ -175,7 +170,6 @@ class FramebufferInfoTestBase : public GpuServiceTest {
   FramebufferManager manager_;
   raw_ptr<Framebuffer> framebuffer_;
   scoped_refptr<FeatureInfo> feature_info_;
-  ServiceDiscardableManager discardable_manager_;
   std::unique_ptr<TextureManager> texture_manager_;
   std::unique_ptr<RenderbufferManager> renderbuffer_manager_;
   std::unique_ptr<MockErrorState> error_state_;

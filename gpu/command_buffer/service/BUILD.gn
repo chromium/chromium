@@ -223,8 +223,6 @@ target(link_target_type, "gles2_sources") {
     "sampler_manager.h",
     "scheduler_sequence.cc",
     "scheduler_sequence.h",
-    "service_discardable_manager.cc",
-    "service_discardable_manager.h",
     "service_font_manager.cc",
     "service_font_manager.h",
     "service_transfer_cache.cc",

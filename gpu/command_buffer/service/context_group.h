@@ -33,7 +33,6 @@ namespace gpu {
 struct GpuPreferences;
 class SharedImageManager;
 class SharedImageRepresentationFactory;
-class ServiceDiscardableManager;
 class DecoderContext;
 class MemoryTracker;
 
@@ -64,7 +63,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
                const scoped_refptr<FeatureInfo>& feature_info,
                gl::ProgressReporter* progress_reporter,
                const GpuFeatureInfo& gpu_feature_info,
-               ServiceDiscardableManager* discardable_manager,
                SharedImageManager* shared_image_manager);
 
   ContextGroup(const ContextGroup&) = delete;
@@ -186,10 +184,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
     return sampler_manager_.get();
   }
 
-  ServiceDiscardableManager* discardable_manager() const {
-    return discardable_manager_;
-  }
-
   SharedImageRepresentationFactory* shared_image_representation_factory()
       const {
     return shared_image_representation_factory_.get();
@@ -301,8 +295,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   raw_ptr<gl::ProgressReporter> progress_reporter_;
 
   GpuFeatureInfo gpu_feature_info_;
-
-  raw_ptr<ServiceDiscardableManager> discardable_manager_;
 
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;

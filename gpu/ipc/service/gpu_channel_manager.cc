@@ -355,7 +355,6 @@ GpuChannelManager::GpuChannelManager(
       shader_translator_cache_(gpu_preferences_),
       default_offscreen_surface_(std::move(default_offscreen_surface)),
       gpu_feature_info_(gpu_feature_info),
-      discardable_manager_(gpu_preferences_),
       image_decode_accelerator_worker_(image_decode_accelerator_worker),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
       memory_pressure_listener_(
