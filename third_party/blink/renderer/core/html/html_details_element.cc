@@ -325,8 +325,7 @@ bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
     return false;
   }
 
-  if (RuntimeEnabledFeatures::ToggleEventSourceEnabled() &&
-      pending_toggle_event_) {
+  if (pending_toggle_event_) {
     // pending_toggle_event_ is created inside the attribute handling code which
     // we can't pass the invoker to, so we set it here instead.
     pending_toggle_event_ = ToggleEvent::Create(

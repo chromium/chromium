@@ -5,5 +5,5 @@
 dictionary ToggleEventInit : EventInit {
     DOMString oldState = "";
     DOMString newState = "";
-    [RuntimeEnabled=ToggleEventSource] Element? source = null;
+    Element? source = null;
 };

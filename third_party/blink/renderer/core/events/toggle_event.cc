@@ -24,9 +24,6 @@ ToggleEvent::ToggleEvent(const AtomicString& type,
       old_state_(old_state),
       new_state_(new_state),
       source_(source) {
-  if (!RuntimeEnabledFeatures::ToggleEventSourceEnabled()) {
-    source_ = nullptr;
-  }
   DCHECK(old_state == "closed" || old_state == "open")
       << " old_state should be \"closed\" or \"open\". Was: " << old_state;
   DCHECK(new_state == "closed" || new_state == "open")
@@ -58,7 +55,6 @@ const String& ToggleEvent::newState() const {
 }
 
 Element* ToggleEvent::source() const {
-  CHECK(RuntimeEnabledFeatures::ToggleEventSourceEnabled());
   if (RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled()) {
     return Retarget(source_);
   }
