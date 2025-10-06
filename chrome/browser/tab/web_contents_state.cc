@@ -188,20 +188,6 @@ WebContentsStateByteBuffer& WebContentsStateByteBuffer::operator=(
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
     WebContentsStateByteBuffer&& other) noexcept = default;
 
-WebContentsStateUnpacked::WebContentsStateUnpacked(
-    bool is_off_the_record,
-    int current_entry_index,
-    std::vector<sessions::SerializedNavigationEntry> navigations)
-    : is_off_the_record_(is_off_the_record),
-      current_entry_index_(current_entry_index),
-      navigations_(std::move(navigations)) {}
-WebContentsStateUnpacked::~WebContentsStateUnpacked() = default;
-
-ScopedJavaLocalRef<jobject> WebContentsStateUnpacked::Pack(JNIEnv* env) const {
-  return WriteSerializedNavigationsAsByteBuffer(
-      env, is_off_the_record_, navigations_, current_entry_index_);
-}
-
 ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
     JNIEnv* env,
     content::WebContents* web_contents) {
@@ -226,23 +212,6 @@ ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
   return WriteNavigationsAsByteBuffer(
       env, web_contents->GetBrowserContext()->IsOffTheRecord(), navigations,
       controller.GetLastCommittedEntryIndex());
-}
-
-std::unique_ptr<WebContentsStateUnpacked> WebContentsState::Unpack(
-    base::span<const uint8_t> buffer,
-    int saved_state_version) {
-  bool is_off_the_record;
-  int current_entry_index;
-  std::vector<sessions::SerializedNavigationEntry> navigations;
-  bool success = WebContentsState::ExtractNavigationEntries(
-      buffer, saved_state_version, &is_off_the_record, &current_entry_index,
-      &navigations);
-  if (!success) {
-    return nullptr;
-  }
-
-  return std::make_unique<WebContentsStateUnpacked>(
-      is_off_the_record, current_entry_index, std::move(navigations));
 }
 
 ScopedJavaLocalRef<jobject>

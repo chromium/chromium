@@ -234,17 +234,3 @@ source_set("impl") {
     "//sql",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "web_contents_state_unittest.cc" ]
-  deps = [
-    ":tab",
-    "//base",
-    "//components/sessions",
-    "//components/tabs:public",
-    "//content/test:test_support",
-    "//testing/gtest",
-    "//ui/base",
-  ]
-}

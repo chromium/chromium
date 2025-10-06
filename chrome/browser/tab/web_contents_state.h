@@ -67,32 +67,6 @@ struct WebContentsStateByteBuffer {
   base::android::ScopedJavaGlobalRef<jobject> java_buffer;
 };
 
-// A class to store unpacked version of WebContentsStateByteBuffer.
-class WebContentsStateUnpacked {
- public:
-  WebContentsStateUnpacked(
-      bool is_off_the_record,
-      int current_entry_index,
-      std::vector<sessions::SerializedNavigationEntry> navigations);
-  ~WebContentsStateUnpacked();
-
-  WebContentsStateUnpacked(const WebContentsStateUnpacked&) = delete;
-  WebContentsStateUnpacked& operator=(const WebContentsStateUnpacked&) = delete;
-
-  bool is_off_the_record() const { return is_off_the_record_; }
-  const std::vector<sessions::SerializedNavigationEntry>& navigations() const {
-    return navigations_;
-  }
-  int current_entry_index() const { return current_entry_index_; }
-
-  base::android::ScopedJavaLocalRef<jobject> Pack(JNIEnv* env) const;
-
- private:
-  bool is_off_the_record_;
-  int current_entry_index_;
-  std::vector<sessions::SerializedNavigationEntry> navigations_;
-};
-
 // Stores state for a WebContents, including its navigation history.
 class WebContentsState {
  public:
@@ -101,12 +75,6 @@ class WebContentsState {
 
   static base::android::ScopedJavaLocalRef<jobject>
   GetContentsStateAsByteBuffer(JNIEnv* env, content::WebContents* web_contents);
-
-  // Unpacks `buffer` into a WebContentsStateUnpacked. Returns nullptr if the
-  // buffer is invalid.
-  static std::unique_ptr<WebContentsStateUnpacked> Unpack(
-      base::span<const uint8_t> buffer,
-      int saved_state_version);
 
   // Returns a new buffer without the navigations matching |predicate|.
   // Returns null if no deletions happened.
