@@ -306,7 +306,7 @@ public class WebAppLaunchHandler extends WebContentsObserver {
                                 return;
                             }
 
-                            if (mWebContents.isDestroyed()) {
+                            if (mWebContents == null || mWebContents.isDestroyed()) {
                                 Log.w(TAG, "Web contents was destroyed.");
                                 return;
                             }
