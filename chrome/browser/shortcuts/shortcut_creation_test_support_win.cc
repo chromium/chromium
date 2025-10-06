@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/win/shortcut.h"

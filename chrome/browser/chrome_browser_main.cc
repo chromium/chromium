@@ -799,10 +799,6 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   if (!device_event_log::IsInitialized())
     device_event_log::Initialize(0 /* default max entries */);
 
-  // Set up and register ERP reporting client.
-  reporting_client_ =
-      reporting::ReportingClient::Create(content::GetUIThreadTaskRunner({}));
-
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostCreateMainMessageLoop();
 }

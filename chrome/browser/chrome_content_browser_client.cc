@@ -52,7 +52,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
-#include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -81,6 +80,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -133,6 +133,7 @@
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
+#include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -586,10 +587,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -1717,11 +1714,9 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
 
   chrome::AddMetricsExtraParts(main_parts.get());
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   main_parts->AddParts(
       std::make_unique<
           enterprise_util::ChromeBrowserMainExtraPartsEnterprise>());
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   main_parts->AddParts(

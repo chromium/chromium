@@ -5,11 +5,13 @@
 #include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 
 #include "components/enterprise/buildflags/buildflags.h"
+#include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
+    BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
+#include "chrome/browser/enterprise/connectors/connectors_service.h"  // nogncheck
+#endif
 
 namespace enterprise_util {
 
@@ -51,12 +53,19 @@ ChromeBrowserMainExtraPartsEnterprise::ChromeBrowserMainExtraPartsEnterprise() =
 ChromeBrowserMainExtraPartsEnterprise::
     ~ChromeBrowserMainExtraPartsEnterprise() = default;
 
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
+    BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 void ChromeBrowserMainExtraPartsEnterprise::PostProfileInit(
     Profile* profile,
     bool is_initial_profile) {
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   MaybePrimeLocalContentAnalysisAgentConnection(profile);
-#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+}
+#endif
+
+void ChromeBrowserMainExtraPartsEnterprise::PostCreateMainMessageLoop() {
+  // Set up and register ERP reporting client.
+  reporting_client_ =
+      reporting::ReportingClient::Create(content::GetUIThreadTaskRunner({}));
 }
 
 }  // namespace enterprise_util
