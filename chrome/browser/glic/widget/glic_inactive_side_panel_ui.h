@@ -34,6 +34,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
       GlicUiEmbedder::Delegate& delegate);
   static std::unique_ptr<GlicInactiveSidePanelUi> CreateForBackgroundTab(
       base::WeakPtr<tabs::TabInterface> tab,
+      content::WebContents* glic_webui_contents,
       GlicUiEmbedder::Delegate& delegate);
 
   ~GlicInactiveSidePanelUi() override;

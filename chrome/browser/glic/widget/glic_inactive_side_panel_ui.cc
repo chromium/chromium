@@ -41,12 +41,15 @@ GlicInactiveSidePanelUi::CreateForVisibleTab(
 std::unique_ptr<GlicInactiveSidePanelUi>
 GlicInactiveSidePanelUi::CreateForBackgroundTab(
     base::WeakPtr<tabs::TabInterface> tab,
+    content::WebContents* glic_webui_contents,
     GlicUiEmbedder::Delegate& delegate) {
   // Using `new` to access a private constructor.
   auto inactive_side_panel =
       base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
   // Mark the side panel for showing next time the tab becomes active.
   inactive_side_panel->Show();
+  inactive_side_panel->inactive_view_controller_.CaptureScreenshot(
+      glic_webui_contents);
   return inactive_side_panel;
 }
 
