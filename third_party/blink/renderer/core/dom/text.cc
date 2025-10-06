@@ -134,21 +134,12 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
     return nullptr;
 
   if (LayoutText* layout_text = GetLayoutObject()) {
-    if (RuntimeEnabledFeatures::TextDiffSplitFixEnabled()) {
-      // To avoid |LayoutText| has empty text, we rebuild layout tree.
-      if (ContainsOnlyWhitespaceOrEmpty()) {
-        SetForceReattachLayoutTree();
-      } else {
-        layout_text->SetTextWithOffset(
-            data(), TextDiffRange::Delete(offset, old_str.length() - offset));
-      }
+    // To avoid |LayoutText| has empty text, we rebuild layout tree.
+    if (ContainsOnlyWhitespaceOrEmpty()) {
+      SetForceReattachLayoutTree();
     } else {
       layout_text->SetTextWithOffset(
-          data(), TextDiffRange::Delete(0, old_str.length()));
-      if (ContainsOnlyWhitespaceOrEmpty()) {
-        // To avoid |LayoutText| has empty text, we rebuild layout tree.
-        SetForceReattachLayoutTree();
-      }
+          data(), TextDiffRange::Delete(offset, old_str.length() - offset));
     }
   }
 

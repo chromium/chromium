@@ -4952,11 +4952,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/325517313
-      name: "TextDiffSplitFix",
-      status: "stable",
-    },
-    {
       // crbug.com/40812040
       name: "TextEmphasisLetterSpacing",
       status: "stable",
