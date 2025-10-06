@@ -60,8 +60,14 @@ An example using [EasyList](https://easylist.to/easylist/easylist.txt) follows:
 ```sh
 1. ninja -C out/Release/ subresource_filter_tools
 2. wget https://easylist.to/easylist/easylist.txt
-3. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=easylist.txt --output_file=easylist_unindexed
-4. out/Release/subresource_indexing_tool easylist_unindexed easylist_indexed
+# Convert `||domain.xyz^` rules into `||domain.xyz^$third-party` so
+# that we don't match all of the subresource requests when visiting
+# a top-level frame with that domain as a first party.
+# crbug.com/448915986
+3. awk '{ if (/^\s*!|^\s*@@|^\s*$/) { print; next } if (/^\s*\|\|[^/]*\^\s*$/) { print $0 "$third-party"; next } print }' easylist.txt > easylist_third.txt
+4. mv easylist_third.txt easylist.txt
+5. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=easylist.txt --output_file=easylist_unindexed
+6. out/Release/subresource_indexing_tool easylist_unindexed easylist_indexed
 ```
 
 ## 3. Generate the smaller filter list
