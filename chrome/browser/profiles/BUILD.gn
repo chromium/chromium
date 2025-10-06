@@ -339,6 +339,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/global_media_controls",
+      "//chrome/browser/ui/lens",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs/organization",

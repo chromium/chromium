@@ -299,7 +299,6 @@
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
-#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/organization/prefs.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
@@ -1144,6 +1143,10 @@ constexpr char kDesksLacrosProfileIdList[] =
     "ash.desks.desks_lacros_profile_id_list";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 09/2025.
+constexpr char kLensOverlayEduActionChipShownCount[] =
+    "lens.edu_action_chip.shown_count";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1649,6 +1652,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2025.
   registry->RegisterListPref(kDesksLacrosProfileIdList);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 09/2025.
+  registry->RegisterIntegerPref(kLensOverlayEduActionChipShownCount, 0);
 }
 
 }  // namespace
@@ -2154,7 +2160,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   gcm::RegisterProfilePrefs(registry);
   GoogleCalendarPageHandler::RegisterProfilePrefs(registry);
   HatsServiceDesktop::RegisterProfilePrefs(registry);
-  lens::prefs::RegisterFeatureFlagProfilePrefs(registry);
   lens::prefs::RegisterProfilePrefs(registry);
   NtpCustomBackgroundService::RegisterProfilePrefs(registry);
   ManagementUI::RegisterProfilePrefs(registry);
@@ -2994,6 +2999,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 08/2025.
   profile_prefs->ClearPref(kDesksLacrosProfileIdList);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 09/2025.
+  profile_prefs->ClearPref(kLensOverlayEduActionChipShownCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
