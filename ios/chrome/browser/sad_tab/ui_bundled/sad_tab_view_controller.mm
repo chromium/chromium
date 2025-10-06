@@ -71,10 +71,12 @@
   [self.overscrollActionsController setStyle:style];
   [self updateOverscrollActionsState];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
-                     withAction:@selector(updateOverscrollActionsState)];
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateOverscrollActionsState)];
+  }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -87,6 +89,17 @@
   self.sadTabView.frame = newFrame;
   [self.scrollView setContentSize:newFrame.size];
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self updateOverscrollActionsState];
+}
+#endif
 
 #pragma mark - SadTabViewDelegate
 

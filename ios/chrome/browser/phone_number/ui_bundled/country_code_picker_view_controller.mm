@@ -155,9 +155,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       kCountryCodePickerTableViewIdentifier;
   [self loadModel];
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits withAction:@selector(updateTitle)];
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+    [self registerForTraitChanges:traits withAction:@selector(updateTitle)];
+  }
 }
 
 #pragma mark - LegacyChromeTableViewController
@@ -220,6 +222,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self updateTitle];
 }
+
+#pragma mark - UIView
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self updateTitle];
+}
+#endif
 
 #pragma mark - UISearchResultsUpdating
 

@@ -459,7 +459,11 @@ void SendKBEventWithModifiers(UIKeyModifierFlags flags, NSString* input) {
   PhysicalKeyboardEvent* keyboardEvent =
       [NSClassFromString(@"UIPhysicalKeyboardEvent") _eventWithInput:input
                                                           inputFlags:0];
-  [keyboardEvent _setModifierFlags:flags];
+  if (@available(iOS 17, *)) {
+    [keyboardEvent _setModifierFlags:flags];
+  } else {
+    keyboardEvent._modifierFlags = flags;
+  }
   IOHIDEventRef hidEvent =
       CreateHIDKeyEvent(input, keyboardEvent.timestamp, true);
   [keyboardEvent _setHIDEvent:hidEvent keyboard:0];

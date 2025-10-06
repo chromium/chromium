@@ -45,16 +45,18 @@ constexpr base::TimeDelta kFixZoomScaleOnRotationDelay = base::Seconds(0.1);
                             UIViewAutoresizingFlexibleHeight |
                             UIViewAutoresizingFlexibleTopMargin |
                             UIViewAutoresizingFlexibleLeftMargin;
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      [weakSelf updateUIOnTraitChange:previousCollection];
-    };
-    NSArray<UITrait>* traits = @[
-      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
-      UITraitPreferredContentSizeCategory.class
-    ];
-    [self registerForTraitChanges:traits withHandler:handler];
+    if (@available(iOS 17, *)) {
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      NSArray<UITrait>* traits = @[
+        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+        UITraitPreferredContentSizeCategory.class
+      ];
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -95,6 +97,17 @@ constexpr base::TimeDelta kFixZoomScaleOnRotationDelay = base::Seconds(0.1);
 }
 
 #pragma mark Layout
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self updateUIOnTraitChange:previousTraitCollection];
+}
+#endif
 
 - (void)layoutSubviews {
   [super layoutSubviews];
