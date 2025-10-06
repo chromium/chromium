@@ -251,28 +251,26 @@ bool DoFindAndCompareScheme(const CHAR* str,
 }
 
 template <typename CHAR>
-bool DoCanonicalize(const CHAR* spec,
-                    int spec_len,
+bool DoCanonicalize(std::basic_string_view<CHAR> spec,
                     bool trim_path_end,
                     WhitespaceRemovalPolicy whitespace_policy,
                     CharsetConverter* charset_converter,
                     CanonOutput* output,
                     Parsed* output_parsed) {
   // Trim leading C0 control characters and spaces.
-  int begin = 0;
-  TrimURL(spec, &begin, &spec_len, trim_path_end);
-  DCHECK(0 <= begin && begin <= spec_len);
-  spec += begin;
-  spec_len -= begin;
+  spec = TrimUrl(spec, trim_path_end);
 
-  output->ReserveSizeIfNeeded(spec_len);
+  output->ReserveSizeIfNeeded(spec.length());
 
   // Remove any whitespace from the middle of the relative URL if necessary.
   // Possibly this will result in copying to the new buffer.
   STACK_UNINITIALIZED RawCanonOutputT<CHAR> whitespace_buffer;
   if (whitespace_policy == REMOVE_WHITESPACE) {
-    spec = RemoveURLWhitespace(spec, spec_len, &whitespace_buffer, &spec_len,
-                               &output_parsed->potentially_dangling_markup);
+    int new_spec_len = 0;
+    const CHAR* new_spec = RemoveURLWhitespace(
+        spec.data(), spec.length(), &whitespace_buffer, &new_spec_len,
+        &output_parsed->potentially_dangling_markup);
+    spec = std::basic_string_view(new_spec, new_spec_len);
   }
 
 #ifdef WIN32
@@ -286,53 +284,52 @@ bool DoCanonicalize(const CHAR* spec,
   // has no meaning as an absolute path name. This is because browsers on Mac
   // & Unix don't generally do this, so there is no compatibility reason for
   // doing so.
-  if (DoesBeginUNCPath(spec, 0, spec_len, false) ||
-      DoesBeginWindowsDriveSpec(spec, 0, spec_len)) {
-    return CanonicalizeFileURL(
-        spec, spec_len, ParseFileURL(std::basic_string_view(spec, spec_len)),
-        charset_converter, output, output_parsed);
+  if (DoesBeginUNCPath(spec.data(), 0, spec.length(), false) ||
+      DoesBeginWindowsDriveSpec(spec.data(), 0, spec.length())) {
+    return CanonicalizeFileURL(spec.data(), spec.length(), ParseFileURL(spec),
+                               charset_converter, output, output_parsed);
   }
 #endif
 
   Component scheme;
-  if (!ExtractScheme(spec, spec_len, &scheme))
+  if (!ExtractScheme(spec, &scheme)) {
     return false;
+  }
 
   // This is the parsed version of the input URL, we have to canonicalize it
   // before storing it in our object.
   bool success;
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
+  if (DoCompareSchemeComponent(spec.data(), scheme, url::kFileScheme)) {
     // File URLs are special.
-    success = CanonicalizeFileURL(
-        spec, spec_len, ParseFileURL(std::basic_string_view(spec, spec_len)),
-        charset_converter, output, output_parsed);
-  } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
+    success =
+        CanonicalizeFileURL(spec.data(), spec.length(), ParseFileURL(spec),
+                            charset_converter, output, output_parsed);
+  } else if (DoCompareSchemeComponent(spec.data(), scheme,
+                                      url::kFileSystemScheme)) {
     // Filesystem URLs are special.
-    success = CanonicalizeFileSystemURL(
-        spec, ParseFileSystemURL(std::basic_string_view(spec, spec_len)),
-        charset_converter, output, output_parsed);
+    success =
+        CanonicalizeFileSystemURL(spec.data(), ParseFileSystemURL(spec),
+                                  charset_converter, output, output_parsed);
 
-  } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec)),
+  } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec.data())),
                           &scheme_type)) {
     // All "normal" URLs.
-    success = CanonicalizeStandardURL(
-        spec, ParseStandardURL(std::basic_string_view(spec, spec_len)),
-        scheme_type, charset_converter, output, output_parsed);
+    success = CanonicalizeStandardURL(spec.data(), ParseStandardURL(spec),
+                                      scheme_type, charset_converter, output,
+                                      output_parsed);
 
   } else {
     // Non-special scheme URLs like data:, mailto: and javascript:.
-    if (!DoIsOpaqueNonSpecial(spec, scheme)) {
+    if (!DoIsOpaqueNonSpecial(spec.data(), scheme)) {
       success = CanonicalizeNonSpecialURL(
-          spec, spec_len,
-          ParseNonSpecialURLInternal(std::basic_string_view(spec, spec_len),
-                                     trim_path_end),
-          charset_converter, *output, *output_parsed);
+          spec.data(), spec.length(),
+          ParseNonSpecialURLInternal(spec, trim_path_end), charset_converter,
+          *output, *output_parsed);
     } else {
-      success = CanonicalizePathURL(
-          spec, spec_len,
-          ParsePathURL(std::basic_string_view(spec, spec_len), trim_path_end),
-          output, output_parsed);
+      success = CanonicalizePathURL(spec.data(), spec.length(),
+                                    ParsePathURL(spec, trim_path_end), output,
+                                    output_parsed);
     }
   }
   return success;
@@ -396,9 +393,8 @@ bool DoResolveRelative(std::string_view base_spec,
       // The output_parsed is incorrect at this point (because it was built
       // based on base_parsed_authority instead of base_parsed) and needs to be
       // re-created.
-      DoCanonicalize(temporary_output.data(), temporary_output.length(), true,
-                     REMOVE_WHITESPACE, charset_converter, output,
-                     output_parsed);
+      DoCanonicalize(temporary_output.view(), true, REMOVE_WHITESPACE,
+                     charset_converter, output, output_parsed);
       return did_resolve_succeed;
     }
   } else if (is_relative) {
@@ -417,10 +413,9 @@ bool DoResolveRelative(std::string_view base_spec,
   }
 
   // Not relative, canonicalize the input.
-  // TODO(crbug.com/350788890): DoCanonicalize() should accept string_views.
-  return DoCanonicalize(relative, relative_length, true,
-                        DO_NOT_REMOVE_WHITESPACE, charset_converter, output,
-                        output_parsed);
+  return DoCanonicalize(std::basic_string_view<CHAR>(relative, relative_length),
+                        true, DO_NOT_REMOVE_WHITESPACE, charset_converter,
+                        output, output_parsed);
 }
 
 template <typename CHAR>
@@ -465,8 +460,8 @@ bool DoReplaceComponents(std::string_view spec,
     // may have changed with the different scheme.
     STACK_UNINITIALIZED RawCanonOutput<128> recanonicalized;
     Parsed recanonicalized_parsed;
-    DoCanonicalize(scheme_replaced.data(), scheme_replaced.length(), true,
-                   REMOVE_WHITESPACE, charset_converter, &recanonicalized,
+    DoCanonicalize(scheme_replaced.view(), true, REMOVE_WHITESPACE,
+                   charset_converter, &recanonicalized,
                    &recanonicalized_parsed);
 
     // Recurse using the version with the scheme already replaced. This will now
@@ -822,23 +817,21 @@ bool HostIsIPAddress(std::string_view host) {
   return host_info.IsIPAddress();
 }
 
-bool Canonicalize(const char* spec,
-                  int spec_len,
+bool Canonicalize(std::string_view spec,
                   bool trim_path_end,
                   CharsetConverter* charset_converter,
                   CanonOutput* output,
                   Parsed* output_parsed) {
-  return DoCanonicalize(spec, spec_len, trim_path_end, REMOVE_WHITESPACE,
+  return DoCanonicalize(spec, trim_path_end, REMOVE_WHITESPACE,
                         charset_converter, output, output_parsed);
 }
 
-bool Canonicalize(const char16_t* spec,
-                  int spec_len,
+bool Canonicalize(std::u16string_view spec,
                   bool trim_path_end,
                   CharsetConverter* charset_converter,
                   CanonOutput* output,
                   Parsed* output_parsed) {
-  return DoCanonicalize(spec, spec_len, trim_path_end, REMOVE_WHITESPACE,
+  return DoCanonicalize(spec, trim_path_end, REMOVE_WHITESPACE,
                         charset_converter, output, output_parsed);
 }
 

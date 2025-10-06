@@ -51,7 +51,7 @@ class URLUtilTest : public testing::Test {
     StdStringCanonOutput output(&canonicalized);
     Parsed parsed;
     bool success =
-        Canonicalize(url_case.input.data(), url_case.input.size(),
+        Canonicalize(url_case.input,
                      /*trim_path_end=*/false,
                      /*charset_converter=*/nullptr, &output, &parsed);
     output.Complete();
@@ -233,8 +233,7 @@ static std::string CheckReplaceScheme(const char* base_url,
   // Make sure the input is canonicalized.
   RawCanonOutput<32> original;
   Parsed original_parsed;
-  Canonicalize(base_url, strlen(base_url), true, nullptr, &original,
-               &original_parsed);
+  Canonicalize(base_url, true, nullptr, &original, &original_parsed);
 
   Replacements<char> replacements;
   replacements.SetScheme(scheme, Component(0, strlen(scheme)));
@@ -449,7 +448,7 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterReplacement) {
   Parsed original_parsed;
   RawCanonOutput<32> original;
   const char* url = "htt\nps://example.com/<path";
-  Canonicalize(url, strlen(url), false, nullptr, &original, &original_parsed);
+  Canonicalize(url, false, nullptr, &original, &original_parsed);
   ASSERT_TRUE(original_parsed.potentially_dangling_markup);
 
   // Perform a replacement, and validate that the potentially_dangling_markup
@@ -468,7 +467,7 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterSchemeOnlyReplacement) {
   Parsed original_parsed;
   RawCanonOutput<32> original;
   const char* url = "http://example.com/\n/<path";
-  Canonicalize(url, strlen(url), false, nullptr, &original, &original_parsed);
+  Canonicalize(url, false, nullptr, &original, &original_parsed);
   ASSERT_TRUE(original_parsed.potentially_dangling_markup);
 
   // Perform a replacement, and validate that the potentially_dangling_markup
@@ -532,7 +531,7 @@ std::optional<std::string> CanonicalizeSpec(std::string_view spec,
   std::string canonicalized;
   StdStringCanonOutput output(&canonicalized);
   Parsed parsed;
-  if (!Canonicalize(spec.data(), spec.size(), trim_path_end,
+  if (!Canonicalize(spec, trim_path_end,
                     /*charset_converter=*/nullptr, &output, &parsed)) {
     return {};
   }

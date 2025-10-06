@@ -59,6 +59,26 @@ inline void TrimURL(const CHAR* spec, int* begin, int* len,
   }
 }
 
+// This shrinks the input URL string to eliminate "should-be-trimmed"
+// characters.
+template <typename CHAR>
+inline std::basic_string_view<CHAR> TrimUrl(std::basic_string_view<CHAR> spec,
+                                            bool trim_path_end = true) {
+  // Strip leading whitespace and control characters.
+  while (!spec.empty() && ShouldTrimFromURL(spec[0])) {
+    spec = spec.substr(1);
+  }
+
+  if (trim_path_end) {
+    // Strip trailing whitespace and control characters. We need the empty()
+    // test for when the input string is all blanks.
+    while (!spec.empty() && ShouldTrimFromURL(spec[spec.length() - 1])) {
+      spec = spec.substr(0, spec.length() - 1);
+    }
+  }
+  return spec;
+}
+
 // Counts the number of consecutive slashes or backslashes starting at the given
 // offset in the given string of the given length. A slash and backslash can be
 // mixed.

@@ -220,15 +220,13 @@ COMPONENT_EXPORT(URL) bool HostIsIPAddress(std::string_view host);
 // output and parsed structures will still be filled and will be consistent,
 // but they will not represent a loadable URL.
 COMPONENT_EXPORT(URL)
-bool Canonicalize(const char* spec,
-                  int spec_len,
+bool Canonicalize(std::string_view spec,
                   bool trim_path_end,
                   CharsetConverter* charset_converter,
                   CanonOutput* output,
                   Parsed* output_parsed);
 COMPONENT_EXPORT(URL)
-bool Canonicalize(const char16_t* spec,
-                  int spec_len,
+bool Canonicalize(std::u16string_view spec,
                   bool trim_path_end,
                   CharsetConverter* charset_converter,
                   CanonOutput* output,
