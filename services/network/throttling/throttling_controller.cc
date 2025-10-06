@@ -129,11 +129,15 @@ void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
   // same time. If this grows too large me need to build maps from the
   // conditions here.
   for (auto& [pattern, network_conditions] : conditions) {
-    auto pattern_matcher = url_pattern::SimpleUrlPatternMatcher::Create(
-        pattern, GURL("https://*"));
-    if (!pattern.empty() &&
-        (!pattern_matcher.has_value() || !*pattern_matcher)) {
-      continue;
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> pattern_matcher;
+    if (!pattern.empty()) {
+      auto maybe_pattern_matcher = url_pattern::SimpleUrlPatternMatcher::Create(
+          pattern, /*base_url=*/nullptr);
+      if (!maybe_pattern_matcher.has_value()) {
+        continue;
+      }
+      pattern_matcher = std::move(*maybe_pattern_matcher);
+      CHECK(pattern_matcher);
     }
 
     if (auto old_entry = FindConditions(old_matchers.begin(),
@@ -144,16 +148,16 @@ void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
 
       matchers_.back().patterns.clear();
       matchers_.back().patterns.emplace_back(std::move(pattern),
-                                             std::move(*pattern_matcher));
+                                             std::move(pattern_matcher));
     } else if (auto new_entry = FindConditions(
                    matchers_.begin(), matchers_.end(), network_conditions);
                new_entry != matchers_.end()) {
       new_entry->patterns.emplace_back(std::move(pattern),
-                                       std::move(*pattern_matcher));
+                                       std::move(pattern_matcher));
     } else {
       matchers_.emplace_back(std::move(network_conditions));
       matchers_.back().patterns.emplace_back(std::move(pattern),
-                                             std::move(*pattern_matcher));
+                                             std::move(pattern_matcher));
     }
   }
 }

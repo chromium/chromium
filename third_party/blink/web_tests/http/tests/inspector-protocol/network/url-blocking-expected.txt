@@ -25,4 +25,12 @@ Test setting patterns that fail to parse:
     id : <number>
     sessionId : <string>
 }
+{
+    error : {
+        code : -32602
+        message : Pattern "*.css" failed to parse as a URLPattern.
+    }
+    id : <number>
+    sessionId : <string>
+}
 

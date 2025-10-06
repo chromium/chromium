@@ -59,8 +59,8 @@
   await testRequest('resources/b.html', false);
 
   testRunner.log('\nTest setting patterns that fail to parse:');
-  const result = await dp.Network.setBlockedURLs({urlPatterns: ['*://*', 'ht tp://']});
-  testRunner.log(result);
+  testRunner.log(await dp.Network.setBlockedURLs({urlPatterns: ['ht tp://']}));
+  testRunner.log(await dp.Network.setBlockedURLs({urlPatterns: ['*.css']}));
 
   testRunner.completeTest();
 })

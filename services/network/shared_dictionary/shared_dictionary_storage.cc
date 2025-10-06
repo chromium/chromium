@@ -260,7 +260,7 @@ SharedDictionaryStorage::MaybeCreateWriter(
   }
 
   auto matcher_create_result =
-      url_pattern::SimpleUrlPatternMatcher::Create(info->match, url);
+      url_pattern::SimpleUrlPatternMatcher::Create(info->match, &url);
   if (!matcher_create_result.has_value()) {
     return base::unexpected(
         mojom::SharedDictionaryError::kWriteErrorInvalidMatchField);

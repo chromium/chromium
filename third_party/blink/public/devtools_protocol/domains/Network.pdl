@@ -1090,8 +1090,8 @@ domain Network
   experimental type NetworkConditions extends object
     properties
       # Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string
-      # syntax (https://urlpattern.spec.whatwg.org/). If the pattern is empty, all requests are matched (including p2p
-      # connections).
+      # syntax (https://urlpattern.spec.whatwg.org/) and must be absolute. If the pattern is empty, all requests are
+      # matched (including p2p connections).
       string urlPattern
       # Minimum latency from request sent to response headers received (ms).
       number latency
@@ -1269,7 +1269,7 @@ domain Network
   experimental command setBlockedURLs
     parameters
       # URL patterns to block. Patterns use the URLPattern constructor string syntax
-      # (https://urlpattern.spec.whatwg.org/). Example: `*://*:*/*.css`.
+      # (https://urlpattern.spec.whatwg.org/) and must be absolute. Example: `*://*:*/*.css`.
       optional array of string urlPatterns
       # URL patterns to block. Wildcards ('*') are allowed.
       deprecated optional array of string urls

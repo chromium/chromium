@@ -809,8 +809,7 @@ SourceTypeEnum SourceTypeFromString(const String& type) {
 
 static std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>
 BuildURLPatternMatcher(const String& pattern) {
-  return url_pattern::SimpleUrlPatternMatcher::Create(pattern.Utf8(),
-                                                      GURL("https://*"))
+  return url_pattern::SimpleUrlPatternMatcher::Create(pattern.Utf8(), nullptr)
       .value_or(std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>());
 }
 

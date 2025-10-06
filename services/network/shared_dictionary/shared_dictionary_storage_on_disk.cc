@@ -267,7 +267,7 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
     const std::string match = info.match();
     std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher;
     auto matcher_create_result =
-        url_pattern::SimpleUrlPatternMatcher::Create(match, info.url());
+        url_pattern::SimpleUrlPatternMatcher::Create(match, &info.url());
     if (!matcher_create_result.has_value()) {
       continue;
     }

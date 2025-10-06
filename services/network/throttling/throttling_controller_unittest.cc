@@ -375,6 +375,7 @@ TEST(ThrottlingControllerTest, SetConditions) {
   // but in some cases fails to parse:
   helper.SetNetworkState({
       {"ht tp://", NetworkConditions{false}},
+      {"*.css", NetworkConditions{false}},
   });
   EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 0u);
 }

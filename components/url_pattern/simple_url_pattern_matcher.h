@@ -125,9 +125,10 @@ class SimpleUrlPatternMatcher {
 
   // Creates a SimpleUrlPatternMatcher from a constructor string and a base URL.
   // If the constructor string is invalid or it contains regexp group, this
-  // method returns an error string.
+  // method returns an error string. If `base_url` is nullptr, relative patterns
+  // in `constructor_string` produce an error.
   static base::expected<std::unique_ptr<SimpleUrlPatternMatcher>, std::string>
-  Create(std::string_view constructor_string, const GURL& base_url);
+  Create(std::string_view constructor_string, const GURL* base_url);
 
   SimpleUrlPatternMatcher(Component protocol,
                           Component username,
@@ -151,8 +152,10 @@ class SimpleUrlPatternMatcher {
   friend class SimpleUrlPatternMatcherTest;
 
   // Creates a `PatternInit` with the result of parsing a constructor string and
-  // apply `base_url`. And returns the result of processing a URLPatternInit,
-  // and processing the default port of the protocol component.
+  // apply `base_url` if given. And returns the result of processing a
+  // URLPatternInit, and processing the default port of the protocol component.
+  // If `base_url` is nullptr, relative or incomplete PatternInits produce an
+  // error.
   // https://urlpattern.spec.whatwg.org/#parse-a-constructor-string
   // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
   //
@@ -164,7 +167,7 @@ class SimpleUrlPatternMatcher {
   // https://urlpattern.spec.whatwg.org/#compute-protocol-matches-a-special-scheme-flag
   static base::expected<PatternInit, std::string> CreatePatternInit(
       std::string_view url_pattern,
-      const GURL& base_url,
+      const GURL* base_url,
       std::optional<Component>* protocol_component_out,
       bool* protocol_matches_a_special_scheme_flag_out);
 

@@ -136,14 +136,19 @@ class SimpleUrlPatternMatcherTest : public testing::Test {
   static base::expected<SimpleUrlPatternMatcher::PatternInit, std::string>
   CreatePatternInit(const std::string_view& url_pattern, const GURL& base_url) {
     return SimpleUrlPatternMatcher::CreatePatternInit(
-        url_pattern, base_url,
+        url_pattern, &base_url,
         /*protocol_matcher_out*=*/nullptr,
         /*should_treat_as_standard_url_out=*/nullptr);
   }
   static base::expected<std::unique_ptr<SimpleUrlPatternMatcher>, std::string>
   CreateMatcher(const std::string_view& constructor_string,
                 const GURL& base_url) {
-    return SimpleUrlPatternMatcher::Create(constructor_string, base_url);
+    return SimpleUrlPatternMatcher::Create(constructor_string, &base_url);
+  }
+
+  static base::expected<std::unique_ptr<SimpleUrlPatternMatcher>, std::string>
+  CreateMatcherWithoutBaseUrl(const std::string_view& constructor_string) {
+    return SimpleUrlPatternMatcher::Create(constructor_string, nullptr);
   }
 };
 
@@ -421,6 +426,171 @@ TEST_F(SimpleUrlPatternMatcherTest, Create) {
           CreateMatcher(test.constructor_string, GURL(test.base_url));
       EXPECT_FALSE(create_matcher_result.has_value());
       EXPECT_EQ(create_matcher_result.error(), test.expected_error);
+    }
+  }
+}
+
+TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
+  struct {
+    std::string_view constructor_string;
+    std::optional<testing::Matcher<const SimpleUrlPatternMatcher::PatternInit&>>
+        expected_pattern;
+    std::optional<std::string_view> expected_error;
+    std::vector<std::string_view> match_urls;
+    std::vector<std::string_view> non_match_urls;
+  } test_cases[] = {
+
+      // Test cases for SimpleUrlPatternMatcher creation success
+
+      // Absolute URL
+      {.constructor_string = "https://example.com/piyo/fuga",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"https", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"example.com",
+           /*port=*/"", /*pathname=*/"/piyo/fuga",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"https://example.com/piyo/fuga",
+                      "https://example.com/piyo/fuga?bar"},
+       .non_match_urls = {"https://example.com/foo/",
+                          "https://example.com/foo/piyo/fuga",
+                          "https://example.com/piyo"}},
+
+      // Absolute URL with absolute pathname
+      {.constructor_string = "https://example.com/foo",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"https", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"example.com",
+           /*port=*/"", /*pathname=*/"/foo",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"https://example.com/foo", "https://example.com/foo?bar"},
+       .non_match_urls = {"https://example.com/bar"}},
+
+      // Absolute URL with different hostname
+      {.constructor_string = "https://example.net/piyo/fuga",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"https", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"example.net",
+           /*port=*/"", /*pathname=*/"/piyo/fuga",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"https://example.net/piyo/fuga",
+                      "https://example.net/piyo/fuga?bar"},
+       .non_match_urls = {"https://example.com/foo/",
+                          "https://example.com/foo/piyo/fuga"}},
+
+      // Absolute URL with a default port
+      {.constructor_string = "https://example.com:443/piyo/fuga",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"https", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"example.com",
+           /*port=*/"", /*pathname=*/"/piyo/fuga",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"https://example.com/piyo/fuga",
+                      "https://example.com:443/piyo/fuga"},
+       .non_match_urls = {"https://example.com:444/piyo/fuga/",
+                          "https://example.com:80/piyo/fuga"}},
+
+      // Absolute URL with a non-default port
+      {.constructor_string = "https://example.com:444/piyo/fuga",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"https", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"example.com",
+           /*port=*/"444", /*pathname=*/"/piyo/fuga",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"https://example.com:444/piyo/fuga"},
+       .non_match_urls = {"https://example.com/piyo/fuga/",
+                          "https://example.com:443/piyo/fuga",
+                          "https://example.com:80/piyo/fuga"}},
+
+      // Empty pathname
+      {.constructor_string = "https://example.com",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"https", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"example.com",
+           /*port=*/"", /*pathname=*/std::nullopt,
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"https://example.com", "https://example.com/piyo/"},
+       .non_match_urls = {"https://example.net/"}},
+
+      // pathname = `/`
+      {.constructor_string = "https://example.com/",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"https", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"example.com",
+           /*port=*/"", /*pathname=*/"/",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"https://example.com"},
+       .non_match_urls = {"https://example.net/", "https://example.com/piyo/"}},
+
+      // Test cases for SimpleUrlPatternMatcher creation failure
+
+      // Relative path with a query string with a non-standard protocol
+      {.constructor_string = "non-standard:hoge?*",
+       .expected_error = "Protocol may not be omitted"},
+
+      // Escaped pathname
+      {.constructor_string = "\\/piyo\\/fuga",
+       .expected_error = "Protocol may not be omitted"},
+
+      // No slash in the non-standard base URL's pathname
+      {.constructor_string = "non-standard:hoge/piyo",
+       .expected_error = "Protocol may not be omitted"},
+
+      // Relative path
+      {.constructor_string = "/foo",
+       .expected_error = "Protocol may not be omitted"},
+
+      // Relative path ending with /
+      {.constructor_string = "/foo/",
+       .expected_error = "Protocol may not be omitted"},
+
+      // Relative path
+      {.constructor_string = "hoge",
+       .expected_error = "Protocol may not be omitted"},
+
+      // Relative path ending with /
+      {.constructor_string = "hoge/",
+       .expected_error = "Protocol may not be omitted"},
+
+      // Empty constructor string
+      {.constructor_string = "",
+       .expected_error = "Protocol may not be omitted"},
+
+      // Invalid constructor string (pathname)
+      {.constructor_string = "https://example.com/{",
+       .expected_error = "Failed to parse pattern for pathname"},
+
+      // Invalid constructor string (protocol)
+      {.constructor_string = "\t://example.com/",
+       .expected_error = "Failed to parse pattern for protocol"},
+
+      // Unsupported regexp group
+      {.constructor_string = "https://example.com/(\\d+)/",
+       .expected_error = "Regexp groups are not supported for pathname"}};
+
+  for (const auto& test : test_cases) {
+    SCOPED_TRACE(base::StrCat(
+        {"constructor_string: \"", test.constructor_string, "\""}));
+    if (!test.expected_error) {
+      ASSERT_OK_AND_ASSIGN(
+          auto matcher, CreateMatcherWithoutBaseUrl(test.constructor_string));
+      for (const auto& match_url : test.match_urls) {
+        EXPECT_TRUE(matcher->Match(GURL(match_url))) << match_url;
+      }
+      for (const auto& non_match_url : test.non_match_urls) {
+        EXPECT_FALSE(matcher->Match(GURL(non_match_url))) << non_match_url;
+      }
+    } else {
+      auto create_matcher_result =
+          CreateMatcherWithoutBaseUrl(test.constructor_string);
+      EXPECT_FALSE(create_matcher_result.has_value());
+      EXPECT_EQ(create_matcher_result.error(), *test.expected_error);
     }
   }
 }

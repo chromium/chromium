@@ -82,10 +82,10 @@ bool IsAbsolutePathname(std::string_view pathname) {
   return false;
 }
 
-std::string ResolveRelativePathnamePattern(const GURL& base_url,
+std::string ResolveRelativePathnamePattern(const GURL* base_url,
                                            std::string_view pathname) {
-  if (base_url.IsStandard() && !IsAbsolutePathname(pathname)) {
-    std::string base_path = EscapePatternString(base_url.GetPath());
+  if (base_url && base_url->IsStandard() && !IsAbsolutePathname(pathname)) {
+    std::string base_path = EscapePatternString(base_url->GetPath());
     auto slash_index = base_path.rfind('/');
     if (slash_index != std::string::npos) {
       // Extract the baseURL path up to and including the first slash.  Append
@@ -169,7 +169,7 @@ bool SimpleUrlPatternMatcher::Component::Match(std::string_view value) const {
 // static
 base::expected<std::unique_ptr<SimpleUrlPatternMatcher>, std::string>
 SimpleUrlPatternMatcher::Create(std::string_view constructor_string,
-                                const GURL& base_url) {
+                                const GURL* base_url) {
   std::optional<Component> protocol_component;
   bool protocol_matches_a_special_scheme_flag = false;
   auto pattern_result =
@@ -183,23 +183,17 @@ SimpleUrlPatternMatcher::Create(std::string_view constructor_string,
                                protocol_matches_a_special_scheme_flag);
 }
 
-// static
-base::expected<SimpleUrlPatternMatcher::PatternInit, std::string>
-SimpleUrlPatternMatcher::CreatePatternInit(
+static base::expected<liburlpattern::ConstructorStringParser, std::string>
+ParseConstructorString(
     std::string_view constructor_string,
-    const GURL& base_url,
-    std::optional<Component>* protocol_component_out,
+    std::optional<SimpleUrlPatternMatcher::Component>* protocol_component_out,
     bool* protocol_matches_a_special_scheme_flag_out) {
-  if (!base_url.is_valid()) {
-    return base::unexpected("Invalid base URL");
-  }
-
   // Spec: Set init to the result of running parse a constructor string given
   // input.
   // https://urlpattern.spec.whatwg.org/#parse-a-constructor-string
   liburlpattern::ConstructorStringParser constructor_string_parser(
       constructor_string);
-  std::optional<Component> protocol_component;
+  std::optional<SimpleUrlPatternMatcher::Component> protocol_component;
   bool protocol_matches_a_special_scheme_flag = false;
   absl::Status result = constructor_string_parser.Parse(
       [&protocol_component, &protocol_matches_a_special_scheme_flag](
@@ -207,7 +201,7 @@ SimpleUrlPatternMatcher::CreatePatternInit(
           -> base::expected<bool, absl::Status> {
         // Spec: Let protocol component be the result of compiling a component
         // given protocol string, canonicalize a protocol, and default options.
-        auto component_result = Component::Create(
+        auto component_result = SimpleUrlPatternMatcher::Component::Create(
             protocol_string, url_pattern::ProtocolEncodeCallback,
             kDefaultOptions);
         if (!component_result.has_value()) {
@@ -237,8 +231,28 @@ SimpleUrlPatternMatcher::CreatePatternInit(
     *protocol_matches_a_special_scheme_flag_out =
         protocol_matches_a_special_scheme_flag;
   }
+  return std::move(constructor_string_parser);
+}
+
+// static
+base::expected<SimpleUrlPatternMatcher::PatternInit, std::string>
+SimpleUrlPatternMatcher::CreatePatternInit(
+    std::string_view constructor_string,
+    const GURL* base_url,
+    std::optional<Component>* protocol_component_out,
+    bool* protocol_matches_a_special_scheme_flag_out) {
+  if (base_url && !base_url->is_valid()) {
+    return base::unexpected("Invalid base URL");
+  }
+
+  auto constructor_string_parser =
+      ParseConstructorString(constructor_string, protocol_component_out,
+                             protocol_matches_a_special_scheme_flag_out);
+  if (!constructor_string_parser.has_value()) {
+    return base::unexpected(constructor_string_parser.error());
+  }
   const liburlpattern::ConstructorStringParser::Result& init =
-      constructor_string_parser.GetResult();
+      constructor_string_parser->GetResult();
 
   // Spec: Let processedInit be the result of process a URLPatternInit given
   // init, "pattern", null, null, null, null, null, null, null, and null.
@@ -246,6 +260,8 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   // The following code are running shortcuts of the steps of "process a
   // URLPatternInit".
   // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+  // If base_url is required to complete the URLPatternInit according to the
+  // spec but is not given, an error is returned.
   //
   // [protocol]
   // - Spec: If init["protocol"] does not exist, then set result["protocol"] to
@@ -258,9 +274,12 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   // Note: "process protocol for init" removes a single trailing ":". But
   //       ConstructorStringParser doesn't set the trailing ":". So we don't
   //       need the logic for the trailing ":" removal.
+  if (!init.protocol && !base_url) {
+    return base::unexpected("Protocol may not be omitted");
+  }
   std::optional<std::string> protocol =
       init.protocol ? std::string(*init.protocol)
-                    : EscapePatternString(base_url.GetScheme());
+                    : EscapePatternString(base_url->GetScheme());
   // [username]
   // - Spec: If type is not "pattern" and init contains none of "protocol",
   //   "hostname", "port" and "username", then set result["username"] to the
@@ -294,11 +313,11 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   //   result of process hostname for init given init["hostname"] and type.
   // Note: "process hostname for init" do nothing when type is "pattern".
   std::optional<std::string> hostname =
-      init.hostname
-          ? std::make_optional(std::string(*init.hostname))
-          : (init.protocol
-                 ? std::nullopt
-                 : std::make_optional(EscapePatternString(base_url.GetHost())));
+      init.hostname ? std::make_optional(std::string(*init.hostname))
+                    : (init.protocol || !base_url
+                           ? std::nullopt
+                           : std::make_optional(
+                                 EscapePatternString(base_url->GetHost())));
   // [port]
   // - Spec: If init contains none of "protocol", "hostname", and "port", then:
   //   - If baseURL’s port is null, then set result["port"] to the empty string.
@@ -308,9 +327,9 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   // Note: "process port for init" do nothing when type is "pattern".
   std::optional<std::string> port =
       init.port ? std::make_optional(std::string(*init.port))
-                : ((init.protocol || init.hostname)
+                : ((init.protocol || init.hostname || !base_url)
                        ? std::nullopt
-                       : std::make_optional(base_url.GetPort()));
+                       : std::make_optional(base_url->GetPort()));
   // [pathname]
   // - Spec: If init contains none of "protocol", "hostname", "port", and
   //   "pathname", then set result["pathname"] to the result of processing a
@@ -338,13 +357,18 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   //     result["pathname"], result["protocol"], and type.
   // Note: The second logic is implemented in ResolveRelativePathnamePattern().
   //       "process pathname for init" do nothing when type is "pattern".
+  if (!base_url && init.pathname && url::IsStandard(*protocol) &&
+      !IsAbsolutePathname(*init.pathname)) {
+    return base::unexpected("Relative pathname not allowed");
+  }
   std::optional<std::string> pathname =
       init.pathname
           ? std::make_optional(
                 ResolveRelativePathnamePattern(base_url, *init.pathname))
-          : ((init.protocol || init.hostname || init.port)
+          : ((init.protocol || init.hostname || init.port || !base_url)
                  ? std::nullopt
-                 : std::make_optional(EscapePatternString(base_url.GetPath())));
+                 : std::make_optional(
+                       EscapePatternString(base_url->GetPath())));
   // [search]
   // - Spec: If init contains none of "protocol", "hostname", "port",
   //   "pathname", and "search", then:
@@ -358,12 +382,12 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   //       ConstructorStringParser doesn't set the leading "?". So we don't
   //       need the logic for the leading "?" removal.
   std::optional<std::string> search =
-      init.search
-          ? std::make_optional(std::string(*init.search))
-          : ((init.protocol || init.hostname || init.port || init.pathname)
-                 ? std::nullopt
-                 : std::make_optional(
-                       EscapePatternString(base_url.GetQuery())));
+      init.search ? std::make_optional(std::string(*init.search))
+                  : ((init.protocol || init.hostname || init.port ||
+                      init.pathname || !base_url)
+                         ? std::nullopt
+                         : std::make_optional(
+                               EscapePatternString(base_url->GetQuery())));
   // [hash]
   // - Spec: If init contains none of "protocol", "hostname", "port",
   //   "pathname", "search", and "hash", then:
@@ -380,9 +404,9 @@ SimpleUrlPatternMatcher::CreatePatternInit(
       init.hash
           ? std::make_optional(std::string(*init.hash))
           : ((init.protocol || init.hostname || init.port || init.pathname ||
-              init.search)
+              init.search || !base_url)
                  ? std::nullopt
-                 : std::make_optional(EscapePatternString(base_url.GetRef())));
+                 : std::make_optional(EscapePatternString(base_url->GetRef())));
 
   CHECK(protocol);
 

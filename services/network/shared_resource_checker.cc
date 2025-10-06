@@ -34,7 +34,7 @@ class SharedResourceChecker::PatternEntry {
   ~PatternEntry() = default;
   PatternEntry(const std::string& pattern, const GURL& base_url) {
     auto pattern_create_result =
-        url_pattern::SimpleUrlPatternMatcher::Create(pattern, base_url);
+        url_pattern::SimpleUrlPatternMatcher::Create(pattern, &base_url);
     if (pattern_create_result.has_value()) {
       url_pattern_ = std::move(pattern_create_result.value());
     }
