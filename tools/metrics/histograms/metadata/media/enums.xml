@@ -1410,6 +1410,17 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Exit picture in picture"/>
 </enum>
 
+<!-- LINT.IfChange(MediaLauncherActivityEnabledReason) -->
+
+<enum name="MediaLauncherActivityEnabledReason">
+  <int value="0" label="Low end device"/>
+  <int value="1" label="Enterprise"/>
+  <int value="2" label="Both"/>
+  <int value="3" label="Neither"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java:MediaLauncherActivityEnabledReason) -->
+
 <enum name="MediaLoadType">
   <int value="0" label="URL"/>
   <int value="1" label="MediaSource"/>

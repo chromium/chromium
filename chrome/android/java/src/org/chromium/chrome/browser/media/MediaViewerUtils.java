@@ -19,6 +19,7 @@ import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -26,6 +27,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -255,6 +257,37 @@ public class MediaViewerUtils {
         if (packageManager.getComponentEnabledSetting(audioComponentName) != newAudioState) {
             packageManager.setComponentEnabledSetting(audioComponentName, newAudioState, flags);
         }
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        MediaLauncherActivityEnabledReason.LOW_END_DEVICE,
+                MediaLauncherActivityEnabledReason.ENTERPRISE,
+        MediaLauncherActivityEnabledReason.BOTH, MediaLauncherActivityEnabledReason.NEITHER
+    })
+    private @interface MediaLauncherActivityEnabledReason {
+        int LOW_END_DEVICE = 0;
+        int ENTERPRISE = 1;
+        int BOTH = 2;
+        int NEITHER = 3;
+        int COUNT = 4;
+    }
+
+    /** Records a histogram for MediaLauncherActivity metrics. */
+    public static void recordMediaLauncherActivityStarted() {
+        @MediaLauncherActivityEnabledReason int reason;
+        if (SysUtils.isLowEndDevice() && isEnterpriseManaged()) {
+            reason = MediaLauncherActivityEnabledReason.BOTH;
+        } else if (SysUtils.isLowEndDevice()) {
+            reason = MediaLauncherActivityEnabledReason.LOW_END_DEVICE;
+        } else if (isEnterpriseManaged()) {
+            reason = MediaLauncherActivityEnabledReason.ENTERPRISE;
+        } else {
+            reason = MediaLauncherActivityEnabledReason.NEITHER;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "MediaLauncherActivityStarted", reason, MediaLauncherActivityEnabledReason.COUNT);
     }
 
     /** Force MediaLauncherActivity to be enabled for testing. */

@@ -5018,6 +5018,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaLauncherActivityStarted"
+    enum="MediaLauncherActivityEnabledReason" expires_after="2026-06-01">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the MediaLauncherActivity starts up. Records the reaosn that
+    MediaLauncherActivity is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaPlaybackWhileNotVisible.InterruptionType"
     enum="MediaPlaybackInterruptionType" expires_after="2026-02-12">
   <owner>dalecurtis@chromium.org</owner>

@@ -63,6 +63,7 @@ public class MediaLauncherActivity extends Activity {
 
         try {
             startActivity(intent);
+            MediaViewerUtils.recordMediaLauncherActivityStarted();
         } catch (SecurityException e) {
             Log.w(TAG, "Cannot open content URI: " + contentUri, e);
         }
