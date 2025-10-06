@@ -15,6 +15,18 @@
 
 namespace blink {
 
+struct SynchronousCompositorProxy::SharedMemoryWithSize {
+  base::WritableSharedMemoryMapping shared_memory;
+  const size_t buffer_size;
+  bool zeroed;
+
+  SharedMemoryWithSize(base::WritableSharedMemoryMapping shm_mapping,
+                       size_t buffer_size)
+      : shared_memory(std::move(shm_mapping)),
+        buffer_size(buffer_size),
+        zeroed(true) {}
+};
+
 SynchronousCompositorProxy::SynchronousCompositorProxy(
     InputHandlerProxy* input_handler_proxy)
     : input_handler_proxy_(input_handler_proxy),
@@ -143,18 +155,6 @@ void SynchronousCompositorProxy::WillSkipDraw() {
     layer_tree_frame_sink_->WillSkipDraw();
   }
 }
-
-struct SynchronousCompositorProxy::SharedMemoryWithSize {
-  base::WritableSharedMemoryMapping shared_memory;
-  const size_t buffer_size;
-  bool zeroed;
-
-  SharedMemoryWithSize(base::WritableSharedMemoryMapping shm_mapping,
-                       size_t buffer_size)
-      : shared_memory(std::move(shm_mapping)),
-        buffer_size(buffer_size),
-        zeroed(true) {}
-};
 
 void SynchronousCompositorProxy::ZeroSharedMemory() {
   // It is possible for this to get called twice, eg. if draw is called before
