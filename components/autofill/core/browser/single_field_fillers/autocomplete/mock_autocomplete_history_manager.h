@@ -19,7 +19,9 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
   MOCK_METHOD(void,
               OnGetSingleFieldSuggestions,
               (const FormData& form,
+               const FormStructure* form_structure,
                const FormFieldData& field,
+               const AutofillField* autofill_field,
                const AutofillClient& client,
                SingleFieldFillRouter::OnSuggestionsReturnedCallback callback),
               (override));

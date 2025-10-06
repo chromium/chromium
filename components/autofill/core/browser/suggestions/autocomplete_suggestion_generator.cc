@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/suggestions/autocomplete_suggestion_generator.h"
 
 #include "base/containers/to_vector.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -65,6 +67,20 @@ void AutocompleteSuggestionGenerator::FetchSuggestionData(
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   if (!trigger_field.should_autocomplete()) {
+    std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
+    return;
+  }
+
+  // Do not offer autocomplete suggestions for credit card number, cvc, and
+  // expiration date related fields. Standalone cvc fields (used to
+  // re-authenticate the use of a credit card the website has on file) will be
+  // handled separately because those have the field type
+  // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
+  if (FieldType type = trigger_autofill_field
+                           ? trigger_autofill_field->Type().GetCreditCardType()
+                           : UNKNOWN_TYPE;
+      data_util::IsCreditCardExpirationType(type) ||
+      type == CREDIT_CARD_VERIFICATION_CODE || type == CREDIT_CARD_NUMBER) {
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
     return;
   }

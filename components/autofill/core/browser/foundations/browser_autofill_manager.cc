@@ -474,32 +474,6 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   }
 }
 
-bool ShouldOfferSingleFieldFill(const AutofillField* autofill_field,
-                                AutofillSuggestionTriggerSource trigger_source,
-                                SuppressReason suppress_reason) {
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
-    return false;
-  }
-  // Do not offer single field form fill suggestions for credit card number,
-  // cvc, and expiration date related fields. Standalone cvc fields (used to
-  // re-authenticate the use of a credit card the website has on file) will be
-  // handled separately because those have the field type
-  // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
-  FieldType type = autofill_field ? autofill_field->Type().GetCreditCardType()
-                                  : UNKNOWN_TYPE;
-  if (data_util::IsCreditCardExpirationType(type) ||
-      type == CREDIT_CARD_VERIFICATION_CODE || type == CREDIT_CARD_NUMBER) {
-    return false;
-  }
-
-  // Do not offer single field form fill suggestions if popups are suppressed
-  // due to an unrecognized autocomplete attribute. Note that in the context
-  // of Autofill, the popup for credit card related fields is not getting
-  // suppressed due to an unrecognized autocomplete attribute.
-  return suppress_reason != SuppressReason::kAutocompleteUnrecognized;
-}
-
 // Returns whether suggestions should be suppressed for the given reason.
 bool ShouldSuppressSuggestions(SuppressReason suppress_reason,
                                LogManager* log_manager) {
@@ -1531,8 +1505,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   }
 
   // Whether or not to request single field form fill suggestions.
-  const bool should_offer_single_field_form_fill = ShouldOfferSingleFieldFill(
-      autofill_field, trigger_source, context.suppress_reason);
+  const bool should_offer_single_field_form_fill =
+      trigger_source !=
+      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick;
 
   // Whether or not to show plus address suggestions.
   const bool should_offer_plus_addresses =
@@ -1604,7 +1579,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     // `on_suggestions_returned` is still called with an empty list of
     // suggestions.
     client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
-            form, field, client(), std::move(on_suggestions_returned));
+        form, form_structure, field, autofill_field, client(),
+        std::move(on_suggestions_returned));
   } else {
     std::move(on_single_field_suggestions_callback)
         .Run(/*single_field_suggestions=*/{});

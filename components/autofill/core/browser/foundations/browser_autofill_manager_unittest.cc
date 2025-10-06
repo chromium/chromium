@@ -3053,6 +3053,22 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
           "", Suggestion::Icon::kNoIcon,
           SuggestionType::kInsecureContextPaymentDisabledMessage)});
 
+  // Ensure that the single field suggestions are not considered for any
+  // field.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
+
   // Clear the test credit cards and try again -- we shouldn't return a warning.
   personal_data().test_payments_data_manager().ClearCreditCards();
   OnAskForValuesToFill(form, cc_number_field);
@@ -3152,6 +3168,22 @@ TEST_F(
   // Fill data in CC Number field and set it as not autofilled.
   test_api(form).field(1).set_value(u"4444 4444 4444 4444");
   test_api(form).field(1).set_is_autofilled(false);
+
+  // Ensure that the single field suggestions are not considered for any
+  // field.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
 
   // Expect no suggestions are returned for the expiry type field.
   const FormFieldData& expiry_type_field = form.fields()[2];
@@ -5109,29 +5141,6 @@ TEST_F(BrowserAutofillManagerTest_AutofillDisabled,
   OnAskForValuesToFill(form, field);
 }
 
-// Test that when Autofill is disabled and the field is a credit card number
-// field, single field form fill suggestions are not queried.
-TEST_F(BrowserAutofillManagerTest_AutofillDisabled,
-       SingleFieldFillSuggestions_CreditCardNumberShouldNotAutocomplete) {
-  // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
-                                               /*use_month_type=*/false);
-  FormsSeen({form});
-  // The second field is "Card Number", which should not autocomplete.
-  FormFieldData& field = test_api(form).field(1);
-  field.set_should_autocomplete(true);
-
-  // Ensure that the single field suggestions are not considered for any
-  // field.
-  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .Times(0);
-  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
-  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .Times(0);
-
-  OnAskForValuesToFill(form, field);
-}
-
 // Test that the situation where there are no Autofill suggestions available,
 // and no single field form fill conditions were met is correctly handled. The
 // single field form fill conditions were not met because autocomplete is set to
@@ -5153,12 +5162,14 @@ TEST_F(
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
-                         const AutofillClient& client,
-                         SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                             on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-      });
+      .WillRepeatedly(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
 
   OnAskForValuesToFill(form, email_field);
 
@@ -5187,12 +5198,14 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
-                         const AutofillClient& client,
-                         SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                             on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-      });
+      .WillRepeatedly(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
 
   OnAskForValuesToFill(form, field);
 
@@ -6148,12 +6161,14 @@ TEST_F(BrowserAutofillManagerTest,
     // to the field not having a type that would route to any of the other
     // single field form fillers.
     ON_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-        .WillByDefault([](const FormData& form, const FormFieldData& field,
-                          const AutofillClient& client,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-          std::move(on_suggestions_returned).Run(field.global_id(), {});
-        });
+        .WillByDefault(
+            [](const FormData& form, const FormStructure* form_structure,
+               const FormFieldData& field, const AutofillField* autofill_field,
+               const AutofillClient& client,
+               SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                   on_suggestions_returned) {
+              std::move(on_suggestions_returned).Run(field.global_id(), {});
+            });
     OnAskForValuesToFill(mixed_form, mixed_form_field);
 
     EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
@@ -8669,12 +8684,14 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
-                         const AutofillClient& client,
-                         SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                             on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-      });
+      .WillRepeatedly(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
   FormsSeen({form});
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -8979,12 +8996,14 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
-                         const AutofillClient& client,
-                         SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                             on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-      });
+      .WillRepeatedly(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(
@@ -9127,7 +9146,10 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormData& form, const FormFieldData& field,
+      .WillRepeatedly([&](const FormData& form,
+                          const FormStructure* form_structure,
+                          const FormFieldData& field,
+                          const AutofillField* autofill_field,
                           const AutofillClient&,
                           SingleFieldFillRouter::OnSuggestionsReturnedCallback
                               on_suggestions_returned) {
@@ -9185,12 +9207,14 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
-                         const AutofillClient& client,
-                         SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                             on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-      });
+      .WillRepeatedly(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(

@@ -447,7 +447,9 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
   run_loop.Run();
 }
 
@@ -474,7 +476,9 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
   std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
@@ -500,7 +504,9 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   // Simulate request for suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
   run_loop.Run();
 }
 
@@ -523,7 +529,9 @@ TEST_F(AutocompleteHistoryManagerTest,
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   // Simulate request for suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
   run_loop.Run();
 }
 
@@ -558,7 +566,9 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
   std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
@@ -596,7 +606,9 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
   std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
@@ -627,7 +639,9 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
   std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
@@ -657,7 +671,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), IsEmpty()))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
   std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
@@ -692,7 +708,9 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
   std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
@@ -753,7 +771,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQuryId_first))
       .Times(1);
@@ -762,7 +782,9 @@ TEST_F(AutocompleteHistoryManagerTest,
                                                u"SomePrefixTwo")))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback_second.is_null());
   std::move(db_callback_second)
@@ -791,7 +813,9 @@ TEST_F(AutocompleteHistoryManagerTest, SuggestionsReturned_CancelPendingQuery) {
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), testing::IsEmpty()))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   // Simulate cancelling the request.
   EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQuryId));
@@ -830,7 +854,9 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), testing::SizeIs(1)));
 
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
   std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
@@ -850,7 +876,9 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
 
   // Simulate request for suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_form_data_, test_field_, autofill_client_, mock_callback.Get());
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
   run_loop.Run();
 
   // Expect a cancel call.

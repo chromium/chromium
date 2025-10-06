@@ -210,7 +210,9 @@ class AutocompleteTest : public InProcessBrowserTest {
     form.set_url(GURL("https://www.foo.com"));
     form.set_fields({field});
     autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        form, field, autofill_manager()->client(), mock_callback.Get());
+        form, /*form_structure=*/nullptr, field,
+        /*trigger_autofill_field=*/nullptr, autofill_manager()->client(),
+        mock_callback.Get());
 
     // Make sure the DB task gets executed.
     WaitForPendingDBTasks(*GetWebDataService());

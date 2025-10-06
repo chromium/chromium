@@ -7,10 +7,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -195,6 +198,32 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
         return saved_on_suggestions_generated_argument.first ==
                FillingProduct::kAutocomplete;
       }));
+}
+
+// Tests that AutocompleteSuggestionGenerator does not generate suggestions for
+// CreditCard-classified fields.
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       CreditCardNumberField_NoSuggestions) {
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/false,
+                                                     /*use_month_type=*/false);
+  test_api(form).field(1).set_should_autocomplete(true);
+  FormStructure form_structure(form);
+  form_structure.field(1)->SetTypeTo(AutofillType(CREDIT_CARD_NUMBER),
+                                     /*source=*/std::nullopt);
+
+  base::MockCallback<base::OnceCallback<void(
+      std::pair<SuggestionGenerator::SuggestionDataSource,
+                std::vector<SuggestionGenerator::SuggestionData>>)>>
+      suggestion_data_callback;
+
+  EXPECT_CALL(*web_data_service(), GetFormValuesForElementName).Times(0);
+  EXPECT_CALL(suggestion_data_callback,
+              Run(testing::Pair(
+                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                  testing::IsEmpty())));
+  generator().FetchSuggestionData(form, form.fields()[1], &form_structure,
+                                  form_structure.field(1), client(),
+                                  suggestion_data_callback.Get());
 }
 
 }  // namespace
