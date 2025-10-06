@@ -20,7 +20,10 @@ namespace data_controls {
 
 namespace {
 
-constexpr size_t kFirstRuleIndex = 0;
+constexpr Verdict::TriggeredRuleKey kFirstRuleKey = {
+    .index = 0,
+    .machine_scope = true,
+};
 constexpr char kFirstRuleID[] = "1234";
 
 class DataControlsRulesServiceTest : public testing::Test {
@@ -100,18 +103,18 @@ class DataControlsRulesServiceTest : public testing::Test {
   void ExpectBlockVerdict(Verdict verdict) const {
     ASSERT_EQ(verdict.level(), Rule::Level::kBlock);
     EXPECT_EQ(verdict.triggered_rules().size(), 1u);
-    EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleIndex));
-    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_name, "block");
-    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_id,
+    EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleKey));
+    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleKey).rule_name, "block");
+    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleKey).rule_id,
               kFirstRuleID);
   }
 
   void ExpectWarnVerdict(Verdict verdict) const {
     ASSERT_EQ(verdict.level(), Rule::Level::kWarn);
     EXPECT_EQ(verdict.triggered_rules().size(), 1u);
-    EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleIndex));
-    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_name, "warn");
-    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_id,
+    EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleKey));
+    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleKey).rule_name, "warn");
+    EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleKey).rule_id,
               kFirstRuleID);
   }
 

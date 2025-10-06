@@ -49,6 +49,10 @@ class RulesServiceBase : public KeyedService {
   // or not.
   virtual bool incognito_profile() const = 0;
 
+  // Returns if the "DataControlsRules" policy for the current service is set at
+  // the machine scope or not.
+  bool MachineScopePolicy() const;
+
   // Parse the "DataControlsRules" policy if the corresponding experiment is
   // enabled, and populate `rules_`.
   void OnDataControlsRulesUpdate();

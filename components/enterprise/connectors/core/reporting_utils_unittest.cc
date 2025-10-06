@@ -401,7 +401,7 @@ TEST(ReportingUtilsTest, GetDangerousDownloadEvent) {
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 TEST(ReportingUtilsTest, GetDataControlsSensitiveDataEvent) {
   data_controls::Verdict::TriggeredRules triggered_rules = {
-      {0, {"1", "rule_1_name"}}};
+      {{0, true}, {"1", "rule_1_name"}}};
 
   auto event = GetDataControlsSensitiveDataEvent(
       /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),

@@ -19,7 +19,10 @@ namespace data_controls {
 
 namespace {
 
-constexpr size_t kFirstRuleIndex = 0;
+constexpr Verdict::TriggeredRuleKey kFirstRuleIndex = {
+    .index = 0,
+    .machine_scope = true,
+};
 constexpr char kFirstRuleID[] = "1234";
 
 class IOSRulesServiceTest : public PlatformTest {

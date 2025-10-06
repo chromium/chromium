@@ -1019,18 +1019,28 @@ void EventReportValidator::ValidateDataControlsAttributes(
           rule.GetDict().FindString(kKeyTriggeredRuleName);
       ASSERT_TRUE(name);
 
-      ASSERT_TRUE(data_controls_triggered_rules_.count(i));
-      ASSERT_EQ(data_controls_triggered_rules_[i].rule_name, *name);
+      // There should be a rule with the same index as in `triggered_rules`, but
+      // `data_controls_triggered_rules_` might be tracking it internally as a
+      // profile rule or machine rule so we need to check with two different
+      // keys.
+      data_controls::Verdict::TriggeredRule expected_rule;
+      if (data_controls_triggered_rules_.count({i, true})) {
+        expected_rule = data_controls_triggered_rules_[{i, true}];
+      } else if (data_controls_triggered_rules_.count({i, false})) {
+        expected_rule = data_controls_triggered_rules_[{i, false}];
+      } else {
+        NOTREACHED();
+      }
 
       std::optional<int> id = rule.GetDict().FindInt(kKeyTriggeredRuleId);
       if (id) {
         int expected_rule_id = 0;
-        ASSERT_TRUE(base::StringToInt(data_controls_triggered_rules_[i].rule_id,
-                                      &expected_rule_id));
+        ASSERT_TRUE(
+            base::StringToInt(expected_rule.rule_id, &expected_rule_id));
         ASSERT_EQ(expected_rule_id, *id);
       } else {
-        ASSERT_TRUE(data_controls_triggered_rules_[i].rule_id.empty())
-            << " Got rule_id " << data_controls_triggered_rules_[i].rule_id
+        ASSERT_TRUE(expected_rule.rule_id.empty())
+            << " Got rule_id " << expected_rule.rule_id
             << " instead of nothing.";
       }
 

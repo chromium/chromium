@@ -13,9 +13,18 @@ namespace data_controls {
 
 namespace {
 
-constexpr size_t kReportRuleIndex = 0;
-constexpr size_t kWarnRuleIndex = 1;
-constexpr size_t kBlockRuleIndex = 2;
+constexpr Verdict::TriggeredRuleKey kReportRuleKey = {
+    .index = 0,
+    .machine_scope = true,
+};
+constexpr Verdict::TriggeredRuleKey kWarnRuleKey = {
+    .index = 1,
+    .machine_scope = true,
+};
+constexpr Verdict::TriggeredRuleKey kBlockRuleKey = {
+    .index = 2,
+    .machine_scope = true,
+};
 
 constexpr char kReportRuleID[] = "report_rule_id";
 constexpr char kWarnRuleID[] = "warn_rule_id";
@@ -31,18 +40,35 @@ Verdict NotSet() {
 }
 Verdict Report() {
   return Verdict::Report({
-      {kReportRuleIndex,
-       {.rule_id = kReportRuleID, .rule_name = kReportRuleName}},
+      {
+          kReportRuleKey,
+          {
+              .rule_id = kReportRuleID,
+              .rule_name = kReportRuleName,
+          },
+      },
   });
 }
 Verdict Warn() {
   return Verdict::Warn({
-      {kWarnRuleIndex, {.rule_id = kWarnRuleID, .rule_name = kWarnRuleName}},
+      {
+          kWarnRuleKey,
+          {
+              .rule_id = kWarnRuleID,
+              .rule_name = kWarnRuleName,
+          },
+      },
   });
 }
 Verdict Block() {
   return Verdict::Block({
-      {kBlockRuleIndex, {.rule_id = kBlockRuleID, .rule_name = kBlockRuleName}},
+      {
+          kBlockRuleKey,
+          {
+              .rule_id = kBlockRuleID,
+              .rule_name = kBlockRuleName,
+          },
+      },
   });
 }
 Verdict Allow() {
@@ -157,23 +183,22 @@ TEST(DataControlVerdictTest, TriggeredRules) {
 
   auto report = Report();
   EXPECT_EQ(report.triggered_rules().size(), 1u);
-  EXPECT_TRUE(report.triggered_rules().count(kReportRuleIndex));
-  EXPECT_EQ(report.triggered_rules().at(kReportRuleIndex).rule_id,
-            kReportRuleID);
-  EXPECT_EQ(report.triggered_rules().at(kReportRuleIndex).rule_name,
+  EXPECT_TRUE(report.triggered_rules().count(kReportRuleKey));
+  EXPECT_EQ(report.triggered_rules().at(kReportRuleKey).rule_id, kReportRuleID);
+  EXPECT_EQ(report.triggered_rules().at(kReportRuleKey).rule_name,
             kReportRuleName);
 
   auto warn = Warn();
   EXPECT_EQ(warn.triggered_rules().size(), 1u);
-  EXPECT_TRUE(warn.triggered_rules().count(kWarnRuleIndex));
-  EXPECT_EQ(warn.triggered_rules().at(kWarnRuleIndex).rule_id, kWarnRuleID);
-  EXPECT_EQ(warn.triggered_rules().at(kWarnRuleIndex).rule_name, kWarnRuleName);
+  EXPECT_TRUE(warn.triggered_rules().count(kWarnRuleKey));
+  EXPECT_EQ(warn.triggered_rules().at(kWarnRuleKey).rule_id, kWarnRuleID);
+  EXPECT_EQ(warn.triggered_rules().at(kWarnRuleKey).rule_name, kWarnRuleName);
 
   auto block = Block();
   EXPECT_EQ(block.triggered_rules().size(), 1u);
-  EXPECT_TRUE(block.triggered_rules().count(kBlockRuleIndex));
-  EXPECT_EQ(block.triggered_rules().at(kBlockRuleIndex).rule_id, kBlockRuleID);
-  EXPECT_EQ(block.triggered_rules().at(kBlockRuleIndex).rule_name,
+  EXPECT_TRUE(block.triggered_rules().count(kBlockRuleKey));
+  EXPECT_EQ(block.triggered_rules().at(kBlockRuleKey).rule_id, kBlockRuleID);
+  EXPECT_EQ(block.triggered_rules().at(kBlockRuleKey).rule_name,
             kBlockRuleName);
 }
 
@@ -182,22 +207,66 @@ TEST(DataControlVerdictTest, MergedPasteVerdictsTriggeredRules) {
   // internally duplicate the rule in two.
   auto merged_warnings = Verdict::MergePasteVerdicts(Warn(), Warn());
   EXPECT_EQ(merged_warnings.triggered_rules().size(), 1u);
-  EXPECT_TRUE(merged_warnings.triggered_rules().count(kWarnRuleIndex));
-  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleIndex).rule_id,
+  EXPECT_TRUE(merged_warnings.triggered_rules().count(kWarnRuleKey));
+  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleKey).rule_id,
             kWarnRuleID);
-  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleIndex).rule_name,
+  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleKey).rule_name,
             kWarnRuleName);
 
-  // Merging three verdicts with different rules should rules in a verdict with
-  // only the destination triggered rules.
+  // Merging three verdicts with different rules should result in a verdict with
+  // all triggered rules as they are all machine-scoped.
   auto all_merged = Verdict::MergePasteVerdicts(
       Warn(), Verdict::MergePasteVerdicts(Report(), Block()));
-  EXPECT_EQ(all_merged.triggered_rules().size(), 1u);
-  EXPECT_TRUE(all_merged.triggered_rules().count(kBlockRuleIndex));
-  EXPECT_EQ(all_merged.triggered_rules().at(kBlockRuleIndex).rule_id,
+  EXPECT_EQ(all_merged.triggered_rules().size(), 3u);
+
+  EXPECT_TRUE(all_merged.triggered_rules().count(kReportRuleKey));
+  EXPECT_TRUE(all_merged.triggered_rules().count(kWarnRuleKey));
+  EXPECT_TRUE(all_merged.triggered_rules().count(kBlockRuleKey));
+
+  EXPECT_EQ(all_merged.triggered_rules().at(kReportRuleKey).rule_id,
+            kReportRuleID);
+  EXPECT_EQ(all_merged.triggered_rules().at(kReportRuleKey).rule_name,
+            kReportRuleName);
+
+  EXPECT_EQ(all_merged.triggered_rules().at(kWarnRuleKey).rule_id, kWarnRuleID);
+  EXPECT_EQ(all_merged.triggered_rules().at(kWarnRuleKey).rule_name,
+            kWarnRuleName);
+
+  EXPECT_EQ(all_merged.triggered_rules().at(kBlockRuleKey).rule_id,
             kBlockRuleID);
-  EXPECT_EQ(all_merged.triggered_rules().at(kBlockRuleIndex).rule_name,
+  EXPECT_EQ(all_merged.triggered_rules().at(kBlockRuleKey).rule_name,
             kBlockRuleName);
+
+  // Merging two verdicts with profile-scoped rules should result in a verdict
+  // with only the destination triggered rules, even if their index is the same.
+  constexpr auto kIdenticalKey =
+      Verdict::TriggeredRuleKey{.index = 0, .machine_scope = false};
+
+  auto profile_verdicts_merged =
+      Verdict::MergePasteVerdicts(Verdict::Block({{
+                                      kIdenticalKey,
+                                      {
+                                          .rule_id = "rule_id_1",
+                                          .rule_name = "rule_name_1",
+                                      },
+                                  }}),
+                                  Verdict::Warn({{
+                                      kIdenticalKey,
+                                      {
+                                          .rule_id = "rule_id_2",
+                                          .rule_name = "rule_name_2",
+                                      },
+                                  }}));
+
+  ASSERT_EQ(profile_verdicts_merged.level(), Rule::Level::kBlock);
+  EXPECT_EQ(profile_verdicts_merged.triggered_rules().size(), 1u);
+
+  EXPECT_TRUE(profile_verdicts_merged.triggered_rules().count(kIdenticalKey));
+  EXPECT_EQ(profile_verdicts_merged.triggered_rules().at(kIdenticalKey).rule_id,
+            "rule_id_2");
+  EXPECT_EQ(
+      profile_verdicts_merged.triggered_rules().at(kIdenticalKey).rule_name,
+      "rule_name_2");
 }
 
 TEST(DataControlVerdictTest, MergedCopyWarningVerdictsTriggeredRules) {
@@ -205,41 +274,41 @@ TEST(DataControlVerdictTest, MergedCopyWarningVerdictsTriggeredRules) {
   // internally duplicate the rule in two.
   auto merged_warnings = Verdict::MergePasteVerdicts(Warn(), Warn());
   EXPECT_EQ(merged_warnings.triggered_rules().size(), 1u);
-  EXPECT_TRUE(merged_warnings.triggered_rules().count(kWarnRuleIndex));
-  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleIndex).rule_id,
+  EXPECT_TRUE(merged_warnings.triggered_rules().count(kWarnRuleKey));
+  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleKey).rule_id,
             kWarnRuleID);
-  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleIndex).rule_name,
+  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleKey).rule_name,
             kWarnRuleName);
 
   // Triggered rules in the OS clipboard verdict are only kept if it's a
   // warning.
   auto report_and_warn = Verdict::MergeCopyWarningVerdicts(Report(), Warn());
   EXPECT_EQ(report_and_warn.triggered_rules().size(), 2u);
-  EXPECT_TRUE(report_and_warn.triggered_rules().count(kReportRuleIndex));
-  EXPECT_TRUE(report_and_warn.triggered_rules().count(kWarnRuleIndex));
-  EXPECT_EQ(report_and_warn.triggered_rules().at(kReportRuleIndex).rule_id,
+  EXPECT_TRUE(report_and_warn.triggered_rules().count(kReportRuleKey));
+  EXPECT_TRUE(report_and_warn.triggered_rules().count(kWarnRuleKey));
+  EXPECT_EQ(report_and_warn.triggered_rules().at(kReportRuleKey).rule_id,
             kReportRuleID);
-  EXPECT_EQ(report_and_warn.triggered_rules().at(kReportRuleIndex).rule_name,
+  EXPECT_EQ(report_and_warn.triggered_rules().at(kReportRuleKey).rule_name,
             kReportRuleName);
-  EXPECT_EQ(report_and_warn.triggered_rules().at(kWarnRuleIndex).rule_id,
+  EXPECT_EQ(report_and_warn.triggered_rules().at(kWarnRuleKey).rule_id,
             kWarnRuleID);
-  EXPECT_EQ(report_and_warn.triggered_rules().at(kWarnRuleIndex).rule_name,
+  EXPECT_EQ(report_and_warn.triggered_rules().at(kWarnRuleKey).rule_name,
             kWarnRuleName);
 
   auto warn_and_block = Verdict::MergeCopyWarningVerdicts(Warn(), Block());
   EXPECT_EQ(warn_and_block.triggered_rules().size(), 1u);
-  EXPECT_TRUE(warn_and_block.triggered_rules().count(kWarnRuleIndex));
-  EXPECT_EQ(warn_and_block.triggered_rules().at(kWarnRuleIndex).rule_id,
+  EXPECT_TRUE(warn_and_block.triggered_rules().count(kWarnRuleKey));
+  EXPECT_EQ(warn_and_block.triggered_rules().at(kWarnRuleKey).rule_id,
             kWarnRuleID);
-  EXPECT_EQ(warn_and_block.triggered_rules().at(kWarnRuleIndex).rule_name,
+  EXPECT_EQ(warn_and_block.triggered_rules().at(kWarnRuleKey).rule_name,
             kWarnRuleName);
 
   auto warn_and_report = Verdict::MergeCopyWarningVerdicts(Warn(), Report());
   EXPECT_EQ(warn_and_report.triggered_rules().size(), 1u);
-  EXPECT_TRUE(warn_and_report.triggered_rules().count(kWarnRuleIndex));
-  EXPECT_EQ(warn_and_report.triggered_rules().at(kWarnRuleIndex).rule_id,
+  EXPECT_TRUE(warn_and_report.triggered_rules().count(kWarnRuleKey));
+  EXPECT_EQ(warn_and_report.triggered_rules().at(kWarnRuleKey).rule_id,
             kWarnRuleID);
-  EXPECT_EQ(warn_and_report.triggered_rules().at(kWarnRuleIndex).rule_name,
+  EXPECT_EQ(warn_and_report.triggered_rules().at(kWarnRuleKey).rule_name,
             kWarnRuleName);
 }
 

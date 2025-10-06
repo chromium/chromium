@@ -19,22 +19,30 @@ GURL google_url() {
   return GURL("https://google.com");
 }
 
-void ExpectBlockVerdict(Verdict verdict) {
+void ExpectBlockVerdict(Verdict verdict, bool expect_machine_source = true) {
   ASSERT_EQ(verdict.level(), Rule::Level::kBlock);
   EXPECT_EQ(verdict.triggered_rules().size(), 1u);
-  EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleIndex));
-  EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_name, "block");
-  EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_id,
-            kFirstRuleID);
+
+  auto index = Verdict::TriggeredRuleKey{
+      .index = kFirstRuleIndex,
+      .machine_scope = expect_machine_source,
+  };
+  EXPECT_TRUE(verdict.triggered_rules().count(index));
+  EXPECT_EQ(verdict.triggered_rules().at(index).rule_name, "block");
+  EXPECT_EQ(verdict.triggered_rules().at(index).rule_id, kFirstRuleID);
 }
 
-void ExpectWarnVerdict(Verdict verdict) {
+void ExpectWarnVerdict(Verdict verdict, bool expect_machine_source = true) {
   ASSERT_EQ(verdict.level(), Rule::Level::kWarn);
   EXPECT_EQ(verdict.triggered_rules().size(), 1u);
-  EXPECT_TRUE(verdict.triggered_rules().count(kFirstRuleIndex));
-  EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_name, "warn");
-  EXPECT_EQ(verdict.triggered_rules().at(kFirstRuleIndex).rule_id,
-            kFirstRuleID);
+
+  auto index = Verdict::TriggeredRuleKey{
+      .index = kFirstRuleIndex,
+      .machine_scope = expect_machine_source,
+  };
+  EXPECT_TRUE(verdict.triggered_rules().count(index));
+  EXPECT_EQ(verdict.triggered_rules().at(index).rule_name, "warn");
+  EXPECT_EQ(verdict.triggered_rules().at(index).rule_id, kFirstRuleID);
 }
 
 void ExpectAllowVerdict(Verdict verdict) {
@@ -83,6 +91,27 @@ TEST_F(RulesServiceBaseTest, NoRules) {
   ExpectNoVerdict(service_->GetCopyToOSClipboardVerdict(google_url()));
   ExpectNoVerdict(
       incognito_service_->GetCopyToOSClipboardVerdict(google_url()));
+}
+
+TEST_F(RulesServiceBaseTest, PolicyScope) {
+  constexpr char kPolicy[] = R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })";
+
+  SetDataControls(&prefs_, {kPolicy}, true);
+  ExpectBlockVerdict(service_->GetCopyRestrictedBySourceVerdict(google_url()),
+                     /*expect_machine_scope=*/true);
+
+  SetDataControls(&prefs_, {kPolicy}, false);
+  ExpectBlockVerdict(service_->GetCopyRestrictedBySourceVerdict(google_url()),
+                     /*expect_machine_scope=*/false);
 }
 
 TEST_F(RulesServiceBaseTest, BlockCopyForSourceUrl) {

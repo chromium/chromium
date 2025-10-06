@@ -1400,7 +1400,7 @@ TEST_P(ReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
       /*enabled_opt_in_events=*/{});
 
   data_controls::Verdict::TriggeredRules triggered_rules = {
-      {0, {"1", "rule_1_name"}}};
+      {{0, true}, {"1", "rule_1_name"}}};
   test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
