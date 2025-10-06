@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 24
+version_major: 25
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -394,6 +394,7 @@ trust_anchors {
 # CN=ISRG Root X1, O=Internet Security Research Group, C=US
 trust_anchors {
   sha256_hex: "96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6"
+  trust_anchor_id: "\x82\xdf\x13\x02\x01"  # 44947.2.1
 }
 
 # CN=Izenpe.com, O=IZENPE S.A., C=ES
@@ -664,6 +665,7 @@ trust_anchors {
 # CN=ISRG Root X2, O=Internet Security Research Group, C=US
 trust_anchors {
   sha256_hex: "69729b8e15a86efc177a57afb7171dfc64add28c2fca8cf1507e34453ccb1470"
+  trust_anchor_id: "\x82\xdf\x13\x02\x06"  # 44947.2.6
 }
 
 # CN=NAVER Global Root Certification Authority, O=NAVER BUSINESS PLATFORM Corp., C=KR
