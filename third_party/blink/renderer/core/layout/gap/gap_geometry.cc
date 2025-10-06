@@ -375,9 +375,14 @@ Vector<LayoutUnit> GapGeometry::GenerateCrossIntersectionList(
         // The intersection at an end spanner main gap must still be added to
         // the vector, so we can paint behind spanners with `rule-break: none`.
         wtf_size_t spanner_index = main_gap_running_index_ + 1;
-        CHECK(main_gaps_[spanner_index].IsEndSpannerMainGap());
-        CHECK_LT(spanner_index, main_gaps_.size());
-        intersections.push_back(main_gaps_[spanner_index].GetGapOffset());
+        if (spanner_index < main_gaps_.size()) {
+          CHECK(main_gaps_[spanner_index].IsEndSpannerMainGap());
+          intersections.push_back(main_gaps_[spanner_index].GetGapOffset());
+        } else {
+          // If there is no column content after a spanner, there'll be no
+          // EndSpannerMainGap.
+          intersections.push_back(content_block_end_);
+        }
       }
       break;
   }

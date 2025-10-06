@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
 namespace blink {
@@ -125,10 +126,10 @@ class CORE_EXPORT ColumnLayoutAlgorithm
                             const BlockBreakToken* break_token,
                             MarginStrut*);
 
-  // Add a block-direction gap, which are caused by row gaps when columns wrap
-  // (controlled by the `column-wrap` property), and also by column spanners.
-  void AddMainGapForSpanner(LayoutUnit block_offset,
-                            LayoutUnit logical_fragment_block_size);
+  // Add another main gap, at the given offset. This is either the block-start
+  // of a row gap, or before or after a spanner.
+  void AddMainGap(LayoutUnit block_offset,
+                  SpannerMainGapType gap_type = SpannerMainGapType::kNone);
 
   // Populates `range_of_cross_gaps_before_current_main_gap_` with
   // `CrossGapRanges` for each group of `CrossGap`s before each `MainGap`.
@@ -243,7 +244,9 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // One entry for each column gap.
   Vector<CrossGap> cross_gaps_;
 
-  CrossGapRange range_of_cross_gaps_before_current_main_gap_;
+  // Index of the first column gap that gets terminated by any subsequent main
+  // gap (row gap or spanner).
+  std::optional<wtf_size_t> first_trailing_column_gap_idx_;
 
   // Offset to the first column (in the first row), from the start border edge
   // of the resulting multicol fragment. Will only be set if needed, i.e. for
