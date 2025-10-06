@@ -160,14 +160,14 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             RequestType.QUERY,
                             Format.PROTO,
-                            PageContentProviderEvent.QUERY_FAILED_INVALID_URL);
+                            PageContentProviderEvent.REQUEST_FAILED_INVALID_URL);
                     return cursor;
                 }
 
                 var format = match == URI_MATCH_TEXT_FORMAT ? Format.TEXT : Format.PROTO;
 
                 PageContentProviderMetrics.recordPageProviderEvent(
-                        RequestType.QUERY, format, PageContentProviderEvent.QUERY);
+                        RequestType.QUERY, format, PageContentProviderEvent.REQUEST_STARTED);
 
                 var pageContentFuture =
                         getPageContentsBytesAsync(invocationId, RequestType.QUERY, format);
@@ -183,20 +183,24 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                     } else {
                         setResultToCursor(cursor, sInvocationState.mInvokedUrl, pageContentBytes);
                     }
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.QUERY,
+                            format,
+                            PageContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_EXTRACTED);
                     return cursor;
 
                 } catch (InterruptedException e) {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             RequestType.QUERY,
                             format,
-                            PageContentProviderEvent.QUERY_FAILED_INTERRUPTED);
+                            PageContentProviderEvent.REQUEST_FAILED_INTERRUPTED);
                     setErrorToCursor(cursor, "Extraction process was interrupted");
                     return cursor;
                 } catch (TimeoutException e) {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             RequestType.QUERY,
                             format,
-                            PageContentProviderEvent.QUERY_FAILED_TIMED_OUT);
+                            PageContentProviderEvent.REQUEST_FAILED_TIMED_OUT);
                     setErrorToCursor(cursor, "Timed out during extraction");
                     return cursor;
                 } catch (ExecutionException e) {
@@ -206,7 +210,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                         PageContentProviderMetrics.recordPageProviderEvent(
                                 RequestType.QUERY,
                                 format,
-                                PageContentProviderEvent.QUERY_FAILED_EXCEPTION);
+                                PageContentProviderEvent.REQUEST_FAILED_EXCEPTION);
                         setErrorToCursor(cursor, "ExecutionException during extraction");
                     }
                     return cursor;
@@ -269,7 +273,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             RequestType.OPEN_FILE,
                             Format.PROTO,
-                            PageContentProviderEvent.QUERY_FAILED_INVALID_URL);
+                            PageContentProviderEvent.REQUEST_FAILED_INVALID_URL);
                     throw new FileNotFoundException("Invalid URI");
                 }
 
@@ -283,12 +287,16 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                             pageContentFuture.get(
                                     PAGE_EXTRACTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                     recordExtractionStartToEndLatency(RequestType.OPEN_FILE, format);
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.OPEN_FILE,
+                            format,
+                            PageContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_EXTRACTED);
                     return createOutputFileDescriptorForBytes(pageContentBytes);
                 } catch (IOException e) {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             RequestType.OPEN_FILE,
                             format,
-                            PageContentProviderEvent.QUERY_FAILED_EXCEPTION);
+                            PageContentProviderEvent.REQUEST_FAILED_EXCEPTION);
                     throw new FileNotFoundException("IO Exception");
                 } catch (ExecutionException e) {
                     if (e.getCause() != null && e.getCause().getMessage() != null) {
@@ -297,20 +305,20 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                         PageContentProviderMetrics.recordPageProviderEvent(
                                 RequestType.OPEN_FILE,
                                 format,
-                                PageContentProviderEvent.QUERY_FAILED_EXCEPTION);
+                                PageContentProviderEvent.REQUEST_FAILED_EXCEPTION);
                     }
                     throw new FileNotFoundException("ExecutionException during extraction");
                 } catch (InterruptedException e) {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             RequestType.OPEN_FILE,
                             format,
-                            PageContentProviderEvent.QUERY_FAILED_INTERRUPTED);
+                            PageContentProviderEvent.REQUEST_FAILED_INTERRUPTED);
                     throw new FileNotFoundException("Extraction process was interrupted");
                 } catch (TimeoutException e) {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             RequestType.OPEN_FILE,
                             format,
-                            PageContentProviderEvent.QUERY_FAILED_TIMED_OUT);
+                            PageContentProviderEvent.REQUEST_FAILED_TIMED_OUT);
                     throw new FileNotFoundException("Timed out during extraction");
                 }
             }
@@ -326,7 +334,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                     || sInvocationState == null
                     || !invocationId.equals(sInvocationState.mInvocationId)) {
                 PageContentProviderMetrics.recordPageProviderEvent(
-                        requestType, format, PageContentProviderEvent.QUERY_FAILED_INVALID_ID);
+                        requestType, format, PageContentProviderEvent.REQUEST_FAILED_INVALID_ID);
                 future.completeExceptionally(new Exception("Invalid ID"));
                 return future;
             }
@@ -360,13 +368,13 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             requestType,
                             format,
-                            PageContentProviderEvent.QUERY_FAILED_TO_GET_CURRENT_TAB);
+                            PageContentProviderEvent.REQUEST_FAILED_TO_GET_CURRENT_TAB);
                     future.completeExceptionally(new Exception("Failed to get current tab"));
                 } else {
                     PageContentProviderMetrics.recordPageProviderEvent(
                             requestType,
                             format,
-                            PageContentProviderEvent.QUERY_FAILED_CURRENT_TAB_CHANGED);
+                            PageContentProviderEvent.REQUEST_FAILED_CURRENT_TAB_CHANGED);
                     future.completeExceptionally(
                             new Exception("Current tab changed before extraction"));
                 }
@@ -435,7 +443,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
             if (sInvocationState != null && sInvocationState.mInvokedUrl.equals(url)) {
                 return sInvocationState.mInvocationId;
             } else {
-                clearCachedContent();
+                clearCachedContent(/* invocationId= */ null);
 
                 sInvocationState =
                         new PageContentInvocationState(
@@ -447,7 +455,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                 String invocationId = sInvocationState.mInvocationId;
                 PostTask.postDelayedTask(
                         TaskTraits.UI_DEFAULT,
-                        () -> clearCachedContentWithId(invocationId),
+                        () -> clearCachedContent(invocationId),
                         INVALIDATE_URI_DELAY_MS);
 
                 return sInvocationState.mInvocationId;
@@ -484,7 +492,11 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
     public static @Nullable String getAssistContentStructuredDataForUrl(
             String url, ActivityTabProvider activityTabProvider, boolean isManagedProfile) {
         String invocationId = getIdForUrl(url, activityTabProvider);
-        if (invocationId == null) return null;
+        if (invocationId == null) {
+            PageContentProviderMetrics.recordPageProviderEvent(
+                    PageContentProviderEvent.GET_CONTENT_URI_FAILED);
+            return null;
+        }
 
         String structuredData;
 
@@ -501,9 +513,13 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                                     buildProtoFormatUri(invocationId)))
                             .toString();
         } catch (JSONException e) {
+            PageContentProviderMetrics.recordPageProviderEvent(
+                    PageContentProviderEvent.GET_CONTENT_URI_FAILED);
             return null;
         }
 
+        PageContentProviderMetrics.recordPageProviderEvent(
+                PageContentProviderEvent.GET_CONTENT_URI_SUCCESS);
         return structuredData;
     }
 
@@ -561,17 +577,6 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                         buildProtoFormatUri(invocationId), Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
-    @VisibleForTesting
-    protected static void clearCachedContent() {
-        synchronized (sLock) {
-            if (sInvocationState != null) {
-                revokeAccessToId(sInvocationState.mInvocationId);
-            }
-
-            sInvocationState = null;
-        }
-    }
-
     /**
      * Clears the cached content related to an invocationId, meant to be used with a timer to clear
      * out data related to URIs that are never queried.
@@ -579,14 +584,23 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      * @param invocationId Invocation ID to clear, used to avoid clearing a newer request
      *     prematurely.
      */
-    private static void clearCachedContentWithId(String invocationId) {
+    @VisibleForTesting
+    protected static void clearCachedContent(@Nullable String invocationId) {
         synchronized (sLock) {
-            if (sInvocationState == null || !sInvocationState.mInvocationId.equals(invocationId)) {
+            if (sInvocationState == null) return;
+            if (invocationId != null && !sInvocationState.mInvocationId.equals(invocationId)) {
                 return;
             }
 
-            PageContentProviderMetrics.recordPageProviderEvent(PageContentProviderEvent.TIMEOUT);
-            clearCachedContent();
+            revokeAccessToId(sInvocationState.mInvocationId);
+            sInvocationState = null;
+            if (invocationId != null) {
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        PageContentProviderEvent.URI_INVALIDATED_TIMEOUT);
+            } else {
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        PageContentProviderEvent.URI_INVALIDATED_NEW_REQUEST);
+            }
         }
     }
 
@@ -611,7 +625,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                                         requestType,
                                                         Format.TEXT,
                                                         PageContentProviderEvent
-                                                                .QUERY_FAILED_EMPTY_RESULT);
+                                                                .REQUEST_FAILED_EMPTY_RESULT);
                                                 pageContentFuture.completeExceptionally(
                                                         new Exception("Error during extraction"));
                                             } else {
@@ -646,7 +660,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                                         requestType,
                                                         Format.PROTO,
                                                         PageContentProviderEvent
-                                                                .QUERY_FAILED_EMPTY_RESULT);
+                                                                .REQUEST_FAILED_EMPTY_RESULT);
                                                 pageContentFuture.completeExceptionally(
                                                         new Exception("Error during extraction"));
                                             } else {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.provider;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -31,34 +32,39 @@ public class PageContentProviderMetrics {
 
     @IntDef({
         PageContentProviderEvent.GET_CONTENT_URI_FAILED,
-        PageContentProviderEvent.QUERY,
-        PageContentProviderEvent.QUERY_FAILED_CURRENT_TAB_CHANGED,
-        PageContentProviderEvent.QUERY_FAILED_INVALID_URL,
-        PageContentProviderEvent.QUERY_FAILED_INVALID_ID,
-        PageContentProviderEvent.QUERY_FAILED_TO_GET_CURRENT_TAB,
-        PageContentProviderEvent.QUERY_SUCCEEDED_RETURNED_EXTRACTED,
-        PageContentProviderEvent.QUERY_FAILED_EMPTY_RESULT,
-        PageContentProviderEvent.QUERY_FAILED_INTERRUPTED,
-        PageContentProviderEvent.QUERY_FAILED_TIMED_OUT,
-        PageContentProviderEvent.QUERY_FAILED_EXCEPTION,
-        PageContentProviderEvent.TIMEOUT,
+        PageContentProviderEvent.REQUEST_STARTED,
+        PageContentProviderEvent.REQUEST_FAILED_CURRENT_TAB_CHANGED,
+        PageContentProviderEvent.REQUEST_FAILED_INVALID_URL,
+        PageContentProviderEvent.REQUEST_FAILED_INVALID_ID,
+        PageContentProviderEvent.REQUEST_FAILED_TO_GET_CURRENT_TAB,
+        PageContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_EXTRACTED,
+        PageContentProviderEvent.REQUEST_FAILED_EMPTY_RESULT,
+        PageContentProviderEvent.REQUEST_FAILED_INTERRUPTED,
+        PageContentProviderEvent.REQUEST_FAILED_TIMED_OUT,
+        PageContentProviderEvent.REQUEST_FAILED_EXCEPTION,
+        PageContentProviderEvent.GET_CONTENT_URI_FAILED,
+        PageContentProviderEvent.GET_CONTENT_URI_SUCCESS,
+        PageContentProviderEvent.URI_INVALIDATED_NEW_REQUEST,
+        PageContentProviderEvent.URI_INVALIDATED_TIMEOUT,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PageContentProviderEvent {
 
         int GET_CONTENT_URI_FAILED = 0;
-        int QUERY = 1;
-        int QUERY_FAILED_CURRENT_TAB_CHANGED = 2;
-        int QUERY_FAILED_INVALID_URL = 3;
-        int QUERY_FAILED_INVALID_ID = 4;
-        int QUERY_FAILED_TO_GET_CURRENT_TAB = 5;
-        int QUERY_SUCCEEDED_RETURNED_EXTRACTED = 7;
-        int QUERY_FAILED_EMPTY_RESULT = 9;
-        int TIMEOUT = 12;
-        int QUERY_FAILED_INTERRUPTED = 13;
-        int QUERY_FAILED_TIMED_OUT = 14;
-        int QUERY_FAILED_EXCEPTION = 15;
-        int NUM_ENTRIES = 16;
+        int REQUEST_STARTED = 1;
+        int REQUEST_FAILED_CURRENT_TAB_CHANGED = 2;
+        int REQUEST_FAILED_INVALID_URL = 3;
+        int REQUEST_FAILED_INVALID_ID = 4;
+        int REQUEST_FAILED_TO_GET_CURRENT_TAB = 5;
+        int REQUEST_SUCCEEDED_RETURNED_EXTRACTED = 7;
+        int REQUEST_FAILED_EMPTY_RESULT = 9;
+        int URI_INVALIDATED_TIMEOUT = 12;
+        int REQUEST_FAILED_INTERRUPTED = 13;
+        int REQUEST_FAILED_TIMED_OUT = 14;
+        int REQUEST_FAILED_EXCEPTION = 15;
+        int GET_CONTENT_URI_SUCCESS = 16;
+        int URI_INVALIDATED_NEW_REQUEST = 17;
+        int NUM_ENTRIES = 18;
     }
 
     public static void recordPageProviderEvent(@PageContentProviderEvent int event) {
@@ -141,7 +147,8 @@ public class PageContentProviderMetrics {
         RecordHistogram.recordMediumTimesHistogram(histogramName, duration);
     }
 
-    private static String concatenateTypeAndFormatToHistogramName(
+    @VisibleForTesting
+    static String concatenateTypeAndFormatToHistogramName(
             String histogram, @RequestType int requestType, @Format int format) {
         return histogram
                 + '.'
