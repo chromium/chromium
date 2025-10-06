@@ -220,6 +220,10 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)revertState {
+  if (!_omniboxTextModel) {
+    return;
+  }
+
   [self setInputInProgress:NO];
   _omniboxTextModel->input.Clear();
   _omniboxTextModel->paste_state = OmniboxPasteState::kNone;
