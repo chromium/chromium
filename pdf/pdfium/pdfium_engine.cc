@@ -967,6 +967,9 @@ void PDFiumEngine::OnDocumentCanceled() {
 void PDFiumEngine::ClearTextSelection() {
   SelectionChangeInvalidator selection_invalidator(this);
   selection_.clear();
+  if (caret_) {
+    caret_->SetVisible(true);
+  }
 }
 
 void PDFiumEngine::ExtendAndInvalidateSelectionByChar(
@@ -976,6 +979,9 @@ void PDFiumEngine::ExtendAndInvalidateSelectionByChar(
 
   SelectionChangeInvalidator selection_invalidator(this);
   ExtendSelectionByChar(index);
+  if (caret_) {
+    caret_->SetVisible(!IsSelecting());
+  }
 }
 
 uint32_t PDFiumEngine::GetCharCount(uint32_t page_index) const {
@@ -1368,7 +1374,7 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
     }
   }
   if (caret_) {
-    caret_->SetVisible(has_focus);
+    caret_->SetVisible(has_focus && !IsSelecting());
   }
 }
 
@@ -1572,6 +1578,7 @@ void PDFiumEngine::OnTextOrLinkAreaClickInternal(const PointData& point_data,
     if (caret_) {
       caret_->SetCharAndDraw(
           PageCharacterIndex(point_data.page_index, char_index));
+      caret_->SetVisible(true);
     }
   } else if (click_count >= 2) {
     OnMultipleClick(click_count, point_data.page_index, point_data.char_index);
@@ -1951,10 +1958,12 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
   const uint32_t char_index = GetCharIndexBasedOnPointData(point_data);
   PageCharacterIndex index{static_cast<uint32_t>(point_data.page_index),
                            char_index};
+  const bool extended = ExtendSelectionByChar(index);
   if (caret_) {
     caret_->SetChar(index);
+    caret_->SetVisible(!IsSelecting());
   }
-  return ExtendSelectionByChar(index);
+  return extended;
 }
 
 bool PDFiumEngine::ExtendSelectionByChar(const PageCharacterIndex& index) {
@@ -2667,6 +2676,10 @@ void PDFiumEngine::SelectAll() {
     if (page->GetCharCount()) {
       selection_.push_back(PDFiumRange::AllTextOnPage(page.get()));
     }
+  }
+
+  if (caret_ && IsSelecting()) {
+    caret_->SetVisible(false);
   }
 }
 
@@ -4265,7 +4278,8 @@ void PDFiumEngine::SetFieldFocus(PDFiumEngineClient::FocusFieldType type) {
   }
 
   if (caret_) {
-    caret_->SetVisible(focus_field_type_ == FocusFieldType::kNoFocus);
+    caret_->SetVisible(focus_field_type_ == FocusFieldType::kNoFocus &&
+                       !IsSelecting());
   }
 }
 

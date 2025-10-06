@@ -92,10 +92,6 @@ bool PdfCaret::MaybeDrawCaret(const RegionData& region,
     return false;
   }
 
-  if (client_->IsSelecting()) {
-    return false;
-  }
-
   gfx::Rect visible_caret =
       gfx::IntersectRects(caret_screen_rect_, dirty_in_screen);
   if (visible_caret.IsEmpty()) {

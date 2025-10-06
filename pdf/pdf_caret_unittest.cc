@@ -403,19 +403,6 @@ TEST_F(PdfCaretTest, MaybeDrawCaret) {
   VerifyCaretRendering(kTestChar0Caret);
 }
 
-TEST_F(PdfCaretTest, CaretNotVisibleWhileSelecting) {
-  SetUpPagesWithCharCounts({1});
-  SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
-
-  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
-  TestDrawCaretFails(kTestChar0Caret);
-
-  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
-  TestDrawCaret(kTestChar0Caret);
-}
-
 TEST_F(PdfCaretTest, Blink) {
   SetUpPagesWithCharCounts({2});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
