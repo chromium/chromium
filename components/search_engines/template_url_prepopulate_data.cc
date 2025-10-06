@@ -196,6 +196,32 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
   return nullptr;
 }
 
+const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
+    std::u16string_view keyword,
+    const std::vector<const PrepopulatedEngine*>&
+        regional_prepopulated_engines) {
+  auto engine_matcher = [&](const PrepopulatedEngine* engine) {
+    return keyword == engine->keyword;
+  };
+
+  // Locate region-specific search engine first to avoid more thorough
+  // scanning. In most cases this should offer the correct match.
+  if (auto iter =
+          std::ranges::find_if(regional_prepopulated_engines, engine_matcher);
+      iter != regional_prepopulated_engines.end()) {
+    return *iter;
+  }
+
+  // Fallback: just grab the first matching entry from the complete list.
+  // This is fine as keywords are unique.
+  if (auto iter = std::ranges::find_if(kAllEngines, engine_matcher);
+      iter != kAllEngines.end()) {
+    return *iter;
+  }
+
+  return nullptr;
+}
+
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
     std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
