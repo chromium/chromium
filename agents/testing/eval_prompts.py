@@ -18,6 +18,9 @@ import constants
 import promptfoo_installation
 import workers
 
+sys.path.append(str(constants.CHROMIUM_SRC))
+from agents.extensions import install
+
 TESTCASE_EXTENSION = '.promptfoo.yaml'
 _SHARD_INDEX_ENV_VAR = 'GTEST_SHARD_INDEX'
 _TOTAL_SHARDS_ENV_VAR = 'GTEST_TOTAL_SHARDS'
@@ -191,7 +194,7 @@ def _perform_chromium_setup(force: bool, build: bool) -> None:
         _build_chromium(src_path)
 
 
-def _fetch_sandbox_image(gemini_cli_bin: pathlib.Path | None = None) -> bool:
+def _fetch_sandbox_image() -> bool:
     """Pre-fetches the sandbox image.
 
     Args:
@@ -201,29 +204,30 @@ def _fetch_sandbox_image(gemini_cli_bin: pathlib.Path | None = None) -> bool:
         True on success, False on failure.
     """
     logging.info('Pre-fetching sandbox image. This may take a minute...')
-    # Use a simple, non-destructive prompt to trigger the one-time
-    # sandbox image download.
-    with tempfile.TemporaryDirectory() as tmpdir:
-        try:
-            command = [gemini_cli_bin or 'gemini', '--sandbox', 'no-op']
-            subprocess.run(
-                command,
-                text=True,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                cwd=tmpdir,
-            )
-            return True
-        except subprocess.CalledProcessError as e:
-            output = ''
-            if e.stdout:
-                output += f'\noutput:\n{e.stdout}'
-            logging.error(
-                'Failed to pre-fetch sandbox image: %s. This may be '
-                'because you are in an environment that does not support '
-                'sandboxing. Try running with --no-sandbox.%s', e, output)
+    image = ''
+    try:
+        version = install.get_gemini_version()
+        if not version:
+            logging.error('Failed to get gemini version.')
             return False
+
+        image = f'{constants.GEMINI_SANDBOX_IMAGE_URL}:{version}'
+        subprocess.run(
+            ['docker', 'pull', image],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        output = ''
+        if hasattr(e, 'stdout') and e.stdout:
+            output += f'\noutput:\n{e.stdout}'
+        logging.error(
+            'Failed to pre-fetch sandbox image from %s: %s. This may be '
+            'because you are in an environment that does not support '
+            'sandboxing. Try running with --no-sandbox.%s', image, e, output)
+        return False
 
 
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
@@ -252,7 +256,7 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
         promptfoo = promptfoo_installation.setup_promptfoo(
             promptfoo_dir, args.promptfoo_revision, args.promptfoo_version)
 
-    if args.sandbox and not _fetch_sandbox_image(args.gemini_cli_bin):
+    if args.sandbox and not _fetch_sandbox_image():
         return 1
 
     worker_options = workers.WorkerOptions(clean=not args.no_clean,

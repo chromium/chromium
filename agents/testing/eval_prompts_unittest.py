@@ -429,25 +429,47 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
 class FetchSandboxImageUnittest(unittest.TestCase):
     """Unit tests for the `_fetch_sandbox_image` function."""
 
-    @mock.patch('subprocess.run')
-    def test_fetch_sandbox_image_success(self, mock_subprocess_run):
+    def setUp(self):
+        self.subprocess_run_patcher = mock.patch('subprocess.run')
+        self.mock_subprocess_run = self.subprocess_run_patcher.start()
+        self.addCleanup(self.subprocess_run_patcher.stop)
+
+        self.get_gemini_version_patcher = mock.patch(
+            'eval_prompts.install.get_gemini_version')
+        self.mock_get_gemini_version = self.get_gemini_version_patcher.start()
+        self.addCleanup(self.get_gemini_version_patcher.stop)
+
+        self.mock_get_gemini_version.return_value = '1.2.3'
+
+    def test_fetch_sandbox_image_success(self):
         """Tests that _fetch_sandbox_image returns true on success."""
-        mock_subprocess_run.return_value = subprocess.CompletedProcess(
-            args=['gemini', '--sandbox', 'no-op'],
-            returncode=0,
-            stdout='',
-        )
         with self.assertLogs(level='INFO') as cm:
             result = eval_prompts._fetch_sandbox_image()
             self.assertTrue(result)
             self.assertIn('Pre-fetching sandbox image', cm.output[0])
 
-    @mock.patch('subprocess.run')
-    def test_fetch_sandbox_image_failure(self, mock_subprocess_run):
+        self.mock_subprocess_run.assert_called_once_with(
+            [
+                'docker', 'pull',
+                'us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:1.2.3'
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+
+    def test_fetch_sandbox_image_get_version_fails(self):
         """Tests that _fetch_sandbox_image returns false on failure."""
-        error = subprocess.CalledProcessError(returncode=1, cmd='gemini')
+        self.mock_get_gemini_version.return_value = None
+        with self.assertLogs(level='ERROR') as cm:
+            result = eval_prompts._fetch_sandbox_image()
+            self.assertFalse(result)
+            self.assertIn('Failed to get gemini version', cm.output[0])
+
+    def test_fetch_sandbox_image_docker_pull_fails(self):
+        """Tests that _fetch_sandbox_image returns false on failure."""
+        error = subprocess.CalledProcessError(returncode=1, cmd='docker')
         error.stdout = 'mocked output'
-        mock_subprocess_run.side_effect = error
+        self.mock_subprocess_run.side_effect = error
         with self.assertLogs(level='ERROR') as cm:
             result = eval_prompts._fetch_sandbox_image()
             self.assertFalse(result)
@@ -513,6 +535,11 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         subprocess_run_patcher = mock.patch('subprocess.run')
         self.mock_subprocess_run = subprocess_run_patcher.start()
         self.addCleanup(subprocess_run_patcher.stop)
+
+        fetch_sandbox_image_patcher = mock.patch(
+            'eval_prompts._fetch_sandbox_image')
+        self.mock_fetch_sandbox_image = fetch_sandbox_image_patcher.start()
+        self.addCleanup(fetch_sandbox_image_patcher.stop)
 
     def test_run_prompt_eval_tests_no_tests(self):
         """Tests that the function returns 1 if there are no tests to run."""
@@ -598,15 +625,9 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         """Tests that _run_prompt_eval_tests exits and logs output if sandbox
         pre-fetch fails."""
         self.args.sandbox = True
-        error = subprocess.CalledProcessError(returncode=1, cmd='gemini')
-        error.stdout = 'mocked output'
-        self.mock_subprocess_run.side_effect = error
-
-        with self.assertLogs(level='ERROR') as cm:
-            result = eval_prompts._run_prompt_eval_tests(self.args)
-            self.assertEqual(result, 1)
-            self.assertIn('Failed to pre-fetch sandbox image', cm.output[0])
-            self.assertIn('mocked output', cm.output[0])
+        self.mock_fetch_sandbox_image.return_value = False
+        result = eval_prompts._run_prompt_eval_tests(self.args)
+        self.assertEqual(result, 1)
 
     def test_run_prompt_eval_tests_with_sandbox_enabled(self):
         """Tests that _run_prompt_eval_tests calls pre-fetch and passes sandbox
@@ -614,17 +635,11 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.sandbox = True
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = []
+        self.mock_fetch_sandbox_image.return_value = True
 
         eval_prompts._run_prompt_eval_tests(self.args)
 
-        self.mock_subprocess_run.assert_called_once_with(
-            ['gemini', '--sandbox', 'no-op'],
-            text=True,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            cwd=mock.ANY,
-        )
+        self.mock_fetch_sandbox_image.assert_called_once()
         self.mock_worker_pool.assert_called_once()
         self.assertTrue(self.mock_worker_pool.call_args[0][2].sandbox)
 
