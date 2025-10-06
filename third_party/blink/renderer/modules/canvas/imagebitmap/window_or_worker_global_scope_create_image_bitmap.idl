@@ -2,9 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://html.spec.whatwg.org/C/#imagebitmapsource
+typedef (HTMLImageElement or
+         SVGImageElement or
+         HTMLVideoElement or
+         HTMLCanvasElement or
+         Blob or
+         ImageData or
+         ImageBitmap or
+         OffscreenCanvas or
+         VideoFrame) ImageBitmapSource;
+
 [
     ImplementedAs=ImageBitmapFactories
-] partial interface WorkerGlobalScope {
+] partial interface mixin WindowOrWorkerGlobalScope {
   // https://html.spec.whatwg.org/#windoworworkerglobalscope
   [CallWith=ScriptState, RaisesException] Promise<ImageBitmap> createImageBitmap(
       ImageBitmapSource imageBitmap, optional ImageBitmapOptions options = {});
