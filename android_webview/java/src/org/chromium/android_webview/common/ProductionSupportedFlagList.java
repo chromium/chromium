@@ -1153,6 +1153,9 @@ public final class ProductionSupportedFlagList {
                 " Moves some of the work that is being run during `startChromium` to be done"
                     + " beforehand during WebView provider initialization. This is expected to"
                     + " improve startup performance especially when async startup takes place."),
+        Flag.baseFeature(
+                "OriginMatcherNewCopyAssignment",
+                "Use a faster implementation for copying OriginMatchers."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

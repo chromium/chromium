@@ -49,6 +49,10 @@ MatchAllOriginsRule::MatchAllOriginsRule()
 
 MatchAllOriginsRule::~MatchAllOriginsRule() = default;
 
+std::unique_ptr<OriginMatcherRule> MatchAllOriginsRule::Clone() const {
+  return std::make_unique<MatchAllOriginsRule>();
+}
+
 net::SchemeHostPortMatcherResult MatchAllOriginsRule::Evaluate(
     const GURL& url) const {
   return net::SchemeHostPortMatcherResult::kInclude;
@@ -103,6 +107,11 @@ bool SubdomainMatchingRule::IsValidSchemeAndHost(const std::string& scheme,
   }
 
   return HostWildcardSanityCheck(host);
+}
+
+std::unique_ptr<OriginMatcherRule> SubdomainMatchingRule::Clone() const {
+  return std::make_unique<SubdomainMatchingRule>(scheme_, optional_host_,
+                                                 optional_port_);
 }
 
 net::SchemeHostPortMatcherResult SubdomainMatchingRule::Evaluate(

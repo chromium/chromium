@@ -4,6 +4,8 @@
 
 #include "components/origin_matcher/origin_matcher.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/origin_matcher/features.h"
 #include "components/origin_matcher/origin_matcher.mojom.h"
 #include "components/origin_matcher/origin_matcher_internal.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -400,6 +402,20 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeValidWildcard) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
       matcher, deserialized));
   ASSERT_NO_FATAL_FAILURE(CompareMatchers(matcher, deserialized));
+}
+
+TEST_F(OriginMatcherTest, CopyAndAssign) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kOriginMatcherNewCopyAssignment);
+
+  OriginMatcher matcher;
+  EXPECT_TRUE(matcher.AddRuleFromString("*"));
+  EXPECT_TRUE(matcher.AddRuleFromString("https://*.example.com"));
+
+  OriginMatcher assigned = matcher;
+  EXPECT_EQ(2u, assigned.rules().size());
+  EXPECT_EQ("*", assigned.rules()[0]->ToString());
+  EXPECT_EQ("https://*.example.com:443", assigned.rules()[1]->ToString());
 }
 
 }  // namespace origin_matcher
