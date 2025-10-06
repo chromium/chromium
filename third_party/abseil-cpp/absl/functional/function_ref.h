@@ -48,6 +48,7 @@
 
 #include <cassert>
 #include <type_traits>
+#include <utility>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -92,6 +93,15 @@ class FunctionRef<R(Args...)> {
   using EnableIfCompatible =
       std::enable_if_t<std::is_invocable_r<R, F, U..., Args...>::value>;
 
+  // Internal constructor to supersede the copying constructor
+  template <typename F>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(std::in_place_t, F&& f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
+      : invoker_(&absl::functional_internal::InvokeObject<F&, R, Args...>) {
+    absl::functional_internal::AssertNonNull(f);
+    ptr_.obj = &f;
+  }
+
  public:
   // Constructs a FunctionRef from any invocable type.
   template <typename F,
@@ -99,10 +109,7 @@ class FunctionRef<R(Args...)> {
                 !std::is_same_v<FunctionRef, absl::remove_cvref_t<F>>, F&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   FunctionRef(F&& f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
-      : invoker_(&absl::functional_internal::InvokeObject<F&, R, Args...>) {
-    absl::functional_internal::AssertNonNull(f);
-    ptr_.obj = &f;
-  }
+      : FunctionRef(std::in_place, std::forward<F>(f)) {}
 
   // Overload for function pointers. This eliminates a level of indirection that
   // would happen if the above overload was used (it lets us store the pointer
@@ -177,7 +184,8 @@ class FunctionRef<R(Args...) const> : private FunctionRef<R(Args...)> {
       typename = EnableIfCompatible<std::enable_if_t<
           !std::is_same_v<FunctionRef, absl::remove_cvref_t<F>>, const F&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  FunctionRef(const F& f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept : Base(f) {}
+  FunctionRef(const F& f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
+      : Base(std::in_place_t(), f) {}
 
   template <typename F, typename = EnableIfCompatible<F*>,
             absl::functional_internal::EnableIf<std::is_function_v<F>> = 0>

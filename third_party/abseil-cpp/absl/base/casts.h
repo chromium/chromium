@@ -33,7 +33,6 @@
 #include <bit>  // For std::bit_cast.
 #endif  // defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
 
-#include "absl/base/internal/identity.h"
 #include "absl/base/macros.h"
 #include "absl/meta/type_traits.h"
 
@@ -90,7 +89,7 @@ ABSL_NAMESPACE_BEGIN
 //
 // Such implicit cast chaining may be useful within template logic.
 template <typename To>
-constexpr To implicit_cast(typename absl::internal::type_identity_t<To> to) {
+constexpr To implicit_cast(typename absl::type_identity_t<To> to) {
   return to;
 }
 
