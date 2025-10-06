@@ -941,11 +941,9 @@ void GlicWindowControllerImpl::SetDraggingAreasAndWatchForMouseEvents() {
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, GetGlicView());
 
-  if (!draggable_area_) {
-    // Set the draggable area to the top bar of the window.
-    GetGlicView()->SetDraggableAreas(
-        {{0, 0, GetGlicView()->width(), kDraggableAreaHeight}});
-  }
+  // Set the draggable area to the top bar of the window.
+  GetGlicView()->SetDraggableAreas(
+      {{0, 0, GetGlicView()->width(), kDraggableAreaHeight}});
 }
 
 GlicView* GlicWindowControllerImpl::GetGlicView() const {
@@ -1244,7 +1242,6 @@ void GlicWindowControllerImpl::ResetAndHidePanel() {
   // detached, attached or currently closed.
 
   // Floating Panel State
-  draggable_area_ = std::nullopt;
   window_event_observer_.reset();
   glic_window_animator_.reset();
   glic_widget_observation_.Reset();
