@@ -118,9 +118,7 @@ hr {
     margin-inline-end: auto;
     border-style: inset;
     border-width: 1px;
-    @supports blink-feature(HrElementGray) {
-        color: gray;
-    }
+    color: gray;
 }
 
 map {
