@@ -6,7 +6,7 @@ desc: |-
 
   1 = Gemini app is not allowed to take action on the web pages.
 
-  If unset, its behavior is determined by GeminiSettings policy.
+  This policy has no effect when the Gemini app is disabled. For example, the Gemini app can be disabled by <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> policy.
 
   For more information, please see https://support.google.com/chrome/a/answer/16291696.
 
