@@ -52,8 +52,9 @@ namespace declarativeNetRequest {
 
   // This describes the possible operations for a "modifyHeaders" rule.
   enum HeaderOperation {
-    // Adds a new entry for the specified header. This operation is not
-    // supported for request headers.
+    // Adds a new entry for the specified header. When modifying the headers of
+    // a request, this operation is only supported for
+    // <a href="#header_modification">specific headers</a>.
     append,
     // Sets a new value for the specified header, removing any existing headers
     // with the same name.
