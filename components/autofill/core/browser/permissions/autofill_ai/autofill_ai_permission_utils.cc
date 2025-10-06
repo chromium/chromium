@@ -163,7 +163,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kImportToWallet:
       return sync_service &&
              sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                 syncer::UserSelectableType::kPayments);
+                 syncer::UserSelectableType::kPayments) &&
+             sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_VALUABLE);
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:

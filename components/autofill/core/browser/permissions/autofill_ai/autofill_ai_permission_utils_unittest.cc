@@ -33,6 +33,7 @@ namespace {
 
 using ::base::Bucket;
 using ::base::BucketsAre;
+using ::testing::Return;
 using ::testing::Values;
 
 constexpr auto kAutofillPredictionSettingsDisable =
@@ -70,6 +71,11 @@ std::string GetTestSuffix(
   NOTREACHED();
 }
 
+class MockSyncService : public syncer::TestSyncService {
+ public:
+  MOCK_CONST_METHOD0(GetActiveDataTypes, syncer::DataTypeSet());
+};
+
 // A test fixture that sets up default state so that all AutofillAI-related
 // actions are permitted.
 class AutofillAiPermissionUtilsTest : public ::testing::Test {
@@ -100,13 +106,14 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
 
   TestAutofillClient& client() { return client_; }
   EntityDataManager& edm() { return *client().GetEntityDataManager(); }
+  MockSyncService& sync_service() { return sync_service_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
-  syncer::TestSyncService sync_service_;
+  MockSyncService sync_service_;
   TestAutofillClient client_;
 };
 
@@ -117,6 +124,8 @@ class AutofillAiMayPerformActionTest
   AutofillAiMayPerformActionTest() {
     client().GetSyncService()->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPayments, true);
+    ON_CALL(sync_service(), GetActiveDataTypes())
+        .WillByDefault(Return(syncer::DataTypeSet{syncer::AUTOFILL_VALUABLE}));
   }
   using AutofillAiPermissionUtilsTest::AutofillAiPermissionUtilsTest;
 };
@@ -584,6 +593,16 @@ TEST_F(AutofillAiMayPerformActionTest,
        ImportToWallet_FalseWhenNotSyncingWallet) {
   client().GetSyncService()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPayments, false);
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
+                                 EntityType(EntityTypeName::kVehicle)),
+      false);
+}
+
+TEST_F(AutofillAiMayPerformActionTest,
+       ImportToWallet_FalseWhenAutofillValuableIsNotActive) {
+  ON_CALL(sync_service(), GetActiveDataTypes())
+      .WillByDefault(Return(syncer::DataTypeSet()));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kVehicle)),
