@@ -22,7 +22,8 @@ namespace autofill {
 class ContactInfoPreconditionChecker : public syncer::SyncServiceObserver {
  public:
   // `on_precondition_changed` is called whenever the result of
-  // `GetPreconditionState()` has possibly changed.
+  // `GetPreconditionState()` has possibly changed. Callers must ensure that
+  // `identity_manager` outlives this instance.
   ContactInfoPreconditionChecker(
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
@@ -33,12 +34,15 @@ class ContactInfoPreconditionChecker : public syncer::SyncServiceObserver {
 
   // SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   // Called by the `managed_status_finder_` when it determines the account type.
   void AccountTypeDetermined();
 
-  const raw_ref<syncer::SyncService> sync_service_;
+  // Returns the SyncService, or `nullptr` after `OnSyncShutdown()`.
+  const syncer::SyncService* GetSyncService() const;
+
   const raw_ref<signin::IdentityManager> identity_manager_;
   const base::RepeatingClosure on_precondition_changed_;
 
