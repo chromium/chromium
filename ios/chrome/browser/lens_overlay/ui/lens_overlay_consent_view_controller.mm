@@ -33,8 +33,6 @@ const CGFloat kPauseButtonRightPadding = 12;
 const CGFloat kPauseButtonBottomPadding = 14;
 // The size of the onboarding symbols.
 const CGFloat kLensOverlayOnboaridingSymbolSize = 22;
-// The value that makes the Lottie animation loop indefinitely.
-const CGFloat kLottieInfiniteLoopFlag = -1;
 // The height of the invariant items of the dialog
 // (e.g. bottom action buttons, the padding).
 const CGFloat kDialogFixedItemsHeight = 160;
@@ -315,7 +313,7 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = kLottieInfiniteLoopFlag;
+  config.shouldLoop = YES;
   return ios::provider::GenerateLottieAnimation(config);
 }
 

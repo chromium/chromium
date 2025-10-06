@@ -250,7 +250,7 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
           ? kAIMCircleAnimationDarkMode
           : kAIMCircleAnimationLightMode;
-  config.loopAnimationCount = -1;
+  config.shouldLoop = YES;
 
   _aimAnimation = ios::provider::GenerateLottieAnimation(config);
   return _aimAnimation;

@@ -67,7 +67,7 @@ const CGFloat kAnimationHeightPercent = 0.5;
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = -1;  // Always loop.
+  config.shouldLoop = YES;
   id<LottieAnimation> animationWrapper =
       ios::provider::GenerateLottieAnimation(config);
   [animationWrapper setDictionaryTextProvider:self.animationTextProvider];

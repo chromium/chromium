@@ -190,7 +190,6 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   LottieAnimationConfiguration* configuration =
       [[LottieAnimationConfiguration alloc] init];
   configuration.animationName = JSONName;
-  configuration.loopAnimationCount = 1;
 
   id<LottieAnimation> wrapper =
       ios::provider::GenerateLottieAnimation(configuration);
