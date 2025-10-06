@@ -103,6 +103,12 @@ GSUTIL_DIR = THIRD_PARTY_DIR / 'catapult/third_party/gsutil'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
 
+# Constants for CBB support.
+# CBB uses a pseudo benchmark that retrieves the versions of alternative
+# browsers (Edge on Windows, or Safari on Mac) installed on the device.
+CBB_BROWSER_VERSIONS_BENCHMARK = 'browser_versions'
+CBB_BROWSER_VERSIONS_FILENAME = 'browser_versions.json'
+
 # See https://crbug.com/923564.
 # We want to switch over to using histograms for everything, but converting from
 # the format output by gtest perf tests to histograms has introduced several
@@ -1214,8 +1220,8 @@ def get_browser_versions(isolated_out_dir):
   """Detect versions of alternative browsers installed on the device.
 
   Detect which version of Edge (and Safari in the future) is currently
-  installed. The result is saved in a file name browser_versions.json in the
-  isolated output directory.
+  installed. The result is saved in a file named CBB_BROWSER_VERSIONS_FILENAME
+  in the isolated output directory.
   """
   results = {}
   if IsWindows():
@@ -1239,7 +1245,8 @@ def get_browser_versions(isolated_out_dir):
     print('Only Windows OS is supported')
     return 1
 
-  with open(os.path.join(isolated_out_dir, 'browser_versions.json'), 'w') as f:
+  with open(os.path.join(isolated_out_dir, CBB_BROWSER_VERSIONS_FILENAME),
+            'w') as f:
     json.dump(results, f)
 
   return 0
@@ -1308,7 +1315,7 @@ def main(sys_args):
         options.xvfb,
         results_label=options.results_label)
     test_results_files.append(output_paths.test_results)
-  elif options.benchmarks == 'browser_versions':
+  elif options.benchmarks == CBB_BROWSER_VERSIONS_BENCHMARK:
     overall_return_code = get_browser_versions(isolated_out_dir)
   elif options.benchmarks:
     benchmarks = options.benchmarks.split(',')
