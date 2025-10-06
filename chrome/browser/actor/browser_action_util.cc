@@ -792,7 +792,9 @@ void BuildActionsResultWithObservations(
           (*action_result.result->execution_end_time - actions_start_time)
               .InMilliseconds());
     }
-    {
+    // Don't report a page stabilization time if the start and end
+    // are the same. Not every tool needs stabilization.
+    if (*action_result.result->execution_end_time != action_result.end_time) {
       apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
           latency_info->add_latency_steps();
       latency_step->mutable_page_stabilization()->set_action_index(i);
