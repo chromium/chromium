@@ -122,7 +122,8 @@ bool BubbleManagerImpl::PendingRequest::operator<(
   return time_added < other.time_added;
 }
 
-BubbleManagerImpl::BubbleManagerImpl(tabs::TabInterface* tab) {
+BubbleManagerImpl::BubbleManagerImpl(tabs::TabInterface* tab)
+    : tab_interface_(tab) {
   tab_subscriptions_.push_back(tab->RegisterWillDeactivate(base::BindRepeating(
       &BubbleManagerImpl::TabWillEnterBackground, base::Unretained(this))));
   tab_subscriptions_.push_back(tab->RegisterDidActivate(base::BindRepeating(
@@ -134,6 +135,14 @@ BubbleManagerImpl::~BubbleManagerImpl() = default;
 void BubbleManagerImpl::RequestShowController(
     BubbleControllerBase& controller_to_show,
     bool force_show) {
+  base::WeakPtr<BubbleControllerBase> controller_weak_ptr =
+      controller_to_show.GetBubbleControllerBaseWeakPtr();
+
+  if (!tab_interface_->IsActivated()) {
+    AddToPendingQueue(controller_weak_ptr);
+    return;
+  }
+
   if (force_show) {
     base::UmaHistogramEnumeration("Autofill.Bubble.RequestShow.ForceShow",
                                   controller_to_show.GetBubbleType());
@@ -141,8 +150,6 @@ void BubbleManagerImpl::RequestShowController(
 
   base::UmaHistogramEnumeration("Autofill.Bubble.RequestShow",
                                 controller_to_show.GetBubbleType());
-  base::WeakPtr<BubbleControllerBase> controller_weak_ptr =
-      controller_to_show.GetBubbleControllerBaseWeakPtr();
 
   base::AutoReset<bool> show_request_guard(&handling_show_request_, true);
 

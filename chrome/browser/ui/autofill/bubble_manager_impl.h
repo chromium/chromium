@@ -99,6 +99,7 @@ class BubbleManagerImpl : public BubbleManager {
   bool handling_tab_will_enter_background_request_ = false;
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  raw_ptr<tabs::TabInterface> tab_interface_;
 };
 
 }  // namespace autofill

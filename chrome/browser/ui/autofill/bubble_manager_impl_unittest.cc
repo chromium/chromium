@@ -36,6 +36,7 @@ class FakeTabInterface : public tabs::MockTabInterface {
   content::WebContents* GetContents() const override { return web_contents_; }
   void Activate();
   void Deactivate();
+  bool IsActivated() const override { return is_activated_; }
 
  private:
   // Only created if a non-null profile is provided.
@@ -755,6 +756,27 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_LogsTimeInQueue) {
   histogram_tester_.ExpectUniqueTimeSample(
       "Autofill.Bubble.Queue.TimeInQueue.SaveUpdateAddress", base::Seconds(5),
       1);
+}
+
+// Tests that if the web contents is deactivated, the show bubble request leads
+// to bubble getting added to the queue.
+TEST_F(BubbleManagerImplTest, TabDeactivated_ShowAddsToQueue) {
+  std::unique_ptr<MockBubbleController> address_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+
+  // Simulate the tab becoming hidden.
+  tab_interface()->Deactivate();
+
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
+  EXPECT_FALSE(address_controller->IsShowingBubble());
+
+  EXPECT_CALL(*address_controller, ShowBubble());
+
+  // Simulate the tab becoming visible.
+  tab_interface()->Activate();
+
+  EXPECT_TRUE(address_controller->IsShowingBubble());
 }
 
 }  // namespace autofill
