@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "remoting/base/internal_headers.h"
 
 namespace base {
@@ -40,6 +41,7 @@ class CorpMessagingPlayground {
   void OnSimpleMessageReceived(const internal::SimpleMessageStruct& message);
   void OnCharacterInput(char c);
   void SendMessage(int count = 1);
+  void StartPingPongMatch();
 
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
@@ -47,6 +49,8 @@ class CorpMessagingPlayground {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<Core> core_;
   internal::EndpointIdStruct last_sender_id_;
+  base::Time last_ping_sent_time_;
+  base::TimeDelta ping_total_rtt_;
   base::WeakPtrFactory<CorpMessagingPlayground> weak_factory_{this};
 };
 

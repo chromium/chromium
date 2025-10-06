@@ -12,15 +12,20 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "net/ssl/client_cert_store.h"
 #include "remoting/base/certificate_helpers.h"
 #include "remoting/base/http_status.h"
+#include "remoting/base/internal_headers.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/signaling/corp_messaging_client.h"
+#include "remoting/test/ping_pong_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
@@ -54,6 +59,7 @@ void CorpMessagingPlayground::Core::Start() {
             << std::endl;
   std::cout << "Press '3' to send a burst of 100 messages to the client."
             << std::endl;
+  std::cout << "Press '4' to start a ping-pong exchange." << std::endl;
   std::cout << "Press 'x' to quit." << std::endl << std::endl;
 
   while (true) {
@@ -127,6 +133,31 @@ void CorpMessagingPlayground::OnSimpleMessageReceived(
             << ", routing_latency=" << routing_latency.InMilliseconds()
             << "ms, payload=" << message.payload;
   last_sender_id_ = message.sender_id;
+
+  if (IsPongMessage(message.payload)) {
+    auto rtt = base::Time::Now() - last_ping_sent_time_;
+    ping_total_rtt_ += rtt;
+    LOG(INFO) << "Current RTT: " << rtt.InMilliseconds()
+              << "ms, Total RTT: " << ping_total_rtt_.InMilliseconds() << "ms";
+    // Now respond with a ping unless we've reached our max count.
+    std::optional<std::string> ping_payload =
+        OnPingPongMessageReceived(message.payload);
+    if (ping_payload.has_value()) {
+      last_ping_sent_time_ = base::Time::Now();
+      client_->SendMessage(last_sender_id_, *ping_payload, base::DoNothing());
+    } else {
+      LOG(INFO) << "Ping-pong exchange finished. Total RTT: "
+                << ping_total_rtt_.InMilliseconds() << "ms";
+    }
+  } else if (IsPingMessage(message.payload)) {
+    std::optional<std::string> pong_payload =
+        OnPingPongMessageReceived(message.payload);
+    if (pong_payload.has_value()) {
+      client_->SendMessage(last_sender_id_, *pong_payload, base::DoNothing());
+    } else {
+      LOG(ERROR) << "Failed to generate response for Ping: " << message.payload;
+    }
+  }
 }
 
 void CorpMessagingPlayground::OnCharacterInput(char c) {
@@ -139,6 +170,9 @@ void CorpMessagingPlayground::OnCharacterInput(char c) {
       break;
     case '3':
       SendMessage(100);
+      break;
+    case '4':
+      StartPingPongMatch();
       break;
     case 'x':
       run_loop_->Quit();
@@ -155,6 +189,18 @@ void CorpMessagingPlayground::SendMessage(int count) {
     client_->SendMessage(last_sender_id_, "Hello from the playground!",
                          base::DoNothing());
   }
+}
+
+void CorpMessagingPlayground::StartPingPongMatch() {
+  if (last_sender_id_.username.empty()) {
+    LOG(WARNING) << "No message received yet, destination ID is unknown.";
+    return;
+  }
+  LOG(INFO) << "Starting a new Ping-Pong match.";
+  ping_total_rtt_ = {};
+  last_ping_sent_time_ = base::Time::Now();
+  client_->SendMessage(last_sender_id_, CreatePingMessage(1),
+                       base::DoNothing());
 }
 
 }  // namespace remoting

@@ -121,7 +121,7 @@ void CorpMessagingClient::SendMessage(
     const std::string& payload,
     StatusCallback on_done) {
   internal::SendHostMessageRequestStruct request;
-  request.simple_message.destination_id = destination_id;
+  request.destination_id = destination_id;
   request.simple_message.message_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   request.simple_message.payload = payload;
