@@ -117,8 +117,8 @@ def parse_build(build_log, root_filter=None):
       file_stack.append(filename)
       continue
 
-    # Clang module compile uses -x after -c, so skip that from include analysis.
-    if (m := COMPILE_RE.match(line)) and m.group(2) != '-x':
+    # Clang module compile .module files, so skip that from include analysis.
+    if (m := COMPILE_RE.match(line)) and not m.group(2).endswith('.module'):
       skipping_root = False
       filename = norm(m.group(2))
       if root_filter and not root_filter.match(filename):
