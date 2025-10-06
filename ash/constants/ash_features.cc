@@ -2030,6 +2030,10 @@ BASE_FEATURE(kDemoSessionToSNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDemoModeSecondaryGoogleAccountSigninAllowedFalse,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to include the device info in the demo account setup request
+// to the demo server in signed-in experience.
+BASE_FEATURE(kSendDeviceInfoToDemoServer, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Moves toasts to the bottom-side corner where the status area is instead of
 // the center when enabled.
 BASE_FEATURE(kSideAlignedToasts, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2705,6 +2709,10 @@ bool IsDemoSessionToSNotificationEnabled() {
 bool IsDemoModeSecondaryGoogleAccountSigninAllowedFalse() {
   return base::FeatureList::IsEnabled(
       kDemoModeSecondaryGoogleAccountSigninAllowedFalse);
+}
+
+bool IsSendDeviceInfoToDemoServerEnabled() {
+  return base::FeatureList::IsEnabled(kSendDeviceInfoToDemoServer);
 }
 
 bool IsEcheSWAEnabled() {
