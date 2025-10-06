@@ -1123,8 +1123,6 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/track-sizing/auto-
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/row-auto-repeat-auto-006.html [ Failure ]
 # Masonry named line failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-002.html [ Failure ]
-# Timing out on Windows
-crbug.com/1076027 [ Win ] external/wpt/css/css-grid/masonry/tentative/item-placement/dense-packing/column-dense-packing-multi-span-005.html [ Failure Skip ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]
