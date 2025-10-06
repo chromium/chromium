@@ -10,7 +10,7 @@ const kPrompt = 'describe this';
 const kValidImagePath = 'resources/media/apple.jpg';
 const kValidAudioPath = 'resources/media/speech.mp3';
 const kValidSVGImagePath = 'resources/media/wikipedia-logo.svg';
-const kValidVideoPath = 'resources/media/video.mp4';
+const kValidVideoPath = 'resources/media/video.webm';
 
 const kImageOptions = {expectedInputs: [{type: 'image'}]};
 const kAudioOptions = {expectedInputs: [{type: 'audio'}]};
