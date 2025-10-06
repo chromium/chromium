@@ -72,6 +72,9 @@ class TouchToFillPaymentMethodProperties {
 
         // The screen displaying the error message and "OK" button.
         int ERROR_SCREEN = 4;
+
+        // The screen displaying the legal messages for linking a new BNPL issuer.
+        int BNPL_ISSUER_TOS_SCREEN = 5;
     }
 
     @interface ItemType {
@@ -117,6 +120,9 @@ class TouchToFillPaymentMethodProperties {
 
         // A section containing the error description.
         int ERROR_DESCRIPTION = 13;
+
+        // A section contains texts shown on BNPL ToS screen.
+        int BNPL_TOS_TEXT = 14;
     }
 
     /** Metadata associated with a card's image. */
@@ -221,6 +227,18 @@ class TouchToFillPaymentMethodProperties {
         static final PropertyKey[] ALL_KEYS = {ON_CLICK_ACTION};
 
         private AllLoyaltyCardsItemProperties() {}
+    }
+
+    /** Properties for the BNPL ToS screen item in the TouchToFill sheet for payments. */
+    static class BnplIssuerTosTextItemProperties {
+        static final PropertyModel.ReadableIntPropertyKey BNPL_TOS_ICON_ID =
+                new PropertyModel.ReadableIntPropertyKey("bnpl_tos_icon_id");
+        static final PropertyModel.ReadableObjectPropertyKey<CharSequence> DESCRIPTION_TEXT =
+                new PropertyModel.ReadableObjectPropertyKey<>("description_text");
+
+        static final PropertyKey[] ALL_KEYS = {BNPL_TOS_ICON_ID, DESCRIPTION_TEXT};
+
+        private BnplIssuerTosTextItemProperties() {}
     }
 
     /**

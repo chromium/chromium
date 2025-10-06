@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_SELECTION_SCREEN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_TOS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ERROR_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
@@ -68,6 +69,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.ALL_LOYALTY_CARDS:
                 case ItemType.BNPL:
                 case ItemType.BNPL_ISSUER:
+                case ItemType.BNPL_TOS_TEXT:
                     return false;
             }
             assert false : "Undefined whether to skip setting background for item of type: " + type;
@@ -208,6 +210,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 return 3;
             case ERROR_SCREEN:
                 return 4;
+            case BNPL_ISSUER_TOS_SCREEN:
+                return 5;
         }
         assert false : "Undefined ScreenId: " + screenId;
         return 0;
@@ -225,6 +229,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 return R.id.touch_to_fill_bnpl_issuer_selection_screen;
             case ERROR_SCREEN:
                 return R.id.touch_to_fill_error_screen;
+            case BNPL_ISSUER_TOS_SCREEN:
+                return R.id.touch_to_fill_bnpl_issuer_tos_screen;
         }
         assert false : "Undefined ScreenId: " + screenId;
         return 0;

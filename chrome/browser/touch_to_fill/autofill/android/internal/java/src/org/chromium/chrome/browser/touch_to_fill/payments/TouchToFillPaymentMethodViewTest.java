@@ -36,6 +36,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ON_ISSUER_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
@@ -69,6 +71,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ERROR_DESCRIPTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
@@ -89,6 +92,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_SELECTION_SCREEN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_TOS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ERROR_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
@@ -98,6 +102,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.COMPLETE_OPACITY_ALPHA;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.GRAYED_OUT_OPACITY_ALPHA;
 
+import android.text.SpannableString;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -385,6 +390,7 @@ public class TouchToFillPaymentMethodViewTest {
                     /* displayName= */ "Affirm",
                     /* iconId= */ R.drawable.affirm_unlinked,
                     /* isLinked= */ false);
+    private static final String BNPL_ISSUER_TOS_ITEM_TEXT = "Affirm ToS text";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1273,6 +1279,45 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    public void testBnplTosScreenShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    ModelList bnplTosScreenItems = new ModelList();
+                    bnplTosScreenItems.add(
+                            new ListItem(
+                                    BNPL_TOS_TEXT, createBnplIssuerTosTextItemModelWithLinkText()));
+                    bnplTosScreenItems.add(
+                            new ListItem(
+                                    BNPL_TOS_TEXT, createBnplIssuerTosTextItemModelWithFlatText()));
+
+                    mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
+                    mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplTosScreenItems);
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        RecyclerView bnplTosScreen =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_bnpl_issuer_tos_screen);
+        assertNotNull(bnplTosScreen);
+        assertThat(bnplTosScreen.getAdapter().getItemCount(), is(2));
+
+        TextView textView = bnplTosScreen.getChildAt(0).findViewById(R.id.bnpl_tos_text);
+        assertTrue(textView.isShown());
+        assertThat(textView.getText().toString(), is(BNPL_ISSUER_TOS_ITEM_TEXT));
+        textView = bnplTosScreen.getChildAt(1).findViewById(R.id.bnpl_tos_text);
+        assertTrue(textView.isShown());
+        assertThat(textView.getText().toString(), is(BNPL_ISSUER_TOS_ITEM_TEXT));
+
+        ImageView imageView = bnplTosScreen.getChildAt(0).findViewById(R.id.bnpl_tos_icon);
+        assertTrue(imageView.isShown());
+        imageView = bnplTosScreen.getChildAt(1).findViewById(R.id.bnpl_tos_icon);
+        assertTrue(imageView.isShown());
+    }
+
+    @Test
+    @MediumTest
     public void testBnplSuggestionView() {
         runOnUiThreadBlocking(
                 () -> {
@@ -1764,6 +1809,22 @@ public class TouchToFillPaymentMethodViewTest {
         return new PropertyModel.Builder(
                         TouchToFillPaymentMethodProperties.ProgressIconProperties.ALL_KEYS)
                 .with(PROGRESS_CONTENT_DESCRIPTION_ID, contentDescription)
+                .build();
+    }
+
+    private static PropertyModel createBnplIssuerTosTextItemModelWithLinkText() {
+        return new PropertyModel.Builder(
+                        TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.ALL_KEYS)
+                .with(BNPL_TOS_ICON_ID, R.drawable.add_link)
+                .with(DESCRIPTION_TEXT, new SpannableString(BNPL_ISSUER_TOS_ITEM_TEXT))
+                .build();
+    }
+
+    private static PropertyModel createBnplIssuerTosTextItemModelWithFlatText() {
+        return new PropertyModel.Builder(
+                        TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.ALL_KEYS)
+                .with(BNPL_TOS_ICON_ID, R.drawable.checklist)
+                .with(DESCRIPTION_TEXT, BNPL_ISSUER_TOS_ITEM_TEXT)
                 .build();
     }
 

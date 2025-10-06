@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_LINKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ON_ISSUER_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
@@ -57,6 +59,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -199,6 +202,14 @@ class TouchToFillPaymentMethodViewBinder {
                         .inflate(R.layout.touch_to_fill_loyalty_card_sheet_item, parent, false);
         AutofillUiUtils.setFilterTouchForSecurity(loyaltyCardItem);
         return loyaltyCardItem;
+    }
+
+    static View createBnplIssuerTosItemView(ViewGroup parent) {
+        View bnplIssuerTosItem =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.touch_to_fill_bnpl_tos_sheet_item, parent, false);
+        AutofillUiUtils.setFilterTouchForSecurity(bnplIssuerTosItem);
+        return bnplIssuerTosItem;
     }
 
     /** Binds the item view to the model properties. */
@@ -613,6 +624,27 @@ class TouchToFillPaymentMethodViewBinder {
             TextView errorDescriptionTextView =
                     view.findViewById(R.id.touch_to_fill_error_description);
             errorDescriptionTextView.setText(model.get(ERROR_DESCRIPTION_STRING));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param propertyKey The {@link PropertyKey} which changed.
+     */
+    static void bindBnplIssuerTosItemView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == BNPL_TOS_ICON_ID) {
+            ImageView iconView = view.findViewById(R.id.bnpl_tos_icon);
+            iconView.setImageDrawable(
+                    AppCompatResources.getDrawable(view.getContext(), model.get(BNPL_TOS_ICON_ID)));
+        } else if (propertyKey == DESCRIPTION_TEXT) {
+            TextView textView = view.findViewById(R.id.bnpl_tos_text);
+            textView.setText(model.get(DESCRIPTION_TEXT), TextView.BufferType.SPANNABLE);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

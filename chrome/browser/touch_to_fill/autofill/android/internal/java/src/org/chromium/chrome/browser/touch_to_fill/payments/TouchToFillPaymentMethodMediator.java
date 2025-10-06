@@ -47,6 +47,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ERROR_DESCRIPTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
@@ -70,6 +71,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_SELECTION_SCREEN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_TOS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ERROR_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
@@ -95,6 +97,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties;
@@ -108,6 +111,7 @@ import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.PaymentsPayload;
 import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.ui.InputProtector;
@@ -602,6 +606,35 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(VISIBLE, true);
     }
 
+    /**
+     * Displays the BNPL issuer ToS screen.
+     *
+     * <p>This method shows a bottom sheet showing the BNPL issuer ToS info.
+     *
+     * @param BnplIssuerTosDetail A struct with text and icon to be shown.
+     */
+    public void showBnplIssuerTos(BnplIssuerTosDetail bnplIssuerTosDetail) {
+        ModelList sheetItems = new ModelList();
+        sheetItems.add(
+                new ListItem(
+                        BNPL_TOS_TEXT,
+                        createBnplIssuerTosTextItemModel(
+                                R.drawable.checklist, bnplIssuerTosDetail.getReviewText())));
+        sheetItems.add(
+                new ListItem(
+                        BNPL_TOS_TEXT,
+                        createBnplIssuerTosTextItemModel(
+                                R.drawable.receipt_long, bnplIssuerTosDetail.getApproveText())));
+        sheetItems.add(
+                new ListItem(
+                        BNPL_TOS_TEXT,
+                        createBnplIssuerTosTextItemModel(
+                                R.drawable.add_link, bnplIssuerTosDetail.getLinkText())));
+
+        mModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
+        mModel.set(SHEET_ITEMS, sheetItems);
+    }
+
     void hideSheet() {
         onDismissed(BottomSheetController.StateChangeReason.NONE);
     }
@@ -864,6 +897,13 @@ class TouchToFillPaymentMethodMediator {
     private PropertyModel createErrorDescriptionModel(String description) {
         return new PropertyModel.Builder(ErrorDescriptionProperties.ALL_KEYS)
                 .with(ERROR_DESCRIPTION_STRING, description)
+                .build();
+    }
+
+    private PropertyModel createBnplIssuerTosTextItemModel(int iconDrawableId, CharSequence text) {
+        return new PropertyModel.Builder(BnplIssuerTosTextItemProperties.ALL_KEYS)
+                .with(BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID, iconDrawableId)
+                .with(BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT, text)
                 .build();
     }
 
