@@ -156,6 +156,10 @@ ci.builder(
         configs = [
             "gpu_tests",
             "debug_builder",
+            # TODO(https://crbug.com/449751912): Prformance overhead of
+            # symbolizing crash stacks in debug builds were causing renderer
+            # crash related tests to timeout.
+            "no_symbols",
             "remoteexec",
             "win",
             "x64",
