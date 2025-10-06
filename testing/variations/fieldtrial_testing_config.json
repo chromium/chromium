@@ -25631,6 +25631,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ForcedDiceMigration",
+                        "IPH_SignInBenefits",
                         "ReplaceSyncPromosWithSignInPromos",
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"
                     ]

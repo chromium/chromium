@@ -475,8 +475,8 @@ void AvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
   // The IPH only concerns signed-in, non-syncing profiles.
   signin::IdentityManager* const identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
