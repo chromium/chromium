@@ -26,6 +26,7 @@ struct ChooseFileEvent {
     ~Builder();
 
     Builder& SetAllowMultipleFiles(bool value);
+    Builder& SetOnlyAllowDirectory(bool value);
     Builder& SetHasSelectedFile(bool value);
     Builder& SetAcceptFileExtensions(std::vector<std::string> value);
     Builder& SetAcceptMimeTypes(std::vector<std::string> value);
@@ -36,6 +37,7 @@ struct ChooseFileEvent {
 
    private:
     bool allow_multiple_files_ = false;
+    bool only_allow_directory_ = false;
     bool has_selected_file_ = false;
     std::vector<std::string> accept_file_extensions_;
     std::vector<std::string> accept_mime_types_;
@@ -51,6 +53,8 @@ struct ChooseFileEvent {
 
   // Whether the input accepts multiple files.
   bool allow_multiple_files;
+  // Whether the input only accepts a directory.
+  bool only_allow_directory;
   // Whether the input already has selected file.
   bool has_selected_file;
   // The file extensions that the input accepts.
@@ -64,6 +68,7 @@ struct ChooseFileEvent {
 
  private:
   ChooseFileEvent(bool allow_multiple_files,
+                  bool only_allow_directory,
                   bool has_selected_file,
                   std::vector<std::string> accept_file_extensions,
                   std::vector<std::string> accept_mime_types,

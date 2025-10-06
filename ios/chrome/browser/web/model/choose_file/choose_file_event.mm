@@ -15,6 +15,12 @@ ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetAllowMultipleFiles(
   return *this;
 }
 
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetOnlyAllowDirectory(
+    bool value) {
+  only_allow_directory_ = value;
+  return *this;
+}
+
 ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetHasSelectedFile(
     bool value) {
   has_selected_file_ = value;
@@ -46,19 +52,21 @@ ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetTime(base::Time value) {
 
 ChooseFileEvent ChooseFileEvent::Builder::Build() {
   CHECK(web_state_);
-  return ChooseFileEvent(allow_multiple_files_, has_selected_file_,
-                         std::move(accept_file_extensions_),
+  return ChooseFileEvent(allow_multiple_files_, only_allow_directory_,
+                         has_selected_file_, std::move(accept_file_extensions_),
                          std::move(accept_mime_types_), web_state_, time_);
 }
 
 ChooseFileEvent::ChooseFileEvent(
     bool allow_multiple_files,
+    bool only_allow_directory,
     bool has_selected_file,
     std::vector<std::string> accept_file_extensions,
     std::vector<std::string> accept_mime_types,
     web::WebState* web_state,
     base::Time time)
     : allow_multiple_files{allow_multiple_files},
+      only_allow_directory{only_allow_directory},
       has_selected_file{has_selected_file},
       accept_file_extensions{std::move(accept_file_extensions)},
       accept_mime_types{std::move(accept_mime_types)},

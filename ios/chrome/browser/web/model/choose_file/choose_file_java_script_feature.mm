@@ -152,8 +152,11 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
 
   std::optional<double> accept_type = body_dict.FindDouble("acceptType");
   std::optional<bool> has_multiple = body_dict.FindBool("hasMultiple");
+  std::optional<bool> has_webkitdirectory =
+      body_dict.FindBool("hasWebkitdirectory");
   std::optional<bool> has_selected_file = body_dict.FindBool("hasSelectedFile");
-  if (!accept_type || !has_multiple || !has_selected_file) {
+  if (!accept_type || !has_multiple || !has_webkitdirectory ||
+      !has_selected_file) {
     return;
   }
   int accept_type_int = static_cast<int>(*accept_type);
@@ -177,6 +180,7 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
     ChooseFileEvent event =
         ChooseFileEvent::Builder()
             .SetAllowMultipleFiles(*has_multiple)
+            .SetOnlyAllowDirectory(*has_webkitdirectory)
             .SetHasSelectedFile(*has_selected_file)
             .SetAcceptFileExtensions(std::move(accept_file_extensions))
             .SetAcceptMimeTypes(std::move(accept_mime_types))

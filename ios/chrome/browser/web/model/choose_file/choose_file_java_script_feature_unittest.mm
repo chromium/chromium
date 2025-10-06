@@ -27,7 +27,7 @@ namespace {
 const char kPageHtml[] =
     "<html><body>"
     "<input type=\"file\" id=\"choose_file\" "
-    "ACCEPT_PLACEHOLDER MULTIPLE_PLACEHOLDER/>"
+    "ACCEPT_PLACEHOLDER MULTIPLE_PLACEHOLDER WEBKITDIRECTORY_PLACEHOLDER/>"
     "<script>"
     "const input = document.getElementById(\"choose_file\");"
     "SET_FILE_PLACEHOLDER"
@@ -45,6 +45,7 @@ const char kPageHtmlForSimulatedClick[] =
     "  input.type = 'file';"
     "  ACCEPT_PLACEHOLDER"
     "  MULTIPLE_PLACEHOLDER"
+    "  WEBKITDIRECTORY_PLACEHOLDER"
     "  SET_FILE_PLACEHOLDER"
     "  input.click();"
     "}"
@@ -100,7 +101,8 @@ class ChooseFileJavaScriptFeatureTest
   void LoadHtml(bool has_multiple,
                 bool has_accept,
                 NSString* accept_value,
-                BOOL already_has_file) {
+                BOOL already_has_file,
+                bool has_webkitdirectory) {
     NSString* html = GetParam().test_simulated_click
                          ? @(kPageHtmlForSimulatedClick)
                          : @(kPageHtml);
@@ -113,6 +115,19 @@ class ChooseFileJavaScriptFeatureTest
     } else {
       html = [html stringByReplacingOccurrencesOfString:@"MULTIPLE_PLACEHOLDER"
                                              withString:@""];
+    }
+    if (has_webkitdirectory) {
+      NSString* replacement =
+          GetParam().test_simulated_click
+              ? @"input.setAttribute('webkitdirectory', true);"
+              : @"webkitdirectory";
+      html = [html
+          stringByReplacingOccurrencesOfString:@"WEBKITDIRECTORY_PLACEHOLDER"
+                                    withString:replacement];
+    } else {
+      html = [html
+          stringByReplacingOccurrencesOfString:@"WEBKITDIRECTORY_PLACEHOLDER"
+                                    withString:@""];
     }
     if (has_accept) {
       NSString* replacement_template =
@@ -163,19 +178,25 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLogging) {
   for (int accept_index = 0; accept_index < 9; accept_index++) {
     for (int multiple_index = 0; multiple_index < 2; multiple_index++) {
       for (int has_file_index = 0; has_file_index < 2; has_file_index++) {
-        base::HistogramTester histogram_tester;
-        LoadHtml([bool_attributes[multiple_index] boolValue], true,
-                 accept_attributes[accept_index],
-                 [bool_attributes[has_file_index] boolValue]);
-        ASSERT_TRUE(
-            web::test::TapWebViewElementWithId(web_state(), "choose_file"));
-        histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
-        histogram_tester.ExpectBucketCount(
-            "IOS.Web.FileInput.Clicked", 2 * accept_index + multiple_index, 1);
-        histogram_tester.ExpectTotalCount("IOS.Web.FileInput.ContentState", 1);
-        histogram_tester.ExpectBucketCount("IOS.Web.FileInput.ContentState",
-                                           2 * multiple_index + has_file_index,
-                                           1);
+        for (int webkitdirectory_index = 0; webkitdirectory_index < 2;
+             webkitdirectory_index++) {
+          base::HistogramTester histogram_tester;
+          LoadHtml([bool_attributes[multiple_index] boolValue], true,
+                   accept_attributes[accept_index],
+                   [bool_attributes[has_file_index] boolValue],
+                   [bool_attributes[webkitdirectory_index] boolValue]);
+          ASSERT_TRUE(
+              web::test::TapWebViewElementWithId(web_state(), "choose_file"));
+          histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
+          histogram_tester.ExpectBucketCount("IOS.Web.FileInput.Clicked",
+                                             2 * accept_index + multiple_index,
+                                             1);
+          histogram_tester.ExpectTotalCount("IOS.Web.FileInput.ContentState",
+                                            1);
+          histogram_tester.ExpectBucketCount(
+              "IOS.Web.FileInput.ContentState",
+              2 * multiple_index + has_file_index, 1);
+        }
       }
     }
   }
@@ -186,7 +207,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
   base::HistogramTester histogram_tester;
   int total_count = 0;
   // No accept, no multiple
-  LoadHtml(false, false, @"", false);
+  LoadHtml(false, false, @"", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -194,7 +215,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kNoAccept*/ 0, 1);
 
   // No accept, multiple
-  LoadHtml(true, false, @"", false);
+  LoadHtml(true, false, @"", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -202,7 +223,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kNoAcceptMultiple*/ 1, 1);
 
   // Multiple empty
-  LoadHtml(false, true, @",,,  ,  ,", false);
+  LoadHtml(false, true, @",,,  ,  ,", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -210,7 +231,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kNoAccept*/ 0, 2);
 
   // Image extension with a dot
-  LoadHtml(false, true, @".png", false);
+  LoadHtml(false, true, @".png", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -218,7 +239,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kImageAccept*/ 6, 1);
 
   // Image extension without a dot
-  LoadHtml(false, true, @"jpg", false);
+  LoadHtml(false, true, @"jpg", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -226,7 +247,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kImageAccept*/ 6, 2);
 
   // Image mime
-  LoadHtml(false, true, @"image/png", false);
+  LoadHtml(false, true, @"image/png", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -234,7 +255,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kImageAccept*/ 6, 3);
 
   // Generic Image mime
-  LoadHtml(false, true, @"image/*", false);
+  LoadHtml(false, true, @"image/*", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -242,7 +263,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kImageAccept*/ 6, 4);
 
   // Two Image types
-  LoadHtml(false, true, @"png, jpg", false);
+  LoadHtml(false, true, @"png, jpg", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -250,7 +271,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kImageAccept*/ 6, 5);
 
   // Video with spaces
-  LoadHtml(false, true, @"  .mp4  ", false);
+  LoadHtml(false, true, @"  .mp4  ", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -258,7 +279,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kVideoAccept*/ 8, 1);
 
   // Audio without dot
-  LoadHtml(false, true, @"mp3", false);
+  LoadHtml(false, true, @"mp3", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -266,7 +287,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kAudioAccept*/ 10, 1);
 
   // Archive
-  LoadHtml(false, true, @"zip , rar ", false);
+  LoadHtml(false, true, @"zip , rar ", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -274,7 +295,7 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestMetricsLoggingExtra) {
                                      /*kArchiveAccept*/ 12, 1);
 
   // Unknown and image
-  LoadHtml(false, true, @"unknown, jpg", false);
+  LoadHtml(false, true, @"unknown, jpg", false, false);
   total_count++;
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", total_count);
@@ -300,7 +321,8 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestInvalidPayload) {
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
       @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
-      @"{'acceptType':0,'hasMultiple':true,'hasSelectedFile':false});",
+      @"{'acceptType':0,'hasMultiple':true,'hasSelectedFile':false,"
+      @"'hasWebkitdirectory':false});",
       java_script_feature_.get());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
 
@@ -342,7 +364,8 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestInvalidPayload) {
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
       @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
-      @"{'acceptType':0,'hasMultiple':true,'hasSelectedFile':false});",
+      @"{'acceptType':0,'hasMultiple':true,'hasSelectedFile':false,"
+      @"'hasWebkitdirectory':false});",
       java_script_feature_.get());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 2);
 }
@@ -374,19 +397,22 @@ TEST_P(ChooseFileJavaScriptFeatureTest,
        accept_attributes_file_extensions) {
     for (const auto& multiple_attribute : bool_attributes) {
       for (const auto& has_file_attributes : bool_attributes) {
-        const bool has_accept = accept_attribute.empty() == false;
-        LoadHtml(multiple_attribute, has_accept, @(accept_attribute.c_str()),
-                 has_file_attributes);
-        ASSERT_TRUE(
-            web::test::TapWebViewElementWithId(web_state(), "choose_file"));
-        const std::optional<ChooseFileEvent> event =
-            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
-        ASSERT_TRUE(event.has_value());
-        EXPECT_EQ(expected_file_extensions, event->accept_file_extensions);
-        EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
-        EXPECT_EQ(has_file_attributes, event->has_selected_file);
-        EXPECT_FALSE(
-            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
+        for (const auto& only_allow_directory : bool_attributes) {
+          const bool has_accept = accept_attribute.empty() == false;
+          LoadHtml(multiple_attribute, has_accept, @(accept_attribute.c_str()),
+                   has_file_attributes, only_allow_directory);
+          ASSERT_TRUE(
+              web::test::TapWebViewElementWithId(web_state(), "choose_file"));
+          const std::optional<ChooseFileEvent> event =
+              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
+          ASSERT_TRUE(event.has_value());
+          EXPECT_EQ(expected_file_extensions, event->accept_file_extensions);
+          EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
+          EXPECT_EQ(only_allow_directory, event->only_allow_directory);
+          EXPECT_EQ(has_file_attributes, event->has_selected_file);
+          EXPECT_FALSE(
+              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
+        }
       }
     }
   }
@@ -421,19 +447,22 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestResetLastChooseFileEventMimeTypes) {
        accept_attributes_mime_types) {
     for (const auto& multiple_attribute : bool_attributes) {
       for (const auto& has_file_attributes : bool_attributes) {
-        const bool has_accept = accept_attribute.empty() == false;
-        LoadHtml(multiple_attribute, has_accept, @(accept_attribute.c_str()),
-                 has_file_attributes);
-        ASSERT_TRUE(
-            web::test::TapWebViewElementWithId(web_state(), "choose_file"));
-        const std::optional<ChooseFileEvent> event =
-            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
-        ASSERT_TRUE(event.has_value());
-        EXPECT_EQ(expected_mime_types, event->accept_mime_types);
-        EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
-        EXPECT_EQ(has_file_attributes, event->has_selected_file);
-        EXPECT_FALSE(
-            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
+        for (const auto& only_allow_directory : bool_attributes) {
+          const bool has_accept = accept_attribute.empty() == false;
+          LoadHtml(multiple_attribute, has_accept, @(accept_attribute.c_str()),
+                   has_file_attributes, only_allow_directory);
+          ASSERT_TRUE(
+              web::test::TapWebViewElementWithId(web_state(), "choose_file"));
+          const std::optional<ChooseFileEvent> event =
+              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
+          ASSERT_TRUE(event.has_value());
+          EXPECT_EQ(expected_mime_types, event->accept_mime_types);
+          EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
+          EXPECT_EQ(only_allow_directory, event->only_allow_directory);
+          EXPECT_EQ(has_file_attributes, event->has_selected_file);
+          EXPECT_FALSE(
+              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
+        }
       }
     }
   }
@@ -447,19 +476,23 @@ TEST_P(ChooseFileJavaScriptFeatureTest,
   ChooseFileTabHelper* tab_helper =
       ChooseFileTabHelper::FromWebState(web_state());
 
-  LoadHtml(/*has_multiple=*/true, /*has_accept=*/true, @".jpg",
-           /*already_has_file=*/true);
-  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
+  for (const bool only_allow_directory : {false, true}) {
+    LoadHtml(/*has_multiple=*/true, /*has_accept=*/true, @".jpg",
+             /*already_has_file=*/true, only_allow_directory);
+    ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
 
-  EXPECT_FALSE(ChooseFileEventHolder::GetInstance()->HasLastChooseFileEvent());
-  EXPECT_TRUE(tab_helper->HasLastChooseFileEvent());
-  const std::optional<ChooseFileEvent> event =
-      tab_helper->ResetLastChooseFileEvent();
-  ASSERT_TRUE(event.has_value());
-  EXPECT_EQ(std::vector<std::string>{".jpg"}, event->accept_file_extensions);
-  EXPECT_EQ(true, event->allow_multiple_files);
-  EXPECT_EQ(true, event->has_selected_file);
-  EXPECT_FALSE(tab_helper->HasLastChooseFileEvent());
+    EXPECT_FALSE(
+        ChooseFileEventHolder::GetInstance()->HasLastChooseFileEvent());
+    EXPECT_TRUE(tab_helper->HasLastChooseFileEvent());
+    const std::optional<ChooseFileEvent> event =
+        tab_helper->ResetLastChooseFileEvent();
+    ASSERT_TRUE(event.has_value());
+    EXPECT_EQ(std::vector<std::string>{".jpg"}, event->accept_file_extensions);
+    EXPECT_EQ(true, event->allow_multiple_files);
+    EXPECT_EQ(only_allow_directory, event->only_allow_directory);
+    EXPECT_EQ(true, event->has_selected_file);
+    EXPECT_FALSE(tab_helper->HasLastChooseFileEvent());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -210,6 +210,7 @@ function parseAcceptAttributeFileExtensions(acceptString: string): string {
 // Describes the state of a file input which was just clicked.
 interface HtmlInputElementState {
   hasMultiple: boolean;
+  hasWebkitdirectory: boolean;
   acceptType: AcceptType;
   mimeTypes: string;
   fileExtensions: string;
@@ -243,6 +244,7 @@ export function processHTMLInputElementClick(target: HTMLInputElement):
   acceptString = acceptString ? acceptString : '';
   return {
     hasMultiple: target.hasAttribute('multiple'),
+    hasWebkitdirectory: target.hasAttribute('webkitdirectory'),
     acceptType: accept,
     mimeTypes: parseAcceptAttributeMimeTypes(acceptString),
     fileExtensions: parseAcceptAttributeFileExtensions(acceptString),
