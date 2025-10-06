@@ -43,8 +43,6 @@ class TabStripNudgeButton : public TabStripControlButton {
 
   bool GetIsShowingNudge() { return is_showing_nudge_; }
 
-  void SetCloseButtonVisible(bool visible);
-
  protected:
   // TabStripControlButton:
   int GetCornerRadius() const override;

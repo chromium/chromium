@@ -35,11 +35,13 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
@@ -48,8 +50,7 @@ namespace {
 constexpr int kHighlightMargin = 2;
 constexpr int kHighlightCornerRadius = 8;
 constexpr int kLabelRightMargin = 8;
-constexpr int kHighlightCloseButtonLeftMargin = 4;
-constexpr int kHighlightCloseButtonRightMargin = 8;
+constexpr int kCloseButtonMargin = 6;
 constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
 constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
 constexpr ui::ColorId kDefaultTextColorV2 = ui::kColorSysOnSurfacePrimary;
@@ -105,39 +106,21 @@ ui::ImageModel GetIconForHighlight() {
 }
 
 gfx::Insets GetIconMargins() {
-  // Default margins for the icon. Right margin comes from the button layout
-  // manager's internal spacing.
-  int left = 6, right = 0;
+  int left = 6 - kHighlightMargin;
+  int right = 4;
 
   if (ShouldShowLabel()) {
     // Extra left margin if the label is shown.
     left += 2;
   }
-
-  if (HighlightNudgeEnabled()) {
-    // Some of the icon's apparent left margin comes from the highlight view
-    // (its parent).
-    left -= kHighlightMargin;
-    // Set our own right margin since the button isn't responsible for this
-    // spacing when the highlight is shown.
-    right = 4;
-  }
   return gfx::Insets().set_left_right(left, right);
 }
 
-std::unique_ptr<views::View> CreateHighlightView() {
-  auto view = std::make_unique<views::View>();
-  view->SetBackground(views::CreateRoundedRectBackground(
-      SK_ColorTRANSPARENT, kHighlightCornerRadius, 0));
-  view->SetProperty(views::kMarginsKey, gfx::Insets(kHighlightMargin));
-  // Don't steal hover events
-  view->SetCanProcessEventsWithinSubtree(false);
-
-  auto* const layout_manager =
-      view->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
-  return view;
+// Helper for making animation durations instant if animations are disabled.
+base::TimeDelta DurationMs(int duration_ms) {
+  return gfx::Animation::ShouldRenderRichAnimation()
+             ? base::Milliseconds(duration_ms)
+             : base::TimeDelta();
 }
 
 }  // namespace
@@ -163,26 +146,30 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
       normal_icon_(GetNormalIcon()),
       icon_for_highlight_(GetIconForHighlight()) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 
   UpdateIcon();
   auto* image_view = static_cast<views::ImageView*>(image_container_view());
   image_view->SetImageSize({kIconSize, kIconSize});
   image_view->SetProperty(views::kMarginsKey, GetIconMargins());
+  image_view->SetPaintToLayer();
+  image_view->layer()->SetFillsBoundsOpaquely(false);
 
-  if (HighlightNudgeEnabled()) {
-    std::optional<size_t> icon_index = GetIndexOf(image_container_view());
-    CHECK(icon_index);
-    highlight_view_ = AddChildViewAt(CreateHighlightView(), *icon_index);
+  CreateIconAndLabelContainer();
 
-    // Reparent icon and label under the highlight.
-    highlight_view_->AddChildView(RemoveChildViewT(image_container_view()));
-    highlight_view_->AddChildView(RemoveChildViewT(label()));
-
-    close_button()->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets().set_left_right(kHighlightCloseButtonLeftMargin,
-                                     kHighlightCloseButtonRightMargin));
+  if (!label()->layer()) {
+    // Make sure label() has a layer even if its text is empty, so we can use
+    // the same opacity animation whether or not the label has text.
+    label()->SetPaintToLayer();
   }
+  label()->SetProperty(views::kMarginsKey,
+                       gfx::Insets().set_right(kLabelRightMargin));
+  close_button()->SetProperty(
+      views::kMarginsKey, gfx::Insets().set_left_right(
+                              HighlightNudgeEnabled() ? kCloseButtonMargin : 0,
+                              kCloseButtonMargin));
+  SetCloseButtonVisible(false);
 
   set_context_menu_controller(this);
 
@@ -193,6 +180,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   UpdateColors();
 
   SetVisible(true);
+  // TODO(430307907): Remove.
   SetIsShowingNudge(false);
   SetHighlightOpacity(0);
 
@@ -219,6 +207,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
 GlicButton::~GlicButton() = default;
 
 void GlicButton::SetNudgeLabel(std::string label) {
+  initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
   SetText(base::UTF8ToUTF16(label));
 }
 
@@ -280,36 +269,45 @@ void GlicButton::OnAnimationEnded() {
 }
 
 void GlicButton::SetHighlightOpacity(float fraction) {
-  if (views::Background* highlight_background =
-          highlight_view_ ? highlight_view_->background() : nullptr;
-      highlight_background && GetColorProvider()) {
-    // Animate highlight background between transparent and opaque.
-    SkColor highlight_color = ui::ColorVariant(kHighlightColorId)
-                                  .ResolveToSkColor(GetColorProvider());
-    highlight_color = SkColorSetA(highlight_color, fraction * SK_AlphaOPAQUE);
-    highlight_background->SetColor(highlight_color);
-  }
+  highlight_view_->layer()->SetOpacity(fraction);
 }
 
 gfx::Size GlicButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const int full_width =
+  const int current_preferred_width =
       GetLayoutManager()->GetPreferredSize(this, available_size).width();
+  const int height =
+      TabStripControlButton::CalculatePreferredSize(
+          views::SizeBounds(current_preferred_width, available_size.height()))
+          .height();
 
-  const int height = TabStripControlButton::CalculatePreferredSize(
-                         views::SizeBounds(full_width, available_size.height()))
-                         .height();
-  const int collapsed_width = std::max(initial_width_, height);
-  const int width = std::lerp(collapsed_width, full_width, GetWidthFactor());
+  // Get collapsed and expanded widths, which are set when the show animation
+  // starts.
+  const int collapsed_width =
+      initial_width_ ? initial_width_ : current_preferred_width;
+  const int expanded_width =
+      expanded_width_ ? expanded_width_ : current_preferred_width;
 
+  // If collapsed width is too small, make it match the height so the button
+  // will be square.
+  const int collapsed_width_or_square = std::max(collapsed_width, height);
+
+  // Interpolate between collapsed and expanded width based on animation state.
+  const int width =
+      std::lerp(collapsed_width_or_square, expanded_width, GetWidthFactor());
   return gfx::Size(width, height);
 }
 
 void GlicButton::StateChanged(ButtonState old_state) {
   TabStripNudgeButton::StateChanged(old_state);
-  if (old_state == STATE_NORMAL && GetState() == STATE_HOVERED &&
-      hovered_callback_) {
-    hovered_callback_.Run();
+  if (old_state == STATE_NORMAL && GetState() == STATE_HOVERED) {
+    if (hovered_callback_) {
+      hovered_callback_.Run();
+    }
+
+    MaybeFadeHighlightOnHover(0);
+  } else if (old_state == STATE_HOVERED && GetState() == STATE_NORMAL) {
+    MaybeFadeHighlightOnHover(1);
   }
 
   UpdateTextAndBackgroundColors();
@@ -360,6 +358,9 @@ void GlicButton::ExecuteCommand(int command_id, int event_flags) {
 
 void GlicButton::SetText(std::u16string_view text) {
   TabStripNudgeButton::SetText(text);
+  // Setting label text seems to clear the margin. Set it again.
+  label()->SetProperty(views::kMarginsKey,
+                       gfx::Insets().set_right(kLabelRightMargin));
 }
 
 bool GlicButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -368,20 +369,6 @@ bool GlicButton::OnMousePressed(const ui::MouseEvent& event) {
     return true;
   }
   return false;
-}
-
-void GlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (ShouldShowLabel() && !initial_width_) {
-    initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
-  }
-  TabStripNudgeButton::OnBoundsChanged(previous_bounds);
-}
-
-void GlicButton::AddedToWidget() {
-  TabStripNudgeButton::AddedToWidget();
-  // Make sure properties like highlight color are updated after this view is
-  // added to the hierarchy.
-  SetIsShowingNudge(is_showing_nudge_);
 }
 
 bool GlicButton::IsContextMenuShowingForTest() {
@@ -456,10 +443,82 @@ void GlicButton::UpdateIcon() {
   SetImageModel(views::Button::STATE_NORMAL, model);
   SetImageModel(views::Button::STATE_HOVERED, model);
   SetImageModel(views::Button::STATE_PRESSED, model);
+  SetImageModel(views::Button::STATE_DISABLED, model);
+}
+
+void GlicButton::MaybeFadeHighlightOnHover(float final_opacity) {
+  if (is_showing_nudge_ && HighlightNudgeEnabled()) {
+    const base::TimeDelta kFadeDuration = DurationMs(170);
+    views::AnimationBuilder()
+        .Once()
+        .SetOpacity(highlight_view_, final_opacity)
+        .SetDuration(kFadeDuration);
+  }
 }
 
 bool GlicButton::IsHighlightVisible() const {
-  return highlight_view_ && is_showing_nudge_ && GetState() != STATE_HOVERED;
+  return HighlightNudgeEnabled() && is_showing_nudge_ &&
+         GetState() != STATE_HOVERED;
+}
+
+void GlicButton::CreateIconAndLabelContainer() {
+  // Restructure the button to place a "highlight" view behind the icon and
+  // label. It's separate from icon_and_label_container so that its opacity can
+  // be animated independently.
+  //
+  // parent (layout: FillLayout)
+  // +-> highlight_view_
+  // +-> container (layout: horizontal BoxLayout)
+  //     +-> image_container_view()
+  //     +-> label()
+
+  std::optional<size_t> icon_index = GetIndexOf(image_container_view());
+  CHECK(icon_index);
+  auto* parent = AddChildViewAt(std::make_unique<views::View>(), *icon_index);
+  parent->SetProperty(views::kMarginsKey, gfx::Insets(kHighlightMargin));
+  // Don't steal hover events
+  parent->SetCanProcessEventsWithinSubtree(false);
+  parent->SetLayoutManager(std::make_unique<views::FillLayout>());
+  icon_label_highlight_view_ = parent;
+
+  highlight_view_ = parent->AddChildView(std::make_unique<views::View>());
+  highlight_view_->SetBackground(views::CreateRoundedRectBackground(
+      kHighlightColorId, kHighlightCornerRadius, 0));
+  highlight_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
+  highlight_view_->layer()->SetFillsBoundsOpaquely(false);
+  highlight_view_->layer()->SetOpacity(0);
+
+  views::View* icon_and_label_container =
+      parent->AddChildView(std::make_unique<views::View>());
+  icon_and_label_container->SetPaintToLayer();
+  icon_and_label_container->layer()->SetFillsBoundsOpaquely(false);
+  auto* const layout_manager = icon_and_label_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>());
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+
+  // Reparent icon and label.
+  icon_and_label_container->AddChildView(
+      RemoveChildViewT(image_container_view()));
+  icon_and_label_container->AddChildView(RemoveChildViewT(label()));
+}
+
+void GlicButton::SetCloseButtonVisible(bool visible) {
+  close_button()->SetVisible(visible);
+
+  gfx::Insets highlight_margins(kHighlightMargin);
+  if (visible) {
+    // Nudge text and close button are shown together, and the close button is
+    // responsible for all the spacing between them.
+    highlight_margins.set_right(0);
+  } else if (ShouldShowLabel()) {
+    // Close button is hidden. If there's label text, give it extra space.
+    highlight_margins.set_right(4);
+  }
+  icon_label_highlight_view_->SetProperty(views::kMarginsKey,
+                                          highlight_margins);
+
+  PreferredSizeChanged();
 }
 
 BEGIN_METADATA(GlicButton)

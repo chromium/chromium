@@ -73,8 +73,6 @@ class GlicButton : public TabStripNudgeButton,
   // Note that this is an optimization for fetching zero-state suggestions so
   // that we can load the suggestions in the UI as quickly as possible.
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void AddedToWidget() override;
 
   bool IsContextMenuShowingForTest();
 
@@ -109,6 +107,10 @@ class GlicButton : public TabStripNudgeButton,
   void UpdateIcon();
   bool IsHighlightVisible() const;
   void SetHighlightOpacity(float fraction);
+  void CreateIconAndLabelContainer();
+  void SetCloseButtonVisible(bool visible);
+
+  void MaybeFadeHighlightOnHover(float final_opacity);
 
 #if BUILDFLAG(ENABLE_GLIC)
   void PanelStateChanged(bool active);
@@ -150,11 +152,15 @@ class GlicButton : public TabStripNudgeButton,
   // (i.e., the user is very likely to interact with it soon).
   base::RepeatingClosure mouse_down_callback_;
 
-  // Cached initial width for animating label changes.
+  // Cached widths for animating label changes.
   int initial_width_ = 0;
+  int expanded_width_ = 0;
 
   // View to be drawn behind the icon and label with a background color.
   raw_ptr<View> highlight_view_ = nullptr;
+
+  // Container view for the icon and label, and the highlight drawn behind them.
+  raw_ptr<View> icon_label_highlight_view_ = nullptr;
 
   const ui::ImageModel normal_icon_;
   const ui::ImageModel icon_for_highlight_;
