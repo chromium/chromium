@@ -266,7 +266,8 @@ public class StripLayoutHelperManager
     private final ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Callback<Integer> mStripVisibilityStateObserver;
-    private final ObservableSupplierImpl<Integer> mStripVisibilityStateSupplier;
+    private final ObservableSupplierImpl<@StripVisibilityState Integer>
+            mStripVisibilityStateSupplier;
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final TopControlsStacker mTopControlsStacker;
 
@@ -1670,7 +1671,7 @@ public class StripLayoutHelperManager
     }
 
     @Override
-    public ObservableSupplier<Integer> getStripVisibilityStateSupplier() {
+    public ObservableSupplier<@StripVisibilityState Integer> getStripVisibilityStateSupplier() {
         // TODO(crbug.com/417238089): get() returns a stale value during height transitions.
         return mStripVisibilityStateSupplier;
     }

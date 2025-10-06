@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,7 +31,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,6 +41,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -60,6 +68,10 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock TabCreator mTabCreator;
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tracker mTracker;
+    @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
+
+    private final ObservableSupplierImpl<@StripVisibilityState Integer>
+            mTabStripVisibilitySupplier = new ObservableSupplierImpl<>();
 
     private final Configuration mConfiguration = new Configuration();
     private OptionalNewTabButtonController mOptionalNewTabButtonController;
@@ -84,7 +96,8 @@ public final class OptionalNewTabButtonControllerUnitTest {
                         mActivityLifecycleDispatcher,
                         () -> mTabCreatorManager,
                         mTabSupplier,
-                        () -> mTracker);
+                        () -> mTracker,
+                        mTabStripVisibilitySupplier);
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
@@ -129,5 +142,52 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED);
+    }
+
+    @Test
+    public void testShouldShowButton_nullTab() {
+        assertFalse(mOptionalNewTabButtonController.shouldShowButton(null));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Features.DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testShouldShowButton_tablet_resizeRefactorDisabled() {
+        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
+        assertFalse(mOptionalNewTabButtonController.shouldShowButton(mTab));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testShouldShowButton_tablet_resizeRefactorEnabled() {
+        // Hide the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
+        assertTrue(mOptionalNewTabButtonController.shouldShowButton(mTab));
+
+        // Show the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.VISIBLE);
+        assertFalse(mOptionalNewTabButtonController.shouldShowButton(mTab));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testShouldShowButton_onTabStripVisibilityStateChanged() {
+        mOptionalNewTabButtonController.addObserver(mButtonDataObserver);
+
+        // Hide the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
+        ButtonData buttonData = mOptionalNewTabButtonController.get(mTab);
+        assertTrue(buttonData.canShow());
+        verify(mButtonDataObserver).buttonDataChanged(eq(true));
+
+        Mockito.clearInvocations(mButtonDataObserver);
+
+        // Show the tab strip.
+        mTabStripVisibilitySupplier.set(StripVisibilityState.VISIBLE);
+        buttonData = mOptionalNewTabButtonController.get(mTab);
+        assertFalse(buttonData.canShow());
+        verify(mButtonDataObserver).buttonDataChanged(eq(true));
     }
 }

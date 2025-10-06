@@ -999,7 +999,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 () -> addVoiceSearchAdaptiveButton(trackerSupplier),
                 groupSuggestionsButtonControllerSupplier,
                 mTabModelSelectorSupplier,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier,
+                mTabStripVisibilitySupplier);
     }
 
     @Override

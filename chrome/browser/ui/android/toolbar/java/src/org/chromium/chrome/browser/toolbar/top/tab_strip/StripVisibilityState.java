@@ -8,8 +8,10 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * A set of states that represent the visibility of the tab strip. These types are bit flags, so
@@ -25,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
     StripVisibilityState.HIDDEN_BY_FADE,
 })
 @NullMarked
+@Target({ElementType.TYPE_USE})
 public @interface StripVisibilityState {
     /** Strip is visible. */
     int VISIBLE = 0;
