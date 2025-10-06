@@ -161,7 +161,7 @@ ClientSidePhishingModel::ClientSidePhishingModel(
       beginning_time_(base::TimeTicks::Now()) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
-      /*model_metadata=*/std::nullopt, this);
+      /*model_metadata=*/std::nullopt, background_task_runner_, this);
 }
 
 void ClientSidePhishingModel::OnModelUpdated(
@@ -245,7 +245,7 @@ void ClientSidePhishingModel::SubscribeToImageEmbedderOptimizationGuide() {
     opt_guide_->AddObserverForOptimizationTargetModel(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
-        /*model_metadata=*/std::nullopt, this);
+        /*model_metadata=*/std::nullopt, background_task_runner_, this);
   }
 }
 

@@ -6,6 +6,7 @@
 
 #import "base/containers/contains.h"
 #import "base/files/file_util.h"
+#import "base/task/thread_pool.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
@@ -163,7 +164,10 @@ class PredictionManagerTestBase : public TestWithProfile {
     OptimizationGuideServiceFactory::GetForProfile(scoped_profile_.profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            std::nullopt, model_file_observer);
+            std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer);
   }
 
   void SetComponentUpdatesEnabled(bool enabled) {
@@ -358,7 +362,10 @@ class PredictionManagerModelDownloadingBrowserTest
         profile ? profile : scoped_profile_.profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/std::nullopt, model_file_observer_.get());
+            /*model_metadata=*/std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer_.get());
   }
 
   // Sets up the model observer to receive valid ModelInfo.

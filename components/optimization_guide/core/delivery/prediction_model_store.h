@@ -64,6 +64,7 @@ class PredictionModelStore {
   // is invoked. On any failures, callback is run with nullptr.
   void LoadModel(proto::OptimizationTarget optimization_target,
                  const proto::ModelCacheKey& model_cache_key,
+                 scoped_refptr<base::SequencedTaskRunner> model_task_runner,
                  PredictionModelLoadedCallback callback);
 
   // Update the model metadata for |model_info| if the model represented by
@@ -112,8 +113,7 @@ class PredictionModelStore {
 
   // Loads the model and verifies if the model files exist and returns the
   // model. Otherwise nullptr is returned on any failures.
-  static std::unique_ptr<proto::PredictionModel>
-  LoadAndVerifyModelInBackgroundThread(
+  static std::unique_ptr<proto::PredictionModel> LoadAndVerifyModelOffThread(
       proto::OptimizationTarget optimization_target,
       const base::FilePath& base_model_dir);
 

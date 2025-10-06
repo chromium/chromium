@@ -46,8 +46,8 @@ void RecordTaskExecutionLatency(proto::OptimizationTarget optimization_target,
 // This class owns and handles the execution of models on the UI thread.
 // Derived classes must provide an implementation of `ModelExecutor`
 // which is then owned by `this`. The passed executor will be called
-// and destroyed on the thread specified by `model_executor_task_runner`,
-// which is all handled by this class.
+// and destroyed on the thread specified by `model_task_runner`, which
+// is all handled by this class.
 //
 // Derived classes that override `OnModelUpdated` must call the parent
 // `OnModelUpdated` as the first step, for the internal state to be updated.
@@ -56,18 +56,22 @@ class ModelHandler : public OptimizationTargetModelObserver {
  public:
   ModelHandler(
       OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       std::unique_ptr<ModelExecutor<OutputType, InputType>> model_executor,
       // Passing nullopt will use a default value.
       std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
       const std::optional<proto::Any>& model_metadata,
+      // If model_loading_task_runner is nullptr then model_task_runner will be
+      // used for model loading.
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner =
+          nullptr,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner =
           base::SequencedTaskRunner::GetCurrentDefault())
       : model_provider_(model_provider),
         optimization_target_(optimization_target),
         model_executor_(std::move(model_executor)),
-        model_executor_task_runner_(model_executor_task_runner) {
+        model_task_runner_(model_task_runner) {
     DCHECK(model_provider_);
     DCHECK(model_executor_);
     DCHECK_NE(optimization_target_,
@@ -83,14 +87,19 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
     handler_created_time_ = base::TimeTicks::Now();
 
+    if (!model_loading_task_runner) {
+      model_loading_task_runner = model_task_runner;
+    }
+
     model_executor_->InitializeAndMoveToExecutionThread(
         model_inference_timeout, optimization_target_,
-        model_executor_task_runner_, reply_task_runner);
+        model_loading_task_runner, model_task_runner_,
+        /*reply_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
 
     // Run this after the executor is initialized in case the model is already
     // available.
     model_provider_->AddObserverForOptimizationTargetModel(
-        optimization_target_, model_metadata, this);
+        optimization_target_, model_metadata, model_loading_task_runner, this);
   }
   ~ModelHandler() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -100,8 +109,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
     // |model_executor_|'s  WeakPtrs are used on the model thread, so
     // that is also where the class must be destroyed.
-    model_executor_task_runner_->DeleteSoon(FROM_HERE,
-                                            std::move(model_executor_));
+    model_task_runner_->DeleteSoon(FROM_HERE, std::move(model_executor_));
   }
   ModelHandler(const ModelHandler&) = delete;
   ModelHandler& operator=(const ModelHandler&) = delete;
@@ -115,8 +123,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
                                      InputType input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    model_executor_task_runner_->PostTask(
-        FROM_HERE, GetExecutionTask(std::move(callback), input));
+    model_task_runner_->PostTask(FROM_HERE,
+                                 GetExecutionTask(std::move(callback), input));
   }
 
   // Same as the method above. But also receives a `base::CancelableTaskTracker`
@@ -128,7 +136,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
                                      InputType input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    tracker->PostTask(model_executor_task_runner_.get(), FROM_HERE,
+    tracker->PostTask(model_task_runner_.get(), FROM_HERE,
                       GetExecutionTask(std::move(callback), input));
   }
 
@@ -150,7 +158,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
       BatchExecutionCallback callback,
       typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
           batch_input) {
-    model_executor_task_runner_->PostTask(
+    model_task_runner_->PostTask(
         FROM_HERE, GetBatchExecutionTask(std::move(callback), batch_input));
   }
 
@@ -162,7 +170,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
           batch_input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    tracker->PostTask(model_executor_task_runner_.get(), FROM_HERE,
+    tracker->PostTask(model_task_runner_.get(), FROM_HERE,
                       GetBatchExecutionTask(std::move(callback), batch_input));
   }
 
@@ -185,7 +193,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // constructed TFLite graph.
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    model_executor_task_runner_->PostTask(
+    model_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ModelExecutor<OutputType,
@@ -200,7 +208,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // constructed TFLite graph.
   void SetShouldPreloadModel(bool should_preload_model) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    model_executor_task_runner_->PostTask(
+    model_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ModelExecutor<OutputType, InputType>::SetShouldPreloadModel,
@@ -213,7 +221,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // signal.
   virtual void UnloadModel() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    model_executor_task_runner_->PostTask(
+    model_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ModelExecutor<OutputType, InputType>::UnloadModel,
                        model_executor_->GetWeakPtrForExecutionThread()));
@@ -248,7 +256,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
       model_info_ = std::nullopt;
     }
 
-    model_executor_task_runner_->PostTask(
+    model_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ModelExecutor<OutputType, InputType>::UpdateModelFile,
                        model_executor_->GetWeakPtrForExecutionThread(),
@@ -374,7 +382,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // the task takes a reference to the TaskRunner (in a cyclic dependency) so
   // |base::Unretained| is not safe anywhere in this class or the
   // |model_executor_|.
-  scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
 
   // Set in |OnModelUpdated|.
   std::optional<ModelInfo> model_info_ GUARDED_BY_CONTEXT(sequence_checker_);

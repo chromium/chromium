@@ -12,6 +12,7 @@ TestModelObserverTracker::~TestModelObserverTracker() = default;
 void TestModelObserverTracker::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget target,
     const std::optional<optimization_guide::proto::Any>& model_metadata,
+    scoped_refptr<base::SequencedTaskRunner> model_task_runner,
     optimization_guide::OptimizationTargetModelObserver* observer) {
   registered_model_metadata_.insert_or_assign(target, model_metadata);
 }

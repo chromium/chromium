@@ -378,6 +378,7 @@ static_library("prediction") {
     "delivery/model_store_metadata_entry.h",
     "delivery/model_util.cc",
     "delivery/model_util.h",
+    "delivery/optimization_guide_model_provider.cc",
     "delivery/optimization_guide_model_provider.h",
     "delivery/optimization_target_model_observer.h",
     "delivery/prediction_manager.cc",

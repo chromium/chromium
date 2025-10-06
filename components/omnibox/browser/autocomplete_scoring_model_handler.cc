@@ -61,14 +61,16 @@ AutocompleteScoringModelHandler::AutocompleteScoringModelHandler(
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
     std::unique_ptr<AutocompleteScoringModelExecutor> model_executor,
     OptimizationTarget optimization_target,
-    const std::optional<optimization_guide::proto::Any>& model_metadata)
+    const std::optional<optimization_guide::proto::Any>& model_metadata,
+    scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner)
     : optimization_guide::ModelHandler<ModelOutput, ModelInput>(
           model_provider,
           model_executor_task_runner,
           std::move(model_executor),
           /*model_inference_timeout=*/std::nullopt,
           optimization_target,
-          model_metadata) {
+          model_metadata,
+          model_loading_task_runner) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since model inference is latency sensitive and it
   // cannot wait for the model to be loaded from disk.

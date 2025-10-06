@@ -58,9 +58,8 @@ class OnDeviceTailModelService
   // demand.
   OnDeviceTailModelService();
 
-  // The task runner to run tail model executor.
-  scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_ =
-      nullptr;
+  // The task runner to run tail model.
+  scoped_refptr<base::SequencedTaskRunner> model_task_runner_ = nullptr;
 
   using ExecutorUniquePtr =
       std::unique_ptr<OnDeviceTailModelExecutor, base::OnTaskRunnerDeleter>;

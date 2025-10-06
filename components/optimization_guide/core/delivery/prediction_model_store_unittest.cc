@@ -109,6 +109,8 @@ class PredictionModelStoreTest : public testing::Test {
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
     prediction_model_store_->LoadModel(
         optimization_target, model_cache_key,
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
         base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
                        base::Unretained(this), run_loop.get()));
     run_loop->Run();

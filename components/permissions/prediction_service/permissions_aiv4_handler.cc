@@ -36,6 +36,7 @@ PermissionsAiv4Handler::PermissionsAiv4Handler(
           /*model_inference_timeout=*/std::nullopt,
           optimization_target,
           /*model_metadata=*/std::nullopt,
+          /*model_loading_task_runner=*/nullptr,
           reply_task_runner) {}
 
 PermissionsAiv4Handler::PermissionsAiv4Handler(

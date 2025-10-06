@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -49,8 +50,16 @@ OnDeviceAssetManager::OnDeviceAssetManager(
           base::BindRepeating(
               &OnDeviceModelServiceController::MaybeUpdateModelAdaptation,
               service_controller.GetWeakPtr())),
-      text_safety_model_observation_(&model_provider, this),
-      language_detection_model_observation_(&model_provider, this) {
+      text_safety_model_observation_(
+          &model_provider,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+          this),
+      language_detection_model_observation_(
+          &model_provider,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+          this) {
   usage_tracker_->AddObserver(this);
   on_device_component_state_manager_->AddObserver(this);
 

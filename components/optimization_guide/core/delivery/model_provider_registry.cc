@@ -67,6 +67,7 @@ ModelProviderRegistry::ModelRegistrationInfo::~ModelRegistrationInfo() =
 void ModelProviderRegistry::AddObserverForOptimizationTargetModel(
     proto::OptimizationTarget optimization_target,
     const std::optional<proto::Any>& model_metadata,
+    scoped_refptr<base::SequencedTaskRunner> model_task_runner,
     OptimizationTargetModelObserver* observer) {
   CHECK(!model_metadata ||
         IsModelMetadataTypeOnServerAllowlist(*model_metadata));

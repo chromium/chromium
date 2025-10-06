@@ -194,10 +194,12 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     : feature_(feature),
       target_(
           *features::internal::GetOptimizationTargetForCapability(feature_)),
-      model_provider_observation_(&model_provider, this),
-      on_load_fn_(on_load_fn),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
+      model_provider_observation_(&model_provider,
+                                  background_task_runner_,
+                                  this),
+      on_load_fn_(on_load_fn) {}
 
 OnDeviceModelAdaptationLoader::~OnDeviceModelAdaptationLoader() {
   Unregister();

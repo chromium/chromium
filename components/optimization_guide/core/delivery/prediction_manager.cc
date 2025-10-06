@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -91,6 +92,8 @@ PredictionManager::PredictionManager(
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger),
       unzipper_factory_(std::move(unzipper_factory)),
+      default_model_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       prediction_model_fetch_timer_(
           local_state,
           base::BindRepeating(
@@ -115,11 +118,19 @@ PredictionManager::~PredictionManager() {
 void PredictionManager::AddObserverForOptimizationTargetModel(
     proto::OptimizationTarget optimization_target,
     const std::optional<proto::Any>& model_metadata,
+    scoped_refptr<base::SequencedTaskRunner> model_task_runner,
     OptimizationTargetModelObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  registry_.AddObserverForOptimizationTargetModel(optimization_target,
-                                                  model_metadata, observer);
+  // Set the target's task runner if none is already present. This has the
+  // effect of using the first registered model_task_runner for all model
+  // execution, if more than one observer gets registered (e.g. in the case of
+  // multiple profiles using the model).
+  optimization_target_model_task_runner_.emplace(optimization_target,
+                                                 model_task_runner);
+
+  registry_.AddObserverForOptimizationTargetModel(
+      optimization_target, model_metadata, model_task_runner, observer);
   base::UmaHistogramMediumTimes(
       "OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit." +
           GetStringNameForOptimizationTarget(optimization_target),
@@ -289,6 +300,15 @@ void PredictionManager::FetchModels() {
   prediction_model_fetch_timer_.SchedulePeriodicModelsFetch();
 }
 
+scoped_refptr<base::SequencedTaskRunner> PredictionManager::GetModelTaskRunner(
+    proto::OptimizationTarget optimization_target) {
+  const auto loc =
+      optimization_target_model_task_runner_.find(optimization_target);
+  return loc != optimization_target_model_task_runner_.end()
+             ? loc->second
+             : default_model_task_runner_;
+}
+
 void PredictionManager::OnModelsFetched(
     const std::vector<proto::ModelInfo> models_request_info,
     std::unique_ptr<proto::GetModelsResponse> get_models_response_data) {
@@ -438,6 +458,7 @@ void PredictionManager::UpdatePredictionModels(
     // Load the model from the store to see whether it is valid or not.
     prediction_model_store_->LoadModel(
         optimization_target, model_cache_key_,
+        GetModelTaskRunner(optimization_target),
         base::BindOnce(&PredictionManager::MaybeDownloadOrUpdatePredictionModel,
                        ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
                        model));
@@ -619,6 +640,7 @@ void PredictionManager::LoadPredictionModels(
     }
     prediction_model_store_->LoadModel(
         optimization_target, model_cache_key_,
+        GetModelTaskRunner(optimization_target),
         base::BindOnce(&PredictionManager::OnLoadPredictionModel,
                        ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
                        /*record_availability_metrics=*/true));

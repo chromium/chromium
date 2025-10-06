@@ -237,6 +237,7 @@ bool PredictionModelStore::HasModelWithVersion(
 void PredictionModelStore::LoadModel(
     proto::OptimizationTarget optimization_target,
     const proto::ModelCacheKey& model_cache_key,
+    scoped_refptr<base::SequencedTaskRunner> model_task_runner,
     PredictionModelLoadedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -265,11 +266,11 @@ void PredictionModelStore::LoadModel(
     return;
   }
 
-  background_task_runner_->PostTaskAndReplyWithResult(
+  model_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &PredictionModelStore::LoadAndVerifyModelInBackgroundThread,
-          optimization_target, base_store_dir_.Append(*base_model_dir)),
+      base::BindOnce(&PredictionModelStore::LoadAndVerifyModelOffThread,
+                     optimization_target,
+                     base_store_dir_.Append(*base_model_dir)),
       base::BindOnce(&PredictionModelStore::OnModelLoaded,
                      weak_ptr_factory_.GetWeakPtr(), optimization_target,
                      model_cache_key, std::move(callback)));
@@ -277,12 +278,11 @@ void PredictionModelStore::LoadModel(
 
 // static
 std::unique_ptr<proto::PredictionModel>
-PredictionModelStore::LoadAndVerifyModelInBackgroundThread(
+PredictionModelStore::LoadAndVerifyModelOffThread(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir) {
   TRACE_EVENT("optimization_guide",
-              "PredictionModelStore::LoadAndVerifyModelInBackgroundThread",
-              "target",
+              "PredictionModelStore::LoadAndVerifyModelOffThread", "target",
               GetStringNameForOptimizationTarget(optimization_target));
 
   auto model_info = ParseModelInfoFromFile(

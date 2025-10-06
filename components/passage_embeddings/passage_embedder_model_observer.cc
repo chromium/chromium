@@ -4,6 +4,7 @@
 
 #include "components/passage_embeddings/passage_embedder_model_observer.h"
 
+#include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 
@@ -23,7 +24,10 @@ PassageEmbedderModelObserver::PassageEmbedderModelObserver(
   if (model_provider_) {
     model_provider_->AddObserverForOptimizationTargetModel(
         target_,
-        /*model_metadata=*/std::nullopt, this);
+        /*model_metadata=*/std::nullopt,
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+        this);
   }
 }
 

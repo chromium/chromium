@@ -893,7 +893,7 @@ class ForegroundTFLiteModelExecutorTest : public TFLiteModelExecutorTest {
 
   void CreateModelHandler() override {
     foreground_execution_sequence_ =
-        base::ThreadPool::CreateSequencedTaskRunner({});
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
     model_handler_ = std::make_unique<TestTFLiteModelHandler>(
         test_model_provider(), foreground_execution_sequence_);

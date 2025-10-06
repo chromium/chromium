@@ -158,15 +158,15 @@ class OnDeviceModelAdaptationLoader final
   ModelBasedCapabilityKey feature_;
   proto::OptimizationTarget target_;
 
+  // Background thread where file processing should be performed.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
   // The model provider to observe for updates to model adaptations.
   OptimizationGuideModelProviderObservation model_provider_observation_;
   OnLoadFn on_load_fn_;
 
   // The compatibility spec that we've registered for adaptations with.
   std::optional<OnDeviceBaseModelSpec> registered_spec_;
-
-  // Background thread where file processing should be performed.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 };
 
 class AdaptationLoaderMap final {

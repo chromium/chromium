@@ -47,6 +47,7 @@ class ModelValidatorModelObserverTracker
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       const std::optional<proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       OptimizationTargetModelObserver* observer) override {
     if (optimization_target == proto::OPTIMIZATION_TARGET_MODEL_VALIDATION) {
       EXPECT_FALSE(model_validation_observer_);

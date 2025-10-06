@@ -21,6 +21,7 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,
       const std::optional<proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       OptimizationTargetModelObserver* observer) override {
     // Make sure we send what is expected based on
     // TestModelHandler ctor.

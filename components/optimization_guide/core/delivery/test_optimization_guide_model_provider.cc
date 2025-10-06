@@ -14,6 +14,7 @@ TestOptimizationGuideModelProvider::~TestOptimizationGuideModelProvider() =
 void TestOptimizationGuideModelProvider::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const std::optional<proto::Any>& model_metadata,
+    scoped_refptr<base::SequencedTaskRunner> model_task_runner,
     optimization_guide::OptimizationTargetModelObserver* observer) {}
 
 void TestOptimizationGuideModelProvider::

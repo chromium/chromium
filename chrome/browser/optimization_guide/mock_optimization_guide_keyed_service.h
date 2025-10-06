@@ -103,6 +103,7 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               AddObserverForOptimizationTargetModel,
               (optimization_guide::proto::OptimizationTarget,
                const std::optional<optimization_guide::proto::Any>&,
+               scoped_refptr<base::SequencedTaskRunner>,
                optimization_guide::OptimizationTargetModelObserver*),
               (override));
   MOCK_METHOD(void,

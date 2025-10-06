@@ -26,6 +26,7 @@ class TestOptimizationGuideModelProvider
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       const std::optional<proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       OptimizationTargetModelObserver* observer) override;
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,

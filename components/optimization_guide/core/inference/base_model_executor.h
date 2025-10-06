@@ -38,13 +38,15 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
   void InitializeAndMoveToExecutionThread(
       std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner,
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
     num_threads_ = features::OverrideNumThreadsForOptTarget(optimization_target)
                        .value_or(-1);
     TFLiteModelExecutor<OutputType, InputType>::
         InitializeAndMoveToExecutionThread(
-            model_inference_timeout, optimization_target, execution_task_runner,
+            model_inference_timeout, optimization_target,
+            model_loading_task_runner, execution_task_runner,
             reply_task_runner);
   }
 

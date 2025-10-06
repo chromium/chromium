@@ -133,6 +133,7 @@ class PredictionManager : public PredictionModelDownloadObserver,
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       const std::optional<proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       OptimizationTargetModelObserver* observer) override;
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
@@ -167,6 +168,10 @@ class PredictionManager : public PredictionModelDownloadObserver,
   void OnModelsFetched(
       const std::vector<proto::ModelInfo> models_request_info,
       std::unique_ptr<proto::GetModelsResponse> get_models_response_data);
+
+  // Gets the model task runner to use for the target.
+  scoped_refptr<base::SequencedTaskRunner> GetModelTaskRunner(
+      proto::OptimizationTarget optimization_target);
 
   // Load models for every target in |optimization_targets| that have not yet
   // been loaded from the store.
@@ -295,6 +300,15 @@ class PredictionManager : public PredictionModelDownloadObserver,
 
   // Callback to build Unzipper remotes.
   unzip::UnzipperFactory unzipper_factory_;
+
+  // The task runner to use if AddObserverForOptimizationTargetModel was never
+  // invoked to provide one.
+  const scoped_refptr<base::SequencedTaskRunner> default_model_task_runner_;
+
+  // The task runner on which to run model loading.
+  base::flat_map<proto::OptimizationTarget,
+                 scoped_refptr<base::SequencedTaskRunner>>
+      optimization_target_model_task_runner_;
 
   // Time the prediction manager got initialized.
   // TODO(crbug.com/40861855): Remove this old model store once the new model

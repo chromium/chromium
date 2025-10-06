@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -158,9 +159,12 @@ class OptimizationGuideInternalsModelsPageBrowserTest
             }));
 
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-        ->AddObserverForOptimizationTargetModel(optimization_target,
-                                                /*model_metadata=*/std::nullopt,
-                                                &model_file_observer);
+        ->AddObserverForOptimizationTargetModel(
+            optimization_target,
+            /*model_metadata=*/std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            &model_file_observer);
 
     run_loop.Run();
   }
