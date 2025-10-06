@@ -168,8 +168,6 @@ found in the LICENSE file.
     <dimen name="location_bar_navigation_attachments_popup_width">250dp</dimen>
 
     <!-- Search engine logo. -->
-    <dimen name="omnibox_search_engine_logo_favicon_size">17dp</dimen>
-    <dimen name="omnibox_search_engine_logo_padding_size">0.5dp</dimen>
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
 
     <!-- Button highlight dimensions. -->
