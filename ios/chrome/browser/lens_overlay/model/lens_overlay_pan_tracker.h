@@ -18,6 +18,10 @@
 // Whether the user pans the view.
 @property(nonatomic, assign, readonly) BOOL isPanning;
 
+// Whether the gesture recognizer cancels touches in view.
+// Default is `NO`.
+@property(nonatomic) BOOL cancelsTouchesInView;
+
 // Creates a new instance of the pan tracker for a given UIView.
 - (instancetype)initWithView:(UIView*)view;
 

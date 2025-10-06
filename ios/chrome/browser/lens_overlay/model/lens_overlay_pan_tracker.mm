@@ -16,9 +16,15 @@
   self = [super init];
   if (self) {
     _view = view;
+    _cancelsTouchesInView = NO;
   }
 
   return self;
+}
+
+- (void)setCancelsTouchesInView:(BOOL)cancelsTouchesInView {
+  _cancelsTouchesInView = cancelsTouchesInView;
+  _panRecognizer.cancelsTouchesInView = cancelsTouchesInView;
 }
 
 - (void)startTracking {
@@ -30,7 +36,7 @@
       [[UIPanGestureRecognizer alloc] initWithTarget:self
                                               action:@selector(handlePan:)];
   _panRecognizer.delegate = self;
-  _panRecognizer.cancelsTouchesInView = NO;
+  _panRecognizer.cancelsTouchesInView = _cancelsTouchesInView;
   [_view addGestureRecognizer:_panRecognizer];
 }
 

@@ -195,6 +195,7 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
   [self.view layoutIfNeeded];
 
   _panTracker = [[LensOverlayPanTracker alloc] initWithView:_bottomSheet.view];
+  _panTracker.cancelsTouchesInView = YES;
   _panTracker.delegate = self;
 
   CGFloat restHeight = [self bottomSheetRestHeight];
