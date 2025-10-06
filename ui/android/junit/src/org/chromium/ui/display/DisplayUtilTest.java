@@ -435,78 +435,91 @@ public class DisplayUtilTest {
     }
 
     @Test
-    public void testClampWindowToDisplay_boundsInsideDisplay() {
+    public void testClampRect_inputRectInsideLimitingRect() {
+        Rect limitingRect = new Rect(0, 0, 1920, 1080);
+        Rect inputRect = new Rect(100, 200, 700, 800);
+        assertEquals(
+                "The inputRect should have been preserved as it's' already inside limitingRect",
+                inputRect,
+                DisplayUtil.clampRect(inputRect, limitingRect));
+    }
+
+    @Test
+    public void testClampRect_inputRectPartiallyOutsideLimitingRectInHorizontalAxis() {
+        Rect limitingRect = new Rect(0, 0, 1000, 1000);
+        Rect inputRect = new Rect(-100, 200, 700, 800);
+
+        // Size can be preserved, there is exactly one Rect with given size distant by 100 px in
+        // Manhattan metric that fits inside the limitingRect, and there is no valid Rect with given
+        // size closer than 100 px.
+        Rect expectedRect = new Rect(0, 200, 800, 800);
+        assertEquals(
+                "The inputRect is partially outside the limitingRect",
+                expectedRect,
+                DisplayUtil.clampRect(inputRect, limitingRect));
+    }
+
+    @Test
+    public void testClampRect_inputRectPartiallyOutsideLimitingRectInVerticalAxis() {
+        Rect limitingRect = new Rect(0, 0, 1000, 1000);
+        Rect inputRect = new Rect(200, -100, 800, 700);
+
+        // Size can be preserved, there is exactly one Rect with given size distant by 100 px in
+        // Manhattan metric that fits inside the limitingRect, and there is no valid Rect with given
+        // size closer than 100 px.
+        Rect expectedRect = new Rect(200, 0, 800, 800);
+        assertEquals(
+                "The inputRect is partially outside the limitingRect",
+                expectedRect,
+                DisplayUtil.clampRect(inputRect, limitingRect));
+    }
+
+    @Test
+    public void testClampRect_inputRectFullyOutsideLimitingRect() {
+        Rect limitingRect = new Rect(0, 0, 1000, 1000);
+        Rect inputRect = new Rect(1100, 1200, 1600, 1800);
+
+        // Size can be preserved, there is exactly one Rect with given size distant by 1400 px in
+        // Manhattan metric that fits inside the limitingRect, and there is no valid Rect with given
+        // size closer than 1400 px.
+        Rect expectedRect = new Rect(500, 400, 1000, 1000);
+        assertEquals(
+                "The inputRect is fully outside the limitingRect",
+                expectedRect,
+                DisplayUtil.clampRect(inputRect, limitingRect));
+    }
+
+    @Test
+    public void testClampRect_inputRectFullyOutsideAndWiderThanLimitingRect() {
+        Rect limitingRect = new Rect(0, 0, 1100, 1200);
+        Rect inputRect = new Rect(-100, 1400, 1200, 1800);
+
+        // Size cannot be preserved in horizontal axis. The least displacement in the vertical axis
+        // to get a Rect inside the display is 400px.
+        Rect expectedRect = new Rect(0, 800, 1100, 1200);
+        assertEquals(
+                "The inputRect is fully outside and wider than the limitingRect",
+                expectedRect,
+                DisplayUtil.clampRect(inputRect, limitingRect));
+    }
+
+    @Test
+    public void testClampRect_inputRectBiggerThanLimitingRect() {
+        Rect limitingRect = new Rect(0, 0, 1400, 1200);
+        Rect inputRect = new Rect(-100, 1400, 1400, 3000);
+        assertEquals(
+                "The inputRect is bigger in both dimensions than the limitingRect",
+                limitingRect,
+                DisplayUtil.clampRect(inputRect, limitingRect));
+    }
+
+    @Test
+    public void testClampWindowToDisplay() {
         when(mDisplayAndroid.getLocalBounds()).thenReturn(new Rect(0, 0, 1920, 1080));
         final Rect testBounds = new Rect(100, 200, 700, 800);
         assertEquals(
                 "The bounds should have been preserved as they were already inside display",
                 testBounds,
-                DisplayUtil.clampWindowToDisplay(testBounds, mDisplayAndroid));
-    }
-
-    @Test
-    public void testClampWindowToDisplay_boundsPartiallyOffscreen() {
-        when(mDisplayAndroid.getLocalBounds()).thenReturn(new Rect(0, 0, 1000, 1000));
-        final Rect testBounds = new Rect(-100, 200, 700, 800);
-        // Size can be preserved, there is exactly one Rect with given size distant by 100 px in
-        // Manhattan metric that fits inside the display, and there is no valid Rect with given size
-        // closer than 100 px.
-        final Rect expectedBounds = new Rect(0, 200, 800, 800);
-        assertEquals(
-                "The bounds were partially off-screen",
-                expectedBounds,
-                DisplayUtil.clampWindowToDisplay(testBounds, mDisplayAndroid));
-    }
-
-    @Test
-    public void testClampWindowToDisplay_boundsPartiallyOffscreen2() {
-        when(mDisplayAndroid.getLocalBounds()).thenReturn(new Rect(0, 0, 1000, 1000));
-        final Rect testBounds = new Rect(200, -100, 800, 700);
-        // Size can be preserved, there is exactly one Rect with given size distant by 100 px in
-        // Manhattan metric that fits inside the display, and there is no valid Rect with given size
-        // closer than 100 px.
-        final Rect expectedBounds = new Rect(200, 0, 800, 800);
-        assertEquals(
-                "The bounds were partially off-screen",
-                expectedBounds,
-                DisplayUtil.clampWindowToDisplay(testBounds, mDisplayAndroid));
-    }
-
-    @Test
-    public void testClampWindowToDisplay_boundsFullyOffscreen() {
-        when(mDisplayAndroid.getLocalBounds()).thenReturn(new Rect(0, 0, 1000, 1000));
-        final Rect testBounds = new Rect(1100, 1200, 1600, 1800);
-        // Size can be preserved, there is exactly one Rect with given size distant by 1400 px in
-        // Manhattan metric that fits inside the display, and there is no valid Rect with given size
-        // closer than 1400 px.
-        final Rect expectedBounds = new Rect(500, 400, 1000, 1000);
-        assertEquals(
-                "The bounds were fully off-screen",
-                expectedBounds,
-                DisplayUtil.clampWindowToDisplay(testBounds, mDisplayAndroid));
-    }
-
-    @Test
-    public void testClampWindowToDisplay_boundsFullyOffscreenAndWiderThanDisplay() {
-        when(mDisplayAndroid.getLocalBounds()).thenReturn(new Rect(0, 0, 1100, 1200));
-        final Rect testBounds = new Rect(-100, 1400, 1200, 1800);
-        // Size cannot be preserved in horizontal axis. The least displacement in the vertical axis
-        // to get a Rect inside the display is 400px.
-        final Rect expectedBounds = new Rect(0, 800, 1100, 1200);
-        assertEquals(
-                "The bounds were fully off-screen and wider than the display",
-                expectedBounds,
-                DisplayUtil.clampWindowToDisplay(testBounds, mDisplayAndroid));
-    }
-
-    @Test
-    public void testClampWindowToDisplay_boundsBiggerThanDisplay() {
-        final Rect displayLocalBounds = new Rect(0, 0, 1400, 1200);
-        when(mDisplayAndroid.getLocalBounds()).thenReturn(displayLocalBounds);
-        final Rect testBounds = new Rect(-100, 1400, 1400, 3000);
-        assertEquals(
-                "The bounds were bigger in both dimensions than the display",
-                displayLocalBounds,
                 DisplayUtil.clampWindowToDisplay(testBounds, mDisplayAndroid));
     }
 

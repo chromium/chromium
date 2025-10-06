@@ -519,20 +519,45 @@ public abstract class DisplayUtil {
     }
 
     /**
-     * If the provided Rect fits fully inside given display's bounds, this method returns a copy of
-     * the provided Rect.
+     * Adjusts {@code inputRect} to fit inside {@code limitingRect}.
      *
-     * <p>Otherwise, the Rect returned will be a copy of the provided Rect modified so that it is
-     * fully inside given display's bounds and is the closest match to the provided Rect,
+     * <p>If {@code inputRect} fits fully inside {@code limitingRect}, this method returns a copy of
+     * {@code inputRect}.
+     *
+     * <p>Otherwise, the returned {@link Rect} will be a copy of {@code inputRect} modified so that
+     * it is fully inside {@code limitingRect} and is the closest match to {@code inputRect},
      * prioritising preserving original width and height first, then minimizing the Manhattan
-     * distance between the original Rect and the adjusted one.
+     * distance between {@code inputRect} and the adjusted one.
      *
-     * <p>If the provided Rect is longer than given display's bounds in precisely one axis, the
-     * displacement alongside the other axis will be minimised between the provided Rect and the
+     * <p>If {@code inputRect} is longer than {@code limitingRect} in precisely one axis, the
+     * displacement alongside the other axis will be minimised between {@code inputRect} and the
      * adjusted one.
      *
-     * <p>If the provided Rect is longer than given display's bounds in both axes, the display's
-     * bounds will be returned.
+     * <p>If {@code inputRect} is longer than {@code limitingRect} in both axes, {@code
+     * limitingRect} will be returned.
+     *
+     * @param inputRect The {@link Rect} to adjust.
+     * @param limitingRect The {@link Rect} that defines the bounds.
+     * @return A new {@link Rect}, guaranteed to be fully within {@code limitingRect}.
+     */
+    @SuppressWarnings("CheckResult")
+    public static Rect clampRect(Rect inputRect, Rect limitingRect) {
+        Rect output = new Rect(inputRect);
+
+        output.offset(Math.max(limitingRect.left - output.left, 0), 0);
+        output.offset(Math.min(limitingRect.right - output.right, 0), 0);
+        output.offset(0, Math.max(limitingRect.top - output.top, 0));
+        output.offset(0, Math.min(limitingRect.bottom - output.bottom, 0));
+
+        output.intersect(limitingRect);
+
+        return output;
+    }
+
+    /**
+     * Adjusts the given bounds to fit the given display.
+     *
+     * <p>Please see {@link #clampRect(Rect, Rect)} for how the bounds are adjusted.
      *
      * @param boundsPx The rectangle to adjust, in pixels. Its coordinates should be relative to the
      *     display, with (0, 0) at the top-left corner and positive axes going rightward and
@@ -541,19 +566,8 @@ public abstract class DisplayUtil {
      * @return A new Rect, guaranteed to be fully within the display bounds. Uses the same
      *     coordinate system as the initial Rect.
      */
-    @SuppressWarnings("CheckResult")
     public static Rect clampWindowToDisplay(Rect boundsPx, DisplayAndroid display) {
-        final Rect output = new Rect(boundsPx);
-        final Rect limitingBounds = display.getLocalBounds();
-
-        output.offset(Math.max(limitingBounds.left - output.left, 0), 0);
-        output.offset(Math.min(limitingBounds.right - output.right, 0), 0);
-        output.offset(0, Math.max(limitingBounds.top - output.top, 0));
-        output.offset(0, Math.min(limitingBounds.bottom - output.bottom, 0));
-
-        output.intersect(limitingBounds);
-
-        return output;
+        return clampRect(boundsPx, display.getLocalBounds());
     }
 
     public static void setCarmaPhase1Version2ComplianceForTesting(
