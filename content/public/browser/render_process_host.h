@@ -26,7 +26,6 @@
 #include "content/public/browser/child_process_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -128,8 +127,7 @@ class Renderer;
 // Interface that represents the browser side of the browser <-> renderer
 // communication channel. There will generally be one RenderProcessHost per
 // renderer process.
-class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
-                                         public IPC::Listener,
+class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
                                          public base::SupportsUserData {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.

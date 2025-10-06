@@ -3957,44 +3957,6 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   return true;
 }
 
-bool RenderProcessHostImpl::Send(IPC::Message* msg) {
-  TRACE_IPC_MESSAGE_SEND("renderer_host", "RenderProcessHostImpl::Send", msg);
-
-  std::unique_ptr<IPC::Message> message(msg);
-
-  // |channel_| is only null after Cleanup(), at which point we don't care
-  // about delivering any messages.
-  if (!channel_)
-    return false;
-
-  DCHECK(!message->is_sync());
-  return channel_->Send(message.release());
-}
-
-bool RenderProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
-  // If we're about to be deleted, or have initiated the fast shutdown
-  // sequence, we ignore incoming messages.
-
-  if (deleting_soon_ || fast_shutdown_started_)
-    return false;
-
-  mark_child_process_activity_time();
-
-  // Dispatch incoming messages to the appropriate IPC::Listener.
-  IPC::Listener* listener = listeners_.Lookup(msg.routing_id());
-  if (!listener) {
-    if (msg.is_sync()) {
-      // The listener has gone away, so we must respond or else the caller
-      // will hang waiting for a reply.
-      IPC::Message* reply = IPC::SyncMessage::GenerateReply(&msg);
-      reply->set_reply_error();
-      Send(reply);
-    }
-    return true;
-  }
-  return listener->OnMessageReceived(msg);
-}
-
 void RenderProcessHostImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
