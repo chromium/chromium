@@ -11,29 +11,45 @@ source_set("utils") {
   ]
 }
 
-source_set("impl") {
-  sources = [ "ios_promos_utils.cc" ]
-
-  deps = [
-    ":utils",
-    "//chrome/browser/feature_engagement",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/promos:utils",
-    "//chrome/browser/segmentation_platform",
-    "//chrome/browser/sync",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/views/frame:toolbar_button_provider",
-    "//chrome/browser/ui/views/location_bar",
-    "//components/feature_engagement/public",
-    "//components/segmentation_platform/embedder/default_model",
-    "//components/segmentation_platform/public",
-    "//components/sync/service",
-  ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-}
-
 if (!is_android) {
+  source_set("impl") {
+    sources = [ "ios_promos_utils.cc" ]
+
+    deps = [
+      ":utils",
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/promos:utils",
+      "//chrome/browser/segmentation_platform",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/location_bar",
+      "//components/feature_engagement/public",
+      "//components/segmentation_platform/embedder/default_model",
+      "//components/segmentation_platform/public",
+      "//components/sync/service",
+    ]
+  }
+
+  source_set("controller") {
+    sources = [
+      "ios_promo_controller.cc",
+      "ios_promo_controller.h",
+    ]
+
+    deps = [
+      ":service",
+      ":utils",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame",
+      "//ui/base/unowned_user_data",
+    ]
+
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+
   source_set("service") {
     sources = [
       "ios_promo_trigger_service.cc",
@@ -55,6 +71,7 @@ if (!is_android) {
     testonly = true
     sources = [ "ios_promo_trigger_service_unittest.cc" ]
     deps = [
+      ":controller",
       ":service",
       "//base/test:test_support",
       "//chrome/browser/promos:utils",

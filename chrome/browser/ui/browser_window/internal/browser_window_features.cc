@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/promos/ios_promo_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -126,6 +127,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
+#include "components/sharing_message/features.h"
 #include "content/public/common/content_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -417,6 +419,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     if (IsChromeLabsEnabled()) {
       chrome_labs_coordinator_ =
           std::make_unique<ChromeLabsCoordinator>(browser);
+    }
+
+    if (MobilePromoOnDesktopTypeEnabled() !=
+        MobilePromoOnDesktopPromoType::kDisabled) {
+      ios_promo_controller_ =
+          GetUserDataFactory().CreateInstance<IOSPromoController>(*browser,
+                                                                  browser);
     }
 
     send_tab_to_self_toolbar_bubble_controller_ = std::make_unique<
@@ -829,6 +838,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   exclusive_access_manager_.reset();
 
   scrim_view_controller_.reset();
+
+  ios_promo_controller_.reset();
 
   if (auto* const provider = browser_elements_->AsA<BrowserElementsViews>()) {
     provider->TearDown();

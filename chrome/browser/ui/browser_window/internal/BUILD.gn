@@ -55,6 +55,7 @@ source_set("internal") {
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/promos:controller",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:glic",
