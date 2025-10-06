@@ -22,6 +22,7 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/mock_filters.h"
+#include "media/base/test_helpers.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_transformation.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1134,6 +1135,97 @@ TEST_F(StarboardPlayerManagerTest, ReportsBufferingMetricAfterUnderrun) {
       StarboardDecoderState::kStarboardDecoderStateNeedsData,
       captured_seek_ticket);
   RunPendingTasks();
+}
+
+TEST_F(StarboardPlayerManagerTest, ReportsDecodeErrorToClientAndMetricsHelper) {
+  // This will be set to the callbacks received by the mock Starboard.
+  const StarboardPlayerCallbackHandler* callbacks = nullptr;
+  EXPECT_CALL(
+      starboard_,
+      CreatePlayer(
+          Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
+              .drm_system = nullptr,
+              .audio_sample_info = GetStarboardAudioConfig(),
+              .video_sample_info = GetStarboardVideoConfig(),
+              .output_mode = StarboardPlayerOutputMode::
+                  kStarboardPlayerOutputModePunchOut})),
+          _))
+      .WillOnce(DoAll(SaveArg<1>(&callbacks), Return(&sb_player_)));
+
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(::media::PIPELINE_ERROR_DECODE)));
+  // Ignore any unrelated metrics calls.
+  EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(_, _))
+      .Times(AnyNumber());
+  // The StarboardPlayerManager should report a cast platform error to the
+  // metrics helper.
+  EXPECT_CALL(metrics_helper_,
+              RecordApplicationEventWithValue("Cast.Platform.Error",
+                                              ::media::PIPELINE_ERROR_DECODE));
+
+  audio_stream_.set_audio_decoder_config(GetChromiumAudioConfig());
+  video_stream_.set_video_decoder_config(GetChromiumVideoConfig());
+
+  auto player_manager = StarboardPlayerManager::Create(
+      &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+      &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
+      /*enable_buffering=*/true);
+  ASSERT_THAT(player_manager, NotNull());
+
+  // Simulate a decode error from Starboard.
+  ASSERT_THAT(callbacks, NotNull());
+  ASSERT_THAT(callbacks->player_error_fn, NotNull());
+  ASSERT_THAT(callbacks->context, NotNull());
+  callbacks->player_error_fn(&sb_player_, callbacks->context,
+                             StarboardPlayerError::kStarboardPlayerErrorDecode,
+                             "");
+}
+
+TEST_F(StarboardPlayerManagerTest,
+       ReportsCapabilitiesErrorToClientAndMetricsHelper) {
+  // This will be set to the callbacks received by the mock Starboard.
+  const StarboardPlayerCallbackHandler* callbacks = nullptr;
+  EXPECT_CALL(
+      starboard_,
+      CreatePlayer(
+          Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
+              .drm_system = nullptr,
+              .audio_sample_info = GetStarboardAudioConfig(),
+              .video_sample_info = GetStarboardVideoConfig(),
+              .output_mode = StarboardPlayerOutputMode::
+                  kStarboardPlayerOutputModePunchOut})),
+          _))
+      .WillOnce(DoAll(SaveArg<1>(&callbacks), Return(&sb_player_)));
+
+  EXPECT_CALL(
+      renderer_client_,
+      OnError(HasStatusCode(::media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET)));
+  // Ignore any unrelated metrics calls.
+  EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(_, _))
+      .Times(AnyNumber());
+  // The StarboardPlayerManager should report a cast platform error to the
+  // metrics helper.
+  EXPECT_CALL(metrics_helper_,
+              RecordApplicationEventWithValue(
+                  "Cast.Platform.Error",
+                  ::media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET));
+
+  audio_stream_.set_audio_decoder_config(GetChromiumAudioConfig());
+  video_stream_.set_video_decoder_config(GetChromiumVideoConfig());
+
+  auto player_manager = StarboardPlayerManager::Create(
+      &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+      &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
+      /*enable_buffering=*/true);
+  ASSERT_THAT(player_manager, NotNull());
+
+  // Simulate a capabilities change from Starboard.
+  ASSERT_THAT(callbacks, NotNull());
+  ASSERT_THAT(callbacks->player_error_fn, NotNull());
+  ASSERT_THAT(callbacks->context, NotNull());
+  callbacks->player_error_fn(
+      &sb_player_, callbacks->context,
+      StarboardPlayerError::kStarboardPlayerErrorCapabilityChanged, "");
 }
 
 }  // namespace

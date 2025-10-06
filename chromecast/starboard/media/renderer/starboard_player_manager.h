@@ -184,6 +184,8 @@ class StarboardPlayerManager {
   base::flat_map<raw_ptr<const void>, scoped_refptr<::media::DecoderBuffer>>
       addr_to_buffer_;
   std::optional<StarboardBufferingTracker> buffering_tracker_;
+  raw_ptr<chromecast::metrics::CastMetricsHelper> cast_metrics_helper_ =
+      nullptr;
 
   // This should be destructed first, to invalidate any weak ptrs.
   base::WeakPtrFactory<StarboardPlayerManager> weak_factory_{this};

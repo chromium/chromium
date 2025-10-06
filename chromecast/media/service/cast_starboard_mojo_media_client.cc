@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "chromecast/starboard/media/renderer/starboard_renderer.h"
 
@@ -43,7 +44,8 @@ CastStarboardMojoMediaClient::CreateCastRenderer(
   LOG(INFO) << "Using StarboardRenderer";
   return std::make_unique<StarboardRenderer>(
       chromecast::media::GetStarboardApiWrapper(), std::move(task_runner),
-      overlay_plane_id, enable_buffering_cb_.Run(), video_geometry_setter_);
+      overlay_plane_id, enable_buffering_cb_.Run(), video_geometry_setter_,
+      chromecast::metrics::CastMetricsHelper::GetInstance());
 }
 
 std::unique_ptr<::media::Renderer> CastStarboardMojoMediaClient::CreateRenderer(

@@ -177,10 +177,12 @@ StarboardPlayerManager::StarboardPlayerManager(
           base::BindRepeating(&StarboardPlayerManager::PushEos,
                               base::Unretained(this)),
           client_,
-          cast_metrics_helper) {
+          cast_metrics_helper),
+      cast_metrics_helper_(cast_metrics_helper) {
   CHECK(starboard_);
   CHECK(client_);
   CHECK(task_runner_);
+  CHECK(cast_metrics_helper_);
   // player_ is set later in the factory function to create
   // StarboardPlayerManager.
 }
@@ -381,7 +383,23 @@ void StarboardPlayerManager::OnPlayerError(
   DCHECK_EQ(player, player_);
   LOG(ERROR) << "Received SbPlayer error " << error
              << ", with message: " << message;
-  client_->OnError(::media::PIPELINE_ERROR_COULD_NOT_RENDER);
+
+  // PIPELINE_ERROR_HARDWARE_CONTEXT_RESET roughly corresponds to Starboard's
+  // kSbPlayerErrorCapabilityChanged. It signifies that the system should
+  // recreate the renderer instead of just giving up (since capabilities
+  // changed, e.g. due to a hardware change like unplugging an external GPU).
+  //
+  // See
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/base/pipeline_impl.cc;l=986;drc=1fb4c56b03b105b03c45627871b15b8933ed8a11
+  // and
+  // https://github.com/youtube/cobalt/blob/6a2df0d123c68a3a29555dedf25fdbc5d161b3c9/starboard/player.h#L69
+  const ::media::PipelineStatusCodes pipeline_error =
+      error == StarboardPlayerError::kStarboardPlayerErrorDecode
+          ? ::media::PIPELINE_ERROR_DECODE
+          : ::media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+  cast_metrics_helper_->RecordApplicationEventWithValue("Cast.Platform.Error",
+                                                        pipeline_error);
+  client_->OnError(pipeline_error);
 }
 
 void StarboardPlayerManager::CallOnDecoderStatus(

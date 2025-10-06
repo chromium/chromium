@@ -35,6 +35,7 @@ cast_source_set("service") {
       "create_mojo_media_client_starboard.cc",
     ]
     deps += [
+      "//chromecast/base/metrics",
       "//chromecast/starboard/media/media:starboard_api_wrapper",
       "//chromecast/starboard/media/renderer:starboard_renderer",
     ]
