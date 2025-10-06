@@ -1193,7 +1193,7 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
   }
 
   // TODO(crbug.com/427778119): Set caret blink interval.
-  caret_->SetVisibility(enabled);
+  caret_->SetEnabled(enabled);
 }
 
 void PDFiumEngine::ContinueFind(bool case_sensitive) {

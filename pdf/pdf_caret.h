@@ -47,9 +47,9 @@ class PdfCaret {
   PdfCaret& operator=(const PdfCaret&) = delete;
   ~PdfCaret();
 
-  // Sets the visibility of the caret. No-op if visibility does not change. If
-  // `is_visible` is true, the caret will be drawn, hidden otherwise.
-  void SetVisibility(bool is_visible);
+  // Sets whether the caret is enabled. No-op if state does not change. If
+  // `enabled` is true, the caret will be drawn, hidden otherwise.
+  void SetEnabled(bool enabled);
 
   // Sets how often the caret should blink. If the interval is set to 0, the
   // caret will not blink. No-op if `interval` is negative.
@@ -83,7 +83,7 @@ class PdfCaret {
 
  private:
   // Refreshes the caret's display state, drawing or hiding the caret depending
-  // on the value of `is_visible_` and resetting the blink timer depending on
+  // on the value of `enabled_` and resetting the blink timer depending on
   // the value of `is_blinking_`.
   void RefreshDisplayState();
 
@@ -177,8 +177,8 @@ class PdfCaret {
   // to the right of the last char.
   PageCharacterIndex index_;
 
-  // Whether the caret is visible.
-  bool is_visible_ = false;
+  // Whether the caret is enabled.
+  bool enabled_ = false;
 
   // Whether the caret is visible on screen, taking into account blinking.
   bool is_blink_visible_ = false;
