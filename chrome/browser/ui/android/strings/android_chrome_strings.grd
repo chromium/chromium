@@ -7105,7 +7105,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Choose your address bar position
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_BOTTOM_OMNIBOX" desc="Description of the Bottom Omnibox feature tip main page promo.">
-        Switch the position of your address bar to the top of bottom for a customaized browsing experience
+        Switch the position of your address bar to the top or bottom for a customized browsing experience
       </message>
     </messages>
   </release>
