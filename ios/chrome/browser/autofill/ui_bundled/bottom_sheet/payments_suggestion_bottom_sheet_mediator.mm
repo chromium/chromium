@@ -261,11 +261,11 @@ bool IsV3() {
 
   FormSuggestionTabHelper* formSuggestionTabHelper =
       FormSuggestionTabHelper::FromWebState(activeWebState);
-  CHECK(formSuggestionTabHelper, base::NotFatalUntil::M137);
+  CHECK(formSuggestionTabHelper);
 
   id<FormInputSuggestionsProvider> crossProvider =
       formSuggestionTabHelper->GetAccessoryViewProvider();
-  CHECK(crossProvider, base::NotFatalUntil::M137);
+  CHECK(crossProvider);
 
   if (crossProvider.type != SuggestionProviderTypeAutofill && !IsV3()) {
     // Last resort safety exit: On the unlikely event that the provider was
