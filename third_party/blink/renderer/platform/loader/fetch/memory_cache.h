@@ -229,9 +229,16 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
                            ClearStrongReferences);
 };
 
-// Sets the global cache, used to swap in a test instance. Returns the old
-// MemoryCache object.
-PLATFORM_EXPORT MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache*);
+// Sets the global cache, used to swap in a test instance. Saves the old
+// MemoryCache object and restores it in the destructor..
+class PLATFORM_EXPORT ScopedMemoryCacheForTesting {
+ public:
+  explicit ScopedMemoryCacheForTesting(Persistent<MemoryCache>);
+  ~ScopedMemoryCacheForTesting();
+
+ private:
+  Persistent<MemoryCache> stored_cache_;
+};
 
 }  // namespace blink
 

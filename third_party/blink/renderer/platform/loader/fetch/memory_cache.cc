@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -135,12 +136,24 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 static constexpr char kPageSavedResourceStrongReferenceSize[] =
     "Blink.MemoryCache.PageSavedResourceStrongReferenceSize2";
 
-MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache* cache) {
-  MemoryCache::Get();
-  MemoryCache* old_cache = g_memory_cache->Release();
-  *g_memory_cache = cache;
-  MemoryCacheDumpProvider::Instance()->SetMemoryCache(cache);
-  return old_cache;
+ScopedMemoryCacheForTesting::ScopedMemoryCacheForTesting(
+    Persistent<MemoryCache> cache) {
+  if (!g_memory_cache) {
+    g_memory_cache = new Persistent<MemoryCache>(std::move(cache));
+    return;
+  }
+
+  stored_cache_ = std::exchange(*g_memory_cache, std::move(cache));
+}
+
+ScopedMemoryCacheForTesting::~ScopedMemoryCacheForTesting() {
+  if (stored_cache_) {
+    *g_memory_cache = std::move(stored_cache_);
+  } else {
+    delete g_memory_cache;
+    g_memory_cache = nullptr;
+  }
+  blink::ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
 void MemoryCacheEntry::Trace(Visitor* visitor) const {

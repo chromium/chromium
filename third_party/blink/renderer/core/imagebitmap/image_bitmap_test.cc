@@ -69,6 +69,10 @@ class ExceptionState;
 
 class ImageBitmapTest : public testing::Test {
  protected:
+  ImageBitmapTest()
+      : scoped_memory_cache_(MakeGarbageCollected<MemoryCache>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting())) {}
+
   void SetUp() override {
     sk_sp<SkSurface> surface =
         SkSurfaces::Raster(SkImageInfo::MakeN32Premul(10, 10));
@@ -79,11 +83,6 @@ class ImageBitmapTest : public testing::Test {
         SkSurfaces::Raster(SkImageInfo::MakeN32Premul(5, 5));
     surface2->getCanvas()->clear(0xAAAAAAAA);
     image2_ = surface2->makeImageSnapshot();
-
-    // Save the global memory cache to restore it upon teardown.
-    global_memory_cache_ =
-        ReplaceMemoryCacheForTesting(MakeGarbageCollected<MemoryCache>(
-            blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
 
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     InitializeSharedGpuContextRaster(test_context_provider_.get());
@@ -96,7 +95,6 @@ class ImageBitmapTest : public testing::Test {
     ThreadState::Current()->CollectAllGarbageForTesting(
         ThreadState::StackState::kNoHeapPointers);
 
-    ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
     SharedGpuContext::Reset();
   }
 
@@ -104,7 +102,7 @@ class ImageBitmapTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   sk_sp<SkImage> image_, image2_;
-  Persistent<MemoryCache> global_memory_cache_;
+  ScopedMemoryCacheForTesting scoped_memory_cache_;
 };
 
 TEST_F(ImageBitmapTest, ImageResourceConsistency) {

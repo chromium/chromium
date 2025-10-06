@@ -112,11 +112,12 @@ class MemoryCacheTest : public testing::Test {
     void DestroyDecodedDataIfPossible() override { SetDecodedSize(0u); }
   };
 
+  MemoryCacheTest()
+      : scoped_memory_cache_(
+            MakeGarbageCollected<MemoryCache>(platform_->test_task_runner())) {}
+
  protected:
   void SetUp() override {
-    // Save the global memory cache to restore it upon teardown.
-    global_memory_cache_ = ReplaceMemoryCacheForTesting(
-        MakeGarbageCollected<MemoryCache>(platform_->test_task_runner()));
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     lifecycle_notifier_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
@@ -127,18 +128,14 @@ class MemoryCacheTest : public testing::Test {
         nullptr /* back_forward_cache_loader_helper */));
   }
 
-  void TearDown() override {
-    ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
-  }
-
-  Persistent<MemoryCache> global_memory_cache_;
+  base::test::TaskEnvironment task_environment_;
   Persistent<ResourceFetcher> fetcher_;
   Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
+  ScopedMemoryCacheForTesting scoped_memory_cache_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
 };
 
 

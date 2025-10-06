@@ -386,9 +386,9 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<HTMLCanvasElement> canvas_element_;
+  ScopedMemoryCacheForTesting scoped_memory_cache_;
 
  private:
-  Persistent<MemoryCache> global_memory_cache_;
   std::unique_ptr<ScopedAccelerated2dCanvasForTest> allow_accelerated_;
 
   class WrapGradients final : public GarbageCollected<WrapGradients> {
@@ -467,7 +467,9 @@ class CanvasRenderingContext2DTestAccelerated
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 
 CanvasRenderingContext2DTestBase::CanvasRenderingContext2DTestBase()
-    : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
+    : scoped_memory_cache_(MakeGarbageCollected<MemoryCache>(
+          blink::scheduler::GetSingleThreadTaskRunnerForTesting())),
+      wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
       opaque_bitmap_(gfx::Size(10, 10), kOpaqueBitmap),
       alpha_bitmap_(gfx::Size(10, 10), kTransparentBitmap) {}
 
@@ -544,18 +546,12 @@ void CanvasRenderingContext2DTestBase::SetUp() {
                                exception_state);
   EXPECT_FALSE(exception_state.HadException());
   AlphaGradient() = alpha_gradient;
-
-  global_memory_cache_ =
-      ReplaceMemoryCacheForTesting(MakeGarbageCollected<MemoryCache>(
-          blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
 }
 
 void CanvasRenderingContext2DTestBase::TearDown() {
   feature_list_.Reset();
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
-
-  ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
 
   // Tear down WebViewHelper because we override Platform in some tests which
   // must be torn down after WebViewHelper.
