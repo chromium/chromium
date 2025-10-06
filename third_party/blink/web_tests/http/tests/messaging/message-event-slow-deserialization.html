@@ -8,15 +8,13 @@ if (window.testRunner) {
   testRunner.waitUntilDone();
 }
 
-const doPost = function (payloadSize) {
-  top.postMessage({payload: "don't panic" + Array(payloadSize).join('!')}, '*');
+const doPost = function () {
+  top.postMessage({payload: "don't panic"}, '*');
 }
 
-function createCrossOriginIframeAndPostMessage(short) {
-  const payloadSize = short ? 0 : 16 * 1024;
+function createCrossOriginIframeAndPostMessage() {
   const iframe = document.createElement("iframe");
-  iframe.src = "data:text/html,<" +
-      `script type="application/x-javascript">(${doPost.toString()})(${payloadSize})</` + "script>";
+  iframe.src = "data:text/html,<" + `script type="application/x-javascript">(${doPost.toString()})()</` + "script>";
   document.body.appendChild(iframe);
 }
 
@@ -34,7 +32,7 @@ function output(message) {
 
 (async function() {
   internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
-  createCrossOriginIframeAndPostMessage(/* short */ false);
+  createCrossOriginIframeAndPostMessage();
   const crossOriginEvent1 = await new Promise(resolve => {
     window.addEventListener('message', resolve, {once: true});
   });
@@ -44,23 +42,13 @@ function output(message) {
       internals.isUseCounted(document, WebFeature.kSlowDeserialization));
 
   internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
-  createCrossOriginIframeAndPostMessage(/* short */ false);
+  createCrossOriginIframeAndPostMessage();
   const crossOriginEvent2 = await new Promise(resolve => {
     window.addEventListener('message', resolve, {once: true});
   });
   crossOriginEvent2.data;
   crossOriginEvent2.origin;
-  output('Used slow mode for cross-origin message with data accessed before origin (long message): ' +
-      internals.isUseCounted(document, WebFeature.kSlowDeserialization));
-
-  internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
-  createCrossOriginIframeAndPostMessage(/* short */ true);
-  const crossOriginEvent3 = await new Promise(resolve => {
-    window.addEventListener('message', resolve, {once: true});
-  });
-  crossOriginEvent3.data;
-  crossOriginEvent3.origin;
-  output('Used slow mode for cross-origin message with data accessed before origin (short message): ' +
+  output('Used slow mode for cross-origin message with data accessed before origin: ' +
       internals.isUseCounted(document, WebFeature.kSlowDeserialization));
 
   internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
