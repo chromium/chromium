@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive суулгах</translation>
 <translation id="5067540696062462445">Татаж авсан файл</translation>
+<translation id="5070314445039955096">Таныг энэ сайтаас гарах үед "<ph name="SITE_DOMAIN" />"-н зөвшөөрлийг унтраасан болгож шинэчилнэ</translation>
 <translation id="507187271399539513">{count,plural, =1{{count}-н {position}-р төлбөрийн хэрэгсэл}other{{count}-н {position}-р төлбөрийн хэрэгсэл}}</translation>
 <translation id="5075939510584558547">Шифрлэлтгүйгээр хадгалах</translation>
 <translation id="5076534614343816664">Үнэ мөшгөх</translation>

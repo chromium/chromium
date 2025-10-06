@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">ঠিক আছে</translation>
 <translation id="5062321486222145940">Google Drive ইনষ্টল কৰক</translation>
 <translation id="5067540696062462445">ডাউনল’ড</translation>
+<translation id="5070314445039955096">আপুনি এই ছাইটটোৰ পৰা বাহিৰ ওলালে "<ph name="SITE_DOMAIN" />"ৰ অনুমতিসমূহ অফ হিচাপে ৰিছেট কৰা হ’ব</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} টা পৰিশোধ পদ্ধতিৰ {position} নম্বৰ পদ্ধতিটো}one{{count} টা পৰিশোধ পদ্ধতিৰ {position} নম্বৰ পদ্ধতিটো}other{{count} টা পৰিশোধ পদ্ধতিৰ {position} নম্বৰ পদ্ধতিটো}}</translation>
 <translation id="5075939510584558547">এনক্ৰিপশ্বনৰ অবিহনে ছেভ কৰক</translation>
 <translation id="5076534614343816664">মূল্য ট্ৰেকিং</translation>
@@ -1678,6 +1679,7 @@
 <translation id="7437712592381799950">আপোনাৰ বাবে প্ৰস্তুত কৰা অধিক সমল চাবলৈ আপুনি ওপৰলৈ ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="7438473148803748807">সকলোৱে লগে লগে “<ph name="GROUP_NAME" />" টেবৰ গোটৰ এক্সেছ হেৰুৱাব আৰু আটাইবোৰ আমন্ত্ৰণৰ লিংক অফ কৰা হ’ব</translation>
 <translation id="7438481509621345350">আপুনি এতিয়া এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
+<translation id="7445682342344043969">পপ-আপ অৱৰোধ কৰা হৈছে</translation>
 <translation id="7451023311965289370">{count,plural, =1{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}one{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}other{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}}</translation>
 <translation id="7451404862887877229">প্ৰথমে "গোপনীয়তা আৰু সুৰক্ষা"ত টিপক আৰু তাৰ পাছত "সুৰক্ষিত ব্ৰাউজিঙ"ত টিপক</translation>
 <translation id="7452393099119876789">আপুনি এইটো মাত্ৰ এবাৰহে কৰিব লাগিব।</translation>

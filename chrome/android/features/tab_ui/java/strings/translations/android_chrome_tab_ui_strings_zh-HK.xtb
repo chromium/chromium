@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> 個分頁群組已無法使用}other{<ph name="TAB_GROUPS_COUNT_MANY" /> 個分頁群組已無法使用}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">已將 <ph name="TABS_COUNT_ONE" /> 個分頁分組</translation>
+<translation id="1844381456014878100">閒置 7 天後</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="1909810060368225529">注意：所有人都能看到此共用分頁群組的變更，所有人都可以變更你的共用分頁群組</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{固定單一分頁}other{固定多個分頁}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{加去有 <ph name="TAB_COUNT1" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」群組}other{加去有 <ph name="TAB_COUNT1" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」群組}}</translation>
 <translation id="6818926723028410516">選取項目</translation>
 <translation id="6856809498882026482">隱藏多重選取模式</translation>
+<translation id="6957436309971790274">閒置 21 天後</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅共享分頁群組「<ph name="TITLE_OF_GROUP" />」，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅共享分頁群組「<ph name="TITLE_OF_GROUP" />」，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="709473454666962555">選取分頁群組</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">關於呢間商店嘅資料宜家顯示喺成個畫面</translation>
 <translation id="8053770993984522566">分頁群組清單，目前顯示於畫面下半部</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
+<translation id="8138067144082174140">閒置 14 天後</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前更新}other{<ph name="NUM_MINS_MANY" /> 分鐘前更新}}</translation>

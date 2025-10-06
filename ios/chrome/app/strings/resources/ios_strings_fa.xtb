@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">خوب</translation>
 <translation id="5062321486222145940">‏نصب Google Drive</translation>
 <translation id="5067540696062462445">بارگیری‌ها</translation>
+<translation id="5070314445039955096">هرگاه این سایت را ترک کنید، اجازه‌های «<ph name="SITE_DOMAIN" />» به حالت خاموش بازنشانی می‌شوند</translation>
 <translation id="507187271399539513">{count,plural, =1{‫{position} از {count} روش پرداخت}one{‫{position} از {count} روش پرداخت}other{‫{position} از {count} روش پرداخت}}</translation>
 <translation id="5075939510584558547">ذخیره بدون رمزگذاری</translation>
 <translation id="5076534614343816664">پیگیری قیمت</translation>

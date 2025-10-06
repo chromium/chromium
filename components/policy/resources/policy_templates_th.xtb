@@ -6769,6 +6769,21 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="5625771176514429288">แอป Chrome จะได้รับอนุญาตให้ทำงานในแพลตฟอร์มเหล่านี้</translation>
 <translation id="5627270992026554674">ไม่อนุญาตให้ครูใช้บัญชีรายชื่อของชั้นเรียนใน Google Classroom</translation>
 <translation id="5630352020869108293">คืนค่าเซสชันล่าสุด</translation>
+<translation id="5630952076819481843">การตั้งค่านโยบายนี้ช่วยให้คุณสร้างรายการรูปแบบ URL ที่ระบุเว็บไซต์ซึ่ง Chrome จะเลือกใบรับรองไคลเอ็นต์ให้โดยอัตโนมัติได้ ค่าจะเป็นอาร์เรย์ของพจนานุกรม JSON ที่มีรูปแบบเป็นสตริงซึ่งแต่ละรายการมีรูปแบบ <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> โดยที่ <ph name="URL_PATTERN_PLACEHOLDER" /> เป็นรูปแบบการตั้งค่าเนื้อหา <ph name="FILTER_PLACEHOLDER" /> จำกัดใบรับรองไคลเอ็นต์ที่เบราว์เซอร์จะเลือกโดยอัตโนมัติ ระบบจะเลือกเฉพาะใบรับรองที่ตรงกับคำขอใบรับรองของเซิร์ฟเวอร์เท่านั้น โดยไม่คำนึงถึงตัวกรอง ใน Android Chrome จะเลือกได้เฉพาะใบรับรองไคลเอ็นต์ที่จัดสรรไว้เองเท่านั้น โดยจะเข้าถึงใบรับรองที่ติดตั้งไว้ในระดับระบบปฏิบัติการไม่ได้
+
+      ตัวอย่างการใช้งานส่วน <ph name="FILTER_PLACEHOLDER" />
+
+* เมื่อตั้งค่า <ph name="FILTER_PLACEHOLDER" /> เป็น <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" /> ระบบจะเลือกเฉพาะใบรับรองไคลเอ็นต์ซึ่งออกโดยใบรับรองที่ใช้ CommonName <ph name="ISSUER_CN_PLACEHOLDER" />
+
+      * เมื่อ <ph name="FILTER_PLACEHOLDER" /> มีทั้งส่วน <ph name="ISSUER_STRING_VALUE" /> และ <ph name="SUBJECT_STRING_VALUE" /> ระบบจะเลือกเฉพาะใบรับรองไคลเอ็นต์ที่เป็นไปตามเงื่อนไขทั้ง 2 ข้อ
+
+      * เมื่อ <ph name="FILTER_PLACEHOLDER" /> มีส่วน <ph name="SUBJECT_STRING_VALUE" /> ที่มีค่า <ph name="FILTER_STRING_ORGANIZATION" /> ใบรับรองต้องมีอย่างน้อย 1 องค์กรที่ตรงกับค่าที่ระบุจึงจะได้รับเลือก
+
+      * เมื่อ <ph name="FILTER_PLACEHOLDER" /> มีส่วน <ph name="SUBJECT_STRING_VALUE" /> ที่มีค่า <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> ใบรับรองต้องมีหน่วยขององค์กรอย่างน้อย 1 หน่วยที่ตรงกับค่าที่ระบุจึงจะได้รับเลือก
+
+      * เมื่อตั้งค่า <ph name="FILTER_PLACEHOLDER" /> เป็น <ph name="EMPTY_DICTIONARY" /> การเลือกใบรับรองไคลเอ็นต์จะไม่มีข้อจำกัดเพิ่มเติม โปรดทราบว่าตัวกรองที่ได้มาจากเว็บเซิร์ฟเวอร์จะยังคงมีผลอยู่
+
+      การไม่ตั้งค่านโยบายนี้หมายความว่าจะไม่มีการเลือกอัตโนมัติสำหรับเว็บไซต์ใดก็ตาม</translation>
 <translation id="5633871703004128675">เปิดใช้ฟีเจอร์การช่วยเหลือพิเศษสำหรับการไฮไลต์เคอร์เซอร์ข้อความ</translation>
 <translation id="5634032995857968056">เปิดใช้แซนด์บ็อกซ์ของคอนเทนเนอร์แอปตัวแสดงผล</translation>
 <translation id="5638334542697444045">ไม่อนุญาตให้ผู้ใช้ใช้การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>

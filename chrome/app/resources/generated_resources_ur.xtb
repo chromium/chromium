@@ -1000,6 +1000,7 @@
 <translation id="166278006618318542">موضوع عوامی کلید الگورتھم</translation>
 <translation id="1662801900924515589"><ph name="APP" /> انسٹال ہو گئی</translation>
 <translation id="1663698992894057019">‏تازہ ترین سیکیورٹی اور سافٹ ویئر کے لیے نئے Chromebook میں اپ گریڈ کریں</translation>
+<translation id="1664497218584335032">یہ ویب سائٹ اس لنک کو ایک ایپ میں کھولنا چاہتی ہے۔</translation>
 <translation id="166454475160289583">آپ کی کی بورڈ ان پٹ کو اوور رائڈ کرنے کی اجازت نہیں ہے</translation>
 <translation id="1665328953287874063">‏اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کے لیے پاس ورڈ یا PIN کا استعمال کریں</translation>
 <translation id="1665859804801131136">اظہار پسندی</translation>
@@ -6545,10 +6546,12 @@
 <translation id="5517304475148761050">‏اس ایپ کو Play اسٹور تک رسائی درکار ہے</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">ہمیشہ اس ایپ میں <ph name="PROTOCOL_SCHEME" /> لنکس کھولیں</translation>
 <translation id="5520605865175417976">کارروائی ہٹائیں <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">کیا یہی وہ ہوم صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="5522156646677899028">اس ایکسٹینشن میں ایک سنگین سیکیورٹی خطرہ شامل ہے۔</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{آپ کے منتظم نے ایک ایکسٹینشن انسٹال کر دی ہے}other{# ایکسٹینشنز انسٹال کر دی گئی ہیں}}</translation>
+<translation id="5523203511530504754">‫<ph name="APP_NAME" /> میں <ph name="PROTOCOL_SCHEME" /> لنکس کھولیں</translation>
 <translation id="5523532775593636291">آپ جو سائٹس شامل کرتے ہیں وہ ہمیشہ فعال رہیں گی اور ان سے میموری کو خالی نہیں کیا جائے گا</translation>
 <translation id="5523558474028191231">نام میں کلمات، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے اور نام میں <ph name="MAX_CHARACTER_COUNT" /> یا اس سے کم حروف کا ہونا ضروری ہے</translation>
 <translation id="5526745900034778153">مطابقت پذیری دوبارہ شروع کرنے کیلئے دوبارہ سائن ان کریں</translation>
@@ -9576,6 +9579,7 @@
 <translation id="7663859337051362114">‏eSIM پروفائل شامل کریں</translation>
 <translation id="76641554187607347">کوئی کی بورڈ منسلک نہیں ہے</translation>
 <translation id="7664442418269614729">‏اس کارڈ کو اپنے iPhone پر استعمال کریں</translation>
+<translation id="7664822217939981459">‫<ph name="PROTOCOL_SCHEME" /> لنک کو کھولنے کیلئے کوئی ایپ منتخب کریں</translation>
 <translation id="7665082356120621510">سائز ریزرو کریں</translation>
 <translation id="7665369617277396874">اکاؤنٹ شامل کریں</translation>
 <translation id="7665445336029073980">ڈاؤن لوڈ کی مکمل سرگزشت</translation>
@@ -11197,6 +11201,7 @@
 <translation id="8750786237117206586">‏ChromeOS Flex آڈیو ترتیبات کا نظم کریں</translation>
 <translation id="8751034568832412184">اسکول</translation>
 <translation id="8751329102746373229">آپ کے منتظم کی جانب سے</translation>
+<translation id="875242763254084885">یہ سائٹ <ph name="ORIGIN" /> اس لنک کو ایک ایپ میں کھولنا چاہتی ہے۔</translation>
 <translation id="8752451679755290210">خودکار طور پر ایک آئٹم سے دوسرے آئٹم پر جائیں</translation>
 <translation id="8753948258138515839">‏فائلز ایپ ان فائلوں تک فوری رسائی فراہم کرتی ہے جنہیں آپ نے Google Drive، خارجی اسٹوریج یا اپنے ChromeOS Flex آلے پر محفوظ کیا ہے۔</translation>
 <translation id="8754200782896249056">‏&lt;p&gt;تعاون یافتہ ڈیسک ٹاپ ماحول کے تحت <ph name="PRODUCT_NAME" /> کو چلانے پر، سسٹم کی پراکسی ترتیبات استعمال کی جائیں گی۔  تاہم، یا تو آپ کا سسٹم تعاون یافتہ نہیں ہے یا آپ کے سسٹم کا کنفیگریشن شروع کرنے میں ایک مسئلہ پیش آ گیا۔&lt;/p&gt;
