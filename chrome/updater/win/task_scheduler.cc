@@ -471,7 +471,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
               }
 
               std::optional<std::wstring> new_sddl =
-                  AddCurrentUserAllowedAce(sddl.Get(), GENERIC_ALL, 0);
+                  AddCurrentUserAllowedAce(sddl.Get(), FILE_ALL_ACCESS, 0);
               if (!new_sddl) {
                 return;
               }
