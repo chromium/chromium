@@ -67,6 +67,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -458,6 +459,17 @@ public class AutofillProfilesFragmentTest {
         assertEquals(profileNameToDelete, profileToDelete.getTitle());
 
         // --- Part 1: Attempt to delete the profile, but cancel on confirmation. ---
+        HistogramWatcher deletionCanceledHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                EditorDialogView.PROFILE_DELETED_HISTOGRAM,
+                                /* value= */ false,
+                                /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                EditorDialogView.PROFILE_DELETED_SETTINGS_HISTOGRAM,
+                                /* value= */ false,
+                                /* times= */ 1)
+                        .build();
         ThreadUtils.runOnUiThreadBlocking(profileToDelete::performClick);
         EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
         rule.setEditorDialogAndWait(editorDialog);
@@ -478,8 +490,20 @@ public class AutofillProfilesFragmentTest {
         // Verify that the profile was NOT deleted.
         checkPreferenceCount(initialCount);
         assertNotNull(findPreference(profileNameToDelete));
+        deletionCanceledHistogramWatcher.assertExpected();
 
         // --- Part 2: Delete the profile and confirm it. ---
+        HistogramWatcher deletionConfirmedHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                EditorDialogView.PROFILE_DELETED_HISTOGRAM,
+                                /* value= */ true,
+                                /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                EditorDialogView.PROFILE_DELETED_SETTINGS_HISTOGRAM,
+                                /* value= */ true,
+                                /* times= */ 1)
+                        .build();
         ThreadUtils.runOnUiThreadBlocking(profileToDelete::performClick);
         rule.setEditorDialogAndWait(autofillProfileFragment.getEditorDialogForTest());
         rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
@@ -489,6 +513,7 @@ public class AutofillProfilesFragmentTest {
         // Verify that the profile IS deleted and the preference count has decreased.
         checkPreferenceCount(initialCount - 1);
         assertNull("Profile should have been deleted", findPreference(profileNameToDelete));
+        deletionConfirmedHistogramWatcher.assertExpected();
     }
 
     @Test

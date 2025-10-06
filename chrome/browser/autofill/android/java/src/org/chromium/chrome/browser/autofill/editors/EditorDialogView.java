@@ -34,10 +34,12 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
@@ -118,6 +120,13 @@ public class EditorDialogView extends AlwaysDismissedDialog
     private @Nullable Runnable mCancelRunnable;
 
     private boolean mValidateOnShow;
+
+    @VisibleForTesting
+    public static final String PROFILE_DELETED_HISTOGRAM = "Autofill.ProfileDeleted.Any";
+
+    @VisibleForTesting
+    public static final String PROFILE_DELETED_SETTINGS_HISTOGRAM =
+            "Autofill.ProfileDeleted.Settings";
 
     /**
      * Builds the editor dialog.
@@ -647,6 +656,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
                         .setNegativeButton(
                                 R.string.cancel,
                                 (dialog, which) -> {
+                                    RecordHistogram.recordBooleanHistogram(
+                                            PROFILE_DELETED_HISTOGRAM, false);
+                                    RecordHistogram.recordBooleanHistogram(
+                                            PROFILE_DELETED_SETTINGS_HISTOGRAM, false);
                                     dialog.cancel();
                                     mConfirmationDialog = null;
                                     if (sObserverForTest != null) {
@@ -656,6 +669,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
                         .setPositiveButton(
                                 primaryButtonText,
                                 (dialog, which) -> {
+                                    RecordHistogram.recordBooleanHistogram(
+                                            PROFILE_DELETED_HISTOGRAM, true);
+                                    RecordHistogram.recordBooleanHistogram(
+                                            PROFILE_DELETED_SETTINGS_HISTOGRAM, true);
                                     handleDelete();
                                     mConfirmationDialog = null;
                                 })
