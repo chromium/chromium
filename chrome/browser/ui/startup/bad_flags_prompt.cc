@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -40,6 +41,7 @@
 #include "media/media_buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -87,7 +89,6 @@ const char* const kBadFlags[] = {
 #if BUILDFLAG(IS_WIN)
     sandbox::policy::switches::kAllowThirdPartyModules,
 #endif
-    switches::kDisableSiteIsolation,
     switches::kDisableWebSecurity,
     switches::kSingleProcess,
 
@@ -207,19 +208,29 @@ const char* const kBadFlags[] = {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Dangerous feature flags in about:flags for which to display a warning that
-// "stability and security will suffer".
-static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
-    // This feature enables developer mode support for Isolated Web Apps.
-    &features::kIsolatedWebAppDevMode,
+// Dangerous flags that can be enabled in about:flags, for which to display a
+// warning that "stability and security will suffer".
+//
+// A flag should be listed here if it is available in about:flags on Android.
+// Flags that are only available on the command line and not in about:flags
+// should be listed in `kBadFlags` above, which is only checked on desktop
+// platforms. This is because command-line flags cannot be set by users on
+// non-rooted Android devices, so we avoid showing a warning for them.
+static const std::variant<const base::Feature*, const char*>
+    kBadFeatureFlagsInAboutFlags[] = {
+        // This feature enables developer mode support for Isolated Web Apps.
+        &features::kIsolatedWebAppDevMode,
+
+        // This flag disables site isolation.
+        switches::kDisableSiteIsolation,
 
 #if BUILDFLAG(IS_ANDROID)
-    &chrome::android::kCommandLineOnNonRooted,
+        &chrome::android::kCommandLineOnNonRooted,
 #endif
 
-    // This flag disables security for the Page Embedded Permission Control, for
-    // testing purposes. Can only be enabled via the command line.
-    &blink::features::kBypassPepcSecurityForTesting,
+        // This flag disables security for the Page Embedded Permission Control,
+        // for testing purposes. Can only be enabled via the command line.
+        &blink::features::kBypassPepcSecurityForTesting,
 };
 
 void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
@@ -251,15 +262,33 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents) {
   }
 #endif
 
-  for (const base::Feature* feature : kBadFeatureFlagsInAboutFlags) {
-    if (base::FeatureList::IsEnabled(*feature)) {
+  for (const auto& flag_or_feature : kBadFeatureFlagsInAboutFlags) {
+    std::string bad_flag_name = std::visit(
+        absl::Overload{[](const base::Feature* feature) -> std::string {
+                         if (feature &&
+                             base::FeatureList::IsEnabled(*feature)) {
+                           return feature->name;
+                         }
+                         return "";
+                       },
+                       [](const char* flag_name) -> std::string {
+                         if (flag_name &&
+                             base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                 flag_name)) {
+                           return flag_name;
+                         }
+                         return "";
+                       }},
+        flag_or_feature);
+
+    if (!bad_flag_name.empty()) {
 #if BUILDFLAG(IS_ANDROID)
       ShowBadFlagsSnackbar(web_contents, l10n_util::GetStringFUTF16(
                                              IDS_BAD_FEATURES_WARNING_MESSAGE,
-                                             base::UTF8ToUTF16(feature->name)));
+                                             base::UTF8ToUTF16(bad_flag_name)));
 #else
       ShowBadFlagsInfoBarHelper(web_contents, IDS_BAD_FEATURES_WARNING_MESSAGE,
-                                feature->name);
+                                bad_flag_name);
 #endif
       return;
     }

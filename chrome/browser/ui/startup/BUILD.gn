@@ -145,6 +145,7 @@ source_set("impl") {
     "//sandbox/policy",
     "//services/network/public/cpp:flags_and_switches",
     "//services/webnn:webnn_switches",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:runtime_features_for_public",
     "//ui/base",
     "//ui/gfx",
