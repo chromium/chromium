@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
@@ -57,7 +58,10 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/features.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -216,9 +220,19 @@ class IsolatedWebAppUpdateManagerBrowserTest
             .AddJs("/register-sw.js", kRegisterServiceWorkerScript)
             .AddJs("/sw.js", kServiceWorkerScript)
             .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}));
+
+    // TODO(crbug.com/426542051): Remove this when more versatile approach is
+    // implemented.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
+                    base::Version("1.0.0"),
+                    /*managed_allowlist=*/{GetWebBundleId()}),
+                HasValue());
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  base::test::ScopedFeatureList features_{
+      features::kIsolatedWebAppManagedAllowlist};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
@@ -260,6 +274,59 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
                                      /*sample=*/false, /*expected_count=*/0);
   histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
                                     /*expected_count=*/0);
+}
+
+// The case of allowlisted app being installed and updated is covered by
+// IsolatedWebAppUpdateManagerBrowserTest::Succeeds
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       NoUpdatesWhenAppNotAllowlisted) {
+  base::HistogramTester histogram_tester;
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          iwa_test_update_server_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  ASSERT_OK_AND_ASSIGN(const IsolationData& app_isolation_data,
+                       GetIsolatedWebApp(GetAppId())->isolation_data());
+  IwaVersion installed_version = app_isolation_data.version();
+
+  // Clear the allowlist, so the app is not allowlisted
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_THAT(
+        test::UpdateKeyDistributionInfoWithAllowlist(base::Version("1.0.1"),
+                                                     /*managed_allowlist=*/{}),
+        HasValue());
+  }
+
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
+
+  ASSERT_FALSE(
+      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
+          GetWebBundleId().id()));
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+
+  histogram_tester.ExpectBucketCount(
+      kIwaKeyDistributionManagedUpdateAllowedHistogramName, /*sample=*/false,
+      /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      kIwaKeyDistributionManagedUpdateAllowedHistogramName, /*sample=*/true,
+      /*expected_count=*/0);
+
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/false, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
+                                    /*expected_count=*/0);
+
+  // Check the version has not changed
+  EXPECT_EQ(app_isolation_data.version(), installed_version);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
