@@ -36,6 +36,28 @@ class PersistTabContextBrowserAgent
 
   ~PersistTabContextBrowserAgent() override;
 
+  // Type alias for the result map of GetContextsAsync. Maps each webstate
+  // unique id to an optional unique pointer holding the fetched
+  // page context. A `std::nullopt` value indicates that no context was found
+  // for the given ID.
+  using PageContextMap = std::map<
+      std::string,
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>;
+
+  // Asynchronously fetches a single page context associated with the given
+  // `webstate_unique_id`.
+  void GetSingleContextAsync(
+      const std::string& webstate_unique_id,
+      base::OnceCallback<void(std::optional<std::unique_ptr<
+                                  optimization_guide::proto::PageContext>>)>
+          callback);
+
+  // Asynchronously fetches multiple page contexts for the provided vector of
+  // `webstate_unique_ids`.
+  void GetMultipleContextsAsync(
+      const std::vector<std::string>& webstate_unique_ids,
+      base::OnceCallback<void(PageContextMap)> callback);
+
   // TabsDependencyInstaller
   void OnWebStateInserted(web::WebState* web_state) override;
   void OnWebStateRemoved(web::WebState* web_state) override;

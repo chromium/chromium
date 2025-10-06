@@ -76,7 +76,87 @@ void CreateStorageDirectory(const base::FilePath& storage_directory_path) {
   }
 }
 
+// Reads the serialized proto data from the file. Returns std::nullopt on
+// failure.
+std::optional<std::string> ReadFileContents(
+    const base::FilePath& storage_directory_path,
+    const std::string& unique_id) {
+  if (storage_directory_path.empty()) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    return std::nullopt;
+  }
+
+  base::FilePath file_path =
+      GetContextFilePath(storage_directory_path, unique_id);
+  if (!base::PathExists(file_path)) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    return std::nullopt;
+  }
+
+  std::string serialized_data;
+  if (!base::ReadFileToString(file_path, &serialized_data)) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    return std::nullopt;
+  }
+
+  return serialized_data;
+}
+
+// Parses serialized data into a PageContext proto. Returns std::nullopt on
+// failure.
+std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
+ParsePageContext(const std::string& serialized_data) {
+  auto page_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  if (!page_context->ParseFromString(serialized_data)) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    return std::nullopt;
+  }
+
+  return page_context;
+}
+
+// Reads and parses a page context from persistent storage using the given
+// `webstate_unique_id`. The context is expected to be stored in a file named
+// "page_context_<unique_id>.proto" within the profile-specific cache
+// directory.
+std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
+ReadAndParseContextFromStorage(const base::FilePath& storage_directory_path,
+                               const std::string& webstate_unique_id) {
+  std::optional<std::string> serialized_data =
+      ReadFileContents(storage_directory_path, webstate_unique_id);
+  if (!serialized_data) {
+    return std::nullopt;
+  }
+
+  std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
+      page_context = ParsePageContext(*serialized_data);
+  if (!page_context) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/445963646): Add metrics logging to browser agent. (time and
+  // success)
+
+  return page_context;
+}
+
+// Performs multiple ReadAndParseContextFromStorage calls.
+PersistTabContextBrowserAgent::PageContextMap DoMultipleContextReads(
+    const base::FilePath& storage_directory_path,
+    const std::vector<std::string>& webstate_unique_ids) {
+  PersistTabContextBrowserAgent::PageContextMap result_map;
+  for (const std::string& unique_id : webstate_unique_ids) {
+    result_map[unique_id] =
+        ReadAndParseContextFromStorage(storage_directory_path, unique_id);
+  }
+
+  return result_map;
+}
+
 }  // namespace
+
+#pragma mark - Public
 
 PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
@@ -106,59 +186,31 @@ PersistTabContextBrowserAgent::~PersistTabContextBrowserAgent() {
   web_state_observation_.Reset();
 }
 
-void PersistTabContextBrowserAgent::OnSceneActivationLevelChanged(
-    SceneActivationLevel level) {
-  if (level != SceneActivationLevelBackground) {
-    return;
-  }
-
-  web::WebState* active_web_state = web_state_observation_.GetSource();
-
-  if (active_web_state) {
-    WasHidden(active_web_state);
-  }
-}
-
-void PersistTabContextBrowserAgent::OnPageContextExtracted(
+void PersistTabContextBrowserAgent::GetSingleContextAsync(
     const std::string& webstate_unique_id,
-    PageContextWrapperCallbackResponse response) {
-  if (!response.has_value()) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
-    return;
-  }
-  // TODO(crbug.com/445963646): Add metrics logging to browser agent.
-
-  std::string serialized_page_context;
-  response.value()->SerializeToString(&serialized_page_context);
-
-  task_runner_->PostTask(
+    base::OnceCallback<void(
+        std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
+        callback) {
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&WriteContextToStorage, std::move(serialized_page_context),
-                     webstate_unique_id, storage_directory_path_));
+      base::BindOnce(&ReadAndParseContextFromStorage, storage_directory_path_,
+                     webstate_unique_id),
+      std::move(callback));
 }
 
-void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
-  if (!web_state) {
+void PersistTabContextBrowserAgent::GetMultipleContextsAsync(
+    const std::vector<std::string>& webstate_unique_ids,
+    base::OnceCallback<void(PageContextMap)> callback) {
+  if (webstate_unique_ids.empty()) {
+    std::move(callback).Run({});
     return;
   }
 
-  // Cancel any ongoing page context operation.
-  if (page_context_wrapper_) {
-    page_context_wrapper_ = nil;
-  }
-
-  std::string webstate_unique_id =
-      base::NumberToString(web_state->GetUniqueIdentifier().identifier());
-
-  page_context_wrapper_ = [[PageContextWrapper alloc]
-        initWithWebState:web_state
-      completionCallback:
-          base::BindOnce(&PersistTabContextBrowserAgent::OnPageContextExtracted,
-                         weak_factory_.GetWeakPtr(), webstate_unique_id)];
-  [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
-  [page_context_wrapper_ setShouldGetInnerText:YES];
-  [page_context_wrapper_ setIsLowPriorityExtraction:YES];
-  [page_context_wrapper_ populatePageContextFieldsAsync];
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DoMultipleContextReads, storage_directory_path_,
+                     webstate_unique_ids),
+      base::BindOnce(std::move(callback)));
 }
 
 void PersistTabContextBrowserAgent::OnWebStateInserted(
@@ -192,4 +244,61 @@ void PersistTabContextBrowserAgent::OnActiveWebStateChanged(
   if (new_active) {
     web_state_observation_.Observe(new_active);
   }
+}
+
+#pragma mark - WebStateObserver
+
+void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
+  if (!web_state) {
+    return;
+  }
+
+  // Cancel any ongoing page context operation.
+  if (page_context_wrapper_) {
+    page_context_wrapper_ = nil;
+  }
+
+  std::string webstate_unique_id =
+      base::NumberToString(web_state->GetUniqueIdentifier().identifier());
+
+  page_context_wrapper_ = [[PageContextWrapper alloc]
+        initWithWebState:web_state
+      completionCallback:
+          base::BindOnce(&PersistTabContextBrowserAgent::OnPageContextExtracted,
+                         weak_factory_.GetWeakPtr(), webstate_unique_id)];
+  [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
+  [page_context_wrapper_ setShouldGetInnerText:YES];
+  [page_context_wrapper_ setIsLowPriorityExtraction:YES];
+  [page_context_wrapper_ populatePageContextFieldsAsync];
+}
+
+#pragma mark - Private
+
+void PersistTabContextBrowserAgent::OnSceneActivationLevelChanged(
+    SceneActivationLevel level) {
+  if (level != SceneActivationLevelBackground) {
+    return;
+  }
+
+  web::WebState* active_web_state = web_state_observation_.GetSource();
+
+  if (active_web_state) {
+    WasHidden(active_web_state);
+  }
+}
+
+void PersistTabContextBrowserAgent::OnPageContextExtracted(
+    const std::string& webstate_unique_id,
+    PageContextWrapperCallbackResponse response) {
+  if (!response.has_value()) {
+    return;
+  }
+
+  std::string serialized_page_context;
+  response.value()->SerializeToString(&serialized_page_context);
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WriteContextToStorage, std::move(serialized_page_context),
+                     webstate_unique_id, storage_directory_path_));
 }
