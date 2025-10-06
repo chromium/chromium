@@ -287,7 +287,7 @@ bool IsShopCardImpressionLimitsEnabled() {
 
 int GetImpressionLimit() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      commerce::kShopCard, commerce::kShopCardMaxImpressions,
+      commerce::kTabResumptionShopCard, commerce::kShopCardMaxImpressions,
       kShopCardMaxImpressions);
 }
 

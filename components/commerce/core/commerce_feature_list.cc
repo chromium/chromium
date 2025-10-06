@@ -153,9 +153,8 @@ BASE_FEATURE(kDiscountAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 // Promotion in Magic Stack for Price Tracking users from other platforms.
 BASE_FEATURE(kPriceTrackingPromo, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// ShopCard in Magic Stack, including shopping features like price drop,
-// reviews, etc.
-BASE_FEATURE(kShopCard, base::FEATURE_DISABLED_BY_DEFAULT);
+// Shopping variations to Tab resumption.
+BASE_FEATURE(kTabResumptionShopCard, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Impression limits on ShopCards
 BASE_FEATURE(kShopCardImpressionLimits, base::FEATURE_DISABLED_BY_DEFAULT);

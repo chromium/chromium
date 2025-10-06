@@ -129,7 +129,7 @@ NSString* HostnameFromGURL(GURL URL) {
   // Relaunching the app undoes the mock setup for shopping_service in setUp
   // For the relaunch cases, explicitly disabling ShopCard so the tests can
   // continue without waiting for the async callback.
-  config.features_disabled.push_back(commerce::kShopCard);
+  config.features_disabled.push_back(commerce::kTabResumptionShopCard);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
