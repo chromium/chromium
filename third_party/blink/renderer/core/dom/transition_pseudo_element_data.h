@@ -23,10 +23,10 @@ class TransitionPseudoElementData final
 
   void SetPseudoElement(PseudoId,
                         PseudoElement*,
-                        const AtomicString& view_transition_name = g_null_atom);
+                        const AtomicString& pseudo_argument = g_null_atom);
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& view_transition_name = g_null_atom) const;
+      const AtomicString& pseudo_argument = g_null_atom) const;
 
   void AddPseudoElements(HeapVector<Member<PseudoElement>, 2>* result) const;
 
@@ -60,19 +60,19 @@ inline void TransitionPseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdViewTransition, nullptr);
   SetPseudoElement(kPseudoIdViewTransitionGroupChildren, nullptr,
                    transition_nested_groups_
-                       ? transition_nested_groups_->view_transition_name()
+                       ? transition_nested_groups_->GetPseudoArgument()
                        : g_null_atom);
   SetPseudoElement(kPseudoIdViewTransitionImagePair, nullptr,
                    transition_image_wrapper_
-                       ? transition_image_wrapper_->view_transition_name()
+                       ? transition_image_wrapper_->GetPseudoArgument()
                        : g_null_atom);
   SetPseudoElement(kPseudoIdViewTransitionOld, nullptr,
                    transition_outgoing_image_
-                       ? transition_outgoing_image_->view_transition_name()
+                       ? transition_outgoing_image_->GetPseudoArgument()
                        : g_null_atom);
   SetPseudoElement(kPseudoIdViewTransitionNew, nullptr,
                    transition_incoming_image_
-                       ? transition_incoming_image_->view_transition_name()
+                       ? transition_incoming_image_->GetPseudoArgument()
                        : g_null_atom);
 
   for (auto& entry : transition_containers_)
@@ -91,29 +91,25 @@ inline void TransitionPseudoElementData::SetPseudoElement(
       transition_ = element;
       break;
     case kPseudoIdViewTransitionImagePair:
-      DCHECK(!element ||
-             element->view_transition_name() == view_transition_name);
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
       transition_image_wrapper_ = element;
       break;
     case kPseudoIdViewTransitionGroupChildren:
-      DCHECK(!element ||
-             element->view_transition_name() == view_transition_name);
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
       transition_nested_groups_ = element;
       break;
     case kPseudoIdViewTransitionOld:
-      DCHECK(!element ||
-             element->view_transition_name() == view_transition_name);
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
       transition_outgoing_image_ = element;
       break;
     case kPseudoIdViewTransitionNew:
-      DCHECK(!element ||
-             element->view_transition_name() == view_transition_name);
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
       transition_incoming_image_ = element;
       break;
     case kPseudoIdViewTransitionGroup: {
       DCHECK(view_transition_name);
       if (element) {
-        DCHECK_EQ(element->view_transition_name(), view_transition_name);
+        DCHECK_EQ(element->GetPseudoArgument(), view_transition_name);
         transition_containers_.Set(view_transition_name, element);
       } else {
         transition_containers_.erase(view_transition_name);
@@ -136,22 +132,22 @@ inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
       return transition_.Get();
     case kPseudoIdViewTransitionImagePair:
       DCHECK(!transition_image_wrapper_ || !view_transition_name ||
-             transition_image_wrapper_->view_transition_name() ==
+             transition_image_wrapper_->GetPseudoArgument() ==
                  view_transition_name);
       return transition_image_wrapper_.Get();
     case kPseudoIdViewTransitionGroupChildren:
       DCHECK(!transition_nested_groups_ || !view_transition_name ||
-             transition_nested_groups_->view_transition_name() ==
+             transition_nested_groups_->GetPseudoArgument() ==
                  view_transition_name);
       return transition_nested_groups_.Get();
     case kPseudoIdViewTransitionOld:
       DCHECK(!transition_outgoing_image_ || !view_transition_name ||
-             transition_outgoing_image_->view_transition_name() ==
+             transition_outgoing_image_->GetPseudoArgument() ==
                  view_transition_name);
       return transition_outgoing_image_.Get();
     case kPseudoIdViewTransitionNew:
       DCHECK(!transition_incoming_image_ || !view_transition_name ||
-             transition_incoming_image_->view_transition_name() ==
+             transition_incoming_image_->GetPseudoArgument() ==
                  view_transition_name);
       return transition_incoming_image_.Get();
     case kPseudoIdViewTransitionGroup: {

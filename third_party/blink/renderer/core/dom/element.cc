@@ -9333,8 +9333,8 @@ void Element::CancelSelectionAfterLayout() {
 
 bool Element::ShouldUpdateBackdropPseudoElement(
     const StyleRecalcChange change) {
-  PseudoElement* element = GetPseudoElement(
-      PseudoId::kPseudoIdBackdrop, /* view_transition_name */ g_null_atom);
+  PseudoElement* element = GetPseudoElement(PseudoId::kPseudoIdBackdrop,
+                                            /* pseudo_argument */ g_null_atom);
   bool generate_pseudo = CanGeneratePseudoElement(PseudoId::kPseudoIdBackdrop);
 
   if (element) {
@@ -9371,15 +9371,15 @@ void Element::UpdateBackdropPseudoElement(
 }
 
 void Element::ApplyPendingBackdropPseudoElementUpdate() {
-  PseudoElement* element = GetPseudoElement(
-      PseudoId::kPseudoIdBackdrop, /* view_transition_name */ g_null_atom);
+  PseudoElement* element = GetPseudoElement(PseudoId::kPseudoIdBackdrop,
+                                            /* pseudo_argument */ g_null_atom);
 
   if (!element && CanGeneratePseudoElement(PseudoId::kPseudoIdBackdrop)) {
     element = PseudoElement::Create(this, PseudoId::kPseudoIdBackdrop,
-                                    /* view_transition_name */ g_null_atom);
-    EnsureElementRareData().SetPseudoElement(
-        PseudoId::kPseudoIdBackdrop, element,
-        /* view_transition_name */ g_null_atom);
+                                    /* pseudo_argument */ g_null_atom);
+    EnsureElementRareData().SetPseudoElement(PseudoId::kPseudoIdBackdrop,
+                                             element,
+                                             /* pseudo_argument */ g_null_atom);
     element->InsertedInto(*this);
     GetDocument().AddToTopLayer(element, this);
   }
@@ -9504,9 +9504,8 @@ void Element::UpdateFirstLetterPseudoElement(
 }
 
 void Element::ClearPseudoElement(PseudoId pseudo_id,
-                                 const AtomicString& view_transition_name) {
-  GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
-                                         view_transition_name);
+                                 const AtomicString& pseudo_argument) {
+  GetElementRareData()->SetPseudoElement(pseudo_id, nullptr, pseudo_argument);
   GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
 }
 
@@ -9563,11 +9562,11 @@ PseudoElement* Element::UpdatePseudoElement(
     PseudoId pseudo_id,
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context,
-    const AtomicString& view_transition_name) {
-  PseudoElement* element = GetPseudoElement(pseudo_id, view_transition_name);
+    const AtomicString& pseudo_argument) {
+  PseudoElement* element = GetPseudoElement(pseudo_id, pseudo_argument);
   if (!element) {
     if ((element = CreatePseudoElementIfNeeded(pseudo_id, style_recalc_context,
-                                               view_transition_name))) {
+                                               pseudo_argument))) {
       // ::before and ::after can have a nested ::marker
       element->CreatePseudoElementIfNeeded(kPseudoIdMarker,
                                            style_recalc_context);
@@ -9606,7 +9605,7 @@ PseudoElement* Element::UpdatePseudoElement(
       }
     }
     if (!generate_pseudo) {
-      ClearPseudoElement(pseudo_id, view_transition_name);
+      ClearPseudoElement(pseudo_id, pseudo_argument);
       element = nullptr;
     }
   }
@@ -9617,7 +9616,7 @@ PseudoElement* Element::UpdatePseudoElement(
 PseudoElement* Element::CreatePseudoElementIfNeeded(
     PseudoId pseudo_id,
     const StyleRecalcContext& style_recalc_context,
-    const AtomicString& view_transition_name) {
+    const AtomicString& pseudo_argument) {
   if (!CanGeneratePseudoElement(pseudo_id)) {
     return nullptr;
   }
@@ -9633,7 +9632,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
   }
 
   PseudoElement* pseudo_element =
-      PseudoElement::Create(this, pseudo_id, view_transition_name);
+      PseudoElement::Create(this, pseudo_id, pseudo_argument);
   if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
     if (!pseudo_element) {
       // TODO(crbug.com/405117185): Replace with DCHECK(pseudo_element) once we
@@ -9642,14 +9641,13 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     }
   }
   EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element,
-                                           view_transition_name);
+                                           pseudo_argument);
   pseudo_element->InsertedInto(*this);
 
   const ComputedStyle* pseudo_style =
       pseudo_element->StyleForLayoutObject(style_recalc_context);
   if (!PseudoElementLayoutObjectIsNeeded(pseudo_id, pseudo_style, this)) {
-    GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
-                                           view_transition_name);
+    GetElementRareData()->SetPseudoElement(pseudo_id, nullptr, pseudo_argument);
     // If the content property is relying on attr() we should add the
     // originating element's ComputedStyle to the pseudo-element style cache, so
     // that when attribute value changes it will force style invalidation.
@@ -9703,9 +9701,9 @@ void Element::DetachPseudoElement(PseudoId pseudo_id,
 
 PseudoElement* Element::GetPseudoElement(
     PseudoId pseudo_id,
-    const AtomicString& view_transition_name) const {
+    const AtomicString& pseudo_argument) const {
   if (ElementRareDataVector* data = GetElementRareData()) {
-    return data->GetPseudoElement(pseudo_id, view_transition_name);
+    return data->GetPseudoElement(pseudo_id, pseudo_argument);
   }
   return nullptr;
 }
@@ -9745,10 +9743,9 @@ bool Element::HasScrollButtonOrMarkerGroupPseudos() const {
 
 Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
-    const AtomicString& view_transition_name) const {
+    const AtomicString& pseudo_argument) const {
   if (!IsTransitionPseudoElement(pseudo_id)) {
-    if (PseudoElement* result =
-            GetPseudoElement(pseudo_id, view_transition_name)) {
+    if (PseudoElement* result = GetPseudoElement(pseudo_id, pseudo_argument)) {
       return result;
     }
     const AtomicString& pseudo_string =
@@ -9790,27 +9787,27 @@ Element* Element::GetStyledPseudoElement(
 
   auto* container_pseudo =
       To<ViewTransitionTransitionElement>(transition_pseudo)
-          ->FindViewTransitionGroupPseudoElement(view_transition_name);
+          ->FindViewTransitionGroupPseudoElement(pseudo_argument);
   if (!container_pseudo || pseudo_id == kPseudoIdViewTransitionGroup) {
     return container_pseudo;
   }
 
   if (pseudo_id == kPseudoIdViewTransitionGroupChildren) {
-    return container_pseudo->GetPseudoElement(pseudo_id, view_transition_name);
+    return container_pseudo->GetPseudoElement(pseudo_id, pseudo_argument);
   }
 
   auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
-      kPseudoIdViewTransitionImagePair, view_transition_name);
+      kPseudoIdViewTransitionImagePair, pseudo_argument);
   if (!wrapper_pseudo || pseudo_id == kPseudoIdViewTransitionImagePair) {
     return wrapper_pseudo;
   }
 
-  return wrapper_pseudo->GetPseudoElement(pseudo_id, view_transition_name);
+  return wrapper_pseudo->GetPseudoElement(pseudo_id, pseudo_argument);
 }
 
 LayoutObject* Element::PseudoElementLayoutObject(PseudoId pseudo_id) const {
-  if (Element* element = GetStyledPseudoElement(
-          pseudo_id, /*view_transition_name*/ g_null_atom)) {
+  if (Element* element =
+          GetStyledPseudoElement(pseudo_id, /*pseudo_argument*/ g_null_atom)) {
     return element->GetLayoutObject();
   }
   return nullptr;

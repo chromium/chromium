@@ -241,16 +241,17 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       // Iterate the list of IDs until we hit the entry for |node's| ID. The
       // sibling is the next ID in the list which generates a pseudo-element.
       bool found = false;
-      for (const auto& view_transition_name :
+      for (const auto& pseudo_argument :
            parent_pseudo->GetContainedViewTransitionNames()) {
         if (!found) {
-          if (view_transition_name == pseudo_element->view_transition_name())
+          if (pseudo_argument == pseudo_element->view_transition_name()) {
             found = true;
+          }
           continue;
         }
 
         if (auto* sibling = parent_element->GetPseudoElement(
-                kPseudoIdViewTransitionGroup, view_transition_name)) {
+                kPseudoIdViewTransitionGroup, pseudo_argument)) {
           return sibling;
         }
       }

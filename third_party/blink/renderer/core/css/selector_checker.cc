@@ -2233,9 +2233,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         DCHECK((transition->Scope() == &element && context.pseudo_id) ||
                element.IsPseudoElement());
         DCHECK(context.pseudo_argument || element.IsPseudoElement());
-        const AtomicString& pseudo_argument = element.IsPseudoElement()
-                                                  ? element.GetPseudoArgument()
-                                                  : *context.pseudo_argument;
+        const AtomicString& pseudo_argument =
+            element.IsPseudoElement()
+                ? To<PseudoElement>(element).GetPseudoArgument()
+                : *context.pseudo_argument;
         return transition->MatchForOnlyChild(pseudo_id_to_check,
                                              pseudo_argument);
       }
@@ -3147,9 +3148,10 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       CHECK(!selector.IdentList().empty());
       const AtomicString& name_or_wildcard = selector.IdentList()[0];
 
-      const String& pseudo_argument = element.IsPseudoElement()
-                                          ? element.GetPseudoArgument()
-                                          : pseudo_argument_;
+      const String& pseudo_argument =
+          element.IsPseudoElement()
+              ? To<PseudoElement>(element).GetPseudoArgument()
+              : pseudo_argument_;
       // note that the pseudo_ident_list is the class list, and
       // pseudo_argument is the name, while in the selector the IdentList() is
       // both the name and the classes.

@@ -194,7 +194,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   RuleIndexList* PseudoCSSRulesForElement(
       Element*,
       PseudoId,
-      const AtomicString& view_transition_name,
+      const AtomicString& pseudo_argument,
       unsigned rules_to_include = kAllCSSRules);
   // Note that StyleRulesForElement will behave as if all links are
   // unvisited; the :visited pseudo-class will never match.
@@ -323,7 +323,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void CollectPseudoRulesForElement(const Element&,
                                     ElementRuleCollector&,
                                     PseudoId,
-                                    const AtomicString& view_transition_name,
+                                    const AtomicString& pseudo_argument,
                                     unsigned rules_to_include);
   void MatchUARules(const Element&, ElementRuleCollector&);
   void MatchUserRules(ElementRuleCollector&);

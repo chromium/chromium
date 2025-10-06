@@ -501,7 +501,7 @@ Node* Node::PseudoAwarePreviousSibling() const {
       CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
       return parent->GetPseudoElement(
           kPseudoIdViewTransitionOld,
-          To<PseudoElement>(this)->view_transition_name());
+          To<ViewTransitionPseudoElementBase>(this)->view_transition_name());
     case kPseudoIdViewTransitionGroup: {
       auto* pseudo = To<ViewTransitionPseudoElementBase>(this);
       auto* parent_pseudo = To<ViewTransitionPseudoElementBase>(parent);
@@ -519,7 +519,7 @@ Node* Node::PseudoAwarePreviousSibling() const {
       CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionGroup);
       return parent->GetPseudoElement(
           kPseudoIdViewTransitionImagePair,
-          To<PseudoElement>(this)->view_transition_name());
+          To<ViewTransitionPseudoElementBase>(this)->view_transition_name());
     case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionOld:
       return nullptr;
@@ -628,7 +628,7 @@ Node* Node::PseudoAwareNextSibling() const {
       CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
       return parent->GetPseudoElement(
           kPseudoIdViewTransitionNew,
-          To<PseudoElement>(this)->view_transition_name());
+          To<ViewTransitionPseudoElementBase>(this)->view_transition_name());
     case kPseudoIdViewTransitionGroup: {
       auto* pseudo = To<ViewTransitionPseudoElementBase>(this);
       auto* parent_pseudo = To<ViewTransitionPseudoElementBase>(parent);
@@ -646,7 +646,7 @@ Node* Node::PseudoAwareNextSibling() const {
       CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionGroup);
       return parent->GetPseudoElement(
           kPseudoIdViewTransitionGroupChildren,
-          To<PseudoElement>(this)->view_transition_name());
+          To<ViewTransitionPseudoElementBase>(this)->view_transition_name());
     case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionNew:
       return nullptr;
@@ -671,11 +671,11 @@ Node* Node::PseudoAwareFirstChild() const {
     if (GetPseudoId() == kPseudoIdViewTransitionGroup) {
       return current_element->GetPseudoElement(
           kPseudoIdViewTransitionImagePair,
-          To<PseudoElement>(this)->view_transition_name());
+          To<ViewTransitionPseudoElementBase>(this)->view_transition_name());
     }
     if (GetPseudoId() == kPseudoIdViewTransitionImagePair) {
       const AtomicString& name =
-          To<PseudoElement>(this)->view_transition_name();
+          To<ViewTransitionPseudoElementBase>(this)->view_transition_name();
       if (Node* first = current_element->GetPseudoElement(
               kPseudoIdViewTransitionOld, name)) {
         return first;
@@ -772,16 +772,16 @@ Node* Node::PseudoAwareLastChild() const {
                .empty()) {
         return current_element->GetPseudoElement(
             kPseudoIdViewTransitionGroupChildren,
-            To<PseudoElement>(this)->view_transition_name());
+            To<ViewTransitionPseudoElementBase>(this)->view_transition_name());
       } else {
         return current_element->GetPseudoElement(
             kPseudoIdViewTransitionImagePair,
-            To<PseudoElement>(this)->view_transition_name());
+            To<ViewTransitionPseudoElementBase>(this)->view_transition_name());
       }
     }
     if (GetPseudoId() == kPseudoIdViewTransitionImagePair) {
       const AtomicString& name =
-          To<PseudoElement>(this)->view_transition_name();
+          To<ViewTransitionPseudoElementBase>(this)->view_transition_name();
       if (Node* last = current_element->GetPseudoElement(
               kPseudoIdViewTransitionNew, name)) {
         return last;

@@ -41,6 +41,10 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
 
   const AtomicString& GetContainingGroupName(const AtomicString& target) const;
 
+  const AtomicString& view_transition_name() const {
+    return GetPseudoArgument();
+  }
+
  protected:
   Vector<AtomicString> view_transition_class_;
   Member<const ViewTransitionStyleTracker> style_tracker_;

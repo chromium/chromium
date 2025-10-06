@@ -898,7 +898,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     for (const auto& matched_rules : parent_resolver.PseudoElementRules()) {
       if (matched_rules->pseudo_id != test_case.pseudo_id)
         continue;
-      if (matched_rules->view_transition_name == "root") {
+      if (matched_rules->pseudo_argument == "root") {
         EXPECT_FALSE(found_rule_for_root);
         found_rule_for_root = true;
         continue;
@@ -912,7 +912,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     // Pseudo-elements which are generated for each tag should include the root
     // by default.
     EXPECT_EQ(found_rule_for_root, test_case.uses_tags);
-    EXPECT_EQ(matched_rules_for_pseudo->view_transition_name,
+    EXPECT_EQ(matched_rules_for_pseudo->pseudo_argument,
               test_case.uses_tags ? AtomicString("foo") : g_null_atom);
 
     auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;

@@ -1327,7 +1327,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 
   // Returns the pseudo-element for the given PseudoId type.
-  // |view_transition_name| is used to uniquely identify a pseudo-element
+  // |pseudo_argument| is used to uniquely identify a pseudo-element
   // from a set of pseudo-elements which share the same |pseudo_id|. The current
   // usage of this ID is limited to pseudo-elements generated for a
   // ViewTransition. See
@@ -1336,7 +1336,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Also see GetStyledPseudoElement() below.
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& view_transition_name = g_null_atom) const;
+      const AtomicString& pseudo_argument = g_null_atom) const;
   LayoutObject* PseudoElementLayoutObject(PseudoId) const;
   CSSPseudoElement* pseudo(const AtomicString& type);
 
@@ -1684,7 +1684,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   std::optional<LayoutUnit> LastRememberedBlockSize() const;
 
   // Returns the element that represents the given |pseudo_id| and
-  // |view_transition_name| originating from this DOM element.  The
+  // |pseudo_argument| originating from this DOM element.  The
   // returned element may be a PseudoElement, or (for element-backed
   // pseudo-elements) an Element.
   //
@@ -1694,9 +1694,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   //
   // Callers that need to deal with all CSS pseudo-elements should use
   // this rather than GetPseudoElement().
-  Element* GetStyledPseudoElement(
-      PseudoId pseudo_id,
-      const AtomicString& view_transition_name) const;
+  Element* GetStyledPseudoElement(PseudoId pseudo_id,
+                                  const AtomicString& pseudo_argument) const;
 
   // Performs an incremental update of the view-transition pseudo-elements.
   void UpdateTransitionPseudoElements(const StyleRecalcChange,
@@ -1947,9 +1946,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetElementFlag(ElementFlags, bool value = true);
   void ClearElementFlag(ElementFlags);
 
-  void ClearPseudoElement(
-      PseudoId,
-      const AtomicString& view_transition_name = g_null_atom);
+  void ClearPseudoElement(PseudoId,
+                          const AtomicString& pseudo_argument = g_null_atom);
 
   bool IsElementNode() const =
       delete;  // This will catch anyone doing an unnecessary check.
@@ -2047,7 +2045,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       PseudoId,
       const StyleRecalcChange,
       const StyleRecalcContext&,
-      const AtomicString& view_transition_name = g_null_atom);
+      const AtomicString& pseudo_argument = g_null_atom);
   enum class StyleUpdatePhase {
     kRecalc,
     kRebuildLayoutTree,
@@ -2069,7 +2067,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   inline PseudoElement* CreatePseudoElementIfNeeded(
       PseudoId,
       const StyleRecalcContext&,
-      const AtomicString& view_transition_name = g_null_atom);
+      const AtomicString& pseudo_argument = g_null_atom);
 
   // For document element scroll control pseudo-elements become not layout
   // siblings, but layout children.

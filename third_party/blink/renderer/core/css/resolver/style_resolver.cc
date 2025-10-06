@@ -2459,7 +2459,7 @@ Element* StyleResolver::FindContainerForElement(
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
     Element* element,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_name,
+    const AtomicString& pseudo_argument,
     unsigned rules_to_include) {
   if (!element || !element->isConnected()) {
     return nullptr;
@@ -2472,8 +2472,8 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
                                  selector_filter_, match_result,
                                  state.ElementLinkState());
   collector.SetMode(SelectorChecker::kCollectingCSSRules);
-  CollectPseudoRulesForElement(*element, collector, pseudo_id,
-                               view_transition_name, rules_to_include);
+  CollectPseudoRulesForElement(*element, collector, pseudo_id, pseudo_argument,
+                               rules_to_include);
 
   if (tracker_) {
     AddMatchedRulesToTracker(collector);
@@ -2491,12 +2491,12 @@ void StyleResolver::CollectPseudoRulesForElement(
     const Element& element,
     ElementRuleCollector& collector,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_name,
+    const AtomicString& pseudo_argument,
     unsigned rules_to_include) {
   StyleRequest style_request{pseudo_id,
                              /* parent_style */ nullptr,
                              /* originating_element_style */ nullptr,
-                             view_transition_name};
+                             pseudo_argument};
   if (pseudo_id == kPseudoIdSearchText) {
     // TODO(crbug.com/339298411): handle :current?
     style_request.search_text_request = StyleRequest::kNotCurrent;
@@ -2510,7 +2510,7 @@ void StyleResolver::CollectPseudoRulesForElement(
     if (view_transition_element) {
       auto* view_transition_group_element =
           view_transition_element->GetPseudoElement(
-              kPseudoIdViewTransitionGroup, view_transition_name);
+              kPseudoIdViewTransitionGroup, pseudo_argument);
       if (view_transition_group_element) {
         style_request.pseudo_ident_list =
             To<ViewTransitionPseudoElementBase>(*view_transition_group_element)

@@ -41,7 +41,7 @@ class InspectorCSSAgentTest : public PageTestBase {
                                              ASSERT_NO_EXCEPTION);
     CHECK(e);
     InspectorStyleResolver resolver(e, kPseudoIdNone,
-                                    /*view_transition_name=*/g_null_atom);
+                                    /*pseudo_argument=*/g_null_atom);
 
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
         function_rules;

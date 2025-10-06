@@ -23,10 +23,10 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
   void SetPseudoElement(PseudoId,
                         PseudoElement*,
-                        const AtomicString& view_transition_name = g_null_atom);
+                        const AtomicString& pseudo_argument = g_null_atom);
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& view_transition_name = g_null_atom) const;
+      const AtomicString& pseudo_argument = g_null_atom) const;
 
   bool HasScrollButtonOrMarkerGroupPseudos() const;
 
@@ -157,7 +157,7 @@ inline void PseudoElementData::ClearPseudoElements() {
 inline void PseudoElementData::SetPseudoElement(
     PseudoId pseudo_id,
     PseudoElement* element,
-    const AtomicString& view_transition_name) {
+    const AtomicString& pseudo_argument) {
   PseudoElement* previous_element = nullptr;
   switch (pseudo_id) {
     case kPseudoIdCheckMark:
@@ -229,8 +229,7 @@ inline void PseudoElementData::SetPseudoElement(
       if (element && !transition_data_)
         transition_data_ = MakeGarbageCollected<TransitionPseudoElementData>();
       if (transition_data_) {
-        transition_data_->SetPseudoElement(pseudo_id, element,
-                                           view_transition_name);
+        transition_data_->SetPseudoElement(pseudo_id, element, pseudo_argument);
         if (!transition_data_->HasPseudoElements())
           transition_data_ = nullptr;
       }
@@ -245,7 +244,7 @@ inline void PseudoElementData::SetPseudoElement(
 
 inline PseudoElement* PseudoElementData::GetPseudoElement(
     PseudoId pseudo_id,
-    const AtomicString& view_transition_name) const {
+    const AtomicString& pseudo_argument) const {
   if (kPseudoIdCheckMark == pseudo_id) {
     return generated_check_.Get();
   }
@@ -292,9 +291,9 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   if (kPseudoIdFirstLetter == pseudo_id)
     return generated_first_letter_.Get();
   if (IsTransitionPseudoElement(pseudo_id)) {
-    return transition_data_ ? transition_data_->GetPseudoElement(
-                                  pseudo_id, view_transition_name)
-                            : nullptr;
+    return transition_data_
+               ? transition_data_->GetPseudoElement(pseudo_id, pseudo_argument)
+               : nullptr;
   }
   return nullptr;
 }

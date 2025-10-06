@@ -185,7 +185,7 @@ class FrontendOperationScope {
 Element* GetPseudoIdAndTag(Element* element,
                            PseudoElement*& pseudo_element,
                            PseudoId& element_pseudo_id,
-                           AtomicString& view_transition_name) {
+                           AtomicString& pseudo_argument) {
   auto* resolved_element = element;
   auto* try_pseudo = DynamicTo<PseudoElement>(element);
   bool is_transition =
@@ -212,7 +212,7 @@ Element* GetPseudoIdAndTag(Element* element,
       return nullptr;
 
     element_pseudo_id = pseudo_element->GetPseudoIdForStyling();
-    view_transition_name = pseudo_element->view_transition_name();
+    pseudo_argument = pseudo_element->GetPseudoArgument();
   }
   return resolved_element;
 }
@@ -1364,13 +1364,13 @@ protocol::Response InspectorCSSAgent::getAnimatedStylesForNode(
 
   Element* animating_element = element;
   PseudoId element_pseudo_id = kPseudoIdNone;
-  AtomicString view_transition_name = g_null_atom;
+  AtomicString pseudo_argument = g_null_atom;
   PseudoElement* pseudo_element = nullptr;
   // If the requested element is a view transition pseudo-element, `element`
   // becomes the first non-pseudo parent element or shadow host element after
   // `GetPseudoIdAndTag` call below.
   element = GetPseudoIdAndTag(element, pseudo_element, element_pseudo_id,
-                              view_transition_name);
+                              pseudo_argument);
   if (!element) {
     return protocol::Response::ServerError("Pseudo element has no parent");
   }
@@ -1442,13 +1442,13 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   Element* animating_element = element;
 
   PseudoId element_pseudo_id = kPseudoIdNone;
-  AtomicString view_transition_name = g_null_atom;
+  AtomicString pseudo_argument = g_null_atom;
   // If the requested element is a view transition pseudo-element, `element`
   // becomes the first non-pseudo parent element or shadow host element after
   // `GetPseudoIdAndTag` call below.
   PseudoElement* pseudo_element = nullptr;
   element = GetPseudoIdAndTag(element, pseudo_element, element_pseudo_id,
-                              view_transition_name);
+                              pseudo_argument);
   if (!element)
     return protocol::Response::ServerError("Pseudo element has no parent");
 
@@ -1477,13 +1477,12 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &document, /*within_selector_checking=*/false);
-  InspectorStyleResolver resolver(element, element_pseudo_id,
-                                  view_transition_name);
+  InspectorStyleResolver resolver(element, element_pseudo_id, pseudo_argument);
 
   // Matched rules.
   *matched_css_rules = BuildArrayForMatchedRuleList(
       resolver.MatchedRules(), element, ghost_rules, element_pseudo_id,
-      view_transition_name);
+      pseudo_argument);
 
   // Inherited styles.
   *inherited_entries =
@@ -1493,7 +1492,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         protocol::CSS::InheritedStyleEntry::create()
             .setMatchedCSSRules(BuildArrayForMatchedRuleList(
                 match->matched_rules, element, ghost_rules, element_pseudo_id,
-                view_transition_name))
+                pseudo_argument))
             .build();
     if (match->element->style() && match->element->style()->length()) {
       InspectorStyleSheetForInlineStyle* style_sheet =
@@ -1501,7 +1500,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       if (style_sheet) {
         entry->setInlineStyle(style_sheet->BuildObjectForStyle(
             style_sheet->InlineStyle(), element, element_pseudo_id,
-            view_transition_name));
+            pseudo_argument));
       }
     }
     (*inherited_entries)->emplace_back(std::move(entry));
@@ -1544,12 +1543,10 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
                     match->pseudo_id))
                 .setMatches(BuildArrayForMatchedRuleList(
                     match->matched_rules, element, ghost_rules,
-                    match->pseudo_id, match->view_transition_name))
+                    match->pseudo_id, match->pseudo_argument))
                 .build());
-    if (match->view_transition_name) {
-      (*pseudo_id_matches)
-          ->back()
-          ->setPseudoIdentifier(match->view_transition_name);
+    if (match->pseudo_argument) {
+      (*pseudo_id_matches)->back()->setPseudoIdentifier(match->pseudo_argument);
     }
   }
 
@@ -1568,9 +1565,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
               .setMatches(BuildArrayForMatchedRuleList(
                   pseudo_match->matched_rules, element, ghost_rules))
               .build());
-      if (pseudo_match->view_transition_name) {
+      if (pseudo_match->pseudo_argument) {
         parent_pseudo_element_matches->back()->setPseudoIdentifier(
-            pseudo_match->view_transition_name);
+            pseudo_match->pseudo_argument);
       }
     }
 
@@ -2269,12 +2266,12 @@ protocol::Response InspectorCSSAgent::resolveValues(
   ExecutionContext* execution_context = element->GetExecutionContext();
 
   if (pseudo_type.has_value()) {
-    AtomicString view_transition_name = pseudo_identifier.has_value()
-                                            ? AtomicString(*pseudo_identifier)
-                                            : g_null_atom;
+    AtomicString pseudo_argument = pseudo_identifier.has_value()
+                                       ? AtomicString(*pseudo_identifier)
+                                       : g_null_atom;
     element = element->GetStyledPseudoElement(
         InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(*pseudo_type),
-        view_transition_name);
+        pseudo_argument);
     if (!element) {
       return protocol::Response::ServerError(
           "Could not retrieve pseudo element.");
@@ -4260,10 +4257,10 @@ void InspectorCSSAgent::ResetStartingStyles() {
 HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     Element* element) {
   PseudoId pseudo_id = kPseudoIdNone;
-  AtomicString view_transition_name = g_null_atom;
+  AtomicString pseudo_argument = g_null_atom;
   PseudoElement* pseudo_element = nullptr;
-  element = GetPseudoIdAndTag(element, pseudo_element, pseudo_id,
-                              view_transition_name);
+  element =
+      GetPseudoIdAndTag(element, pseudo_element, pseudo_id, pseudo_argument);
   if (!element)
     return {};
 
@@ -4284,8 +4281,7 @@ HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
 
   HeapVector<Member<CSSStyleRule>> rules =
       FilterDuplicateRules(style_resolver.PseudoCSSRulesForElement(
-          element, pseudo_id, view_transition_name,
-          StyleResolver::kAllCSSRules));
+          element, pseudo_id, pseudo_argument, StyleResolver::kAllCSSRules));
   HeapVector<Member<CSSStyleDeclaration>> styles;
   if (!pseudo_id && element->style())
     styles.push_back(element->style());
