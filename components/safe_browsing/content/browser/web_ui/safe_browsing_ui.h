@@ -54,10 +54,10 @@ class CrSBLogVoidify {
   void operator&(std::ostream&) {}
 };
 
-#define CRSBLOG                                                \
-  (!::safe_browsing::WebUIContentInfoSingleton::HasListener()) \
-      ? static_cast<void>(0)                                   \
-      : ::safe_browsing::CrSBLogVoidify() &                    \
+#define CRSBLOG                                                               \
+  (!::safe_browsing::WebUIContentInfoSingleton::GetInstance()->HasListener()) \
+      ? static_cast<void>(0)                                                  \
+      : ::safe_browsing::CrSBLogVoidify() &                                   \
             ::safe_browsing::CrSBLogMessage().stream()
 
 }  // namespace safe_browsing

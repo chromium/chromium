@@ -26,10 +26,8 @@ WebUIContentInfoSingleton* WebUIContentInfoSingleton::GetInstance() {
   return instance.get();
 }
 
-// static
 bool WebUIContentInfoSingleton::HasListener() {
-  return GetInstance()->has_test_listener_ ||
-         !GetInstance()->webui_instances_.empty();
+  return has_test_listener_ || !webui_instances_.empty();
 }
 
 void WebUIContentInfoSingleton::AddToDownloadUrlsChecked(

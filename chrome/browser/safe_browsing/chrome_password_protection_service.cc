@@ -731,7 +731,8 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
+  if (IsIncognito() &&
+      !WebUIContentInfoSingleton::GetInstance()->HasListener()) {
     return;
   }
 
@@ -777,7 +778,8 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
     PasswordReuseDialogInteraction::InteractionResult interaction_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
+  if (IsIncognito() &&
+      !WebUIContentInfoSingleton::GetInstance()->HasListener()) {
     return;
   }
 
@@ -805,7 +807,8 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupResult(
     PasswordReuseLookup::LookupResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
+  if (IsIncognito() &&
+      !WebUIContentInfoSingleton::GetInstance()->HasListener()) {
     return;
   }
 
@@ -835,7 +838,8 @@ void ChromePasswordProtectionService::
         const std::string& verdict_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
+  if (IsIncognito() &&
+      !WebUIContentInfoSingleton::GetInstance()->HasListener()) {
     return;
   }
 

@@ -42,7 +42,7 @@ class WebUIContentInfoSingleton
       delete;
 
   // Returns true when there is a listening chrome://safe-browsing tab.
-  static bool HasListener();
+  bool HasListener();
 
   // Add the new message in |download_urls_checked_| and send it to all
   // the open chrome://safe-browsing tabs.
