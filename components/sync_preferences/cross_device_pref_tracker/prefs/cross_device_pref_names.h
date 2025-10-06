@@ -10,15 +10,23 @@ namespace prefs {
 // Alphabetical list of preferences used by the cross device pref tracker.
 // Keep alphabetized, and document each.
 
-// Dictionary that stores the value of the omnibox position (bottom/top) across
-// a user's syncing devices.
-inline constexpr char kCrossDeviceOmniboxIsInBottomPosition[] =
-    "cross_device.omnibox.is_in_bottom_position";
+// go/keep-sorted start newline_separated=yes skip_lines=1
 
 // Dictionary that stores the value of the 16th active day for cross-platform
 // promos on iOS across a user's syncing devices.
 inline constexpr char kCrossDeviceCrossPlatformPromosIOS16thActiveDay[] =
     "cross_device.cross_platform_promos.ios_16th_active_day";
+
+// Dictionary that stores the value of the omnibox position (bottom/top) across
+// a user's syncing devices.
+inline constexpr char kCrossDeviceOmniboxIsInBottomPosition[] =
+    "cross_device.omnibox.is_in_bottom_position";
+
+// Dictionary that stores if the Safety Check Home Module is enabled.
+inline constexpr char kCrossDeviceSafetyCheckHomeModuleEnabled[] =
+    "cross_device.home.module.safety_check.enabled";
+
+// go/keep-sorted end
 
 }  // namespace prefs
 

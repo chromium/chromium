@@ -33,6 +33,7 @@ source_set("cross_device_pref_tracker") {
     "//components/keyed_service/core",
     "//components/omnibox/browser:pref_names",
     "//components/prefs",
+    "//components/safety_check:pref_names",
     "//components/sync_device_info",
   ]
 

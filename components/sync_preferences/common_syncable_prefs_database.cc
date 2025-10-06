@@ -146,6 +146,7 @@ enum {
   kCrossDeviceOmniboxIsInBottomPosition = 97,
   kAutofillWasNameAndEmailProfileUsed = 98,
   kCrossDeviceCrossPlatformPromosIOS16thActiveDay = 99,
+  kCrossDeviceSafetyCheckHomeModuleEnabled = 100,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -262,12 +263,16 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {prefs::kCookieControlsMode,
          {syncable_prefs_ids::kCookieControlsMode, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {prefs::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
+         {syncable_prefs_ids::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
+          syncer::PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kMergeableDict}},
         {prefs::kCrossDeviceOmniboxIsInBottomPosition,
          {syncable_prefs_ids::kCrossDeviceOmniboxIsInBottomPosition,
           syncer::PREFERENCES, PrefSensitivity::kNone,
           MergeBehavior::kMergeableDict}},
-        {prefs::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
-         {syncable_prefs_ids::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
+        {prefs::kCrossDeviceSafetyCheckHomeModuleEnabled,
+         {syncable_prefs_ids::kCrossDeviceSafetyCheckHomeModuleEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone,
           MergeBehavior::kMergeableDict}},
         {prefs::kSafeBrowsingEnabled,

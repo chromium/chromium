@@ -371,6 +371,7 @@ chromium-metrics-reviews@google.com.
   <int value="97" label="CrossDeviceOmniboxIsInBottomPosition"/>
   <int value="98" label="AutofillWasNameAndEmailProfileUsed"/>
   <int value="99" label="CrossDeviceCrossPlatformPromosIOS16thActiveDay"/>
+  <int value="100" label="CrossDeviceSafetyCheckHomeModuleEnabled"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
