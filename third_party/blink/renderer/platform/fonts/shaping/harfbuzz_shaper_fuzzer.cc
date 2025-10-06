@@ -78,10 +78,19 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     PlainTextNode* node = MakeGarbageCollected<PlainTextNode>(
         subrun, /* normalize_space */ false, font, /* supports_bidi */ true,
         nullptr);
-    ShapeResultBloberizer::FillGlyphs bloberizer(
-        font.GetFontDescription(), *node,
-        ShapeResultBloberizer::Type::kEmitText);
-    bloberizer.Blobs();
+    if (!node->ContainsRtlItems()) {
+      ShapeResultBloberizer::FillGlyphs bloberizer(
+          font.GetFontDescription(), *node,
+          ShapeResultBloberizer::Type::kEmitText);
+      bloberizer.Blobs();
+    } else {
+      for (const PlainTextItem& item : node->ItemList()) {
+        ShapeResultBloberizer::FillGlyphsNG bloberizer(
+            font.GetFontDescription(), item.Text(), 0, item.Length(),
+            item.EnsureView(), ShapeResultBloberizer::Type::kEmitText);
+        bloberizer.Blobs();
+      }
+    }
   }
 
   return 0;
