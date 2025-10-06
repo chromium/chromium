@@ -21,7 +21,8 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Returns the specifics for the setting of the given `name` if the bridge
   // is aware of any such setting. Otherwise, nullopt is returned.
-  std::optional<sync_pb::AccountSettingSpecifics> GetSetting(
+  // Virtual for testing.
+  virtual std::optional<sync_pb::AccountSettingSpecifics> GetSetting(
       std::string_view name) const;
 
   // syncer::DataTypeSyncBridge:

@@ -18,17 +18,40 @@
 
 namespace autofill {
 
+namespace {
+constexpr std::string_view kWalletPrivacyContextualSurfacingSetting =
+    "WALLET_PRIVACY_CONTEXTUAL_SURFACING";
+}
+
 AccountSettingService::AccountSettingService(
     std::unique_ptr<AccountSettingSyncBridge> sync_bridge)
     : sync_bridge_(std::move(sync_bridge)) {}
 
 AccountSettingService::~AccountSettingService() = default;
 
+bool AccountSettingService::IsWalletPrivacyContextualSurfacingEnabled() const {
+  return GetBoolean(kWalletPrivacyContextualSurfacingSetting,
+                    /*default_value=*/false);
+}
+
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 AccountSettingService::GetSyncControllerDelegate() {
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncAccountSettings));
   return std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
       sync_bridge_->change_processor()->GetControllerDelegate().get());
+}
+
+bool AccountSettingService::GetBoolean(std::string_view name,
+                                       bool default_value) const {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+    return default_value;
+  }
+  auto setting = sync_bridge_->GetSetting(name);
+  DCHECK(!setting || setting->has_bool_value());
+  if (!setting || !setting->has_bool_value()) {
+    return default_value;
+  }
+  return setting->bool_value();
 }
 
 }  // namespace autofill
