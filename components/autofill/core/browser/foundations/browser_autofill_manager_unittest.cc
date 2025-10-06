@@ -808,29 +808,6 @@ class MockAutofillClient : public TestAutofillClient {
         .set_credit_card_save_manager(create_credit_card_save_manager());
     test_api(*GetFormDataImporter())
         .set_iban_save_manager(std::make_unique<IbanSaveManager>(this));
-
-    // By default, if we offer single field form fill, suggestions should be
-    // returned because it is assumed `field.should_autocomplete` is set to
-    // true. This should be overridden in tests where
-    // `field.should_autocomplete` is set to false or other conditions for
-    // different providers are not met.
-    ON_CALL(*GetPaymentsAutofillClient()->GetMerchantPromoCodeManager(),
-            OnGetSingleFieldSuggestions)
-        .WillByDefault(Return(true));
-    ON_CALL(*GetPaymentsAutofillClient()->GetIbanManager(),
-            OnGetSingleFieldSuggestions)
-        .WillByDefault(Return(true));
-    MockAutocompleteHistoryManager* autocomplete_history_manager =
-        static_cast<MockAutocompleteHistoryManager*>(
-            GetAutocompleteHistoryManager());
-    ON_CALL(*autocomplete_history_manager,
-            OnGetSingleFieldSuggestions)
-        .WillByDefault([](const FormData& form, const FormFieldData& field,
-                          const AutofillClient& client,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-          std::move(on_suggestions_returned).Run(field.global_id(), {});
-        });
   }
 
   MOCK_METHOD(void, GetAiPageContent, (GetAiPageContentCallback), (override));
