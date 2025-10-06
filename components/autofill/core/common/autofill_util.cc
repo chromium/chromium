@@ -176,11 +176,6 @@ GURL StripAuthAndParams(const GURL& gurl) {
   return gurl.ReplaceComponents(rep);
 }
 
-bool IsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source) {
-  return IsPasswordsAutofillManuallyTriggered(trigger_source).value();
-}
-
 IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
   return IsPasswordRequestManuallyTriggered(

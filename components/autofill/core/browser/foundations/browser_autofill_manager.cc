@@ -385,14 +385,12 @@ const char* SubmissionSourceToString(SubmissionSource source) {
 }
 
 // Returns true if autocomplete=unrecognized (address) fields should receive
-// suggestions. On desktop, suggestion can only be triggered for them through
-// manual fallbacks. On mobile, suggestions are always shown.
-bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
-    AutofillSuggestionTriggerSource trigger_source) {
+// suggestions.
+bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return true;
 #else
-  return IsAutofillManuallyTriggered(trigger_source);
+  return false;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
@@ -569,7 +567,7 @@ SuggestionsContext BuildSuggestionsContext(
   context.filling_product =
       GetPreferredSuggestionFillingProduct(autofill_field->Type());
 
-  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
+  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields() &&
       autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     // If non-Autocomplete suggestions may be shown on some other field of the
     // form, we want to suppress Autocomplete suggestions on this field.
@@ -1138,6 +1136,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 #endif  // !BUILDFLAG(IS_ANDROID)
       return;
     }
+  } else if (IsPasswordsAutofillManuallyTriggered(trigger_source)) {
+    return;
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
@@ -1507,15 +1507,16 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     return;
   }
 
-  // Check if other suggestion sources should be queried. Other suggestions may
-  // include Compose or single field form suggestions. Manual fallbacks can't
-  // trigger different suggestion types.
-  const bool should_offer_other_suggestions =
-      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source);
+  if (!suggestions.empty()) {
+    // Show the list of `suggestions` if not empty. These may include address or
+    // credit card suggestions. Additionally, warnings about mixed content might
+    // be present.
+    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+    return;
+  }
 
-  if (should_offer_other_suggestions &&
-      (field.form_control_type() == FormControlType::kTextArea ||
-       field.form_control_type() == FormControlType::kContentEditable)) {
+  if (field.form_control_type() == FormControlType::kTextArea ||
+      field.form_control_type() == FormControlType::kContentEditable) {
     AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
     std::optional<Suggestion> maybe_compose_suggestion =
         compose_delegate
@@ -1529,19 +1530,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     }
   }
 
-  if (!suggestions.empty()) {
-    // Show the list of `suggestions` if not empty. These may include address or
-    // credit card suggestions. Additionally, warnings about mixed content might
-    // be present.
-    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
-    return;
-  }
-
   // Whether or not to request single field form fill suggestions.
-  const bool should_offer_single_field_form_fill =
-      should_offer_other_suggestions &&
-      ShouldOfferSingleFieldFill(autofill_field, trigger_source,
-                                 context.suppress_reason);
+  const bool should_offer_single_field_form_fill = ShouldOfferSingleFieldFill(
+      autofill_field, trigger_source, context.suppress_reason);
 
   // Whether or not to show plus address suggestions.
   const bool should_offer_plus_addresses =

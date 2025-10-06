@@ -87,8 +87,7 @@ void ComposeSuggestionGenerator::GenerateSuggestions(
       all_suggestion_data,
       [](const std::pair<SuggestionDataSource, std::vector<SuggestionData>>&
              data) { return !data.second.empty(); });
-  if (other_products_have_suggestion_data ||
-      IsAutofillManuallyTriggered(trigger_source_)) {
+  if (other_products_have_suggestion_data) {
     callback({FillingProduct::kCompose, {}});
     return;
   }
