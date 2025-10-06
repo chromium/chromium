@@ -68,6 +68,10 @@ void TaskManagerInterface::AddObserver(TaskManagerObserver* observer) {
     StartUpdating();
   }
 
+  // Observer was removed as part of StartUpdating.
+  if (!observers_.HasObserver(observer)) {
+    return;
+  }
   if (observer->desired_refresh_time() > current_refresh_time)
     return;
 
