@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/core/browser/plus_address_suggestion_generator.h"
+#include "components/plus_addresses/core/browser/plus_address_suggestion_helper.h"
 
 #include <string>
 #include <utility>
@@ -161,7 +161,7 @@ std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
 
 }  // namespace
 
-PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
+PlusAddressSuggestionHelper::PlusAddressSuggestionHelper(
     const PlusAddressSettingService* setting_service,
     PlusAddressAllocator* allocator,
     url::Origin origin)
@@ -169,10 +169,9 @@ PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
       allocator_(CHECK_DEREF(allocator)),
       origin_(std::move(origin)) {}
 
-PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
+PlusAddressSuggestionHelper::~PlusAddressSuggestionHelper() = default;
 
-std::vector<autofill::Suggestion>
-PlusAddressSuggestionGenerator::GetSuggestions(
+std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
     const std::vector<std::string>& affiliated_plus_addresses,
     bool is_creation_enabled,
     const autofill::FormData& focused_form,
@@ -228,7 +227,7 @@ PlusAddressSuggestionGenerator::GetSuggestions(
   return suggestions;
 }
 
-void PlusAddressSuggestionGenerator::RefreshPlusAddressForSuggestion(
+void PlusAddressSuggestionHelper::RefreshPlusAddressForSuggestion(
     Suggestion& suggestion) {
   CHECK(IsInlineGenerationEnabled());
   suggestion =
@@ -236,7 +235,7 @@ void PlusAddressSuggestionGenerator::RefreshPlusAddressForSuggestion(
 }
 
 // static
-Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
+Suggestion PlusAddressSuggestionHelper::GetManagePlusAddressSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
       SuggestionType::kManagePlusAddress);
@@ -245,7 +244,7 @@ Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
 }
 
 // static
-Suggestion PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+Suggestion PlusAddressSuggestionHelper::GetPlusAddressErrorSuggestion(
     const PlusAddressRequestError& error) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
@@ -275,7 +274,7 @@ Suggestion PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
 }
 
 // static
-void PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+void PlusAddressSuggestionHelper::SetSuggestedPlusAddressForSuggestion(
     const PlusAddress& plus_address,
     autofill::Suggestion& suggestion) {
   suggestion.payload =
@@ -284,7 +283,7 @@ void PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
 }
 
 // static
-void PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
+void PlusAddressSuggestionHelper::SetLoadingStateForSuggestion(
     bool is_loading,
     autofill::Suggestion& suggestion) {
   suggestion.is_loading = Suggestion::IsLoading(is_loading);
@@ -298,7 +297,7 @@ void PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
 }
 
 autofill::Suggestion
-PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
+PlusAddressSuggestionHelper::CreateNewPlusAddressSuggestion() {
   if (IsInlineGenerationEnabled()) {
     return CreateNewPlusAddressInlineSuggestion(/*refreshed_suggestion=*/false);
   }
@@ -316,7 +315,7 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
   return suggestion;
 }
 
-bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
+bool PlusAddressSuggestionHelper::IsInlineGenerationEnabled() const {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!setting_service_->GetHasAcceptedNotice()) {
     return false;
@@ -328,7 +327,7 @@ bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
 }
 
 autofill::Suggestion
-PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion(
+PlusAddressSuggestionHelper::CreateNewPlusAddressInlineSuggestion(
     bool refreshed_suggestion) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),

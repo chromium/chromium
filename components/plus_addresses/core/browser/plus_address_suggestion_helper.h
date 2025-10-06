@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SUGGESTION_GENERATOR_H_
-#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SUGGESTION_GENERATOR_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SUGGESTION_HELPER_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SUGGESTION_HELPER_H_
 
 #include <vector>
 
@@ -26,15 +26,14 @@ class PlusAddressSettingService;
 // Helper class for generation plus address suggestions. Objects of this class
 // are not intended to be saved into a member - instead, their lifetime should
 // be scoped to a method call that generates suggestions.
-class PlusAddressSuggestionGenerator final {
+class PlusAddressSuggestionHelper final {
   STACK_ALLOCATED();
 
  public:
-  PlusAddressSuggestionGenerator(
-      const PlusAddressSettingService* setting_service,
-      PlusAddressAllocator* allocator,
-      url::Origin origin);
-  ~PlusAddressSuggestionGenerator();
+  PlusAddressSuggestionHelper(const PlusAddressSettingService* setting_service,
+                              PlusAddressAllocator* allocator,
+                              url::Origin origin);
+  ~PlusAddressSuggestionHelper();
 
   // Returns the suggestions to be offered on the field in `focused_form` with
   // `focused_field_id` with Password Manager classification
@@ -101,4 +100,4 @@ class PlusAddressSuggestionGenerator final {
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SUGGESTION_GENERATOR_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SUGGESTION_HELPER_H_

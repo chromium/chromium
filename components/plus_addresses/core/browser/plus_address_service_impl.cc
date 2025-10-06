@@ -39,7 +39,7 @@
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_jit_allocator.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
-#include "components/plus_addresses/core/browser/plus_address_suggestion_generator.h"
+#include "components/plus_addresses/core/browser/plus_address_suggestion_helper.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/plus_address_ui_utils.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
@@ -336,9 +336,9 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
   const bool is_creation_enabled =
       IsPlusAddressCreationEnabled(origin, is_off_the_record);
   std::vector<Suggestion> suggestions =
-      PlusAddressSuggestionGenerator(&setting_service_.get(),
-                                     plus_address_allocator_.get(),
-                                     std::move(origin))
+      PlusAddressSuggestionHelper(&setting_service_.get(),
+                                  plus_address_allocator_.get(),
+                                  std::move(origin))
           .GetSuggestions(plus_addresses, is_creation_enabled, focused_form,
                           focused_field, form_field_type_groups,
                           focused_form_classification, trigger_source);
@@ -357,7 +357,7 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
 }
 
 Suggestion PlusAddressServiceImpl::GetManagePlusAddressSuggestion() const {
-  return PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion();
+  return PlusAddressSuggestionHelper::GetManagePlusAddressSuggestion();
 }
 
 void PlusAddressServiceImpl::ReservePlusAddress(
@@ -643,9 +643,9 @@ void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(
       SuggestionEvent::kRefreshPlusAddressInlineClicked);
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
-  PlusAddressSuggestionGenerator(&setting_service_.get(),
-                                 plus_address_allocator_.get(),
-                                 last_committed_primary_main_frame_origin)
+  PlusAddressSuggestionHelper(&setting_service_.get(),
+                              plus_address_allocator_.get(),
+                              last_committed_primary_main_frame_origin)
       .RefreshPlusAddressForSuggestion(
           updated_suggestions[current_suggestion_index]);
   std::move(update_suggestions_callback)
@@ -682,7 +682,7 @@ void PlusAddressServiceImpl::OnShowedInlineSuggestion(
          const PlusProfileOrError& profile_or_error) {
         if (!profile_or_error.has_value()) {
           suggestions[suggestion_index] =
-              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+              PlusAddressSuggestionHelper::GetPlusAddressErrorSuggestion(
                   profile_or_error.error());
           metrics::RecordAutofillSuggestionEvent(
               SuggestionEvent::kErrorDuringReserve);
@@ -692,7 +692,7 @@ void PlusAddressServiceImpl::OnShowedInlineSuggestion(
                        kPlusAddressUpdatedInBrowserProcess);
           return;
         }
-        PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+        PlusAddressSuggestionHelper::SetSuggestedPlusAddressForSuggestion(
             profile_or_error->plus_address, suggestions[suggestion_index]);
         std::move(update_callback)
             .Run(std::move(suggestions),
@@ -726,7 +726,7 @@ void PlusAddressServiceImpl::OnAcceptedInlineSuggestion(
   // First, update the suggestions to show a loading state.
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
-  PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
+  PlusAddressSuggestionHelper::SetLoadingStateForSuggestion(
       /*is_loading=*/true, updated_suggestions[current_suggestion_index]);
   std::move(update_suggestions_callback)
       .Run(

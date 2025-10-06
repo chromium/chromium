@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/core/browser/plus_address_suggestion_generator.h"
+#include "components/plus_addresses/core/browser/plus_address_suggestion_helper.h"
 
 #include <string>
 #include <utility>
@@ -85,9 +85,9 @@ FormData SetGeneratedFrameTokenAndHostFormId(FormData form) {
       std::move(form), autofill::test::MakeLocalFrameToken());
 }
 
-class PlusAddressSuggestionGeneratorTest : public ::testing::Test {
+class PlusAddressSuggestionHelperTest : public ::testing::Test {
  public:
-  PlusAddressSuggestionGeneratorTest() = default;
+  PlusAddressSuggestionHelperTest() = default;
 
  protected:
   FakePlusAddressAllocator& allocator() { return allocator_; }
@@ -103,10 +103,10 @@ class PlusAddressSuggestionGeneratorTest : public ::testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests that an empty PlusAddressPayload is set if there are no cached plus
 // addresses.
-TEST_F(PlusAddressSuggestionGeneratorTest,
+TEST_F(PlusAddressSuggestionHelperTest,
        InlineGenerationWithoutPreallocatedAddresses) {
   allocator().set_is_next_allocation_synchronous(false);
-  PlusAddressSuggestionGenerator generator(
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
   FormData form = CreateTestSignupFormData();
@@ -121,10 +121,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 
 // Tests that if there are cached plus addresses available, then one is set is
 // the PlusAddressPayload.
-TEST_F(PlusAddressSuggestionGeneratorTest,
+TEST_F(PlusAddressSuggestionHelperTest,
        InlineGenerationWithPreallocatedAddresses) {
   allocator().set_is_next_allocation_synchronous(true);
-  PlusAddressSuggestionGenerator generator(
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
   FormData form = CreateTestSignupFormData();
@@ -138,13 +138,12 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
                       *test::CreatePlusProfile().plus_address))));
 }
 
-TEST_F(PlusAddressSuggestionGeneratorTest,
-       SetSuggestedPlusAddressForSuggestion) {
+TEST_F(PlusAddressSuggestionHelperTest, SetSuggestedPlusAddressForSuggestion) {
   const PlusAddress plus_address("plus@foo.com");
   Suggestion suggestion(SuggestionType::kCreateNewPlusAddressInline);
   suggestion.payload = Suggestion::PlusAddressPayload();
   suggestion.is_loading = Suggestion::IsLoading(true);
-  PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+  PlusAddressSuggestionHelper::SetSuggestedPlusAddressForSuggestion(
       plus_address, suggestion);
 
   EXPECT_FALSE(suggestion.is_loading);
@@ -152,9 +151,9 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
             base::UTF8ToUTF16(*plus_address));
 }
 
-TEST_F(PlusAddressSuggestionGeneratorTest, GetPlusAddressErrorSuggestion) {
+TEST_F(PlusAddressSuggestionHelperTest, GetPlusAddressErrorSuggestion) {
   const Suggestion suggestion(
-      PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+      PlusAddressSuggestionHelper::GetPlusAddressErrorSuggestion(
           PlusAddressRequestError::AsNetworkError(net::HTTP_BAD_REQUEST)));
   EXPECT_EQ(suggestion.type, SuggestionType::kPlusAddressError);
   EXPECT_EQ(
@@ -169,14 +168,14 @@ TEST_F(PlusAddressSuggestionGeneratorTest, GetPlusAddressErrorSuggestion) {
           IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT)))));
 }
 
-TEST_F(PlusAddressSuggestionGeneratorTest,
+TEST_F(PlusAddressSuggestionHelperTest,
        GetPlusAddressErrorSuggestionForQuotaError) {
   const auto error =
       PlusAddressRequestError::AsNetworkError(net::HTTP_TOO_MANY_REQUESTS);
   ASSERT_TRUE(error.IsQuotaError());
 
   const Suggestion suggestion(
-      PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(error));
+      PlusAddressSuggestionHelper::GetPlusAddressErrorSuggestion(error));
   EXPECT_EQ(suggestion.type, SuggestionType::kPlusAddressError);
   EXPECT_EQ(
       suggestion.main_text.value,
@@ -192,18 +191,18 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 
 // Tests that suggestions in the `is_loading` state do not have a refresh
 // button and is not acceptable.
-TEST_F(PlusAddressSuggestionGeneratorTest, LoadingStateProperties) {
+TEST_F(PlusAddressSuggestionHelperTest, LoadingStateProperties) {
   Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
   inline_suggestion.payload = Suggestion::PlusAddressPayload();
 
-  PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
+  PlusAddressSuggestionHelper::SetLoadingStateForSuggestion(
       /*is_loading=*/true, inline_suggestion);
   EXPECT_TRUE(inline_suggestion.is_loading);
   EXPECT_FALSE(inline_suggestion.IsAcceptable());
   EXPECT_FALSE(inline_suggestion.GetPayload<Suggestion::PlusAddressPayload>()
                    .offer_refresh);
 
-  PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+  PlusAddressSuggestionHelper::SetSuggestedPlusAddressForSuggestion(
       PlusAddress("foo@moo.com"), inline_suggestion);
   EXPECT_FALSE(inline_suggestion.is_loading);
   EXPECT_TRUE(inline_suggestion.GetPayload<Suggestion::PlusAddressPayload>()
@@ -213,9 +212,9 @@ TEST_F(PlusAddressSuggestionGeneratorTest, LoadingStateProperties) {
 
 // Tests that creation is offered on fields where autofill was previously
 // triggered.
-TEST_F(PlusAddressSuggestionGeneratorTest,
+TEST_F(PlusAddressSuggestionHelperTest,
        CreationSuggestionOnPreviouslyAutofilledFields) {
-  PlusAddressSuggestionGenerator generator(
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
 
@@ -247,10 +246,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 
 // Tests that the creation suggestion contains no labels if the notice has not
 // been accepted.
-TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
+TEST_F(PlusAddressSuggestionHelperTest, FirstTimeCreateSuggestion) {
   setting_service().set_has_accepted_notice(false);
 
-  PlusAddressSuggestionGenerator generator(
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
   FormData form = CreateTestSignupFormData();
@@ -265,8 +264,8 @@ TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
 }
 
 // Tests that no creation suggestion is shown on a login form.
-TEST_F(PlusAddressSuggestionGeneratorTest, NoSuggestionsOnLoginForm) {
-  PlusAddressSuggestionGenerator generator(
+TEST_F(PlusAddressSuggestionHelperTest, NoSuggestionsOnLoginForm) {
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
   const FormData login_form = SetGeneratedFrameTokenAndHostFormId(
@@ -292,9 +291,8 @@ TEST_F(PlusAddressSuggestionGeneratorTest, NoSuggestionsOnLoginForm) {
 
 // Tests that creation is offered on forms classified by PWM as login forms if
 // they have name or address fields included.
-TEST_F(PlusAddressSuggestionGeneratorTest,
-       SuggestionsOnLoginFormWithNameFields) {
-  PlusAddressSuggestionGenerator generator(
+TEST_F(PlusAddressSuggestionHelperTest, SuggestionsOnLoginFormWithNameFields) {
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
   FormData form = autofill::test::CreateTestPasswordFormData();
@@ -328,9 +326,9 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 
 // Tests that creation is offered on forms classified by PWM as login forms if
 // the password field is hidden.
-TEST_F(PlusAddressSuggestionGeneratorTest,
+TEST_F(PlusAddressSuggestionHelperTest,
        SuggestionsOnLoginFormWithHiddenPasswordField) {
-  PlusAddressSuggestionGenerator generator(
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
   FormData form = autofill::test::CreateTestPasswordFormData();
@@ -355,9 +353,9 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 
 // Tests that filling is offered on fields where autofill was previously
 // triggered and prefix-matching is not applied.
-TEST_F(PlusAddressSuggestionGeneratorTest,
+TEST_F(PlusAddressSuggestionHelperTest,
        FillingSuggestionOnPreviouslyAutofilledFields) {
-  PlusAddressSuggestionGenerator generator(
+  PlusAddressSuggestionHelper generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
   const std::string plus_address = "test+plus@test.com";

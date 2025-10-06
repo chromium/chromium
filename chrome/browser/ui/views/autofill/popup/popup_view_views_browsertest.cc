@@ -24,7 +24,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/plus_addresses/core/browser/fake_plus_address_allocator.h"
-#include "components/plus_addresses/core/browser/plus_address_suggestion_generator.h"
+#include "components/plus_addresses/core/browser/plus_address_suggestion_helper.h"
 #include "components/plus_addresses/core/browser/settings/fake_plus_address_setting_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -591,11 +591,11 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
 
   std::vector<Suggestion> GetPlusAddressSuggestion(
       const std::vector<std::string>& affiliated_plus_addresses) {
-    plus_addresses::PlusAddressSuggestionGenerator generator(
+    plus_addresses::PlusAddressSuggestionHelper helper(
         &setting_service(), &allocator(),
         url::Origin::Create(GURL("https://foo.bar")));
     FormData form = autofill::test::CreateTestSignupFormData();
-    return generator.GetSuggestions(
+    return helper.GetSuggestions(
         affiliated_plus_addresses,
         /*is_creation_enabled=*/true, form, form.fields()[0],
         /*form_field_type_groups=*/{}, PasswordFormClassification(),

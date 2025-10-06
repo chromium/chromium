@@ -83,8 +83,8 @@ source_set("browser") {
     "plus_address_service.h",
     "plus_address_service_impl.cc",
     "plus_address_service_impl.h",
-    "plus_address_suggestion_generator.cc",
-    "plus_address_suggestion_generator.h",
+    "plus_address_suggestion_helper.cc",
+    "plus_address_suggestion_helper.h",
     "plus_address_ui_utils.cc",
     "plus_address_ui_utils.h",
   ]
@@ -139,7 +139,7 @@ source_set("unit_tests") {
     "plus_address_parsing_utils_unittest.cc",
     "plus_address_preallocator_unittest.cc",
     "plus_address_service_impl_unittest.cc",
-    "plus_address_suggestion_generator_unittest.cc",
+    "plus_address_suggestion_helper_unittest.cc",
   ]
 
   deps = [
