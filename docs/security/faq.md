@@ -388,6 +388,19 @@ precautions to stay safe online. That doesn't mean bugs that require user error
 are always out of scope, but it does mean that spoofs which would not deceive
 a user being reasonable and prudent are out of scope.
 
+<a name="TOC-As-a-user_I-can-bypass-an-enterprise-policy-is-this-a-security-bug_"></a>
+### As a user, I can bypass an enterprise policy - is this a security bug?
+In general, no. Enterprise policies applying to running, enterprise-enrolled
+Chrome instances are not by default a security boundary. It may be a functional
+bug in the implementation of the enterprise policy, or it may be intended
+behavior, but either way actions by the local user are generally considered to
+be "local attacks" and outside our threat model.
+
+ChromeOS is an exception to this. On ChromeOS, Chrome integrates more deeply
+with the host operating system and is able to provide stronger guarantees about
+policies.  Therefore, an enterprise policy bypass by a local user of a ChromeOS
+device may still be a security bug.
+
 ## Areas outside Chrome's Threat Model
 
 <a name="TOC-Are-privacy-issues-considered-security-bugs-"></a>
