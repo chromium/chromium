@@ -6,6 +6,6 @@
 
 [
     ImplementedAs=GlobalFetch
-] partial interface WorkerGlobalScope {
+] partial interface mixin WindowOrWorkerGlobalScope {
     [CallWith=ScriptState, NewObject, RaisesException] Promise<Response> fetch(RequestInfo input, optional RequestInit init = {});
 };
