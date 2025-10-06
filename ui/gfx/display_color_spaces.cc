@@ -105,6 +105,16 @@ void DisplayColorSpaces::SetOutputColorSpaceAndBufferFormat(
   buffer_formats_[i] = buffer_format;
 }
 
+void DisplayColorSpaces::SetOutputColorSpaceAndFormat(
+    ContentColorUsage color_usage,
+    bool needs_alpha,
+    const gfx::ColorSpace& color_space,
+    viz::SharedImageFormat format) {
+  SetOutputColorSpaceAndBufferFormat(
+      color_usage, needs_alpha, color_space,
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format));
+}
+
 ColorSpace DisplayColorSpaces::GetOutputColorSpace(
     ContentColorUsage color_usage,
     bool needs_alpha) const {
