@@ -4749,6 +4749,8 @@
       "external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html",
       "external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html",
       "external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html",
+      "external/wpt/navigation-api/ordering-and-transition/back-cross-document-event-order.html",
+      "external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-event-order.html",
       "external/wpt/navigation-timing/nested-unload-timing.html",
       "external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.js",
       "external/wpt/permissions-policy/experimental-features/unload-disallowed-subframe.tentative.window.js",
