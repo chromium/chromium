@@ -13,8 +13,8 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
+#include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
-#include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
@@ -110,7 +110,9 @@ GlicInstanceImpl::GlicInstanceImpl(
       id_(instance_id),
       host_(profile_, this, this),
       sharing_manager_(
-          std::make_unique<GlicEmptyFocusedTabManager>(),
+          std::make_unique<GlicActivePinnedFocusedTabManager>(
+              profile,
+              &sharing_manager_),
           std::make_unique<GlicEmptyFocusedBrowserManager>(),
           std::make_unique<GlicPinnedTabManager>(profile, this, metrics),
           profile,

@@ -101,7 +101,7 @@ GlicActiveTabForProfileTracker::AddActiveTabChangedCallback(
   return active_tab_changed_callback_list_.Add(std::move(callback));
 }
 
-tabs::TabInterface* GlicActiveTabForProfileTracker::GetActiveTab() {
+tabs::TabInterface* GlicActiveTabForProfileTracker::GetActiveTab() const {
   return last_notified_tab_.get();
 }
 

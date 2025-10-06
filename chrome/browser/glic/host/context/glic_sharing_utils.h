@@ -45,7 +45,7 @@ class GlicActiveTabForProfileTracker : public BrowserListObserver {
       base::RepeatingCallback<void(tabs::TabInterface* tab)> callback);
 
   // Get the last notified active tab.
-  tabs::TabInterface* GetActiveTab();
+  tabs::TabInterface* GetActiveTab() const;
 
  private:
   // BrowserListObserver.
