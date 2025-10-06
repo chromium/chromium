@@ -1656,11 +1656,18 @@ void MenuController::SetSelection(MenuItemView* menu_item,
       pending_state_.submenu_open !=
           !!(selection_types & SELECTION_OPEN_SUBMENU);
 
+  auto this_ref = AsWeakPtr();
+
   if (pending_item_changed && pending_state_.item) {
     SetHotTrackedButton(nullptr);
   }
 
-  auto this_ref = AsWeakPtr();
+  // SetHotTrackedButton does some accessibility stuff that could conceivably
+  // cause `this` to be deleted, so protect against that.
+  if (!this_ref) {
+    return;
+  }
+
   // Notify an accessibility focus event on all menu items except for the root.
   bool ensure_focus_within_popup =
       menu_item && pending_item_changed &&
