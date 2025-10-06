@@ -80,6 +80,18 @@ Preload attempts: [
             [0] : <rule-set-2>
         ]
     }
+    [4] : {
+        key : {
+            action : PrerenderUntilScript
+            loaderId : <string>
+            url : http://127.0.0.1:8000/pus.html
+        }
+        nodeIds : [
+        ]
+        ruleSetIds : [
+            [0] : <rule-set-2>
+        ]
+    }
 ]
 
 Running test: documentRules
@@ -159,6 +171,19 @@ Preload attempts: [
         }
         nodeIds : [
             [0] : <link-1>
+        ]
+        ruleSetIds : [
+            [0] : <rule-set-2>
+        ]
+    }
+    [6] : {
+        key : {
+            action : PrerenderUntilScript
+            loaderId : <string>
+            url : http://127.0.0.1:8000/pus.html
+        }
+        nodeIds : [
+            [0] : <link-8>
         ]
         ruleSetIds : [
             [0] : <rule-set-2>

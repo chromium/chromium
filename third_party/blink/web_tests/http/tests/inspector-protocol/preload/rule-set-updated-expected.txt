@@ -38,6 +38,24 @@ Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are dispatched.
     tag : prerender_tag
 }
 {
+    _selector : #prerender-until-script
+    backendNodeId : <number>
+    id : <string>
+    loaderId : <string>
+    sourceText : {
+        prerender_until_script : [
+            [0] : {
+                source : list
+                urls : [
+                    [0] : /page.html?pus=1
+                ]
+            }
+        ]
+        tag : prerender_until_script_tag
+    }
+    tag : prerender_until_script_tag
+}
+{
     _selector : #invalid-json
     backendNodeId : <number>
     errorMessage : Line: 4, column: 7, Syntax error.

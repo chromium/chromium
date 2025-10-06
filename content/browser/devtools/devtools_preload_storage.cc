@@ -40,6 +40,7 @@ void DevToolsPreloadStorage::UpdatePrefetchStatus(
 }
 
 void DevToolsPreloadStorage::UpdatePrerenderStatus(
+    blink::mojom::SpeculationAction action,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     const base::UnguessableToken& preload_pipeline_id,
@@ -56,13 +57,25 @@ void DevToolsPreloadStorage::UpdatePrerenderStatus(
   if (mismatched_headers) {
     data.mismatched_headers = *mismatched_headers;
   }
-  prerender_data_map_[key] = std::move(data);
+
+  switch (action) {
+    case blink::mojom::SpeculationAction::kPrerender:
+      prerender_data_map_[key] = std::move(data);
+      break;
+    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+      prerender_until_script_data_map_[key] = std::move(data);
+      break;
+    case blink::mojom::SpeculationAction::kPrefetch:
+    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+      NOTREACHED();
+  }
 }
 
 void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
     const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   std::set<PrefetchKey> prefetch_keys_from_candidates;
   std::set<PrerenderKey> prerender_keys_from_candidates;
+  std::set<PrerenderKey> prerender_until_script_keys_from_candidates;
 
   for (const auto& candidate_ptr : candidates) {
     switch (candidate_ptr->action) {
@@ -74,9 +87,12 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
             std::make_pair(candidate_ptr->url,
                            candidate_ptr->target_browsing_context_name_hint));
         break;
-      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-      // TODO(https://crbug.com/428500219): Implement this.
       case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+        prerender_until_script_keys_from_candidates.insert(
+            std::make_pair(candidate_ptr->url,
+                           candidate_ptr->target_browsing_context_name_hint));
+        break;
+      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
         NOTIMPLEMENTED_LOG_ONCE();
     };
   }
@@ -86,6 +102,9 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
   });
   std::erase_if(prerender_data_map_, [&](const auto& pair) {
     return !prerender_keys_from_candidates.contains(pair.first);
+  });
+  std::erase_if(prerender_until_script_data_map_, [&](const auto& pair) {
+    return !prerender_until_script_keys_from_candidates.contains(pair.first);
   });
 }
 

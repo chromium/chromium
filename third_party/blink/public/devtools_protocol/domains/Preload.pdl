@@ -57,6 +57,7 @@ experimental domain Preload
     enum
       Prefetch
       Prerender
+      PrerenderUntilScript
 
   # Corresponds to mojom::SpeculationTargetHint.
   # See https://github.com/WICG/nav-speculation/blob/main/triggers.md#window-name-targeting-hints
