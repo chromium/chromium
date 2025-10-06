@@ -281,7 +281,7 @@
   {
     "name": "android-data-importer-service",
     "owners": [ "treib@chromium.org", "fsenra@google.com" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 150
   },
   {
     "name": "android-desktop-density",
