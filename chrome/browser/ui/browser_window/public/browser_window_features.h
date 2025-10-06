@@ -80,7 +80,6 @@ class ToastService;
 class TranslateBubbleController;
 class UpgradeNotificationController;
 class WebUIBrowserSidePanelUI;
-class ZoomBubbleCoordinator;
 
 #if BUILDFLAG(IS_WIN)
 class WindowsTaskbarIconUpdater;
@@ -456,7 +455,6 @@ class BrowserWindowFeatures {
   ImmersiveModeController* immersive_mode_controller() {
     return immersive_mode_controller_.get();
   }
-
   const ImmersiveModeController* immersive_mode_controller() const {
     return immersive_mode_controller_.get();
   }
@@ -587,8 +585,6 @@ class BrowserWindowFeatures {
 #if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 #endif
-
-  std::unique_ptr<ZoomBubbleCoordinator> zoom_bubble_coordinator_;
 
   std::unique_ptr<ActorUiWindowController> actor_ui_window_controller_;
 
