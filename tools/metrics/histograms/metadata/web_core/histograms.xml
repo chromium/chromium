@@ -484,8 +484,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2"
-    units="ms" expires_after="2025-11-09">
-  <owner>estade@chromium.org</owner>
+    units="ms" expires_after="2026-11-02">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The time it takes for an IndexedDB transaction to commit, starting from when
@@ -497,8 +498,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2.Foreground"
-    units="ms" expires_after="2026-01-25">
-  <owner>estade@chromium.org</owner>
+    units="ms" expires_after="2026-11-02">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Only recorded for foreground tabs, i.e. priority 0 clients, as of when the
