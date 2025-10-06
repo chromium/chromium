@@ -346,8 +346,7 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
     bool should_retransfer =
         std::find(browser_handling_cases.begin(), browser_handling_cases.end(),
                   static_cast<TransferInputToVizResult>(transfer_result)) !=
-            browser_handling_cases.end() &&
-        !InputTransferHandlerAndroid::NewPointersGoDirectlyToViz();
+        browser_handling_cases.end();
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
         .WillOnce(Return(static_cast<int>(transfer_result)));
     if (should_retransfer) {
@@ -360,16 +359,8 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
           .Times(1);
     }
 
-    // In case the transfer was successful, the events are consumed until next
-    // cancel.
-    const bool expected_sequence_dropped =
-        !InputTransferHandlerAndroid::NewPointersGoDirectlyToViz() ||
-        static_cast<TransferInputToVizResult>(transfer_result) ==
-            TransferInputToVizResult::kSuccessfullyTransferred;
-    EXPECT_EQ(transfer_handler_->OnTouchEvent(*down_event_2),
-              expected_sequence_dropped);
-    EXPECT_EQ(transfer_handler_->OnTouchEvent(*cancel_event_2),
-              expected_sequence_dropped);
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event_2));
 
     event_time += base::Milliseconds(20);
     transfer_handler_->OnTouchEnd(event_time);
@@ -412,31 +403,23 @@ TEST_F(InputTransferHandlerTest,
   // We haven't received a notification from Viz for TouchEnd yet.
   // The new sequence should be dropped, instead of Browser and Viz
   // potentially handling the seequence at same time.
-  const bool expected_sequence_dropped =
-      !InputTransferHandlerAndroid::NewPointersGoDirectlyToViz();
-
   base::HistogramTester histogram_tester;
-  EXPECT_EQ(transfer_handler_->OnTouchEvent(*down_event_2),
-            expected_sequence_dropped);
-  EXPECT_EQ(transfer_handler_->OnTouchEvent(*move_event_2),
-            expected_sequence_dropped);
-  EXPECT_EQ(transfer_handler_->OnTouchEvent(*cancel_event_2),
-            expected_sequence_dropped);
-  if (expected_sequence_dropped) {
-    const int num_dropped_events = 3;
-    histogram_tester.ExpectUniqueSample(
-        InputTransferHandlerAndroid::kEventsInDroppedSequenceHistogram,
-        num_dropped_events, 1);
-    histogram_tester.ExpectBucketCount(
-        InputTransferHandlerAndroid::kEventTypesInDroppedSequenceHistogram,
-        ui::MotionEvent::Action::DOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        InputTransferHandlerAndroid::kEventTypesInDroppedSequenceHistogram,
-        ui::MotionEvent::Action::MOVE, 1);
-    histogram_tester.ExpectBucketCount(
-        InputTransferHandlerAndroid::kEventTypesInDroppedSequenceHistogram,
-        ui::MotionEvent::Action::CANCEL, 1);
-  }
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event_2));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event_2));
+  const int num_dropped_events = 3;
+  histogram_tester.ExpectUniqueSample(
+      InputTransferHandlerAndroid::kEventsInDroppedSequenceHistogram,
+      num_dropped_events, 1);
+  histogram_tester.ExpectBucketCount(
+      InputTransferHandlerAndroid::kEventTypesInDroppedSequenceHistogram,
+      ui::MotionEvent::Action::DOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      InputTransferHandlerAndroid::kEventTypesInDroppedSequenceHistogram,
+      ui::MotionEvent::Action::MOVE, 1);
+  histogram_tester.ExpectBucketCount(
+      InputTransferHandlerAndroid::kEventTypesInDroppedSequenceHistogram,
+      ui::MotionEvent::Action::CANCEL, 1);
 }
 
 TEST_F(InputTransferHandlerTest,
@@ -588,13 +571,7 @@ TEST_F(InputTransferHandlerTest,
   down_time = event_time + base::Milliseconds(8);
   auto down_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
-
-  if (InputTransferHandlerAndroid::NewPointersGoDirectlyToViz()) {
-    // The touch sequence can be handled by Browser.
-    EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event_2));
-  } else {
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
-  }
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
 }
 
 }  // namespace content
