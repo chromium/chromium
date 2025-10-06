@@ -173,7 +173,7 @@ class HttpStreamPool::Group {
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
   // Cancels all on-going jobs.
-  void CancelJobs(int error);
+  void CancelJobs(int error, StreamSocketCloseReason cancel_reason);
 
   // Returns an active AttemptManager for `job`.
   AttemptManager* GetAttemptManagerForJob(Job* job);

@@ -191,7 +191,7 @@ class HttpStreamPool::AttemptManager
   void OnJobComplete(Job* job);
 
   // Cancels all jobs.
-  void CancelJobs(int error);
+  void CancelJobs(int error, StreamSocketCloseReason cancel_reason);
 
   // Cancels the QuicAttempt if it exists.
   void CancelQuicAttempt(int error);

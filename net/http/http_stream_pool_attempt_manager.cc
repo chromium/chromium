@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -556,7 +557,20 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
   MaybeCompleteLater();
 }
 
-void HttpStreamPool::AttemptManager::CancelJobs(int error) {
+void HttpStreamPool::AttemptManager::CancelJobs(
+    int error,
+    StreamSocketCloseReason cancel_reason) {
+  std::string_view reason_suffix =
+      StreamSocketCloseReasonToString(cancel_reason);
+  base::UmaHistogramCounts100(
+      base::StrCat(
+          {"Net.HttpStreamPool.RequestJobCancelCount.", reason_suffix}),
+      request_jobs_.size());
+  base::UmaHistogramCounts100(
+      base::StrCat(
+          {"Net.HttpStreamPool.PreconnectJobCancelCount.", reason_suffix}),
+      preconnect_jobs_.size());
+
   HandleFinalError(error);
 }
 

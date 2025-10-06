@@ -165,6 +165,24 @@ chromium-metrics-reviews@google.com.
   <variant name="WriteEntryData"/>
 </variants>
 
+<!-- LINT.IfChange(StreamSocketCloseReason) -->
+
+<variants name="StreamSocketCloseReason">
+  <variant name="Abort"/>
+  <variant name="AttemptManagerDraining"/>
+  <variant name="CannotUseTcpBasedProtocols"/>
+  <variant name="CloseAllConnections"/>
+  <variant name="IpAddressChanged"/>
+  <variant name="QuicSessionCreated"/>
+  <variant name="SpdySessionCreated"/>
+  <variant name="SslConfigChanged"/>
+  <variant name="Unspecified"/>
+  <variant name="UsingExistingQuicSession"/>
+  <variant name="UsingExistingSpdySession"/>
+</variants>
+
+<!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
+
 <variants name="SuccessOrFailure">
   <variant name="Failure" summary="Operation failed"/>
   <variant name="Success" summary="Operation succeeded"/>
@@ -3510,17 +3528,7 @@ chromium-metrics-reviews@google.com.
     The number of in-flight stream attempts when canceling them. Recorded when
     an HttpStreamPool::AttemptManager cancels in-flight stream attempts.
   </summary>
-  <token key="Reason">
-    <variant name="CannotUseTcpBasedProtocols"/>
-    <variant name="CloseAllConnections"/>
-    <variant name="IpAddressChanged"/>
-    <variant name="QuicSessionCreated"/>
-    <variant name="SpdySessionCreated"/>
-    <variant name="SslConfigChanged"/>
-    <variant name="Unspecified"/>
-    <variant name="UsingExistingQuicSession"/>
-    <variant name="UsingExistingSpdySession"/>
-  </token>
+  <token key="Reason" variants="StreamSocketCloseReason"/>
 </histogram>
 
 <histogram
@@ -3605,6 +3613,22 @@ chromium-metrics-reviews@google.com.
     <variant name="OtherFailure" summary="Attempt failed other than time out"/>
     <variant name="Success" summary="Attempt succeeded"/>
     <variant name="TimedOut" summary="Attempt timed out"/>
+  </token>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.{JobType}JobCancelCount.{Reason}"
+    units="jobs" expires_after="2025-12-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The number of HttpStreamPool::Jobs when an HttpStreamPool::AttemptManager
+    cancels them. Recorded when an HttpStreamPool::AttemptManager cancels
+    HttpStreamPool::Jobs.
+  </summary>
+  <token key="Reason" variants="StreamSocketCloseReason"/>
+  <token key="JobType">
+    <variant name="Preconnect"/>
+    <variant name="Request"/>
   </token>
 </histogram>
 

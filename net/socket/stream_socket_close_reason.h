@@ -28,7 +28,7 @@ enum class StreamSocketCloseReason {
   kAttemptManagerDraining = 10,
   kMaxValue = kAttemptManagerDraining,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:StreamSocketCloseReason)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:StreamSocketCloseReason,tools/metrics/histograms/metadata/net/histograms.xml:StreamSocketCloseReason)
 
 std::string_view StreamSocketCloseReasonToString(
     StreamSocketCloseReason reason);

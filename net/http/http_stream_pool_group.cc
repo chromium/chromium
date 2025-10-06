@@ -292,7 +292,7 @@ void HttpStreamPool::Group::FlushWithError(
     StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
   Refresh(net_log_close_reason_utf8, attempt_cancel_reason);
-  CancelJobs(error);
+  CancelJobs(error, attempt_cancel_reason);
 }
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
@@ -309,9 +309,10 @@ void HttpStreamPool::Group::CloseIdleStreams(
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
 
-void HttpStreamPool::Group::CancelJobs(int error) {
+void HttpStreamPool::Group::CancelJobs(int error,
+                                       StreamSocketCloseReason cancel_reason) {
   if (attempt_manager_) {
-    attempt_manager_->CancelJobs(error);
+    attempt_manager_->CancelJobs(error, cancel_reason);
   }
 }
 
