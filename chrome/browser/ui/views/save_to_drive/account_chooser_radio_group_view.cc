@@ -19,6 +19,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace save_to_drive {
@@ -33,7 +34,7 @@ AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
       /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN),
       /*horizontal=*/0));
-  SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemRadio);
   GetViewAccessibility().SetName(
       base::StrCat({account.full_name, " ", account.email}));
@@ -60,6 +61,11 @@ AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
   radio_button_ = AddChildView(std::move(radio_button));
 }
 AccountChooserRadioButtonRow::~AccountChooserRadioButtonRow() = default;
+
+bool AccountChooserRadioButtonRow::HandleAccessibleAction(
+    const ui::AXActionData& action_data) {
+  return radio_button_->HandleAccessibleAction(action_data);
+}
 
 bool AccountChooserRadioButtonRow::OnMousePressed(const ui::MouseEvent& event) {
   if (event.IsLeftMouseButton()) {
