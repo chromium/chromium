@@ -7,8 +7,12 @@
   "name2"
 };
 
-dictionary DictWithDeprecatedMember {
-  [deprecated="This dict member is deprecated"] boolean deprecatedDictMember;
+[deprecated="This dict is deprecated"] dictionary DeprecatedDictionary {
+  boolean normalMember;
+};
+
+dictionary DictionaryWithDeprecatedMember {
+  [deprecated="This dict member is deprecated"] boolean deprecatedMember;
 };
 
 callback OnDeprecatedEventListener = undefined ();
@@ -27,6 +31,9 @@ interface OnDeprecatedEvent : ExtensionEvent {
 
   [deprecated="This event is deprecated"]
   static attribute OnDeprecatedEvent onDeprecatedEvent;
+
+  [deprecated="This property is deprecated"]
+  const long DEPRECATED_PROPERTY = 6;
 };
 
 partial interface Browser {

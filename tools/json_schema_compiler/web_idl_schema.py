@@ -132,6 +132,25 @@ def GetExtendedAttributeValue(node: IDLNode, name: str) -> Optional[str]:
   return None
 
 
+def AddCommonExtendedAttributeProperties(node: IDLNode, properties: dict):
+  """Looks for common extended attributes and adds them to properties.
+
+  Several different nodes in our IDL schemas have a common set of extended
+  attributes which they all share. This helper function looks for them and adds
+  the associated values to the supplied properties if they are present.
+
+  Args:
+    node: The IDLNode to look for the extended attributes on.
+    properties: The object to add the associated key value pairs to.
+  """
+  if deprecated := GetExtendedAttributeValue(node, 'deprecated'):
+    properties['deprecated'] = deprecated
+  if HasExtendedAttribute(node, 'nodoc'):
+    properties['nodoc'] = True
+  # TODO(crbug.com/340297705): Add the nocompile extended attribute here too and
+  # test for it on associated nodes.
+
+
 def _ExtractNodeComment(node: IDLNode) -> str:
   """Extract contiguous file comments above a node and return them as a string.
 
@@ -537,8 +556,7 @@ class DictionaryMember(TypedProperty):
     if not self.node.GetProperty('REQUIRED'):
       self.properties['optional'] = True
 
-    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
-      self.properties['deprecated'] = deprecated
+    AddCommonExtendedAttributeProperties(self.node, self.properties)
 
     description = ProcessNodeDescription(self.node).description
     if description:
@@ -569,8 +587,7 @@ class Operation:
     if (description_data.description):
       properties['description'] = description_data.description
 
-    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
-      properties['deprecated'] = deprecated
+    AddCommonExtendedAttributeProperties(self.node, properties)
 
     parameters = []
     arguments_node = self.node.GetOneOf('Arguments')
@@ -636,6 +653,8 @@ class Dictionary:
         'properties': properties,
         'type': 'object'
     }
+    AddCommonExtendedAttributeProperties(self.node, result)
+
     return result
 
 
@@ -666,10 +685,7 @@ class Enum:
         'type': 'string',
         'enum': enum
     }
-    if HasExtendedAttribute(self.node, 'nodoc'):
-      result['nodoc'] = True
-    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
-      result['deprecated'] = deprecated
+    AddCommonExtendedAttributeProperties(self.node, result)
 
     return result
 
@@ -731,9 +747,7 @@ class Event:
           FunctionArgument(argument, parameter_descriptions).Process())
     properties['parameters'] = parameters
 
-    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
-      properties['deprecated'] = deprecated
-
+    AddCommonExtendedAttributeProperties(self.node, properties)
 
     return properties
 
@@ -805,8 +819,7 @@ class Property:
     if (description_data.description):
       properties['description'] = description_data.description
 
-    # TODO(crbug.com/445495198): Add support for appropriate extended attributes
-    # on properties (deprecated, nodoc, nocompile).
+    AddCommonExtendedAttributeProperties(self.node, properties)
 
     return (self.node.GetName(), properties)
 
@@ -898,31 +911,32 @@ class Namespace:
       property_key, property_value = Property(node).process()
       properties[property_key] = property_value
 
-    # Several special attributes specific to the schema compilation process are
-    # defined using Extended Attributes on the API Interface definition.
-    nodoc = HasExtendedAttribute(self.namespace, 'nodoc')
-    platforms = GetExtendedAttributeValue(self.namespace, 'platforms')
-    deprecated = GetExtendedAttributeValue(self.namespace, 'deprecated')
-    compiler_options = {}
-    if implemented_in := GetExtendedAttributeValue(self.namespace,
-                                                   'implemented_in'):
-      compiler_options['implemented_in'] = implemented_in
-    if HasExtendedAttribute(self.namespace, 'generate_error_messages'):
-      compiler_options['generate_error_messages'] = True
-
-    return {
+    result = {
         'namespace': self.name,
         'functions': functions,
         'types': types,
         'events': events,
         'properties': properties,
         'manifest_keys': manifest_keys,
-        'nodoc': nodoc,
         'description': description,
-        'platforms': platforms,
-        'compiler_options': compiler_options,
-        'deprecated': deprecated,
+        'nodoc': False,
+        'platforms': None,
+        'deprecated': None,
+        'compiler_options': {},
     }
+
+    # Several special attributes specific to the schema compilation process are
+    # defined using Extended Attributes on the API Interface definition.
+    AddCommonExtendedAttributeProperties(self.namespace, result)
+    if platforms := GetExtendedAttributeValue(self.namespace, 'platforms'):
+      result['platforms'] = platforms
+    if implemented_in := GetExtendedAttributeValue(self.namespace,
+                                                   'implemented_in'):
+      result['compiler_options']['implemented_in'] = implemented_in
+    if HasExtendedAttribute(self.namespace, 'generate_error_messages'):
+      result['compiler_options']['generate_error_messages'] = True
+
+    return result
 
 
 class IDLSchema:

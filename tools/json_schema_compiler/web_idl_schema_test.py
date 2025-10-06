@@ -50,6 +50,19 @@ def getType(schema: dict, name: str) -> dict:
   raise KeyError('Could not find "type" with id "%s" in schema' % name)
 
 
+def getProperty(schema: dict, name: str) -> dict:
+  """Gets the property dictionary with the specified name from the schema.
+
+  Args:
+    schema: The processed API schema dictionary to look for the property in.
+    name: The name of the property to look for.
+
+  Returns:
+    The dictionary for the property with the specified name.
+  """
+  return schema['properties'][name]
+
+
 def getEvent(schema: dict, name: str) -> dict:
   """Gets the event dictionary with the specified name from the schema.
 
@@ -523,7 +536,6 @@ class WebIdlSchemaTest(unittest.TestCase):
   # 'properties' object.
   def testConstantProperties(self):
     schema = self.idl_basics
-    properties = schema['properties']
     # Properties are an ordered dict, so ordering matches order in the IDL file.
     self.assertEqual(
         [
@@ -532,28 +544,26 @@ class WebIdlSchemaTest(unittest.TestCase):
             'CONSTANT_STRING',
             'DESCRIBED_CONSTANT',
         ],
-        list(properties.keys()),
+        list(schema['properties'].keys()),
     )
     self.assertEqual({
         'type': 'integer',
         'value': 39
-    }, properties['CONSTANT_LONG'])
+    }, getProperty(schema, 'CONSTANT_LONG'))
     self.assertEqual({
         'type': 'number',
         'value': 3.9
-    }, properties['CONSTANT_DOUBLE'])
+    }, getProperty(schema, 'CONSTANT_DOUBLE'))
     self.assertEqual({
         'type': 'string',
         'value': 'Foo'
-    }, properties['CONSTANT_STRING'])
+    }, getProperty(schema, 'CONSTANT_STRING'))
     self.assertEqual(
         {
             'type': 'integer',
             'value': 9,
             'description': 'Comment on a constant property with a value.',
-        },
-        properties['DESCRIBED_CONSTANT'],
-    )
+        }, getProperty(schema, 'DESCRIBED_CONSTANT'))
 
   # Tests that a const DOMString defined on an API Interface which is missing
   # the StringValue extended attribute will throw an error. It's unfortunate
@@ -744,31 +754,59 @@ class WebIdlSchemaTest(unittest.TestCase):
         'test/web_idl/void_unsupported.idl',
     )
 
-  # Tests that an API interface that uses the nodoc extended attribute has the
-  # related nodoc attribute set to true after processing.
-  def testNoDocOnNamespace(self):
-    idl = web_idl_schema.Load('test/web_idl/nodoc_on_namespace.idl')
+  # Tests that the nodoc extended attribute used in various places gets the
+  # related attribute set to True after processing.
+  def testNoDocExtendedAttribute(self):
+    idl = web_idl_schema.Load('test/web_idl/nodoc_examples.idl')
     self.assertEqual(1, len(idl))
     schema = idl[0]
+
+    # Top level namespace:
     self.assertEqual('nodocAPI', schema['namespace'])
     self.assertTrue(schema['nodoc'])
     # Also ensure the description comes through correctly on the node with
     # 'nodoc' as an extended attribute.
     self.assertEqual(
-        'The nodoc API. This exists to demonstrate nodoc on the main interface'
-        ' itself.',
+        'The nodoc API. This exists to demonstrate a variety of nodoc extended'
+        ' attribute usage.',
         schema['description'],
     )
 
-  # Tests that an enum that uses the nodoc extended attribute has the related
-  # nodoc attribute set to true after processing.
-  def testNoDocOnEnum(self):
-    schema = self.idl_basics
-    nodoc_enum = getType(schema, 'EnumTypeWithNoDoc')
-    self.assertEqual(True, nodoc_enum['nodoc'])
-    # An enum without the extended attribute will not have a nodoc attribute.
-    no_nodoc_enum = getType(schema, 'EnumType')
-    self.assertFalse(hasattr(no_nodoc_enum, 'nodoc'))
+    # Enums:
+    nodoc_enum = getType(schema, 'EnumWithNoDoc')
+    self.assertTrue(nodoc_enum['nodoc'])
+    normal_enum = getType(schema, 'NormalEnum')
+    self.assertFalse(hasattr(normal_enum, 'nodoc'))
+
+    # Dictionaries:
+    nodoc_dict = getType(schema, 'DictionaryWithNoDoc')
+    self.assertTrue(nodoc_dict['nodoc'])
+    normal_dict = getType(schema, 'NormalDictionary')
+    self.assertFalse(hasattr(normal_dict, 'nodoc'))
+
+    # Dictionary members:
+    nodoc_dict_member = getType(schema, 'DictionaryWithNoDocMember')
+    self.assertTrue(nodoc_dict_member['properties']['nodocMember']['nodoc'])
+    self.assertFalse(
+        hasattr(nodoc_dict_member['properties']['normalMember'], 'nodoc'))
+
+    # Functions:
+    nodoc_function = getFunction(schema, 'functionWithNoDoc')
+    self.assertTrue(nodoc_function['nodoc'])
+    normal_function = getFunction(schema, 'normalFunction')
+    self.assertFalse(hasattr(normal_function, 'nodoc'))
+
+    # Events:
+    nodoc_event = getEvent(schema, 'noDocEvent')
+    self.assertTrue(nodoc_event['nodoc'])
+    normal_event = getEvent(schema, 'normalEvent')
+    self.assertFalse(hasattr(normal_event, 'nodoc'))
+
+    # Properties:
+    nodoc_property = getProperty(schema, 'PROPERTY_WITH_NODOC')
+    self.assertTrue(nodoc_property['nodoc'])
+    normal_property = getProperty(schema, 'NORMAL_PROPERTY')
+    self.assertFalse(hasattr(normal_property, 'nodoc'))
 
   # Tests that the deprecated extended attribute used in various places get the
   # related attribute set to the provided string after processing.
@@ -776,20 +814,28 @@ class WebIdlSchemaTest(unittest.TestCase):
   # attributes preceding them, so we need to find some other way to mark a
   # specific enum value as deprecated.
   def testDeprecatedExtendedAttribute(self):
-    idl = web_idl_schema.Load('test/web_idl/deprecated.idl')
+    idl = web_idl_schema.Load('test/web_idl/deprecated_examples.idl')
     self.assertEqual(1, len(idl))
     schema = idl[0]
 
+    # Top level Namespace:
     self.assertEqual('This API is deprecated', schema['deprecated'])
 
+    # Enums:
     deprecated_enum = getType(schema, 'DeprecatedEnum')
     self.assertEqual('This enum is deprecated', deprecated_enum['deprecated'])
 
-    deprecated_dict = getType(schema, 'DictWithDeprecatedMember')
+    # Dictionaries:
+    deprecated_dict = getType(schema, 'DeprecatedDictionary')
+    self.assertEqual('This dict is deprecated', deprecated_dict['deprecated'])
+
+    # Dictionary members:
+    deprecated_dict_member = getType(schema, 'DictionaryWithDeprecatedMember')
     self.assertEqual(
         'This dict member is deprecated',
-        deprecated_dict['properties']['deprecatedDictMember']['deprecated'])
+        deprecated_dict_member['properties']['deprecatedMember']['deprecated'])
 
+    # Functions:
     deprecated_function = getFunction(schema, 'deprecatedFunction')
     self.assertEqual(
         'This function is deprecated and it has such a long message that\n  it'
@@ -797,8 +843,14 @@ class WebIdlSchemaTest(unittest.TestCase):
         deprecated_function['deprecated'],
     )
 
+    # Events:
     deprecated_event = getEvent(schema, 'onDeprecatedEvent')
     self.assertEqual('This event is deprecated', deprecated_event['deprecated'])
+
+    # Properties:
+    deprecated_property = getProperty(schema, 'DEPRECATED_PROPERTY')
+    self.assertEqual('This property is deprecated',
+                     deprecated_property['deprecated'])
 
   # Tests that a function defined with the requiredCallback extended attribute
   # does not have the returns_async field marked as optional after processing.
