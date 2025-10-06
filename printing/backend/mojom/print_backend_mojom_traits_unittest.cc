@@ -26,7 +26,7 @@ namespace printing {
 using ::testing::UnorderedElementsAreArray;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePrinterBasicInfo) {
+TEST(PrintBackendMojomTraitsTest, PrinterBasicInfo) {
   static const PrinterBasicInfo kPrinterBasicInfo1(
       /*printer_name=*/"test printer name 1",
       /*display_name=*/"test display name 1",
@@ -54,8 +54,7 @@ TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePrinterBasicInfo) {
   }
 }
 
-TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePrinterBasicInfoEmptyNames) {
+TEST(PrintBackendMojomTraitsTest, PrinterBasicInfoEmptyNames) {
   static const PrinterBasicInfo kPrinterBasicInfoEmptyPrinterName(
       /*printer_name=*/"",
       /*display_name=*/"test display name",
@@ -77,7 +76,7 @@ TEST(PrintBackendMojomTraitsTest,
   }
 }
 
-TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
+TEST(PrintBackendMojomTraitsTest, Paper) {
   PrinterSemanticCapsAndDefaults::Papers test_papers = kPapers;
   test_papers.push_back(kPaperCustom);
 
@@ -90,7 +89,7 @@ TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
   }
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperCtors) {
+TEST(PrintBackendMojomTraitsTest, PaperCtors) {
   // All constructors should be able to generate valid papers.
   constexpr gfx::Size kNonEmptySize(100, 200);
   constexpr gfx::Rect kNonEmptyPrintableArea(kNonEmptySize);
@@ -138,7 +137,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperCtors) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
+TEST(PrintBackendMojomTraitsTest, PaperEmpty) {
   // Empty Papers should be valid.
   PrinterSemanticCapsAndDefaults::Paper input;
   PrinterSemanticCapsAndDefaults::Paper output;
@@ -147,7 +146,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
   EXPECT_EQ(input, output);
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperInvalidCustomSize) {
+TEST(PrintBackendMojomTraitsTest, PaperInvalidCustomSize) {
   // The min height is larger than the max height, so it should be invalid.
   PrinterSemanticCapsAndDefaults::Paper input{
       /*display_name=*/"display_name",
@@ -162,7 +161,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperInvalidCustomSize) {
       mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperEmptyPrintableArea) {
+TEST(PrintBackendMojomTraitsTest, PaperEmptyPrintableArea) {
   // The printable area is empty, but the other fields are not, so it should be
   // invalid.
   PrinterSemanticCapsAndDefaults::Paper input{
@@ -175,7 +174,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperEmptyPrintableArea) {
       mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanSize) {
+TEST(PrintBackendMojomTraitsTest, PaperPrintableAreaLargerThanSize) {
   // The printable area is larger than the size, so it should be invalid.
   PrinterSemanticCapsAndDefaults::Paper input{
       /*display_name=*/"display_name", /*vendor_id=*/"vendor_id",
@@ -187,7 +186,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanSize) {
       mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanCustomSize) {
+TEST(PrintBackendMojomTraitsTest, PaperPrintableAreaLargerThanCustomSize) {
   // The printable area is larger than the custom size, so it should be invalid.
   PrinterSemanticCapsAndDefaults::Paper input{
       /*display_name=*/"display_name",
@@ -201,7 +200,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanCustomSize) {
       mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaOutOfBounds) {
+TEST(PrintBackendMojomTraitsTest, PaperPrintableAreaOutOfBounds) {
   // The printable area is out of bounds of the size, so it should be invalid.
   PrinterSemanticCapsAndDefaults::Paper input{
       /*display_name=*/"display_name", /*vendor_id=*/"vendor_id",
@@ -213,7 +212,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaOutOfBounds) {
       mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
-TEST(PrintBackendMojomTraitsTest, TestPaperNegativePrintableArea) {
+TEST(PrintBackendMojomTraitsTest, PaperNegativePrintableArea) {
   // The printable area has negative x and y values, so it should be invalid.
   PrinterSemanticCapsAndDefaults::Paper input{
       /*display_name=*/"display_name", /*vendor_id=*/"vendor_id",
@@ -226,7 +225,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperNegativePrintableArea) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST(PrintBackendMojomTraitsTest, TestValidMargins) {
+TEST(PrintBackendMojomTraitsTest, ValidMargins) {
   PrinterSemanticCapsAndDefaults::Paper input{
       /*display_name=*/"display_name",
       /*vendor_id=*/"vendor_id",
@@ -240,7 +239,7 @@ TEST(PrintBackendMojomTraitsTest, TestValidMargins) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
-TEST(PrintBackendMojomTraitsTest, TestInvalidMargins) {
+TEST(PrintBackendMojomTraitsTest, InvalidMargins) {
   // The printable area is valid, but the margins are invalid, so it should be
   // invalid. The margins are invalid because content width and the top margins
   // are negative.
@@ -258,8 +257,7 @@ TEST(PrintBackendMojomTraitsTest, TestInvalidMargins) {
       mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
-TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializeAdvancedCapability) {
+TEST(PrintBackendMojomTraitsTest, AdvancedCapability) {
   for (const auto& advanced_capability : kAdvancedCapabilities) {
     AdvancedCapability input = advanced_capability;
     AdvancedCapability output;
@@ -268,9 +266,9 @@ TEST(PrintBackendMojomTraitsTest,
     EXPECT_EQ(advanced_capability, output);
   }
 }
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsPrintScalingTypes) {
+
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsPrintScalingTypes) {
   // Normal scenario: valid types and default value
   {
     PrinterSemanticCapsAndDefaults input =
@@ -314,9 +312,8 @@ TEST(
   }
 }
 
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsPrintScalingTypesDuplicate) {
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsPrintScalingTypesDuplicate) {
   // Duplicates in print_scaling_types (should be invalid)
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults(
@@ -333,8 +330,7 @@ TEST(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePrinterSemanticCapsAndDefaults) {
+TEST(PrintBackendMojomTraitsTest, PrinterSemanticCapsAndDefaults) {
   OptionalSampleCapabilities caps;
 #if BUILDFLAG(IS_CHROMEOS)
   caps = SampleWithScaleAndPinAndAdvancedCapabilities();
@@ -371,8 +367,7 @@ TEST(PrintBackendMojomTraitsTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsCopiesMax) {
+TEST(PrintBackendMojomTraitsTest, PrinterSemanticCapsAndDefaultsCopiesMax) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   PrinterSemanticCapsAndDefaults output;
@@ -384,9 +379,8 @@ TEST(PrintBackendMojomTraitsTest,
                mojom::PrinterSemanticCapsAndDefaults>(input, output));
 }
 
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsAllowableEmptyArrays) {
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsAllowableEmptyArrays) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   PrinterSemanticCapsAndDefaults output;
@@ -418,8 +412,7 @@ TEST(
 #endif
 }
 
-TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsEmptyPapers) {
+TEST(PrintBackendMojomTraitsTest, PrinterSemanticCapsAndDefaultsEmptyPapers) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   PrinterSemanticCapsAndDefaults output;
@@ -436,7 +429,7 @@ TEST(PrintBackendMojomTraitsTest,
 }
 
 TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsEmptyMediaTypes) {
+     PrinterSemanticCapsAndDefaultsEmptyMediaTypes) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   PrinterSemanticCapsAndDefaults output;
@@ -451,9 +444,8 @@ TEST(PrintBackendMojomTraitsTest,
   EXPECT_EQ(kEmptyMediaTypes, output.media_types);
 }
 
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsNoDuplicatesInArrays) {
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsNoDuplicatesInArrays) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   PrinterSemanticCapsAndDefaults output;
@@ -486,9 +478,8 @@ TEST(
 #endif
 }
 
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsAllowedDuplicatesInArrays) {
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsAllowedDuplicatesInArrays) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   PrinterSemanticCapsAndDefaults output;
@@ -521,8 +512,7 @@ TEST(
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePageOutputQualityAttribute) {
+TEST(PrintBackendMojomTraitsTest, PageOutputQualityAttribute) {
   PageOutputQualityAttribute input = kPageOutputQualityAttribute1;
   PageOutputQualityAttribute output;
   EXPECT_TRUE(
@@ -532,8 +522,7 @@ TEST(PrintBackendMojomTraitsTest,
   EXPECT_EQ(kPageOutputQualityAttribute1.name, output.name);
 }
 
-TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePageOutputQuality) {
+TEST(PrintBackendMojomTraitsTest, PageOutputQuality) {
   PageOutputQuality input = kPageOutputQuality;
   PageOutputQuality output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PageOutputQuality>(
@@ -543,7 +532,7 @@ TEST(PrintBackendMojomTraitsTest,
 }
 
 TEST(PrintBackendMojomTraitsTest,
-     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsXpsCapabilities) {
+     PrinterSemanticCapsAndDefaultsXpsCapabilities) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults(
           SampleWithPageOutputQuality());
@@ -557,9 +546,8 @@ TEST(PrintBackendMojomTraitsTest,
             output.page_output_quality->default_quality);
 }
 
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsAllowableEmptyArraysXpsCapabilities) {
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsAllowableEmptyArraysXpsCapabilities) {
   const PageOutputQualityAttributes kEmptyQualities;
   PageOutputQuality quality(kEmptyQualities, /*default_quality=*/std::nullopt);
   PrinterSemanticCapsAndDefaults input =
@@ -573,9 +561,8 @@ TEST(
   EXPECT_EQ(kEmptyQualities, output.page_output_quality->qualities);
 }
 
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsDefaultQualityInArraysXpsCapabilities) {
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsDefaultQualityInArraysXpsCapabilities) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults(
           SampleWithPageOutputQuality());
@@ -591,7 +578,7 @@ TEST(
 
 TEST(
     PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsMissingDefaultQualityInArraysXpsCapabilities) {
+    PrinterSemanticCapsAndDefaultsMissingDefaultQualityInArraysXpsCapabilities) {
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults(
           SampleWithPageOutputQuality());
@@ -604,9 +591,8 @@ TEST(
                mojom::PrinterSemanticCapsAndDefaults>(input, output));
 }
 
-TEST(
-    PrintBackendMojomTraitsTest,
-    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsNoDuplicatesInArraysXpsCapabilities) {
+TEST(PrintBackendMojomTraitsTest,
+     PrinterSemanticCapsAndDefaultsNoDuplicatesInArraysXpsCapabilities) {
   // `kPageOutputQualityAttributePrime` has same display_name and name with
   // `kPageOutputQualityAttribute1`, which is not allowed.
   const PageOutputQualityAttribute kPageOutputQualityAttributePrime(
