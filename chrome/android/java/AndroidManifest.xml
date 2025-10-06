@@ -39,17 +39,6 @@ by a child template that "extends" this file.
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!--
-      Enable runtime permissions as uses-permission in tip of tree builds
-      only for ease of development on Android L and earlier. For consumer
-      channels use "runtime permission" uses-permission-sdk-23 which provides
-      permission on Android M and later without a prompt.
-    -->
-    {% if channel in ['default'] %}
-        <!--  Needed for allowing downloaded APKs to be installed. -->
-        <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-    {% endif %}
-
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" />
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
@@ -75,6 +64,8 @@ by a child template that "extends" this file.
 
     <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
     <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
+
+    <!--  Needed for allowing downloaded APKs to be installed. -->
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
     <uses-permission android:name="android.permission.CAMERA" />
