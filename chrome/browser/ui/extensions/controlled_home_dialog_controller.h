@@ -14,19 +14,23 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
-class Browser;
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace extensions {
 class Extension;
-}
+}  // namespace extensions
 
 // A bubble shown for an extension overriding the user's home page (different
 // than the NTP).
 class ControlledHomeDialogController
     : public ControlledHomeDialogControllerInterface {
  public:
-  explicit ControlledHomeDialogController(Browser* browser);
+  explicit ControlledHomeDialogController(Profile* profile,
+                                          content::WebContents* web_contents);
 
   ControlledHomeDialogController(const ControlledHomeDialogController&) =
       delete;
@@ -66,10 +70,10 @@ class ControlledHomeDialogController
   // if so, closes the bubble.
   void HandleExtensionUnloadOrUninstall(const extensions::Extension* extension);
 
-  // The corresponding `Browser`.
-  raw_ptr<Browser> const browser_;
   // The corresponding `Profile`.
   raw_ptr<Profile> const profile_;
+  // The original web contents that triggered the dialog.
+  base::WeakPtr<content::WebContents> web_contents_;
   // The action taken when the bubble closed, if any.
   std::optional<CloseAction> close_action_;
   // The extension controlling the home page, if any. This is null'd out when

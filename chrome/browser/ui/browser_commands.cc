@@ -967,7 +967,8 @@ void Home(Browser* browser, WindowOpenDisposition disposition) {
 
   if (disposition == WindowOpenDisposition::CURRENT_TAB ||
       disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-    extensions::MaybeShowExtensionControlledHomeNotification(browser);
+    extensions::MaybeShowExtensionControlledHomeNotification(
+        browser, browser->tab_strip_model()->GetActiveWebContents());
   }
 #endif
 

@@ -40,6 +40,8 @@ std::unique_ptr<KeyedService> BuildOverrideRegistrar(
 
 }  // namespace
 
+// TODO(crbug.com/441590893): Use ExtensionBrowserTest which is platform
+// agnostic and doesn't depend on Browser.
 class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
  public:
   ControlledHomeDialogControllerTest() = default;
@@ -126,6 +128,9 @@ class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
     extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
     extension_registrar_ = extensions::ExtensionRegistrar::Get(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
+
+    // Add web contents since dialog controller needs them.
+    AddTab(browser(), GURL(url::kAboutBlankURL));
   }
 
   void TearDown() override {
@@ -179,8 +184,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   ASSERT_TRUE(browser());
   ASSERT_TRUE(profile());
 
-  auto dialog_controller =
-      std::make_unique<ControlledHomeDialogController>(browser());
+  auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+      profile(), browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
   EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -203,8 +208,8 @@ TEST_F(ControlledHomeDialogControllerTest,
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
-  auto dialog_controller =
-      std::make_unique<ControlledHomeDialogController>(browser());
+  auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+      profile(), browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
   EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -226,8 +231,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   ASSERT_TRUE(extension);
 
   {
-    auto dialog_controller =
-        std::make_unique<ControlledHomeDialogController>(browser());
+    auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents());
     EXPECT_TRUE(dialog_controller->ShouldShow());
     EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -243,8 +248,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   EXPECT_FALSE(IsExtensionAcknowledged(extension->id()));
 
   {
-    auto dialog_controller =
-        std::make_unique<ControlledHomeDialogController>(browser());
+    auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents());
     // Even though the extension hasn't been acknowledged, we shouldn't show the
     // bubble twice in the same session.
     EXPECT_FALSE(dialog_controller->ShouldShow());
@@ -257,8 +262,8 @@ TEST_F(ControlledHomeDialogControllerTest,
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
-  auto dialog_controller =
-      std::make_unique<ControlledHomeDialogController>(browser());
+  auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+      profile(), browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
   EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -280,8 +285,8 @@ TEST_F(ControlledHomeDialogControllerTest,
 
   AcknowledgeExtension(extension->id());
 
-  auto dialog_controller =
-      std::make_unique<ControlledHomeDialogController>(browser());
+  auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+      profile(), browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(dialog_controller->ShouldShow());
 }
 
@@ -297,8 +302,8 @@ TEST_F(ControlledHomeDialogControllerTest, LongExtensionNameIsTruncated) {
       LoadExtensionOverridingHome(base::UTF16ToUTF8(long_name));
   ASSERT_TRUE(extension);
 
-  auto dialog_controller =
-      std::make_unique<ControlledHomeDialogController>(browser());
+  auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+      profile(), browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
 
   std::u16string bubble_text = dialog_controller->GetBodyText();
@@ -317,8 +322,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   ASSERT_TRUE(extension2);
 
   {
-    auto dialog_controller =
-        std::make_unique<ControlledHomeDialogController>(browser());
+    auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents());
     EXPECT_TRUE(dialog_controller->ShouldShow());
     // The most-recently-installed extension should control the home page
     // (`extension2`).
@@ -339,8 +344,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   }
 
   {
-    auto dialog_controller =
-        std::make_unique<ControlledHomeDialogController>(browser());
+    auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents());
     // Since `extension2` was removed, we shouldn't have acknowledged either
     // extension and we can re-show the bubble if the homepage is controlled
     // by another extension.
@@ -359,8 +364,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   ASSERT_TRUE(extension2);
 
   {
-    auto dialog_controller =
-        std::make_unique<ControlledHomeDialogController>(browser());
+    auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents());
     EXPECT_TRUE(dialog_controller->ShouldShow());
     EXPECT_EQ(extension2, dialog_controller->extension_for_testing());
 
@@ -381,8 +386,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   {
     // The bubble shouldn't want to show (the extension that controls the home
     // page was acknowledged).
-    auto dialog_controller =
-        std::make_unique<ControlledHomeDialogController>(browser());
+    auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents());
     EXPECT_FALSE(dialog_controller->ShouldShow());
   }
 
@@ -391,8 +396,8 @@ TEST_F(ControlledHomeDialogControllerTest,
       extension2->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   {
-    auto dialog_controller =
-        std::make_unique<ControlledHomeDialogController>(browser());
+    auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents());
     // Now a new extension controls the home page, so we should re-show the
     // bubble.
     EXPECT_TRUE(dialog_controller->ShouldShow());
@@ -407,8 +412,8 @@ TEST_F(ControlledHomeDialogControllerTest,
           "ext", extensions::mojom::ManifestLocation::kExternalPolicy);
   ASSERT_TRUE(extension);
 
-  auto dialog_controller =
-      std::make_unique<ControlledHomeDialogController>(browser());
+  auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
+      profile(), browser()->tab_strip_model()->GetActiveWebContents());
   // We still show the bubble for policy-installed extensions, but it should
   // have a policy decoration.
   EXPECT_TRUE(dialog_controller->ShouldShow());

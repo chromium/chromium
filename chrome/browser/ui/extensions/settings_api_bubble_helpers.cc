@@ -106,17 +106,19 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
                                 PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
-void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
+void MaybeShowExtensionControlledHomeNotification(
+    BrowserWindowInterface* browser,
+    content::WebContents* web_contents) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  auto* profile = browser->GetProfile();
   auto bubble_delegate =
-      std::make_unique<ControlledHomeDialogController>(browser);
+      std::make_unique<ControlledHomeDialogController>(profile, web_contents);
   if (!bubble_delegate->ShouldShow()) {
     return;
   }
 
   bubble_delegate->PendingShow();
-  ShowControlledHomeDialog(browser->profile(),
-                           browser->window()->GetNativeWindow(),
+  ShowControlledHomeDialog(profile, browser->GetWindow()->GetNativeWindow(),
                            std::move(bubble_delegate));
 #endif
 }

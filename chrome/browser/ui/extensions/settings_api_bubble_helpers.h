@@ -8,7 +8,6 @@
 #include "base/auto_reset.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
-class Browser;
 class BrowserWindowInterface;
 class PrefRegistrySimple;
 class Profile;
@@ -43,7 +42,9 @@ void AcknowledgePreExistingNtpExtensions(Profile* profile);
 // Shows a bubble notifying the user that the homepage is controlled by an
 // extension. This bubble is shown only on the first use of the Home button
 // after the controlling extension takes effect.
-void MaybeShowExtensionControlledHomeNotification(Browser* browser);
+void MaybeShowExtensionControlledHomeNotification(
+    BrowserWindowInterface* browser,
+    content::WebContents* web_contents);
 
 // Shows a bubble notifying the user that the search engine is controlled by an
 // extension. This bubble is shown only on the first search after the

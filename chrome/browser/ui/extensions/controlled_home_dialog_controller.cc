@@ -13,12 +13,13 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -88,9 +89,11 @@ void AcknowledgeExtension(Profile& profile,
 
 }  // namespace
 
-ControlledHomeDialogController::ControlledHomeDialogController(Browser* browser)
-    : browser_(browser),
-      profile_(browser->profile()),
+ControlledHomeDialogController::ControlledHomeDialogController(
+    Profile* profile,
+    content::WebContents* web_contents)
+    : profile_(profile),
+      web_contents_(web_contents->GetWeakPtr()),
       extension_(GetExtensionToWarnAbout(*profile_)) {}
 
 ControlledHomeDialogController::~ControlledHomeDialogController() {
@@ -211,14 +214,14 @@ void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
       break;
     case CLOSE_LEARN_MORE: {
       AcknowledgeExtension(*profile_, extension_->id());
-      if (!g_should_ignore_learn_more_for_testing) {
+      if (!g_should_ignore_learn_more_for_testing && web_contents_) {
         GURL learn_more_url(chrome::kExtensionControlledSettingLearnMoreURL);
-        DCHECK(learn_more_url.is_valid());
-        browser_->OpenURL(
-            content::OpenURLParams(learn_more_url, content::Referrer(),
-                                   WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                   ui::PAGE_TRANSITION_LINK, false),
-            /*navigation_handle_callback=*/{});
+        CHECK(learn_more_url.is_valid());
+        content::OpenURLParams params(learn_more_url, content::Referrer(),
+                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      ui::PAGE_TRANSITION_LINK,
+                                      /*is_renderer_initiated=*/false);
+        web_contents_->OpenURL(params, {});
       }
       break;
     }
