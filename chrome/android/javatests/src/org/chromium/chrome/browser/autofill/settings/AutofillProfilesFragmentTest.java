@@ -474,6 +474,61 @@ public class AutofillProfilesFragmentTest {
                 true);
     }
 
+    /**
+     * A helper method for testing the deletion of an Autofill profile. Clicks the deletion button
+     * but cancels the flow. Clicks the deletion button again and confirms the deletion dialog by
+     * clicking the corresponding positive button.
+     *
+     * @param profileNameToDelete The name of the profile to be deleted.
+     * @param initialCount The number of preferences expected before the deletion.
+     * @param expectedConfirmationMessage The confirmation message expected to be shown to the user.
+     */
+    private void testDeleteProfile(
+            String profileNameToDelete, int initialCount, String expectedConfirmationMessage)
+            throws Exception {
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Check the preferences on the initial screen.
+        checkPreferenceCount(initialCount);
+        AutofillProfileEditorPreference profileToDelete =
+                autofillProfileFragment.findPreference(profileNameToDelete);
+        assertNotNull("Profile to delete not found", profileToDelete);
+        assertEquals(profileNameToDelete, profileToDelete.getTitle());
+
+        // --- Part 1: Attempt to delete the profile, but cancel on confirmation. ---
+        ThreadUtils.runOnUiThreadBlocking(profileToDelete::performClick);
+        EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
+        rule.setEditorDialogAndWait(editorDialog);
+        rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
+
+        // Verify the confirmation message is correct.
+        AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
+        assertNotNull(confirmationDialog);
+        TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
+        assertEquals(expectedConfirmationMessage, messageView.getText().toString());
+
+        // Click cancel and ensure we return to the editor, then the main list.
+        rule.clickInConfirmationDialogAndWait(
+                DialogInterface.BUTTON_NEGATIVE, /* waitForPreferenceUpdate= */ false);
+        rule.clickInEditorAndWait(
+                R.id.payments_edit_cancel_button, /* waitForPreferenceUpdate= */ false);
+
+        // Verify that the profile was NOT deleted.
+        checkPreferenceCount(initialCount);
+        assertNotNull(findPreference(profileNameToDelete));
+
+        // --- Part 2: Delete the profile and confirm it. ---
+        ThreadUtils.runOnUiThreadBlocking(profileToDelete::performClick);
+        rule.setEditorDialogAndWait(autofillProfileFragment.getEditorDialogForTest());
+        rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
+        rule.clickInConfirmationDialogAndWait(
+                DialogInterface.BUTTON_POSITIVE, /* waitForPreferenceUpdate= */ true);
+
+        // Verify that the profile IS deleted and the preference count has decreased.
+        checkPreferenceCount(initialCount - 1);
+        assertNull("Profile should have been deleted", findPreference(profileNameToDelete));
+    }
+
     @Test
     @MediumTest
     @Feature({"Preferences"})
@@ -481,6 +536,8 @@ public class AutofillProfilesFragmentTest {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(false, new HashSet());
         testDeleteProfile(
+                "Seb Doe",
+                7 /* toggle + add button + 4 profiles + plus address entry */,
                 context.getString(R.string.autofill_delete_local_address_record_type_notice));
     }
 
@@ -491,95 +548,30 @@ public class AutofillProfilesFragmentTest {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
         testDeleteProfile(
+                "Seb Doe",
+                7 /* toggle + add button + 4 profiles + plus address entry */,
                 context.getString(R.string.autofill_delete_sync_address_record_type_notice));
-    }
-
-    public void testDeleteProfile(String expectedConfirmationMessage) throws Exception {
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-
-        // Check the preferences on the initial screen.
-        checkPreferenceCount(
-                7 /* One toggle + one add button + four profiles + plus address entry. */);
-        AutofillProfileEditorPreference sebProfile =
-                autofillProfileFragment.findPreference("Seb Doe");
-        assertNotNull(sebProfile);
-        assertEquals("Seb Doe", sebProfile.getTitle());
-
-        // Delete the profile, but cancel on confirmation.
-        ThreadUtils.runOnUiThreadBlocking(sebProfile::performClick);
-        EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
-        rule.setEditorDialogAndWait(editorDialog);
-        rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
-
-        // Verify the confirmation message for non-account profile.
-        AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
-        assertNotNull(confirmationDialog);
-        TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
-        assertEquals(expectedConfirmationMessage.toString(), messageView.getText().toString());
-
-        // Get back to the profile list.
-        rule.clickInConfirmationDialogAndWait(
-                DialogInterface.BUTTON_NEGATIVE, /* waitForPreferenceUpdate= */ false);
-        rule.clickInEditorAndWait(
-                R.id.payments_edit_cancel_button, /* waitForPreferenceUpdate= */ false);
-
-        // Make sure the profile is not deleted and the number of profiles didn't change.
-        checkPreferenceCount(
-                7 /* One toggle + one add button + four profiles + plus address entry. */);
-
-        // Delete a profile and confirm it.
-        ThreadUtils.runOnUiThreadBlocking(sebProfile::performClick);
-        rule.setEditorDialogAndWait(autofillProfileFragment.getEditorDialogForTest());
-        rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
-        rule.clickInConfirmationDialogAndWait(
-                DialogInterface.BUTTON_POSITIVE, /* waitForPreferenceUpdate= */ true);
-
-        // Make sure the profile is deleted.
-        checkPreferenceCount(
-                6 /* One toggle + one add button + three profiles + plus address entry. */);
-        assertNotNull(findPreference("John Doe"));
-        assertNull(findPreference("Seb Doe"));
     }
 
     @Test
     @MediumTest
     @Feature({"Preferences"})
     public void testDeleteAccountProfile() throws Exception {
+        // Setup specific to this test case.
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
-
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-        Context context = autofillProfileFragment.getContext();
-
         mHelper.setProfile(sAccountProfile);
+        Context context = sSettingsActivityTestRule.getFragment().getContext();
 
-        // Check the preferences on the initial screen.
-        checkPreferenceCount(
-                8 /* One toggle + one add button + five profiles + plus address entry. */);
-        AutofillProfileEditorPreference artikProfile = findPreference("Artik Doe");
-        assertNotNull(artikProfile);
-
-        // Delete Artik's account profile.
-        ThreadUtils.runOnUiThreadBlocking(artikProfile::performClick);
-        EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
-        rule.setEditorDialogAndWait(editorDialog);
-        rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
-
-        // Verify the message.
-        AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
-        assertNotNull(confirmationDialog);
-        TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
+        // Prepare the expected confirmation message with the account email.
         String expectedMessage =
                 context.getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", TestAccounts.ACCOUNT1.getEmail());
-        assertEquals(expectedMessage.toString(), messageView.getText().toString());
 
-        rule.clickInConfirmationDialogAndWait(
-                DialogInterface.BUTTON_POSITIVE, /* waitForPreferenceUpdate= */ true);
-
-        // Make sure the profile is deleted.
-        checkPreferenceCount(
-                7 /* One toggle + one add button + four profiles + plus address entry. */);
-        assertNull(findPreference("Artik Doe"));
+        // Call the reusable helper method with parameters for this test.
+        testDeleteProfile(
+                "Artik Doe",
+                8 /* toggle + add button + 5 profiles + plus address entry */,
+                expectedMessage);
     }
 
     @Test
