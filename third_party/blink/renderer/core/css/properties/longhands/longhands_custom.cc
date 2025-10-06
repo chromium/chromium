@@ -707,34 +707,6 @@ const CSSValue* AnimationTrigger::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
-const CSSValue* TimelineTriggerBehavior::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kOnce);
-}
-
-const CSSValue* TimelineTriggerBehavior::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
-      style.Animations()
-          ? style.Animations()->TimelineTriggerBehaviorList()
-          : Vector<EAnimationTriggerBehavior>{
-                CSSAnimationData::InitialTimelineTriggerBehavior()});
-}
-
-const CSSValue* TimelineTriggerBehavior::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext&,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList<CSSIdentifierValue*(
-      CSSParserTokenStream&)>(
-      css_parsing_utils::ConsumeIdent<CSSValueID::kOnce, CSSValueID::kRepeat,
-                                      CSSValueID::kAlternate,
-                                      CSSValueID::kState>,
-      stream);
-}
-
 const CSSValue* TimelineTriggerName::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

@@ -536,7 +536,6 @@ textWrapMode
 textWrapStyle
 timelineScope
 timelineTrigger
-timelineTriggerBehavior
 timelineTriggerExitRangeEnd
 timelineTriggerExitRangeStart
 timelineTriggerName

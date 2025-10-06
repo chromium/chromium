@@ -1441,7 +1441,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerOnceOnly) {
         height: 50px;
         width: 50px;
         animation: myAnim linear 0.5s forwards;
-        timeline-trigger: --trigger once;
+        timeline-trigger: --trigger;
         animation-trigger: --trigger;
       }
      .scroller {
@@ -1537,7 +1537,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerScrollOnce) {
         height: 50px;
         width: 50px;
         animation: myAnim linear 0.5s forwards;
-        timeline-trigger: --trigger scroll() once 25% 75%;
+        timeline-trigger: --trigger scroll() 25% 75%;
         animation-trigger: --trigger;
       }
      .scroller {
@@ -1588,7 +1588,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewAlternate) {
         height: 50px;
         width: 50px;
         animation: myAnim linear 0.5s forwards;
-        timeline-trigger: --trigger view() alternate contain 10% contain 90%;
+        timeline-trigger: --trigger view() contain 10% contain 90%;
            animation-trigger: --trigger;
       }
      .scroller {
@@ -1639,7 +1639,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewRepeat) {
         height: 50px;
         width: 50px;
         animation: myAnim linear 0.5s forwards;
-        timeline-trigger: --trigger view() repeat contain 10% contain 90%
+        timeline-trigger: --trigger view() contain 10% contain 90%
         cover 1% cover 99%;
         animation-trigger: --trigger;
       }
@@ -1694,7 +1694,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerNamedTimeline) {
       }
       #target {
         animation: myAnim linear 0.5s forwards;
-        timeline-trigger: --trigger --viewtimeline repeat contain 10% contain 90%;
+        timeline-trigger: --trigger --viewtimeline contain 10% contain 90%;
         animation-trigger: --trigger;
       }
      .scroller {
@@ -1746,10 +1746,10 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeTimeline) {
         animation: stretch linear 0.5s forwards;
       }
       .view_trigger {
-        timeline-trigger: --trigger --viewtimeline repeat contain 10% contain 90%;
+        timeline-trigger: --trigger --viewtimeline contain 10% contain 90%;
       }
       .scroll_trigger {
-        timeline-trigger: --trigger --scrolltimeline repeat contain 10% contain 90%;
+        timeline-trigger: --trigger --scrolltimeline contain 10% contain 90%;
       }
      .scroller {
         overflow-y: scroll;
@@ -1833,22 +1833,22 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeRangeStart) {
         animation: stretch linear 0.5s forwards;
       }
       .normal_trigger {
-        timeline-trigger: --normal-trigger view() repeat;
+        timeline-trigger: --normal-trigger view();
       }
       .normal_trigger2 {
-        timeline-trigger: --normal-trigger view() repeat;
+        timeline-trigger: --normal-trigger view();
       }
       .contain10_trigger {
-        timeline-trigger: --contain10-trigger view() once contain 10%;
+        timeline-trigger: --contain10-trigger view() contain 10%;
       }
       .contain10_trigger2 {
-        timeline-trigger: --contain10-trigger view() once contain 10%;
+        timeline-trigger: --contain10-trigger view() contain 10%;
       }
       .contain90_trigger {
-        timeline-trigger: --contain90-trigger view() once contain 90%;
+        timeline-trigger: --contain90-trigger view() contain 90%;
       }
       .cover90_trigger {
-        timeline-trigger: --cover90-trigger view() once cover 90%;
+        timeline-trigger: --cover90-trigger view() cover 90%;
       }
 
      .scroller {
@@ -1915,7 +1915,7 @@ TEST_P(CSSAnimationsTriggerTest, NonTriggerChange) {
         height: 10px;
         width: 10px;
         animation: stretch linear 0.5s forwards;
-        timeline-trigger: --trigger view() once contain 10% contain 90%;
+        timeline-trigger: --trigger view() contain 10% contain 90%;
         animation-trigger: --trigger;
       }
       .scroll_tl {
@@ -2012,7 +2012,7 @@ TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
         height: 10px;
         width: 10px;
         animation: stretch linear 0.5s forwards;
-        timeline-trigger: --trigger view() once 100px 300px;
+        timeline-trigger: --trigger view() 100px 300px;
         animation-trigger: --trigger;
 
       }
@@ -2058,11 +2058,11 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
       }
       .trigger1 {
         animation-trigger: trigger(--trigger1, enter play);
-        timeline-trigger: --trigger1 view() once contain 10% contain 90%;
+        timeline-trigger: --trigger1 view() contain 10% contain 90%;
       }
       .trigger2 {
         animation-trigger: trigger(--trigger2, exit pause);
-        timeline-trigger: --trigger2 view() once contain 10% contain 90%;
+        timeline-trigger: --trigger2 view() contain 10% contain 90%;
       }
      .scroller {
         overflow-y: scroll;

@@ -4059,9 +4059,6 @@ const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
       list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
           animation_data->TimelineTriggerSourceList().at(i), style));
 
-      list->Append(*ComputedStyleUtils::ValueForAnimationTriggerBehavior(
-          animation_data->TimelineTriggerBehaviorList().at(i)));
-
       list->Append(*ComputedStyleUtils::ValueForAnimationRange(
           animation_data->TimelineTriggerRangeStartList().at(i), style,
           Length::Percent(0.0)));
@@ -4084,8 +4081,6 @@ const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
   default_list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
   default_list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
       CSSAnimationData::InitialTimelineTriggerSource(), style));
-  default_list->Append(*ComputedStyleUtils::ValueForAnimationTriggerBehavior(
-      CSSAnimationData::InitialTimelineTriggerBehavior()));
   default_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
       CSSAnimationData::InitialTimelineTriggerRangeStart(), style,
       Length::Percent(0.0)));

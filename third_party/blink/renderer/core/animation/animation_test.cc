@@ -2770,7 +2770,6 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
           ));
 
         let trigger = new TimelineTrigger({
-          type: "alternate",
           timeline: new ViewTimeline({
             subject: document.getElementById('subject'), axis: "y"
           }),

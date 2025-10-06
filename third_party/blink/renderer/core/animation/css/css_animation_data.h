@@ -69,9 +69,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
       const {
     return timeline_trigger_name_list_;
   }
-  const Vector<EAnimationTriggerBehavior>& TimelineTriggerBehaviorList() const {
-    return timeline_trigger_behavior_list_;
-  }
   const Vector<std::optional<TimelineOffset>>& TimelineTriggerRangeStartList()
       const {
     return timeline_trigger_range_start_list_;
@@ -124,9 +121,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   HeapVector<Member<const ScopedCSSName>>& TimelineTriggerNameList() {
     return timeline_trigger_name_list_;
   }
-  Vector<EAnimationTriggerBehavior>& TimelineTriggerBehaviorList() {
-    return timeline_trigger_behavior_list_;
-  }
   Vector<std::optional<TimelineOffset>>& TimelineTriggerRangeStartList() {
     return timeline_trigger_range_start_list_;
   }
@@ -178,9 +172,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return EffectModel::CompositeOperation::kCompositeReplace;
   }
   static const ScopedCSSName* InitialTimelineTriggerName() { return nullptr; }
-  static EAnimationTriggerBehavior InitialTimelineTriggerBehavior() {
-    return EAnimationTriggerBehavior::kOnce;
-  }
   static std::optional<TimelineOffset> InitialTimelineTriggerRangeStart() {
     return std::nullopt;
   }
@@ -210,7 +201,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<EffectModel::CompositeOperation> composition_list_;
 
   HeapVector<Member<const ScopedCSSName>> timeline_trigger_name_list_;
-  Vector<EAnimationTriggerBehavior> timeline_trigger_behavior_list_;
   Vector<std::optional<TimelineOffset>> timeline_trigger_range_start_list_;
   Vector<std::optional<TimelineOffset>> timeline_trigger_range_end_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_exit_range_start_list_;

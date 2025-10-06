@@ -409,7 +409,6 @@ text-underline-position: auto
 text-wrap-mode: wrap
 text-wrap-style: auto
 timeline-scope: none
-timeline-trigger-behavior: once
 timeline-trigger-exit-range-end: auto
 timeline-trigger-exit-range-start: auto
 timeline-trigger-name: none
