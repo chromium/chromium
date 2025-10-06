@@ -64,13 +64,6 @@
 
 namespace {
 
-// Maximum delay to wait for fetching the account capabilities before showing
-// the fullscreen sign-in promo. If fetching the account capabilities takes more
-// than the delay, then the promo is suppressed - it may be shown on the next
-// start-up.
-constexpr base::TimeDelta kShowFullscreenSigninPromoMaxDelay =
-    base::Milliseconds(200);
-
 // The duration between two signin upgrade promo trigger is randomly chosen
 // between [53..68) days.
 base::TimeDelta DurationBetweenPromoTriggers() {
@@ -170,21 +163,6 @@ syncer::DataTypeSet DataCountsMapToDataTypeSet(
 #pragma mark - Public
 
 namespace signin {
-
-base::TimeDelta GetWaitThresholdForCapabilities() {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          signin::kWaitThresholdMillisecondsForCapabilitiesApi)) {
-    std::string delayString = command_line->GetSwitchValueASCII(
-        signin::kWaitThresholdMillisecondsForCapabilitiesApi);
-    int commandLineDelay = 0;
-    if (base::StringToInt(delayString, &commandLineDelay)) {
-      return base::Milliseconds(commandLineDelay);
-    }
-  }
-  return kShowFullscreenSigninPromoMaxDelay;
-}
 
 bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
                                     const base::Version& current_version) {
