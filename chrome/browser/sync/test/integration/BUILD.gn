@@ -18,6 +18,7 @@ source_set("sync_integration_tests_impl") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
     ":sync_integration_test_support",
+    "//chrome/browser/autofill",
     "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",
@@ -30,6 +31,8 @@ source_set("sync_integration_tests_impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/test:browser_tests_runner",
     "//chrome/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",
     "//components/data_sharing/public",
@@ -50,6 +53,7 @@ source_set("sync_integration_tests_impl") {
   ]
 
   sources = [
+    "single_client_account_setting_sync_test.cc",
     "single_client_autofill_profile_sync_test.cc",
     "single_client_bookmarks_sync_test.cc",
     "single_client_collaboration_group_sync_test.cc",
