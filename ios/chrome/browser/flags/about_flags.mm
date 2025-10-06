@@ -2820,6 +2820,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCacheIdentityListInChromeName,
      flag_descriptions::kCacheIdentityListInChromeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kCacheIdentityListInChrome)},
+    {"show-tab-grid-on-start", flag_descriptions::kShowTabGridOnStartName,
+     flag_descriptions::kShowTabGridOnStartDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kShowTabGridOnStart)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

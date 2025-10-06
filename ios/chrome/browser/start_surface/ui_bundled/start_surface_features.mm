@@ -11,8 +11,11 @@ namespace {
 // Default value for kReturnToStartSurfaceInactiveDurationInSeconds.
 constexpr base::TimeDelta kDefaultReturnToStartSurfaceInactiveDuration =
     base::Hours(4);
-
+// Default value for kDefaultShowTabGridInactiveDurationInSeconds.
+constexpr base::TimeDelta kDefaultShowTabGridInactiveDuration = base::Hours(1);
 }  // anonymous namespace
+
+BASE_FEATURE(kShowTabGridOnStart, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurface, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -21,6 +24,9 @@ BASE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations,
 
 BASE_FEATURE(kIOSStartTimeStartupRemediations,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kShowTabGridInactiveDurationInSeconds[] =
+    "ShowTabGridInactiveDurationInSeconds";
 
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =
     "ReturnToStartSurfaceInactiveDurationInSeconds";
@@ -36,6 +42,16 @@ const char kIOSStartTimeStartupRemediationsSaveNTPWebState[] =
 
 bool IsStartSurfaceEnabled() {
   return base::FeatureList::IsEnabled(kStartSurface);
+}
+
+bool IsTabGridOnStartEnabled() {
+  return base::FeatureList::IsEnabled(kShowTabGridOnStart);
+}
+
+base::TimeDelta GetReturnToTabGridDuration() {
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
+      kShowTabGridOnStart, kShowTabGridInactiveDurationInSeconds,
+      kDefaultShowTabGridInactiveDuration.InSecondsF()));
 }
 
 base::TimeDelta GetReturnToStartSurfaceDuration() {

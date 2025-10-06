@@ -888,6 +888,9 @@ extern const char kShareInWebContextMenuIOSDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
+extern const char kShowTabGridOnStartName[];
+extern const char kShowTabGridOnStartDescription[];
+
 extern const char kSignInButtonNoAvatarName[];
 extern const char kSignInButtonNoAvatarDescription[];
 
