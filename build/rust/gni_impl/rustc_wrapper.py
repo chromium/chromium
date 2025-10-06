@@ -82,7 +82,18 @@ import action_helpers
 # using our clang toolchain. That will remove the need for most of this
 # script.
 
-FILE_RE = re.compile("[^:]+: (.+)")
+# Regex for a line that specifies inter-file dependencies in a `.d` file.
+#
+# The syntax for such files follows the Makefile syntax and a regex is not
+# necessarily the best way to parse the lines. But this is what we started
+# with and it worked reasonably well so far. The main known issue is that
+# spaces in filenames are not supported.
+#
+# Other notes:
+# * We rely on greediness of `*` and `+`
+# * "#" is rejected as the first character to reject lines like
+#   `# env-dep:OUT_DIR=foo/bar`.
+FILE_RE = re.compile("^([^# ][^ ]*):( .+)?$")
 
 
 # Equivalent of python3.9 built-in
@@ -90,6 +101,49 @@ def remove_lib_suffix_from_l_args(text):
   if text.startswith("-l") and text.endswith(".lib"):
     return text[:-len(".lib")]
   return text
+
+
+def normalize_path(path, abs_build_root):
+  """Returns normalized `path` ('/' + relative to build root). """
+
+  # str.removeprefix() does not exist before python 3.9.
+  def remove_prefix(text, prefix):
+    if text.startswith(prefix):
+      return text[len(prefix):]
+    return text
+
+  return os.path.relpath(os.path.normpath(remove_prefix(
+      path, abs_build_root))).replace('\\', '/')
+
+
+def normalize_depline(depline, abs_build_root):
+  """Returns `depline` with normalized file paths.
+
+     Path normalization is needed to avoid "absolute path in deps ... request is
+     not relocatable" error.
+
+     If `depline` doesn't describe file/path dependencies (e.g. describes an
+     `env-dep`) then an unmodified `depline` is returned.
+  """
+  m = FILE_RE.match(depline)
+  if not m:
+    return depline
+
+  lhs_file = m.group(1)
+  rhs_group = m.group(2)
+  if rhs_group:
+    rhs_files = rhs_group.split()
+  else:
+    rhs_files = []
+
+  lhs_file = normalize_path(lhs_file, abs_build_root)
+  rhs_files = [normalize_path(f, abs_build_root) for f in rhs_files]
+
+  if rhs_files:
+    rhs_files = " ".join(rhs_files)
+    return f"{lhs_file}: {rhs_files}"
+  else:
+    return f"{lhs_file}:"
 
 
 def verify_inputs(depline, sources, abs_build_root):
@@ -103,22 +157,12 @@ def verify_inputs(depline, sources, abs_build_root):
   consumed.
   """
 
-  # str.removeprefix() does not exist before python 3.9.
-  def remove_prefix(text, prefix):
-    if text.startswith(prefix):
-      return text[len(prefix):]
-    return text
-
-  def normalize_path(p):
-    return os.path.relpath(os.path.normpath(remove_prefix(
-        p, abs_build_root))).replace('\\', '/')
-
   # Collect the files that rustc says are needed.
   found_files = {}
   m = FILE_RE.match(depline)
-  if m:
-    files = m.group(1)
-    found_files = {normalize_path(f): f for f in files.split()}
+  if m and m.group(2):
+    files = m.group(2)
+    found_files = {normalize_path(f, abs_build_root): f for f in files.split()}
   # Get which ones are not listed in GN.
   missing_files = found_files.keys() - sources
 
@@ -190,10 +234,17 @@ def main():
   fixed_env_vars = []
   for item in rustenv:
     (k, v) = item.split("=", 1)
-    # TODO(https://crbug.com/442128549): remove once SDKROOT is no longer
-    # required to be absolute, or if we can pass an -isysroot equivalent flag
-    # instead.
-    if k == 'SDKROOT':
+
+    # Paths need to be relative at gn/ninja level (for compatibility with
+    # distributed builds), but it's okay to use absolute paths below gn/ninja
+    # level.  And because some paths need to be absolute, we make all of them
+    # absolute.  Examples of environment-variable-stored paths that need to be
+    # absolute:
+    #
+    # * `OUT_DIR` (because `rustc` resolves `include!` in relation to `.rs`
+    #   files - see https://crbug.com/448040713#comment6).
+    # * `SDKROOT` - see https://crbug.com/442128549
+    if os.path.exists(v):
       v = os.path.abspath(v)
     env[k] = v
     fixed_env_vars.append(k)
@@ -220,7 +271,9 @@ def main():
       if m and m.group(1) in fixed_env_vars:
         dirty = True  # We want to skip this line.
       else:
-        final_depfile_lines.append(line)
+        new_line = normalize_depline(line, abs_build_root)
+        dirty = dirty or (new_line != line)
+        final_depfile_lines.append(new_line)
 
   # Verify each dependent file is listed in sources/inputs.
   for line in final_depfile_lines:

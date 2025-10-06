@@ -65,6 +65,7 @@ template("rust_target") {
     _crate_name = string_replace(_crate_name, "/", "_s")
     _crate_name = string_replace(_crate_name, ":", "_c")
     _crate_name = string_replace(_crate_name, "-", "_d")
+
     # The string replacements below are introduced to decrease the number
     # of characters in the crate name. This is particularly important while
     # building Chromium with lld_emit_indexes_and_imports=True, since it
@@ -230,8 +231,7 @@ template("rust_target") {
   if (defined(invoker.cxx_bindings)) {
     _cxx_bindings = invoker.cxx_bindings
   }
-  _rustenv = [ "OUT_DIR=" +
-               rebase_path(_env_out_dir, get_path_info(_crate_root, "dir")) ]
+  _rustenv = [ "OUT_DIR=" + rebase_path(_env_out_dir, root_build_dir) ]
   if (defined(invoker.rustenv)) {
     _rustenv += invoker.rustenv
   }
