@@ -2472,16 +2472,15 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateRearrangesDraggedTabs) {
   model->SelectTabAt(4);
 
   // Moves tab 2 to the front of the detached window.
-  delegate_->set_drop_callback(base::BindRepeating(
-      [](const BrowserList* browser_list,
-         TabDragDelegate::DragController& controller) {
+  delegate_->set_drop_callback(base::BindLambdaForTesting(
+      [&](TabDragDelegate::DragController& controller) {
         auto tab = controller.DetachTabAtForInsertion(1);
-        CHECK_EQ(2u, browser_list->size());
-        Browser* new_browser = browser_list->get(1);
-        new_browser->tab_strip_model()->InsertDetachedTabAt(0, std::move(tab),
-                                                            0, std::nullopt);
-      },
-      browser_list()));
+        CHECK_EQ(2u, browser_list()->size());
+        BrowserWindowInterface* const new_browser =
+            ui_test_utils::GetBrowserNotInSet({browser()});
+        new_browser->GetTabStripModel()->InsertDetachedTabAt(0, std::move(tab),
+                                                             0, std::nullopt);
+      }));
 
   Tab* tab = tab_strip->tab_at(0);
   const int tab_width = tab->width();
@@ -2535,8 +2534,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachToOwnWindowWithNonVisibleOnAllWorkspaceState) {
   // Set the source browser to be visible on all workspace.
   ASSERT_EQ(1u, browser_list()->size());
-  Browser* source_browser = browser_list()->get(0);
-  auto* source_window = source_browser->window()->GetNativeWindow();
+  BrowserWindowInterface* const source_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  auto* source_window = source_browser->GetWindow()->GetNativeWindow();
   source_window->SetProperty(
       aura::client::kWindowWorkspaceKey,
       aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
@@ -4603,27 +4603,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_TRUE(new_browser->GetWindow()->IsMaximized());
 }
 
-namespace {
-
-void NewBrowserWindowStateStep2(DetachToBrowserTabDragControllerTest* test,
-                                TabStrip* tab_strip) {
-  // There should be two browser windows, including the newly created one for
-  // the dragged tab.
-  EXPECT_EQ(3u, test->browser_list()->size());
-
-  // Get this new created window for the dragged tab.
-  Browser* new_browser = test->browser_list()->get(2);
-  aura::Window* window = new_browser->window()->GetNativeWindow();
-  EXPECT_NE(window->GetProperty(aura::client::kShowStateKey),
-            ui::mojom::WindowShowState::kMaximized);
-  EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
-            ui::mojom::WindowShowState::kDefault);
-
-  EXPECT_TRUE(test->ReleaseInput());
-}
-
-}  // namespace
-
 // Test that tab dragging can work on a browser window with its initial show
 // state is MAXIMIZED.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
@@ -4633,7 +4612,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   params.initial_show_state = ui::mojom::WindowShowState::kMaximized;
   Browser* browser = Browser::Create(params);
   AddBlankTabAndShow(browser);
-  TabStrip* tab_strip = GetTabStripForBrowser(browser);
   AddTabsAndResetBrowser(browser, 1);
 
   // Maximize the browser window.
@@ -4643,8 +4621,23 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             ui::mojom::WindowShowState::kMaximized);
 
   // Drag it far enough that the first tab detaches.
-  DragTabAndNotify(
-      tab_strip, base::BindOnce(&NewBrowserWindowStateStep2, this, tab_strip));
+  DragTabForDetachAndNotify(
+      browser,
+      base::BindLambdaForTesting([&](BrowserWindowInterface* source_browser,
+                                     BrowserWindowInterface* detached_browser) {
+        // There should be two browser windows, including the newly created one
+        // for the dragged tab.
+        EXPECT_EQ(3u, browser_list()->size());
+
+        aura::Window* const window =
+            detached_browser->GetWindow()->GetNativeWindow();
+        EXPECT_NE(window->GetProperty(aura::client::kShowStateKey),
+                  ui::mojom::WindowShowState::kMaximized);
+        EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
+                  ui::mojom::WindowShowState::kDefault);
+
+        EXPECT_TRUE(ReleaseInput());
+      }));
 }
 
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
@@ -4862,7 +4855,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
                        DragAppToOwnWindow) {
   // Install and get a tabbed system app.
   webapps::AppId tabbed_app_id = InstallMockApp();
-  Browser* app_browser = LaunchWebAppBrowser(tabbed_app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowser(tabbed_app_id);
   ASSERT_EQ(2u, browser_list()->size());
 
   // Close normal browser since other code expects only 1 browser to start.
@@ -4870,7 +4864,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   ASSERT_EQ(1u, browser_list()->size());
   SelectFirstBrowser();
   ASSERT_EQ(app_browser, browser());
-  EXPECT_EQ(Browser::Type::TYPE_APP, browser_list()->get(0)->type());
+  EXPECT_EQ(BrowserWindowInterface::Type::TYPE_APP, browser()->GetType());
   AddTabsAndResetBrowser(browser(), 1, GetAppUrl());
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -5658,37 +5652,6 @@ class DetachToBrowserTabDragControllerTestTouch
   std::unique_ptr<base::SimpleTestTickClock> clock_;
 };
 
-namespace {
-void PressSecondFingerWhileDetachedStep3(
-    DetachToBrowserTabDragControllerTest* test) {
-  EXPECT_TRUE(TabDragController::IsActive());
-  EXPECT_EQ(2u, test->browser_list()->size());
-  EXPECT_TRUE(test->browser_list()->get(1)->window()->IsActive());
-
-  EXPECT_TRUE(test->ReleaseInput());
-  EXPECT_TRUE(test->ReleaseInput(1));
-}
-
-void PressSecondFingerWhileDetachedStep2(
-    DetachToBrowserTabDragControllerTest* test,
-    const gfx::Point& target_point) {
-  EXPECT_TRUE(TabDragController::IsActive());
-  size_t num_browsers = test->browser_list()->size();
-  EXPECT_EQ(2u, num_browsers);
-  EXPECT_TRUE(
-      test->browser_list()->get(num_browsers - 1)->window()->IsActive());
-
-  // The window hint isn't used on Ash.
-  gfx::NativeWindow window_hint = gfx::NativeWindow();
-  // Continue dragging after adding a second finger.
-  EXPECT_TRUE(test->PressInput(gfx::Point(), window_hint, 1));
-  EXPECT_TRUE(test->DragInputToNotifyWhenDone(
-      target_point, base::BindOnce(&PressSecondFingerWhileDetachedStep3, test),
-      window_hint));
-}
-
-}  // namespace
-
 // Detaches a tab and while detached presses a second finger.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
                        PressSecondFingerWhileDetached) {
@@ -5702,14 +5665,32 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   const int touch_move_delta = GetDetachY(tab_strip);
   const gfx::Point target = GetCenterInScreenCoordinates(tab_strip->tab_at(0)) +
                             gfx::Vector2d(0, 2 * touch_move_delta);
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  DragTabAndNotify(
-      tab_strip,
-      base::BindOnce(&PressSecondFingerWhileDetachedStep2, this, target), 0,
-      touch_move_delta + 5);
 
-  // There should now be another browser.
-  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* const new_browser = DragTabForDetachAndNotify(
+      browser(),
+      base::BindLambdaForTesting([&](BrowserWindowInterface* source_browser,
+                                     BrowserWindowInterface* detached_browser) {
+        EXPECT_TRUE(TabDragController::IsActive());
+        EXPECT_TRUE(detached_browser->GetWindow()->IsActive());
+
+        // The window hint isn't used on Ash.
+        gfx::NativeWindow window_hint = gfx::NativeWindow();
+        // Continue dragging after adding a second finger.
+        EXPECT_TRUE(PressInput(gfx::Point(), window_hint, 1));
+        EXPECT_TRUE(DragInputToNotifyWhenDone(
+            target, base::BindLambdaForTesting([&]() {
+              EXPECT_TRUE(TabDragController::IsActive());
+              EXPECT_EQ(2u, browser_list()->size());
+              EXPECT_TRUE(ui_test_utils::GetBrowserNotInSet({browser()})
+                              ->GetWindow()
+                              ->IsActive());
+
+              EXPECT_TRUE(ReleaseInput());
+              EXPECT_TRUE(ReleaseInput(1));
+            }),
+            window_hint));
+      }),
+      0, touch_move_delta + 5);
   ASSERT_TRUE(new_browser);
 
   // Should no longer be dragging.
@@ -5810,6 +5791,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
 
   // Sends events to the server without waiting for its reply, which will cause
   // extra touch events before PerformWindowMove starts handling events.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   test::QuitDraggingObserver observer(tab_strip);
   clock_ = std::make_unique<base::SimpleTestTickClock>();
   clock_->SetNowTicks(base::TimeTicks::Now());
@@ -5822,13 +5804,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   clock_->Advance(base::Milliseconds(2));
   ASSERT_TRUE(ReleaseInput());
   observer.Wait();
+  BrowserWindowInterface* const browser2 = browser_created_observer.Wait();
 
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
   EXPECT_EQ(2u, browser_list()->size());
-  auto* browser2 = browser_list()->get(1);
-  EXPECT_TRUE(browser2->window()->IsMinimized());
-  EXPECT_FALSE(browser2->window()->IsVisible());
+  EXPECT_TRUE(browser2->GetWindow()->IsMinimized());
+  EXPECT_FALSE(browser2->GetWindow()->IsVisible());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -5887,7 +5869,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
                        DoesNotMoveTabOnDrag) {
   // Install and launch mock app that can be locked for OnTask.
   const webapps::AppId tabbed_app_id = InstallMockApp();
-  Browser* const app_browser = LaunchWebAppBrowser(tabbed_app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowser(tabbed_app_id);
   ASSERT_EQ(2u, browser_list()->size());
 
   // Close normal browser.
@@ -5895,7 +5878,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   ASSERT_EQ(1u, browser_list()->size());
   SelectFirstBrowser();
   ASSERT_EQ(app_browser, browser());
-  EXPECT_EQ(Browser::Type::TYPE_APP, browser_list()->get(0)->type());
+  EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
   // Lock the app for OnTask and set up app for testing drag behavior.
   browser()->SetLockedForOnTask(true);
@@ -5920,7 +5903,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
                        TabDoesNotDetachOnDrag) {
   // Install and launch mock app that can be locked for OnTask.
   const webapps::AppId tabbed_app_id = InstallMockApp();
-  Browser* const app_browser = LaunchWebAppBrowser(tabbed_app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowser(tabbed_app_id);
   ASSERT_EQ(2u, browser_list()->size());
 
   // Close normal browser.
@@ -5928,7 +5912,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   ASSERT_EQ(1u, browser_list()->size());
   SelectFirstBrowser();
   ASSERT_EQ(app_browser, browser());
-  EXPECT_EQ(Browser::Type::TYPE_APP, browser_list()->get(0)->type());
+  EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
   // Lock the app for OnTask and set up app for testing drag behavior.
   browser()->SetLockedForOnTask(true);
@@ -5948,7 +5932,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
                        WindowDoesNotMoveOnTabDrag) {
   // Install and launch mock app that can be locked for OnTask.
   const webapps::AppId tabbed_app_id = InstallMockApp();
-  Browser* const app_browser = LaunchWebAppBrowser(tabbed_app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowser(tabbed_app_id);
   ASSERT_EQ(2u, browser_list()->size());
 
   // Close normal browser.
@@ -5956,7 +5941,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   ASSERT_EQ(1u, browser_list()->size());
   SelectFirstBrowser();
   ASSERT_EQ(app_browser, browser());
-  EXPECT_EQ(Browser::Type::TYPE_APP, browser_list()->get(0)->type());
+  EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
   // Lock the app for OnTask.
   browser()->SetLockedForOnTask(true);
