@@ -34,6 +34,8 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   using GetOtpSuggestionsCallback =
       base::OnceCallback<void(std::vector<std::string>)>;
 
+  // TODO(crbug.com/446680359): Take a reference instead of a pointer for owner
+  // to remove null-checks.
   OtpManagerImpl(BrowserAutofillManager* owner,
                  one_time_tokens::SmsOtpBackend* sms_otp_backend);
   OtpManagerImpl(const OtpManagerImpl&) = delete;
@@ -55,6 +57,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
 
   // Handler for when the SMS backend returns OTPs.
   void OnOtpRetrievalComplete(const one_time_tokens::OtpFetchReply& reply);
+
+  // Returns true if an OTP must not be delivered to the caller in an autofill
+  // context, e.g., because the page called the WebOTP API.
+  bool IsOtpDeliveryBlocked();
 
   // The owning BrowserAutofillManager.
   raw_ptr<BrowserAutofillManager> owner_;

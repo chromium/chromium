@@ -17,6 +17,10 @@ ContentAutofillClient::GetAutofillDriverFactory() {
   return autofill_driver_factory_;
 }
 
+bool ContentAutofillClient::DocumentUsedWebOTP() {
+  return GetWebContents().GetPrimaryMainFrame()->DocumentUsedWebOTP();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentAutofillClient);
 
 }  // namespace autofill

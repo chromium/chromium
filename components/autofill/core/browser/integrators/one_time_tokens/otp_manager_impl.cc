@@ -56,11 +56,25 @@ OtpManagerImpl::~OtpManagerImpl() = default;
 
 void OtpManagerImpl::GetOtpSuggestions(
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
+  // If a website uses the WebOTP API, GMSCore or Chrome will show its own UI to
+  // fill the OTP. `wrapped_callback` prevents that an SMS OTP is delivered in
+  // case the WebOTP API was used.
+  GetOtpSuggestionsCallback wrapped_callback = base::BindOnce(
+      [](base::WeakPtr<OtpManagerImpl> self,
+         OtpManagerImpl::GetOtpSuggestionsCallback callback,
+         std::vector<std::string> suggestions) {
+        if (!self || self->IsOtpDeliveryBlocked()) {
+          suggestions.clear();
+        }
+        std::move(callback).Run(std::move(suggestions));
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
   if (!sms_otp_retrieval_in_progress_) {
     FilterExpiredOtps(otp_suggestions_);
-    std::move(callback).Run(OtpsToSuggestionStrings(otp_suggestions_));
+    std::move(wrapped_callback).Run(OtpsToSuggestionStrings(otp_suggestions_));
   } else {
-    last_pending_get_suggestions_callback_ = std::move(callback);
+    last_pending_get_suggestions_callback_ = std::move(wrapped_callback);
   }
 }
 
@@ -130,6 +144,10 @@ void OtpManagerImpl::OnOtpRetrievalComplete(
 
   // TODO(crbug.com/415272524): Record metrics on how often the retrieval
   // succeeds or fails, in combination with the OTP source.
+}
+
+bool OtpManagerImpl::IsOtpDeliveryBlocked() {
+  return owner_ && owner_->client().DocumentUsedWebOTP();
 }
 
 }  // namespace autofill

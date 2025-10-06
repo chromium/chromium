@@ -183,11 +183,14 @@ static_library("test_support") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    sources = [
+  sources = [ "otp_manager_browsertest.cc" ]
+
+  # TODO(crbug.com/449649023) Migrate these tests to PlatformBrowserTests.
+  if (!is_android) {
+    sources += [
       "autocomplete_browsertest.cc",
       "autofill_across_iframes_browsertest.cc",
       "autofill_browsertest.cc",
@@ -195,27 +198,32 @@ if (!is_android) {
       "autofill_server_browsertest.cc",
       "form_structure_browsertest.cc",
     ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    deps = [
-      "//base/version_info",
-      "//chrome/browser/autofill",
-      "//chrome/browser/ui:browser_navigator_params_headers",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/webdata_services",
-      "//chrome/test:test_support",
-      "//components/autofill/content/browser:test_support",
-      "//components/autofill/core/common:test_support",
-      "//components/password_manager/content/browser:test_support",
-      "//components/ukm:test_support",
-      "//testing/data_driven_testing",
-    ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base/version_info",
+    "//chrome/browser/autofill",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/webdata_services",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/common:test_support",
+    "//components/password_manager/content/browser:test_support",
+    "//components/ukm:test_support",
+    "//testing/data_driven_testing",
+  ]
+
+  if (is_android) {
+    deps += [ "//content/test:browsertest_support" ]
+  } else {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_android) {

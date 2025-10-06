@@ -44,6 +44,9 @@ class ContentAutofillClient
   virtual credential_management::ContentCredentialManager*
   GetContentCredentialManager() = 0;
 
+  // Implementation of AutofillClient:
+  bool DocumentUsedWebOTP() final;
+
  private:
   friend class content::WebContentsUserData<ContentAutofillClient>;
 
