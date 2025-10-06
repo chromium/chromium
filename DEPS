@@ -2924,15 +2924,15 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@2eb0d5fb962855247b25193b7a0439b0da05cb93',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@2f7ba7eaee8d05ac369c751fdab6746a23b2e415',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@a57276bf558f5cf94d3a9854ebdf5a2236849a5a',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@01e0577914a75a2569c846778c2f93aa8e6feddd',
   'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@533a69c63ae773d90d03b206954ffffec6517dbd',
   'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@a4f8ada9f4f97c45b8c89c57997be9cebaae65d2',
-  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@ae0461b671558197a9a50e5fcfcc3b2d3f406b42',
-  'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@5568ce14705e512113df5b459fc86d857b3d7789',
-  'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@4d0b838ffcf1ef81151f0e7e11fad1d9ff859813',
+  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@35e5469b619bfeeaf30d8c8e54ddde20e8a9e5f5',
+  'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@38e5db242947e46e2536e8515527c1c05b1715ff',
+  'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@a1e45945b3a84140956dc4672684090cf8e636a4',
   'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@3b60aa235ce6695fb1d4118c5bf1122b394a6205',
 
   'src/third_party/vulkan_memory_allocator':
