@@ -96,4 +96,12 @@ JNI_Fido2CredentialRequest_GetCredentialResponseFromJson(
       env, webauthn::GetAssertionResponseFromValue, jjson);
 }
 
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_Fido2CredentialRequest_ReportOptionsToJson(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& byte_buffer) {
+  return MojoClassToJSON<blink::mojom::PublicKeyCredentialReportOptions>(
+      env, byte_buffer);
+}
+
 }  // namespace webauthn

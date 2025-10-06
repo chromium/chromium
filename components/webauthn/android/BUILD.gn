@@ -38,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/AuthenticatorErrorResponseCallback.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
+    "java/src/org/chromium/components/webauthn/AuthenticatorReportResponseCallback.java",
     "java/src/org/chromium/components/webauthn/Barrier.java",
     "java/src/org/chromium/components/webauthn/CreateConfirmationUiDelegate.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",

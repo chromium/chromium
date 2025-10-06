@@ -111,6 +111,14 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
+    public void performReportWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
+            Callback<WebAuthSecurityChecksResults> callback) {
+        callback.onResult(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
+    }
+
+    @Override
     public GlobalRenderFrameHostId getGlobalRenderFrameHostId() {
         return new GlobalRenderFrameHostId(-1, -1);
     }

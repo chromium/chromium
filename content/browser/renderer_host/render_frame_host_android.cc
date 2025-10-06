@@ -275,6 +275,26 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
+void RenderFrameHostAndroid::PerformReportWebAuthSecurityChecks(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& relying_party_id,
+    const base::android::JavaParamRef<jobject>& effective_origin,
+    const base::android::JavaParamRef<jobject>& callback) const {
+  url::Origin origin = url::Origin::FromJavaObject(env, effective_origin);
+  render_frame_host_->PerformReportWebAuthSecurityChecks(
+      ConvertJavaStringToUTF8(env, relying_party_id), origin,
+      base::BindOnce(
+          [](base::android::ScopedJavaGlobalRef<jobject> callback,
+             blink::mojom::AuthenticatorStatus status, bool is_cross_origin) {
+            base::android::RunObjectCallbackAndroid(
+                callback,
+                Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
+                    base::android::AttachCurrentThread(),
+                    static_cast<jint>(status), is_cross_origin));
+          },
+          base::android::ScopedJavaGlobalRef<jobject>(callback)));
+}
+
 jint RenderFrameHostAndroid::GetLifecycleState(JNIEnv* env) const {
   return static_cast<jint>(render_frame_host_->GetLifecycleState());
 }

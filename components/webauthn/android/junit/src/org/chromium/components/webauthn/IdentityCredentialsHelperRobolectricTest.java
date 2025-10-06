@@ -14,6 +14,7 @@ import android.os.Bundle;
 import androidx.test.filters.SmallTest;
 
 import com.google.android.gms.identitycredentials.CreateCredentialRequest;
+import com.google.android.gms.identitycredentials.SignalCredentialStateRequest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.blink.mojom.AllAcceptedCredentialsOptions;
+import org.chromium.blink.mojom.CurrentUserDetailsOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
+import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,6 +52,22 @@ public class IdentityCredentialsHelperRobolectricTest {
         when(mAuthenticationContextProviderMock.getContext()).thenReturn(mContext);
         when(mAuthenticationContextProviderMock.getRenderFrameHost()).thenReturn(mFrameHost);
         mHelper = new IdentityCredentialsHelper(mAuthenticationContextProviderMock);
+    }
+
+    private void verifyBuildSignalCredentialStateRequest(
+            PublicKeyCredentialReportOptions options, String expectedType) {
+        SignalCredentialStateRequest request =
+                mHelper.buildSignalCredentialStateRequest(options, ORIGIN_STRING);
+
+        assertThat(request).isNotNull();
+        assertThat(request.getType()).isEqualTo(expectedType);
+        assertThat(request.getOrigin()).isEqualTo(ORIGIN_STRING);
+
+        Bundle expectedRequestData = new Bundle();
+        expectedRequestData.putString(
+                "androidx.credentials.signal_request_json_key",
+                Fido2ApiTestHelper.TEST_SERIALIZED_REPORT_REQUEST_JSON);
+        assertThat(request.getRequestData().toString()).isEqualTo(expectedRequestData.toString());
     }
 
     @Test
@@ -96,5 +116,41 @@ public class IdentityCredentialsHelperRobolectricTest {
                 "androidx.credentials.BUNDLE_KEY_IS_CONDITIONAL_REQUEST", true);
         assertThat(request.getCandidateQueryData().toString())
                 .isEqualTo(expectedQueryData.toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildSignalCredentialStateRequest_unknownCredentialId() {
+        PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
+        options.relyingPartyId = ORIGIN_STRING;
+        options.unknownCredentialId = new byte[] {1, 2, 3, 4};
+        verifyBuildSignalCredentialStateRequest(
+                options, "androidx.credentials.SIGNAL_UNKNOWN_CREDENTIAL_STATE_REQUEST_TYPE");
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildSignalCredentialStateRequest_allAcceptedCredentials() {
+        PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
+        options.relyingPartyId = ORIGIN_STRING;
+        options.allAcceptedCredentials = new AllAcceptedCredentialsOptions();
+        options.allAcceptedCredentials.userId = new byte[] {1, 2, 3, 4};
+        options.allAcceptedCredentials.allAcceptedCredentialsIds =
+                new byte[][] {{6, 5, 4}, {3, 2, 1}};
+        verifyBuildSignalCredentialStateRequest(
+                options, "androidx.credentials.SIGNAL_ALL_ACCEPTED_CREDENTIALS_REQUEST_TYPE");
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildSignalCredentialStateRequest_currentUserDetails() {
+        PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
+        options.relyingPartyId = ORIGIN_STRING;
+        options.currentUserDetails = new CurrentUserDetailsOptions();
+        options.currentUserDetails.userId = new byte[] {1, 2, 3, 4};
+        options.currentUserDetails.name = "username";
+        options.currentUserDetails.displayName = "displayName";
+        verifyBuildSignalCredentialStateRequest(
+                options, "androidx.credentials.SIGNAL_CURRENT_USER_DETAILS_STATE_REQUEST_TYPE");
     }
 }

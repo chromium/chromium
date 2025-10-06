@@ -45,6 +45,7 @@ using blink::mojom::MakeCredentialAuthenticatorResponse;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
 using blink::mojom::PublicKeyCredentialCreationOptions;
 using blink::mojom::PublicKeyCredentialCreationOptionsPtr;
+using blink::mojom::PublicKeyCredentialReportOptions;
 using blink::mojom::PublicKeyCredentialRequestOptions;
 using blink::mojom::PublicKeyCredentialRequestOptionsPtr;
 using blink::mojom::RemoteDesktopClientOverride;
@@ -601,6 +602,51 @@ TEST(WebAuthenticationJSONConversionTest,
     EXPECT_EQ(response->authenticator_attachment,
               device::AuthenticatorAttachment::kAny);
     EXPECT_FALSE(response->user_handle);
+  }
+}
+
+TEST(WebAuthenticationJSONConversionTest,
+     PublicKeyCredentialReportOptionsToValue) {
+  {
+    // CurrentUserDetails
+    auto current_user_details = blink::mojom::CurrentUserDetailsOptions::New(
+        kUserId, kUserName, kUserDisplayName);
+    auto options = PublicKeyCredentialReportOptions::New(
+        kRpId, std::nullopt, nullptr, std::move(current_user_details));
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(
+        json,
+        R"({"displayName":"Example User","name":"user@example.test","rpId":"example.test","userId":"dGVzdCB1c2VyIGlk"})");
+  }
+  {
+    // AllAcceptedCredentials
+    std::vector<std::vector<uint8_t>> all_accepted_credentials_ids = {kUserId};
+    auto all_accepted_credentials =
+        blink::mojom::AllAcceptedCredentialsOptions::New(
+            kUserId, std::move(all_accepted_credentials_ids));
+    auto options = PublicKeyCredentialReportOptions::New(
+        kRpId, std::nullopt, std::move(all_accepted_credentials), nullptr);
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(
+        json,
+        R"({"allAcceptedCredentialIds":["dGVzdCB1c2VyIGlk"],"rpId":"example.test","userId":"dGVzdCB1c2VyIGlk"})");
+  }
+  {
+    // UnknownCredentialId
+    auto options =
+        PublicKeyCredentialReportOptions::New(kRpId, kUserId, nullptr, nullptr);
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(json,
+              R"({"credentialId":"dGVzdCB1c2VyIGlk","rpId":"example.test"})");
   }
 }
 

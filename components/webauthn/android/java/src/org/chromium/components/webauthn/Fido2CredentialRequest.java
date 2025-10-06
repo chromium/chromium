@@ -42,6 +42,7 @@ import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
+import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
@@ -810,6 +811,34 @@ public class Fido2CredentialRequest
                 (e) -> {
                     logError(TAG, "FIDO2 API call failed", e);
                     callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
+                });
+    }
+
+    public void handleReportRequest(
+            PublicKeyCredentialReportOptions options,
+            Origin origin,
+            AuthenticatorReportResponseCallback callback) {
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
+        assert frameHost != null;
+
+        if (options.unknownCredentialId == null
+                && options.allAcceptedCredentials == null
+                && options.currentUserDetails == null) {
+            callback.onComplete(AuthenticatorStatus.UNKNOWN_ERROR);
+            return;
+        }
+
+        frameHost.performReportWebAuthSecurityChecks(
+                options.relyingPartyId,
+                origin,
+                (results) -> {
+                    if (results.securityCheckResult != AuthenticatorStatus.SUCCESS) {
+                        callback.onComplete(results.securityCheckResult);
+                        return;
+                    }
+                    mIdentityCredentialsHelper.handleReportRequest(
+                            options, convertOriginToString(origin));
+                    callback.onComplete(AuthenticatorStatus.SUCCESS);
                 });
     }
 
@@ -1600,5 +1629,7 @@ public class Fido2CredentialRequest
         String getOptionsToJson(ByteBuffer serializedOptions);
 
         byte @Nullable [] getCredentialResponseFromJson(String json);
+
+        String reportOptionsToJson(ByteBuffer serializedOptions);
     }
 }

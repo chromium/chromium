@@ -76,6 +76,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
     private @Nullable MakeCredential_Response mMakeCredentialCallback;
     private @Nullable GetCredential_Response mGetCredentialCallback;
+    private @Nullable Report_Response mReportCallback;
     private @Nullable Fido2CredentialRequest mPendingFido2CredentialRequest;
     private final Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
@@ -256,7 +257,23 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
     @Override
     public void report(PublicKeyCredentialReportOptions options, Report_Response callback) {
-        callback.call(AuthenticatorStatus.NOT_IMPLEMENTED, null);
+        log(TAG, "report");
+        if (!DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL)) {
+            callback.call(AuthenticatorStatus.NOT_IMPLEMENTED, null);
+            return;
+        }
+
+        if (mIsOperationPending) {
+            callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
+            return;
+        }
+
+        mReportCallback = callback;
+        mIsOperationPending = true;
+
+        mPendingFido2CredentialRequest = getFido2CredentialRequest();
+        mPendingFido2CredentialRequest.handleReportRequest(
+                options, assertNonNull(mOrigin), this::onReportComplete);
     }
 
     private boolean couldSupportConditionalMediation() {
@@ -307,16 +324,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         capabilities.add(
                 createWebAuthnClientCapability(AuthenticatorConstants.CAPABILITY_PPAA, true));
 
-        capabilities.add(
-                createWebAuthnClientCapability(
-                        AuthenticatorConstants.CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS, false));
-        capabilities.add(
-                createWebAuthnClientCapability(
-                        AuthenticatorConstants.CAPABILITY_SIGNAL_CURRENT_USER_DETAILS, false));
-        capabilities.add(
-                createWebAuthnClientCapability(
-                        AuthenticatorConstants.CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL, false));
-
         if (!couldSupportUvpaa()) {
             capabilities.add(
                     createWebAuthnClientCapability(
@@ -329,6 +336,16 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             capabilities.add(
                     createWebAuthnClientCapability(
                             AuthenticatorConstants.CAPABILITY_IMMEDIATE_GET, false));
+            capabilities.add(
+                    createWebAuthnClientCapability(
+                            AuthenticatorConstants.CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS,
+                            false));
+            capabilities.add(
+                    createWebAuthnClientCapability(
+                            AuthenticatorConstants.CAPABILITY_SIGNAL_CURRENT_USER_DETAILS, false));
+            capabilities.add(
+                    createWebAuthnClientCapability(
+                            AuthenticatorConstants.CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL, false));
             callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
             return;
         }
@@ -359,6 +376,25 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                                             DeviceFeatureList
                                                                     .WEBAUTHN_IMMEDIATE_GET)
                                                     && isUvpaa));
+                            boolean signal_supported =
+                                    isUvpaa
+                                            && DeviceFeatureMap.isEnabled(
+                                                    DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL);
+                            capabilities.add(
+                                    createWebAuthnClientCapability(
+                                            AuthenticatorConstants
+                                                    .CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS,
+                                            signal_supported));
+                            capabilities.add(
+                                    createWebAuthnClientCapability(
+                                            AuthenticatorConstants
+                                                    .CAPABILITY_SIGNAL_CURRENT_USER_DETAILS,
+                                            signal_supported));
+                            capabilities.add(
+                                    createWebAuthnClientCapability(
+                                            AuthenticatorConstants
+                                                    .CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL,
+                                            signal_supported));
                             callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
                         });
     }
@@ -462,6 +498,15 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             assumeNonNull(passwordCredential);
             mGetCredentialCallback.call(getCredentialResponseForPassword(passwordCredential));
         }
+        cleanupRequest();
+    }
+
+    public void onReportComplete(int status) {
+        log(TAG, "onReportComplete completed with status: " + status);
+        // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
+        if (!mIsOperationPending || mReportCallback == null) return;
+
+        mReportCallback.call(status, null);
         cleanupRequest();
     }
 

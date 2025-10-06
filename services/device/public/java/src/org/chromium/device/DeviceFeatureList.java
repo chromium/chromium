@@ -24,6 +24,7 @@ public abstract class DeviceFeatureList {
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
     public static final String BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND =
             "BatteryStatusManagerBroadcastReceiverInBackground";
+    public static final String WEBAUTHN_ANDROID_SIGNAL = "WebAuthenticationAndroidSignal";
     public static final String WEBAUTHN_PASSKEY_UPGRADE = "WebAuthenticationPasskeyUpgrade";
     public static final String WEBAUTHN_IMMEDIATE_GET = "WebAuthenticationImmediateGet";
 

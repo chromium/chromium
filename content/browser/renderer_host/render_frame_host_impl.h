@@ -3031,6 +3031,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::optional<url::Origin>& remote_desktop_client_override_origin,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
           callback);
+  void PerformReportWebAuthSecurityChecks(
+      const std::string& relying_party_id,
+      const url::Origin& effective_origin,
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+          callback);
 #endif
 
   using JavaScriptResultAndTypeCallback =
@@ -4405,15 +4410,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::optional<mojo::UrgentMessageScope> MakeUrgentMessageScopeIfNeeded();
 
 #if BUILDFLAG(IS_ANDROID)
-  // These functions are called after a WebAuthn relying party check has
-  // completed. See `PerformMakeCredentialWebAuthSecurityChecks` and
-  // `PerformGetAssertionWebAuthSecurityChecks`.
-  void OnGetAssertionWebAuthSecurityChecksCompleted(
-      base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
-          callback,
-      bool is_cross_origin,
-      blink::mojom::AuthenticatorStatus status);
-  void OnMakeCredentialWebAuthSecurityChecksCompleted(
+  // This function is called after a WebAuthn relying party check has
+  // completed. See `Perform*WebAuthSecurityChecks`.
+  void OnWebAuthSecurityChecksCompleted(
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
           callback,
       bool is_cross_origin,

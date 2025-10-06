@@ -26,6 +26,15 @@ base::Value ToValue(
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options);
 
+// Converts a `PublicKeyCredentialReportOptions` into a `base::Value`.
+//
+// This is not formally specified, but corresponds to the JSON expected in
+// `requestJSON` field in `SignalCredentialStateRequest` in the Android
+// Credentials API.
+// https://developer.android.com/reference/androidx/credentials/SignalCredentialStateRequest
+base::Value ToValue(
+    const blink::mojom::PublicKeyCredentialReportOptionsPtr& options);
+
 // Converts a `base::Value` encoding a `PublicKeyCredential` instance from a
 // WebAuthn `get()` request into a `MakeCredentialAuthenticatorResponse`.
 // Returns a pair of the converted message and an error string. The message will

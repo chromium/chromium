@@ -46,7 +46,8 @@ import org.chromium.url.Origin;
 @SmallTest
 @EnableFeatures({
     DeviceFeatureList.WEBAUTHN_PASSKEY_UPGRADE,
-    DeviceFeatureList.WEBAUTHN_IMMEDIATE_GET
+    DeviceFeatureList.WEBAUTHN_IMMEDIATE_GET,
+    DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL
 })
 public class AuthenticatorImplTest {
     private AuthenticatorImpl mAuthenticator;
@@ -151,6 +152,14 @@ public class AuthenticatorImplTest {
     public void testGetClientCapabilities_ImmediateGet_Supported_WhenUvpaaAvailable() {
         GmsCoreUtils.setGmsCoreVersionForTesting(GmsCoreUtils.GMSCORE_MIN_VERSION);
         testCapability(AuthenticatorConstants.CAPABILITY_IMMEDIATE_GET, true);
+    }
+
+    @Test
+    public void testGetClientCapabilities_SignalApi_Supported_WhenUvpaaAvailable() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(GmsCoreUtils.GMSCORE_MIN_VERSION);
+        testCapability(AuthenticatorConstants.CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS, true);
+        testCapability(AuthenticatorConstants.CAPABILITY_SIGNAL_CURRENT_USER_DETAILS, true);
+        testCapability(AuthenticatorConstants.CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL, true);
     }
 
     @Test

@@ -56,6 +56,7 @@ import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
+import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink_public.common.BlinkFeatures;
@@ -734,6 +735,16 @@ public class Fido2CredentialRequestRobolectricTest {
         handleGetCredentialRequest();
 
         verify(mBarrierMock).onFido2ApiCancelled(eq(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+    }
+
+    @Test
+    @SmallTest
+    public void testReportRequest_noSignalArgumentsSet_unknownError() {
+        PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
+        options.relyingPartyId = "rpId";
+        mRequest.handleReportRequest(options, mOrigin, mCallback::onReportOutcome);
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
     }
 
     private void handleMakeCredentialRequest(Bundle browserOptions) {

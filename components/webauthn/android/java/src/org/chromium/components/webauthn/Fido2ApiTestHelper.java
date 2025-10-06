@@ -445,6 +445,7 @@ public class Fido2ApiTestHelper {
             "{serialized_make_request}";
     private static final String TEST_SERIALIZED_GET_ASSERTION_REQUEST_JSON =
             "{serialized_get_request}";
+    public static final String TEST_SERIALIZED_REPORT_REQUEST_JSON = "{serialized_report_request}";
 
     /**
      * Builds a test intent to be returned by a successful call to makeCredential.
@@ -813,6 +814,11 @@ public class Fido2ApiTestHelper {
                     public byte[] getCredentialResponseFromJson(String json) {
                         return TEST_SERIALIZED_CREDMAN_GET_CREDENTIAL_RESPONSE;
                     }
+
+                    @Override
+                    public String reportOptionsToJson(ByteBuffer serializedOptions) {
+                        return TEST_SERIALIZED_REPORT_REQUEST_JSON;
+                    }
                 };
         Fido2CredentialRequestJni.setInstanceForTesting(fido2CredentialRequestJni);
     }
@@ -866,6 +872,12 @@ public class Fido2ApiTestHelper {
         }
 
         public void onError(int status) {
+            assert mStatus == null;
+            mStatus = status;
+            unblock();
+        }
+
+        public void onReportOutcome(int status) {
             assert mStatus == null;
             mStatus = status;
             unblock();
