@@ -87,6 +87,10 @@ void PageContentMetadataObserver::PrimaryPageChanged(content::Page& page) {
   // and re-initialize them for the new page's frame tree.
   frame_data_.clear();
   UpdateFrameObservers();
+  // The meta tags are guaranteed to be empty here but we dispatch an update
+  // for all frames to ensure that observers are notified that any
+  // previous tags are no longer found (because of the navigation).
+  DispatchMetadata();
 }
 
 void PageContentMetadataObserver::UpdateFrameObservers() {
@@ -106,9 +110,16 @@ void PageContentMetadataObserver::UpdateFrameObservers() {
 
 void PageContentMetadataObserver::DispatchMetadata() {
   auto page_metadata = blink::mojom::PageMetadata::New();
-  for (const auto& it : frame_data_) {
-    if (it.second.metadata) {
-      page_metadata->frame_metadata.push_back(it.second.metadata->Clone());
+  for (const auto& [render_frame_host, frame_data] : frame_data_) {
+    if (frame_data.metadata) {
+      page_metadata->frame_metadata.push_back(frame_data.metadata->Clone());
+    } else {
+      // Create a representation for a frame with no matching meta tags.
+      auto frame_metadata = blink::mojom::FrameMetadata::New();
+      frame_metadata->url = GetURLForFrameMetadata(
+          render_frame_host->GetLastCommittedURL(),
+          render_frame_host->GetLastCommittedOrigin());
+      page_metadata->frame_metadata.push_back(std::move(frame_metadata));
     }
   }
   callback_.Run(std::move(page_metadata));
