@@ -1795,13 +1795,6 @@
       status: "experimental",
     },
     {
-      // Prevents <form method=dialog> from submitting across shadow boundaries
-      // when looking for an ancestor <dialog> element.
-      // https://issues.chromium.org/issues/40229445
-      name: "DialogSubmitShadowBoundaries",
-      status: "stable",
-    },
-    {
       name: "DigitalGoods",
       origin_trial_feature_name: "DigitalGoodsV2",
       origin_trial_os: ["android", "chromeos"],

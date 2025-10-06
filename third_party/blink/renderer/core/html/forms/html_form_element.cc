@@ -417,18 +417,10 @@ void HTMLFormElement::requestSubmit(HTMLElement* submitter,
 }
 
 void HTMLFormElement::SubmitDialog(FormSubmission* form_submission) {
-  if (RuntimeEnabledFeatures::DialogSubmitShadowBoundariesEnabled()) {
-    if (auto* dialog = Traversal<HTMLDialogElement>::FirstAncestor(*this)) {
-      dialog->close(form_submission->Result());
-    }
-    return;
+  if (auto* dialog = Traversal<HTMLDialogElement>::FirstAncestor(*this)) {
+    dialog->close(form_submission->Result());
   }
-  for (Node* node = this; node; node = node->ParentOrShadowHostNode()) {
-    if (auto* dialog = DynamicTo<HTMLDialogElement>(*node)) {
-      dialog->close(form_submission->Result());
-      return;
-    }
-  }
+  return;
 }
 
 void HTMLFormElement::ScheduleFormSubmission(
