@@ -5,6 +5,6 @@
 // https://w3c.github.io/ServiceWorker/#self-caches
 [
     ImplementedAs=GlobalCacheStorage
-] partial interface Window {
+] partial interface mixin WindowOrWorkerGlobalScope {
     [SecureContext, MeasureAs=GlobalCacheStorage, RaisesException] readonly attribute CacheStorage caches;
 };
