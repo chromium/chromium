@@ -224,68 +224,6 @@ int MapStarboardModifiersToUiFlags(unsigned int sb_modifiers) {
   return ui_flags;
 }
 
-// Helper to create Mouse events
-std::unique_ptr<ui::Event> CreateMouseEvent(const SbInputData* input_data,
-                                            base::TimeTicks timestamp,
-                                            int ui_flags) {
-  const SbInputEventType raw_type = input_data->type;
-  const SbKey raw_key = input_data->key;
-  const gfx::PointF position(input_data->position.x, input_data->position.y);
-
-  switch (raw_type) {
-    case kSbInputEventTypePress:
-    case kSbInputEventTypeUnpress: {
-      int changed_button_flag = 0;
-      switch (raw_key) {
-        case kSbKeyMouse1:
-          changed_button_flag = ui::EF_LEFT_MOUSE_BUTTON;
-          break;
-        case kSbKeyMouse2:
-          changed_button_flag = ui::EF_RIGHT_MOUSE_BUTTON;
-          break;
-        case kSbKeyMouse3:
-          changed_button_flag = ui::EF_MIDDLE_MOUSE_BUTTON;
-          break;
-        case kSbKeyMouse4:
-          changed_button_flag = ui::EF_BACK_MOUSE_BUTTON;
-          break;
-        case kSbKeyMouse5:
-          changed_button_flag = ui::EF_FORWARD_MOUSE_BUTTON;
-          break;
-        default:
-          return nullptr;  // Not a mouse button key
-      }
-
-      ui::EventType event_type = (raw_type == kSbInputEventTypePress)
-                                     ? ui::EventType::kMousePressed
-                                     : ui::EventType::kMouseReleased;
-      return std::make_unique<ui::MouseEvent>(
-          event_type, position, position, timestamp,
-          ui_flags | changed_button_flag, changed_button_flag);
-    }
-    case kSbInputEventTypeMove: {
-      return std::make_unique<ui::MouseEvent>(ui::EventType::kMouseMoved,
-                                              position, position, timestamp,
-                                              ui_flags, 0);
-    }
-    case kSbInputEventTypeWheel: {
-      // Standard multiplier for converting line deltas to scroll offsets.
-      const int kScrollOffsetMultiplier = ui::MouseWheelEvent::kWheelDelta;
-      int offset_x =
-          static_cast<int>(-input_data->delta.x * kScrollOffsetMultiplier);
-      int offset_y =
-          static_cast<int>(-input_data->delta.y * kScrollOffsetMultiplier);
-
-      return std::make_unique<ui::MouseWheelEvent>(
-          gfx::Vector2d(offset_x, offset_y), position, position, timestamp,
-          ui_flags, ui::EF_NONE);
-    }
-    default:
-      VLOG(1) << "Unhandled Mouse EventType: " << raw_type;
-      return nullptr;
-  }
-}
-
 // Helper to create Touch events
 std::unique_ptr<ui::Event> CreateTouchEvent(const SbInputData* input_data,
                                             base::TimeTicks timestamp,
@@ -370,6 +308,73 @@ scoped_refptr<base::SequencedTaskRunner> GetCurrentSequencedTaskRunner() {
 
 }  // namespace
 
+// Helper to create Mouse events
+std::unique_ptr<ui::Event> StarboardEventSource::CreateMouseEvent(
+    const SbInputData* input_data,
+    base::TimeTicks timestamp,
+    int ui_flags) {
+  const SbInputEventType raw_type = input_data->type;
+  const SbKey raw_key = input_data->key;
+  const gfx::PointF position(input_data->position.x, input_data->position.y);
+  switch (raw_type) {
+    case kSbInputEventTypePress:
+    case kSbInputEventTypeUnpress: {
+      int changed_button_flag = 0;
+      switch (raw_key) {
+        case kSbKeyMouse1:
+          changed_button_flag = ui::EF_LEFT_MOUSE_BUTTON;
+          break;
+        case kSbKeyMouse2:
+          changed_button_flag = ui::EF_RIGHT_MOUSE_BUTTON;
+          break;
+        case kSbKeyMouse3:
+          changed_button_flag = ui::EF_MIDDLE_MOUSE_BUTTON;
+          break;
+        case kSbKeyMouse4:
+          changed_button_flag = ui::EF_BACK_MOUSE_BUTTON;
+          break;
+        case kSbKeyMouse5:
+          changed_button_flag = ui::EF_FORWARD_MOUSE_BUTTON;
+          break;
+        default:
+          return nullptr;  // Not a mouse button key
+      }
+
+      // Starboard doesn't have a concept of dragging, which is conventionally
+      // required by the platform. Simulate it by tracking mouse presses.
+      // ui::EventFlags are used because they are bit flags.
+      key_flags_ ^= changed_button_flag;
+      ui::EventType event_type = (raw_type == kSbInputEventTypePress)
+                                     ? ui::EventType::kMousePressed
+                                     : ui::EventType::kMouseReleased;
+      return std::make_unique<ui::MouseEvent>(
+          event_type, position, position, timestamp,
+          ui_flags | key_flags_ | changed_button_flag, changed_button_flag);
+    }
+    case kSbInputEventTypeMove: {
+      ui::EventType event_type = key_flags_ ? ui::EventType::kMouseDragged
+                                            : ui::EventType::kMouseMoved;
+      return std::make_unique<ui::MouseEvent>(
+          event_type, position, position, timestamp, ui_flags | key_flags_, 0);
+    }
+    case kSbInputEventTypeWheel: {
+      // Standard multiplier for converting line deltas to scroll offsets.
+      const int kScrollOffsetMultiplier = ui::MouseWheelEvent::kWheelDelta;
+      int offset_x =
+          static_cast<int>(-input_data->delta.x * kScrollOffsetMultiplier);
+      int offset_y =
+          static_cast<int>(-input_data->delta.y * kScrollOffsetMultiplier);
+
+      return std::make_unique<ui::MouseWheelEvent>(
+          gfx::Vector2d(offset_x, offset_y), position, position, timestamp,
+          ui_flags | key_flags_, ui::EF_NONE);
+    }
+    default:
+      VLOG(1) << "Unhandled Mouse EventType: " << raw_type;
+      return nullptr;
+  }
+}
+
 // static
 void StarboardEventSource::SbEventHandle(void* context, const SbEvent* event) {
   reinterpret_cast<StarboardEventSource*>(context)->SbEventHandleInternal(
@@ -408,6 +413,7 @@ void StarboardEventSource::SbEventHandleInternal(const SbEvent* event) {
     properties[kPropertyFromStarboard] =
         std::vector<uint8_t>(kPropertyFromStarboardSize);
     ui_event->SetProperties(properties);
+
     DispatchUiEvent(std::move(ui_event));
   }
 }

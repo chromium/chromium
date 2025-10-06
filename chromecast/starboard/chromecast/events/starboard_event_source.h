@@ -43,8 +43,15 @@ class StarboardEventSource : public UiEventSource {
   // which |this| was created.
   void DispatchUiEvent(std::unique_ptr<ui::Event> event);
 
+  // Creates a MouseEvent for the |input_data| at the |timestamp| with the
+  // specified |ui_flags|. Stores or appends |key_flags_| based on press state.
+  std::unique_ptr<ui::Event> CreateMouseEvent(const SbInputData* input_data,
+                                              base::TimeTicks timestamp,
+                                              int ui_flags);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ui::PlatformWindowDelegate* delegate_;
+  int key_flags_ = 0;
 
   base::WeakPtrFactory<StarboardEventSource> weak_factory_{this};
 };

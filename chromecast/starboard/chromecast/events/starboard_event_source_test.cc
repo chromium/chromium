@@ -321,6 +321,44 @@ TEST_F(StarboardEventSourceTest, MouseMiddleButtonClick) {
   EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyMiddleMouseButton());
 }
 
+TEST_F(StarboardEventSourceTest, MouseDrag) {
+  // Left Mouse + Move creates Drag
+  EmulateKey(kSbKeyMouse1, true, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_LEFT_MOUSE_BUTTON);
+
+  // Releasing Left Mouse removes Drag
+  EmulateKey(kSbKeyMouse1, false, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseMoved);
+}
+
+TEST_F(StarboardEventSourceTest, MouseDragMulti) {
+  // Left Mouse + Move creates Drag
+  EmulateKey(kSbKeyMouse1, true, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_LEFT_MOUSE_BUTTON);
+
+  // Adding Right Mouse creates Drag
+  EmulateKey(kSbKeyMouse2, true, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_RIGHT_MOUSE_BUTTON);
+
+  // Only releasing Left Mouse preserves Drag
+  EmulateKey(kSbKeyMouse1, false, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+
+  // Also releasing Right Mouse removes Drag
+  EmulateKey(kSbKeyMouse2, false, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseMoved);
+}
+
 TEST_F(StarboardEventSourceTest, MouseWheelScroll) {
   EmulateMouseWheel(kDeltaX, kDeltaY);
   ASSERT_NE(last_ui_event_, nullptr);
