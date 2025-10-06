@@ -121,6 +121,7 @@ void GlicFloatingUi::Show() {
 
 void GlicFloatingUi::Close() {
   glic_widget_.reset();
+  delegate_->WillCloseFor(/*tab=*/nullptr);
 }
 
 void GlicFloatingUi::ClosePanel() {
