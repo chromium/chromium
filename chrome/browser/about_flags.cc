@@ -1664,10 +1664,12 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
     {"ShowContextMenu", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxTall[] = {
+    {"ShowContextMenu", "true"},
     {"RealboxLayoutMode", ntp_composebox::kRealboxLayoutModeTall},
     {"CyclingPlaceholders", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
+    {"ShowContextMenu", "true"},
     {"RealboxLayoutMode", ntp_composebox::kRealboxLayoutModeCompact},
     {"CyclingPlaceholders", "true"},
 };
