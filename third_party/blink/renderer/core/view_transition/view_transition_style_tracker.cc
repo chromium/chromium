@@ -419,7 +419,9 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
     // The view-transition must still be active.
     // See(crbug.com/444889294)
     ViewTransition* transition = ViewTransitionUtils::GetTransition(*this);
-    CHECK(transition && transition->IsGeneratingPseudo(*this));
+    if (!transition || !transition->IsGeneratingPseudo(*this)) {
+      return false;
+    }
 
     if (!ViewTransitionPseudoElementBase::CanGeneratePseudoElement(pseudo_id)) {
       return false;
