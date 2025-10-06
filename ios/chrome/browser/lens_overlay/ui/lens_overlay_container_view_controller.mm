@@ -192,6 +192,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   _bottomSheet.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_bottomSheet];
   [self.view addSubview:_bottomSheet.view];
+  [_bottomSheet didMoveToParentViewController:self];
 
   AddSameConstraints(_bottomSheet.view, self.view);
   [_bottomSheet setContent:viewController];
@@ -207,6 +208,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   _sidePanel.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_sidePanel];
   [self.view addSubview:_sidePanel.view];
+  [_sidePanel didMoveToParentViewController:self];
 
   AddSameConstraintsToSides(_sidePanel.view, _splitViewLayoutGuide,
                             (LayoutSides::kTop | LayoutSides::kBottom));

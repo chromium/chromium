@@ -106,7 +106,6 @@ const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
                      constant:insets.top];
   [NSLayoutConstraint activateConstraints:@[ _topConstraint ]];
 
-  [_containerViewController didMoveToParentViewController:_baseViewController];
   _containerViewController.selectionViewController.view.alpha = 1;
 
   if (!animated) {
