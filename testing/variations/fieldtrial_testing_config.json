@@ -24335,6 +24335,36 @@
             ]
         }
     ],
+    "SubframeProcessShutdownDelay": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledDelay10s",
+                    "params": {
+                        "delay_seconds": "10"
+                    },
+                    "enable_features": [
+                        "SubframeProcessShutdownDelay"
+                    ]
+                },
+                {
+                    "name": "EnabledDelay40s",
+                    "params": {
+                        "delay_seconds": "40"
+                    },
+                    "enable_features": [
+                        "SubframeProcessShutdownDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "SupportMultipleServerRequestsForPixPayments": [
         {
             "platforms": [
