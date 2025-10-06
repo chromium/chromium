@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/fullscreen_signin_promo_scene_agent.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
@@ -25,12 +25,12 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
-@interface SigninFullscreenPromoSceneAgent () <
+@interface FullscreenSigninPromoSceneAgent () <
     ProfileStateObserver,
     IdentityManagerObserverBridgeDelegate>
 @end
 
-@implementation SigninFullscreenPromoSceneAgent {
+@implementation FullscreenSigninPromoSceneAgent {
   // The PromosManager used by the scene agent to manage promo display.
   raw_ptr<PromosManager> _promosManager;
 
@@ -123,11 +123,11 @@
               ->GetProfile(),
           version_info::GetVersion())) {
     _promosManager->RegisterPromoForContinuousDisplay(
-        promos_manager::Promo::SigninFullscreen);
+        promos_manager::Promo::FullscreenSignin);
     return;
   }
 
-  _promosManager->DeregisterPromo(promos_manager::Promo::SigninFullscreen);
+  _promosManager->DeregisterPromo(promos_manager::Promo::FullscreenSignin);
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -141,7 +141,7 @@
     if (skipReason != history_sync::HistorySyncSkipReason::kNone) {
       // Deregister the promo if the user signed in and the history sync can be
       // skipped.
-      _promosManager->DeregisterPromo(promos_manager::Promo::SigninFullscreen);
+      _promosManager->DeregisterPromo(promos_manager::Promo::FullscreenSignin);
     }
   }
 }

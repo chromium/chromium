@@ -4,10 +4,10 @@
 
 source_set("promo") {
   sources = [
-    "signin_fullscreen_promo_display_handler.h",
-    "signin_fullscreen_promo_display_handler.mm",
-    "signin_fullscreen_promo_scene_agent.h",
-    "signin_fullscreen_promo_scene_agent.mm",
+    "fullscreen_signin_promo_display_handler.h",
+    "fullscreen_signin_promo_display_handler.mm",
+    "fullscreen_signin_promo_scene_agent.h",
+    "fullscreen_signin_promo_scene_agent.mm",
   ]
   deps = [
     "//components/feature_engagement/public",
@@ -30,7 +30,7 @@ source_set("promo") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "signin_fullscreen_promo_scene_agent_unittest.mm" ]
+  sources = [ "fullscreen_signin_promo_scene_agent_unittest.mm" ]
 
   deps = [
     ":promo",

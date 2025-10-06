@@ -62,7 +62,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/fullscreen_signin_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
@@ -1429,7 +1429,7 @@ void OnListFamilyMembersResponse(
   if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
     [sceneState
         addAgent:
-            [[SigninFullscreenPromoSceneAgent alloc]
+            [[FullscreenSigninPromoSceneAgent alloc]
                 initWithPromosManager:promosManager
                           authService:authService
                       identityManager:IdentityManagerFactory::GetForProfile(

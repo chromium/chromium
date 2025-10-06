@@ -80,8 +80,8 @@ std::optional<Promo> PromoForName(std::string_view promo) {
     return promos_manager::Promo::PostDefaultAbandonment;
   }
 
-  if (promo == "promos_manager::Promo::SigninFullscreen") {
-    return promos_manager::Promo::SigninFullscreen;
+  if (promo == "promos_manager::Promo::FullscreenSignin") {
+    return promos_manager::Promo::FullscreenSignin;
   }
 
   if (promo == "promos_manager::Promo::WelcomeBack") {
@@ -139,8 +139,8 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "StaySafeDefaultBrowser";
     case promos_manager::Promo::PostDefaultAbandonment:
       return "PostDefaultAbandonment";
-    case promos_manager::Promo::SigninFullscreen:
-      return "SigninFullscreen";
+    case promos_manager::Promo::FullscreenSignin:
+      return "FullscreenSignin";
     case promos_manager::Promo::WelcomeBack:
       return "WelcomeBack";
     case promos_manager::Promo::BWGPromo:

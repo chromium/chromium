@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/fullscreen_signin_promo_scene_agent.h"
 
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -34,9 +34,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-class SigninFullscreenPromoSceneAgentTest : public PlatformTest {
+class FullscreenSigninPromoSceneAgentTest : public PlatformTest {
  public:
-  SigninFullscreenPromoSceneAgentTest() : PlatformTest() {
+  FullscreenSigninPromoSceneAgentTest() : PlatformTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -59,7 +59,7 @@ class SigninFullscreenPromoSceneAgentTest : public PlatformTest {
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     promos_manager_ = std::make_unique<MockPromosManager>();
-    agent_ = [[SigninFullscreenPromoSceneAgent alloc]
+    agent_ = [[FullscreenSigninPromoSceneAgent alloc]
         initWithPromosManager:promos_manager_.get()
                   authService:authentication_service_
               identityManager:identity_manager_
@@ -78,7 +78,7 @@ class SigninFullscreenPromoSceneAgentTest : public PlatformTest {
     scene_state_.UIEnabled = YES;
   }
 
-  ~SigninFullscreenPromoSceneAgentTest() override {
+  ~FullscreenSigninPromoSceneAgentTest() override {
     profile_state_.profile = nullptr;
   }
 
@@ -100,7 +100,7 @@ class SigninFullscreenPromoSceneAgentTest : public PlatformTest {
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  SigninFullscreenPromoSceneAgent* agent_;
+  FullscreenSigninPromoSceneAgent* agent_;
   web::WebTaskEnvironment task_environment_;
   syncer::TestSyncService sync_service_;
   StubBrowserProviderInterface* stub_browser_interface_provider_;
@@ -117,8 +117,8 @@ class SigninFullscreenPromoSceneAgentTest : public PlatformTest {
 
 // Tests that the sign-in fullscreen promo registers with the promo manager when
 // the eligibility criteria are met.
-TEST_F(SigninFullscreenPromoSceneAgentTest,
-       TestSigninFullscreenPromoRegistration) {
+TEST_F(FullscreenSigninPromoSceneAgentTest,
+       TestFullscreenSigninPromoRegistration) {
   const base::Version version_1_0("1.0");
   FakeSystemIdentity* fake_identity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -129,25 +129,25 @@ TEST_F(SigninFullscreenPromoSceneAgentTest,
 
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(
-                  promos_manager::Promo::SigninFullscreen))
+                  promos_manager::Promo::FullscreenSignin))
       .Times(1);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
 
 // Tests that the sign-in fullscreen promo is not registered in the promo
 // manager when the eligibility criteria are not met.
-TEST_F(SigninFullscreenPromoSceneAgentTest,
-       TestSigninFullscreenPromoNoRegistration) {
+TEST_F(FullscreenSigninPromoSceneAgentTest,
+       TestFullscreenSigninPromoNoRegistration) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(
-                  promos_manager::Promo::SigninFullscreen))
+                  promos_manager::Promo::FullscreenSignin))
       .Times(0);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
 
 // Tests that when a promo was previously registered, it is deregistered when
 // user is signed in and history sync is opted in.
-TEST_F(SigninFullscreenPromoSceneAgentTest,
+TEST_F(FullscreenSigninPromoSceneAgentTest,
        TestPromoDeregistrationWhenSignedInWithHistorySync) {
   // Register the promo.
   const base::Version version_1_0("1.0");
@@ -159,20 +159,20 @@ TEST_F(SigninFullscreenPromoSceneAgentTest,
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(
-                  promos_manager::Promo::SigninFullscreen))
+                  promos_manager::Promo::FullscreenSignin))
       .Times(1);
   EXPECT_CALL(*promos_manager_.get(),
-              DeregisterPromo(promos_manager::Promo::SigninFullscreen))
+              DeregisterPromo(promos_manager::Promo::FullscreenSignin))
       .Times(0);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   // Sign in and enable history sync.
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(
-                  promos_manager::Promo::SigninFullscreen))
+                  promos_manager::Promo::FullscreenSignin))
       .Times(0);
   EXPECT_CALL(*promos_manager_.get(),
-              DeregisterPromo(promos_manager::Promo::SigninFullscreen))
+              DeregisterPromo(promos_manager::Promo::FullscreenSignin))
       .Times(1);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, YES);
@@ -186,7 +186,7 @@ TEST_F(SigninFullscreenPromoSceneAgentTest,
 
 // Tests that when a promo was previously registered, it is still registered
 // when user is signed in without history sync.
-TEST_F(SigninFullscreenPromoSceneAgentTest,
+TEST_F(FullscreenSigninPromoSceneAgentTest,
        TestPromoRegistrationWhenSignedInWithoutHistorySync) {
   // Register the promo.
   const base::Version version_1_0("1.0");
@@ -198,20 +198,20 @@ TEST_F(SigninFullscreenPromoSceneAgentTest,
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(
-                  promos_manager::Promo::SigninFullscreen))
+                  promos_manager::Promo::FullscreenSignin))
       .Times(1);
   EXPECT_CALL(*promos_manager_.get(),
-              DeregisterPromo(promos_manager::Promo::SigninFullscreen))
+              DeregisterPromo(promos_manager::Promo::FullscreenSignin))
       .Times(0);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   // Sign in without history sync.
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(
-                  promos_manager::Promo::SigninFullscreen))
+                  promos_manager::Promo::FullscreenSignin))
       .Times(0);
   EXPECT_CALL(*promos_manager_.get(),
-              DeregisterPromo(promos_manager::Promo::SigninFullscreen))
+              DeregisterPromo(promos_manager::Promo::FullscreenSignin))
       .Times(1);
   authentication_service_->SignIn(fake_identity1,
                                   signin_metrics::AccessPoint::kUnknown);

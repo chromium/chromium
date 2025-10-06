@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_SIGNIN_FULLSCREEN_PROMO_SCENE_AGENT_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_SIGNIN_FULLSCREEN_PROMO_SCENE_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_FULLSCREEN_SIGNIN_PROMO_SCENE_AGENT_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_FULLSCREEN_SIGNIN_PROMO_SCENE_AGENT_H_
 
 #import <Foundation/Foundation.h>
 
@@ -21,9 +21,9 @@ class PromosManager;
 class AuthenticationService;
 class PrefService;
 
-// A scene agent that registers the Signin fullscreen promo in the promo
+// A scene agent that registers the Fullscreen Signin promo in the promo
 // manager.
-@interface SigninFullscreenPromoSceneAgent : ObservingSceneAgent
+@interface FullscreenSigninPromoSceneAgent : ObservingSceneAgent
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                           authService:(AuthenticationService*)authService
@@ -32,4 +32,4 @@ class PrefService;
                           prefService:(PrefService*)prefService;
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_SIGNIN_FULLSCREEN_PROMO_SCENE_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_FULLSCREEN_SIGNIN_PROMO_SCENE_AGENT_H_

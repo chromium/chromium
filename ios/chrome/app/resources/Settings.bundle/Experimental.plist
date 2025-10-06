@@ -180,7 +180,7 @@
 				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
 				<string>promos_manager::Promo::DockingPromo</string>
 				<string>promos_manager::Promo::BWGPromo</string>
-				<string>promos_manager::Promo::SigninFullscreen</string>
+				<string>promos_manager::Promo::FullscreenSignin</string>
 			</array>
 			<key>Titles</key>
 			<array>

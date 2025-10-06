@@ -45,7 +45,7 @@ enum class Promo {
   MadeForIOSDefaultBrowser = 14,   // "Made For iOS" default browser promo.
   StaySafeDefaultBrowser = 15,     // "Stay Safe" default browser promo.
   PostDefaultAbandonment = 16,     // Post-default browser abandonment alert.
-  SigninFullscreen = 17,           // Sign-in fullscreen promo.
+  FullscreenSignin = 17,           // Fullscreen sign-in promo.
   WelcomeBack = 18,                // Welcome Back promo.
   BWGPromo = 19,                   // BWG promo.
   SafariImportRemindMeLater =

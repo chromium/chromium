@@ -256,7 +256,7 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   std::optional<promos_manager::Promo> forced_promo =
       promos_manager::PromoForName(base::SysNSStringToUTF8(forced_promo_name));
   if (forced_promo.has_value() &&
-      forced_promo.value() == promos_manager::Promo::SigninFullscreen) {
+      forced_promo.value() == promos_manager::Promo::FullscreenSignin) {
     return true;
   }
 
