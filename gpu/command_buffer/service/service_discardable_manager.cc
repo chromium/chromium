@@ -118,29 +118,4 @@ bool ServiceDiscardableManager::OnMemoryDump(
   return true;
 }
 
-void ServiceDiscardableManager::OnTextureManagerDestruction(
-    gles2::TextureManager* texture_manager) {
-}
-
-void ServiceDiscardableManager::OnTextureDeleted(
-    uint32_t texture_id,
-    gles2::TextureManager* texture_manager) {
-}
-
-void ServiceDiscardableManager::OnContextLost() {
-}
-
-void ServiceDiscardableManager::OnTextureSizeChanged(
-    uint32_t texture_id,
-    gles2::TextureManager* texture_manager,
-    size_t new_size) {
-}
-
-void ServiceDiscardableManager::HandleMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-}
-
-void ServiceDiscardableManager::EnforceCacheSizeLimit(size_t limit) {
-}
-
 }  // namespace gpu

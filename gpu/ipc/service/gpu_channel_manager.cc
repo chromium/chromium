@@ -608,7 +608,6 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
 void GpuChannelManager::LoseAllContexts() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  discardable_manager_.OnContextLost();
   share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
   for (auto& kv : gpu_channels_) {
     kv.second->MarkAllContextsLost();
@@ -829,10 +828,9 @@ void GpuChannelManager::HandleMemoryPressure(
   if (program_cache_)
     program_cache_->HandleMemoryPressure(memory_pressure_level);
 
-  // These caches require a current context for cleanup.
+  // SharedContextState requires a current context for cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {
-      discardable_manager_.HandleMemoryPressure(memory_pressure_level);
     shared_context_state_->PurgeMemory(memory_pressure_level);
   }
 

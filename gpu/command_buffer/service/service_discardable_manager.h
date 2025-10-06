@@ -42,29 +42,7 @@ class GPU_GLES2_EXPORT ServiceDiscardableManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  // Returns all unlocked texture refs to the texture_manager for deletion.
-  // After this point, this class will have no references to the given
-  // |texture_manager|.
-  void OnTextureManagerDestruction(gles2::TextureManager* texture_manager);
-
-  // Called when a texture is deleted, to clean up state.
-  void OnTextureDeleted(uint32_t texture_id,
-                        gles2::TextureManager* texture_manager);
-
-  // Called by the TextureManager when a texture's size changes.
-  void OnTextureSizeChanged(uint32_t texture_id,
-                            gles2::TextureManager* texture_manager,
-                            size_t new_size);
-
-  // Called when all contexts with cached textures in this manager are lost.
-  void OnContextLost();
-
-  void HandleMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
  private:
-  void EnforceCacheSizeLimit(size_t limit);
-
   struct GpuDiscardableEntry {
    public:
     GpuDiscardableEntry(ServiceDiscardableHandle handle, size_t size);

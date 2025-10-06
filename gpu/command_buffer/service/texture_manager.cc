@@ -478,10 +478,6 @@ void TextureManager::MarkContextLost() {
 }
 
 void TextureManager::Destroy() {
-  // Retreive any outstanding unlocked textures from the discardable manager so
-  // we can clean them up here.
-  discardable_manager_->OnTextureManagerDestruction(this);
-
   while (!textures_.empty()) {
     textures_.erase(textures_.begin());
     if (progress_reporter_)
@@ -2137,8 +2133,6 @@ void TextureManager::SetLevelInfo(TextureRef* ref,
   Texture* texture = ref->texture();
   texture->SetLevelInfo(target, level, internal_format, width, height, depth,
                         border, format, type, cleared_rect);
-  discardable_manager_->OnTextureSizeChanged(ref->client_id(), this,
-                                             texture->estimated_size());
 }
 
 TextureRef* TextureManager::Consume(
@@ -2284,7 +2278,6 @@ void TextureManager::ReturnTexture(scoped_refptr<TextureRef> texture_ref) {
 void TextureManager::RemoveTexture(GLuint client_id) {
   TextureMap::iterator it = textures_.find(client_id);
   if (it != textures_.end()) {
-    discardable_manager_->OnTextureDeleted(client_id, this);
     it->second->reset_client_id();
     textures_.erase(it);
   }
@@ -2315,9 +2308,6 @@ void TextureManager::StopTracking(TextureRef* ref) {
   }
   num_uncleared_mips_ -= texture->num_uncleared_mips();
   DCHECK_GE(num_uncleared_mips_, 0);
-
-  if (ref->client_id())
-    discardable_manager_->OnTextureDeleted(ref->client_id(), this);
 }
 
 MemoryTypeTracker* TextureManager::GetMemTracker() {
