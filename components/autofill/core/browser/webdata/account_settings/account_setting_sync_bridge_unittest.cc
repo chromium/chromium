@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_test_util.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_util.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
@@ -27,7 +28,15 @@ namespace autofill {
 
 namespace {
 
+using SettingSpecifics = sync_pb::AccountSettingSpecifics;
 using ::testing::_;
+using ::testing::Optional;
+
+syncer::EntityData EntityFromSpecifics(const SettingSpecifics& specifics) {
+  syncer::EntityData entity;
+  *entity.specifics.mutable_account_setting() = specifics;
+  return entity;
+}
 
 class AccountSettingSyncBridgeTest : public testing::Test {
  public:
@@ -60,6 +69,19 @@ class AccountSettingSyncBridgeTest : public testing::Test {
 
   syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
+  }
+
+  // Simulates starting to sync with `remote_specifics` pre-existing on the
+  // server-side. Returns true if syncing started successfully.
+  bool StartSyncingWithServerData(
+      const std::vector<SettingSpecifics>& remote_specifics) {
+    syncer::EntityChangeList change_list;
+    for (const SettingSpecifics& specifics : remote_specifics) {
+      change_list.push_back(syncer::EntityChange::CreateAdd(
+          specifics.name(), EntityFromSpecifics(specifics)));
+    }
+    return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list));
   }
 
  private:
@@ -98,6 +120,66 @@ TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
   RecreateBridgeAnsWaitForModelToSync(syncer::MetadataBatchContains(
       /*state=*/syncer::HasInitialSyncDone(),
       /*entities=*/testing::IsEmpty()));
+}
+
+TEST_F(AccountSettingSyncBridgeTest, MergeFullSyncData) {
+  EXPECT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
+  // Expect that the setting is available immediately.
+  EXPECT_THAT(bridge().GetSetting("name"),
+              Optional(HasStringSetting("name", "value")));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridgeAnsWaitForModelToSync();
+  EXPECT_THAT(bridge().GetSetting("name"),
+              Optional(HasStringSetting("name", "value")));
+}
+
+TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name1", "string")}));
+
+  // Simulate receiving an incremental add and an update to the existing entity.
+  syncer::EntityChangeList change_list;
+  change_list.push_back(syncer::EntityChange::CreateAdd(
+      "name2", EntityFromSpecifics(CreateSettingSpecifics("name2", 123))));
+  change_list.push_back(syncer::EntityChange::CreateUpdate(
+      "name1",
+      EntityFromSpecifics(CreateSettingSpecifics("name1", "new-string"))));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(change_list)));
+
+  // Expect that the setting is available immediately.
+  EXPECT_THAT(bridge().GetSetting("name1"),
+              Optional(HasStringSetting("name1", "new-string")));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasIntSetting("name2", 123)));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridgeAnsWaitForModelToSync();
+  EXPECT_THAT(bridge().GetSetting("name1"),
+              Optional(HasStringSetting("name1", "new-string")));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasIntSetting("name2", 123)));
+}
+
+TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", true),
+                                  CreateSettingSpecifics("name2", "string")}));
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      syncer::EntityChange::CreateDelete("name1", syncer::EntityData()));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(change_list)));
+  // Expect that the change was applied immediately.
+  EXPECT_FALSE(bridge().GetSetting("name1"));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasStringSetting("name2", "string")));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridgeAnsWaitForModelToSync();
+  EXPECT_FALSE(bridge().GetSetting("name1"));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasStringSetting("name2", "string")));
 }
 
 }  // namespace

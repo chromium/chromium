@@ -19,6 +19,11 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
       syncer::OnceDataTypeStoreFactory store_factory);
   ~AccountSettingSyncBridge() override;
 
+  // Returns the specifics for the setting of the given `name` if the bridge
+  // is aware of any such setting. Otherwise, nullopt is returned.
+  std::optional<sync_pb::AccountSettingSpecifics> GetSetting(
+      std::string_view name) const;
+
   // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
@@ -45,6 +50,7 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> data,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void ReportErrorIfSet(const std::optional<syncer::ModelError>& error);
 
   // Storage layer used by this sync bridge. Asynchronously created through the
   // `store_factory` injected through the constructor. Non-null if creation

@@ -43,6 +43,15 @@ AccountSettingSyncBridge::AccountSettingSyncBridge(
 
 AccountSettingSyncBridge::~AccountSettingSyncBridge() = default;
 
+std::optional<sync_pb::AccountSettingSpecifics>
+AccountSettingSyncBridge::GetSetting(std::string_view name) const {
+  auto it = settings_.find(name);
+  if (it == settings_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
 std::unique_ptr<syncer::MetadataChangeList>
 AccountSettingSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
@@ -51,15 +60,41 @@ AccountSettingSyncBridge::CreateMetadataChangeList() {
 std::optional<syncer::ModelError> AccountSettingSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  // Since ACCOUNT_SETTING is read-only, merging local and sync data is the same
+  // as applying changes from sync locally.
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
 std::optional<syncer::ModelError>
 AccountSettingSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE: {
+        const sync_pb::AccountSettingSpecifics& specifics =
+            change->data().specifics.account_setting();
+        batch->WriteData(change->storage_key(), specifics.SerializeAsString());
+        settings_.insert_or_assign(change->storage_key(), specifics);
+        break;
+      }
+      case syncer::EntityChange::ACTION_DELETE: {
+        batch->DeleteData(change->storage_key());
+        settings_.erase(change->storage_key());
+        break;
+      }
+    }
+  }
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(&AccountSettingSyncBridge::ReportErrorIfSet,
+                     weak_factory_.GetWeakPtr()));
   return std::nullopt;
 }
 
@@ -120,6 +155,11 @@ void AccountSettingSyncBridge::StartSyncingWithDataAndMetadata(
   settings_ = base::flat_map<std::string, sync_pb::AccountSettingSpecifics>(
       std::move(processed_entries));
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+}
+
+void AccountSettingSyncBridge::ReportErrorIfSet(
+    const std::optional<syncer::ModelError>& error) {
+  RETURN_IF_ERROR(error);
 }
 
 }  // namespace autofill
