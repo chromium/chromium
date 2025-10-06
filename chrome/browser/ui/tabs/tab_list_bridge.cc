@@ -208,6 +208,15 @@ void TabListBridge::OnTabStripModelChanged(
     case TabStripModelChange::kSelectionOnly:
       break;
   }
+
+  if (selection.active_tab_changed()) {
+    tabs::TabInterface* tab = tab_strip_->GetActiveTab();
+    if (tab) {
+      for (auto& observer : observers_) {
+        observer.OnActiveTabChanged(tab);
+      }
+    }
+  }
 }
 
 // static

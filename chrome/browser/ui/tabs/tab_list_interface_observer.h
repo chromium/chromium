@@ -21,7 +21,11 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // on Android platforms, such as if a tab that was closed is re-introduced
   // (see also tabClosureUndone() here:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java;drc=e2bb611334ebe2b1cbe519ff183f5178896b8c55;l=140).
-  void OnTabAdded(tabs::TabInterface* tab, int index) {}
+  virtual void OnTabAdded(tabs::TabInterface* tab, int index) {}
+
+  // Called when the active tab changed. `tab` is the new active tab and is
+  // never null.
+  virtual void OnActiveTabChanged(tabs::TabInterface* tab) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_LIST_INTERFACE_OBSERVER_H_
