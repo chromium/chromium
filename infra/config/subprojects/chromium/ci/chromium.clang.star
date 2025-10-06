@@ -95,15 +95,16 @@ consoles.console_view(
     ("clang-tot-device", "iOS|internal", "dev"),
 )]
 
-def tot_mac_builder(*, name, cores = 12, is_rust = False, **kwargs):
+def tot_mac_builder(*, name, is_rust = False, **kwargs):
     if "gn_args" in kwargs:
         kwargs["gn_args"].configs.append("mac")
     desc_tool = "Rust" if is_rust else "Clang"
     return ci.builder(
         name = name,
-        cores = cores,
         os = os.MAC_DEFAULT,
         ssd = True,
+        cores = None,
+        cpu = cpu.ARM64,
         properties = {
             # The Chromium build doesn't need system Xcode, but the ToT
             # bots also build clang and llvm and that build does need system
@@ -1920,8 +1921,6 @@ tot_mac_builder(
             "mac_default_x64",
         ],
     ),
-    cores = None,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "rel",
@@ -1961,8 +1960,6 @@ tot_mac_builder(
             "mac_default_x64",
         ],
     ),
-    cores = None,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "dbg",
@@ -2011,8 +2008,6 @@ tot_mac_builder(
             "mac_default_x64",
         ],
     ),
-    cores = None,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "asn",
@@ -2160,8 +2155,6 @@ tot_mac_builder(
             "arm64",
         ],
     ),
-    cores = None,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "mac",
@@ -2298,8 +2291,6 @@ tot_mac_builder(
             "mac_default_x64",
         ],
     ),
-    cores = None,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "Rust ToT",
         short_name = "mac",
