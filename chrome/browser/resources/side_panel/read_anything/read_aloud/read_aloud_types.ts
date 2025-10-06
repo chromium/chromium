@@ -108,7 +108,7 @@ export class DomReadAloudNode extends ReadAloudNode {
     if (!(other instanceof DomReadAloudNode)) {
       return false;
     }
-    return this.node.isEqualNode(other.node);
+    return this.node.isSameNode(other.node);
   }
 
   getText(): string {
