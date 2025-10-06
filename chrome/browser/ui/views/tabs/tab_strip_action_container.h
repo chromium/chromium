@@ -179,6 +179,7 @@ class TabStripActionContainer : public views::View,
   void OnGlicButtonDismissed();
   void OnGlicButtonHovered();
   void OnGlicButtonMouseDown();
+  void OnGlicButtonAnimationEnded();
 
   std::unique_ptr<glic::GlicActorTaskIcon> CreateGlicActorTaskIcon(
       TabStripController* tab_strip_controller);
@@ -224,6 +225,8 @@ class TabStripActionContainer : public views::View,
   void ExecuteHideTabStripNudge(TabStripNudgeButton* button);
 
   void OnAnimationSessionEnded();
+
+  bool ButtonOwnsAnimation(const TabStripNudgeButton* button) const;
 
   std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton(
       TabStripController* tab_strip_controller);

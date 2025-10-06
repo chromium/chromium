@@ -179,5 +179,9 @@ void TabStripNudgeButton::SetCloseButtonFocusBehavior(
   close_button_->SetFocusBehavior(focus_behavior);
 }
 
+gfx::SlideAnimation* TabStripNudgeButton::GetExpansionAnimationForTesting() {
+  return nullptr;
+}
+
 BEGIN_METADATA(TabStripNudgeButton)
 END_METADATA
