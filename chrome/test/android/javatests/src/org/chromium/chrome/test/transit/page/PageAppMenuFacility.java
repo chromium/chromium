@@ -56,11 +56,14 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         // TODO: Declare top buttons (forward, reload, bookmark, etc.).
         // TODO: Declare more common menu items
 
-        mNewTab = declareMenuItem(items, NEW_TAB_ID);
-
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
+            if (!mHostStation.isIncognito()) {
+                mNewTab = declareMenuItem(items, NEW_TAB_ID);
+            } else {
+                mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
+            }
         } else {
+            mNewTab = declareMenuItem(items, NEW_TAB_ID);
             mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
         }
 
@@ -73,16 +76,27 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
             mPinTab = declarePossibleMenuItem(items, PIN_TAB);
             mUnpinTab = declarePossibleMenuItem(items, UNPIN_TAB);
         }
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            mNewWindow = declareMenuItem(items, NEW_WINDOW_ID);
+            mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
+        }
         mSettings = declareMenuItem(items, SETTINGS_ID);
-
     }
 
-    /** Select "New tab" from the app menu. */
+    /** Select "New tab" from the app menu. If this doesn't exist, select "New window". */
     public RegularNewTabPageStation openNewTab() {
-        return mNewTab.scrollToAndSelectTo().arriveAt(createNewTabPageStation());
+        if (mNewTab != null) {
+            return mNewTab.scrollToAndSelectTo().arriveAt(createNewTabPageStation());
+        } else {
+            assert mNewWindow != null : "App menu does not have 'New tab' or 'New window'";
+            return openNewWindow();
+        }
     }
 
-    /** Select "New Incognito tab" or "New Incognito window" from the app menu. */
+    /**
+     * Select "New Incognito tab" from the app menu. If this doesn't exist, select "New Incognito
+     * window".
+     */
     public IncognitoNewTabPageStation openNewIncognitoTab() {
         if (mNewIncognitoTab != null) {
             return mNewIncognitoTab
@@ -90,11 +104,8 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
                     .arriveAt(createNewIncognitoTabPageStation());
         } else {
             assert mNewIncognitoWindow != null
-                    : "App menu is expected to show 'New Incognito window' or 'New Incognito tab";
-            return mNewIncognitoWindow
-                    .scrollToAndSelectTo()
-                    .inNewTask()
-                    .arriveAt(createNewIncognitoWindowStation());
+                    : "App menu does not have 'New Incognito tab' or 'New Incognito window'";
+            return openNewIncognitoWindow();
         }
     }
 
@@ -103,6 +114,18 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         TabbedAppMenuPropertiesDelegate delegate = getTabbedAppMenuPropertiesDelegate();
         assert delegate.shouldShowNewWindow() : "App menu is not expected to show 'New window'";
         return mNewWindow.scrollToAndSelectTo().inNewTask().arriveAt(createNewWindowStation());
+    }
+
+    /** Select "New Incognito window" from the app menu. */
+    public IncognitoNewTabPageStation openNewIncognitoWindow() {
+        TabbedAppMenuPropertiesDelegate delegate = getTabbedAppMenuPropertiesDelegate();
+        assert delegate.shouldShowNewIncognitoWindow()
+                : "App menu is not expected to show 'New Incognito window'";
+        assert mNewIncognitoWindow != null;
+        return mNewIncognitoWindow
+                .scrollToAndSelectTo()
+                .inNewTask()
+                .arriveAt(createNewIncognitoWindowStation());
     }
 
     /**
