@@ -816,7 +816,7 @@ class ClientManager {
         callOnSession(session, params -> params.mAllowParallelRequest = allowed);
     }
 
-    public boolean getAllowParallelRequestForSession(SessionHolder<?> session) {
+    public boolean getAllowParallelRequestForSession(@Nullable SessionHolder<?> session) {
         return callOnSession(session, false, params -> params.mAllowParallelRequest);
     }
 
@@ -824,7 +824,7 @@ class ClientManager {
         callOnSession(session, params -> params.mAllowResourcePrefetch = allowed);
     }
 
-    public boolean getAllowResourcePrefetchForSession(SessionHolder<?> session) {
+    public boolean getAllowResourcePrefetchForSession(@Nullable SessionHolder<?> session) {
         return callOnSession(session, false, params -> params.mAllowResourcePrefetch);
     }
 
@@ -846,7 +846,7 @@ class ClientManager {
      * @param origin Origin to verify
      */
     public synchronized boolean isFirstPartyOriginForSession(
-            SessionHolder<?> session, Origin origin) {
+            @Nullable SessionHolder<?> session, Origin origin) {
         return ChromeOriginVerifier.wasPreviouslyVerified(
                 getClientPackageNameForSession(session),
                 origin,

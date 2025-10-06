@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -222,7 +223,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     private Runnable cleanupPendingTabClosure() {
         final boolean isChromeTabbedActivityRunning =
-                LaunchIntentDispatcher.chromeTabbedTaskExists(getActivity());
+                LaunchIntentDispatcher.chromeTabbedTaskExists(assertNonNull(getActivity()));
         return () -> {
             if (mTab.didCloseWhileDetached()) {
                 PostTask.postTask(

@@ -1127,7 +1127,7 @@ public class CustomTabsConnection {
      * @param session Session extracted from the intent.
      * @param intent incoming intent.
      */
-    public void onHandledIntent(SessionHolder<?> session, Intent intent) {
+    public void onHandledIntent(@Nullable SessionHolder<?> session, Intent intent) {
         String url = IntentHandler.getUrlFromIntent(intent);
         if (TextUtils.isEmpty(url)) {
             return;
@@ -1169,7 +1169,7 @@ public class CustomTabsConnection {
     }
 
     private void maybePreconnectToRedirectEndpoint(
-            SessionHolder<?> session, String url, Intent intent) {
+            @Nullable SessionHolder<?> session, String url, Intent intent) {
         // For the preconnection to not be a no-op, we need more than just the native library.
         if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
             return;
@@ -1192,7 +1192,7 @@ public class CustomTabsConnection {
 
     @VisibleForTesting
     @ParallelRequestStatus
-    int handleParallelRequest(SessionHolder<?> session, Intent intent) {
+    int handleParallelRequest(@Nullable SessionHolder<?> session, Intent intent) {
         int status = maybeStartParallelRequest(session, intent);
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.ParallelRequestStatusOnStart",
@@ -1229,7 +1229,7 @@ public class CustomTabsConnection {
      * @return Whether the request was started, with reason in case of failure.
      */
     private @ParallelRequestStatus int maybeStartParallelRequest(
-            SessionHolder<?> session, Intent intent) {
+            @Nullable SessionHolder<?> session, Intent intent) {
         ThreadUtils.assertOnUiThread();
 
         if (!intent.hasExtra(PARALLEL_REQUEST_URL_KEY)) return ParallelRequestStatus.NO_REQUEST;
@@ -1283,7 +1283,7 @@ public class CustomTabsConnection {
      * @return Number of prefetch requests that have been sent.
      */
     @VisibleForTesting
-    int maybePrefetchResources(SessionHolder<?> session, Intent intent) {
+    int maybePrefetchResources(@Nullable SessionHolder<?> session, Intent intent) {
         ThreadUtils.assertOnUiThread();
 
         if (!mClientManager.getAllowResourcePrefetchForSession(session)) return 0;
@@ -1329,7 +1329,7 @@ public class CustomTabsConnection {
      * @return Whether {@code session} can create a parallel request for a given {@code referrer}.
      */
     @VisibleForTesting
-    boolean canDoParallelRequest(SessionHolder<?> session, Uri referrer) {
+    boolean canDoParallelRequest(@Nullable SessionHolder<?> session, Uri referrer) {
         ThreadUtils.assertOnUiThread();
         Origin origin = Origin.create(referrer);
         if (origin == null) return false;
