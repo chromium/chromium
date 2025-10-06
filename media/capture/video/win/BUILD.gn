@@ -44,6 +44,7 @@ source_set("win") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/viz/common/resources:shared_image_format",
     "//media",
     "//media/base/win:color_space_util_win",
     "//media/capture/mojom:image_capture",

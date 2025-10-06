@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
@@ -160,9 +161,9 @@ bool GpuMemoryBufferTrackerWin::CreateBufferInternal(
 
   dxgi_handle_ = std::move(buffer_handle).dxgi_handle();
   dimensions_ = dimensions;
-  stride_ = gfx::RowSizeForBufferFormat(dimensions_.width(),
-                                        gfx::BufferFormat::YUV_420_BIPLANAR,
-                                        /*plane=*/0);
+  stride_ = viz::SharedMemoryRowSizeForSharedImageFormat(
+                viz::MultiPlaneFormat::kNV12, /*plane=*/0, dimensions_.width())
+                .value();
 
   region_ = base::UnsafeSharedMemoryRegion::Create(GetMemorySizeInBytes());
   mapping_ = region_.Map();
