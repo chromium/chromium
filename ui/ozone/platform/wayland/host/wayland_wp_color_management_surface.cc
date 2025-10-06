@@ -99,6 +99,14 @@ void WaylandWpColorManagementSurface::OnPreferredChanged(
   CHECK(self);
   CHECK_EQ(feedback_surface, self->feedback_surface_.get());
 
+  // Reset the previous image description before creating a new one.
+  // Per the color management protocol specification:
+  // "The client should stop using and destroy the image descriptions created
+  // by earlier invocations of this request for the associated wl_surface."
+  // This prevents "invalid object" errors when the compositor or client tries
+  // to reference the old object ID after it has been destroyed.
+  self->image_description_.reset();
+
   auto image_description_object = wl::Object<wp_image_description_v1>(
       wp_color_management_surface_feedback_v1_get_preferred(feedback_surface));
 
