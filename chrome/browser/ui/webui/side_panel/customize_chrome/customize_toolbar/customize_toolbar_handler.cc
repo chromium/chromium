@@ -252,6 +252,13 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
                       base::Unretained(this))));
         }
 
+        bool is_not_pinnable =
+            action_item->GetProperty(actions::kActionItemPinnableKey) ==
+            static_cast<int>(actions::ActionPinnableState::kNotPinnable);
+        if (is_not_pinnable) {
+          return;
+        }
+
         // If the icon is a vector icon, recolor it to match the spec.
         // Non-vector icons cannot be recolored, but there aren't any of those
         // currently anyways.

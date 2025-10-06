@@ -43,7 +43,8 @@ class PinnedActionToolbarButton : public ToolbarButton {
       bool needs_delayed_destruction);
   void SetIconVisibility(bool is_visible);
   bool NeedsDelayedDestruction() { return needs_delayed_destruction_; }
-  void SetIsPinnable(bool is_pinnable) { is_pinnable_ = is_pinnable; }
+  void SetIsPinnable(bool is_pinnable);
+  bool IsPinnable() { return is_pinnable_; }
   void SetIsPermanent() { permanent_ = true; }
   void SetIsActionShowingBubble(bool showing_bubble) {
     is_action_showing_bubble_ = showing_bubble;

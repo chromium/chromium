@@ -296,3 +296,31 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
             false);
   EXPECT_EQ(web_app_container->IsActionPinned(kActionPrint), false);
 }
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       PinnedButtonPinningAndUnpinning) {
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(browser()->profile());
+
+  // Verify button is visible when pinned.
+  actions_model->UpdatePinnedState(kActionTabSearch, true);
+  auto* button_before = container()->GetButtonFor(kActionTabSearch);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(container()->IsActionPinned(kActionTabSearch), true);
+  EXPECT_EQ(button_before->GetVisible(), true);
+
+  // Verify button is no longer visible after unpinning.
+  actions_model->UpdatePinnedState(kActionTabSearch, false);
+  auto* button_during = container()->GetButtonFor(kActionTabSearch);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(container()->IsActionPinned(kActionTabSearch), false);
+  // Button becomes inaccessible after being unpinned.
+  EXPECT_EQ(button_during, nullptr);
+
+  // Verify button is visible when pinned again.
+  actions_model->UpdatePinnedState(kActionTabSearch, true);
+  auto* button_after = container()->GetButtonFor(kActionTabSearch);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(container()->IsActionPinned(kActionTabSearch), true);
+  EXPECT_EQ(button_after->GetVisible(), true);
+}
