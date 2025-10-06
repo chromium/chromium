@@ -20,6 +20,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -51,8 +54,9 @@ std::u16string ExpectedTaskTitle(const std::string& title) {
 }
 
 // Get the process id of the active WebContents for the passed |browser|.
-int GetChildProcessID(Browser* browser) {
-  return browser->tab_strip_model()
+int GetChildProcessID(BrowserWindowInterface* browser) {
+  return browser->GetFeatures()
+      .tab_strip_model()
       ->GetActiveWebContents()
       ->GetPrimaryMainFrame()
       ->GetProcess()
@@ -83,7 +87,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
     task_provider_.reset();
   }
 
-  Browser* CreateNewProfileAndSwitch() {
+  BrowserWindowInterface* CreateNewProfileAndSwitch() {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath new_path =
         profile_manager->GenerateNextProfileDirectoryPath();
@@ -92,19 +96,20 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
 
     profiles::SwitchToProfile(new_path, /* always_create = */ false,
                               base::DoNothing());
-    BrowserList* browser_list = BrowserList::GetInstance();
-    return *browser_list->begin_browsers_ordered_by_activation();
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   }
 
-  content::ServiceWorkerContext* GetServiceWorkerContext(Browser* browser) {
-    return browser->profile()
+  content::ServiceWorkerContext* GetServiceWorkerContext(
+      BrowserWindowInterface* browser) {
+    return browser->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetServiceWorkerContext();
   }
 
   void WaitUntilTaskCount(uint64_t count) {
-    if (tasks_.size() == count)
+    if (tasks_.size() == count) {
       return;
+    }
 
     expected_task_count_ = count;
     base::RunLoop loop;
@@ -117,16 +122,18 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
     DCHECK(task);
     tasks_.push_back(task);
 
-    if (expected_task_count_ == tasks_.size())
+    if (expected_task_count_ == tasks_.size()) {
       StopWaiting();
+    }
   }
 
   void TaskRemoved(Task* task) override {
     DCHECK(task);
     std::erase(tasks_, task);
 
-    if (expected_task_count_ == tasks_.size())
+    if (expected_task_count_ == tasks_.size()) {
       StopWaiting();
+    }
   }
 
   const std::vector<raw_ptr<Task, VectorExperimental>>& tasks() const {
@@ -143,8 +150,9 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
   }
 
   void StopWaiting() {
-    if (quit_closure_for_waiting_)
+    if (quit_closure_for_waiting_) {
       std::move(quit_closure_for_waiting_).Run();
+    }
   }
 
  private:
@@ -243,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   const GURL kCreateServiceWorkerURL = embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html");
 
-  Browser* browser_1 = CreateNewProfileAndSwitch();
+  BrowserWindowInterface* browser_1 = CreateNewProfileAndSwitch();
   content::RenderFrameHost* render_frame_host_1 =
       ui_test_utils::NavigateToURL(browser_1, kCreateServiceWorkerURL);
   ASSERT_EQ(render_frame_host_1->GetLastCommittedURL(),
@@ -252,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
 
-  Browser* browser_2 = CreateNewProfileAndSwitch();
+  BrowserWindowInterface* browser_2 = CreateNewProfileAndSwitch();
   content::RenderFrameHost* render_frame_host_2 =
       ui_test_utils::NavigateToURL(browser_2, kCreateServiceWorkerURL);
   ASSERT_EQ(render_frame_host_2->GetLastCommittedURL(),
