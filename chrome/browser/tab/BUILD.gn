@@ -191,7 +191,9 @@ robolectric_library("junit") {
 source_set("tab") {
   sources = [
     "android_tab_package.h",
+    "collection_storage_observer.h",
     "collection_storage_package.h",
+    "collection_structure_tracker.h",
     "storage_package.h",
     "tab_state_storage_backend.h",
     "tab_state_storage_database.h",
@@ -215,7 +217,9 @@ source_set("tab") {
 source_set("impl") {
   sources = [
     "android_tab_package.cc",
+    "collection_storage_observer.cc",
     "collection_storage_package.cc",
+    "collection_structure_tracker.cc",
     "tab_state_storage_backend.cc",
     "tab_state_storage_database.cc",
     "tab_state_storage_service.cc",
