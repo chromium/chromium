@@ -193,11 +193,12 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
   // context to ES2 works around this issue at least when using the passthrough
   // command decoder (it's unfortunately not guaranteed to work with the
   // validating decoder as native GL drivers tend to return GLES3 contexts if
-  // they support GLES3 even if the client has requested GLES2).
+  // they support GLES3 even if the client has requested GLES2, but it won't
+  // make any things worse there either).
   // TODO(crbug.com/444049511): Eliminate the need for this workaround as part
   // of eliminating GLES2 support in Chrome altogether.
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
-  attribs.client_major_es_version = use_passthrough_cmd_decoder ? 2 : 3;
+  attribs.client_major_es_version = 2;
 #else
   attribs.client_major_es_version = 3;
 #endif
