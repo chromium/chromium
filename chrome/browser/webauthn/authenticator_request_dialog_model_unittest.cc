@@ -2603,57 +2603,65 @@ struct {
   bool has_hybrid;
   bool has_internal;
   bool supports_hybrid;
+  bool has_uvpaa;
   HasCreds has_creds;
   int expected_button;
 } kWinHelloButtonGetAssertionTestCases[] = {
     // Windows v7+ with all transports.
-    {L, true, true, true, true, HasCreds::kHasRecognizedCredential, kPhoneOrSk},
+    {L, true, true, true, true, true, HasCreds::kHasRecognizedCredential,
+     kPhoneOrSk},
 
     // Windows v7+ with only security keys.
-    {L, true, false, false, true, HasCreds::kNoRecognizedCredential, kSk},
+    {L, true, false, false, true, true, HasCreds::kNoRecognizedCredential, kSk},
 
     // Windows v7+ with only phones.
-    {L, false, true, false, true, HasCreds::kNoRecognizedCredential, kPhone},
+    {L, false, true, false, true, true, HasCreds::kNoRecognizedCredential,
+     kPhone},
 
     // Windows v7+ with only internal creds.
-    {L, false, false, true, true, HasCreds::kHasRecognizedCredential,
+    {L, false, false, true, true, true, HasCreds::kHasRecognizedCredential,
      kNoChromeUI},
 
     // Windows v7+ with empty allow-list.
-    {L, false, false, false, true, HasCreds::kHasRecognizedCredential,
+    {L, false, false, false, true, true, HasCreds::kHasRecognizedCredential,
      kPhoneOrSk},
 
     // Windows v5+ with all transports.
-    {L, true, true, true, false, HasCreds::kHasRecognizedCredential, kSk},
+    {L, true, true, true, false, true, HasCreds::kHasRecognizedCredential, kSk},
 
     // Windows v5+ with only security keys
-    {L, true, false, false, false, HasCreds::kNoRecognizedCredential, kSk},
+    {L, true, false, false, false, true, HasCreds::kNoRecognizedCredential,
+     kSk},
 
     // Windows v5+ with only phones.
-    {L, false, true, false, false, HasCreds::kNoRecognizedCredential,
+    {L, false, true, false, false, true, HasCreds::kNoRecognizedCredential,
      kNoWinButton},
 
     // Windows v5+ with only internal creds.
-    {L, false, false, true, false, HasCreds::kHasRecognizedCredential,
+    {L, false, false, true, false, true, HasCreds::kHasRecognizedCredential,
      kNoChromeUI},
 
     // Windows v5+ with empty allow-list.
-    {L, false, false, false, false, HasCreds::kHasRecognizedCredential, kSk},
+    {L, false, false, false, false, true, HasCreds::kHasRecognizedCredential,
+     kSk},
 
     // Windows <v4 with all transports.
-    {L, true, true, true, false, HasCreds::kUnknown, kHelloOrSk},
+    {L, true, true, true, false, true, HasCreds::kUnknown, kHelloOrSk},
 
     // Windows <v4 with only security keys.
-    {L, true, false, false, false, HasCreds::kUnknown, kSk},
+    {L, true, false, false, false, true, HasCreds::kUnknown, kSk},
 
     // Windows <v4 with only phones.
-    {L, false, true, false, false, HasCreds::kUnknown, kNoWinButton},
+    {L, false, true, false, false, true, HasCreds::kUnknown, kNoWinButton},
 
     // Windows <v4 with only internal creds.
-    {L, false, false, true, false, HasCreds::kUnknown, kHello},
+    {L, false, false, true, false, true, HasCreds::kUnknown, kHello},
 
     // Windows <v4 with empty allow-list.
-    {L, false, false, false, false, HasCreds::kUnknown, kHelloOrSk},
+    {L, false, false, false, false, true, HasCreds::kUnknown, kHelloOrSk},
+
+    // Windows <v4 with empty allow-list and no Win Hello.
+    {L, false, false, false, false, false, HasCreds::kUnknown, kSk},
 };
 #undef L
 
@@ -2676,6 +2684,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     transports_info.transport_list_did_include_internal =
         test_case.has_internal;
     transports_info.has_platform_authenticator_credential = test_case.has_creds;
+    transports_info.win_is_uvpaa = test_case.has_uvpaa;
     if (test_case.has_creds == HasCreds::kHasRecognizedCredential) {
       transports_info.recognized_credentials = {kCred1};
     }
@@ -2687,6 +2696,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     SCOPED_TRACE(testing::Message() << "SK: " << test_case.has_sk);
     SCOPED_TRACE(testing::Message() << "Hybrid: " << test_case.has_hybrid);
     SCOPED_TRACE(testing::Message() << "Internal: " << test_case.has_internal);
+    SCOPED_TRACE(testing::Message() << "Win isUVPAA: " << test_case.has_uvpaa);
     SCOPED_TRACE(testing::Message()
                  << "Has creds: " << static_cast<int>(test_case.has_creds));
     SCOPED_TRACE(testing::Message()
