@@ -753,6 +753,14 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
                                   delay_before_interleaved_updates,
                                   delay_to_finish_sweeper)));
 
+  // Make sure the clean up completes.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+               level_db::BackingStore::InSessionCleanupVerificationEvent::
+                   kMatchedSnapshot) > 0;
+  }));
+
   histograms.ExpectTotalCount("IndexedDB.LevelDB.InSessionCleanupSnapshotTime",
                               2);
   histograms.ExpectTotalCount(
