@@ -1841,7 +1841,14 @@ class TabImpl implements Tab {
         }
     }
 
-    /** This is currently used when restoring tabs, and by DOMDistiller */
+    /**
+     * This is currently used by recent tabs when restoring tabs.
+     *
+     * @deprecated This method is deprecated and should not be used. The intent is to align with
+     *     desktop platforms where a WebContents is assigned to a Tab and they remain 1:1 for the
+     *     lifetime of the Tab. The remaining uses of this method are being removed.
+     */
+    @Deprecated
     @CalledByNative
     void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
         boolean hasWebContents = mContentView != null && mWebContents != null;
