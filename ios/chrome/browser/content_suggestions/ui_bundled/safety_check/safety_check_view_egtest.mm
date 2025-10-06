@@ -5,6 +5,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safety_check/safety_check_pref_names.h"
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
@@ -101,7 +102,7 @@ void ScrollToSafetyCheckModule() {
   // Enable relevant preferences for the test.
   [ChromeEarlGrey
       setBoolValue:YES
-       forUserPref:prefs::kHomeCustomizationMagicStackSafetyCheckEnabled];
+       forUserPref:safety_check::prefs::kSafetyCheckHomeModuleEnabled];
 
   // Intentionally forces a Safety Check error to ensure module visibility in
   // the Magic Stack.

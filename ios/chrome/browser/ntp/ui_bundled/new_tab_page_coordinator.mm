@@ -21,6 +21,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/safety_check/safety_check_pref_names.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -1796,7 +1797,7 @@
 
       PrefService* prefService = self.prefService;
       BOOL safetyCheckEnabled = prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
+          safety_check::prefs::kSafetyCheckHomeModuleEnabled);
       BOOL tabResumptionEnabled = prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
       BOOL tipsEnabled = prefService->GetBoolean(

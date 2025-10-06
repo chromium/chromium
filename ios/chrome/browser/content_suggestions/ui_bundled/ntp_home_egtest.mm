@@ -12,6 +12,7 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
+#import "components/safety_check/safety_check_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
@@ -1131,7 +1132,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Check error to ensure module visibility in the Magic Stack.
   [ChromeEarlGrey
       setBoolValue:YES
-       forUserPref:prefs::kHomeCustomizationMagicStackSafetyCheckEnabled];
+       forUserPref:safety_check::prefs::kSafetyCheckHomeModuleEnabled];
   [ChromeEarlGrey
          setStringValue:NameForSafetyCheckState(
                             SafeBrowsingSafetyCheckState::kUnsafe)

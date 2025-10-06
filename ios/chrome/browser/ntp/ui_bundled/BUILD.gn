@@ -132,6 +132,7 @@ source_set("coordinator") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/safety_check:pref_names",
     "//components/search",
     "//components/search_engines",
     "//components/signin/public/base",

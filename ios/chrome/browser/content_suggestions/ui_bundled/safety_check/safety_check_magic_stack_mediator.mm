@@ -11,6 +11,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
+#import "components/safety_check/safety_check_pref_names.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -134,7 +135,7 @@ int ImpressionsCount(const base::Value::List& impressions,
       _userPrefChangeRegistrar.Init(userState);
 
       _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
+          safety_check::prefs::kSafetyCheckHomeModuleEnabled,
           &_userPrefChangeRegistrar);
 
       _safetyCheckState = [self initialSafetyCheckState];
@@ -359,9 +360,9 @@ int ImpressionsCount(const base::Value::List& impressions,
     // has changed.
     [self runningStateChanged:_safetyCheckState.runningState];
   } else if (preferenceName ==
-                 prefs::kHomeCustomizationMagicStackSafetyCheckEnabled &&
+                 safety_check::prefs::kSafetyCheckHomeModuleEnabled &&
              !_userState->GetBoolean(
-                 prefs::kHomeCustomizationMagicStackSafetyCheckEnabled)) {
+                 safety_check::prefs::kSafetyCheckHomeModuleEnabled)) {
     [self.delegate removeSafetyCheckModule];
   }
 }

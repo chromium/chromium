@@ -4,6 +4,21 @@
 
 import("//build/config/features.gni")
 
+source_set("pref_names") {
+  sources = [ "safety_check_pref_names.h" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "safety_check_prefs.cc",
+    "safety_check_prefs.h",
+  ]
+  deps = [
+    ":pref_names",
+    "//components/prefs",
+  ]
+}
+
 source_set("safety_check") {
   sources = [
     "safety_check.cc",

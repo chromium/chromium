@@ -430,6 +430,7 @@ source_set("eg2_tests") {
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/omnibox/browser:aim_eligibility_service_features",
     "//components/regional_capabilities",
+    "//components/safety_check:pref_names",
     "//components/search_engines",
     "//components/segmentation_platform/public",
     "//components/signin/internal/identity_manager",

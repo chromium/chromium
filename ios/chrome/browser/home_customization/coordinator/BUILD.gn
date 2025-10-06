@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/prefs",
+    "//components/safety_check:pref_names",
     "//components/sync/protocol:protocol_gen",
     "//components/themes",
     "//ios/chrome/app/strings",

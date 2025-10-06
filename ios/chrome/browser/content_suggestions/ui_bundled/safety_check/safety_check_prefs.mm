@@ -6,6 +6,7 @@
 
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/safety_check/safety_check_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -19,13 +20,11 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsSafetyCheckInMagicStackDisabled(PrefService* prefs) {
-  return !prefs->GetBoolean(
-      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
+  return !prefs->GetBoolean(safety_check::prefs::kSafetyCheckHomeModuleEnabled);
 }
 
 void DisableSafetyCheckInMagicStack(PrefService* prefs) {
-  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
-                    false);
+  prefs->SetBoolean(safety_check::prefs::kSafetyCheckHomeModuleEnabled, false);
 }
 
 }  // namespace safety_check_prefs

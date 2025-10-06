@@ -61,6 +61,8 @@
 #import "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #import "components/regional_capabilities/regional_capabilities_prefs.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safety_check/safety_check_pref_names.h"
+#import "components/safety_check/safety_check_prefs.h"
 #import "components/saved_tab_groups/public/pref_names.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
@@ -958,8 +960,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
                                 true);
   registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
-  registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
 
   safety_check_prefs::RegisterPrefs(registry);
@@ -1006,6 +1006,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(
       prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
       PrefRegistry::LOSSY_PREF);
+
+  safety_check::prefs::RegisterProfilePrefs(registry);
 
   // Preferences related to Lens Overlay.
   registry->RegisterBooleanPref(prefs::kLensOverlayConditionsAccepted, false);
@@ -1106,6 +1108,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTipsInMagicStackDisabledPref, false);
   registry->RegisterBooleanPref(kHomeCustomizationMagicStackSetUpListEnabled,
                                 true);
+
+  // Deprecated 10/2025. Use
+  // `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1283,6 +1290,11 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 10/2025
   prefs->ClearPref(kTipsInMagicStackDisabledPref);
   prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
+
+  // Added 10/2025.
+  RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,
+                    prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
+                    prefs);
 }
 
 void MigrateObsoleteUserDefault() {

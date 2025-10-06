@@ -29,6 +29,7 @@ source_set("safety_check") {
     "//components/password_manager/core/browser",
     "//components/pref_registry",
     "//components/prefs/ios",
+    "//components/safety_check:pref_names",
     "//components/version_info",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
@@ -76,6 +77,7 @@ source_set("prefs") {
   ]
   deps = [
     "//components/prefs",
+    "//components/safety_check:pref_names",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
   ]
@@ -119,6 +121,7 @@ source_set("eg2_tests") {
     ":prefs",
     "//base/test:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check:pref_names",
     "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
