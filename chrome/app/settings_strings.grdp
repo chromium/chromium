@@ -780,6 +780,9 @@
   <message name="IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVED_MESSAGE" desc="Hidden text that is read to screen readers to confirm that a home and work address was removed.">
     Address removed
   </message>
+  <message name="IDS_SETTINGS_NAME_EMAIL_ADDRESS_REMOVED_MESSAGE" desc="Hidden text that is read to screen readers to confirm that a name email address was removed.">
+    Info removed
+  </message>
 
   <!-- Default Browser Page -->
   <if expr="not is_chromeos">

@@ -1236,7 +1236,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"yourSavedInfoPageDescription",
        IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION},
       {"yourSavedInfoRelatedServicesTitle",
-        IDS_SETTINGS_RELATED_SERVICES_TITLE},
+       IDS_SETTINGS_RELATED_SERVICES_TITLE},
       {"passwordsDescription", IDS_SETTINGS_PASSWORD_MANAGER_DESCRIPTION},
       {"genericCreditCard", IDS_AUTOFILL_CC_GENERIC},
       {"creditCards", IDS_AUTOFILL_PAYMENT_METHODS},
@@ -1474,7 +1474,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"removeAddressFromChrome",
        IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVE_CONFIRMATION_DIALOG_ACTION_OK},
       {"homeAndWorkAddressRemovedMessage",
-       IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVED_MESSAGE}};
+       IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVED_MESSAGE},
+      {"nameEmailAddressRemovedMessage",
+       IDS_SETTINGS_NAME_EMAIL_ADDRESS_REMOVED_MESSAGE}};
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
