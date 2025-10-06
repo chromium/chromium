@@ -12,6 +12,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -58,6 +59,12 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   auto* sync_service =
       WebViewSyncServiceFactory::GetForBrowserState(browser_state);
+
+  PrefService* prefs = browser_state->GetPrefs();
+  if (prefs->GetBoolean(ios_web_view::kUseImageFetcherEnabled)) {
+    // TODO(crbug.com/448641522): Create ImageFetcher and pass to
+    // PersonalDataManager.
+  }
   return std::make_unique<autofill::PersonalDataManager>(
       profile_db, account_db, browser_state->GetPrefs(),
       ApplicationContext::GetInstance()->GetLocalState(),

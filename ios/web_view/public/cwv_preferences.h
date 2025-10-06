@@ -67,6 +67,10 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isAutofillVCNUsageEnabled)
     BOOL autofillVCNUsageEnabled;
 
+// Whether or not image fetcher usage is enabled.
+@property(nonatomic, assign, getter=isUseImageFetcherEnabled)
+    BOOL useImageFetcherEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Resets all translation settings back to default. In particular, this will
