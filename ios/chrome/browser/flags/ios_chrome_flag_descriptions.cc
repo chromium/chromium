@@ -26,6 +26,12 @@ const char kAIMPrototypeImmersiveSRPName[] =
 const char kAIMPrototypeImmersiveSRPDescription[] =
     "When enabled, the AIM prototype will open SRPs in an embedded web view.";
 
+const char kAIMPrototypeTabPickerName[] =
+    "Enable the tab picker within the AIM prototype";
+const char kAIMPrototypeTabPickerDescription[] =
+    "When enabled, users are offered the ability to attach multiple tabs in "
+    "the AIM prototype.";
+
 const char kAskGeminiChipName[] = "Ask Gemini Chip";
 const char kAskGeminiChipDescription[] = "Enables the Ask Gemini Chip feature.";
 

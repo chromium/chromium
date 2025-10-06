@@ -119,6 +119,11 @@
     "expiry_milestone": 145
   },
   {
+    "name":"aim-prototype-tab-picker",
+    "owners": ["ameurhosni@google.com","alionadangla@google.com","radunitescu@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "aim-server-eligibility",
     "owners": ["ameurhosni@google.com", "mahmadi@chromium.org"],
     "expiry_milestone": 145

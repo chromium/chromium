@@ -29,6 +29,9 @@ extern const char kAIMPrototypeDescription[];
 extern const char kAIMPrototypeImmersiveSRPName[];
 extern const char kAIMPrototypeImmersiveSRPDescription[];
 
+extern const char kAIMPrototypeTabPickerName[];
+extern const char kAIMPrototypeTabPickerDescription[];
+
 extern const char kAskGeminiChipName[];
 extern const char kAskGeminiChipDescription[];
 
