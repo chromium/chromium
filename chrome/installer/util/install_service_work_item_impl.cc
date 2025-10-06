@@ -634,15 +634,18 @@ void InstallServiceWorkItemImpl::SetDescription() {
 
 bool InstallServiceWorkItemImpl::InstallNewService() {
   DCHECK(!service_.IsValid());
-  bool success = InstallService(
-      ServiceConfig(kServiceType, start_type_, kServiceErrorControl,
-                    service_cmd_line_.GetCommandLineString(),
-                    kServiceDependencies, GetCurrentServiceDisplayName()));
-  if (success)
-    rollback_new_service_ = true;
+  if (!InstallService(ServiceConfig(
+          kServiceType, start_type_, kServiceErrorControl,
+          service_cmd_line_.GetCommandLineString(), kServiceDependencies,
+          GetCurrentServiceDisplayName()))) {
+    return false;
+  }
+
+  rollback_new_service_ = true;
 
   SetDescription();
-  return success;
+
+  return true;
 }
 
 bool InstallServiceWorkItemImpl::UpgradeService() {
