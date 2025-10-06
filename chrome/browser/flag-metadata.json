@@ -9153,11 +9153,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "separate-profiles-for-managed-accounts",
-    "owners": [ "treib@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "separate-web-app-shortcut-badge-icon",
     "owners": ["tbarzic@chromium.org", "owenzhang@google.com"],
     "expiry_milestone": 130

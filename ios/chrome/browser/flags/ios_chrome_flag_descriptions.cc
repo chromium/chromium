@@ -1470,12 +1470,6 @@ const char kSendUmaOverAnyNetwork[] =
 const char kSendUmaOverAnyNetworkDescription[] =
     "When enabled, will send UMA data over either WiFi or cellular by default.";
 
-const char kSeparateProfilesForManagedAccountsName[] =
-    "Put each managed account into its own profile";
-const char kSeparateProfilesForManagedAccountsDescription[] =
-    "If enabled, each managed account will be assigned to its own separate "
-    "profile.";
-
 const char kShareExtensionForMultiprofileName[] =
     "Enable Share Extension for multiprofile";
 const char kShareExtensionForMultiprofileDescription[] =
