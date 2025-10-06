@@ -176,13 +176,17 @@ public class SelectActionMenuHelper {
                         selectionActionMenuDelegate, classificationResult, selectedText);
         if (secondaryAssistItems != null) itemGroups.add(secondaryAssistItems);
 
-        itemGroups.add(
+        SelectionMenuGroup textProcessingAssistItems =
                 getTextProcessingItems(
                         context,
                         isSelectionPassword,
                         isSelectionReadOnly,
+                        selectedText,
                         textProcessingIntentHandler,
-                        selectionActionMenuDelegate));
+                        selectionActionMenuDelegate);
+        if (textProcessingAssistItems != null) {
+            itemGroups.add(textProcessingAssistItems);
+        }
 
         return itemGroups;
     }
@@ -302,12 +306,14 @@ public class SelectActionMenuHelper {
     }
 
     @VisibleForTesting
-    /* package */ static SelectionMenuGroup getTextProcessingItems(
+    /* package */ static @Nullable SelectionMenuGroup getTextProcessingItems(
             Context context,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
+            String selectedText,
             @Nullable TextProcessingIntentHandler intentHandler,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
+        if (selectedText.isEmpty()) return null;
         SelectionMenuGroup textProcessingItems =
                 new SelectionMenuGroup(
                         R.id.select_action_menu_text_processing_items,

@@ -1166,8 +1166,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         SelectionMenuGroup textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, false, this::processText, mSelectionActionMenuDelegate);
-        if (!textProcessingItems.items.isEmpty()) {
+                        mContext,
+                        false,
+                        false,
+                        "test",
+                        this::processText,
+                        mSelectionActionMenuDelegate);
+        if (textProcessingItems != null && !textProcessingItems.items.isEmpty()) {
             addMenuItemsToActionMenu(
                     mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null);
         }

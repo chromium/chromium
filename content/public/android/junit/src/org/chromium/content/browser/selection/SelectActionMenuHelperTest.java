@@ -5,6 +5,7 @@
 package org.chromium.content.browser.selection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -185,13 +186,27 @@ public class SelectActionMenuHelperTest {
                 new TestSelectionActionMenuDelegate();
         SelectionMenuGroup group =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, intentHandler, null);
+                        mContext, false, true, "test", intentHandler, null);
         assertEquals(1, group.items.size());
 
         group =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, intentHandler, selectionActionMenuDelegate);
+                        mContext, false, true, "test", intentHandler, selectionActionMenuDelegate);
         assertEquals(0, group.items.size());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    public void testGetTextProcessingItems_emptySelection() {
+        SelectActionMenuHelper.TextProcessingIntentHandler intentHandler =
+                new SelectActionMenuHelper.TextProcessingIntentHandler() {
+                    @Override
+                    public void handleIntent(Intent textProcessingIntent) {}
+                };
+        SelectionMenuGroup group =
+                SelectActionMenuHelper.getTextProcessingItems(
+                        mContext, false, true, "", intentHandler, null);
+        assertNull(group);
     }
 
     private ResolveInfo createResolveInfoWithActivityInfo(String activityName, boolean exported) {
