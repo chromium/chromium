@@ -1703,7 +1703,8 @@ void NativeWidgetMacNSWindowHost::GetHasMenuController(
 void NativeWidgetMacNSWindowHost::GetHitTestResult(
     const gfx::Point& location_in_content,
     GetHitTestResultCallback callback) {
-  remote_cocoa::mojom::HitTestResult hit_test_result;
+  remote_cocoa::mojom::HitTestResult hit_test_result =
+      remote_cocoa::mojom::HitTestResult::kOther;
   GetHitTestResult(location_in_content, &hit_test_result);
   std::move(callback).Run(hit_test_result);
 }
