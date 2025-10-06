@@ -273,31 +273,21 @@ def main():
             return 1
 
     if args.skip_remoteexec_cfg_fetch:
-        return 0
-
-    logging.info("fetch reclient_cfgs for RBE project %s..." % rbe_project)
-
-    cipd_prefix = posixpath.join(args.cipd_prefix, rbe_project)
-
-    # cleanup unused nacl configs. preserve nacl/rewrapper_linux.cfg
-    # TODO(b/354804085): remove this code.
-    for cfg in [
-            "nacl/rewrapper_mac.cfg",
-            "nacl/rewrapper_windows.cfg",
-            "nacl/win-cross",
-    ]:
-        cfgpath = os.path.join(THIS_DIR, cfg)
-        if os.path.exists(cfgpath):
-            if os.path.isdir(cfgpath):
+        # remove stale reclient cfgs
+        for cfg in ["chromium-browser-clang", "python", "win-cross"]:
+            cfgpath = os.path.join(THIS_DIR, cfg)
+            if os.path.exists(cfgpath):
 
                 def onerror(func, cfgpath, exc_info):
                     os.chmod(cfgpath, 0o644)
                     func(cfgpath)
 
                 shutil.rmtree(cfgpath, onerror=onerror)
-            else:
-                os.chmod(cfgpath, 0o644)
-                os.remove(cfgpath)
+        return 0
+
+    logging.info("fetch reclient_cfgs for RBE project %s..." % rbe_project)
+
+    cipd_prefix = posixpath.join(args.cipd_prefix, rbe_project)
 
     tool_revisions = {
         "chromium-browser-clang": ClangRevision(),
