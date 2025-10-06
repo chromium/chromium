@@ -3297,6 +3297,11 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
       inner_render_manager->current_frame_host();
   RenderViewHostImpl* inner_render_view_host =
       inner_main_frame->render_view_host();
+  RenderFrameHostImpl* inner_speculative_frame =
+      inner_render_manager->speculative_frame_host();
+  RenderViewHostImpl* inner_speculative_render_view_host =
+      inner_speculative_frame ? inner_speculative_frame->render_view_host()
+                              : nullptr;
   auto* outer_render_manager =
       render_frame_host_impl->frame_tree_node()->render_manager();
 
@@ -3321,6 +3326,16 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
       prev_rwhv->Destroy();
     }
   }
+  // Do the same for speculative render frame host's view.
+  if (inner_speculative_frame) {
+    RenderWidgetHostViewBase* prev_speculative_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(
+            inner_speculative_frame->GetView());
+    if (prev_speculative_rwhv &&
+        !prev_speculative_rwhv->IsRenderWidgetHostViewChildFrame()) {
+      prev_speculative_rwhv->Destroy();
+    }
+  }
 
   // When the WebContents being initialized has not already navigated, the
   // browser side Render{View,Frame}Host must be initialized and the
@@ -3334,6 +3349,20 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
   if (!inner_render_manager->GetRenderWidgetHostView()) {
     inner_web_contents_impl->CreateRenderWidgetHostViewForRenderManager(
         inner_render_view_host);
+  }
+  // Do the same for speculative render frame host.
+  if (inner_speculative_render_view_host) {
+    inner_render_manager->InitRenderView(
+        inner_speculative_frame->GetSiteInstance()->group(),
+        inner_speculative_render_view_host,
+        /*proxy=*/nullptr, /*navigation_metrics_token=*/std::nullopt);
+    RenderWidgetHostViewBase* speculative_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(
+            inner_speculative_frame->GetView());
+    if (!speculative_rwhv) {
+      inner_web_contents_impl->CreateRenderWidgetHostViewForRenderManager(
+          inner_speculative_render_view_host);
+    }
   }
 
   inner_web_contents_impl->RecursivelyUnregisterRenderWidgetHostViews();
