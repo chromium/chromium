@@ -362,18 +362,20 @@ cr-searchbox-icon {
   inset-inline-start: 16px;
 }
 
-:host([realbox-layout-mode='Tall']) {
+:host([ntp-realbox-next-enabled]) input::placeholder {
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+:host([ntp-realbox-next-enabled]) {
   --cr-searchbox-border-radius: 26px;
-  --cr-searchbox-compose-button-position-top: 12px;
   --cr-searchbox-dropdown-padding-bottom: 12px;
-  --cr-searchbox-dropdown-padding-top: 62px;
-  --cr-searchbox-height: 112px;
-  --cr-searchbox-icon-height: 40px;
-  --cr-searchbox-input-padding-top_: 22px;
+  --cr-searchbox-icon-size: 40px;
   --text-input-inline-start-spacing: 16px;
 }
 
-:host([realbox-layout-mode='Tall']) cr-searchbox-dropdown::part(dropdown-content) {
+:host([ntp-realbox-next-enabled]) cr-searchbox-dropdown::part(dropdown-content) {
   background-color: unset;
   border-radius: unset;
   box-shadow: unset;
@@ -384,7 +386,15 @@ cr-searchbox-icon {
   padding-top: unset;
 }
 
-:host([realbox-layout-mode='Tall']) .dropdownContainer {
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
+  z-index: 100;
+}
+
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-file-carousel) {
+  margin-top: 16px;
+}
+
+:host([ntp-realbox-next-enabled]) .dropdownContainer {
   background-color: var(--color-searchbox-results-background);
   border-radius: var(--cr-searchbox-border-radius);
   box-shadow: var(--cr-searchbox-shadow);
@@ -393,6 +403,17 @@ cr-searchbox-icon {
   overflow: hidden;
   padding-bottom: var(--cr-searchbox-dropdown-padding-bottom);
   padding-top: var(--cr-searchbox-dropdown-padding-top);
+}
+
+:host([realbox-layout-mode='Tall']) {
+  --cr-searchbox-compose-button-position-top: 12px;
+  --cr-searchbox-dropdown-padding-top: 60px;
+  --cr-searchbox-height: 108px;
+  --cr-searchbox-input-padding-top_: 22px;
+}
+
+:host([realbox-layout-mode='Tall'][has-context-files_]) {
+  --cr-searchbox-dropdown-padding-top: 48px;
 }
 
 @media (forced-colors: active) {
@@ -415,12 +436,6 @@ cr-searchbox-icon {
   padding-inline-start: 24px;
 }
 
-:host([realbox-layout-mode='Tall']) input::placeholder {
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-}
-
 :host([realbox-layout-mode='Tall']:not([dropdown-is-visible])) cr-searchbox-icon,
 :host([realbox-layout-mode='Tall'][dropdown-is-visible]) .searchbox-icon-button-container {
   display: none;
@@ -428,7 +443,7 @@ cr-searchbox-icon {
 
 :host([realbox-layout-mode='Tall']) .searchbox-icon-button {
   bottom: 12px;
-  height: var(--cr-searchbox-icon-height);
+  height: var(--cr-searchbox-icon-size);
   padding: 8px 12px;
 }
 
@@ -449,11 +464,41 @@ cr-searchbox-icon {
 
 :host([realbox-layout-mode='Tall'][searchbox-lens-search-enabled_]) #voiceSearchButton,
 :host([realbox-layout-mode='Tall'][searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
-  inset-inline-end: calc(12px + var(--cr-searchbox-icon-height) + var(--cr-searchbox-icon-spacing));
+  inset-inline-end: calc(12px + var(--cr-searchbox-icon-size) + var(--cr-searchbox-icon-spacing));
 }
 
 :host-context([realbox-layout-mode='Tall']) #composeButton {
   --cr-button-height: 36px;
+}
+
+:host([realbox-layout-mode='Compact']) {
+  --cr-searchbox-dropdown-padding-top: 12px;
+  --cr-searchbox-height: 56px;
+}
+
+:host([realbox-layout-mode='Compact']) #inputWrapper {
+  z-index: 99;
+}
+
+:host([realbox-layout-mode='Compact']) cr-searchbox-icon {
+  display: none;
+}
+
+:host([realbox-layout-mode='Compact'][compose-button-enabled][searchbox-lens-search-enabled_]) #lensSearchButton {
+  inset-inline-end: calc(var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
+}
+
+:host([realbox-layout-mode='Compact'][compose-button-enabled][searchbox-lens-search-enabled_]) #voiceSearchButton,
+:host([realbox-layout-mode='Compact'][compose-button-enabled][searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
+  inset-inline-end: calc(var(--cr-searchbox-icon-size) + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
+}
+
+:host([realbox-layout-mode='Compact']) .dropdownContainer {
+  z-index: auto;
+}
+
+:host([realbox-layout-mode='Compact']) cr-searchbox-dropdown::part(dropdown-content) {
+  padding-top: 12px;
 }
 
 :host-context([realbox-layout-mode='Tall']) #errorScrim {

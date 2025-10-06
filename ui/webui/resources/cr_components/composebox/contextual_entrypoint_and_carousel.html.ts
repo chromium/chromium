@@ -11,19 +11,10 @@ import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoi
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  ${this.showFileCarousel_ ? html`
-    <ntp-composebox-file-carousel
-      id="carousel"
-      .files=${Array.from(this.files_.values())}
-      @delete-file=${this.onDeleteFile_}>
-    </ntp-composebox-file-carousel> ` : ''}
-  ${this.showDropdown && this.showFileCarousel_ ? html`
-  <div class="carousel-divider"></div>` : ''}
-  <!-- Suggestions are slotted in from the parent component. -->
-  <slot id="dropdownMatches"></slot>
-  ${this.contextMenuEnabled_ ? html`
+  ${this.compactMode ? html`
     <div id="contextMenuContainer">
       <composebox-context-menu-entrypoint id="contextEntrypoint"
+          part="composebox-entrypoint"
           class="upload-icon no-overlap"
           @open-image-upload="${this.openImageUpload_}"
           @open-file-upload="${this.openFileUpload_}"
@@ -32,7 +23,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           @create-image-click="${this.onCreateImageClick_}"
           ?in-create-image-mode="${this.inCreateImageMode_}"
           ?inputs-disabled="${this.inputsDisabled_}"
-          ?show-context-menu-description="${this.showContextMenuDescription_}">
+          ?show-context-menu-description="${false}">
       </composebox-context-menu-entrypoint>
       <composebox-tool-chip
           icon="composebox:deepSearch"
@@ -47,28 +38,68 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           @click="${this.onCreateImageClick_}">
       </composebox-tool-chip>
     </div>
-  ` : html`
-    <div id="uploadContainer" class="icon-fade">
-        <cr-icon-button
+      `: ''}
+  ${this.showFileCarousel_ ? html`
+    <ntp-composebox-file-carousel
+      part="composebox-file-carousel"
+      id="carousel"
+      .files=${Array.from(this.files_.values())}
+      @delete-file=${this.onDeleteFile_}>
+    </ntp-composebox-file-carousel> ` : ''}
+  ${this.showDropdown && this.showFileCarousel_ ? html`
+  <div class="carousel-divider"></div>` : ''}
+  <!-- Suggestions are slotted in from the parent component. -->
+  <slot id="dropdownMatches"></slot>
+  ${!this.compactMode ? html`
+    ${this.contextMenuEnabled_ ? html`
+      <div id="contextMenuContainer">
+        <composebox-context-menu-entrypoint id="contextEntrypoint"
             class="upload-icon no-overlap"
-            id="imageUploadButton"
-            iron-icon="composebox:imageUpload"
-            title="${this.i18n('composeboxImageUploadButtonTitle')}"
-            .disabled="${this.inputsDisabled_}"
-            @click="${this.openImageUpload_}">
-        </cr-icon-button>
-        ${this.composeboxShowPdfUpload_ ? html`
-        <cr-icon-button
-            class="upload-icon no-overlap"
-            id="fileUploadButton"
-            iron-icon="composebox:fileUpload"
-            title="${this.i18n('composeboxPdfUploadButtonTitle')}"
-            .disabled="${this.inputsDisabled_}"
-            @click="${this.openFileUpload_}">
-        </cr-icon-button>
-        `: ''}
-    </div>
-  `}
+            @open-image-upload="${this.openImageUpload_}"
+            @open-file-upload="${this.openFileUpload_}"
+            @add-tab-context="${this.addTabContext_}"
+            @deep-search-click="${this.onDeepSearchClick_}"
+            @create-image-click="${this.onCreateImageClick_}"
+            ?in-create-image-mode="${this.inCreateImageMode_}"
+            ?inputs-disabled="${this.inputsDisabled_}"
+            ?show-context-menu-description="${this.showContextMenuDescription_}">
+        </composebox-context-menu-entrypoint>
+        <composebox-tool-chip
+            icon="composebox:deepSearch"
+            label="${this.i18n('deepSearch')}"
+            ?visible="${this.inDeepSearchMode_}"
+            @click="${this.onDeepSearchClick_}">
+        </composebox-tool-chip>
+        <composebox-tool-chip
+            icon="composebox:nanoBanana"
+            label="${this.i18n('createImages')}"
+            ?visible="${this.inCreateImageMode_}"
+            @click="${this.onCreateImageClick_}">
+        </composebox-tool-chip>
+      </div>
+    ` : html`
+      <div id="uploadContainer" class="icon-fade">
+          <cr-icon-button
+              class="upload-icon no-overlap"
+              id="imageUploadButton"
+              iron-icon="composebox:imageUpload"
+              title="${this.i18n('composeboxImageUploadButtonTitle')}"
+              .disabled="${this.inputsDisabled_}"
+              @click="${this.openImageUpload_}">
+          </cr-icon-button>
+          ${this.composeboxShowPdfUpload_ ? html`
+          <cr-icon-button
+              class="upload-icon no-overlap"
+              id="fileUploadButton"
+              iron-icon="composebox:fileUpload"
+              title="${this.i18n('composeboxPdfUploadButtonTitle')}"
+              .disabled="${this.inputsDisabled_}"
+              @click="${this.openFileUpload_}">
+          </cr-icon-button>
+          `: ''}
+      </div>
+    `}
+  `: ''}
   <input type="file"
       accept="${this.imageFileTypes_}"
       id="imageInput"
