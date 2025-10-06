@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -56,9 +55,9 @@ import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
-import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -142,12 +141,7 @@ public class NewTabPageLayout extends LinearLayout
 
     private FeedSurfaceScrollDelegate mScrollDelegate;
 
-    private final int mTileViewWidth;
-    private @Nullable Integer mInitialTileNum;
-    private @Nullable Boolean mIsMvtAllFilledLandscape;
-    private @Nullable Boolean mIsMvtAllFilledPortrait;
-    private final int mTileViewIntervalPaddingTablet;
-    private final int mTileViewEdgePaddingTablet;
+    private boolean mMvtContentFits;
     private float mTransitionEndOffset;
     private boolean mIsTablet;
     private ObservableSupplier<Integer> mTabStripHeightSupplier;
@@ -183,12 +177,6 @@ public class NewTabPageLayout extends LinearLayout
         super(context, attrs);
         mContext = context;
         Resources resources = getResources();
-        mTileViewWidth = resources.getDimensionPixelOffset(R.dimen.tile_view_width);
-        mTileViewIntervalPaddingTablet =
-                resources.getDimensionPixelOffset(R.dimen.tile_view_padding_interval_tablet);
-        mTileViewEdgePaddingTablet =
-                resources.getDimensionPixelOffset(R.dimen.tile_view_padding_edge_tablet);
-
         mNtpSearchBoxTopMarginWithoutLogo =
                 resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
         mNtpSearchBoxTransitionStartOffset =
@@ -695,31 +683,12 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     /** Updates the width of the MV tiles container when used in NTP on the tablet. */
-    private void calculateTabletMvtWidth(int widthMeasureSpec) {
+    private void calculateTabletMvtWidth(int totalWidth) {
         if (mMvTilesContainerLayout.getVisibility() == GONE) return;
 
-        if (mInitialTileNum == null) {
-            mInitialTileNum =
-                    ((TilesLinearLayout) findViewById(R.id.mv_tiles_layout)).getTileCount();
-        }
-
-        int currentOrientation = getResources().getConfiguration().orientation;
-        if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
-                        && mIsMvtAllFilledLandscape == null)
-                || (currentOrientation == Configuration.ORIENTATION_PORTRAIT
-                        && mIsMvtAllFilledPortrait == null)) {
-            boolean isAllFilled =
-                    mInitialTileNum * mTileViewWidth
-                                    + (mInitialTileNum - 1) * mTileViewIntervalPaddingTablet
-                                    + 2 * mTileViewEdgePaddingTablet
-                            <= widthMeasureSpec;
-            if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                mIsMvtAllFilledLandscape = isAllFilled;
-            } else {
-                mIsMvtAllFilledPortrait = isAllFilled;
-            }
-            updateMvtOnTablet();
-        }
+        MostVisitedTilesLayout mvTilesLayout = findViewById(R.id.mv_tiles_layout);
+        mMvtContentFits = mvTilesLayout.contentFitsOnTablet(totalWidth);
+        updateMvtOnTablet();
     }
 
     public void onSwitchToForeground() {
@@ -1284,14 +1253,10 @@ public class NewTabPageLayout extends LinearLayout
     private void updateMvtOnTablet() {
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
-        marginLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (mIsMvtAllFilledLandscape != null && mIsMvtAllFilledLandscape) {
-                marginLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-        } else if (mIsMvtAllFilledPortrait != null && mIsMvtAllFilledPortrait) {
-            marginLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
+        marginLayoutParams.width =
+                mMvtContentFits
+                        ? ViewGroup.LayoutParams.WRAP_CONTENT
+                        : ViewGroup.LayoutParams.MATCH_PARENT;
 
         int lateralPaddingId =
                 mIsInNarrowWindowOnTablet
