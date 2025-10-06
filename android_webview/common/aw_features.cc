@@ -290,4 +290,9 @@ BASE_FEATURE(kWebViewCacheBoundaryInterfaceMethods,
 BASE_FEATURE(kWebViewOptInToGmsBindServiceOptimization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Moves some of the work that is being run during
+// `startChromium` to be done beforehand during WebView provider
+// initialization. This is expected to improve startup performance especially
+// when async startup takes place.
+BASE_FEATURE(kWebViewMoveWorkToProviderInit, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

@@ -1148,6 +1148,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
                 "Opt-in WebView to GMSCore's bindService optimizations"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
+                " Moves some of the work that is being run during `startChromium` to be done"
+                    + " beforehand during WebView provider initialization. This is expected to"
+                    + " improve startup performance especially when async startup takes place."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

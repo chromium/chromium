@@ -319,8 +319,11 @@ public class TraceEvent implements AutoCloseable {
         // by other applications
         if (sEnabled != enabled) {
             sEnabled = enabled;
-            ThreadUtils.getUiThreadLooper()
-                    .setMessageLogging(enabled ? LooperMonitorHolder.sInstance : null);
+            // UI Thread may not be set by this point.
+            if (sUiThreadReady) {
+                ThreadUtils.getUiThreadLooper()
+                        .setMessageLogging(enabled ? LooperMonitorHolder.sInstance : null);
+            }
         }
 
         if (sEnabled) {
@@ -355,7 +358,10 @@ public class TraceEvent implements AutoCloseable {
             EarlyTraceEvent.maybeEnableInBrowserProcess();
         }
         if (EarlyTraceEvent.enabled()) {
-            ThreadUtils.getUiThreadLooper().setMessageLogging(LooperMonitorHolder.sInstance);
+            // UI Thread may not be set by this point.
+            if (sUiThreadReady) {
+                ThreadUtils.getUiThreadLooper().setMessageLogging(LooperMonitorHolder.sInstance);
+            }
         }
     }
 
@@ -368,6 +374,7 @@ public class TraceEvent implements AutoCloseable {
         sUiThreadReady = true;
         if (sEnabled) {
             ViewHierarchyDumper.updateEnabledState();
+            ThreadUtils.getUiThreadLooper().setMessageLogging(LooperMonitorHolder.sInstance);
         }
     }
 

@@ -78,28 +78,42 @@ public class WebViewCachedFlags {
             sInstance =
                     new WebViewCachedFlags(
                             prefs,
-                            Map.of(
-                                    // Add new CachedFlags here along with their default state.
-                                    AwFeatures.WEBVIEW_DISABLE_CHIPS,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD,
-                                    DefaultState.DISABLED,
-                                    TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
-                                    DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
-                                    DefaultState.DISABLED));
+                            // Add new CachedFlags here along with their default state.
+                            Map.ofEntries(
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_DISABLE_CHIPS,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures
+                                                    .WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
+                                            DefaultState.DISABLED)));
         }
     }
 
