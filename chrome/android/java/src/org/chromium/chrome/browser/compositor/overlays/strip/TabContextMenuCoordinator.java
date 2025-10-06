@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -586,7 +587,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
                     new ListItem(
                             MENU_ITEM,
                             new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                    .with(TITLE, mTabGroupModelFilter.getTabGroupTitle(groupId))
+                                    .with(
+                                            TITLE,
+                                            TabGroupTitleUtils.getDisplayableTitle(
+                                                    mContext, mTabGroupModelFilter, groupId))
                                     .with(ENABLED, true)
                                     .with(CLICK_LISTENER, clickListener)
                                     .with(
