@@ -21397,6 +21397,7 @@ Called by update_net_error_codes.py.-->
   <int value="194" label="Chrome App deprecation"/>
   <int value="196" label="Spotlight session start countdown"/>
   <int value="197" label="Face Gaze Active"/>
+  <int value="201" label="Incompatible Charger"/>
 </enum>
 
 <enum name="NQEObservationSource">

@@ -2954,6 +2954,12 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
 
       <!-- Status tray charging strings. -->
+      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_TITLE" desc="The title of a notification indicating that an incompatible charger has been connected, and no charging will occur." translateable="false">
+        Incompatible charger
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_MESSAGE" desc="The message body of a notification indicating that an incompatible charger has been connected, and that the user needs to connect a more powerful one." translateable="false">
+        Connect an adapter with more watts (W) to charge your device.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE" desc="The title of a notification indicating that a low-current USB charger has been connected.">
         Low-power charger connected
       </message>

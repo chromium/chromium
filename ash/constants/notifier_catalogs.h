@@ -217,7 +217,8 @@ enum class NotificationCatalogName {
   kUsbPeripheralDeviceOrEndpointLimit = 198,
   kDemoMode = 199,
   kArcDlcInstall = 200,
-  kMaxValue = kArcDlcInstall
+  kIncompatibleCharger = 201,
+  kMaxValue = kIncompatibleCharger
 };
 
 // A living catalog that registers system nudges.

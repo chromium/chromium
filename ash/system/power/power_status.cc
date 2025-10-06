@@ -228,7 +228,14 @@ std::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
 
 bool PowerStatus::IsLinePowerConnected() const {
   return proto_.external_power() !=
-         power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+             power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED &&
+         !IsIncompatibleChargerConnected();
+}
+
+bool PowerStatus::IsIncompatibleChargerConnected() const {
+  return proto_.external_power() ==
+         power_manager::
+             PowerSupplyProperties_ExternalPower_LOW_VOLTAGE_NO_CHARGE;
 }
 
 bool PowerStatus::IsMainsChargerConnected() const {

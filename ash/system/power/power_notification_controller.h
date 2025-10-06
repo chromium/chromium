@@ -116,6 +116,9 @@ class ASH_EXPORT PowerNotificationController
   // Overridden from ash::ShellObserver:
   void OnShellDestroying() override;
 
+  // Show a notification when an incompatible charger is plugged in.
+  bool MaybeShowIncompatibleChargerNotification();
+
   // Shows a notification that a low-power USB charger has been connected.
   // Returns true if a notification was shown or explicitly hidden.
   bool MaybeShowUsbChargerNotification();
@@ -149,6 +152,7 @@ class ASH_EXPORT PowerNotificationController
   // Reset the timestamp related to critical notification.
   void ResetCriticalNotificationTimestamp();
 
+  static const char kIncompatibleChargerNotificationId[];
   static const char kUsbNotificationId[];
 
   raw_ptr<PrefService> local_state_;                             // Unowned.
@@ -159,6 +163,10 @@ class ASH_EXPORT PowerNotificationController
 
   // Was the battery full the last time OnPowerStatusChanged() was called?
   bool battery_was_full_ = false;
+
+  // Was an incompatible charger connected the last time OnPowerStatusChanged()
+  // was called?
+  bool incompatible_charger_was_connected_ = false;
 
   // Was a USB charger connected the last time OnPowerStatusChanged() was
   // called?

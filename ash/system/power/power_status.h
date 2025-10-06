@@ -210,6 +210,10 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Returns true if line power (including a charger of any type) is connected.
   virtual bool IsLinePowerConnected() const;
 
+  // Returns true if an incompatible charger is plugged in, which is incapable
+  // of charging the device at all (no trickle charging like with USB chargers).
+  bool IsIncompatibleChargerConnected() const;
+
   // Returns true if an official, non-USB charger is connected.
   bool IsMainsChargerConnected() const;
 
