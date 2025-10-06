@@ -6,8 +6,6 @@
 
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
-#include "third_party/webrtc/p2p/base/port.h"
-#include "third_party/webrtc/pc/webrtc_sdp.h"
 
 namespace blink {
 
@@ -68,9 +66,13 @@ RTCIceCandidatePlatform::RTCIceCandidatePlatform(
 }
 
 void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
-  webrtc::Candidate c;
-  if (!webrtc::ParseCandidate(candidate_.Utf8(), &c, nullptr, true))
+  webrtc::RTCErrorOr<webrtc::Candidate> parsed_candidate =
+      webrtc::Candidate::ParseCandidateString(candidate_.Utf8());
+  if (!parsed_candidate.ok()) {
     return;
+  }
+
+  const webrtc::Candidate& c = parsed_candidate.value();
 
   foundation_ = String::FromUTF8(c.foundation());
   component_ = CandidateComponentToString(c.component());
