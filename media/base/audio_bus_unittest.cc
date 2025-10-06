@@ -261,23 +261,6 @@ TEST_F(AudioBusTest, AllChannelsSubspan) {
   EXPECT_EQ(current_channel, kChannels);
 }
 
-// Verify an AudioBus created via wrapping a vector works as advertised.
-TEST_F(AudioBusTest, WrapVector) {
-  AllocateDataPerChannel();
-
-  std::vector<float*> data_pointers;
-  data_pointers.reserve(kChannels);
-
-  for (AlignedFloatArray& data : data_) {
-    data_pointers.push_back(data.as_span().data());
-  }
-
-  std::unique_ptr<AudioBus> bus =
-      AudioBus::WrapVector(kFrameCount, GetRawPointers(data_));
-  VerifyChannelAndFrameCount(bus.get());
-  VerifyReadWriteAndAlignment(bus.get());
-}
-
 // Verify an AudioBus created via wrapping a memory block works as advertised.
 TEST_F(AudioBusTest, WrapMemory) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
@@ -323,14 +306,6 @@ TEST_F(AudioBusTest, CopyTo) {
 
   {
     SCOPED_TRACE("Created");
-    CopyTest(bus1.get(), bus2.get());
-  }
-  {
-    SCOPED_TRACE("Wrapped Vector");
-    // Try a copy to an AudioBus wrapping a vector.
-    AllocateDataPerChannel();
-
-    bus2 = AudioBus::WrapVector(kFrameCount, GetRawPointers(data_));
     CopyTest(bus1.get(), bus2.get());
   }
   {

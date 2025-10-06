@@ -105,17 +105,6 @@ AudioBus::AudioBus(int channels, int frames, base::span<float> data)
   BuildChannelData(channels, data);
 }
 
-AudioBus::AudioBus(int frames, const std::vector<float*>& channel_data)
-    : frames_(base::checked_cast<size_t>(frames)) {
-  CHECK(IsValidChannelCount(channel_data.size()));
-  channel_data_.reserve(channel_data.size());
-
-  for (float* data : channel_data) {
-    CHECK(IsAligned(data));
-    channel_data_.emplace_back(data, frames_);
-  }
-}
-
 AudioBus::AudioBus(int channels) : channel_data_(channels), is_wrapper_(true) {
   CHECK(IsValidChannelCount(channels));
 }
@@ -137,12 +126,6 @@ std::unique_ptr<AudioBus> AudioBus::Create(const AudioParameters& params) {
 
 std::unique_ptr<AudioBus> AudioBus::CreateWrapper(int channels) {
   return base::WrapUnique(new AudioBus(channels));
-}
-
-std::unique_ptr<AudioBus> AudioBus::WrapVector(
-    int frames,
-    const std::vector<float*>& channel_data) {
-  return base::WrapUnique(new AudioBus(frames, channel_data));
 }
 
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(int channels,
