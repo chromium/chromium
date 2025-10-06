@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_animation_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
@@ -577,4 +578,12 @@ TEST_F(BrowserViewControllerTest, ViewOnInsert) {
                                 })];
   InsertWebState(std::move(ntp_web_state2));
   EXPECT_OCMOCK_VERIFY(container_view_mock);
+}
+
+// BrowserViewController needs to conform to
+// `<LogoAnimationControllerOwnerOwner>` to support VoiceOver. Related to
+// crbug.com/442767141.
+TEST_F(BrowserViewControllerTest, LogoAnimationControllerOwnerOwner) {
+  EXPECT_TRUE(
+      [bvc_ conformsToProtocol:@protocol(LogoAnimationControllerOwnerOwner)]);
 }
