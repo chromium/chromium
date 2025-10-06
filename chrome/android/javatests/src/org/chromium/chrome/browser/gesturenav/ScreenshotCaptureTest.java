@@ -38,7 +38,6 @@ import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
@@ -148,25 +147,7 @@ public class ScreenshotCaptureTest {
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testNavigatingAwayFromNtpToNormalPageSoftware(boolean nightModeEnabled)
-            throws IOException, TimeoutException, InterruptedException {
-        mRenderTestRule.setVariantPrefix("software");
-        navigatingAwayFromNtpToNormalPage();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S)
-    public void testNavigatingAwayFromNtpToNormalPageHardware(boolean nightModeEnabled)
-            throws IOException, TimeoutException, InterruptedException {
-        mRenderTestRule.setVariantPrefix("hardware");
-        navigatingAwayFromNtpToNormalPage();
-    }
-
-    private void navigatingAwayFromNtpToNormalPage()
+    public void testNavigatingAwayFromNtpToNormalPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
         mActivityTestRule.startOnNtp();
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
