@@ -203,22 +203,17 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
 GlicButton::~GlicButton() = default;
 
 void GlicButton::SetNudgeLabel(std::string label) {
-  if (!EntrypointVariationsEnabled()) {
-    initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
-    return SetText(base::UTF8ToUTF16(label));
-  }
-  // Store the new label text until the right moment in the animation to update
-  // the view.
-  pending_text_ = base::UTF8ToUTF16(label);
+  initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
+  SetText(base::UTF8ToUTF16(label));
+  // TODO(430307907): Remove and instead do this mid-animation.
+  SetCloseButtonVisible(true);
+  // TODO(430307907): Remove this when we switch to setting the text later.
+  PreferredSizeChanged();
+  expanded_width_ = GetLayoutManager()->GetPreferredSize(this).width();
 }
 
 void GlicButton::RestoreDefaultLabel() {
-  if (!EntrypointVariationsEnabled()) {
-    return SetText(GetLabelText());
-  }
-  // Store the new label text until the right moment in the animation to update
-  // the view.
-  pending_text_ = GetLabelText();
+  SetText(GetLabelText());
 }
 
 void GlicButton::OnFreWebUiStateChanged(mojom::FreWebUiState new_state) {
@@ -248,11 +243,17 @@ void GlicButton::SetIsShowingNudge(bool is_showing) {
     AnnounceNudgeShown();
     StartShowAnimation();
   } else {
+    // TODO(430307907): Remove and instead do this mid-animation.
+    RestoreDefaultLabel();
+    SetCloseButtonVisible(false);
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
     StartHideAnimation();
   }
 
   is_showing_nudge_ = is_showing;
+  // TODO(430307907): Remove and instead do this mid-animation.
+  UpdateTextAndBackgroundColors();
+  UpdateIcon();
   PreferredSizeChanged();
 }
 
@@ -464,9 +465,7 @@ void GlicButton::StartShowAnimation() {
     return SetCloseButtonVisible(true);
   }
 
-  // Remember the button's original width before changing the text and showing
-  // the close button.
-  initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
+  // TODO(430307907): Set initial_width_ here.
   SetCloseButtonVisible(true);
   expanded_width_ = CalculateExpandedWidth();
 
@@ -477,20 +476,7 @@ void GlicButton::StartShowAnimation() {
       /*show=*/true, kShowDuration, kCloseButtonFadeStart,
       kCloseButtonFadeDuration);
 
-  const base::TimeDelta kLabelFadeOutDuration = DurationMs(17);
-  const base::TimeDelta kNudgeFadeInStart =
-      DurationMs(ShouldShowLabel() ? 267 : 150);
-  const base::TimeDelta kNudgeFadeInDuration =
-      DurationMs(ShouldShowLabel() ? 100 : 200);
-  views::AnimationBuilder()
-      .OnEnded(base::BindOnce(&GlicButton::ApplyTextAndFadeIn,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              std::move(pending_text_),
-                              /*delay=*/DurationMs(0), kNudgeFadeInDuration))
-      .Once()
-      .At(kNudgeFadeInStart - kLabelFadeOutDuration)
-      .SetOpacity(label(), 0)
-      .SetDuration(kLabelFadeOutDuration);
+  // TODO(430307907): Fade out the default label and update it here.
 }
 
 void GlicButton::StartHideAnimation() {
@@ -507,66 +493,13 @@ void GlicButton::StartHideAnimation() {
       /*show=*/false, kHideDuration, kCloseButtonFadeStart,
       kCloseButtonFadeDuration);
 
-  const base::TimeDelta kNudgeFadeOutStart =
-      DurationMs(ShouldShowLabel() ? 0 : 50);
-  const base::TimeDelta kNudgeFadeOutDuration =
-      DurationMs(ShouldShowLabel() ? 133 : 267);
-  const float kNudgeFinalOpacity = ShouldShowLabel() ? 0.5 : 0;
-  const base::TimeDelta kLabelFadeInStart = DurationMs(34);
-  const base::TimeDelta kLabelFadeInDuration = DurationMs(17);
-
-  views::AnimationBuilder()
-      .OnEnded(base::BindOnce(&GlicButton::ApplyTextAndFadeIn,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              std::make_optional(GetLabelText()),
-                              kLabelFadeInStart, kLabelFadeInDuration))
-      .Once()
-      .At(kNudgeFadeOutStart)
-      .SetOpacity(label(), kNudgeFinalOpacity)
-      .SetDuration(kNudgeFadeOutDuration);
-}
-
-void GlicButton::ApplyTextAndFadeIn(std::optional<std::u16string> text,
-                                    base::TimeDelta delay,
-                                    base::TimeDelta duration) {
-  if (text) {
-    SetText(*text);
-  }
-
-  // This moment coincides with the highlight being midway through its opacity
-  // animation. Update text and icon for the final highlight state now.
-  UpdateTextAndBackgroundColors();
-  UpdateIcon();
-
-  if (is_showing_nudge_) {
-    // Start at 50% opacity if replacing default label with nudge.
-    label()->layer()->SetOpacity(ShouldShowLabel() ? 0.5 : 0);
-  }
-
-  views::AnimationBuilder()
-      .Once()
-      .At(delay)
-      .SetOpacity(label(), 1)
-      .SetDuration(duration);
+  // TODO(430307907): Fade out the nudge label and update it here.
 }
 
 int GlicButton::CalculateExpandedWidth() {
-  // Measure the nudge text.
-  auto render_text = gfx::RenderText::CreateRenderText();
-  CHECK(pending_text_);
-  render_text->SetText(*pending_text_);
-  render_text->SetFontList(label()->font_list());
-  const int nudge_text_width = render_text->GetStringSize().width();
-
-  const int old_width = GetLayoutManager()->GetPreferredSize(this).width();
-  // Replace old label with new.
-  int new_width = old_width - label()->width() + nudge_text_width;
-  if (!ShouldShowLabel()) {
-    // If transitioning from empty label to nudge label, make sure the label
-    // margin is included.
-    new_width += kLabelRightMargin;
-  }
-  return new_width;
+  // TODO(430307907): Replace this with the calculation when text isn't rendered
+  // yet.
+  return expanded_width_;
 }
 
 void GlicButton::StartExpansionAnimations(
