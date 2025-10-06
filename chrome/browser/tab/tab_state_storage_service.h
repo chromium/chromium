@@ -18,6 +18,7 @@
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace tabs_pb {
 class TabState;
@@ -49,8 +50,18 @@ class TabStateStorageService : public KeyedService,
  private:
   void OnAllTabsLoaded(LoadAllTabsCallback callback,
                        std::vector<NodeState> entries);
+
+  int GetOrCreateStorageId(const TabCollection* collection);
+  int GetOrCreateStorageId(const TabInterface* tab);
+
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;
+
+  // Storage ids need to be unique across tabs and collections, but the handles
+  // do not have this guarantee. Track them separately.
+  int next_storage_id_ = 1;
+  absl::flat_hash_map<int32_t, int> tab_handle_to_storage_id_;
+  absl::flat_hash_map<int32_t, int> collection_handle_to_storage_id_;
 };
 
 }  // namespace tabs
