@@ -8,12 +8,14 @@
 #import <Foundation/Foundation.h>
 
 @class ConsistencyAccountChooserViewController;
+@class IdentityItemConfigurator;
 
 // Protocol to get the model.
 @protocol ConsistencyAccountChooserTableViewControllerModelDelegate <NSObject>
 
 // Returns all the configurators to generate model items.
-@property(nonatomic, strong, readonly) NSArray* sortedIdentityItemConfigurators;
+@property(nonatomic, strong, readonly)
+    NSArray<IdentityItemConfigurator*>* sortedIdentityItemConfigurators;
 
 @end
 

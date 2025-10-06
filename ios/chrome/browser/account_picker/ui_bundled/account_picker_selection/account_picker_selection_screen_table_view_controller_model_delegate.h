@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class AccountPickerSelectionScreenIdentityItemConfigurator;
 @class AccountPickerSelectionScreenViewController;
 
 // Protocol to get the model.
@@ -14,7 +15,9 @@
     AccountPickerSelectionScreenTableViewControllerModelDelegate <NSObject>
 
 // Returns all the configurators to generate model items.
-@property(nonatomic, strong, readonly) NSArray* sortedIdentityItemConfigurators;
+@property(nonatomic, strong, readonly)
+    NSArray<AccountPickerSelectionScreenIdentityItemConfigurator*>*
+        sortedIdentityItemConfigurators;
 
 @end
 
