@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "v8/include/v8-forward.h"
 
 namespace auction_worklet {

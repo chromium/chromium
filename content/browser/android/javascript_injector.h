@@ -5,14 +5,10 @@
 #ifndef CONTENT_BROWSER_ANDROID_JAVASCRIPT_INJECTOR_H_
 #define CONTENT_BROWSER_ANDROID_JAVASCRIPT_INJECTOR_H_
 
-#include <string>
-#include <vector>
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/origin_matcher/origin_matcher.h"
-#include "content/common/gin_java_bridge.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

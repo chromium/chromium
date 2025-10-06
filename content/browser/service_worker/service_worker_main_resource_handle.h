@@ -8,8 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
+#include "net/base/isolation_info.h"
+
+namespace network {
+struct ResourceRequest;
+}
 
 namespace content {
 

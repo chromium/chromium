@@ -11,8 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
-#include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 
 namespace mojo {
 class Connector;

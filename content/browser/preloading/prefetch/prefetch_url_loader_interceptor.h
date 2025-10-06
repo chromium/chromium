@@ -13,7 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 

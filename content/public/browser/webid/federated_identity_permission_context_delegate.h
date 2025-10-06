@@ -16,7 +16,6 @@
 #include "content/public/browser/webid/identity_request_account.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {

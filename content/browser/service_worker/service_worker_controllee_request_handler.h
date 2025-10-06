@@ -19,8 +19,6 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
 

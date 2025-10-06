@@ -17,7 +17,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "content/browser/attribution_reporting/aggregatable_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"

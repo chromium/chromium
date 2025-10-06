@@ -9,7 +9,7 @@
 #include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/context_recycler.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
 namespace auction_worklet {

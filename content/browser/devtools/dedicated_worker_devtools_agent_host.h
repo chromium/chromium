@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_DEVTOOLS_DEDICATED_WORKER_DEVTOOLS_AGENT_HOST_H_
 
 #include "content/browser/devtools/worker_or_worklet_devtools_agent_host.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 
 namespace blink {
 class StorageKey;

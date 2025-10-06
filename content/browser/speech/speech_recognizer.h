@@ -9,7 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
-#include "media/mojo/mojom/speech_recognition_recognition_context.h"
+
+namespace media {
+struct SpeechRecognitionRecognitionContext;
+}
 
 namespace content {
 

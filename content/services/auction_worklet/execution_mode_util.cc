@@ -10,6 +10,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
 namespace auction_worklet {
 

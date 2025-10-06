@@ -12,7 +12,6 @@
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
 

@@ -20,7 +20,6 @@
 #include "content/public/browser/webid/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace url {

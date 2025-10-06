@@ -12,7 +12,6 @@
 #include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 
 namespace content {
 class RenderFrameHostImpl;
