@@ -120,8 +120,12 @@ void CorpMessagingPlayground::OnStreamClosed(const HttpStatus& status) {
 
 void CorpMessagingPlayground::OnSimpleMessageReceived(
     const internal::SimpleMessageStruct& message) {
-  LOG(INFO) << "SimpleMessage received from " << message.sender_id.username
-            << ": " << message.payload;
+  // `create_time` is not used because it is set on the client and may be out of
+  // sync with the time values set by the server.
+  auto routing_latency = message.deliver_time - message.receive_time;
+  LOG(INFO) << "SimpleMessage received: sender=" << message.sender_id.username
+            << ", routing_latency=" << routing_latency.InMilliseconds()
+            << "ms, payload=" << message.payload;
   last_sender_id_ = message.sender_id;
 }
 
