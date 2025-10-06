@@ -14,9 +14,11 @@ specific_include_rules = {
   "oop_video_decoder_factory_service\.cc": [
     "+components/viz/common/switches.h",
   ],
+  "oop_video_decoder_factory_process_service\.cc": [
+    "+services/viz/public/cpp/gpu/gpu.h",
+  ],
   "webrtc_video_perf_mojolpm_fuzzer\.cc": [
     "+third_party/libprotobuf-mutator/src/src",
     "+components/leveldb_proto/testing/fake_db.h",
   ],
 }
-

@@ -70,9 +70,12 @@ ServiceProcessHost::Options::WithPreloadedLibraries(
 #endif  // #if BUILDFLAG(IS_WIN)
 
 ServiceProcessHost::Options& ServiceProcessHost::Options::WithGpuClient(
+    bool enable_extra_handles_validation,
     base::PassKey<ServiceProcessHostGpuClient> passkey) {
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   allow_gpu_client = true;
+  extra_handles_validation = enable_extra_handles_validation;
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
   return *this;
 }

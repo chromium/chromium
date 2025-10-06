@@ -113,7 +113,8 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #include "media/capture/capture_switches.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
@@ -375,8 +376,19 @@ auto RunOOPArcVideoAcceleratorFactoryService(
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 auto RunOOPVideoDecoderFactoryProcessService(
     mojo::PendingReceiver<media::mojom::VideoDecoderFactoryProcess> receiver) {
-  return std::make_unique<media::OOPVideoDecoderFactoryProcessService>(
+  auto service = std::make_unique<media::OOPVideoDecoderFactoryProcessService>(
       std::move(receiver));
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
+  UtilityThread::Get()->BindHostReceiver(
+      remote_gpu.InitWithNewPipeAndPassReceiver());
+  std::unique_ptr<viz::Gpu> viz_gpu = viz::Gpu::Create(
+      std::move(remote_gpu), UtilityThread::Get()->GetIOTaskRunner());
+  service->SetVizGpu(std::move(viz_gpu));
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+
+  return service;
 }
 
 auto RunVideoEncodeAcceleratorProviderFactory(
@@ -402,10 +414,6 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
   // loop of type IO that can get notified when pipes have data.
   services.Add(RunNetworkService);
 
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  services.Add(RunOOPVideoDecoderFactoryProcessService);
-#endif
-
   // Add new IO-thread services above this line.
   GetContentClient()->utility()->RegisterIOThreadServices(services);
 }
@@ -421,6 +429,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   services.Add(RunVideoEffects);
+#endif
+
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+  services.Add(RunOOPVideoDecoderFactoryProcessService);
 #endif
 
   if (optimization_guide::features::CanLaunchOnDeviceModelService()) {

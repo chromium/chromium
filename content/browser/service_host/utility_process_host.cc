@@ -82,7 +82,8 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/host/gpu_client.h"
 #include "media/capture/capture_switches.h"
@@ -156,7 +157,8 @@ UtilityProcessHost::Options::Options()
 #else
       child_flags_(ChildProcessHost::CHILD_NORMAL),
 #endif
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
       allowed_gpu_(false),
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
       file_data_(std::make_unique<ChildProcessLauncherFileData>()),
@@ -172,7 +174,8 @@ UtilityProcessHost::Options::Options(Options&&) = default;
 UtilityProcessHost::UtilityProcessHost(Options options,
                                        std::unique_ptr<Client> client)
     : options_(std::move(options)),
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
       client_(std::move(client)) {
@@ -227,10 +230,12 @@ UtilityProcessHost::Options& UtilityProcessHost::Options::WithPreloadLibraries(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-UtilityProcessHost::Options&
-UtilityProcessHost::Options::WithGpuClientAllowed() {
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+UtilityProcessHost::Options& UtilityProcessHost::Options::WithGpuClientAllowed(
+    bool extra_handles_validation) {
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   allowed_gpu_ = true;
+  extra_handles_validation_ = extra_handles_validation;
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
   return *this;
 }

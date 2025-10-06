@@ -26,6 +26,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
+#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_context.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -337,8 +338,32 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithBuffer", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
+  gfx::GpuMemoryBufferHandle buffer_handle = std::move(params->buffer_handle);
+
+#if BUILDFLAG(IS_OZONE)
+  if (channel_->enable_extra_handles_validation() &&
+      buffer_handle.type == gfx::NATIVE_PIXMAP) {
+    const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
+    auto format = params->si_info->meta.format;
+    if (!gfx::CanFitImageForSizeAndFormat(
+            pixmap_handle, params->si_info->meta.size, ToBufferFormat(format),
+            /*assume_single_memory_object=*/false)) {
+      LOG(ERROR)
+          << "SharedImageStub: Unable to import buffer, failed validation.";
+      OnError();
+      return;
+    }
+    if (gfx::CloneHandleForIPC(pixmap_handle).planes.empty()) {
+      LOG(ERROR) << "SharedImageStub: Unable to import buffer, failed to dup "
+                    "buffer fds.";
+      OnError();
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+
   if (!CreateSharedImage(
-          params->mailbox, std::move(params->buffer_handle),
+          params->mailbox, std::move(buffer_handle),
           params->si_info->meta.format, params->si_info->meta.size,
           params->si_info->meta.color_space,
           params->si_info->meta.surface_origin,

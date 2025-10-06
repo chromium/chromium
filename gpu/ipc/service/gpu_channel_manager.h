@@ -117,6 +117,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
                                int client_id,
                                uint64_t client_tracing_id,
                                bool is_gpu_host,
+                               bool enable_extra_handles_validation,
                                const gfx::GpuExtraInfo& gpu_extra_info);
 
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);

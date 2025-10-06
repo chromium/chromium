@@ -192,6 +192,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void EstablishGpuChannel(int client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
+                           bool enable_extra_handles_validation,
                            bool sync,
                            EstablishChannelCallback callback);
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);

@@ -47,7 +47,8 @@ class VideoCaptureServiceLauncher {
     ServiceProcessHost::Options options;
     options.WithDisplayName("Video Capture");
     // TODO(crbug.com/328099369) Remove once gpu client is provided directly.
-    options.WithGpuClient(ServiceProcessHostGpuClient::GetPassKey());
+    options.WithGpuClient(/*enable_extra_handles_validation=*/false,
+                          ServiceProcessHostGpuClient::GetPassKey());
 #if BUILDFLAG(IS_MAC)
     // On Mac, the service requires a CFRunLoop which is provided by a
     // UI message loop. See https://crbug.com/834581.

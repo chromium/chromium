@@ -705,6 +705,7 @@ GpuChannel::GpuChannel(
     int32_t client_id,
     uint64_t client_tracing_id,
     bool is_gpu_host,
+    bool enable_extra_handles_validation,
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     const gfx::GpuExtraInfo& gpu_extra_info)
     : gpu_channel_manager_(gpu_channel_manager),
@@ -716,6 +717,7 @@ GpuChannel::GpuChannel(
       io_task_runner_(io_task_runner),
       share_group_(share_group),
       is_gpu_host_(is_gpu_host),
+      enable_extra_handles_validation_(enable_extra_handles_validation),
       filter_(base::MakeRefCounted<GpuChannelMessageFilter>(
           this,
           channel_token,
@@ -725,6 +727,7 @@ GpuChannel::GpuChannel(
           std::move(task_runner))) {
   DCHECK(gpu_channel_manager_);
   DCHECK(client_id_);
+  DCHECK(!(is_gpu_host_ && enable_extra_handles_validation_));
 }
 
 GpuChannel::~GpuChannel() {
@@ -757,13 +760,15 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
     int32_t client_id,
     uint64_t client_tracing_id,
     bool is_gpu_host,
+    bool enable_extra_handles_validation,
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     const gfx::GpuExtraInfo& gpu_extra_info) {
   auto gpu_channel = base::WrapUnique(new GpuChannel(
       gpu_channel_manager, channel_token, scheduler, sync_point_manager,
       std::move(share_group), std::move(task_runner), std::move(io_task_runner),
       client_id, client_tracing_id, is_gpu_host,
-      image_decode_accelerator_worker, gpu_extra_info));
+      enable_extra_handles_validation, image_decode_accelerator_worker,
+      gpu_extra_info));
 
   if (!gpu_channel->CreateSharedImageStub(gpu_extra_info)) {
     LOG(ERROR) << "GpuChannel: Failed to create SharedImageStub";

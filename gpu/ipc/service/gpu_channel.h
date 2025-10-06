@@ -73,6 +73,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       int32_t client_id,
       uint64_t client_tracing_id,
       bool is_gpu_host,
+      bool enable_extra_handles_validation,
       ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
       const gfx::GpuExtraInfo& gpu_extra_info);
 
@@ -108,6 +109,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   }
 
   bool is_gpu_host() const { return is_gpu_host_; }
+  bool enable_extra_handles_validation() const {
+    return enable_extra_handles_validation_;
+  }
 
   // IPC::Listener implementation:
   void OnChannelError() override;
@@ -214,6 +218,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              int32_t client_id,
              uint64_t client_tracing_id,
              bool is_gpu_host,
+             bool enable_extra_handles_validation,
              ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
              const gfx::GpuExtraInfo& gpu_extra_info);
 
@@ -263,6 +268,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   std::unique_ptr<SharedImageStub> shared_image_stub_;
 
   const bool is_gpu_host_;
+  const bool enable_extra_handles_validation_;
 
 #if BUILDFLAG(IS_WIN)
   // Set of active DCOMPTextures.

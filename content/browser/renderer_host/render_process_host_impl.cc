@@ -1646,9 +1646,9 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   const int id = GetDeprecatedID();
   const uint64_t tracing_id =
       ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(id);
-  gpu_client_.reset(
-      new viz::GpuClient(std::make_unique<BrowserGpuClientDelegate>(), id,
-                         tracing_id, GetUIThreadTaskRunner({})));
+  gpu_client_ = std::make_unique<viz::GpuClient>(
+      std::make_unique<BrowserGpuClientDelegate>(), id, tracing_id,
+      /*enable_extra_handles_validation=*/false, GetUIThreadTaskRunner({}));
 }
 
 // static

@@ -11,6 +11,10 @@
 #include "media/mojo/services/oop_video_decoder_factory_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace viz {
+class Gpu;
+}
+
 namespace media {
 
 // An OOPVideoDecoderFactoryProcessService allows the browser process to
@@ -31,6 +35,7 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
       const gpu::GpuFeatureInfo& gpu_feature_info,
       mojo::PendingReceiver<mojom::InterfaceFactory> receiver) final;
 
+  void SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu);
   void OnFactoryDisconnected();
 
  private:
@@ -38,6 +43,8 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<OOPVideoDecoderFactoryService> factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<viz::Gpu> viz_gpu_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

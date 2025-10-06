@@ -4,6 +4,8 @@
 
 #include "media/mojo/services/oop_video_decoder_factory_process_service.h"
 
+#include "services/viz/public/cpp/gpu/gpu.h"
+
 namespace media {
 
 OOPVideoDecoderFactoryProcessService::OOPVideoDecoderFactoryProcessService(
@@ -33,6 +35,11 @@ void OOPVideoDecoderFactoryProcessService::InitializeVideoDecoderFactory(
       base::BindOnce(
           &OOPVideoDecoderFactoryProcessService::OnFactoryDisconnected,
           base::Unretained(this)));
+}
+
+void OOPVideoDecoderFactoryProcessService::SetVizGpu(
+    std::unique_ptr<viz::Gpu> viz_gpu) {
+  viz_gpu_ = std::move(viz_gpu);
 }
 
 void OOPVideoDecoderFactoryProcessService::OnFactoryDisconnected() {

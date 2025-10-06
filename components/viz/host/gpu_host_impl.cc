@@ -264,11 +264,13 @@ void GpuHostImpl::ConnectFrameSinkManager(
 void GpuHostImpl::EstablishGpuChannel(int client_id,
                                       uint64_t client_tracing_id,
                                       bool is_gpu_host,
+                                      bool enable_extra_handles_validation,
                                       bool sync,
                                       EstablishChannelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT2("gpu", "GpuHostImpl::EstablishGpuChannel", "client_id",
                client_id, "is_gpu_host", is_gpu_host);
+  DCHECK(!(is_gpu_host && enable_extra_handles_validation));
 
   shutdown_timeout_.Stop();
 
@@ -291,7 +293,8 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
     {
       mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
       gpu_service_remote_->EstablishGpuChannel(
-          client_id, client_tracing_id, is_gpu_host, &channel_handle, &gpu_info,
+          client_id, client_tracing_id, is_gpu_host,
+          enable_extra_handles_validation, &channel_handle, &gpu_info,
           &gpu_feature_info, &shared_image_capabilities);
     }
     OnChannelEstablished(client_id, true, std::move(channel_handle), gpu_info,
@@ -299,6 +302,7 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
   } else {
     gpu_service_remote_->EstablishGpuChannel(
         client_id, client_tracing_id, is_gpu_host,
+        enable_extra_handles_validation,
         base::BindOnce(&GpuHostImpl::OnChannelEstablished,
                        weak_ptr_factory_.GetWeakPtr(), client_id, false));
   }

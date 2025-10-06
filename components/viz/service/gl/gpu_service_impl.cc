@@ -866,6 +866,7 @@ bool GpuServiceImpl::IsExiting() const {
 void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
                                          uint64_t client_tracing_id,
                                          bool is_gpu_host,
+                                         bool enable_extra_handles_validation,
                                          EstablishGpuChannelCallback callback) {
   // This should always be called on the IO thread first.
   if (io_runner_->BelongsToCurrentThread()) {
@@ -890,14 +891,15 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::EstablishGpuChannel,
                                   weak_ptr_, client_id, client_tracing_id,
-                                  is_gpu_host, std::move(wrap_callback)));
+                                  is_gpu_host, enable_extra_handles_validation,
+                                  std::move(wrap_callback)));
     return;
   }
 
   auto channel_token = base::UnguessableToken::Create();
   gpu::GpuChannel* gpu_channel = gpu_channel_manager_->EstablishChannel(
       channel_token, client_id, client_tracing_id, is_gpu_host,
-      gpu_extra_info_);
+      enable_extra_handles_validation, gpu_extra_info_);
 
   if (!gpu_channel) {
     // This returns a null handle, which is treated by the client as a failure

@@ -37,7 +37,8 @@ namespace base {
 class Thread;
 }  // namespace base
 
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 namespace viz {
 class GpuClient;
 }  // namespace viz
@@ -124,7 +125,7 @@ class CONTENT_EXPORT UtilityProcessHost final
 #endif  // BUILDFLAG(IS_WIN)
 
     // Allows the child process to bind viz.mojom.Gpu.
-    Options& WithGpuClientAllowed();
+    Options& WithGpuClientAllowed(bool extra_handles_validation);
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     // Adds to ChildProcessLauncherFileData::files_to_preload, which maps |key|
@@ -188,6 +189,9 @@ class CONTENT_EXPORT UtilityProcessHost final
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
     // Whether or not to bind viz::mojom::Gpu to the utility process.
     bool allowed_gpu_;
+    // Whether or not the gpu channel will perform extra validation on handles
+    // sent by the utility process.
+    bool extra_handles_validation_ = false;
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
     // A mojo receiver to bind once the process starts.
@@ -247,7 +251,8 @@ class CONTENT_EXPORT UtilityProcessHost final
   };
   LaunchState launch_state_ = LaunchState::kLaunchInProgress;
 
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
+    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 

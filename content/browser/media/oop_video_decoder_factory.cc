@@ -12,6 +12,7 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_host_passkeys.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder_factory_process.mojom.h"
@@ -20,8 +21,6 @@
 namespace content {
 
 #if BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
-
-namespace {
 
 // OOPVideoDecoderFactoryProcessLauncher is a helper singleton class that
 // launches utility processes to host a media::mojom::InterfaceFactory once
@@ -117,9 +116,16 @@ class OOPVideoDecoderFactoryProcessLauncher final
     }
 
     mojo::Remote<media::mojom::VideoDecoderFactoryProcess> process;
+    // TODO(https://crbug.com/403183890): Instead allowing utility process to
+    // request a viz.mojom.Gpu pipe, directly pass a viz.mojom.Gpu
+    // pending_remote here. See crbug.com/328099369 for more information.
     ServiceProcessHost::Launch(
         process.BindNewPipeAndPassReceiver(),
-        ServiceProcessHost::Options().WithDisplayName("Video Decoder").Pass());
+        ServiceProcessHost::Options()
+            .WithDisplayName("Video Decoder")
+            .WithGpuClient(/*enable_extra_handles_validation=*/true,
+                           ServiceProcessHostGpuClient::GetPassKey())
+            .Pass());
     process->InitializeVideoDecoderFactory(*gpu_feature_info_,
                                            std::move(receiver));
     processes_.Add(std::move(process));
@@ -152,8 +158,6 @@ class OOPVideoDecoderFactoryProcessLauncher final
   base::queue<mojo::PendingReceiver<media::mojom::InterfaceFactory>>
       pending_factory_receivers_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
 };
-
-}  // namespace
 
 #endif  // BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
 

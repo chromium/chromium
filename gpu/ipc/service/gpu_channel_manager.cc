@@ -477,6 +477,7 @@ GpuChannel* GpuChannelManager::EstablishChannel(
     int client_id,
     uint64_t client_tracing_id,
     bool is_gpu_host,
+    bool enable_extra_handles_validation,
     const gfx::GpuExtraInfo& gpu_extra_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -495,7 +496,8 @@ GpuChannel* GpuChannelManager::EstablishChannel(
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
       this, channel_token, scheduler_, sync_point_manager_, share_group_,
       task_runner_, io_task_runner_, client_id, client_tracing_id, is_gpu_host,
-      image_decode_accelerator_worker_, gpu_extra_info);
+      enable_extra_handles_validation, image_decode_accelerator_worker_,
+      gpu_extra_info);
 
   if (!gpu_channel)
     return nullptr;

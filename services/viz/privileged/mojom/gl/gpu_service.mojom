@@ -56,10 +56,13 @@ interface GpuService {
   // client. The GPU service responds with an IPC handle. |gpu_info| and
   // |gpu_feature_info| are returned so that if this method is called
   // synchronously they are available (since the PostTask for
-  // GpuHost::DidInitialize might not be dispatched yet.
+  // GpuHost::DidInitialize might not be dispatched yet).
   [Sync, NoInterrupt]
   EstablishGpuChannel(
-      int32 client_id, uint64 client_tracing_id, bool is_gpu_host)
+      int32 client_id,
+      uint64 client_tracing_id,
+      bool is_gpu_host,
+      bool enable_extra_handles_validation)
       => (handle<message_pipe>? channel_handle,
           gpu.mojom.GpuInfo gpu_info,
           gpu.mojom.GpuFeatureInfo gpu_feature_info,
