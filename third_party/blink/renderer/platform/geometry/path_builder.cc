@@ -61,7 +61,7 @@ std::array<gfx::Vector2dF, 3> ApproximateSuperellipseHalfCornerAsBezierCurve(
 // Adds a curved corner to a path. The vertex argument is the 4 points
 // of the corner rectangle, starting from the beginning of the corner
 // and continuing clockwise.
-void AddCurvedCorner(SkPath& path, const Corner& corner) {
+void AddCurvedCorner(SkPathBuilder& path, const Corner& corner) {
   if (corner.IsConcave()) {
     AddCurvedCorner(path, corner.Inverse());
     return;
@@ -106,35 +106,39 @@ PathBuilder::~PathBuilder() = default;
 
 PathBuilder::PathBuilder(const Path& path) : builder_(path.GetSkPath()) {}
 
+void PathBuilder::ClearCachedData() {
+  current_path_.reset();
+  current_bounds_.reset();
+}
+
 void PathBuilder::Reset() {
   builder_.reset();
-  current_path_.reset();
+  ClearCachedData();
 }
 
 Path PathBuilder::Finalize() {
-  Path path(std::move(builder_));
-
-  Reset();
-
-  return path;
+  ClearCachedData();
+  return builder_.detach();
 }
 
 gfx::RectF PathBuilder::BoundingRect() const {
-  return gfx::SkRectToRectF(builder_.getBounds());
+  if (!current_bounds_) {
+    current_bounds_.emplace(gfx::SkRectToRectF(builder_.computeBounds()));
+  }
+  return current_bounds_.value();
 }
 
 const Path& PathBuilder::CurrentPath() const {
   if (!current_path_) {
-    current_path_.emplace(builder_);
+    current_path_.emplace(builder_.snapshot());
   }
 
   return current_path_.value();
 }
 
 std::optional<gfx::PointF> PathBuilder::CurrentPoint() const {
-  SkPoint point;
-  if (builder_.getLastPt(&point)) {
-    return gfx::SkPointToPointF(point);
+  if (auto point = builder_.getLastPt()) {
+    return gfx::SkPointToPointF(*point);
   }
   return std::nullopt;
 }
@@ -142,21 +146,21 @@ std::optional<gfx::PointF> PathBuilder::CurrentPoint() const {
 PathBuilder& PathBuilder::Close() {
   builder_.close();
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
 PathBuilder& PathBuilder::MoveTo(const gfx::PointF& pt) {
   builder_.moveTo(gfx::PointFToSkPoint(pt));
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
 PathBuilder& PathBuilder::LineTo(const gfx::PointF& pt) {
   builder_.lineTo(gfx::PointFToSkPoint(pt));
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -164,7 +168,7 @@ PathBuilder& PathBuilder::QuadTo(const gfx::PointF& ctrl,
                                  const gfx::PointF& pt) {
   builder_.quadTo(gfx::PointFToSkPoint(ctrl), gfx::PointFToSkPoint(pt));
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -174,7 +178,7 @@ PathBuilder& PathBuilder::CubicTo(const gfx::PointF& ctrl1,
   builder_.cubicTo(gfx::PointFToSkPoint(ctrl1), gfx::PointFToSkPoint(ctrl2),
                    gfx::PointFToSkPoint(pt));
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -184,12 +188,13 @@ PathBuilder& PathBuilder::ArcTo(const gfx::PointF& p,
                                 float x_rotate,
                                 bool large_arc,
                                 bool sweep) {
-  builder_.arcTo(radius_x, radius_y, x_rotate,
-                 large_arc ? SkPath::kLarge_ArcSize : SkPath::kSmall_ArcSize,
-                 sweep ? SkPathDirection::kCW : SkPathDirection::kCCW, p.x(),
-                 p.y());
+  builder_.arcTo(
+      SkVector{radius_x, radius_y}, x_rotate,
+      large_arc ? SkPathBuilder::kLarge_ArcSize : SkPathBuilder::kSmall_ArcSize,
+      sweep ? SkPathDirection::kCW : SkPathDirection::kCCW,
+      gfx::PointFToSkPoint(p));
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -198,7 +203,7 @@ PathBuilder& PathBuilder::ArcTo(const gfx::PointF& p1,
                                 float radius) {
   builder_.arcTo(gfx::PointFToSkPoint(p1), gfx::PointFToSkPoint(p2), radius);
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -208,7 +213,7 @@ PathBuilder& PathBuilder::AddRect(const gfx::PointF& origin,
                                     opposite_point.y()),
                    SkPathDirection::kCW, 0);
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -216,7 +221,7 @@ PathBuilder& PathBuilder::AddPath(const Path& src,
                                   const AffineTransform& transform) {
   builder_.addPath(src.GetSkPath(), transform.ToSkMatrix());
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -226,13 +231,14 @@ PathBuilder& PathBuilder::AddRoundedRect(const FloatRoundedRect& rect,
                     clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
                     /* start at upper-left after corner radius */ 0);
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
 PathBuilder& PathBuilder::AddCorner(const ContouredRect::Corner& corner) {
   AddCurvedCorner(builder_, corner);
-  current_path_.reset();
+
+  ClearCachedData();
   return *this;
 }
 
@@ -256,7 +262,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     AddCurvedCorner(builder_, contoured_rect.BottomLeftCorner());
     AddCurvedCorner(builder_, contoured_rect.TopLeftCorner());
     Close();
-    current_path_.reset();
+    ClearCachedData();
   };
 
   if (origin_rect == target_rect) {
@@ -337,7 +343,7 @@ PathBuilder& PathBuilder::AddContouredRect(
                      gfx::PointF(origin_rect.Rect().right(), outer_rect.y())));
     }
     Close();
-    current_path_.reset();
+    ClearCachedData();
     return *this;
   }
 
@@ -363,43 +369,43 @@ PathBuilder& PathBuilder::AddContouredRect(
                                       contoured_rect.GetCornerCurvature());
 
   if (!origin_rect.GetRadii().TopRight().IsEmpty()) {
-    SkPath path;
+    SkPathBuilder path;
     path.moveTo(infinite_rect.left(), infinite_rect.top());
     AddCurvedCorner(path, contoured_rect.TopRightCorner());
     path.lineTo(infinite_rect.right(), infinite_rect.bottom());
     path.lineTo(infinite_rect.left(), infinite_rect.bottom());
     path.close();
-    op_builder.add(path, kIntersect_SkPathOp);
+    op_builder.add(path.detach(), kIntersect_SkPathOp);
   }
 
   if (!origin_rect.GetRadii().BottomRight().IsEmpty()) {
-    SkPath path;
+    SkPathBuilder path;
     path.moveTo(infinite_rect.right(), infinite_rect.top());
     AddCurvedCorner(path, contoured_rect.BottomRightCorner());
     path.lineTo(infinite_rect.left(), infinite_rect.bottom());
     path.lineTo(infinite_rect.left(), infinite_rect.top());
     path.close();
-    op_builder.add(path, kIntersect_SkPathOp);
+    op_builder.add(path.detach(), kIntersect_SkPathOp);
   }
 
   if (!origin_rect.GetRadii().BottomLeft().IsEmpty()) {
-    SkPath path;
+    SkPathBuilder path;
     path.moveTo(infinite_rect.right(), infinite_rect.bottom());
     AddCurvedCorner(path, contoured_rect.BottomLeftCorner());
     path.lineTo(infinite_rect.left(), infinite_rect.top());
     path.lineTo(infinite_rect.right(), infinite_rect.top());
     path.close();
-    op_builder.add(path, kIntersect_SkPathOp);
+    op_builder.add(path.detach(), kIntersect_SkPathOp);
   }
 
   if (!origin_rect.GetRadii().TopLeft().IsEmpty()) {
-    SkPath path;
+    SkPathBuilder path;
     path.moveTo(infinite_rect.left(), infinite_rect.bottom());
     AddCurvedCorner(path, contoured_rect.TopLeftCorner());
     path.lineTo(infinite_rect.right(), infinite_rect.top());
     path.lineTo(infinite_rect.right(), infinite_rect.bottom());
     path.close();
-    op_builder.add(path, kIntersect_SkPathOp);
+    op_builder.add(path.detach(), kIntersect_SkPathOp);
   }
 
   SkPath result;
@@ -408,7 +414,7 @@ PathBuilder& PathBuilder::AddContouredRect(
   } else {
     DrawAsSinglePath();
   }
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -445,7 +451,7 @@ PathBuilder& PathBuilder::AddEllipse(const gfx::PointF& p,
   } else {
     builder_.arcTo(oval, start_degrees, sweep_degrees, false);
   }
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -477,7 +483,7 @@ PathBuilder& PathBuilder::AddRect(const gfx::RectF& rect) {
   // Start at upper-left, add clock-wise.
   builder_.addRect(gfx::RectFToSkRect(rect), SkPathDirection::kCW, 0);
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
@@ -490,34 +496,34 @@ PathBuilder& PathBuilder::AddEllipse(const gfx::PointF& center,
                        center.x() + radius_x, center.y() + radius_y),
       SkPathDirection::kCW, 1);
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
 PathBuilder& PathBuilder::SetWindRule(WindRule rule) {
   const SkPathFillType fill_type = WebCoreWindRuleToSkFillType(rule);
 
-  if (fill_type == builder_.getFillType()) {
+  if (fill_type == builder_.fillType()) {
     return *this;
   }
 
   builder_.setFillType(fill_type);
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
 PathBuilder& PathBuilder::Translate(const gfx::Vector2dF& offset) {
   builder_.offset(offset.x(), offset.y());
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 
 PathBuilder& PathBuilder::Transform(const AffineTransform& xform) {
   builder_.transform(xform.ToSkMatrix());
 
-  current_path_.reset();
+  ClearCachedData();
   return *this;
 }
 

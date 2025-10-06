@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 
 namespace gfx {
 
@@ -133,10 +133,12 @@ class PLATFORM_EXPORT PathBuilder {
   PathBuilder& Transform(const AffineTransform&);
 
  private:
-  // TODO(crbug.com/378688986): switch to SkPathBuilder when ready.
-  SkPath builder_;
+  void ClearCachedData();
+
+  SkPathBuilder builder_;
 
   mutable std::optional<Path> current_path_;
+  mutable std::optional<gfx::RectF> current_bounds_;
 };
 
 }  // namespace blink
