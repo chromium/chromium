@@ -110,7 +110,8 @@ class WaylandTestBase {
       PlatformWindowType type,
       const gfx::Rect bounds,
       MockWaylandPlatformWindowDelegate* delegate,
-      gfx::AcceleratedWidget parent_widget = gfx::kNullAcceleratedWidget);
+      gfx::AcceleratedWidget parent_widget = gfx::kNullAcceleratedWidget,
+      bool inactive = false);
 
   base::test::TaskEnvironment task_environment_;
 

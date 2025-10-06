@@ -250,7 +250,8 @@ std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
     PlatformWindowType type,
     const gfx::Rect bounds,
     MockWaylandPlatformWindowDelegate* delegate,
-    gfx::AcceleratedWidget parent_widget) {
+    gfx::AcceleratedWidget parent_widget,
+    bool inactive) {
   PlatformWindowInitProperties properties;
   properties.bounds = bounds;
   properties.type = type;
@@ -259,7 +260,7 @@ std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
   auto window =
       delegate->CreateWaylandWindow(connection_.get(), std::move(properties));
   if (window)
-    window->Show(false);
+    window->Show(inactive);
   return window;
 }
 

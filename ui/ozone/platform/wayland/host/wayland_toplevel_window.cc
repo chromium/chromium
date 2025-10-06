@@ -135,8 +135,11 @@ void WaylandToplevelWindow::Show(bool inactive) {
 
   UpdateWindowScale(false);
 
-  if (inactive)
+  if (inactive) {
     Deactivate();
+  } else {
+    Activate();
+  }
 
   WaylandWindow::Show(inactive);
 }
@@ -292,17 +295,20 @@ void WaylandToplevelWindow::ShowWindowControlsMenu(const gfx::Point& point) {
 
 void WaylandToplevelWindow::ActivateWithToken(std::string token) {
   DCHECK(connection()->xdg_activation());
-  bool can_activate = IsSurfaceConfigured();
 
   // Stacking the dragged xdg toplevel as the topmost one (and tied to the
   // pointer cursor) is reponsibility of the Wayland compositor, so bail out
   // if `this` is currently being dragged.
   if (auto* drag_controller = connection()->window_drag_controller()) {
-    can_activate &= !drag_controller->IsDraggingWindow(this);
+    if (drag_controller->IsDraggingWindow(this)) {
+      return;
+    }
   }
 
-  if (can_activate) {
+  if (IsSurfaceConfigured()) {
     connection()->xdg_activation()->Activate(root_surface()->surface(), token);
+  } else {
+    pending_configure_activation_token_ = token;
   }
 }
 
@@ -664,6 +670,13 @@ void WaylandToplevelWindow::AckConfigure(uint32_t serial) {
   // details.
   if (xdg_toplevel()) {
     xdg_toplevel()->AckConfigure(serial);
+  }
+
+  if (pending_configure_activation_token_.has_value()) {
+    DCHECK(connection()->xdg_activation());
+    connection()->xdg_activation()->Activate(
+        root_surface()->surface(), pending_configure_activation_token_.value());
+    pending_configure_activation_token_.reset();
   }
 }
 

@@ -249,6 +249,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   // The z order for the window.
   ZOrderLevel z_order_ = ZOrderLevel::kNormal;
 
+  // Activation will only be done if the surface is configured.
+  // If it is requested before, it is stored and executed in ack configure.
+  std::optional<std::string> pending_configure_activation_token_ = std::nullopt;
+
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 
   gfx::ImageSkia initial_icon_;
