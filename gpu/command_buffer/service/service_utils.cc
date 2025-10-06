@@ -189,10 +189,18 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     attribs.allow_client_arrays = true;
   }
 
-  bool force_es2_context =
-      features::UseGles2ForOopR() && use_passthrough_cmd_decoder;
-
-  attribs.client_major_es_version = force_es2_context ? 2 : 3;
+  // Tests fail with GLES3 on Android emulators (crbug.com/1423712). Forcing the
+  // context to ES2 works around this issue at least when using the passthrough
+  // command decoder (it's unfortunately not guaranteed to work with the
+  // validating decoder as native GL drivers tend to return GLES3 contexts if
+  // they support GLES3 even if the client has requested GLES2).
+  // TODO(crbug.com/444049511): Eliminate the need for this workaround as part
+  // of eliminating GLES2 support in Chrome altogether.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+  attribs.client_major_es_version = use_passthrough_cmd_decoder ? 2 : 3;
+#else
+  attribs.client_major_es_version = 3;
+#endif
   attribs.client_minor_es_version = 0;
 
   return attribs;

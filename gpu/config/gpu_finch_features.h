@@ -136,7 +136,6 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGPUDriverBugListTestGroup);
 GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kGPUDriverBugListTestGroupId;
 
-GPU_CONFIG_EXPORT bool UseGles2ForOopR();
 GPU_CONFIG_EXPORT bool IsUsingVulkan();
 GPU_CONFIG_EXPORT bool IsDrDcEnabled(
     const gpu::GpuFeatureInfo& gpu_feature_info);
