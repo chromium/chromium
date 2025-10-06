@@ -2204,7 +2204,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataUpdates) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataOnNavigation) {
+// TODO(https://crbug.com/449764057): Flakes/fails on all by windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_testGetPageMetadataOnNavigation testGetPageMetadataOnNavigation
+#else
+#define MAYBE_testGetPageMetadataOnNavigation \
+  DISABLED_testGetPageMetadataOnNavigation
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
+                       MAYBE_testGetPageMetadataOnNavigation) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Runs the JS test until the first `advanceToNextStep()`.
   ExecuteJsTest();
