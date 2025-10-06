@@ -152,9 +152,15 @@ chromium-metrics-reviews@google.com.
   <variant name="PassageEmbedder" summary="Text embedding for passages"/>
   <variant name="PasswordManagerFormClassification"
       summary="Classifies password forms"/>
+  <variant name="PermissionsAiv4GeolocationAndroid"
+      summary="Permissions: Use snapshot and visible page content text to
+               decide on relevance for a Geolocation permission request"/>
   <variant name="PermissionsAiv4GeolocationDesktop"
       summary="Permissions: Use snapshot and visible page content text to
                decide on relevance for a Geolocation permission request"/>
+  <variant name="PermissionsAiv4NotificationsAndroid"
+      summary="Permissions: Use snapshot and visible page content text to
+               decide on relevance for a Notifications permission request"/>
   <variant name="PermissionsAiv4NotificationsDesktop"
       summary="Permissions: Use snapshot and visible page content text to
                decide on relevance for a Notifications permission request"/>

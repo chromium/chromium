@@ -263,6 +263,10 @@ enum OptimizationTarget {
   // Target for a newer, generalized safety model, designed to replace the
   // model associated with target `OPTIMIZATION_TARGET_TEXT_SAFETY`.
   OPTIMIZATION_TARGET_GENERALIZED_SAFETY = 67;
+  // Target for the text+image AIv4 geolocation permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_ANDROID = 68;
+  // Target for the text+image AIv4 notifications permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_ANDROID = 69;
 }
 
 // The model engine versions that can be used to do model inference.
