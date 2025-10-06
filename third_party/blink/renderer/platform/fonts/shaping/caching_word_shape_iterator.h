@@ -72,9 +72,9 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     return NextWord(word_result);
   }
 
- private:
   const ShapeResult* ShapeWordWithoutSpacing(const TextRun&, const Font*);
 
+ private:
   const ShapeResult* ShapeWord(const TextRun&, const Font*);
 
   bool NextWord(const ShapeResult** word_result) {

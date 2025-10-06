@@ -30,27 +30,12 @@
 
 namespace blink {
 
-static inline float ShapeResultsForRun(ShapeCache* shape_cache,
-                                       const Font* font,
-                                       const TextRun& run,
-                                       ShapeResultBuffer* results_buffer) {
-  CachingWordShapeIterator iterator(shape_cache, run, font);
-  const ShapeResult* word_result = nullptr;
-  float total_width = 0;
-  while (iterator.Next(&word_result)) {
-    if (word_result) {
-      total_width += word_result->Width();
-      results_buffer->AppendResult(std::move(word_result));
-    }
-  }
-  return total_width;
-}
-
 GlyphData CachingWordShaper::EmphasisMarkGlyphData(
     const TextRun& emphasis_mark_run) const {
   ShapeResultBuffer buffer;
-  ShapeResultsForRun(font_.GetShapeCache(), &font_, emphasis_mark_run, &buffer);
-
+  buffer.AppendResult(
+      CachingWordShapeIterator(font_.GetShapeCache(), emphasis_mark_run, &font_)
+          .ShapeWordWithoutSpacing(emphasis_mark_run, &font_));
   return buffer.EmphasisMarkGlyphData(font_.GetFontDescription());
 }
 
