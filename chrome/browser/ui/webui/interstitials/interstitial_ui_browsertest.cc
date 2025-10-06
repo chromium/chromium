@@ -51,13 +51,10 @@ class InterstitialUITest : public InProcessBrowserTest {
   // page title and body content that is expected.
   //
   // page_title must be an exact match, while body content may appear anywhere
-  // in the rendered page. Thus an empty body_text never fails. If
-  // expand_details is set, body_text will also match any content hidden below
-  // the fold.
+  // in the rendered page. Thus an empty body_text never fails.
   void TestInterstitial(GURL url,
                         const std::string& page_title,
-                        const std::u16string& body_text,
-                        bool expand_details) {
+                        const std::u16string& body_text) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(base::ASCIIToUTF16(page_title),
               browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
@@ -75,13 +72,6 @@ class InterstitialUITest : public InProcessBrowserTest {
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
-    if (expand_details) {
-      EXPECT_EQ(true,
-                content::EvalJs(
-                    contents,
-                    "document.querySelector('#details-button').click(); true"));
-    }
-
     EXPECT_GE(ui_test_utils::FindInPage(contents, body_text, true, true,
                                         nullptr, nullptr),
               1);
@@ -89,8 +79,7 @@ class InterstitialUITest : public InProcessBrowserTest {
 
   // Convenience function to test interstitial pages without provided body_text.
   void TestInterstitial(GURL url, const std::string& page_title) {
-    TestInterstitial(url, page_title, std::u16string(),
-                     /*expand_details=*/false);
+    TestInterstitial(url, page_title, std::u16string());
   }
 
   // Convenience function to test interstitial pages with l10n message_ids as
@@ -98,23 +87,7 @@ class InterstitialUITest : public InProcessBrowserTest {
   void TestInterstitial(GURL url,
                         const std::string& page_title,
                         int message_id) {
-    TestInterstitial(url, page_title, l10n_util::GetStringUTF16(message_id),
-                     /*expand_details=*/false);
-  }
-
-  // Default version of TestInterstitial that uses expand_details=false.
-  void TestInterstitial(GURL url,
-                        const std::string& page_title,
-                        const std::u16string& body_text) {
-    TestInterstitial(url, page_title, body_text, /*expand_details=*/false);
-  }
-
-  // Convenience function to test interstitial pages where the body_text is
-  // below the fold.
-  void TestInterstitialExpandedDetails(GURL url,
-                                       const std::string& page_title,
-                                       const std::u16string& body_text) {
-    TestInterstitial(url, page_title, body_text, /*expand_details=*/true);
+    TestInterstitial(url, page_title, l10n_util::GetStringUTF16(message_id));
   }
 };
 
@@ -146,15 +119,15 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, MITMSoftwareInterstitial) {
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, PinnedCertInterstitial) {
-  TestInterstitialExpandedDetails(
-      GURL("chrome://interstitials/ssl?type=hpkp_failure"), "Privacy error",
-      u"NET::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN");
+  TestInterstitial(GURL("chrome://interstitials/ssl?type=hpkp_failure"),
+                   "Privacy error",
+                   u"NET::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN");
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, CTInterstitial) {
-  TestInterstitialExpandedDetails(
-      GURL("chrome://interstitials/ssl?type=ct_failure"), "Privacy error",
-      u"NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED");
+  TestInterstitial(GURL("chrome://interstitials/ssl?type=ct_failure"),
+                   "Privacy error",
+                   u"NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED");
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, EnterpriseBlockInterstitial) {

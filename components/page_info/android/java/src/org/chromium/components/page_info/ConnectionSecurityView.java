@@ -13,6 +13,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +30,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -45,18 +47,13 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
     public static class ViewParams {
         public @DrawableRes int iconResId;
         public @ColorRes int iconTint;
-        public CharSequence summary;
-        public CharSequence details;
+        public @Nullable CharSequence summary;
+        public @Nullable CharSequence details;
         public @Nullable Runnable resetDecisionsCallback;
         public byte @Nullable [][] certChain;
         public boolean isCert1Qwac;
         public byte @Nullable [][] twoQwacCertChain;
         public @Nullable CharSequence qwacIdentity;
-
-        ViewParams() {
-            this.summary = "";
-            this.details = "";
-        }
     }
 
     private final Context mContext;
@@ -86,10 +83,11 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
     }
 
     public void setParams(ViewParams params) {
-        boolean visible = params.summary.length() != 0 || params.details.length() != 0;
+        boolean visible = params.summary != null || params.details != null;
         setVisibility(visible ? VISIBLE : GONE);
         if (!visible) return;
 
+        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
         mIcon.setImageResource(params.iconResId);
 
         ImageViewCompat.setImageTintList(
@@ -100,20 +98,16 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
                                 mContext, R.color.default_icon_color_tint_list));
 
         mSummary.setText(params.summary);
-        mSummary.setVisibility(params.summary.length() != 0 ? VISIBLE : GONE);
-
-        if (params.details.length() != 0) {
-            if (params.summary.length() == 0) {
-                // The only case where we have details but no summary is when the IdentityInfo's
-                // SiteIdentityStatus is PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE. We shouldn't
-                // display a "Learn more" link for that.
-                mDetails.setText(params.details);
-            } else {
-                mDetails.setText(
-                        buildTextWithLink(params.details, mContext.getString(R.string.learn_more)));
-            }
+        mSummary.setVisibility(params.summary != null ? VISIBLE : GONE);
+        if (params.summary != null && params.details != null) {
+            mSummary.setPadding(0, 0, 0, ViewUtils.dpToPx(displayMetrics, 4));
         }
-        mDetails.setVisibility(params.details.length() != 0 ? VISIBLE : GONE);
+
+        if (params.details != null) {
+            mDetails.setText(
+                    buildTextWithLink(params.details, mContext.getString(R.string.learn_more)));
+        }
+        mDetails.setVisibility(params.details != null ? VISIBLE : GONE);
         mDetails.setOnClickListener(this);
 
         if (params.resetDecisionsCallback != null) {

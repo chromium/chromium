@@ -882,13 +882,8 @@ SkColor PageInfoUI::GetSecondaryTextColor() {
 // static
 int PageInfoUI::GetIdentityIconID(PageInfo::SiteIdentityStatus status) {
   switch (status) {
-    case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
-      if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
-        return IDR_PAGEINFO_INTERNAL;
-      } else {
-        return IDR_PAGEINFO_GOOD;
-      }
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:
+    case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT:
