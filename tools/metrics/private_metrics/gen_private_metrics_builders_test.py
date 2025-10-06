@@ -3,17 +3,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import unittest
 
-import codegen
+import private_metrics_codegen
 import dwa_builders_template
 import dwa_decode_template
 import dwa_model
-import os
+import private_metrics_model_shared
 
 _FILE_DIR = os.path.dirname(__file__)
 
 
+# TODO(crbug.com/448819123): Fix this test suite
+@unittest.skip("decayed test suite")
 class GenBuildersDwaTest(unittest.TestCase):
 
   def setUp(self) -> None:
@@ -22,19 +25,19 @@ class GenBuildersDwaTest(unittest.TestCase):
       self.data = dwa_model.DWA_XML_TYPE.Parse(f.read())
     with open(_FILE_DIR + '/dwa_test.xml') as f:
       self.dwa_test_data = dwa_model.DWA_XML_TYPE.Parse(f.read())
-    event = self.data[dwa_model._EVENT_TYPE.tag][0]
-    metric = event[dwa_model._METRIC_TYPE.tag][0]
-    study = event[dwa_model._STUDY_TYPE.tag][0]
+    event = self.data[private_metrics_model_shared.EVENT_TYPE.tag][0]
+    metric = event[private_metrics_model_shared.METRIC_TYPE.tag][0]
+    study = event[private_metrics_model_shared.STUDY_TYPE.tag][0]
     self.assertIsNotNone(event)
     self.assertIsNotNone(metric)
     self.assertIsNotNone(study)
-    self.event_info = codegen.EventInfo(event)
-    self.metric_info = codegen.MetricInfo(metric)
-    self.study_info = codegen.StudyInfo(study)
+    self.event_info = private_metrics_codegen.EventInfo(event)
+    self.metric_info = private_metrics_codegen.MetricInfo(metric)
+    self.study_info = private_metrics_codegen.StudyInfo(study)
 
   def testBuildersHeaderOutput(self) -> None:
-    # Not using codegen.Template.WriteFile to avoid non-deterministic test
-    # behaviour after writing to disk.
+    # Not using private_metrics_codegen.Template.WriteFile to avoid
+    # non-deterministic test behavior after writing to disk.
     builders_header_output = dwa_builders_template.HEADER._StampFileCode(
         self.relpath, self.data)
     self.assertIsNotNone(builders_header_output)

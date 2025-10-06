@@ -5,7 +5,6 @@
 
 import os
 import sys
-import dwa_model
 import private_metrics_model_shared
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))

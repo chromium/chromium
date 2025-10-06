@@ -12,13 +12,13 @@ template("private_metrics_builders") {
 
   # Generate builders for specific Private Metrics type.
   action("generate_${target_name}") {
-    script = "//tools/metrics/private_metrics/gen_builders.py"
+    script = "//tools/metrics/private_metrics/gen_private_metrics_builders.py"
 
     # Re-generate the outputs if the codegen code changes:
     inputs = [
       "//tools/metrics/private_metrics/dwa_builders_template.py",
       "//tools/metrics/private_metrics/dwa_decode_template.py",
-      "//tools/metrics/private_metrics/codegen.py",
+      "//tools/metrics/private_metrics/private_metrics_codegen.py",
     ]
 
     sources = [ "//tools/metrics/private_metrics/${invoker.type}.xml" ]

@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 """Templates for generating builder classes for DWA entries."""
 
-import codegen
+import private_metrics_codegen
 
-HEADER = codegen.Template(basename="dwa_builders.h",
-                          file_template="""
-// Generated from gen_builders.py.  DO NOT EDIT!
+HEADER = private_metrics_codegen.Template(basename="dwa_builders.h",
+                                          file_template="""
+// Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
 #ifndef {file.guard_path}
@@ -28,7 +28,7 @@ namespace builders {{
 
 #endif  // {file.guard_path}
 """,
-                          event_template="""
+                                          event_template="""
 class {event.name} final : public ::dwa::internal::DwaEntryBuilderBase {{
  public:
   explicit {event.name}();
@@ -45,20 +45,20 @@ class {event.name} final : public ::dwa::internal::DwaEntryBuilderBase {{
 {study_code}
 }};
 """,
-                          metric_template="""
+                                          metric_template="""
   static const char k{metric.name}Name[];
   static constexpr uint64_t k{metric.name}NameHash = UINT64_C({metric.hash});
   {event.name}& Set{metric.name}(int64_t value);
 """,
-                          study_template="""
+                                          study_template="""
   static constexpr char k{study.name}Name[] = "{study.raw_name}";
   static constexpr uint32_t k{study.name}NameHash = UINT32_C({study.hash});
 """)
 
-IMPL = codegen.Template(
+IMPL = private_metrics_codegen.Template(
     basename="dwa_builders.cc",
     file_template="""
-// Generated from gen_builders.py.  DO NOT EDIT!
+// Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
 #include "{file.dir_path}dwa_builders.h"

@@ -34,7 +34,7 @@ sys.exit(
             # directory to be added to sys.path *before* ukm), and that we run
             # the tests in a single process (jobs=1, below).
             'common/codegen_shared_test.py',
-            'private_metrics/gen_builders_test.py',
+            'private_metrics/gen_private_metrics_builders_test.py',
             'private_metrics/private_metrics_model_shared_test.py',
             'private_metrics/private_metrics_validations_test.py',
             'ukm/gen_builders_test.py',
