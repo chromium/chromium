@@ -599,14 +599,13 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
 }
 
 void SidePanelCoordinator::UpdateNewTabButtonState() {
-  views::ImageButton* const header_open_in_new_tab_button =
-      side_panel_header_->header_more_info_button();
-  if (header_open_in_new_tab_button && current_key()) {
+  if (current_key()) {
     SidePanelEntry* current_entry = GetEntryForUniqueKey(*current_key());
     bool has_open_in_new_tab_button =
         current_entry->SupportsNewTabButton() &&
         current_entry->GetOpenInNewTabURL().is_valid();
-    header_open_in_new_tab_button->SetVisible(has_open_in_new_tab_button);
+    side_panel_header_->header_open_in_new_tab_button()->SetVisible(
+        has_open_in_new_tab_button);
   }
 }
 

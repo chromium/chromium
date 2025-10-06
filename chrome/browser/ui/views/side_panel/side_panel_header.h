@@ -39,6 +39,10 @@ class SidePanelHeader : public views::View {
 
   views::ToggleImageButton* header_pin_button() { return header_pin_button_; }
 
+  views::ImageButton* header_open_in_new_tab_button() {
+    return header_open_in_new_tab_button_;
+  }
+
   views::ImageButton* header_more_info_button() {
     return header_more_info_button_;
   }
