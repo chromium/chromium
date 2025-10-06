@@ -16,20 +16,6 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   NOTREACHED();
 }
 
-std::unique_ptr<InstallPromptDelegate>
-ChromeManagementAPIDelegate::SetEnabledFunctionDelegate(
-    content::WebContents* web_contents,
-    content::BrowserContext* browser_context,
-    const Extension* extension,
-    base::OnceCallback<void(bool)> callback) const {
-  // TODO(crbug.com/410932770): Show a permission dialog. For now, pretend that
-  // the user accepted it. When this dialog is built, also enable the test
-  // ManagementApiUnitTest.SetEnabled_IncreasedPermissions.
-  NOTIMPLEMENTED() << "Skipping enable extension dialog";
-  std::move(callback).Run(true);
-  return nullptr;
-}
-
 bool ChromeManagementAPIDelegate::CreateAppShortcutFunctionDelegate(
     ManagementCreateAppShortcutFunction* function,
     const Extension* extension,

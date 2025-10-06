@@ -27,6 +27,55 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 namespace {
 
+class ManagementSetEnabledFunctionInstallPromptDelegate
+    : public InstallPromptDelegate {
+ public:
+  ManagementSetEnabledFunctionInstallPromptDelegate(
+      content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
+      const Extension* extension,
+      base::OnceCallback<void(bool)> callback)
+      : install_prompt_(new ExtensionInstallPrompt(web_contents)),
+        callback_(std::move(callback)) {
+    ExtensionInstallPrompt::PromptType type =
+        ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
+            browser_context, extension);
+    install_prompt_->ShowDialog(
+        base::BindOnce(&ManagementSetEnabledFunctionInstallPromptDelegate::
+                           OnInstallPromptDone,
+                       weak_factory_.GetWeakPtr()),
+        extension, nullptr,
+        std::make_unique<ExtensionInstallPrompt::Prompt>(type),
+        ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+  }
+
+  ManagementSetEnabledFunctionInstallPromptDelegate(
+      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
+  ManagementSetEnabledFunctionInstallPromptDelegate& operator=(
+      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
+
+  ~ManagementSetEnabledFunctionInstallPromptDelegate() override = default;
+
+ private:
+  void OnInstallPromptDone(
+      ExtensionInstallPrompt::DoneCallbackPayload payload) {
+    // This dialog doesn't support the "withhold permissions" checkbox.
+    DCHECK_NE(
+        payload.result,
+        ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
+    std::move(callback_).Run(payload.result ==
+                             ExtensionInstallPrompt::Result::ACCEPTED);
+  }
+
+  // Used for prompting to re-enable items with permissions escalation updates.
+  std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
+
+  base::OnceCallback<void(bool)> callback_;
+
+  base::WeakPtrFactory<ManagementSetEnabledFunctionInstallPromptDelegate>
+      weak_factory_{this};
+};
+
 class ManagementUninstallFunctionUninstallDialogDelegate
     : public ExtensionUninstallDialog::Delegate,
       public UninstallDialogDelegate {
@@ -112,6 +161,16 @@ LaunchType ChromeManagementAPIDelegate::GetLaunchType(
     const ExtensionPrefs* prefs,
     const Extension* extension) const {
   return ::extensions::GetLaunchType(prefs, extension);
+}
+
+std::unique_ptr<InstallPromptDelegate>
+ChromeManagementAPIDelegate::SetEnabledFunctionDelegate(
+    content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    base::OnceCallback<void(bool)> callback) const {
+  return std::make_unique<ManagementSetEnabledFunctionInstallPromptDelegate>(
+      web_contents, browser_context, extension, std::move(callback));
 }
 
 std::unique_ptr<UninstallDialogDelegate>

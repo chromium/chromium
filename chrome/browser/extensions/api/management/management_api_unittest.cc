@@ -802,9 +802,6 @@ TEST_F(ManagementApiUnitTest, SetEnabled_IncreasedPermissions) {
   // Due to a permission increase, prefs will contain escalation information.
   EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
 
-// TODO(crbug.com/410932770): Port the rest of this test to desktop Android
-// when the extension permission dialog is supported.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // 1) Confirm re-enable prompt without user gesture, expect the extension to
   // stay disabled.
   {
@@ -866,7 +863,6 @@ TEST_F(ManagementApiUnitTest, SetEnabled_IncreasedPermissions) {
   known_perms = prefs->GetGrantedPermissions(extension_id);
   ASSERT_TRUE(known_perms);
   EXPECT_FALSE(known_perms->IsEmpty());
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 TEST_F(ManagementApiUnitTest,
