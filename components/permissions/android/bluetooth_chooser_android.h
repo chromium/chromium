@@ -70,12 +70,7 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
       content::RenderFrameHost* frame,
       const EventHandler& event_handler,
       std::unique_ptr<BluetoothChooserAndroidDelegate> delegate,
-      CreateJavaDialogCallback create_java_dialog_callback) {
-    // Using `new` to access a non-public constructor.
-    return base::WrapUnique(
-        new BluetoothChooserAndroid(frame, event_handler, std::move(delegate),
-                                    std::move(create_java_dialog_callback)));
-  }
+      CreateJavaDialogCallback create_java_dialog_callback);
 
  private:
   BluetoothChooserAndroid(

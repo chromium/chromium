@@ -184,6 +184,19 @@ void BluetoothChooserAndroid::ShowNeedLocationPermissionLink(JNIEnv* env) {
                      "");
 }
 
+// static
+std::unique_ptr<BluetoothChooserAndroid>
+BluetoothChooserAndroid::CreateForTesting(
+    content::RenderFrameHost* frame,
+    const EventHandler& event_handler,
+    std::unique_ptr<BluetoothChooserAndroidDelegate> delegate,
+    CreateJavaDialogCallback create_java_dialog_callback) {
+  // Using `new` to access a non-public constructor.
+  return base::WrapUnique(
+      new BluetoothChooserAndroid(frame, event_handler, std::move(delegate),
+                                  std::move(create_java_dialog_callback)));
+}
+
 void BluetoothChooserAndroid::OpenURL(const char* url) {
   web_contents_->OpenURL(
       content::OpenURLParams(GURL(url), content::Referrer(),
