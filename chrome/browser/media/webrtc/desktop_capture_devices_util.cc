@@ -282,16 +282,9 @@ void CreateMediaStreamCaptureIndicatorUI(
                             std::unique_ptr<content::MediaStreamUI>)>
         on_media_stream_capture_indicator_ui_created_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<content::MediaStreamUI> capture_indicator_ui =
-      MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator()
-          ->RegisterMediaStream(web_contents, devices);
-  std::move(on_media_stream_capture_indicator_ui_created_callback)
-      .Run(std::move(devices), std::move(capture_indicator_ui));
-#else  // !BUILDFLAG(IS_ANDROID)
-  // If required, register to display the notification for stream capture.
   std::unique_ptr<MediaStreamUI> notification_ui;
+#if !BUILDFLAG(IS_ANDROID)
+  // If required, register to display the notification for stream capture.
   if (display_notification) {
     if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
       content::GlobalRenderFrameHostId capturer_id;
@@ -312,6 +305,7 @@ void CreateMediaStreamCaptureIndicatorUI(
           web_contents);
     }
   }
+#endif
 
   std::unique_ptr<content::MediaStreamUI> capture_indicator_ui =
       MediaCaptureDevicesDispatcher::GetInstance()
@@ -320,7 +314,6 @@ void CreateMediaStreamCaptureIndicatorUI(
                                 std::move(notification_ui), application_title);
   std::move(on_media_stream_capture_indicator_ui_created_callback)
       .Run(std::move(devices), std::move(capture_indicator_ui));
-#endif
 }
 
 void OnAudioDeviceIdObtained(
