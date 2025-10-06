@@ -26587,11 +26587,24 @@
                     "name": "EnabledFSM",
                     "enable_features": [
                         "VizDirectCompositorThreadIpcFrameSinkManager"
+                    ],
+                    "disable_features": [
+                        "VizDirectCompositorThreadIpcNonRoot"
                     ]
                 },
                 {
                     "name": "EnabledNonRoot",
                     "enable_features": [
+                        "VizDirectCompositorThreadIpcNonRoot"
+                    ],
+                    "disable_features": [
+                        "VizDirectCompositorThreadIpcFrameSinkManager"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "VizDirectCompositorThreadIpcFrameSinkManager",
                         "VizDirectCompositorThreadIpcNonRoot"
                     ]
                 }
@@ -26608,11 +26621,24 @@
                     "name": "EnabledFSM",
                     "enable_features": [
                         "VizDirectCompositorThreadIpcFrameSinkManager"
+                    ],
+                    "disable_features": [
+                        "VizDirectCompositorThreadIpcNonRoot"
                     ]
                 },
                 {
                     "name": "EnabledNonRoot",
                     "enable_features": [
+                        "VizDirectCompositorThreadIpcNonRoot"
+                    ],
+                    "disable_features": [
+                        "VizDirectCompositorThreadIpcFrameSinkManager"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "VizDirectCompositorThreadIpcFrameSinkManager",
                         "VizDirectCompositorThreadIpcNonRoot"
                     ]
                 }
