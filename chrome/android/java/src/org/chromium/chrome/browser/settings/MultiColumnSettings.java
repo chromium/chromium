@@ -160,7 +160,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
     }
 
-    int getHeaderPanelWidthPx() {
+    public int getHeaderPanelWidthPx() {
         return mHeaderPanelWidthPx;
     }
 
