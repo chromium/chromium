@@ -4,7 +4,6 @@
 
 #include "chromeos/services/tts/tts_player.h"
 
-#include "base/compiler_specific.h"
 #include "chromeos/services/tts/constants.h"
 #include "chromeos/services/tts/tts_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -104,9 +103,9 @@ TEST_F(TtsPlayerTest, RenderSingleFrame) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(1, frames_rendered);
-  std::vector<float> actual(bus->channel(0), UNSAFE_TODO(bus->channel(0) + 1));
-  std::vector<float> expected = {0.7};
-  EXPECT_THAT(actual, testing::ElementsAreArray(expected));
+  auto actual = bus->channel_span(0).first<1u>();
+  constexpr std::array<float, 1> kExpected = {0.7};
+  EXPECT_EQ(actual, base::span(kExpected));
 }
 
 TEST_F(TtsPlayerTest, RenderFramesFromPartialBuffers) {
@@ -135,9 +134,9 @@ TEST_F(TtsPlayerTest, RenderFramesFromPartialBuffers) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  std::vector<float> actual(bus->channel(0), UNSAFE_TODO(bus->channel(0) + 5));
-  std::vector<float> expected = {0.1, 0.2, 0.3, 0.4, 0.5};
-  EXPECT_THAT(actual, testing::ElementsAreArray(expected));
+  auto actual = bus->channel_span(0).first<5u>();
+  constexpr std::array<float, 5> kExpected = {0.1, 0.2, 0.3, 0.4, 0.5};
+  EXPECT_EQ(actual, base::span(kExpected));
 }
 
 TEST_F(TtsPlayerTest, RenderBusWithFramesFromEmptyAndPartialBuffers) {
@@ -176,9 +175,9 @@ TEST_F(TtsPlayerTest, RenderBusWithFramesFromEmptyAndPartialBuffers) {
   EXPECT_EQ(0, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  std::vector<float> actual(bus->channel(0), UNSAFE_TODO(bus->channel(0) + 5));
-  std::vector<float> expected = {0.1, 0.2, 0.3, 0.4, 0.5};
-  EXPECT_THAT(actual, testing::ElementsAreArray(expected));
+  auto actual = bus->channel_span(0).first<5u>();
+  constexpr std::array<float, 5> kExpected = {0.1, 0.2, 0.3, 0.4, 0.5};
+  EXPECT_EQ(actual, base::span(kExpected));
 }
 
 TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
@@ -214,10 +213,9 @@ TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
   EXPECT_EQ(0, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  std::vector<float> actual(first_bus->channel(0),
-                            UNSAFE_TODO(first_bus->channel(0) + 5));
-  std::vector<float> expected = {0.1, 0.2, 0.3, 0.4, 0.5};
-  EXPECT_THAT(actual, testing::ElementsAreArray(expected));
+  auto first_actual = first_bus->channel_span(0).first<5u>();
+  constexpr std::array<float, 5> kFirstExpected = {0.1, 0.2, 0.3, 0.4, 0.5};
+  EXPECT_EQ(first_actual, base::span(kFirstExpected));
 
   // Render two frames to second bus.
   auto second_bus = media::AudioBus::Create(/*channels=*/1, /*frames=*/5);
@@ -232,10 +230,9 @@ TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(2, frames_rendered);
-  actual = std::vector<float>(second_bus->channel(0),
-                              UNSAFE_TODO(second_bus->channel(0) + 2));
-  expected = {0.6, 0.7};
-  EXPECT_THAT(actual, testing::ElementsAreArray(expected));
+  auto second_actual = second_bus->channel_span(0).first<2u>();
+  constexpr std::array<float, 2> kSecondExpected = {0.6, 0.7};
+  EXPECT_THAT(second_actual, base::span(kSecondExpected));
 }
 
 }  // namespace

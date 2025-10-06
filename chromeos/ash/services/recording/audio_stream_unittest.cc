@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/recording/audio_stream.h"
 
-#include "base/compiler_specific.h"
 #include "base/memory/aligned_memory.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/recording/audio_capture_test_base.h"
@@ -210,9 +209,8 @@ TEST_F(AudioStreamTest, ConsumeToMisalignedDestination) {
   int mis_aligned_start_frame = 0;
   for (; mis_aligned_start_frame < destination->frames();
        ++mis_aligned_start_frame) {
-    if (!base::IsAligned(
-            &UNSAFE_TODO(destination->channel(0)[mis_aligned_start_frame]),
-            media::vector_math::kRequiredAlignment)) {
+    if (!base::IsAligned(&destination->channel_span(0)[mis_aligned_start_frame],
+                         media::vector_math::kRequiredAlignment)) {
       break;
     }
   }
