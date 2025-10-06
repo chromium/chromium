@@ -283,6 +283,12 @@ bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object,
     return true;
   }
 
+  // TODO(crbug.com/449152897): Backdrop-filter and clip path paint worklet
+  // images are not rasterized correctly.
+  if (!layout_object.StyleRef().BackdropFilter().IsEmpty()) {
+    return true;
+  }
+
   return false;
 }
 
