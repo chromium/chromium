@@ -12,25 +12,15 @@
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
-// Implementations of std::less<> here are for purposes of detecting duplicate
+// Implementations of Less here are for purposes of detecting duplicate
 // entries in arrays.  They do not require strict checks of all fields, but
 // instead focus on identifying attributes that would be used to clearly
 // distinguish properties to a user.  E.g., if two entries have the same
 // displayable name but different corresponding values, consider that to be a
 // duplicate for these purposes.
-namespace std {
+namespace {
 
-template <>
-struct less<::gfx::Size> {
-  bool operator()(const ::gfx::Size& lhs, const ::gfx::Size& rhs) const {
-    if (lhs.width() < rhs.width())
-      return true;
-    return lhs.height() < rhs.height();
-  }
-};
-
-template <>
-struct less<::printing::PrinterSemanticCapsAndDefaults::Paper> {
+struct LessPaper {
   bool operator()(
       const ::printing::PrinterSemanticCapsAndDefaults::Paper& lhs,
       const ::printing::PrinterSemanticCapsAndDefaults::Paper& rhs) const {
@@ -42,8 +32,8 @@ struct less<::printing::PrinterSemanticCapsAndDefaults::Paper> {
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
-template <>
-struct less<::printing::AdvancedCapability> {
+
+struct LessAdvancedCapability {
   bool operator()(const ::printing::AdvancedCapability& lhs,
                   const ::printing::AdvancedCapability& rhs) const {
     if (lhs.name < rhs.name)
@@ -51,9 +41,10 @@ struct less<::printing::AdvancedCapability> {
     return lhs.display_name < rhs.display_name;
   }
 };
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-}  // namespace std
+}  // namespace
 
 namespace mojo {
 
@@ -77,9 +68,9 @@ bool StructTraits<
 
 namespace {
 
-template <class Key>
-bool HasDuplicateItems(const std::vector<Key>& items) {
-  std::set<Key> items_encountered;
+template <class Key, class Less = std::less<Key>>
+bool HasDuplicateItems(const std::vector<Key>& items, Less = {}) {
+  std::set<Key, Less> items_encountered;
   for (const Key& item : items) {
     bool inserted = items_encountered.insert(item).second;
     if (!inserted) {
@@ -327,13 +318,13 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-  if (HasDuplicateItems(out->user_defined_papers)) {
+  if (HasDuplicateItems(out->user_defined_papers, LessPaper{})) {
     DLOG(ERROR) << "Duplicate user_defined_papers detected.";
     return false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (HasDuplicateItems(out->advanced_capabilities)) {
+  if (HasDuplicateItems(out->advanced_capabilities, LessAdvancedCapability{})) {
     DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
     return false;
   }
