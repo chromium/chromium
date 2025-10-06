@@ -155,8 +155,8 @@ CGFloat const kSheetCornerRadius = 30;
 }
 
 - (void)stop {
-  [_mainViewController dismissViewControllerAnimated:YES completion:nil];
   [self recordUserBackgroundSelectionOutcome];
+  [_mainViewController dismissViewControllerAnimated:YES completion:nil];
 
   _backgroundConfigurationMediator = nil;
   if (_photoPickerCoordinator) {
@@ -355,6 +355,20 @@ CGFloat const kSheetCornerRadius = 30;
           "IOS.HomeCustomization.Background.Gallery."
           "Outcome",
           _backgroundConfigurationMediator.backgroundSelectionOutcome);
+      if (_backgroundConfigurationMediator.backgroundSelectionOutcome ==
+              BackgroundSelectionOutcome::kApplied &&
+          [_mainViewController
+              isKindOfClass:
+                  [HomeCustomizationBackgroundPresetGalleryPickerViewController
+                      class]]) {
+        HomeCustomizationBackgroundPresetGalleryPickerViewController*
+            presetGalleryPickerViewController = base::apple::ObjCCast<
+                HomeCustomizationBackgroundPresetGalleryPickerViewController>(
+                _mainViewController);
+        base::UmaHistogramCounts100(
+            "IOS.HomeCustomization.Background.Gallery.SelectedIndex",
+            presetGalleryPickerViewController.selectedIndex);
+      }
       break;
     case HomeCustomizationBackgroundStyle::kUserUploaded:
       base::UmaHistogramEnumeration(

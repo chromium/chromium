@@ -36,6 +36,9 @@
     id<HomeCustomizationBackgroundPickerPresentationDelegate>
         presentationDelegate;
 
+// The index of the selected item in the gallery.
+@property(nonatomic, readonly) NSInteger selectedIndex;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PRESET_GALLERY_PICKER_VIEW_CONTROLLER_H_

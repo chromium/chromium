@@ -153,6 +153,10 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   AddSameConstraints(_collectionView, self.view);
 }
 
+- (NSInteger)selectedIndex {
+  return _collectionView.indexPathsForSelectedItems.firstObject.section;
+}
+
 #pragma mark - HomeCustomizationBackgroundConfigurationConsumer
 
 - (void)setBackgroundCollectionConfigurations:
