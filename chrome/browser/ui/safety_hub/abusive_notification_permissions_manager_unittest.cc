@@ -110,7 +110,6 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
   // TODO(crbug/com/342210522): When we refactor utils to be cleaner, this
   // helper will no longer be necessary.
   bool IsRevokedSettingValueRevoked(
-      AbusiveNotificationPermissionsManager* abuse_manager,
       std::string url) {
     base::Value stored_value =
         safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
@@ -169,8 +168,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_EQ(GetNotificationSettingValue(url2),
             ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   VerifyTimeoutCallbackNotCalled();
 
@@ -208,7 +207,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
           hcsm(), GURL(url1))
           .is_none());
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   VerifyTimeoutCallbackNotCalled();
 
@@ -242,7 +241,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_EQ(GetNotificationSettingValue(url3),
             ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
   EXPECT_TRUE(
       safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
           hcsm(), GURL(url2))
@@ -281,7 +280,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ALLOW);
   EXPECT_EQ(GetNotificationSettingValue(url3),
             ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url2)));
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
@@ -329,8 +328,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_EQ(GetNotificationSettingValue(url2),
             ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   // Make sure that when we regrant url1, it is not automatically revoked again.
   manager.RegrantPermissionForOriginIfNecessary(GURL(url1));
@@ -344,7 +343,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url1)));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   // Running period checks again should still not include url1.
   RunUntilSafeBrowsingChecksComplete(&manager);
@@ -358,7 +357,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url1)));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   // Check that the correct metric is reported.
   auto ukm_entries = ukm_recorder.GetEntriesByName(
@@ -447,8 +446,11 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       0u);
 
   AbusiveNotificationPermissionsManager::
-      SetRevokedAbusiveNotificationPermission(hcsm(), GURL(url1),
-                                              /*is_ignored=*/false);
+      SetRevokedAbusiveNotificationPermission(
+          hcsm(), GURL(url1),
+          /*is_ignored=*/false,
+          safe_browsing::NotificationRevocationSource::
+              kSocialEngineeringBlocklist);
   content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
   EXPECT_EQ(content_settings.size(), 1u);
@@ -457,15 +459,18 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_EQ(GetNotificationSettingValue(url2),
             ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
   EXPECT_TRUE(
       safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
           hcsm(), GURL(url2))
           .is_none());
 
   AbusiveNotificationPermissionsManager::
-      SetRevokedAbusiveNotificationPermission(hcsm(), GURL(url2),
-                                              /*is_ignored=*/false);
+      SetRevokedAbusiveNotificationPermission(
+          hcsm(), GURL(url2),
+          /*is_ignored=*/false,
+          safe_browsing::NotificationRevocationSource::
+              kSocialEngineeringBlocklist);
   content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
   EXPECT_EQ(content_settings.size(), 2u);
@@ -475,8 +480,64 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_EQ(GetNotificationSettingValue(url2),
             ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
+  EXPECT_EQ(
+      safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url1)));
+  EXPECT_EQ(
+      safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url2)));
+}
+
+TEST_F(
+    AbusiveNotificationPermissionsManagerTest,
+    SetRevokedAbusiveNotificationPermissionMaintainsExistingRevocationSource) {
+  // Simulate existing revoked notification setting without revocation source.
+  AddRevokedAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ASK,
+                                /*is_ignored=*/false);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
+  // Simulate existing revoked notification setting with revocation source
+  // `kManualSafeBrowsingRevocationStr`.
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+  content_settings::ContentSettingConstraints constraint;
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url2), GURL(url2), revoked_notifications_type,
+      base::Value(
+          base::Value::Dict()
+              .Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)
+              .Set(kAbusiveRevocationSourceKeyStr,
+                   kManualSafeBrowsingRevocationStr)),
+      constraint);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
+  EXPECT_EQ(
+      safe_browsing::NotificationRevocationSource::
+          kManualSafeBrowsingRevocation,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url2)));
+
+  AbusiveNotificationPermissionsManager::
+      SetRevokedAbusiveNotificationPermission(hcsm(), GURL(url1),
+                                              /*is_ignored=*/true);
+  AbusiveNotificationPermissionsManager::
+      SetRevokedAbusiveNotificationPermission(hcsm(), GURL(url2),
+                                              /*is_ignored=*/true);
+
+  // Verify the setting values are changed to ignored.
+  EXPECT_FALSE(IsRevokedSettingValueRevoked(url1));
+  EXPECT_FALSE(IsRevokedSettingValueRevoked(url2));
+  // Verify that the revocation sources are maintained.
+  EXPECT_EQ(
+      safe_browsing::NotificationRevocationSource::kUnknown,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url1)));
+  EXPECT_EQ(
+      safe_browsing::NotificationRevocationSource::
+          kManualSafeBrowsingRevocation,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url2)));
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -506,7 +567,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url1)));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   content_settings::ContentSettingConstraints constraints;
   manager.UndoRegrantPermissionForOriginIfNecessary(
@@ -520,8 +581,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_EQ(GetNotificationSettingValue(url2),
             ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   // Check that the correct metric is reported.
   auto ukm_entries = ukm_recorder.GetEntriesByName(
@@ -543,6 +604,41 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       static_cast<int>(
           AbusiveNotificationPermissionsManager::
               AbusiveNotificationPermissionsInteractions::kUndoAllowAgain));
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest,
+       RegrantAndUndoMaintainExistingRevocationSource) {
+  // Simulate existing revoked notification setting with revocation source
+  // `kManualSafeBrowsingRevocationStr`.
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ASK);
+  content_settings::ContentSettingConstraints constraint;
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url1), GURL(url1), revoked_notifications_type,
+      base::Value(
+          base::Value::Dict()
+              .Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)
+              .Set(kAbusiveRevocationSourceKeyStr,
+                   kManualSafeBrowsingRevocationStr)),
+      constraint);
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
+
+  // Re-grant.
+  manager.RegrantPermissionForOriginIfNecessary(GURL(url1));
+  EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+      hcsm(), GURL(url1)));
+
+  // Undo re-grant.
+  content_settings::ContentSettingConstraints constraints;
+  manager.UndoRegrantPermissionForOriginIfNecessary(
+      GURL(url1), abusive_permission_types, std::move(constraints));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
+
+  ASSERT_EQ(
+      safe_browsing::NotificationRevocationSource::
+          kManualSafeBrowsingRevocation,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url1)));
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -570,7 +666,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url1)));
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   // After 40 days, the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings
   // should be cleaned up, `url1` should still have allowed notifications,
@@ -634,7 +730,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_TRUE(IsUrlInContentSettings(content_settings, url3));
   EXPECT_EQ(GetNotificationSettingValue(url3),
             ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url3));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url3));
   histogram_tester.ExpectTotalCount(
       safety_hub::kBlocklistCheckCountHistogramName, /* expected_count */ 3);
   histogram_tester.ExpectBucketCount(

@@ -15,6 +15,7 @@
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/notifications_permission_revocation_config.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
@@ -585,4 +586,11 @@ TEST_F(PermissionShowManualRevocationsSafetyHubEnabledTest,
   EXPECT_TRUE(safety_hub_util::IsUrlRevokedAbusiveNotification(
       HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
       origin_to_revoke));
+  EXPECT_EQ(
+      safe_browsing::NotificationRevocationSource::
+          kManualSafeBrowsingRevocation,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(
+              HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
+              origin_to_revoke));
 }

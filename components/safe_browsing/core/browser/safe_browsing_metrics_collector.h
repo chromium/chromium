@@ -31,7 +31,8 @@ enum class NotificationRevocationSource {
   kSuspiciousWarningOneTapUnsubscribe = 3,
   kDisruptiveAutoRevocation = 4,
   kUserManuallyChangedSiteSetting = 5,
-  kMaxValue = kUserManuallyChangedSiteSetting,
+  kUnknown = 6,
+  kMaxValue = kUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:NotificationRevocationSource)
 

@@ -99,6 +99,8 @@ void RevokePermission(const GURL& origin, Profile* profile) {
     AbusiveNotificationPermissionsManager::
         ExecuteAbusiveNotificationAutoRevocation(
             HostContentSettingsMapFactory::GetForProfile(profile), origin,
+            safe_browsing::NotificationRevocationSource::
+                kManualSafeBrowsingRevocation,
             base::DefaultClock::GetInstance());
   } else {
     permissions::PermissionsClient::Get()
