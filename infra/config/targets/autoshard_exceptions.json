@@ -154,7 +154,7 @@
                 "try_builder": "linux-rel"
             },
             "interactive_ui_tests": {
-                "shards": 12,
+                "shards": 14,
                 "try_builder": "linux-rel"
             },
             "not_site_per_process_blink_wpt_tests": {
@@ -178,7 +178,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
-                "shards": 77,
+                "shards": 84,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
@@ -260,7 +260,7 @@
                 "try_builder": "win-rel"
             },
             "updater_tests_system": {
-                "shards": 5,
+                "shards": 6,
                 "try_builder": "win-rel"
             }
         }
