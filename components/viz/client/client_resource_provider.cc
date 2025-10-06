@@ -263,6 +263,8 @@ void ClientResourceProvider::PrepareSendToParent(
       };
 
   if (context_provider) {
+    CHECK(context_provider->SharedImageInterface());
+
     context_provider->SharedImageInterface()->VerifySyncTokens(
         imports, [](ImportedResource* imported) {
           return can_verify_resource(imported)
