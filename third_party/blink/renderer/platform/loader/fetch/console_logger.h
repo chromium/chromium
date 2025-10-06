@@ -28,6 +28,12 @@ class PLATFORM_EXPORT ConsoleLogger : public GarbageCollectedMixin {
   ConsoleLogger() = default;
   virtual ~ConsoleLogger() = default;
 
+  // Please familiarize yourself with http://goo.gle/devtools-console-policy
+  // prior to adding new console messages, and make sure that you understand the
+  // implications on the developer experience. A good console message should be
+  // actionable and relevant to what the developer is currently doing. Using the
+  // DevTools Console panel as a means to advertise best practices or Chromium
+  // agendas has shown to be counterproductive.
   void AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
                          mojom::blink::ConsoleMessageLevel level,
                          const String& message,
@@ -37,6 +43,12 @@ class PLATFORM_EXPORT ConsoleLogger : public GarbageCollectedMixin {
     AddConsoleMessageImpl(source, level, message, discard_duplicates, category);
   }
 
+  // Please familiarize yourself with http://goo.gle/devtools-console-policy
+  // prior to adding new console messages, and make sure that you understand the
+  // implications on the developer experience. A good console message should be
+  // actionable and relevant to what the developer is currently doing. Using the
+  // DevTools Console panel as a means to advertise best practices or Chromium
+  // agendas has shown to be counterproductive.
   void AddConsoleMessage(ConsoleMessage* message,
                          bool discard_duplicates = false) {
     AddConsoleMessageImpl(message, discard_duplicates);

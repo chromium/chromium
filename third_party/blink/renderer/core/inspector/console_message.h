@@ -23,6 +23,14 @@ class LocalFrame;
 class WorkerThread;
 struct WebConsoleMessage;
 
+// Represents a message to be shown in the DevTools console.
+//
+// Please familiarize yourself with http://goo.gle/devtools-console-policy prior
+// to introducing new console messages, and make sure that you understand the
+// implications on the developer experience. A good console message should be
+// actionable and relevant to what the developer is currently doing. Using the
+// DevTools Console panel as a means to advertise best practices or Chromium
+// agendas has shown to be counterproductive.
 class CORE_EXPORT ConsoleMessage final
     : public GarbageCollected<ConsoleMessage> {
  public:
