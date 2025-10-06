@@ -53,7 +53,8 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
   DCHECK(context);
 
   if (!base::FeatureList::IsEnabled(
-          chrome::android::kTabStorageSqlitePrototype)) {
+          chrome::android::kTabStorageSqlitePrototype) ||
+      !base::FeatureList::IsEnabled(chrome::android::kTabCollectionAndroid)) {
     return nullptr;
   }
 

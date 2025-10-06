@@ -234,7 +234,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             createArchivedTabModelInDeferredTask(tabContentManager);
         }
 
-        if (ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()) {
+        if (ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()
+                && ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
             mTabStateStoreIsAuthoritative =
                     ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                             ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE,
