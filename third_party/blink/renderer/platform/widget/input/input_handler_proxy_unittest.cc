@@ -297,11 +297,15 @@ class InputHandlerProxyEventQueueTest
     : public testing::Test,
       public ::testing::WithParamInterface<bool> {
  public:
-  InputHandlerProxyEventQueueTest()
-      : input_handler_proxy_(mock_input_handler_, &mock_client_) {
+  InputHandlerProxyEventQueueTest() = default;
+
+  void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
         input::features::kUpdateScrollPredictorInputMapping,
         /* enabled= */ GetParam());
+
+    input_handler_proxy_ = std::make_unique<TestInputHandlerProxy>(
+        mock_input_handler_, &mock_client_);
 
     SetScrollPredictionEnabled(true);
   }
@@ -322,12 +326,12 @@ class InputHandlerProxyEventQueueTest
                                           int x = 0,
                                           int y = 0) {
     InjectInputEvent(CreateGestureScrollPinch(
-        type, source_device, input_handler_proxy_.tick_clock_->NowTicks(),
+        type, source_device, input_handler_proxy_->tick_clock_->NowTicks(),
         delta_y_or_scale, x, y));
   }
 
   void InjectInputEvent(std::unique_ptr<WebInputEvent> event) {
-    input_handler_proxy_.HandleInputEventWithLatencyInfo(
+    input_handler_proxy_->HandleInputEventWithLatencyInfo(
         std::make_unique<WebCoalescedInputEvent>(std::move(event),
                                                  ui::LatencyInfo()),
         nullptr,
@@ -342,7 +346,7 @@ class InputHandlerProxyEventQueueTest
 
     mouse_event.SetPositionInWidget(gfx::PointF(x, y));
     mouse_event.button = WebMouseEvent::Button::kLeft;
-    HandleInputEventWithLatencyInfo(&input_handler_proxy_, mouse_event);
+    HandleInputEventWithLatencyInfo(input_handler_proxy_.get(), mouse_event);
   }
 
   void DidHandleInputEventAndOverscroll(
@@ -356,12 +360,12 @@ class InputHandlerProxyEventQueueTest
   }
 
   base::circular_deque<std::unique_ptr<EventWithCallback>>& event_queue() {
-    return input_handler_proxy_.compositor_event_queue_->queue_;
+    return input_handler_proxy_->compositor_event_queue_->queue_;
   }
 
   void SetInputHandlerProxyTickClockForTesting(
       const base::TickClock* tick_clock) {
-    input_handler_proxy_.SetTickClockForTesting(tick_clock);
+    input_handler_proxy_->SetTickClockForTesting(tick_clock);
   }
 
   void DeliverInputForBeginFrame(
@@ -375,39 +379,39 @@ class InputHandlerProxyEventQueueTest
                     viz::BeginFrameArgs::kStartingFrameNumber) *
                        interval;
     }
-    input_handler_proxy_.DeliverInputForBeginFrame(viz::BeginFrameArgs::Create(
+    input_handler_proxy_->DeliverInputForBeginFrame(viz::BeginFrameArgs::Create(
         BEGINFRAME_FROM_HERE, 0, next_begin_frame_number_++, frame_time,
         frame_time + interval, interval, begin_frame_args_type));
   }
 
   void DeliverInputForHighLatencyMode() {
-    input_handler_proxy_.DeliverInputForHighLatencyMode();
+    input_handler_proxy_->DeliverInputForHighLatencyMode();
   }
 
   void SetScrollPredictionEnabled(bool enabled) {
-    input_handler_proxy_.scroll_predictor_ =
+    input_handler_proxy_->scroll_predictor_ =
         enabled ? std::make_unique<ScrollPredictor>() : nullptr;
   }
 
   std::unique_ptr<ui::InputPredictor::InputData>
   GestureScrollEventPredictionAvailable() {
-    return input_handler_proxy_.scroll_predictor_->predictor_
+    return input_handler_proxy_->scroll_predictor_->predictor_
         ->GeneratePrediction(WebInputEvent::GetStaticTimeStampForTests());
   }
 
   base::TimeTicks NowTimestampForEvents() {
-    return input_handler_proxy_.tick_clock_->NowTicks();
+    return input_handler_proxy_->tick_clock_->NowTicks();
   }
 
   TestInputHandlerProxy* GetInputHandlerProxy() {
-    return &input_handler_proxy_;
+    return input_handler_proxy_.get();
   }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::StrictMock<cc::MockInputHandler> mock_input_handler_;
   testing::StrictMock<MockInputHandlerProxyClient> mock_client_;
-  TestInputHandlerProxy input_handler_proxy_;
+  std::unique_ptr<TestInputHandlerProxy> input_handler_proxy_;
   std::vector<InputHandlerProxy::EventDisposition> event_disposition_recorder_;
   std::vector<ui::LatencyInfo> latency_info_recorder_;
 
@@ -1162,7 +1166,7 @@ TEST_P(InputHandlerProxyEventQueueTest,
   HandleMouseEvent(WebInputEvent::Type::kMouseDown);
   HandleMouseEvent(WebInputEvent::Type::kMouseUp);
 
-  input_handler_proxy_.DispatchQueuedInputEventsHelper();
+  input_handler_proxy_->DispatchQueuedInputEventsHelper();
 }
 
 // Tests that the allowed touch action is correctly set when a touch is made
@@ -1284,15 +1288,27 @@ TEST_P(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
 // GestureScrollUpdates are not passed to the resampling code.
 TEST_P(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ::features::kSendEmptyGestureScrollUpdate,
-      {{"filter_out_empty_updates", "true"}});
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
 
+  // Always enable the empty update filtering.
+  enabled_features.push_back({::features::kSendEmptyGestureScrollUpdate,
+                              {{"filter_out_empty_updates", "true"}}});
+
+  if (GetParam()) {
+    // kUpdateScrollPredictorInputMapping is ENABLED. Disable synthetic
+    // prediction for this test.
+    enabled_features.push_back(
+        {input::features::kUpdateScrollPredictorInputMapping,
+         {{"generate_synthetic_scroll", "false"}}});
+  }
+
+  feature_list.InitWithFeaturesAndParameters(enabled_features,
+                                             /* disabled_features */ {});
   base::SimpleTestTickClock tick_clock;
   tick_clock.SetNowTicks(base::TimeTicks::Now());
   SetInputHandlerProxyTickClockForTesting(&tick_clock);
 
-  input_handler_proxy_.SetScrollEventDispatchMode(
+  input_handler_proxy_->SetScrollEventDispatchMode(
       cc::InputHandlerClient::ScrollEventDispatchMode::
           kDispatchScrollEventsUntilDeadline,
       0.333);
@@ -1797,7 +1813,8 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
   InputHandlerProxy input_handler_proxy_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestTickClock tick_clock_;
-  uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
+  uint64_t next_begin_frame_number_ =
+      viz::BeginFrameArgs::kStartingFrameNumber + 1;
   base::WeakPtrFactory<UnifiedScrollingInputHandlerProxyTest> weak_ptr_factory_{
       this};
 };
@@ -2759,7 +2776,7 @@ TEST_P(InputHandlerProxyEventQueueTest, TouchpadGestureScrollEndFlushQueue) {
   EXPECT_EQ(4ul, event_disposition_recorder_.size());
 
   EXPECT_FALSE(
-      input_handler_proxy_.gesture_scroll_on_impl_thread_for_testing());
+      input_handler_proxy_->gesture_scroll_on_impl_thread_for_testing());
 
   // Starting a new scroll sequence should have the same behavior (namely that
   // the first scroll update is not queued but immediately dispatched).
@@ -2940,7 +2957,7 @@ TEST_P(InputHandlerProxyEventQueueTest, KeyEventAttribution) {
   EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_)).Times(0);
 
   WebInputEventAttribution attribution =
-      input_handler_proxy_.PerformEventAttribution(key);
+      input_handler_proxy_->PerformEventAttribution(key);
   EXPECT_EQ(attribution.type(), WebInputEventAttribution::kFocusedFrame);
   EXPECT_EQ(attribution.target_frame_id(), cc::ElementId());
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
@@ -2956,7 +2973,7 @@ TEST_P(InputHandlerProxyEventQueueTest, MouseEventAttribution) {
       .WillOnce(testing::Return(cc::ElementId(0xDEADBEEF)));
 
   WebInputEventAttribution attribution =
-      input_handler_proxy_.PerformEventAttribution(mouse_down);
+      input_handler_proxy_->PerformEventAttribution(mouse_down);
   EXPECT_EQ(attribution.type(), WebInputEventAttribution::kTargetedFrame);
   EXPECT_EQ(attribution.target_frame_id(), cc::ElementId(0xDEADBEEF));
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
@@ -2972,7 +2989,7 @@ TEST_P(InputHandlerProxyEventQueueTest, MouseWheelEventAttribution) {
       .WillOnce(testing::Return(cc::ElementId(0xDEADBEEF)));
 
   WebInputEventAttribution attribution =
-      input_handler_proxy_.PerformEventAttribution(wheel);
+      input_handler_proxy_->PerformEventAttribution(wheel);
   EXPECT_EQ(attribution.type(), WebInputEventAttribution::kTargetedFrame);
   EXPECT_EQ(attribution.target_frame_id(), cc::ElementId(0xDEADBEEF));
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
@@ -2999,7 +3016,7 @@ TEST_P(InputHandlerProxyEventQueueTest, TouchEventAttribution) {
       .WillOnce(testing::Return(cc::ElementId(0xDEADBEEF)));
 
   WebInputEventAttribution attribution =
-      input_handler_proxy_.PerformEventAttribution(touch);
+      input_handler_proxy_->PerformEventAttribution(touch);
   EXPECT_EQ(attribution.type(), WebInputEventAttribution::kTargetedFrame);
   EXPECT_EQ(attribution.target_frame_id(), cc::ElementId(0xDEADBEEF));
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
@@ -3016,7 +3033,7 @@ TEST_P(InputHandlerProxyEventQueueTest, GestureEventAttribution) {
       .Times(1)
       .WillOnce(testing::Return(cc::ElementId(0xDEADBEEF)));
   WebInputEventAttribution attribution =
-      input_handler_proxy_.PerformEventAttribution(gesture);
+      input_handler_proxy_->PerformEventAttribution(gesture);
   EXPECT_EQ(attribution.type(), WebInputEventAttribution::kTargetedFrame);
   EXPECT_EQ(attribution.target_frame_id(), cc::ElementId(0xDEADBEEF));
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
@@ -3037,7 +3054,7 @@ TEST_P(InputHandlerProxyEventQueueTest, QueueInputForLateBeginFrameArgs) {
   base::SimpleTestTickClock tick_clock;
   tick_clock.SetNowTicks(base::TimeTicks::Now());
   SetInputHandlerProxyTickClockForTesting(&tick_clock);
-  input_handler_proxy_.SetScrollEventDispatchMode(
+  input_handler_proxy_->SetScrollEventDispatchMode(
       cc::InputHandlerClient::ScrollEventDispatchMode::
           kDispatchScrollEventsUntilDeadline,
       0.333);

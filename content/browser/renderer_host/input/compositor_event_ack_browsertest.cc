@@ -103,6 +103,42 @@ const char kBlockingTouchStartDataURL[] =
 
 namespace content {
 
+class FlingStartObserver
+    : public content::RenderWidgetHost::InputEventObserver {
+ public:
+  FlingStartObserver(content::RenderWidgetHost* host,
+                     base::OnceClosure quit_closure)
+      : host_(host), quit_closure_(std::move(quit_closure)) {
+    host_->AddInputEventObserver(this);
+  }
+
+  ~FlingStartObserver() override { host_->RemoveInputEventObserver(this); }
+
+  void OnInputEventAck(const RenderWidgetHost&,
+                       blink::mojom::InputEventResultSource source,
+                       blink::mojom::InputEventResultState state,
+                       const blink::WebInputEvent& event) override {
+    if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollUpdate) {
+      return;
+    }
+    const auto& gesture_event =
+        static_cast<const blink::WebGestureEvent&>(event);
+
+    if (gesture_event.data.scroll_update.inertial_phase !=
+        blink::WebGestureEvent::InertialPhaseState::kMomentum) {
+      return;
+    }
+
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+ private:
+  raw_ptr<content::RenderWidgetHost> host_;
+  base::OnceClosure quit_closure_;
+};
+
 // This test will used event listeners which block the renderer's main thread.
 // This test verifies that the compositor sends back an event ack that is not
 // blocked by the main thread. Then that subsequently the compositor will
@@ -297,6 +333,11 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
              .root_scroll_offset.value_or(default_scroll_offset)
              .y() <= 0)
     observer.WaitForMetadataChange();
+
+  // Wait for the fling to start on the compositor thread.
+  base::RunLoop run_loop;
+  FlingStartObserver fling_observer(GetWidgetHost(), run_loop.QuitClosure());
+  run_loop.Run();
 
   touch_event.ReleasePoint(0);
   //  TODO(wjmaclean): Figure out why we can send two touch events with the same
