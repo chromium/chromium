@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/google/google_update_app_command.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/install_static/install_details.h"
@@ -43,6 +44,15 @@ bool PlatformExperienceHelperMightBeInstalled() {
       peh_base_dir.Append(kPlatformExperienceHelperDir)
           .Append(kPlatformExperienceHelperExe);
   return base::PathExists(peh_exe_path);
+}
+
+// This function might block.
+// Returns whether we should attempt installing the platform experience helper.
+bool ShouldInstallPlatformExperienceHelper() {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    return false;
+  }
+  return !PlatformExperienceHelperMightBeInstalled();
 }
 
 // Enum for tracking the launch status of the platform experience helper
@@ -119,7 +129,7 @@ void SetInstallerLauncherDelegateForTesting(  // IN-TEST
 }
 
 void MaybeInstallPlatformExperienceHelper() {
-  if (PlatformExperienceHelperMightBeInstalled()) {
+  if (!ShouldInstallPlatformExperienceHelper()) {
     return;
   }
 
