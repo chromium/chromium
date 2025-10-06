@@ -730,6 +730,51 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, SaveToDriveControls) {
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("save_to_drive_controls_test.js", "test.pdf");
 }
+
+class PDFExtensionJSSaveToDriveBeforeUnloadTest
+    : public PDFExtensionJSSaveToDriveTest {
+ protected:
+  // OOPIF PDF only, since MimeHandler handles the beforeunload event instead.
+  bool UseOopif() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveBeforeUnloadTest, Uploading) {
+  RunTestsInJsModule("save_to_drive_before_unload_uploading_test.js",
+                     "test.pdf");
+}
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+class PDFExtensionJSInk2SaveToDriveBeforeUnloadTest
+    : public PDFExtensionJSSaveToDriveBeforeUnloadTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
+    enabled.push_back({chrome_pdf::features::kPdfInk2, {}});
+    enabled.push_back({chrome_pdf::features::kPdfSaveToDrive, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveToDriveBeforeUnloadTest,
+                       UploadCanceled) {
+  RunTestsInJsModule("ink2_save_to_drive_cancelled_before_unload_test.js",
+                     "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveToDriveBeforeUnloadTest,
+                       UploadInProgressWithMoreEdits) {
+  RunTestsInJsModule(
+      "ink2_save_to_drive_uploading_more_edits_before_unload_test.js",
+      "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveToDriveBeforeUnloadTest,
+                       UploadFinished) {
+  RunTestsInJsModule("ink2_save_to_drive_success_before_unload_test.js",
+                     "test.pdf");
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -749,4 +794,10 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSCaretBrowsingModeTest);
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSSaveToDriveTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionJSSaveToDriveBeforeUnloadTest);
+#if BUILDFLAG(ENABLE_PDF_INK2)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionJSInk2SaveToDriveBeforeUnloadTest);
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)

@@ -4,94 +4,17 @@
 
 import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-import type {PdfViewerPrivateProxy, ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {PdfViewerPrivateProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
+import type {ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {setUpTestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
 import {getRequiredElement} from './test_util.js';
 
 const SaveToDriveStatus = chrome.pdfViewerPrivate.SaveToDriveStatus;
 const SaveToDriveErrorType = chrome.pdfViewerPrivate.SaveToDriveErrorType;
 
 const viewer = document.body.querySelector('pdf-viewer')!;
-
-export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
-    PdfViewerPrivateProxy {
-  onSaveToDriveProgress: FakeChromeEvent;
-  private streamUrl_: string = '';
-
-  constructor() {
-    super([
-      'saveToDrive',
-      'setPdfDocumentTitle',
-    ]);
-
-    this.onSaveToDriveProgress = new FakeChromeEvent();
-  }
-
-  sendSaveToDriveProgress(
-      progress: chrome.pdfViewerPrivate.SaveToDriveProgress): void {
-    this.onSaveToDriveProgress.callListeners(this.streamUrl_, progress);
-  }
-
-  saveToDrive(saveRequestType?: chrome.pdfViewerPrivate.SaveRequestType): void {
-    this.methodCalled('saveToDrive', saveRequestType);
-  }
-
-  setPdfDocumentTitle(title: string): void {
-    this.methodCalled('setPdfDocumentTitle', title);
-  }
-
-  setStreamUrl(streamUrl: string): void {
-    this.streamUrl_ = streamUrl;
-  }
-
-  sendQuotaExceededError(): void {
-    this.sendSaveToDriveProgress({
-      status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
-      errorType: SaveToDriveErrorType.QUOTA_EXCEEDED,
-      accountEmail: 'test@gmail.com',
-    });
-  }
-
-  sendSessionTimeoutError(): void {
-    this.sendSaveToDriveProgress({
-      status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
-      errorType: SaveToDriveErrorType.OAUTH_ERROR,
-    });
-  }
-
-  sendUploadInProgress(uploadedBytes: number, fileSizeBytes: number): void {
-    this.sendSaveToDriveProgress({
-      status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
-      errorType: SaveToDriveErrorType.NO_ERROR,
-      uploadedBytes: uploadedBytes,
-      fileSizeBytes: fileSizeBytes,
-      fileMetadata: 'uploading, 2 minutes left',
-    });
-  }
-
-  sendUploadCompleted(): void {
-    this.sendSaveToDriveProgress({
-      status: SaveToDriveStatus.UPLOAD_COMPLETED,
-      errorType: SaveToDriveErrorType.NO_ERROR,
-      driveItemId: 'test-drive-item-id',
-      parentFolderName: 'test-parent-folder-name',
-      fileName: 'save_to_drive_test.pdf',
-      accountEmail: 'test@gmail.com',
-    });
-  }
-
-  sendUninitializedState(): void {
-    this.sendSaveToDriveProgress({
-      status: SaveToDriveStatus.NOT_STARTED,
-      errorType: SaveToDriveErrorType.NO_ERROR,
-    });
-  }
-}
 
 function assertBubbleAndProgressBar(
     bubble: ViewerSaveToDriveBubbleElement, value: number, max: number): void {
@@ -113,20 +36,12 @@ function closeBubble(bubble: ViewerSaveToDriveBubbleElement): void {
   chrome.test.assertFalse(bubble.$.dialog.open);
 }
 
-function setUpTestPrivateProxy(): TestPdfViewerPrivateProxy {
-  const privateProxy = new TestPdfViewerPrivateProxy();
-  privateProxy.setStreamUrl(viewer.getStreamUrlForTesting());
-  PdfViewerPrivateProxyImpl.setInstance(privateProxy);
-  viewer.setOnSaveToDriveProgressListenerForTesting();
-  return privateProxy;
-}
-
 // Unit tests for the pdf-viewer Save to Drive elements.
 const tests = [
   async function testSaveToDriveButton() {
     const controls =
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
 
     chrome.test.assertEq('pdf:add-to-drive', controls.$.save.ironIcon);
 
@@ -154,7 +69,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubble() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     chrome.test.assertTrue(!!bubble);
@@ -211,7 +126,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleCloseButtonAndStateResets() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
     const controls =
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
@@ -240,7 +155,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleCloseButtonNotResetting() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
     const controls =
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
@@ -268,7 +183,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleCancelUpload() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     // Set the save to Drive state to uploading and open the bubble.
@@ -304,7 +219,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleQuotaExceededAndManageStorageClick() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     // Set quota exceeded state and open the bubble.
@@ -338,7 +253,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleUploadCompletedAndOpenInDriveClick() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     // Set upload completed state and open the bubble.
@@ -376,7 +291,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleRetryUploadOriginal() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     // Click on the save button to initiate an upload.
@@ -411,7 +326,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleRetryUploadEdited() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     // Click on the save button to initiate an edited upload.
@@ -437,21 +352,29 @@ const tests = [
     retryButton.click();
     await privateProxy.whenCalled('saveToDrive');
 
-    chrome.test.assertEq(2, privateProxy.getCallCount('saveToDrive'));
-    const args = privateProxy.getArgs('saveToDrive');
-    chrome.test.assertEq(2, args.length);
-    chrome.test.assertEq('EDITED', args[0]);
-    chrome.test.assertEq('EDITED', args[1]);
+    // Click on the save button again after `hasEdits` is false to reset the
+    // internal `saveToDriveRequestType_`, or else it will enable beforeunload
+    // dialog in the next test.
+    privateProxy.sendUninitializedState();
+    controls.hasEdits = false;
+    controls.$.save.click();
+    await privateProxy.whenCalled('saveToDrive');
 
     // Reset the bubble open state for the next test.
     closeBubble(bubble);
-    controls.hasEdits = false;
+
+    chrome.test.assertEq(3, privateProxy.getCallCount('saveToDrive'));
+    const args = privateProxy.getArgs('saveToDrive');
+    chrome.test.assertEq(3, args.length);
+    chrome.test.assertEq('EDITED', args[0]);
+    chrome.test.assertEq('EDITED', args[1]);
+    chrome.test.assertEq('ORIGINAL', args[2]);
 
     chrome.test.succeed();
   },
 
   async function testBubbleOpenAndCloseAutomaticallyAfterUploadInProgress() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     privateProxy.sendUploadInProgress(0, 100);
@@ -483,7 +406,7 @@ const tests = [
   },
 
   async function testBubbleNotCloseAfterUploadInProgressIfOpenedManually() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     privateProxy.sendUploadInProgress(0, 100);
@@ -516,7 +439,7 @@ const tests = [
   },
 
   async function testStateResetsAfterAccountChooserCanceled() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
     privateProxy.sendUploadInProgress(0, 100);
@@ -541,7 +464,7 @@ const tests = [
   },
 
   async function testSaveToDriveBubbleUploadInitialized() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
     const controls =
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
@@ -559,14 +482,40 @@ const tests = [
         '566px', progress.$.innerProgress.getAttribute('stroke-dashoffset'));
     assertBubbleAndProgressBar(bubble, 0, 0);
 
-    // Reset the bubble open state for the next test.
+    // Reset the bubble and the upload for the next test.
+    privateProxy.sendUninitializedState();
+    await microtasksFinished();
     closeBubble(bubble);
 
     chrome.test.succeed();
   },
 
   async function testSaveToDriveBubbleConnectionError() {
-    const privateProxy = setUpTestPrivateProxy();
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+
+    privateProxy.sendSaveToDriveProgress({
+      status: SaveToDriveStatus.UPLOAD_FAILED,
+      errorType: SaveToDriveErrorType.OFFLINE,
+    });
+    await microtasksFinished();
+    controls.$.save.click();
+    await microtasksFinished();
+
+    assertBubbleDescription(bubble, 'Check your internet connection');
+
+    // Reset the bubble and the upload for the next test.
+    privateProxy.sendUninitializedState();
+    await microtasksFinished();
+    closeBubble(bubble);
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleConnectionError() {
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
     const controls =
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');

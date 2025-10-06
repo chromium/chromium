@@ -5,7 +5,8 @@
 import {AnnotationMode, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {getNewTestBeforeUnloadProxy, setupTestMockPluginForInk, startFinishModifiedInkStroke} from './test_util.js';
+import {getNewTestBeforeUnloadProxy} from './test_before_unload_proxy.js';
+import {setupTestMockPluginForInk, startFinishModifiedInkStroke} from './test_util.js';
 
 chrome.test.runTests([
   // Test that the save unedited dialog does not appear when the user navigates

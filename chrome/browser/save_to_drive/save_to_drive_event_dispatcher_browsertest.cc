@@ -91,6 +91,14 @@ class SaveToDriveEventDispatcherBrowserTest
   }
 
   void TearDownOnMainThread() override {
+    // At the end of a Save to Drive upload test, the state in the UI needs to
+    // be reset, or else it will be blocked by the beforeunload dialog.
+    pdf_api::SaveToDriveProgress progress;
+    progress.status = pdf_api::SaveToDriveStatus::kNotStarted;
+    progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
+    EXPECT_CALL(*save_to_drive_recorder_, Record);
+    dispatcher_->Notify(std::move(progress));
+
     save_to_drive_recorder_ = nullptr;
     time_remaining_calculator_ = nullptr;
     dispatcher_.reset();
