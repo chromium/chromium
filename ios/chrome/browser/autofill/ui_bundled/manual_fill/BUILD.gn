@@ -242,6 +242,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/prefs",
+    "//components/test/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/autofill/ui_bundled:bridges",

@@ -6,4 +6,5 @@ source_set("ios") {
   assert(is_ios, "components/test/ios/BUILD.gn only usable for iOS")
   testonly = true
   sources = [ "test_utils.h" ]
+  deps = [ "//third_party/ocmock" ]
 }

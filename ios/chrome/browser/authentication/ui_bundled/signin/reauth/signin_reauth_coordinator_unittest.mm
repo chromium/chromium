@@ -105,9 +105,9 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
                                               completion_block)]);
   [reauth_coordinator start];
 
-  OCMExpect([mock_delegate_ reauthFinishedWithResult:ReauthResult::kSuccess
-                                              gaiaID:static_cast<GaiaId*>(
-                                                         [OCMArg anyPointer])])
+  OCMExpect([mock_delegate_
+                reauthFinishedWithResult:ReauthResult::kSuccess
+                                  gaiaID:ios::OCM::AnyPointer<GaiaId>()])
       .andDo(^(NSInvocation* invocation) {
         GaiaId* gaia_id;
         [invocation getArgument:&gaia_id atIndex:3];
@@ -235,10 +235,9 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
                                               completion_block)]);
   [reauth_coordinator start];
 
-  OCMExpect(
-      [[((id)mock_delegate_) ignoringNonObjectArgs]
-          reauthFinishedWithResult:ReauthResult::kSuccess
-                            gaiaID:static_cast<GaiaId*>([OCMArg anyPointer])])
+  OCMExpect([[((id)mock_delegate_) ignoringNonObjectArgs]
+                reauthFinishedWithResult:ReauthResult::kSuccess
+                                  gaiaID:ios::OCM::AnyPointer<GaiaId>()])
       .andDo(^(NSInvocation* invocation) {
         GaiaId* gaia_id;
         [invocation getArgument:&gaia_id atIndex:3];

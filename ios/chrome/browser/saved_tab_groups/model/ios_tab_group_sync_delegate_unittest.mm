@@ -633,12 +633,12 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   OCMStub([mock_application_handler_
       displayTabGridInMode:TabGridOpeningMode::kRegular]);
 
-  OCMStub([mock_tab_groups_handler_
-              showTabGroup:(const TabGroup*)[OCMArg anyPointer]])
+  OCMStub(
+      [mock_tab_groups_handler_ showTabGroup:ios::OCM::AnyPointer<TabGroup>()])
       .andAssignStructParameterToVariable(tab_group_shown, 0);
 
   OCMStub([mock_tab_grid_handler_
-              bringGroupIntoView:(const TabGroup*)[OCMArg anyPointer]
+              bringGroupIntoView:ios::OCM::AnyPointer<TabGroup>()
                         animated:NO])
       .andAssignStructParameterToVariable(tab_group_for_grid, 0);
   EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))

@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/sync:test_support",
     "//components/sync/base:features",
+    "//components/test/ios",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator",

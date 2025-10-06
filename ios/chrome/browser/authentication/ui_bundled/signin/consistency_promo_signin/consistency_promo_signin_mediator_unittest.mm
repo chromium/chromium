@@ -172,16 +172,15 @@ class ConsistencyPromoSigninMediatorTest
     }
     OCMExpect(
         [mediator_delegate_mock_
-            trackWebSigninWithIdentityManager:static_cast<
-                                                  signin::IdentityManager*>(
-                                                  [OCMArg anyPointer])
-                            accountReconcilor:static_cast<AccountReconcilor*>(
-                                                  [OCMArg anyPointer])
+            trackWebSigninWithIdentityManager:ios::OCM::AnyPointer<
+                                                  signin::IdentityManager>()
+                            accountReconcilor:ios::OCM::AnyPointer<
+                                                  AccountReconcilor>()
                                 signinAccount:CoreAccountId()
-                                 withCallback:
-                                     static_cast<base::RepeatingCallback<void(
-                                         signin::WebSigninTracker::Result)>*>(
-                                         [OCMArg anyPointer])
+                                 withCallback:ios::OCM::AnyPointer<
+                                                  base::RepeatingCallback<void(
+                                                      signin::WebSigninTracker::
+                                                          Result)>>()
                                   withTimeout:std::nullopt])
         .ignoringNonObjectArgs()
         .andAssignStructParameterAtAddressToVariable(captured_callback_, 3);

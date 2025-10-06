@@ -7,6 +7,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -74,11 +75,9 @@ TEST_F(ManualFillFormObserverHelperiOSTest, ObservesWebState) {
   params.value = "value";
   params.input_missing = false;
 
-  OCMExpect([mock_delegate_
-                     webState:static_cast<web::WebState*>([OCMArg anyPointer])
-      didRegisterFormActivity:params
-                      inFrame:static_cast<web::WebFrame*>(
-                                  [OCMArg anyPointer])]);
+  OCMExpect([mock_delegate_ webState:ios::OCM::AnyPointer<web::WebState>()
+             didRegisterFormActivity:params
+                             inFrame:ios::OCM::AnyPointer<web::WebFrame>()]);
 
   autofill::TestFormActivityTabHelper test_form_activity_tab_helper(
       web_state_list_.GetActiveWebState());
@@ -107,31 +106,25 @@ TEST_F(ManualFillFormObserverHelperiOSTest, ObservesMultipleWebStates) {
   params.value = "value";
   params.input_missing = false;
 
-  OCMExpect([mock_delegate_
-                     webState:static_cast<web::WebState*>([OCMArg anyPointer])
-      didRegisterFormActivity:params
-                      inFrame:static_cast<web::WebFrame*>(
-                                  [OCMArg anyPointer])]);
+  OCMExpect([mock_delegate_ webState:ios::OCM::AnyPointer<web::WebState>()
+             didRegisterFormActivity:params
+                             inFrame:ios::OCM::AnyPointer<web::WebFrame>()]);
 
   test_form_activity_tab_helper0.FormActivityRegistered(nullptr, params);
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 
   web_state_list_.ActivateWebStateAt(1);
 
-  OCMExpect([mock_delegate_
-                     webState:static_cast<web::WebState*>([OCMArg anyPointer])
-      didRegisterFormActivity:params
-                      inFrame:static_cast<web::WebFrame*>(
-                                  [OCMArg anyPointer])]);
+  OCMExpect([mock_delegate_ webState:ios::OCM::AnyPointer<web::WebState>()
+             didRegisterFormActivity:params
+                             inFrame:ios::OCM::AnyPointer<web::WebFrame>()]);
   test_form_activity_tab_helper1.FormActivityRegistered(nullptr, params);
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 
   web_state_list_.ActivateWebStateAt(0);
-  OCMExpect([mock_delegate_
-                     webState:static_cast<web::WebState*>([OCMArg anyPointer])
-      didRegisterFormActivity:params
-                      inFrame:static_cast<web::WebFrame*>(
-                                  [OCMArg anyPointer])]);
+  OCMExpect([mock_delegate_ webState:ios::OCM::AnyPointer<web::WebState>()
+             didRegisterFormActivity:params
+                             inFrame:ios::OCM::AnyPointer<web::WebFrame>()]);
   test_form_activity_tab_helper0.FormActivityRegistered(nullptr, params);
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }

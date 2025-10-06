@@ -12,6 +12,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
@@ -119,9 +120,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
         OCMStrictClassMock([FullscreenSigninScreenCoordinator class]);
     OCMExpect([(id)fullscreen_signin_screen_coordinator_mock_ alloc])
         .andReturn(fullscreen_signin_screen_coordinator_mock_);
-    ChangeProfileContinuationProvider* provider =
-        static_cast<base::RepeatingCallback<ChangeProfileContinuation()>*>(
-            [OCMArg anyPointer]);
+    ChangeProfileContinuationProvider* provider = ios::OCM::AnyPointer<
+        base::RepeatingCallback<ChangeProfileContinuation()>>();
     OCMExpect(
         [fullscreen_signin_screen_coordinator_mock_
              initWithBaseNavigationController:[OCMArg any]

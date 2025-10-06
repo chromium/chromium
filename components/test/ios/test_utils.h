@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_TEST_IOS_TEST_UTILS_H_
 #define COMPONENTS_TEST_IOS_TEST_UTILS_H_
 
+#import "third_party/ocmock/OCMock/OCMock.h"
+
 // Expects that the i-th parameter of the invocation is equal to `expected`
 #define andCompareObjectAtIndex(expected, index)                      \
   andDo(^(NSInvocation * invocation) {                                \
@@ -53,5 +55,16 @@
     variable = [param copy];                               \
     return YES;                                            \
   }]
+
+namespace ios::OCM {
+
+// Returns a OCMArg that accepts any pointer, and can be used as argument of
+// pointer of type T*.
+template <typename T>
+T* AnyPointer() {
+  return static_cast<T*>([OCMArg anyPointer]);
+}
+
+}  // namespace ios::OCM
 
 #endif  // COMPONENTS_TEST_IOS_TEST_UTILS_H_

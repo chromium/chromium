@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
@@ -108,16 +109,12 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
     OCMStub([mock_save_to_photos_mediator_ alloc])
         .andReturn(mock_save_to_photos_mediator_);
     OCMStub([mock_save_to_photos_mediator_
-                    initWithPhotosService:reinterpret_cast<PhotosService*>(
-                                              [OCMArg anyPointer])
-                              prefService:reinterpret_cast<PrefService*>(
-                                              [OCMArg anyPointer])
-                    accountManagerService:reinterpret_cast<
-                                              ChromeAccountManagerService*>(
-                                              [OCMArg anyPointer])
-                          identityManager:reinterpret_cast<
-                                              signin::IdentityManager*>(
-                                              [OCMArg anyPointer])
+                    initWithPhotosService:ios::OCM::AnyPointer<PhotosService>()
+                              prefService:ios::OCM::AnyPointer<PrefService>()
+                    accountManagerService:ios::OCM::AnyPointer<
+                                              ChromeAccountManagerService>()
+                          identityManager:ios::OCM::AnyPointer<
+                                              signin::IdentityManager>()
                 manageStorageAlertHandler:[OCMArg any]
                        applicationHandler:[OCMArg any]
                          googleOneHandler:[OCMArg any]])

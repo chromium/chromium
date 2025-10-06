@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/core/browser/account_reconcilor.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
@@ -112,19 +113,15 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     OCMExpect([(id)mediator_mock_ alloc]).andReturn(mediator_mock_);
     OCMExpect(
         [mediator_mock_
-            initWithAccountManagerService:reinterpret_cast<
-                                              ChromeAccountManagerService*>(
-                                              [OCMArg anyPointer])
-                    authenticationService:reinterpret_cast<
-                                              AuthenticationService*>(
-                                              [OCMArg anyPointer])
-                          identityManager:reinterpret_cast<
-                                              signin::IdentityManager*>(
-                                              [OCMArg anyPointer])
-                        accountReconcilor:reinterpret_cast<AccountReconcilor*>(
-                                              [OCMArg anyPointer])
-                          userPrefService:reinterpret_cast<PrefService*>(
-                                              [OCMArg anyPointer])
+            initWithAccountManagerService:ios::OCM::AnyPointer<
+                                              ChromeAccountManagerService>()
+                    authenticationService:ios::OCM::AnyPointer<
+                                              AuthenticationService>()
+                          identityManager:ios::OCM::AnyPointer<
+                                              signin::IdentityManager>()
+                        accountReconcilor:ios::OCM::AnyPointer<
+                                              AccountReconcilor>()
+                          userPrefService:ios::OCM::AnyPointer<PrefService>()
                               accessPoint:access_point_])
         .ignoringNonObjectArgs()
         .andReturn(mediator_mock_);

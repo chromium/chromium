@@ -219,9 +219,8 @@ class SharedPasswordControllerTest : public PlatformTest {
 
     PasswordGenerationFrameHelper* password_generation_helper_ptr =
         &password_generation_helper_;
-    OCMStub(
-        [driver_helper_ PasswordGenerationHelper:static_cast<web::WebFrame*>(
-                                                     [OCMArg anyPointer])])
+    OCMStub([driver_helper_
+                PasswordGenerationHelper:ios::OCM::AnyPointer<web::WebFrame>()])
         .andReturn(password_generation_helper_ptr);
 
     EXPECT_CALL(password_manager_, GetClient)
@@ -236,8 +235,8 @@ class SharedPasswordControllerTest : public PlatformTest {
         web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
     dummy_driver_ = IOSPasswordManagerDriverFactory::GetRetainableDriver(
         &web_state_, dummy_web_frame.get());
-    OCMStub([driver_helper_ PasswordManagerDriver:static_cast<web::WebFrame*>(
-                                                      [OCMArg anyPointer])])
+    OCMStub([driver_helper_
+                PasswordManagerDriver:ios::OCM::AnyPointer<web::WebFrame>()])
         .andReturn(dummy_driver_.get());
   }
 
