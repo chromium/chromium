@@ -26,6 +26,7 @@ class TemplateURLService;
 namespace autofill {
 class AddressDataManager;
 class AutofillWebDataService;
+class AccountSettingService;
 }  // namespace autofill
 
 namespace bookmarks {
@@ -134,6 +135,8 @@ class CommonControllerBuilder {
 
   // Setters to inject dependencies. Each of these setters must be invoked
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
+  void SetAccountSettingService(
+      autofill::AccountSettingService* account_setting_service);
   void SetAddressDataManagerGetter(
       base::RepeatingCallback<autofill::AddressDataManager*()>
           address_data_manager_getter);
@@ -254,6 +257,8 @@ class CommonControllerBuilder {
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
+  SafeOptional<raw_ptr<autofill::AccountSettingService>>
+      account_setting_service_;
   base::RepeatingCallback<autofill::AddressDataManager*()>
       address_data_manager_getter_;
   SafeOptional<raw_ptr<signin::IdentityManager>> identity_manager_;

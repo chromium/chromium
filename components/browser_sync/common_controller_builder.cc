@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_data_type_controller.h"
+#include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_data_type_controller.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_local_data_batch_uploader.h"
@@ -201,6 +202,11 @@ bool ArePreferencesAllowedInTransportMode() {
 CommonControllerBuilder::CommonControllerBuilder() = default;
 
 CommonControllerBuilder::~CommonControllerBuilder() = default;
+
+void CommonControllerBuilder::SetAccountSettingService(
+    autofill::AccountSettingService* account_setting_service) {
+  account_setting_service_.Set(account_setting_service);
+}
 
 void CommonControllerBuilder::SetAddressDataManagerGetter(
     base::RepeatingCallback<autofill::AddressDataManager*()>
@@ -811,10 +817,18 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 #endif
 
+#if !BUILDFLAG(IS_IOS)
   if (!disabled_types.Has(syncer::ACCOUNT_SETTING) &&
+      account_setting_service_.value() &&
       base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
-    // TODO(crbug.com/441735283) Complete syncing of account settings.
+    controllers.push_back(std::make_unique<DataTypeController>(
+        syncer::ACCOUNT_SETTING,
+        /*delegate_for_full_sync_mode=*/
+        account_setting_service_.value()->GetSyncControllerDelegate(),
+        /*delegate_for_transport_mode=*/
+        account_setting_service_.value()->GetSyncControllerDelegate()));
   }
+#endif
 
   if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA) &&
       base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData) &&

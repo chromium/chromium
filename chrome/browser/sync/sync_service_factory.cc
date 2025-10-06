@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
+#include "chrome/browser/autofill/account_setting_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -187,6 +188,8 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
 #endif  // DCHECK_IS_ON()
 
   browser_sync::CommonControllerBuilder builder;
+  builder.SetAccountSettingService(
+      autofill::AccountSettingServiceFactory::GetForBrowserContext(profile));
   // A callback is needed here because `autofill::PersonalDataManagerFactory`
   // already depends on `SyncServiceFactory`.
   builder.SetAddressDataManagerGetter(
@@ -512,6 +515,7 @@ SyncServiceFactory::SyncServiceFactory()
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in ChromeSyncClient, which this factory constructs.
   DependsOn(AboutSigninInternalsFactory::GetInstance());
+  DependsOn(autofill::AccountSettingServiceFactory::GetInstance());
   DependsOn(AccountBookmarkSyncServiceFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
