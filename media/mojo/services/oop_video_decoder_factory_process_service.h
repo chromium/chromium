@@ -6,10 +6,15 @@
 #define MEDIA_MOJO_SERVICES_OOP_VIDEO_DECODER_FACTORY_PROCESS_SERVICE_H_
 
 #include "base/sequence_checker.h"
+#include "gpu/ipc/client/gpu_channel_observer.h"
 #include "media/mojo/mojom/video_decoder_factory_process.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/oop_video_decoder_factory_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+namespace gpu {
+class ClientSharedImageInterface;
+}
 
 namespace viz {
 class Gpu;
@@ -20,7 +25,8 @@ namespace media {
 // An OOPVideoDecoderFactoryProcessService allows the browser process to
 // initialize an InterfaceFactory with a gpu::GpuFeatureInfo.
 class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
-    : public mojom::VideoDecoderFactoryProcess {
+    : public mojom::VideoDecoderFactoryProcess,
+      public gpu::GpuChannelLostObserver {
  public:
   explicit OOPVideoDecoderFactoryProcessService(
       mojo::PendingReceiver<mojom::VideoDecoderFactoryProcess> receiver);
@@ -35,6 +41,9 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
       const gpu::GpuFeatureInfo& gpu_feature_info,
       mojo::PendingReceiver<mojom::InterfaceFactory> receiver) final;
 
+  // gpu::GpuChannelLostObserver implementation.
+  void OnGpuChannelLost() final;
+
   void SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu);
   void OnFactoryDisconnected();
 
@@ -44,9 +53,16 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
   std::unique_ptr<OOPVideoDecoderFactoryService> factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  void OnGpuChannelLostTask();
+  scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface();
+
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
   std::unique_ptr<viz::Gpu> viz_gpu_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<OOPVideoDecoderFactoryProcessService> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace media

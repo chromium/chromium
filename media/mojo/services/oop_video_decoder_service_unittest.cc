@@ -9,6 +9,8 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_log.mojom.h"
@@ -19,6 +21,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_fence.h"
 
 using testing::_;
 using testing::ByMove;
@@ -342,7 +345,7 @@ std::unique_ptr<AuxiliaryEndpoints> ConstructVideoDecoder(
 class OOPVideoDecoderServiceTest : public testing::Test {
  public:
   OOPVideoDecoderServiceTest()
-      : oop_video_decoder_factory_service_(gpu::GpuFeatureInfo()) {
+      : oop_video_decoder_factory_service_(gpu::GpuFeatureInfo(), nullptr) {
     oop_video_decoder_factory_service_
         .SetVideoDecoderCreationCallbackForTesting(
             video_decoder_creation_cb_.Get());

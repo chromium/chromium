@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_context_for_oopvd_impl.h"
 #include "media/base/format_utils.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
@@ -976,37 +977,64 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     return;
   }
 
-  if (frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
-    VLOGF(2) << "Received a frame with an unexpected storage type";
-    Stop();
-    return;
+  static const bool extract_shared_image =
+      base::FeatureList::IsEnabled(kUseSharedImageInOOPVDProcess);
+  std::vector<base::ScopedFD> duped_fds;
+
+  if (extract_shared_image) {
+    if (frame->storage_type() != VideoFrame::STORAGE_OPAQUE) {
+      VLOGF(2) << "Received a frame with an unexpected storage type";
+      Stop();
+      return;
+    }
+
+    if (!frame->HasSharedImage()) {
+      VLOGF(2) << "Received a frame without shared image";
+      Stop();
+      return;
+    }
+
+    const size_t num_fds = frame->NumDmabufFds();
+    if (num_fds > 0) {
+      VLOGF(2) << "Received a frame with DMA buffer FD's";
+      Stop();
+      return;
+    }
+  } else {
+    if (frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
+      VLOGF(2) << "Received a frame with an unexpected storage type";
+      Stop();
+      return;
+    }
+
+    // The mojo traits guarantee this.
+    CHECK(gfx::Rect(frame->coded_size()).Contains(frame->visible_rect()));
+
+    const size_t num_fds = frame->NumDmabufFds();
+    if (0 == num_fds) {
+      VLOGF(2) << "Received a frame with zero DMA buffer FD's";
+      Stop();
+      return;
+    }
+
+    duped_fds.reserve(num_fds);
+    for (size_t i = 0; i < num_fds; ++i) {
+      if (frame->GetDmabufFd(i) < 0) {
+        VLOGF(2) << "Received at least one invalid FD";
+        Stop();
+        return;
+      }
+      duped_fds.emplace_back(HANDLE_EINTR(dup(frame->GetDmabufFd(i))));
+      if (!duped_fds.back().is_valid()) {
+        VLOGF(2) << "Failed to dup() an FD";
+        Stop();
+        return;
+      }
+    }
   }
 
   // The mojo traits guarantee this.
   CHECK(gfx::Rect(frame->coded_size()).Contains(frame->visible_rect()));
-
-  const size_t num_fds = frame->NumDmabufFds();
-  if (0 == num_fds) {
-    VLOGF(2) << "Received a frame with zero DMA buffer FD's";
-    Stop();
-    return;
-  }
-
-  std::vector<base::ScopedFD> duped_fds;
-  duped_fds.reserve(num_fds);
-  for (size_t i = 0; i < num_fds; ++i) {
-    if (frame->GetDmabufFd(i) < 0) {
-      VLOGF(2) << "Received at least one invalid FD";
-      Stop();
-      return;
-    }
-    duped_fds.emplace_back(HANDLE_EINTR(dup(frame->GetDmabufFd(i))));
-    if (!duped_fds.back().is_valid()) {
-      VLOGF(2) << "Failed to dup() an FD";
-      Stop();
-      return;
-    }
-  }
 
   const base::TimeDelta fake_timestamp = frame->timestamp();
   auto it = fake_timestamp_to_real_timestamp_cache_.Get(fake_timestamp);
@@ -1043,109 +1071,118 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     return;
   }
 
-  // What follows is all the logic necessary to recycle buffers safely.
-  //
-  // Note that the way we track buffers is with the frame's tracking token. In
-  // theory, this should uniquely identify allocated buffers. In practice, we
-  // can't trust what comes from the remote decoder. A malicious decoder could
-  // send us two frames that have the same tracking token, but actually refer to
-  // different dma-bufs. The solution to this is that we assume that the remote
-  // decoder is telling the truth in a sense: if we receive an incoming buffer
-  // with a tracking_token that we already know about (by looking it up in
-  // |received_token_to_decoded_frame_map_|), we will re-use the buffer that we
-  // know about and ignore the incoming one. The goal with the rest of the logic
-  // below is that if this assumption is violated, the worst case is a visually
-  // incorrect output but not a security problem.
-  //
-  // When something like a resolution change happens, we assume that the remote
-  // decoder recreated its pool of buffers. Therefore, in those cases we can
-  // forget about all known frames since we shouldn't see those buffers again.
-  // In order to detect those cases, we replicate the logic from
-  // PlatformVideoFramePool::IsSameFormat_Locked().
-  const VideoPixelFormat format = frame->format();
-  const gfx::Size coded_size = frame->coded_size();
-  const gfx::Rect visible_rect = frame->visible_rect();
-  const gfx::Size natural_size = frame->natural_size();
-  const gfx::ColorSpace color_space = frame->ColorSpace();
-  const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata();
-  const VideoFrameMetadata metadata = metadata_to_propagate;
-  const base::UnguessableToken received_tracking_token =
-      *frame->metadata().tracking_token;
-  if (!received_token_to_decoded_frame_map_.empty()) {
-    // It doesn't matter which frame we pick to calculate the current state. All
-    // of them should yield the same result.
-    const VideoPixelFormat current_format =
-        received_token_to_decoded_frame_map_.cbegin()->second->format();
-    const gfx::Size& current_coded_size =
-        received_token_to_decoded_frame_map_.cbegin()->second->coded_size();
-    const gfx::Size& current_visible_rect_size_from_origin =
-        GetRectSizeFromOrigin(received_token_to_decoded_frame_map_.cbegin()
-                                  ->second->visible_rect());
-    const bool currently_uses_protected =
-        received_token_to_decoded_frame_map_.cbegin()
-            ->second->metadata()
-            .hw_protected;
-
-    if (format != current_format || coded_size != current_coded_size ||
-        GetRectSizeFromOrigin(visible_rect) !=
-            current_visible_rect_size_from_origin ||
-        metadata.hw_protected != currently_uses_protected) {
-      received_token_to_decoded_frame_map_.clear();
-      generated_token_to_decoded_frame_map_.clear();
-    }
-  }
-
-  scoped_refptr<FrameResource> frame_to_wrap;
-  auto decoded_frame_it =
-      received_token_to_decoded_frame_map_.find(received_tracking_token);
-  if (decoded_frame_it != received_token_to_decoded_frame_map_.end()) {
-    frame_to_wrap = decoded_frame_it->second;
-    CHECK_EQ(frame_to_wrap->format(), format);
-    CHECK_EQ(frame_to_wrap->coded_size(), coded_size);
-    CHECK_EQ(GetRectSizeFromOrigin(frame_to_wrap->visible_rect()),
-             GetRectSizeFromOrigin(visible_rect));
-    CHECK_EQ(frame_to_wrap->metadata().hw_protected, metadata.hw_protected);
+  scoped_refptr<FrameResource> wrapped_frame;
+  if (extract_shared_image) {
+    frame->set_timestamp(real_timestamp);
+    frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
+                       weak_this_factory_.GetWeakPtr(), *release_token)));
+    wrapped_frame = VideoFrameResource::Create(std::move(frame));
   } else {
-    scoped_refptr<FrameResource> native_pixmap_frame =
-        CreateDecodedFrameResource(frame->layout(), visible_rect, natural_size,
-                                   std::move(duped_fds), fake_timestamp,
-                                   metadata, color_space, hdr_metadata);
-    if (!native_pixmap_frame) {
+    // What follows is all the logic necessary to recycle buffers safely.
+    //
+    // Note that the way we track buffers is with the frame's tracking token. In
+    // theory, this should uniquely identify allocated buffers. In practice, we
+    // can't trust what comes from the remote decoder. A malicious decoder could
+    // send us two frames that have the same tracking token, but actually refer
+    // to different dma-bufs. The solution to this is that we assume that the
+    // remote decoder is telling the truth in a sense: if we receive an incoming
+    // buffer with a tracking_token that we already know about (by looking it up
+    // in |received_token_to_decoded_frame_map_|), we will reuse the buffer that
+    // we know about and ignore the incoming one. The goal with the rest of the
+    // logic below is that if this assumption is violated, the worst case is a
+    // visually incorrect output but not a security problem.
+    //
+    // When something like a resolution change happens, we assume that the
+    // remote decoder recreated its pool of buffers. Therefore, in those cases
+    // we can forget about all known frames since we shouldn't see those buffers
+    // again. In order to detect those cases, we replicate the logic from
+    // PlatformVideoFramePool::IsSameFormat_Locked().
+    const VideoPixelFormat format = frame->format();
+    const gfx::Size coded_size = frame->coded_size();
+    const gfx::Rect visible_rect = frame->visible_rect();
+    const gfx::Size natural_size = frame->natural_size();
+    const gfx::ColorSpace color_space = frame->ColorSpace();
+    const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata();
+    const VideoFrameMetadata metadata = metadata_to_propagate;
+    const base::UnguessableToken received_tracking_token =
+        *frame->metadata().tracking_token;
+    if (!received_token_to_decoded_frame_map_.empty()) {
+      // It doesn't matter which frame we pick to calculate the current state.
+      // All of them should yield the same result.
+      const VideoPixelFormat current_format =
+          received_token_to_decoded_frame_map_.cbegin()->second->format();
+      const gfx::Size& current_coded_size =
+          received_token_to_decoded_frame_map_.cbegin()->second->coded_size();
+      const gfx::Size& current_visible_rect_size_from_origin =
+          GetRectSizeFromOrigin(received_token_to_decoded_frame_map_.cbegin()
+                                    ->second->visible_rect());
+      const bool currently_uses_protected =
+          received_token_to_decoded_frame_map_.cbegin()
+              ->second->metadata()
+              .hw_protected;
+
+      if (format != current_format || coded_size != current_coded_size ||
+          GetRectSizeFromOrigin(visible_rect) !=
+              current_visible_rect_size_from_origin ||
+          metadata.hw_protected != currently_uses_protected) {
+        received_token_to_decoded_frame_map_.clear();
+        generated_token_to_decoded_frame_map_.clear();
+      }
+    }
+
+    scoped_refptr<FrameResource> frame_to_wrap;
+    auto decoded_frame_it =
+        received_token_to_decoded_frame_map_.find(received_tracking_token);
+    if (decoded_frame_it != received_token_to_decoded_frame_map_.end()) {
+      frame_to_wrap = decoded_frame_it->second;
+      CHECK_EQ(frame_to_wrap->format(), format);
+      CHECK_EQ(frame_to_wrap->coded_size(), coded_size);
+      CHECK_EQ(GetRectSizeFromOrigin(frame_to_wrap->visible_rect()),
+               GetRectSizeFromOrigin(visible_rect));
+      CHECK_EQ(frame_to_wrap->metadata().hw_protected, metadata.hw_protected);
+    } else {
+      scoped_refptr<FrameResource> native_pixmap_frame =
+          CreateDecodedFrameResource(
+              frame->layout(), visible_rect, natural_size, std::move(duped_fds),
+              fake_timestamp, metadata, color_space, hdr_metadata);
+      if (!native_pixmap_frame) {
+        Stop();
+        return;
+      }
+      received_token_to_decoded_frame_map_[received_tracking_token] =
+          native_pixmap_frame;
+      generated_token_to_decoded_frame_map_[native_pixmap_frame
+                                                ->tracking_token()] =
+          native_pixmap_frame.get();
+      frame_to_wrap = std::move(native_pixmap_frame);
+    }
+
+    // If |frame_to_wrap| was cached in |received_token_to_decoded_frame_map_|,
+    // then there is a possibility that |visible_rect| and |natural_size|, which
+    // are computed from |frame| are different than in |frame_to_wrap| and
+    // |frame|. Because of this, CreateWrappingFrame() is called with
+    // |visible_rect| and |natural_size|.
+    wrapped_frame =
+        frame_to_wrap->CreateWrappingFrame(visible_rect, natural_size);
+    if (!wrapped_frame) {
+      VLOGF(2) << "Could not wrap the frame";
       Stop();
       return;
     }
-    received_token_to_decoded_frame_map_[received_tracking_token] =
-        native_pixmap_frame;
-    generated_token_to_decoded_frame_map_[native_pixmap_frame
-                                              ->tracking_token()] =
-        native_pixmap_frame.get();
-    frame_to_wrap = std::move(native_pixmap_frame);
+
+    wrapped_frame->set_timestamp(real_timestamp);
+    wrapped_frame->set_color_space(color_space);
+    wrapped_frame->set_hdr_metadata(hdr_metadata);
+    wrapped_frame->set_metadata(metadata);
+
+    // The destruction observer will be called after the client releases the
+    // video frame. base::BindPostTaskToCurrentDefault() is used to make sure
+    // that the WeakPtr is dereferenced on the correct sequence.
+    wrapped_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
+                       weak_this_factory_.GetWeakPtr(), *release_token)));
   }
-
-  // If |frame_to_wrap| was cached in |received_token_to_decoded_frame_map_|,
-  // then there is a possibility that |visible_rect| and |natural_size|, which
-  // are computed from |frame| are different than in |frame_to_wrap| and
-  // |frame|. Because of this, CreateWrappingFrame() is called with
-  // |visible_rect| and |natural_size|.
-  scoped_refptr<FrameResource> wrapped_frame =
-      frame_to_wrap->CreateWrappingFrame(visible_rect, natural_size);
-  if (!wrapped_frame) {
-    VLOGF(2) << "Could not wrap the frame";
-    Stop();
-    return;
-  }
-
-  wrapped_frame->set_timestamp(real_timestamp);
-  wrapped_frame->set_color_space(color_space);
-  wrapped_frame->set_hdr_metadata(hdr_metadata);
-  wrapped_frame->set_metadata(metadata);
-
-  // The destruction observer will be called after the client releases the
-  // video frame. base::BindPostTaskToCurrentDefault() is used to make sure that
-  // the WeakPtr is dereferenced on the correct sequence.
-  wrapped_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
-                     weak_this_factory_.GetWeakPtr(), *release_token)));
 
   can_read_without_stalling_ = can_read_without_stalling;
 
