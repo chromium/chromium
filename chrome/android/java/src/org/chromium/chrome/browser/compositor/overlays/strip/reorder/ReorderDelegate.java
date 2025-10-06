@@ -532,8 +532,14 @@ public class ReorderDelegate {
             StripLayoutView reorderingView,
             boolean toLeft) {
         if (reorderingView instanceof StripLayoutTab) {
-            mTabStrategy.reorderViewInDirection(
-                    tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+            if (mModel.isTabMultiSelected(((StripLayoutTab) reorderingView).getTabId())
+                    && mModel.getMultiSelectedTabsCount() > 1) {
+                mMultiTabStrategy.reorderViewInDirection(
+                        tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+            } else {
+                mTabStrategy.reorderViewInDirection(
+                        tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+            }
         } else if (reorderingView instanceof StripLayoutGroupTitle) {
             mGroupStrategy.reorderViewInDirection(
                     tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
