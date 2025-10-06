@@ -162,10 +162,9 @@ void CookieSettings::set_content_settings(
   content_settings_[type] =
       content_settings::HostIndexedContentSettings::Create(settings);
 
-  if (type == ContentSettingsType::COOKIES ||
-      type == ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL) {
-    // Cookies and the top-level origin trial for 3PCD use allow-by-default
-    // settings, so ensure their default is set appropriately.
+  if (type == ContentSettingsType::COOKIES) {
+    // Cookies use allow-by-default settings, so ensure the default is set
+    // appropriately.
     if (settings.empty() ||
         settings.back().primary_pattern != ContentSettingsPattern::Wildcard() ||
         settings.back().secondary_pattern !=

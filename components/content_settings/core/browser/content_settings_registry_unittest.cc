@@ -153,15 +153,6 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
     // they should be marked as INHERIT_IN_INCOGNITO.
     if (info->IsSettingValid(CONTENT_SETTING_ALLOW) &&
         info->GetInitialDefaultSetting() == CONTENT_SETTING_ALLOW) {
-      // Top-level 3pcd origin trial content settings are a special case that
-      // should not be inherited in incognito, despite being ALLOW-by-default.
-      if (info->website_settings_info()->type() ==
-          ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL) {
-        EXPECT_EQ(info->incognito_behavior(),
-                  ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
-        continue;
-      }
-
       EXPECT_EQ(info->incognito_behavior(),
                 ContentSettingsInfo::INHERIT_IN_INCOGNITO);
       continue;

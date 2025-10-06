@@ -1366,8 +1366,8 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritWebsiteSetting) {
 
 TEST_F(HostContentSettingsMapTest, IncognitoDontInheritContentSetting) {
   // Content settings marked DONT_INHERIT_IN_INCOGNITO in
-  // ContentSettingsRegistry (e.g. top-level scoped 3pcd, which is a special
-  // case) don't inherit any values from from regular to incognito.
+  // ContentSettingsRegistry (e.g. Storage Access Header origin trial, which is
+  // a special case) don't inherit any values from from regular to incognito.
   TestingProfile profile;
   Profile* otr_profile =
       profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -1378,25 +1378,29 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritContentSetting) {
 
   GURL host("https://example.com/");
 
-  // top-level scoped 3pcd defaults to ALLOW.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(
-                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            otr_map->GetContentSetting(
-                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
+  // Storage Access Header origin trial content settings defaults to BLOCK.
+  EXPECT_EQ(
+      CONTENT_SETTING_BLOCK,
+      map->GetContentSetting(
+          host, host, ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL));
+  EXPECT_EQ(
+      CONTENT_SETTING_BLOCK,
+      otr_map->GetContentSetting(
+          host, host, ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL));
 
   map->SetContentSettingDefaultScope(
-      host, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL,
-      CONTENT_SETTING_BLOCK);
+      host, host, ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
+      CONTENT_SETTING_ALLOW);
 
   // The setting is not inherited by |otr_map|.
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            map->GetContentSetting(
-                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            otr_map->GetContentSetting(
-                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      map->GetContentSetting(
+          host, host, ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL));
+  EXPECT_EQ(
+      CONTENT_SETTING_BLOCK,
+      otr_map->GetContentSetting(
+          host, host, ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL));
 }
 
 TEST_F(HostContentSettingsMapTest, PrefExceptionsOperation) {
