@@ -4795,7 +4795,7 @@
 <translation id="4276856098224910511">לא ניתן להתקין. עדכון מערכת ההפעלה בהמתנה. צריך להחיל עדכונים של מערכת ההפעלה שנמצאים בהמתנה, להפעיל מחדש ולנסות שוב. קוד השגיאה הוא <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">‏מקור להגדרות XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{ההרשאות הוסרו מאתר אחד}one{ההרשאות הוסרו מ-{NUM_SITES} אתרים}two{ההרשאות הוסרו מ-{NUM_SITES} אתרים}other{ההרשאות הוסרו מ-{NUM_SITES} אתרים}}</translation>
-<translation id="4278390842282768270">מותר</translation>
+<translation id="4278390842282768270">יש אישור</translation>
 <translation id="4278498748067682896">‏השימוש בשדרוג של הקיוסק והשילוט מאפשר למכשיר לפעול רק במצב קיוסק או שילוט. אם רוצים לאפשר למשתמשים להיכנס לחשבון במכשיר, צריך לחזור אחורה ולבצע רישום באמצעות שדרוג ל-Chrome Enterprise.</translation>
 <translation id="4278779213160967034">התהליך הזה עשוי להימשך כמה דקות. הקבצים בתהליך הורדה.</translation>
 <translation id="4279129444466079448">‏ניתן להתקין עד <ph name="PROFILE_LIMIT" /> פרופילים של eSIM במכשיר הזה. כדי להוסיף פרופיל נוסף, קודם צריך להסיר פרופיל קיים.</translation>
@@ -10895,7 +10895,7 @@
 <translation id="8561565784790166472">יש להמשיך בזהירות</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8562115322675481339">יצירה של קבוצת כרטיסיות חדשה</translation>
-<translation id="8563043098557365232">מותרת רק לשירותי מערכת</translation>
+<translation id="8563043098557365232">יש אישור רק לשירותי מערכת</translation>
 <translation id="8564220755011656606">אין גישה למיקרופון</translation>
 <translation id="8565021320663436446">להסיר את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8565650234829130278">בוצע ניסיון לשדרג יישום לאחור.</translation>
