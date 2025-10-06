@@ -792,8 +792,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       "Browser.setPermission",
       base::Value::Dict()
           .Set("setting", "granted")
-          .Set("origin", kOriginB)
-          .Set("embeddingOrigin", kOriginA)
+          .Set("origin", kOriginA)
+          .Set("embeddedOrigin", kOriginB)
           .Set("permission",
                base::Value::Dict().Set("name", "storage-access")));
   test_storage_access(/*expected_for_frame=*/true,

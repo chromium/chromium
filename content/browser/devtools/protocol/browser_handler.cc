@@ -390,7 +390,7 @@ void BrowserHandler::SetPermission(
     std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
     const protocol::Browser::PermissionSetting& setting,
     std::optional<std::string> origin,
-    std::optional<std::string> embedding_origin,
+    std::optional<std::string> embedded_origin,
     std::optional<std::string> browser_context_id,
     std::unique_ptr<protocol::Browser::Backend::SetPermissionCallback>
         callback) {
@@ -420,25 +420,21 @@ void BrowserHandler::SetPermission(
   PermissionControllerImpl* permission_controller =
       PermissionControllerImpl::FromBrowserContext(browser_context);
 
-  std::optional<url::Origin> overridden_requesting_origin;
   std::optional<url::Origin> overridden_embedding_origin;
+  std::optional<url::Origin> overridden_requesting_origin;
   if (origin.has_value()) {
-    ASSIGN_OR_RETURN(overridden_requesting_origin, ParseOriginString(origin),
-                     [&callback](Response response) {
-                       callback->sendFailure(response);
-                       return;
-                     });
+    ASSIGN_OR_RETURN(
+        overridden_embedding_origin, ParseOriginString(origin),
+        [&callback](Response response) { callback->sendFailure(response); });
 
-    // Only consider the embedding origin if there's a requesting origin. Use
-    // the requesting origin as the embedding origin, if one is not provided.
-    ASSIGN_OR_RETURN(overridden_embedding_origin,
-                     ParseOriginString(embedding_origin),
-                     [&callback](Response response) {
-                       callback->sendFailure(response);
-                       return;
-                     });
-    if (!overridden_embedding_origin) {
-      overridden_embedding_origin = overridden_requesting_origin;
+    // Only consider `embedded_origin` if `origin` is valid and non-nullopt. Use
+    // `origin` as `overridden_requesting_origin`, if `embedded_origin` is
+    // nullopt.
+    ASSIGN_OR_RETURN(
+        overridden_requesting_origin, ParseOriginString(embedded_origin),
+        [&callback](Response response) { callback->sendFailure(response); });
+    if (!overridden_requesting_origin) {
+      overridden_requesting_origin = overridden_embedding_origin;
     }
   }
 

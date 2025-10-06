@@ -68,7 +68,7 @@ class BrowserHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
       const protocol::Browser::PermissionSetting& setting,
       std::optional<std::string> origin,
-      std::optional<std::string> embedding_origin,
+      std::optional<std::string> embedded_origin,
       std::optional<std::string> browser_context_id,
       std::unique_ptr<protocol::Browser::Backend::SetPermissionCallback>
           callback) override;

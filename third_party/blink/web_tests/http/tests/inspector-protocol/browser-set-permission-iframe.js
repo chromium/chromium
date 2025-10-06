@@ -19,7 +19,7 @@
   // Grant and query the storage access permission.
   await queryPermission(iframeSession, storage_access_descriptor, 'prompt');
   await setPermission(
-      storage_access_descriptor, 'granted', requestingUrl, embeddingUrl);
+      storage_access_descriptor, 'granted', embeddingUrl, requestingUrl);
   await queryPermission(iframeSession, storage_access_descriptor, 'granted');
 
   // Navigate to a new embedding url.
@@ -44,17 +44,17 @@
   // message.
   await setPermission(storage_access_descriptor, 'granted', 'data:text/html,');
   await setPermission(
-      storage_access_descriptor, 'granted', requestingUrl, 'data:text/html,');
+      storage_access_descriptor, 'granted', 'data:text/html,', requestingUrl);
 
   testRunner.completeTest();
 
-  async function setPermission(permission, setting, origin, embeddingOrigin) {
+  async function setPermission(permission, setting, origin, embeddedOrigin) {
     const params = {permission, setting};
     if (origin) {
       params.origin = origin;
     }
-    if (embeddingOrigin) {
-      params.embeddingOrigin = embeddingOrigin;
+    if (embeddedOrigin) {
+      params.embeddedOrigin = embeddedOrigin;
     }
     const response = await dp.Browser.setPermission(params);
     if (response.error) {
