@@ -18,7 +18,6 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
-#include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -78,6 +77,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #else
+#include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -135,6 +135,7 @@ class MockAutofillAccessibilityHelper : public AutofillAccessibilityHelper {
 };
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
 class MockAutofillFieldPromoController : public AutofillFieldPromoController {
  public:
   ~MockAutofillFieldPromoController() override = default;
@@ -143,6 +144,7 @@ class MockAutofillFieldPromoController : public AutofillFieldPromoController {
   MOCK_METHOD(bool, IsMaybeShowing, (), (const override));
   MOCK_METHOD(const base::Feature&, GetFeaturePromo, (), (const override));
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This test class is needed to make the constructor public.
 class TestChromeAutofillClient : public ChromeAutofillClient {
@@ -178,6 +180,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 #endif
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   void SetUpIphForTesting(const base::Feature& feature_promo) {
     auto autofill_field_promo_controller =
         std::make_unique<MockAutofillFieldPromoController>();
@@ -189,10 +192,13 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     client()->SetAutofillFieldPromoTesting(
         std::move(autofill_field_promo_controller));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void TearDown() override {
     // Avoid that the raw pointer becomes dangling.
+#if !BUILDFLAG(IS_ANDROID)
     autofill_field_promo_controller_ = nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID)
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -205,9 +211,11 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     return ContentAutofillDriver::GetForRenderFrameHost(rfh);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   MockAutofillFieldPromoController* autofill_field_promo_controller() {
     return autofill_field_promo_controller_;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   // Helper function to set up mock accessibility helper for Android tests.
@@ -261,7 +269,9 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
       {.disable_server_communication = true}};
   base::test::ScopedFeatureList scoped_feature_list_{
       plus_addresses::features::kPlusAddressesEnabled};
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockAutofillFieldPromoController> autofill_field_promo_controller_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MockAutofillAccessibilityHelper> mock_accessibility_helper_;
 #endif
@@ -662,6 +672,7 @@ TEST_F(ChromeAutofillClientTest,
       /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
   SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
 
@@ -714,6 +725,7 @@ TEST_F(ChromeAutofillClientTest,
 
   testing::Mock::VerifyAndClearExpectations(autofill_field_promo_controller());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
  public:

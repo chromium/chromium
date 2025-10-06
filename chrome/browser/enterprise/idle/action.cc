@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

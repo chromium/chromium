@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -19,7 +20,10 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/views/bubble/bubble_border.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace permissions {
 class PermissionDecisionAutoBlockerBase;

@@ -16,12 +16,12 @@
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/types/pass_key.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager_uma_helper.h"
+#include "ui/views/bubble/bubble_border.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {

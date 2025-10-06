@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
@@ -45,6 +44,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
+#else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace optimization_guide {
@@ -248,10 +249,12 @@ class ChromeAutofillClient : public ContentAutofillClient,
           keep_popup_open_for_testing);
     }
   }
+#if !BUILDFLAG(IS_ANDROID)
   void SetAutofillFieldPromoTesting(
       std::unique_ptr<AutofillFieldPromoController> test_controller) {
     autofill_field_promo_controller_ = std::move(test_controller);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
   void SetAutofillSnackbarControllerImplForTesting(
       std::unique_ptr<AutofillSnackbarControllerImpl>
@@ -323,9 +326,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
   std::unique_ptr<AutofillSnackbarControllerImpl>
       autofill_snackbar_controller_impl_;
-#endif
+#else   // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;
+#endif  // BUILDFLAG(IS_ANDROID)
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
   const AutofillAblationStudy ablation_study_;
