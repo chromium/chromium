@@ -43,6 +43,7 @@ using PaymentsRpcCardType = PaymentsAutofillClient::PaymentsRpcCardType;
 using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
 using UnmaskCardReason = payments::PaymentsAutofillClient::UnmaskCardReason;
 
+namespace {
 // The consumer of the full card request API.
 class MockResultDelegate : public FullCardRequest::ResultDelegate {
  public:
@@ -102,6 +103,7 @@ class MockPaymentsDataManager : public TestPaymentsDataManager {
               (const CreditCard& credit_card),
               (override));
 };
+}  // namespace
 
 // TODO(crbug.com/41412501): Simplify this test setup.
 // The test fixture for full card request.
