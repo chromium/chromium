@@ -2118,13 +2118,9 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalWithSubpixelPositionIsRounded) {
   }
 }
 
-// Broken on Apple platforms: https://crbug.com/1194323
-#if BUILDFLAG(IS_APPLE)
-#define MAYBE_EmojiPercentage DISABLED_EmojiPercentage
-#else
-#define MAYBE_EmojiPercentage EmojiPercentage
-#endif
-TEST_F(HarfBuzzShaperTest, MAYBE_EmojiPercentage) {
+// As the comment indicate, this test is not valid when Noto Color Emoji from
+// the third_party directory is updated to Unicode 13 or newer.
+TEST_F(HarfBuzzShaperTest, DISABLED_EmojiPercentage) {
 #if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetInstance()->version() >=
       base::win::Version::WIN11) {
