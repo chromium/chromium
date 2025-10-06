@@ -240,6 +240,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
             case SettingsAccessPoint.TAILORED_SECURITY:
                 metricsSuffix = "TailoredSecurity";
                 break;
+            case SettingsAccessPoint.TIPS_NOTIFICATIONS_PROMO:
+                metricsSuffix = "TipsNotificationsPromo";
+                break;
             default:
                 assert false : "Should not be reached.";
                 metricsSuffix = "";

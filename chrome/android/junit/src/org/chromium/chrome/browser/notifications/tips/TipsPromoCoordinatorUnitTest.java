@@ -25,12 +25,15 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link TipsPromoCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,8 +66,11 @@ public class TipsPromoCoordinatorUnitTest {
 
     @SmallTest
     @Test
-    public void testShowBottomSheet() {
-        mTipsPromoCoordinator.showBottomSheet(TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
+    public void testShowBottomSheet() throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mTipsPromoCoordinator.showBottomSheet(
+                TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING, callbackHelper::notifyCalled);
+
         assertEquals(
                 ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
@@ -73,6 +79,10 @@ public class TipsPromoCoordinatorUnitTest {
                 ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        mView.findViewById(R.id.tips_promo_settings_button).performClick();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        callbackHelper.waitForOnly();
     }
 
     @Test

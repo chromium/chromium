@@ -36,6 +36,14 @@ public class TipsPromoViewBinder {
             ButtonCompat detailsButton = view.findViewById(R.id.tips_promo_details_button);
             detailsButton.setOnClickListener(
                     model.get(TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER));
+        } else if (key == TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER) {
+            ButtonCompat settingsButton = view.findViewById(R.id.tips_promo_settings_button);
+            settingsButton.setOnClickListener(
+                    model.get(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER));
+            ButtonCompat detailsSettingsButton =
+                    view.findViewById(R.id.tips_promo_details_settings_button);
+            detailsSettingsButton.setOnClickListener(
+                    model.get(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER));
         }
     }
 }

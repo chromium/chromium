@@ -3027,6 +3027,9 @@ useful for Chirp alerts (go/crca-alerts). -->
     <variant name="TailoredSecurity"
         summary="The user enters the Safe Browsing settings page from the UX
                  shown due to a change in the Tailored Security setting"/>
+    <variant name="TipsNotificationsPromo"
+        summary="The user enters the Safe Browsing settings page from the UX
+                 shown due to interacting with the tips notifications promo."/>
   </token>
 </histogram>
 

@@ -97,4 +97,23 @@ public class TipsPromoViewBinderUnitTest {
         onClickListener.performClick();
         callbackHelper.waitForOnly();
     }
+
+    @SmallTest
+    @Test
+    public void testSettingsButtonClickListener() throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        OnClickListener clickListener = (view) -> callbackHelper.notifyCalled();
+
+        mModel.set(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER, clickListener);
+        View settingsOnClickListener = mView.findViewById(R.id.tips_promo_settings_button);
+        assertNotNull(settingsOnClickListener);
+        settingsOnClickListener.performClick();
+        callbackHelper.waitForNext();
+
+        View settingsDetailsOnClickListener =
+                mView.findViewById(R.id.tips_promo_details_settings_button);
+        assertNotNull(settingsDetailsOnClickListener);
+        settingsDetailsOnClickListener.performClick();
+        callbackHelper.waitForNext();
+    }
 }

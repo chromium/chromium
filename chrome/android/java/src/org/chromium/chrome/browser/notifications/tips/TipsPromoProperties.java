@@ -59,8 +59,15 @@ public class TipsPromoProperties {
     public static final WritableObjectPropertyKey<OnClickListener> DETAILS_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** Click listener for the settings button. */
+    public static final WritableObjectPropertyKey<OnClickListener> SETTINGS_BUTTON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = {
-        FEATURE_TIP_PROMO_DATA, CURRENT_SCREEN, DETAILS_BUTTON_CLICK_LISTENER
+        FEATURE_TIP_PROMO_DATA,
+        CURRENT_SCREEN,
+        DETAILS_BUTTON_CLICK_LISTENER,
+        SETTINGS_BUTTON_CLICK_LISTENER
     };
 
     /**

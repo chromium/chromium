@@ -79,8 +79,11 @@ public class TipsPromoCoordinator {
      * Shows the promo. The caller is responsible for all eligibility checks.
      *
      * @param featureType The {@link TipsNotificationsFeatureType} to show.
+     * @param featureActionRunnable The action to run for the associated feature type on positive
+     *     (settings) button click.
      */
-    public void showBottomSheet(@TipsNotificationsFeatureType int featureType) {
+    public void showBottomSheet(
+            @TipsNotificationsFeatureType int featureType, Runnable featureActionRunnable) {
         FeatureTipPromoData data = TipsUtils.getFeatureTipPromoDataForType(mContext, featureType);
         mPropertyModel.set(TipsPromoProperties.FEATURE_TIP_PROMO_DATA, data);
         mPropertyModel.set(TipsPromoProperties.CURRENT_SCREEN, ScreenType.MAIN_SCREEN);
@@ -89,6 +92,12 @@ public class TipsPromoCoordinator {
                 (view) -> {
                     mPropertyModel.set(
                             TipsPromoProperties.CURRENT_SCREEN, ScreenType.DETAIL_SCREEN);
+                });
+        mPropertyModel.set(
+                TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER,
+                (view) -> {
+                    mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
+                    featureActionRunnable.run();
                 });
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
     }
