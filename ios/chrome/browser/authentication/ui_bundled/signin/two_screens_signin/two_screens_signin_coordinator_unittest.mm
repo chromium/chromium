@@ -182,9 +182,10 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     return window_.rootViewController.presentedViewController;
   }
 
-  // Expects no preferences or metrics related to upgrade promo since the access
-  // point is not `kSigninPromo`.
-  void ExpectNoUpgradePromoHistogram(base::HistogramTester* histogram_tester) {
+  // Expects no preferences or metrics related to fullscreen sign-in promo since
+  // the access point is not `kSigninPromo`.
+  void ExpectNoFullscreenSigninPromoHistogram(
+      base::HistogramTester* histogram_tester) {
     histogram_tester->ExpectTotalCount(kUMASSORecallAccountsAvailable, 0);
     histogram_tester->ExpectTotalCount(kUMASSORecallPromoSeenCount, 0);
     histogram_tester->ExpectTotalCount(kUMASSORecallPromoAction, 0);
@@ -267,7 +268,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   // Expect completion block not to be run when the stop comes from an external
   // caller.
   EXPECT_FALSE(completion_block_done_);
-  ExpectNoUpgradePromoHistogram(&histogram_tester);
+  ExpectNoFullscreenSigninPromoHistogram(&histogram_tester);
   EXPECT_FALSE(scene_state_.signinInProgress);
 }
 
@@ -289,7 +290,7 @@ TEST_F(TwoScreensSigninCoordinatorTest,
   // calling -stop. Since the user has already signed in and history sync
   // opt-in, the coordinator will call the completion block.
   EXPECT_TRUE(completion_block_done_);
-  ExpectNoUpgradePromoHistogram(&histogram_tester);
+  ExpectNoFullscreenSigninPromoHistogram(&histogram_tester);
   EXPECT_FALSE(scene_state_.signinInProgress);
 }
 
@@ -306,7 +307,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
   // caller.
   EXPECT_FALSE(completion_block_done_);
 
-  ExpectNoUpgradePromoHistogram(&histogram_tester);
+  ExpectNoFullscreenSigninPromoHistogram(&histogram_tester);
   EXPECT_FALSE(scene_state_.signinInProgress);
 }
 
@@ -325,7 +326,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   };
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::Seconds(1), true, completion_condition));
-  ExpectNoUpgradePromoHistogram(&histogram_tester);
+  ExpectNoFullscreenSigninPromoHistogram(&histogram_tester);
   EXPECT_FALSE(scene_state_.signinInProgress);
 }
 
@@ -351,6 +352,6 @@ TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
 
-  ExpectNoUpgradePromoHistogram(&histogram_tester);
+  ExpectNoFullscreenSigninPromoHistogram(&histogram_tester);
   EXPECT_FALSE(scene_state_.signinInProgress);
 }

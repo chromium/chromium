@@ -30,8 +30,8 @@
 // Shows the default browser promo after the user tapped Remind Me Later.
 - (void)showDefaultBrowserPromoAfterRemindMeLater;
 
-// Shows the sign-in fullscreen promo.
-- (void)showSigninPromo;
+// Shows the fullscreen sign-in promo.
+- (void)showFullscreenSigninPromo;
 
 // Shows the Welcome Back promo.
 - (void)showWelcomeBackPromo;

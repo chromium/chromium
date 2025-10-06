@@ -124,7 +124,7 @@ TEST_F(FullscreenSigninPromoSceneAgentTest,
   FakeSystemIdentityManager::FromSystemIdentityManager(
       GetApplicationContext()->GetSystemIdentityManager())
       ->AddIdentity(fake_identity1);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
 
   EXPECT_CALL(*promos_manager_.get(),
@@ -155,7 +155,7 @@ TEST_F(FullscreenSigninPromoSceneAgentTest,
   FakeSystemIdentityManager::FromSystemIdentityManager(
       GetApplicationContext()->GetSystemIdentityManager())
       ->AddIdentity(fake_identity1);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(
@@ -194,7 +194,7 @@ TEST_F(FullscreenSigninPromoSceneAgentTest,
   FakeSystemIdentityManager::FromSystemIdentityManager(
       GetApplicationContext()->GetSystemIdentityManager())
       ->AddIdentity(fake_identity1);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForContinuousDisplay(

@@ -56,8 +56,8 @@ enum class PostCrashAction {
 // Container for startup information.
 @property(nonatomic, weak) id<StartupInformation> startupInformation;
 
-// YES if the sign-in upgrade promo has been presented to the user, once.
-@property(nonatomic) BOOL signinUpgradePromoPresentedOnce;
+// YES if the fullscreen sign-in promo has been presented to the user, once.
+@property(nonatomic) BOOL fullscreenSigninPromoPresentedOnce;
 
 // Indicates what action, if any, is taken after a crash (stash tabs, show NTP,
 // show safe mode).

@@ -3178,10 +3178,10 @@ const char kChromeAppStoreUrl[] =
   [self.defaultBrowserGenericPromoCoordinator start];
 }
 
-- (void)showSigninPromo {
+- (void)showFullscreenSigninPromo {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      showSigninUpgradePromoWithCompletion:^(SigninCoordinatorResult result,
-                                             id<SystemIdentity>) {
+      showFullscreenSigninPromoWithCompletion:^(SigninCoordinatorResult result,
+                                                id<SystemIdentity>) {
         [self.promosManagerCoordinator promoWasDismissed];
       }];
 }

@@ -67,7 +67,7 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "upgrade_signin_promo_egtest.mm" ]
+  sources = [ "fullscreen_signin_promo_egtest.mm" ]
   deps = [
     "//base",
     "//base/test:test_support",

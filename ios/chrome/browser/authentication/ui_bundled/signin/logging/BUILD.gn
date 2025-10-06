@@ -8,9 +8,9 @@ source_set("logging") {
   sources = [
     "first_run_signin_logger.h",
     "first_run_signin_logger.mm",
+    "fullscreen_signin_promo_logger.h",
+    "fullscreen_signin_promo_logger.mm",
     "signin_logger.h",
-    "upgrade_signin_logger.h",
-    "upgrade_signin_logger.mm",
     "user_signin_logger.h",
     "user_signin_logger.mm",
   ]

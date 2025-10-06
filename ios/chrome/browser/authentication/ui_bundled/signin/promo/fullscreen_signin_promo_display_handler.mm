@@ -13,7 +13,7 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  [self.handler showSigninPromo];
+  [self.handler showFullscreenSigninPromo];
 }
 
 #pragma mark - PromoProtocol

@@ -145,7 +145,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [self expectUpgradePromoMetricsAndPreferences];
+  [self expectFullscreenSigninPromoMetricsAndPreferences];
 }
 
 - (void)testHistoryOptInPromoNotShownWhenAlreadyGranted {
@@ -186,7 +186,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [self expectUpgradePromoMetricsAndPreferences];
+  [self expectFullscreenSigninPromoMetricsAndPreferences];
 }
 
 // Tests sign-in promo behavior in landscape. It should appears if and only if
@@ -211,7 +211,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 #pragma mark - Helpers
 
-- (void)expectUpgradePromoMetricsAndPreferences {
+- (void)expectFullscreenSigninPromoMetricsAndPreferences {
   NSError* error = [MetricsAppInterface
       expectUniqueSampleWithCount:1
                         forBucket:1

@@ -65,10 +65,10 @@
 namespace {
 
 // Maximum delay to wait for fetching the account capabilities before showing
-// the sign-in upgrade promo. If fetching the account capabilities takes more
+// the fullscreen sign-in promo. If fetching the account capabilities takes more
 // than the delay, then the promo is suppressed - it may be shown on the next
 // start-up.
-constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
+constexpr base::TimeDelta kShowFullscreenSigninPromoMaxDelay =
     base::Milliseconds(200);
 
 // The duration between two signin upgrade promo trigger is randomly chosen
@@ -183,7 +183,7 @@ base::TimeDelta GetWaitThresholdForCapabilities() {
       return base::Milliseconds(commandLineDelay);
     }
   }
-  return kShowSigninUpgradePromoMaxDelay;
+  return kShowFullscreenSigninPromoMaxDelay;
 }
 
 bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
@@ -362,7 +362,7 @@ bool ShouldPresentWebSignin(ProfileIOS* profile) {
   return true;
 }
 
-void RecordUpgradePromoSigninStarted(
+void RecordFullscreenSigninPromoStarted(
     signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version) {

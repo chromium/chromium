@@ -183,14 +183,14 @@ using signin_metrics::PromoAction;
 }
 
 + (SigninCoordinator*)
-    upgradeSigninPromoCoordinatorWithBaseViewController:
+    fullscreenSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                browser:(Browser*)browser
-                                           contextStyle:
-                                               (SigninContextStyle)contextStyle
-                      changeProfileContinuationProvider:
-                          (const ChangeProfileContinuationProvider&)
-                              changeProfileContinuationProvider {
+                                                   browser:(Browser*)browser
+                                              contextStyle:(SigninContextStyle)
+                                                               contextStyle
+                         changeProfileContinuationProvider:
+                             (const ChangeProfileContinuationProvider&)
+                                 changeProfileContinuationProvider {
   CHECK(changeProfileContinuationProvider);
   AccessPoint accessPoint = AccessPoint::kFullscreenSigninPromo;
   PromoAction promoAction = PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;

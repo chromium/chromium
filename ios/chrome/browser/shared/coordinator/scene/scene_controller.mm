@@ -1252,7 +1252,7 @@ void OnListFamilyMembersResponse(
   if (level == SceneActivationLevelForegroundActive &&
       profileInitStage == ProfileInitStage::kFinal) {
     if (!IsFullscreenSigninPromoManagerMigrationEnabled()) {
-      [self tryPresentSigninUpgradePromo];
+      [self tryPresentFullscreenSigninPromo];
     }
 
     if ([self handleExternalIntents]) {
@@ -1731,8 +1731,8 @@ void OnListFamilyMembersResponse(
   });
 }
 
-// Returns YES if the sign-in upgrade promo should be presented.
-- (BOOL)shouldPresentSigninUpgradePromo {
+// Returns YES if the fullscreen sign-in promo should be presented.
+- (BOOL)shouldPresentFullscreenSigninPromo {
   if (![self isTabAvailableToPresentViewController]) {
     return NO;
   }
@@ -1753,22 +1753,24 @@ void OnListFamilyMembersResponse(
     return NO;
   }
   // Don't show the promo if already presented.
-  if (self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce) {
+  if (self.sceneState.profileState.appState
+          .fullscreenSigninPromoPresentedOnce) {
     return NO;
   }
   return YES;
 }
 
-// Presents the sign-in upgrade promo.
-- (void)tryPresentSigninUpgradePromo {
+// Presents the fullscreen sign-in  promo.
+- (void)tryPresentFullscreenSigninPromo {
   // It is possible during a slow asynchronous call that the user changes their
   // state so as to no longer be eligible for sign-in promos. Return early in
   // this case.
-  if (![self shouldPresentSigninUpgradePromo]) {
+  if (![self shouldPresentFullscreenSigninPromo]) {
     return;
   }
-  self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce = YES;
-  [self showSigninUpgradePromoWithCompletion:nil];
+  self.sceneState.profileState.appState.fullscreenSigninPromoPresentedOnce =
+      YES;
+  [self showFullscreenSigninPromoWithCompletion:nil];
 }
 
 - (BOOL)canHandleIntents {
@@ -1877,7 +1879,7 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - ApplicationCommands
 
-- (void)showSigninUpgradePromoWithCompletion:
+- (void)showFullscreenSigninPromoWithCompletion:
     (SigninCoordinatorCompletionCallback)dismissalCompletion {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
@@ -1885,13 +1887,13 @@ void OnListFamilyMembersResponse(
   Browser* browser = self.mainInterface.browser;
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
   self.signinCoordinator = [SigninCoordinator
-      upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
-                                                              .viewController
-                                                  browser:browser
-                                             contextStyle:SigninContextStyle::
-                                                              kDefault
-                        changeProfileContinuationProvider:
-                            DoNothingContinuationProvider()];
+      fullscreenSigninPromoCoordinatorWithBaseViewController:self.mainInterface
+                                                                 .viewController
+                                                     browser:browser
+                                                contextStyle:
+                                                    SigninContextStyle::kDefault
+                           changeProfileContinuationProvider:
+                               DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:dismissalCompletion];
 }
 

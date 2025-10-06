@@ -46,7 +46,7 @@
 - (void)showOmniboxPositionChoicePromo {
 }
 
-- (void)showSigninPromo {
+- (void)showFullscreenSigninPromo {
 }
 
 - (void)showWelcomeBackPromo {

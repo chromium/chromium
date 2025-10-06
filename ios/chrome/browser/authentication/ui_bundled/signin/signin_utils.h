@@ -101,9 +101,6 @@ class ProfileSignoutRequest {
   bool run_has_been_called_ = false;
 };
 
-// Returns the maximum allowed waiting time for the Account Capabilities API.
-base::TimeDelta GetWaitThresholdForCapabilities();
-
 // Returns true if this user sign-in upgrade should be shown for `profile`.
 bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
                                     const base::Version& current_version);
@@ -112,13 +109,13 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
 // actions is recorded to track why the sign-in dialog was not presented.
 bool ShouldPresentWebSignin(ProfileIOS* profile);
 
-// This method should be called when sign-in starts from the upgrade promo.
-// It records in user defaults:
+// This method should be called when sign-in starts from the fullscreen signin
+// promo. It records in user defaults:
 //   + the Chromium current version.
 //   + increases the sign-in promo display count.
 //   + Gaia ids list.
 // Separated out into a discrete function to allow overriding when testing.
-void RecordUpgradePromoSigninStarted(
+void RecordFullscreenSigninPromoStarted(
     signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version);

@@ -158,7 +158,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayNextShowTimeNotReached) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
 
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
 
   EXPECT_FALSE(
@@ -177,7 +177,7 @@ TEST_F(SigninUtilsTest, TestWillDisplayNextShowTimeReached) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
 
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   base::Time next_show_time =
       GetLocalState()->GetTime(prefs::kNextSSORecallTime);
@@ -196,7 +196,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplaySameVersion) {
   FakeSystemIdentity* fake_identity2 = [FakeSystemIdentity fakeIdentity2];
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_0));
@@ -211,7 +211,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMinorVersion) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_1_1("1.1");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_1));
@@ -226,7 +226,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayTwoMinorVersions) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_1_2("1.2");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_2));
@@ -241,7 +241,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMajorVersion) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_2_0));
@@ -256,7 +256,7 @@ TEST_F(SigninUtilsTest, TestWillDisplayTwoMajorVersions) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_TRUE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
@@ -280,9 +280,9 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnlyLegacy) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_3_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
@@ -317,9 +317,9 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnly) {
                   feature_engagement::kIPHiOSPromoSigninFullscreenFeature)))
       .WillRepeatedly(testing::Return(event_list));
 
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_3_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
@@ -335,9 +335,9 @@ TEST_F(SigninUtilsTest, TestWillShowForNewAccountAdded) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_3_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
@@ -363,9 +363,9 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemovedLegacy) {
   const base::Version version_5_0("5.0");
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_3_0);
   fake_system_identity_manager()->ForgetIdentity(fake_identity,
                                                  base::DoNothing());
@@ -386,9 +386,9 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
   const base::Version version_5_0("5.0");
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_3_0);
   fake_system_identity_manager()->ForgetIdentity(fake_identity,
                                                  base::DoNothing());
@@ -422,9 +422,9 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_4_0("4.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_3_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
@@ -441,7 +441,7 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
 TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
@@ -455,7 +455,7 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfFirstRunAfterPostRestore) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(switches::kFullscreenSignInPromoUseDate);
   const base::Version version_1_0("1.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   task_environment_.FastForwardBy(base::Days(100));
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
@@ -476,7 +476,7 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(switches::kFullscreenSignInPromoUseDate);
   const base::Version version_1_0("1.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   task_environment_.FastForwardBy(base::Days(100));
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
@@ -500,7 +500,7 @@ TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
                                  signin_metrics::AccessPoint::kUnknown);
 
   const base::Version version_1_0("1.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   // Using task_environment_.FastForwardBy() causes this test to crash due to
   // sync internal logic.
@@ -522,7 +522,7 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
   authentication_service->SignIn(identity,
                                  signin_metrics::AccessPoint::kUnknown);
   const base::Version version_1_0("1.0");
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
   // Using task_environment_.FastForwardBy() causes this test to crash due to
   // sync internal logic.

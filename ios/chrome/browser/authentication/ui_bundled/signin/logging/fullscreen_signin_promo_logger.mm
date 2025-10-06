@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/upgrade_signin_logger.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/fullscreen_signin_promo_logger.h"
 
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -19,7 +19,7 @@ using signin_metrics::LogSigninAccessPointStarted;
 using signin_metrics::PromoAction;
 using signin_metrics::RecordSigninUserActionForAccessPoint;
 
-@implementation UpgradeSigninLogger {
+@implementation FullscreenSigninPromoLogger {
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
 
@@ -72,7 +72,7 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
 
   // Records in user defaults that the promo has been shown as well as the
   // number of times it's been displayed.
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       _identityManager, _accountManagerService, version_info::GetVersion());
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
   int promoSeenCount =

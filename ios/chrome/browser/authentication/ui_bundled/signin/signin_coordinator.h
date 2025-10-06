@@ -96,18 +96,18 @@ class PrefRegistrySyncable;
                                   (const ChangeProfileContinuationProvider&)
                                       continuationProvider;
 
-// Returns a coordinator for upgrade sign-in workflow.
+// Returns a coordinator for fullscreen sign-in promo workflow.
 // `viewController` presents the sign-in.
 // `contextStyle` is used to customize content on screens.
 + (SigninCoordinator*)
-    upgradeSigninPromoCoordinatorWithBaseViewController:
+    fullscreenSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                browser:(Browser*)browser
-                                           contextStyle:
-                                               (SigninContextStyle)contextStyle
-                      changeProfileContinuationProvider:
-                          (const ChangeProfileContinuationProvider&)
-                              changeProfileContinuationProvider;
+                                                   browser:(Browser*)browser
+                                              contextStyle:(SigninContextStyle)
+                                                               contextStyle
+                         changeProfileContinuationProvider:
+                             (const ChangeProfileContinuationProvider&)
+                                 changeProfileContinuationProvider;
 
 // Returns a coordinator to add an account.
 // `viewController` presents the sign-in.
