@@ -106,6 +106,8 @@ ios_web_view_sources = [
   "//ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.mm",
   "//ios/web_view/internal/autofill/web_view_autofill_client_ios.h",
   "//ios/web_view/internal/autofill/web_view_autofill_client_ios.mm",
+  "//ios/web_view/internal/autofill/web_view_autofill_image_fetcher_factory.h",
+  "//ios/web_view/internal/autofill/web_view_autofill_image_fetcher_factory.mm",
   "//ios/web_view/internal/autofill/web_view_autofill_image_fetcher_impl.h",
   "//ios/web_view/internal/autofill/web_view_autofill_image_fetcher_impl.mm",
   "//ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h",

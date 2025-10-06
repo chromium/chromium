@@ -13,6 +13,8 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
+#import "ios/web_view/internal/autofill/web_view_autofill_image_fetcher_factory.h"
+#import "ios/web_view/internal/autofill/web_view_autofill_image_fetcher_impl.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -42,6 +44,7 @@ WebViewPersonalDataManagerFactory::WebViewPersonalDataManagerFactory()
   DependsOn(WebViewIdentityManagerFactory::GetInstance());
   DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
   DependsOn(WebViewSyncServiceFactory::GetInstance());
+  DependsOn(WebViewAutofillImageFetcherFactory::GetInstance());
 }
 
 WebViewPersonalDataManagerFactory::~WebViewPersonalDataManagerFactory() {}
