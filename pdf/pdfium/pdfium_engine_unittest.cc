@@ -33,6 +33,7 @@
 #include "pdf/page_character_index.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_draw_selection_test_base.h"
+#include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/mouse_event_builder.h"
@@ -2973,11 +2974,14 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkPrintTest, testing::Values(false));
 
 class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
  public:
+  static constexpr gfx::Size kAnnotationFormFieldsVisiblePageSize{816, 1056};
   static constexpr gfx::Size kHelloWorldExpectedVisiblePageSize{266, 266};
   PDFiumEngineCaretTest() = default;
   PDFiumEngineCaretTest(const PDFiumEngineCaretTest&) = delete;
   PDFiumEngineCaretTest& operator=(const PDFiumEngineCaretTest&) = delete;
   ~PDFiumEngineCaretTest() override = default;
+
+  MockTestClient& client() { return client_; }
 
   void SetUp() override {
     PDFiumDrawSelectionTestBase::SetUp();
@@ -3005,10 +3009,19 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
     return engine_.get();
   }
 
+  bool HandleKeyDownEvent(ui::KeyboardCode key) {
+    blink::WebKeyboardEvent event(
+        blink::WebInputEvent::Type::kKeyDown,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.windows_key_code = key;
+    return engine_->HandleInputEvent(event);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PDFiumEngine> engine_;
-  TestClient client_;
+  NiceMock<MockTestClient> client_;
 };
 
 TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
@@ -3129,16 +3142,66 @@ TEST_P(PDFiumEngineCaretTest, TextSelectAndMove) {
   DrawCaretAndCompareWithPlatformExpectations(
       *engine, /*page_index=*/0, "hello_world_caret_text_selection.png");
 
-  blink::WebKeyboardEvent key_down_event(
-      blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  key_down_event.windows_key_code = ui::KeyboardCode::VKEY_RIGHT;
-  EXPECT_TRUE(engine->HandleInputEvent(key_down_event));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT));
 
   // TODO(crbug.com/446944878): Caret should appear at the end of the text
   // selection.
   DrawCaretAndCompareWithPlatformExpectations(
       *engine, /*page_index=*/0, "hello_world_caret_text_selection_end.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, FormFocus) {
+  PDFiumEngine* engine =
+      CreateEngine(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Focus onto a form field page element.
+  EXPECT_CALL(client(),
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+
+  // Caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+
+  // Click outside the form field to kill focus.
+  EXPECT_CALL(client(), FormFieldFocusChange(
+                            PDFiumEngineClient::FocusFieldType::kNoFocus));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(gfx::PointF(1.0f, 1.0f))));
+
+  // Caret should be visible.
+  DrawCaretAndCompare(*engine, /*page_index=*/0,
+                      "annotation_form_fields_caret.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, FormFieldLoseFocusGainFocus) {
+  PDFiumEngine* engine =
+      CreateEngine(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Focus onto a form field page element.
+  EXPECT_CALL(client(),
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+
+  // Caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+
+  EXPECT_CALL(client(), FormFieldFocusChange(
+                            PDFiumEngineClient::FocusFieldType::kNoFocus));
+  engine->UpdateFocus(false);
+
+  EXPECT_CALL(client(),
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+  engine->UpdateFocus(true);
+
+  // Form still has focus, so caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineCaretTest, testing::Bool());

@@ -52,6 +52,12 @@ class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
   // caret is visible. The plugin size of `engine` must have a non-empty
   // intersect with the page contents rect of page `page_index`, i.e. the page
   // must be visible, otherwise the test will fail.
+  void DrawCaretAndCompare(PDFiumEngine& engine,
+                           int page_index,
+                           std::string_view expected_png_filename);
+
+  // Same as `DrawCaretAndCompare()`, but has different expected PNGs for
+  // specific platforms.
   void DrawCaretAndCompareWithPlatformExpectations(
       PDFiumEngine& engine,
       int page_index,

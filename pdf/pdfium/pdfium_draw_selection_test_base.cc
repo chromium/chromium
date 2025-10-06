@@ -53,6 +53,16 @@ void PDFiumDrawSelectionTestBase::DrawHighlightsAndCompare(
                      /*draw_caret=*/false);
 }
 
+void PDFiumDrawSelectionTestBase::DrawCaretAndCompare(
+    PDFiumEngine& engine,
+    int page_index,
+    std::string_view expected_png_filename) {
+  DrawAndCompareImpl(engine, page_index, FILE_PATH_LITERAL("caret"),
+                     expected_png_filename,
+                     /*use_platform_suffix=*/false,
+                     /*draw_caret=*/true);
+}
+
 void PDFiumDrawSelectionTestBase::DrawCaretAndCompareWithPlatformExpectations(
     PDFiumEngine& engine,
     int page_index,

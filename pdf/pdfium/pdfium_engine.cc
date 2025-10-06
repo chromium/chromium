@@ -1343,6 +1343,7 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
       if (last_focused_annot) {
         FPDF_BOOL ret = FORM_SetFocusedAnnot(form(), last_focused_annot.get());
         DCHECK(ret);
+        return;
       }
     }
   } else {
@@ -1362,6 +1363,9 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
       FPDFPage_CloseAnnot(last_focused_annot);
     }
     KillFormFocus();
+    if (has_focus) {
+      return;
+    }
   }
   if (caret_) {
     caret_->SetVisible(has_focus);
@@ -4258,6 +4262,10 @@ void PDFiumEngine::SetFieldFocus(PDFiumEngineClient::FocusFieldType type) {
   // Clear `editable_form_text_area_` when focus no longer in form text area.
   if (focus_field_type_ != FocusFieldType::kText) {
     editable_form_text_area_ = false;
+  }
+
+  if (caret_) {
+    caret_->SetVisible(focus_field_type_ == FocusFieldType::kNoFocus);
   }
 }
 
