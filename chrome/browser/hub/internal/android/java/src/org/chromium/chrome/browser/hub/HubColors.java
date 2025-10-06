@@ -19,7 +19,6 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
@@ -96,11 +95,14 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme, boolean isGtsUpdateEnabled) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SurfaceColorUpdateUtils.getHubPaneSwitcherSelectedIconColor(
-                        context, /* isIncognito= */ false, isGtsUpdateEnabled);
+                return isGtsUpdateEnabled
+                        ? SemanticColorUtils.getDefaultIconColor(context)
+                        : SemanticColorUtils.getDefaultIconColorAccent1(context);
             case HubColorScheme.INCOGNITO:
-                return SurfaceColorUpdateUtils.getHubPaneSwitcherSelectedIconColor(
-                        context, /* isIncognito= */ true, isGtsUpdateEnabled);
+                return isGtsUpdateEnabled
+                        ? ContextCompat.getColor(context, R.color.default_icon_color_light)
+                        : ContextCompat.getColor(
+                                context, R.color.default_control_color_active_dark);
             default:
                 assert false;
                 return Color.TRANSPARENT;

@@ -32,6 +32,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
@@ -43,7 +44,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetadata;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -342,7 +343,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 @Nullable Bitmap thumbnail, int index, boolean showGhostLoadIllustration) {
             final RectF rect = mThumbnailRects.get(index);
             if (thumbnail == null) {
-                if (SurfaceColorUpdateUtils.useNewGm3GtsTabGroupColors()) {
+                if (useNewGm3GtsTabGroupColors()) {
                     mTextPaint.setColor(mResolvedTextColor);
                     mColordEmptyThumbnailPaint.setColor(mResolvedEmptyPlaceholderColor);
                     Paint emptyThumbnailPaint =
@@ -358,7 +359,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
                 if (showGhostLoadIllustration) {
                     Resources res = mContext.getResources();
-                    if (SurfaceColorUpdateUtils.useNewGm3GtsTabGroupColors()) {
+                    if (useNewGm3GtsTabGroupColors()) {
                         mEmptyThumbnailGhostLoadIllustration.setTint(
                                 mResolvedGhostIllustrationColor);
                     }
@@ -486,6 +487,12 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                             drawFaviconThenMaybeSendBack(favicon, index);
                         });
             }
+        }
+
+        /** Whether new GM3 colors are being used for the tab group colors. */
+        public static boolean useNewGm3GtsTabGroupColors() {
+            return ChromeFeatureList.sAndroidTabGroupsColorUpdateGm3.isEnabled()
+                    || ThemeModuleUtils.isForceEnableDependencies();
         }
     }
 

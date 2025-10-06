@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -161,8 +160,8 @@ public class TabCardThemeUtilUnitTest {
         @TabGroupColorId int testColorId = TabGroupColorId.GREEN;
         @ColorInt
         int expectedColor =
-                SurfaceColorUpdateUtils.getCardViewMiniThumbnailPlaceholderColor(
-                        mContext, /* isIncognito= */ false, testColorId);
+                TabGroupColorPickerUtils.getTabGroupCardMiniThumbnailPlaceholderColor(
+                        mContext, testColorId, /* isIncognito= */ false);
         @ColorInt
         int actualColor =
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
@@ -250,8 +249,8 @@ public class TabCardThemeUtilUnitTest {
         @TabGroupColorId int testColorId = TabGroupColorId.CYAN;
         @ColorInt
         int expectedColor =
-                SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
-                        mContext, /* isIncognito= */ false, testColorId);
+                TabGroupColorPickerUtils.getTabGroupCardTextColor(
+                        mContext, testColorId, /* isIncognito= */ false);
         @ColorInt
         int actualColor =
                 TabCardThemeUtil.getTabGroupNumberTextColor(
@@ -292,8 +291,9 @@ public class TabCardThemeUtilUnitTest {
         // This test verifies that the method correctly delegates to SurfaceColorUpdateUtils.
         @TabGroupColorId int testColorId = TabGroupColorId.ORANGE;
         ColorStateList expectedColor =
-                SurfaceColorUpdateUtils.getCardViewActionButtonColor(
-                        mContext, /* isIncognito= */ false, testColorId);
+                ColorStateList.valueOf(
+                        TabGroupColorPickerUtils.getTabGroupCardTextColor(
+                                mContext, testColorId, /* isIncognito= */ false));
         ColorStateList actualColor =
                 TabCardThemeUtil.getActionButtonTintList(
                         mContext, /* isIncognito= */ false, /* isSelected= */ false, testColorId);

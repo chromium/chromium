@@ -18,7 +18,6 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -119,8 +118,14 @@ public class TabCardThemeUtil {
             @ColorInt int baseColor = SemanticColorUtils.getColorOnPrimary(context);
             return MaterialColors.compositeARGBWithAlpha(baseColor, alpha);
         }
-        return SurfaceColorUpdateUtils.getCardViewMiniThumbnailPlaceholderColor(
-                context, isIncognito, colorId);
+        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            return TabGroupColorPickerUtils.getTabGroupCardMiniThumbnailPlaceholderColor(
+                    context, colorId, isIncognito);
+        }
+        if (isIncognito) {
+            return context.getColor(R.color.incognito_tab_thumbnail_placeholder_color);
+        }
+        return SemanticColorUtils.getColorSurfaceContainerLow(context);
     }
 
     /**
@@ -198,8 +203,12 @@ public class TabCardThemeUtil {
                     ? context.getColor(R.color.incognito_tab_tile_number_selected_color)
                     : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG);
         }
-        return SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
-                context, isIncognito, colorId);
+        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            return TabGroupColorPickerUtils.getTabGroupCardTextColor(context, colorId, isIncognito);
+        }
+        return isIncognito
+                ? context.getColor(R.color.incognito_tab_tile_number_color)
+                : SemanticColorUtils.getDefaultTextColor(context);
     }
 
     /**
@@ -223,7 +232,16 @@ public class TabCardThemeUtil {
                     : ColorStateList.valueOf(
                             MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG));
         }
-        return SurfaceColorUpdateUtils.getCardViewActionButtonColor(context, isIncognito, colorId);
+        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            return ColorStateList.valueOf(
+                    TabGroupColorPickerUtils.getTabGroupCardTextColor(
+                            context, colorId, isIncognito));
+        }
+        return isIncognito
+                ? AppCompatResources.getColorStateList(
+                        context, R.color.incognito_tab_action_button_color)
+                : ColorStateList.valueOf(
+                        MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG));
     }
 
     /**
