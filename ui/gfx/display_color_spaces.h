@@ -57,11 +57,6 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // build configuration.
   explicit DisplayColorSpaces(const ColorSpace& color_space);
 
-  // Initialize as |color_space| and |buffer_format| for all settings. If
-  // |color_space| is the default (invalid) color space, then initialize to
-  // sRGB.
-  DisplayColorSpaces(const ColorSpace& color_space, BufferFormat buffer_format);
-
   // Initialize as |color_space| and |format| (which must be single-plane) for
   // all settings. If |color_space| is the default (invalid) color space, then
   // initialize to sRGB.

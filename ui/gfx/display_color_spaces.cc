@@ -75,17 +75,14 @@ DisplayColorSpaces::DisplayColorSpaces(const gfx::ColorSpace& c)
     color_spaces_[i] = c;
 }
 
-DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c, BufferFormat f)
-    : DisplayColorSpaces(c) {
-  for (size_t i = 0; i < kConfigCount; i++) {
-    buffer_formats_[i] = f;
-  }
-}
-
 DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c,
                                        viz::SharedImageFormat f)
-    : DisplayColorSpaces(c,
-                         viz::SinglePlaneSharedImageFormatToBufferFormat(f)) {}
+    : DisplayColorSpaces(c) {
+  auto buffer_format = viz::SinglePlaneSharedImageFormatToBufferFormat(f);
+  for (size_t i = 0; i < kConfigCount; i++) {
+    buffer_formats_[i] = buffer_format;
+  }
+}
 
 void DisplayColorSpaces::SetOutputBufferFormats(
     gfx::BufferFormat buffer_format_no_alpha,
