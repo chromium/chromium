@@ -9,15 +9,6 @@ enum GPUCanvasAlphaMode {
     "premultiplied",
 };
 
-enum GPUCanvasToneMappingMode {
-    "standard",
-    "extended",
-};
-
-dictionary GPUCanvasToneMapping {
-  GPUCanvasToneMappingMode mode = "standard";
-};
-
 dictionary GPUCanvasConfiguration {
     required GPUDevice device;
     required GPUTextureFormat format;
@@ -25,5 +16,5 @@ dictionary GPUCanvasConfiguration {
     sequence<GPUTextureFormat> viewFormats = [];
     PredefinedColorSpace colorSpace = "srgb";
     GPUCanvasAlphaMode alphaMode = "opaque";
-    GPUCanvasToneMapping toneMapping = {};
+    CanvasToneMapping toneMapping = {};
 };

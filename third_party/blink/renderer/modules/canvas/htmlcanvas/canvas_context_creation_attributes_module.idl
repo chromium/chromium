@@ -26,6 +26,15 @@ enum CanvasPixelFormat {
     "float16",
 };
 
+enum CanvasToneMappingMode {
+    "standard", // default
+    "extended",
+};
+
+dictionary CanvasToneMapping {
+    CanvasToneMappingMode mode = "standard";
+};
+
 enum CanvasPowerPreference {
     "default",
     "low-power",
@@ -33,9 +42,9 @@ enum CanvasPowerPreference {
 };
 
 enum CanvasWillReadFrequently {
-  "true",
-  "false",
-  "undefined" // default
+    "true",
+    "false",
+    "undefined" // default
 };
 
 // The PermissiveDictionaryConversion extended attribute is needed to allow the
@@ -50,7 +59,8 @@ dictionary CanvasContextCreationAttributesModule {
     // Canvas 2D attributes
     boolean alpha = true;  // Also used for WebGL.
     PredefinedColorSpace colorSpace = "srgb";
-    [RuntimeEnabled=CanvasFloatingPoint] CanvasPixelFormat colorType = "unorm8";
+    [RuntimeEnabled=CanvasToneMapping] CanvasToneMapping toneMapping = {};
+    CanvasPixelFormat colorType = "unorm8";
     CanvasWillReadFrequently willReadFrequently = "undefined";
 
     // WebGL attributes
