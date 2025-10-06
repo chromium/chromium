@@ -13,6 +13,12 @@
 
 namespace ui {
 
+// Align events to a few milliseconds before frame_time. This is to make the
+// resampling either doing interpolation or extrapolating a closer future time
+// so that resampled result is more accurate and has less noise. This adds some
+// latency during resampling but a few ms should be fine.
+inline constexpr auto kResampleLatency = base::Milliseconds(-5);
+
 // This class expects a sequence of inputs with their coordinates and timestamps
 // and models the input path. It then can predict the coordinates at any given
 // time.
