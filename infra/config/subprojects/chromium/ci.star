@@ -198,6 +198,7 @@ consoles.console_view(
 ) for name, category, short_name in (
     ("fuchsia-arm64-rel-ready", "p/chrome|arm64", "rel-ready"),
     ("fuchsia-arm64-nest-sd", "p/chrome|official", "nest-arm"),
+    ("fuchsia-arm64-nest-sd-perf", "p/chrome|official", "nest-arm-perf"),
     ("fuchsia-ava-astro", "hardware|ava", "ast"),
     ("fuchsia-ava-nelson", "hardware|ava", "nsn"),
     ("fuchsia-ava-sherlock", "hardware|ava", "sher"),
