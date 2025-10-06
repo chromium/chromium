@@ -185,16 +185,6 @@
         </message>
       </if>
 
-      <!-- Links from the Clear Browsing Data dialog. -->
-      <message name="IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_DIALOG" translateable="false">
-        https://myactivity.google.com/myactivity/?utm_source=chrome_n
-      </message>
-
-      <!-- Links on the History page. -->
-      <message name="IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY" translateable="false">
-        https://myactivity.google.com/myactivity/?utm_source=chrome_h
-      </message>
-
     </messages>
   </release>
 </grit>

@@ -53,7 +53,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/locale_settings.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -674,12 +673,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_CLEAR_GOOGLE_SEARCH_HISTORY_NON_GOOGLE_DSE,
           chrome::kMyActivityUrlInClearBrowsingData));
-  html_source->AddString(
-      "historyDeletionDialogBody",
-      l10n_util::GetStringFUTF16(
-          IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE,
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_DIALOG)));
+  html_source->AddString("historyDeletionDialogBody",
+                         l10n_util::GetStringFUTF16(
+                             IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE,
+                             chrome::kMyActivityUrlInClearBrowsingDataNotice));
   html_source->AddString(
       "passwordsDeletionDialogBody",
       l10n_util::GetStringFUTF16(
