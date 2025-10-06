@@ -1379,9 +1379,12 @@ BASE_FEATURE(kLockScreenNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 // Feature to allow MAC address randomization to be enabled for WiFi networks.
 BASE_FEATURE(kMacAddressRandomization, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabling this flag allows the managed local pin and password related changes to be
-// applied.
+// Enabling this flag allows the managed local pin and password related changes
+// to be applied.
 BASE_FEATURE(kManagedLocalPinAndPassword, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables policy management for USB printers.
+BASE_FEATURE(kManagedUsbPrinters, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Mahi on PDF contents in the Media App.
 BASE_FEATURE(kMediaAppPdfMahi, base::FEATURE_ENABLED_BY_DEFAULT);
