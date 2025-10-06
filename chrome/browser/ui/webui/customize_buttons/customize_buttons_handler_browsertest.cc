@@ -96,7 +96,7 @@ class CustomizeButtonsHandlerBrowserTestBase : public InProcessBrowserTest {
             std::move(mock_controller_ptr));
   }
 
-  void CreateHandlerWithTabInterface(bool set_tab_interface) {
+  void CreateHandler(bool set_tab_interface) {
     tabs::TabInterface* tab = nullptr;
     if (set_tab_interface) {
       tab = browser()->tab_strip_model()->GetActiveTab();
@@ -138,7 +138,7 @@ class CustomizeButtonsHandlerBrowserTest
  public:
   void SetUpOnMainThread() override {
     CustomizeButtonsHandlerBrowserTestBase::SetUpOnMainThread();
-    CreateHandlerWithTabInterface(/*set_tab_interface=*/GetParam());
+    CreateHandler(/*set_tab_interface=*/GetParam());
   }
 };
 
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
                                      testing::SaveArg<1>(&section)));
   EXPECT_CALL(doc_, SetCustomizeChromeSidePanelVisibility)
       .Times(2)
-      .WillRepeatedly([&visible](bool visible_arg) { visible = visible_arg; });
+      .WillRepeatedly(testing::SaveArg<0>(&visible));
   EXPECT_CALL(
       *GetMockFeaturePromoHelper(),
       RecordPromoFeatureUsageAndClosePromo(
@@ -177,8 +177,7 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
       .Times(2);
 
   handler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/true,
-      customize_buttons::mojom::CustomizeChromeSection::kUnspecified,
+      /*visible=*/true, CustomizeChromeSection::kUnspecified,
       customize_buttons::mojom::SidePanelOpenTrigger::kNewTabFooter);
   doc_.FlushForTesting();
 
@@ -187,8 +186,7 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
   EXPECT_TRUE(visible);
 
   handler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/true,
-      customize_buttons::mojom::CustomizeChromeSection::kAppearance,
+      /*visible=*/true, CustomizeChromeSection::kAppearance,
       customize_buttons::mojom::SidePanelOpenTrigger::kNewTabPage);
   doc_.FlushForTesting();
 
@@ -209,8 +207,7 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, CloseSidePanel) {
       .Times(0);
 
   handler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/false,
-      customize_buttons::mojom::CustomizeChromeSection::kModules,
+      /*visible=*/false, CustomizeChromeSection::kModules,
       customize_buttons::mojom::SidePanelOpenTrigger::kNewTabPage);
   doc_.FlushForTesting();
 }
@@ -246,44 +243,19 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest,
             1);
 }
 
-class CustomizeButtonsHandlerVisibilityParamsTest
+class CustomizeButtonsHandlerTriggerParamTest
     : public CustomizeButtonsHandlerBrowserTestBase,
       public testing::WithParamInterface<
-          std::tuple<customize_buttons::mojom::CustomizeChromeSection,
-                     customize_buttons::mojom::SidePanelOpenTrigger>> {
+          customize_buttons::mojom::SidePanelOpenTrigger> {
  public:
   void SetUpOnMainThread() override {
     CustomizeButtonsHandlerBrowserTestBase::SetUpOnMainThread();
-    CreateHandlerWithTabInterface(/*set_tab_interface=*/false);
+    CreateHandler(/*set_tab_interface=*/false);
   }
 
  protected:
-  customize_buttons::mojom::CustomizeChromeSection section_param() const {
-    return std::get<0>(GetParam());
-  }
   customize_buttons::mojom::SidePanelOpenTrigger trigger_param() const {
-    return std::get<1>(GetParam());
-  }
-
-  CustomizeChromeSection GetExpectedSection(
-      customize_buttons::mojom::CustomizeChromeSection section) {
-    // TODO(crbug.com/419081665) Dedupe CustomizeChromeSection mojom enums.
-    switch (section) {
-      case customize_buttons::mojom::CustomizeChromeSection::kUnspecified:
-        return CustomizeChromeSection::kUnspecified;
-      case customize_buttons::mojom::CustomizeChromeSection::kAppearance:
-        return CustomizeChromeSection::kAppearance;
-      case customize_buttons::mojom::CustomizeChromeSection::kShortcuts:
-        return CustomizeChromeSection::kShortcuts;
-      case customize_buttons::mojom::CustomizeChromeSection::kModules:
-        return CustomizeChromeSection::kModules;
-      case customize_buttons::mojom::CustomizeChromeSection::kWallpaperSearch:
-        return CustomizeChromeSection::kWallpaperSearch;
-      case customize_buttons::mojom::CustomizeChromeSection::kToolbar:
-        return CustomizeChromeSection::kToolbar;
-      case customize_buttons::mojom::CustomizeChromeSection::kFooter:
-        return CustomizeChromeSection::kFooter;
-    }
+    return GetParam();
   }
 
   SidePanelOpenTrigger GetExpectedTrigger(
@@ -299,21 +271,12 @@ class CustomizeButtonsHandlerVisibilityParamsTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    CustomizeButtonsHandlerVisibilityParamsTest,
-    testing::Combine(
-        testing::Values(
-            customize_buttons::mojom::CustomizeChromeSection::kUnspecified,
-            customize_buttons::mojom::CustomizeChromeSection::kAppearance,
-            customize_buttons::mojom::CustomizeChromeSection::kShortcuts,
-            customize_buttons::mojom::CustomizeChromeSection::kModules,
-            customize_buttons::mojom::CustomizeChromeSection::kWallpaperSearch,
-            customize_buttons::mojom::CustomizeChromeSection::kToolbar),
-        testing::Values(
-            customize_buttons::mojom::SidePanelOpenTrigger::kNewTabPage,
-            customize_buttons::mojom::SidePanelOpenTrigger::kNewTabFooter)));
+    CustomizeButtonsHandlerTriggerParamTest,
+    testing::Values(
+        customize_buttons::mojom::SidePanelOpenTrigger::kNewTabPage,
+        customize_buttons::mojom::SidePanelOpenTrigger::kNewTabFooter));
 
-IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerVisibilityParamsTest,
-                       OpenSidePanel) {
+IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerTriggerParamTest, OpenSidePanel) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::optional<CustomizeChromeSection> section;
@@ -338,8 +301,7 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerVisibilityParamsTest,
       .Times(1);
 
   handler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/true, section_param(), trigger_param());
+      /*visible=*/true, CustomizeChromeSection::kUnspecified, trigger_param());
 
-  EXPECT_EQ(section.value(), GetExpectedSection(section_param()));
   EXPECT_EQ(trigger, GetExpectedTrigger(trigger_param()));
 }

@@ -9,6 +9,7 @@
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -45,7 +46,7 @@ class CustomizeButtonsHandler
   // Wallpaper Search button.
   void SetCustomizeChromeSidePanelVisible(
       bool visible,
-      customize_buttons::mojom::CustomizeChromeSection section,
+      CustomizeChromeSection section,
       customize_buttons::mojom::SidePanelOpenTrigger triger) override;
 
  private:

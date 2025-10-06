@@ -4,16 +4,7 @@
 
 module customize_buttons.mojom;
 
-// TODO(crbug.com/403572608) Dedupe CustomizeChromeSection mojom enums.
-enum CustomizeChromeSection {
-  kUnspecified,
-  kAppearance,
-  kShortcuts,
-  kModules,
-  kWallpaperSearch,
-  kToolbar,
-  kFooter,
-};
+import "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom";
 
 enum SidePanelOpenTrigger {
   kNewTabPage,
@@ -41,8 +32,8 @@ interface CustomizeButtonsHandler {
 
   // Shows or hides the customize chrome in unified side panel.
   SetCustomizeChromeSidePanelVisible(bool visible,
-                                     CustomizeChromeSection section,
-                                     SidePanelOpenTrigger trigger);
+      side_panel.mojom.CustomizeChromeSection section,
+      SidePanelOpenTrigger trigger);
 };
 
 // WebUI-side handler for requests from the browser.

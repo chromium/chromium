@@ -179,9 +179,7 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
                const std::vector<ntp_tiles::TileType>& disabled_shortcuts));
   MOCK_METHOD(void, SetTheme, (side_panel::mojom::ThemePtr));
   MOCK_METHOD(void, SetThemeEditable, (bool));
-  MOCK_METHOD(void,
-              ScrollToSection,
-              (side_panel::mojom::CustomizeChromeSection));
+  MOCK_METHOD(void, ScrollToSection, (CustomizeChromeSection));
   MOCK_METHOD(void,
               AttachedTabStateUpdated,
               (side_panel::mojom::NewTabPageType));
@@ -898,7 +896,7 @@ TEST_F(CustomizeChromePageHandlerTest, SetUseDeviceTheme_Off) {
 }
 
 TEST_F(CustomizeChromePageHandlerTest, ScrollToSection) {
-  side_panel::mojom::CustomizeChromeSection section;
+  CustomizeChromeSection section;
   EXPECT_CALL(mock_page_, ScrollToSection)
       .Times(1)
       .WillOnce(SaveArg<0>(&section));
@@ -906,7 +904,7 @@ TEST_F(CustomizeChromePageHandlerTest, ScrollToSection) {
   handler().ScrollToSection(CustomizeChromeSection::kAppearance);
   mock_page_.FlushForTesting();
 
-  EXPECT_EQ(side_panel::mojom::CustomizeChromeSection::kAppearance, section);
+  EXPECT_EQ(CustomizeChromeSection::kAppearance, section);
 }
 
 // Ensures that url's are correctly mapped to their NewTabPage type.
@@ -951,7 +949,7 @@ TEST_F(CustomizeChromePageHandlerTest, ScrollToUnspecifiedSection) {
 }
 
 TEST_F(CustomizeChromePageHandlerTest, UpdateScrollToSection) {
-  side_panel::mojom::CustomizeChromeSection section;
+  CustomizeChromeSection section;
   EXPECT_CALL(mock_page_, ScrollToSection)
       .Times(2)
       .WillRepeatedly(SaveArg<0>(&section));
@@ -960,7 +958,7 @@ TEST_F(CustomizeChromePageHandlerTest, UpdateScrollToSection) {
   handler().UpdateScrollToSection();
   mock_page_.FlushForTesting();
 
-  EXPECT_EQ(side_panel::mojom::CustomizeChromeSection::kAppearance, section);
+  EXPECT_EQ(CustomizeChromeSection::kAppearance, section);
 }
 
 class CustomizeChromePageHandlerWallpaperSearchTest

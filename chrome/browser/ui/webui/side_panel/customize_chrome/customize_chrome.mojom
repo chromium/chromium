@@ -102,6 +102,7 @@ struct ManagementNoticeState {
 };
 
 enum CustomizeChromeSection {
+  kUnspecified,
   kAppearance,
   kShortcuts,
   kModules,
@@ -249,7 +250,7 @@ interface CustomizeChromePage {
   SetThemeEditable(bool is_theme_editable);
   // Scrolls side panel to |section|. Possibly a response to a call to
   // |CustomizeChromePageHandler.UpdateScrollToSection()|.
-  ScrollToSection(CustomizeChromeSection section);
+  ScrollToSection(side_panel.mojom.CustomizeChromeSection section);
   // Sets Information about the tab that is attached to the CustomizeChromePage.
   AttachedTabStateUpdated(NewTabPageType ntp_type);
   // Sets the name and description of the system that manages the new tab page,

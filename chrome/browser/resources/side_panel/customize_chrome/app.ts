@@ -35,6 +35,7 @@ import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import type {ThemesElement} from './themes.js';
 
 const SECTION_TO_SELECTOR = {
+  [CustomizeChromeSection.kUnspecified]: '',
   [CustomizeChromeSection.kAppearance]: '#appearance',
   [CustomizeChromeSection.kShortcuts]: '#shortcuts',
   [CustomizeChromeSection.kModules]: '#modules',

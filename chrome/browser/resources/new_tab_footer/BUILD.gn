@@ -36,10 +36,14 @@ build_webui("build") {
   mojo_files_deps = [
     "//chrome/browser/ui/webui/customize_buttons:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_footer:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_ts__generator",
+    "//components/ntp_tiles:mojo_bindings_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom-webui.ts",
+    "$root_gen_dir/components/ntp_tiles/tile_type.mojom-webui.ts",
   ]
 
   ts_path_mappings =

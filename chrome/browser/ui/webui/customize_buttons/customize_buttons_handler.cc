@@ -103,7 +103,7 @@ void CustomizeButtonsHandler::NotifyCustomizeChromeSidePanelVisibilityChanged(
 
 void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
     bool visible,
-    customize_buttons::mojom::CustomizeChromeSection section,
+    CustomizeChromeSection section,
     customize_buttons::mojom::SidePanelOpenTrigger trigger) {
   customize_chrome::SidePanelController*
       customize_chrome_side_panel_controller =
@@ -114,32 +114,6 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
     customize_chrome_side_panel_controller->CloseSidePanel();
     NotifyCustomizeChromeSidePanelVisibilityChanged(false);
     return;
-  }
-
-  CustomizeChromeSection section_enum;
-  // TODO(crbug.com/419081665) Dedupe CustomizeChromeSection mojom enums.
-  switch (section) {
-    case customize_buttons::mojom::CustomizeChromeSection::kUnspecified:
-      section_enum = CustomizeChromeSection::kUnspecified;
-      break;
-    case customize_buttons::mojom::CustomizeChromeSection::kAppearance:
-      section_enum = CustomizeChromeSection::kAppearance;
-      break;
-    case customize_buttons::mojom::CustomizeChromeSection::kShortcuts:
-      section_enum = CustomizeChromeSection::kShortcuts;
-      break;
-    case customize_buttons::mojom::CustomizeChromeSection::kModules:
-      section_enum = CustomizeChromeSection::kModules;
-      break;
-    case customize_buttons::mojom::CustomizeChromeSection::kWallpaperSearch:
-      section_enum = CustomizeChromeSection::kWallpaperSearch;
-      break;
-    case customize_buttons::mojom::CustomizeChromeSection::kToolbar:
-      section_enum = CustomizeChromeSection::kToolbar;
-      break;
-    case customize_buttons::mojom::CustomizeChromeSection::kFooter:
-      section_enum = CustomizeChromeSection::kFooter;
-      break;
   }
 
   SidePanelOpenTrigger trigger_enum;
@@ -153,8 +127,7 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
   }
 
   NotifyCustomizeChromeSidePanelVisibilityChanged(true);
-  customize_chrome_side_panel_controller->OpenSidePanel(trigger_enum,
-                                                        section_enum);
+  customize_chrome_side_panel_controller->OpenSidePanel(trigger_enum, section);
 
   // Record usage for customize chrome promo.
   auto* tab = GetActiveTab();
