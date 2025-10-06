@@ -1242,7 +1242,7 @@
 <translation id="5804012843049740908">Chrome を最大限に活用するための設定のヒント</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="58081802114142635">Google AI を改善するため、ユーザーのアクティビティが使用されます</translation>
-<translation id="5813223718099710537">この機能を使用すると、ページ　コンテンツと URL が Google に送信されます。この動作は設定でいつでもオフにできます。</translation>
+<translation id="5813223718099710537">この機能を使用すると、ページ コンテンツと URL が Google に送信されます。この動作は設定でいつでもオフにできます。</translation>
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5818161931099046557">Google アカウントで編集</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -1663,7 +1663,7 @@
 <translation id="7403227077090127147"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）さんは「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなります</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> 件の未読記事があります。</translation>
 <translation id="7412027924265291969">続行</translation>
-<translation id="741204030948306876">ON にする</translation>
+<translation id="741204030948306876">オンにする</translation>
 <translation id="7417689656810783109">グループ名を変更</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
 <translation id="7425053386765766120">お支払い方法を追加…</translation>
@@ -1699,7 +1699,7 @@
 <translation id="7512909159512473473">パスフレーズを入力…</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7514530647142300459">Google アカウント（<ph name="EMAIL" />）のパスワードを引き続き使用してください</translation>
-<translation id="7522587739845660862">位置情報についての詳細</translation>
+<translation id="7522587739845660862">ユーザーの位置に関する情報</translation>
 <translation id="7522948500476882302">ファイルのダウンロード時に、1 か月後に自動削除するかどうかを選択できます</translation>
 <translation id="7524055474074101597">アプリからパスワードなどにアクセスできます。</translation>
 <translation id="75362970626182391">新しいタブグループ</translation>
@@ -1716,7 +1716,7 @@
 <translation id="7582666837709186351">カメラを使って、写真や周囲のテキストを翻訳できます。</translation>
 <translation id="7582857256643797524">この設定はデバイスで有効になっています</translation>
 <translation id="7583004045319035904"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> を使用して、シークレット タブのロックを解除します。</translation>
-<translation id="7588149553568293500">お客様が選択できる項目の詳細をご確認ください。</translation>
+<translation id="7588149553568293500">プライバシーの設定についてご確認ください。</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{アクティブでない {COUNT} 個のタブを閉じますか？}other{アクティブでない {COUNT} 個のタブを閉じますか？}}</translation>
 <translation id="7598439272585186139">セキュリティを強化</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
