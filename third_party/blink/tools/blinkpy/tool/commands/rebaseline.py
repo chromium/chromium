@@ -104,6 +104,13 @@ class AbstractRebaseliningCommand(Command):
         default=False,
         help=('Dry run mode. List actions that would be performed '
               'but do not actually write to disk.'))
+    clobber_os_version_option = optparse.make_option(
+        '--clobber-os-version',
+        action='store_true',
+        default=False,
+        help=('Write baselines directly to `platform/$os/` instead of '
+              '`platform/$os-$version/` by assuming the tests are OS version-'
+              'agnostic.'))
     results_directory_option = optparse.make_option(
         '--results-directory',
         action='callback',
@@ -339,6 +346,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         self.baseline_cache_stats = BaselineCacheStatistics()
         self._total_commands = self._completed_commands = 0
         self._rebaseline_failures = {}
+        self._clobber_os_version = False
 
     def _release_builders(self):
         """Returns a list of builder names for continuous release builders.
@@ -415,6 +423,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return build_steps
 
     def _copy_baselines(self, groups: Dict[str, TestBaselineSet]) -> None:
+        if self._clobber_os_version:
+            return
         commands = []
         for base_test in sorted(groups):
             group = groups[base_test]
@@ -538,7 +548,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             pool.run(commands)
 
     def _worker_factory(self, worker_connection):
-        return Worker(worker_connection, dry_run=self._dry_run)
+        return Worker(worker_connection,
+                      dry_run=self._dry_run,
+                      clobber_os_version=self._clobber_os_version)
 
     def handle(self, name: str, source: str, *args):
         """Handler called when a worker completes a rebaseline task.
@@ -997,9 +1009,11 @@ class Worker:
 
     def __init__(self,
                  connection,
-                 dry_run: bool = False):
+                 dry_run: bool = False,
+                 clobber_os_version: bool = False):
         self._connection = connection
         self._dry_run = dry_run
+        self._clobber_os_version = clobber_os_version
         self._commands = {
             'copy_baselines': self._copy_baselines,
             'download_baselines': self._download_baselines,
@@ -1081,8 +1095,13 @@ class Worker:
         flag_spec_option = self._host.builders.flag_specific_option(
             task.build.builder_name, task.step_name)
         port.set_option_default('flag_specific', flag_spec_option)
+        if self._clobber_os_version:
+            version_dir = self._fs.join(port.web_tests_dir(), 'platform',
+                                        port.operating_system())
+        else:
+            version_dir = port.baseline_version_dir()
         dest = self._fs.join(
-            port.baseline_version_dir(),
+            version_dir,
             port.output_filename(task.test,
                                  test_failures.FILENAME_SUFFIX_EXPECTED,
                                  '.' + suffix))

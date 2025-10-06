@@ -87,6 +87,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
     def __init__(self, tool, io_pool: Optional[Executor] = None):
         super().__init__(options=[
+            self.clobber_os_version_option,
             self.only_changed_tests_option,
             self.no_trigger_jobs_option,
             self.test_name_file_option,
@@ -137,6 +138,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
     def execute(self, options, args, tool):
         self._dry_run = options.dry_run
+        self._clobber_os_version = options.clobber_os_version
         self.git_cl = self.git_cl or GitCL(tool)
 
         # '--dry-run' implies '--no-trigger-jobs'.

@@ -649,9 +649,13 @@ class TestImporter:
 
         # If this starts blocking the importer unnecessarily, revert
         # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
-        # Try linux-blink-rel to make sure no breakage in webdriver tests
-        for builder in ['linux-blink-rel']:
-            description += f'Cq-Include-Trybots: luci.chromium.try:{builder}\n'
+        # Try `*-blink-rel` to make sure no breakage in webdriver tests or for
+        # any OS versions not covered in CQ.
+        for builder in self.host.builders.all_try_builder_names():
+            if self.host.builders.main_for_builder(
+                    builder) == 'tryserver.blink':
+                description += (
+                    f'Cq-Include-Trybots: luci.chromium.try:{builder}\n')
 
         return description
 

@@ -242,6 +242,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'issue': None,
             'patchset': None,
             'manifest_update': False,
+            'clobber_os_version': False,
         }
         options.update(kwargs)
         return optparse.Values(options)
@@ -325,6 +326,24 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             "INFO: Copied baselines for 'one/slow-fail.html' (txt) (3/5)\n",
             "INFO: Copied baselines for 'one/text-fail.html' (txt) (4/5)\n",
             "INFO: Copied baselines for 'two/image-fail.html' (png) (5/5)\n",
+            "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/5)\n",
+            "INFO: Downloaded baselines for 'one/missing.html' (2/5)\n",
+            "INFO: Downloaded baselines for 'one/slow-fail.html' (3/5)\n",
+            "INFO: Downloaded baselines for 'one/text-fail.html' (4/5)\n",
+            "INFO: Downloaded baselines for 'two/image-fail.html' (5/5)\n",
+            'INFO: Staging 0 baselines with git.\n',
+        ])
+
+    def test_execute_with_clobber_os_version(self):
+        exit_code = self.command.execute(
+            self.command_options(clobber_os_version=True), [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: All builds finished.\n',
+            'INFO: Fetching test results for 4 suites.\n',
+            'INFO: Rebaselining 5 tests.\n',
+            # No copy steps.
             "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/5)\n",
             "INFO: Downloaded baselines for 'one/missing.html' (2/5)\n",
             "INFO: Downloaded baselines for 'one/slow-fail.html' (3/5)\n",
