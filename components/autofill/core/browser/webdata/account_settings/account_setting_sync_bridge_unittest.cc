@@ -220,6 +220,19 @@ TEST_F(AccountSettingSyncBridgeTest, GetAllDataForDebugging) {
                                    HasIntSetting("name3", 123)));
 }
 
+TEST_F(AccountSettingSyncBridgeTest, IsEntityDataValid) {
+  SettingSpecifics specifics = CreateSettingSpecifics("name", "value");
+  EXPECT_TRUE(bridge().IsEntityDataValid(EntityFromSpecifics(specifics)));
+
+  // Specifics with an empty name are invalid.
+  specifics.mutable_name()->clear();
+  EXPECT_FALSE(bridge().IsEntityDataValid(EntityFromSpecifics(specifics)));
+
+  // Specifics with a missing name are invalid.
+  specifics.clear_name();
+  EXPECT_FALSE(bridge().IsEntityDataValid(EntityFromSpecifics(specifics)));
+}
+
 }  // namespace
 
 }  // namespace autofill

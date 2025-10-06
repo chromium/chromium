@@ -133,8 +133,10 @@ AccountSettingSyncBridge::GetAllDataForDebugging() {
 
 bool AccountSettingSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
-  NOTIMPLEMENTED();
-  return false;
+  CHECK(entity_data.specifics.has_account_setting());
+  const sync_pb::AccountSettingSpecifics& specifics =
+      entity_data.specifics.account_setting();
+  return !specifics.name().empty();
 }
 
 std::string AccountSettingSyncBridge::GetClientTag(
