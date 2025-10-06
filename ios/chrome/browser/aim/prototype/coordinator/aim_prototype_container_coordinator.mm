@@ -6,15 +6,20 @@
 
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_navigation_mediator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_container_view_controller.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_dismiss_animator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_present_animator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/web/public/web_state.h"
 
 @interface AIMPrototypeContainerCoordinator () <
     AIMPrototypeContainerViewControllerDelegate,
+    AIMPrototypeNavigationMediatorDelegate,
     UIViewControllerTransitioningDelegate>
 
 @end
@@ -22,6 +27,8 @@
 @implementation AIMPrototypeContainerCoordinator {
   // The coordinator for the main AIM UI.
   AIMPrototypeCoordinator* _aimCoordinator;
+  // The mediator for the web navigation.
+  AIMPrototypeNavigationMediator* _navigationMediator;
   // The entrypoint that triggered the AIM prototype.
   AIMPrototypeEntrypoint _entrypoint;
   // An optional query to pre-fill the omnibox.
@@ -48,11 +55,22 @@
   _viewController.transitioningDelegate = self;
   _viewController.delegate = self;
 
+  UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  web::WebState::CreateParams params =
+      web::WebState::CreateParams(self.profile);
+  _navigationMediator = [[AIMPrototypeNavigationMediator alloc]
+      initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
+                      webStateParams:params];
+  _navigationMediator.consumer = _viewController;
+  _navigationMediator.delegate = self;
+
   _aimCoordinator = [[AIMPrototypeCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       entrypoint:_entrypoint
-                           query:_query];
+                           query:_query
+                       URLLoader:_navigationMediator];
   _aimCoordinator.omniboxPopupPresenterDelegate = _viewController;
   [_aimCoordinator start];
 
@@ -70,6 +88,9 @@
 
   [_aimCoordinator stop];
   _aimCoordinator = nil;
+
+  [_navigationMediator disconnect];
+  _navigationMediator = nil;
 }
 
 #pragma mark - UIViewControllerTransitioningDelegate
@@ -94,6 +115,20 @@
 
 - (void)aimPrototypeContainerViewControllerDidTapCloseButton:
     (AIMPrototypeViewController*)viewController {
+  [self dismissAIMPrototype];
+}
+
+#pragma mark - AIMPrototypeNavigationMediatorDelegate
+
+- (void)navigationMediatorDidFinish:
+    (AIMPrototypeNavigationMediator*)navigationMediator {
+  [self dismissAIMPrototype];
+}
+
+#pragma mark - Private
+
+// Sends the command to get the AIM prototype dismissed.
+- (void)dismissAIMPrototype {
   id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [commands hideAIMPrototype];

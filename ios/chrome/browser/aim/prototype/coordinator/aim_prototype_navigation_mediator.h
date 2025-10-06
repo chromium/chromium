@@ -16,7 +16,12 @@ class UrlLoadingBrowserAgent;
 
 // Delegate for the AIM prototype navigation mediator.
 @protocol AIMPrototypeNavigationMediatorDelegate
-- (void)dismissAIMPrototype;
+
+// Called when the navigation mediator requires the AIM prototype to be
+// dismissed.
+- (void)navigationMediatorDidFinish:
+    (AIMPrototypeNavigationMediator*)navigationMediator;
+
 @end
 
 // A mediator for the AIM prototype's navigation.

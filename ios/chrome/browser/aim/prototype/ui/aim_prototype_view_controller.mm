@@ -127,8 +127,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UIView* _omniboxContainer;
   /// A spacer view used in the stack view.
   UIView* _spacerView;
-  /// The WebView for the SRP.
-  UIView* _webView;
 
   /// The cancellable callback for updating the glow effect.
   base::CancelableOnceClosure _updateGlowCallback;
@@ -455,26 +453,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 - (void)hideMicButton:(BOOL)hidden {
   _micButton.hidden = hidden;
-}
-
-#pragma mark - AIMPrototypeNavigationConsumer
-
-- (void)setWebView:(UIView*)webView {
-  if (_webView == webView) {
-    return;
-  }
-  [_webView removeFromSuperview];
-  _webView = webView;
-  if (webView) {
-    webView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view insertSubview:webView atIndex:0];
-    AddSameConstraintsToSides(
-        webView, self.view,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
-    [webView.bottomAnchor
-        constraintEqualToAnchor:_inputPlateContainerView.topAnchor]
-        .active = YES;
-  }
 }
 
 #pragma mark - Actions

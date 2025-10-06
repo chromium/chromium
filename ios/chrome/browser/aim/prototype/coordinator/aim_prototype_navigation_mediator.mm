@@ -157,7 +157,7 @@
   // performed, for example. This hack postpones the dismiss action.
   __weak __typeof(self) weakSelf = self;
   base::OnceClosure completion = base::BindOnce(^{
-    [weakSelf.delegate dismissAIMPrototype];
+    [weakSelf.delegate navigationMediatorDidFinish:weakSelf];
   });
   constexpr base::TimeDelta kDelay = base::Seconds(0.5);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

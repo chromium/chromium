@@ -28,7 +28,7 @@ class WebStateList;
                                             LoadQueryCommands>
 
 @property(nonatomic, weak) id<AIMPrototypeConsumer> consumer;
-@property(nonatomic, weak) id<AIMPrototypeURLLoader> urlLoader;
+@property(nonatomic, weak) id<AIMPrototypeURLLoader> URLLoader;
 
 - (instancetype)initWithComposeboxQueryController:
                     (std::unique_ptr<ComposeboxQueryControllerIOS>)

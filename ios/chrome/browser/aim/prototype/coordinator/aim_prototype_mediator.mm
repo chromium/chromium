@@ -249,7 +249,7 @@ CreateInputDataFromAnnotatedPageContent(
   if (!_AIModeEnabled) {
     URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
   }
-  [self.urlLoader loadURL:URL];
+  [self.URLLoader loadURL:URL];
 }
 
 - (void)setAIModeEnabled:(BOOL)enabled {
@@ -574,7 +574,7 @@ CreateInputDataFromAnnotatedPageContent(
   if (isSearchType) {
     [self sendText:[NSString cr_fromString16:text]];
   } else {
-    [self.urlLoader loadURL:destinationURL];
+    [self.URLLoader loadURL:destinationURL];
   }
 }
 

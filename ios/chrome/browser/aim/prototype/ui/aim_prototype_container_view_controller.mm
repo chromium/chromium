@@ -21,10 +21,14 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 }  // namespace
 
 @implementation AIMPrototypeContainerViewController {
+  // Close button.
+  UIButton* _closeButton;
   // Container for the input.
   UIView* _inputContainer;
-  /// Container for the omnibox popup.
+  // Container for the omnibox popup.
   UIView* _omniboxPopupContainer;
+  // WebView for the SRP, when AI Mode Immersive SRP is enabled.
+  UIView* _webView;
 }
 
 - (void)viewDidLoad {
@@ -34,9 +38,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
   UILayoutGuide* safeAreaGuide = self.view.safeAreaLayoutGuide;
 
-  // Close button
-  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  // Close button.
+  _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kCloseButtonSize
                           weight:UIImageSymbolWeightRegular
@@ -49,21 +53,22 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                               colorWithAlphaComponent:kCloseButtonAlpha],
                           [UIColor tertiarySystemFillColor]
                         ]);
-  [closeButton setImage:buttonImage forState:UIControlStateNormal];
+  [_closeButton setImage:buttonImage forState:UIControlStateNormal];
 
-  [closeButton addTarget:self
-                  action:@selector(closeButtonTapped)
-        forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:closeButton];
+  [_closeButton addTarget:self
+                   action:@selector(closeButtonTapped)
+         forControlEvents:UIControlEventTouchUpInside];
+  [self.view addSubview:_closeButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    [closeButton.topAnchor constraintEqualToAnchor:safeAreaGuide.topAnchor
-                                          constant:kCloseButtonPadding],
-    [closeButton.trailingAnchor
+    [_closeButton.topAnchor constraintEqualToAnchor:safeAreaGuide.topAnchor
+                                           constant:kCloseButtonPadding],
+    [_closeButton.trailingAnchor
         constraintEqualToAnchor:safeAreaGuide.trailingAnchor
                        constant:-kCloseButtonPadding],
-    [closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
-    [closeButton.widthAnchor constraintEqualToAnchor:closeButton.heightAnchor],
+    [_closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
+    [_closeButton.widthAnchor
+        constraintEqualToAnchor:_closeButton.heightAnchor],
   ]];
 
   // Omnibox popup container.
@@ -74,7 +79,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
   [NSLayoutConstraint activateConstraints:@[
     [_omniboxPopupContainer.topAnchor
-        constraintEqualToAnchor:closeButton.bottomAnchor],
+        constraintEqualToAnchor:_closeButton.bottomAnchor],
     [_omniboxPopupContainer.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
     [_omniboxPopupContainer.trailingAnchor
@@ -112,6 +117,26 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   inputViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(_inputContainer, inputViewController.view);
   [inputViewController didMoveToParentViewController:self];
+}
+
+#pragma mark - AIMPrototypeNavigationConsumer
+
+- (void)setWebView:(UIView*)webView {
+  if (_webView == webView) {
+    return;
+  }
+  [_webView removeFromSuperview];
+  _webView = webView;
+  if (webView) {
+    webView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view insertSubview:webView atIndex:0];
+    AddSameConstraintsToSides(webView, self.view.safeAreaLayoutGuide,
+                              LayoutSides::kLeading | LayoutSides::kTrailing);
+    [NSLayoutConstraint activateConstraints:@[
+      [webView.topAnchor constraintEqualToAnchor:_closeButton.bottomAnchor],
+      [webView.bottomAnchor constraintEqualToAnchor:_inputContainer.topAnchor],
+    ]];
+  }
 }
 
 #pragma mark - Action

@@ -13,6 +13,7 @@
 
 @protocol AIMPrototypeAnimationContextProvider;
 enum class AIMPrototypeEntrypoint;
+@protocol AIMPrototypeURLLoader;
 class Browser;
 @protocol OmniboxPopupPresenterDelegate;
 
@@ -36,6 +37,7 @@ class Browser;
                                    browser:(Browser*)browser
                                 entrypoint:(AIMPrototypeEntrypoint)entrypoint
                                      query:(NSString*)query
+                                 URLLoader:(id<AIMPrototypeURLLoader>)URLLoader
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
