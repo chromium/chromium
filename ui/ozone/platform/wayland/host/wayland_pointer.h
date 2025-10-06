@@ -97,6 +97,11 @@ class WaylandPointer {
                   std::optional<base::TimeTicks> timestamp,
                   bool is_high_resolution);
 
+  static void OnAxisRelativeDirection(void* data,
+                                      wl_pointer* obj,
+                                      uint32_t axis,
+                                      uint32_t direction);
+
   wl::Object<wl_pointer> obj_;
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<Delegate> delegate_;

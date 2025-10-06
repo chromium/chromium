@@ -50,6 +50,7 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
       .axis_stop = &OnAxisStop,
       .axis_discrete = &OnAxisDiscrete,
       .axis_value120 = &OnAxisValue120,
+      .axis_relative_direction = &OnAxisRelativeDirection,
   };
   wl_pointer_add_listener(obj_.get(), &kPointerListener, this);
 }
@@ -210,8 +211,7 @@ void WaylandPointer::OnAxisDiscrete(void* data,
                                     wl_pointer* pointer,
                                     uint32_t axis,
                                     int32_t discrete) {
-  // TODO(crbug.com/40720099): Use this event for better handling of mouse wheel
-  // events.
+  // Deprecated since version 8
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
@@ -248,6 +248,16 @@ void WaylandPointer::OnAxisImpl(double delta,
   if (!axis_source_received_) {
     delegate_->OnPointerAxisSourceEvent(WL_POINTER_AXIS_SOURCE_WHEEL);
   }
+}
+
+// --- Version 9 ---
+
+// static
+void WaylandPointer::OnAxisRelativeDirection(void* data,
+                                             wl_pointer* obj,
+                                             uint32_t axis,
+                                             uint32_t direction) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace ui
