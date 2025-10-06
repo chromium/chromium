@@ -8,6 +8,7 @@ include_rules = [
   "+components/gcm_driver",
   "+components/history/core/common",
   "+components/image_fetcher/ios",
+  "+components/image_fetcher/core",
   "+components/infobars/core",
   "+components/invalidation",
   "+components/keyed_service/core",

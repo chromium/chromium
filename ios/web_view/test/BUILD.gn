@@ -66,6 +66,7 @@ source_set("unittests") {
     "../internal/autofill/cwv_credit_card_unittest.mm",
     "../internal/autofill/cwv_credit_card_verifier_unittest.mm",
     "../internal/autofill/cwv_vcn_enrollment_manager_unittest.mm",
+    "../internal/autofill/web_view_autofill_image_fetcher_impl_unittest.mm",
     "../internal/cwv_download_task_unittest.mm",
     "../internal/cwv_favicon_unittest.mm",
     "../internal/cwv_flags_unittest.mm",
