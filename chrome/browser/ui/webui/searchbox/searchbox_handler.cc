@@ -322,7 +322,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("enableCsbMotionTweaks", false);
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
+      {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL},
       {"searchboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
       {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
       {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},

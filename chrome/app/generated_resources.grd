@@ -9789,6 +9789,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_LENS_SEARCH" desc="The tooltip for search-by-image button">
         Search by image
       </message>
+      <message name="IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL" desc="The a11y label for the reinvoke visual selection button in the compose box.">
+        Select region of screen for follow up
+      </message>
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_CLOSE_BUTTON_LABEL" desc="Aria label for the button to close the upload dialog.">
         Close
       </message>
