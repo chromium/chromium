@@ -17,6 +17,7 @@ found in the LICENSE file.
     android:imeOptions="actionGo|flagNoExtractUi|flagNoFullscreen"
     android:textAppearance="@style/TextAppearance.SearchBoxText"
     android:hint="@string/omnibox_empty_hint"
+    android:textAlignment="viewStart"
     app:layout_constraintStart_toEndOf="@id/location_bar_status"
     app:layout_constraintEnd_toStartOf="@id/url_action_container"
     app:layout_goneMarginEnd="@dimen/location_bar_end_padding"

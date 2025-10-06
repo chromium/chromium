@@ -400,8 +400,6 @@ public class UrlBar extends AutocompleteEditText {
         } else {
             setTextDirection(TEXT_DIRECTION_LTR);
         }
-        // Always align to the same as the paragraph direction (LTR = left, RTL = right).
-        setTextAlignment(TEXT_ALIGNMENT_TEXT_START);
     }
 
     @Override
