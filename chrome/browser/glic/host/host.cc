@@ -76,6 +76,15 @@ void Host::Shutdown() {
   contents_.reset();
 }
 
+void Host::Reload() {
+  auto* contents = webui_contents();
+  if (!contents) {
+    return;
+  }
+  contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
+                                   /*check_for_repost=*/false);
+}
+
 void Host::CreateContents(bool initially_hidden) {
   if (!contents_) {
     contents_ = std::make_unique<WebUIContentsContainer>(

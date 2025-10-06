@@ -538,7 +538,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
 #define MAYBE_testReload testReload
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -554,14 +553,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  WebUIStateListener listener(GetHost());
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  WebUIStateListener listener(GetHost());
   ExecuteJsTest();
 
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
-  window_controller().Reload();
+  ReloadGlicWebui();
   listener.WaitForWebUiState(mojom::WebUiState::kUninitialized);
   ExecuteJsTest();
 
@@ -1741,7 +1739,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                                  .Set("isFirstRun", true))});
 
   WebUIStateListener listener(GetHost());
-  window_controller().Reload();
+  ReloadGlicWebui();
   listener.WaitForWebUiState(mojom::WebUiState::kUninitialized);
 
   ExecuteJsTest(
@@ -2206,16 +2204,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataUpdates) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetPageMetadataOnNavigation) {
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataOnNavigation) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Runs the JS test until the first `advanceToNextStep()`.
   ExecuteJsTest();
 
   // The JS test is now paused. We can now navigate the tab.
   RunTestSequence(NavigateWebContents(
-      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                     "/title1.html")));
+      kFirstTab,
+      InProcessBrowserTest::embedded_test_server()->GetURL("/title1.html")));
 
   // Continue the JS test to verify the metadata update.
   ContinueJsTest();

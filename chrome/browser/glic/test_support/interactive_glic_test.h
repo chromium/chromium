@@ -533,6 +533,12 @@ class InteractiveGlicTestT : public T {
     actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
   }
 
+  void ReloadGlicWebui() {
+    Host* host = GetHost();
+    CHECK(host);
+    host->Reload();
+  }
+
  protected:
   GlicKeyedService* glic_service() {
     return GlicKeyedServiceFactory::GetGlicKeyedService(

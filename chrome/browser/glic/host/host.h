@@ -178,6 +178,9 @@ class Host : public GlicSharingManagerProvider {
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();
 
+  // Reload the web contents, if it is present.
+  void Reload();
+
   // Creates the web contents that will own the Glic WebUI.
   // `initially_hidden` value is only relevant when
   // `kGlicGuestContentsVisibilityState` flag is enabled, otherwise the default
@@ -294,6 +297,8 @@ class Host : public GlicSharingManagerProvider {
   // Returns the current panel state.
   const mojom::PanelState& GetPanelState(GlicWebClientAccess* client) const;
 
+  base::WeakPtr<Host> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
  private:
   friend class HostManager;
 
@@ -357,6 +362,7 @@ class Host : public GlicSharingManagerProvider {
 
   // The current view in the primary page handler.
   mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;
+  base::WeakPtrFactory<Host> weak_ptr_factory_{this};
 };
 
 // A Host::Delegate which does nothing. For chrome://glic tabs or inactive

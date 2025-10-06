@@ -1522,10 +1522,7 @@ void GlicWindowControllerImpl::Preload() {
 }
 
 void GlicWindowControllerImpl::Reload() {
-  if (auto* webui_contents = host().webui_contents()) {
-    webui_contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
-                                           /*check_for_repost=*/false);
-  }
+  host().Reload();
 }
 
 bool GlicWindowControllerImpl::IsWarmed() const {
