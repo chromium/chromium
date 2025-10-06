@@ -23,6 +23,31 @@
 
 namespace permissions {
 
+using optimization_guide::proto::OptimizationTarget;
+
+namespace {
+
+inline OptimizationTarget getGeolocationAiv4OptTarget() {
+#if BUILDFLAG(IS_ANDROID)
+  return OptimizationTarget::
+      OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_ANDROID;
+#else
+  return OptimizationTarget::
+      OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_DESKTOP;
+#endif
+}
+inline OptimizationTarget getNotificationsAiv4OptTarget() {
+#if BUILDFLAG(IS_ANDROID)
+  return OptimizationTarget::
+      OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_ANDROID;
+#else
+  return OptimizationTarget::
+      OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP;
+#endif
+}
+
+}  // namespace
+
 PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     OptimizationGuideKeyedService* optimization_guide,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
@@ -54,26 +79,22 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
   notification_prediction_model_handler_ =
       std::make_unique<PredictionModelHandler>(
           optimization_guide,
-          optimization_guide::proto::OptimizationTarget::
+          OptimizationTarget::
               OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS);
 
   geolocation_prediction_model_handler_ =
       std::make_unique<PredictionModelHandler>(
           optimization_guide,
-          optimization_guide::proto::OptimizationTarget::
+          OptimizationTarget::
               OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
 
   if (IsAiv4ModelAvailable()) {
     VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv4";
     notification_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
-        optimization_guide,
-        optimization_guide::proto::OptimizationTarget::
-            OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP,
+        optimization_guide, getNotificationsAiv4OptTarget(),
         RequestType::kNotifications);
     geolocation_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
-        optimization_guide,
-        optimization_guide::proto::OptimizationTarget::
-            OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_DESKTOP,
+        optimization_guide, getGeolocationAiv4OptTarget(),
         RequestType::kGeolocation);
     return;
   }
@@ -81,12 +102,12 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv3";
     notification_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
         optimization_guide,
-        optimization_guide::proto::OptimizationTarget::
+        OptimizationTarget::
             OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE,
         RequestType::kNotifications);
     geolocation_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
         optimization_guide,
-        optimization_guide::proto::OptimizationTarget::
+        OptimizationTarget::
             OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE,
         RequestType::kGeolocation);
     return;
