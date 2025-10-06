@@ -12,8 +12,8 @@ rootWebArea
 ++++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"banana"
 ++++++++++++++staticText ignored
 ++++++++++++image ignored invisible
-++++++++++++staticText name='banana'
-++++++++++++++inlineTextBox name='banana' previousOnLineId=listMarker:"2. "
+++++++++++++staticText name='banana' previousOnLineId=staticText
+++++++++++++++inlineTextBox name='banana' previousOnLineId=staticText
 ++++++++++listItem
 ++++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"<newline>"
 ++++++++++++++staticText ignored

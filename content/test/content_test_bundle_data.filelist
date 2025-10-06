@@ -4812,6 +4812,8 @@ data/accessibility/html/list-item-nested-div-expected-win.txt
 data/accessibility/html/list-item-nested-div.html
 data/accessibility/html/list-item-shadow-dom-line-navigation-expected-blink.txt
 data/accessibility/html/list-item-shadow-dom-line-navigation.html
+data/accessibility/html/list-marker-multiline-expected-blink.txt
+data/accessibility/html/list-marker-multiline.html
 data/accessibility/html/list-marker-styles-expected-blink.txt
 data/accessibility/html/list-marker-styles.html
 data/accessibility/html/list-markers-expected-android-assist-data.txt
@@ -4830,6 +4832,8 @@ data/accessibility/html/list-text-expected-blink.txt
 data/accessibility/html/list-text-removal-expected-blink.txt
 data/accessibility/html/list-text-removal.html
 data/accessibility/html/list-text.html
+data/accessibility/html/list-with-multi-line-list-item-in-content-editable-expected-blink.txt
+data/accessibility/html/list-with-multi-line-list-item-in-content-editable.html
 data/accessibility/html/list.html
 data/accessibility/html/long-text-expected-blink.txt
 data/accessibility/html/long-text.html
