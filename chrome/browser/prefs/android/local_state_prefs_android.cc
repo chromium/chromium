@@ -11,6 +11,11 @@
 
 namespace chrome_browser_prefs {
 
+void OnLocalStatePrefsLoaded() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_LocalStatePrefs_setNativePrefsLoaded(env);
+}
+
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_LocalStatePrefs_GetPrefService(JNIEnv* env) {
   return g_browser_process->local_state()->GetJavaObject();

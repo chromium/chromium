@@ -180,6 +180,10 @@
 #include "chrome/browser/webapps/webapps_client_android.h"
 #include "chrome/browser/webauthn/android/chrome_webauthn_client_android.h"
 #include "components/webauthn/android/webauthn_client_android.h"
+
+namespace chrome_browser_prefs {
+void OnLocalStatePrefsLoaded();
+}  // namespace chrome_browser_prefs
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
@@ -411,6 +415,10 @@ void BrowserProcessImpl::Init() {
 
   MigrateObsoleteLocalStatePrefs(local_state());
   pref_change_registrar_.Init(local_state());
+
+#if BUILDFLAG(IS_ANDROID)
+  chrome_browser_prefs::OnLocalStatePrefsLoaded();
+#endif
 
   // Initialize the notification for the default browser setting policy.
   pref_change_registrar_.Add(
