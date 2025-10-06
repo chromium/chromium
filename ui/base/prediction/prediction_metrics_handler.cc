@@ -93,7 +93,14 @@ void PredictionMetricsHandler::AddPredictedEvent(
     const base::TimeTicks& time_stamp,
     const base::TimeTicks& frame_time,
     bool scrolling) {
-  DCHECK(!events_queue_.empty());
+  // A prediction can be generated synthetically before any real events have
+  // been processed. In this case, the metrics handler has no ground truth to
+  // compare against, so we must return early to avoid a crash from accessing an
+  // empty queue.
+  if (events_queue_.empty()) {
+    return;
+  }
+
   // If the predicted event is prior to the first real event, ignore it as we
   // don't have enough data for interpolation.
   if (time_stamp < events_queue_.front().time_stamp)

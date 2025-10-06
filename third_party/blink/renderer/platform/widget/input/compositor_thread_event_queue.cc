@@ -273,4 +273,8 @@ base::TimeTicks CompositorThreadEventQueue::PeekTimestamp() const {
   return empty() ? base::TimeTicks() : queue_.front()->event().TimeStamp();
 }
 
+const WebInputEvent* CompositorThreadEventQueue::FirstOriginalEvent() const {
+  return empty() ? nullptr : queue_.front()->first_original_event();
+}
+
 }  // namespace blink

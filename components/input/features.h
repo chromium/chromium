@@ -30,6 +30,13 @@ COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kUseAndroidBufferedInputDispatch);
 
 #endif
 
+// When enabled, if a synthetic scroll prediction cannot be generated (e.g.,
+// due to insufficient history), the next event from the queue is dispatched
+// directly without resampling. This ensures that input is not stalled when
+// prediction fails.
+COMPONENT_EXPORT(INPUT)
+BASE_DECLARE_FEATURE(kDispatchSingleEventIfNoPrediction);
+
 COMPONENT_EXPORT(INPUT)
 BASE_DECLARE_FEATURE(kLogBubblingTouchscreenGesturesForDebug);
 COMPONENT_EXPORT(INPUT)
@@ -41,6 +48,16 @@ BASE_DECLARE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp);
 COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kRendererHangWatcher);
 COMPONENT_EXPORT(INPUT)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kRendererHangWatcherDelay);
+
+// Updates the scroll predictor's input mapping and behavior. When enabled:
+// 1. It uses `sample_time` (VSync time - 5ms) as the boundary for a frame's
+//    events and "looks ahead" at the next event to improve prediction.
+// 2. It generates a synthetic scroll event if the queue is empty, keeping
+//    scrolling smooth even if input events are missed.
+COMPONENT_EXPORT(INPUT)
+BASE_DECLARE_FEATURE(kUpdateScrollPredictorInputMapping);
+COMPONENT_EXPORT(INPUT)
+BASE_DECLARE_FEATURE_PARAM(bool, kGenerateSyntheticScrollPrediction);
 
 COMPONENT_EXPORT(INPUT)
 BASE_DECLARE_FEATURE(kUnresponsiveMultipleStackCollection);

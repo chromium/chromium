@@ -16,6 +16,10 @@ BASE_FEATURE(kUseAndroidBufferedInputDispatch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kDispatchSingleEventIfNoPrediction,
+             "DispatchSingleEventIfNoPrediction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLogBubblingTouchscreenGesturesForDebug,
              "LogBubblingTouchscreenGesturesForDebug",
 #if BUILDFLAG(IS_ANDROID)
@@ -34,6 +38,15 @@ BASE_FEATURE(kIgnoreBubblingCollisionIfSourceDevicesMismatch,
 BASE_FEATURE(kScrollBubblingFix,
              "ScrollBubblingFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUpdateScrollPredictorInputMapping,
+             "UpdateScrollPredictorInputMapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kGenerateSyntheticScrollPrediction,
+                   &kUpdateScrollPredictorInputMapping,
+                   "generate_synthetic_scroll",
+                   true);
 
 // Flag guard for fix for crbug.com/404464598.
 BASE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp,

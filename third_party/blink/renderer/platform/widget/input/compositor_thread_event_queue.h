@@ -41,6 +41,8 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
   // Returns the timestamp of the event at the head of the queue.
   base::TimeTicks PeekTimestamp() const;
 
+  const WebInputEvent* FirstOriginalEvent() const;
+
   bool empty() const { return queue_.empty(); }
 
   size_t size() const { return queue_.size(); }

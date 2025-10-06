@@ -3,6 +3,7 @@ include_rules = [
     "-cc/ipc",
     "-cc/mojom",
     "-cc/test",
+    "+components/input/features.h",
     "+components/viz/common",
     "+media/base/media_switches.h",
     "+gpu/command_buffer/client/shared_memory_limits.h",
