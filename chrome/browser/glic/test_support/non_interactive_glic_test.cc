@@ -8,7 +8,9 @@
 
 namespace glic {
 
-NonInteractiveGlicTest::NonInteractiveGlicTest() = default;
+NonInteractiveGlicTest::NonInteractiveGlicTest() {
+  GlicFocusedBrowserManager::SetTestingModeForTesting(true);
+}
 
 NonInteractiveGlicTest::NonInteractiveGlicTest(
     const base::FieldTrialParams& glic_params,
