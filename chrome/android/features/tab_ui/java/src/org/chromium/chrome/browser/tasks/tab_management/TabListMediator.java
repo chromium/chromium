@@ -636,14 +636,21 @@ class TabListMediator implements TabListNotificationHandler {
                 @Override
                 public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
                     int index = mModelList.indexFromTabId(tab.getId());
+                    updateTab(index, tab, /* isUpdatingId= */ false, /* quickMode= */ false);
+
+                    // When pinning a tab in a group it will be removed from the group so the index
+                    // update is unnecessary.
+                    if (!mActionsOnAllRelatedTabs) return;
+
                     int finalIndex =
                             mModelList.indexOfNthTabCard(
                                     mCurrentTabGroupModelFilterSupplier
                                             .get()
                                             .getTabModel()
                                             .indexOf(tab));
-                    updateTab(index, tab, /* isUpdatingId= */ false, /* quickMode= */ false);
-                    if (index != finalIndex) {
+                    if (index != finalIndex
+                            && index != TabModel.INVALID_TAB_INDEX
+                            && finalIndex != TabModel.INVALID_TAB_INDEX) {
                         mModelList.move(index, finalIndex);
                     }
                 }
