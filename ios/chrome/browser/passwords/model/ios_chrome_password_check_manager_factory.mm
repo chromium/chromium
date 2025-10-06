@@ -17,6 +17,22 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 
+namespace {
+// Default factory for IOSChromePasswordCheckManager.
+scoped_refptr<RefcountedKeyedService> BuildInstance(ProfileIOS* profile) {
+  return base::MakeRefCounted<IOSChromePasswordCheckManager>(
+      profile->GetPrefs(),
+      IOSChromeBulkLeakCheckServiceFactory::GetForProfile(profile),
+      std::make_unique<password_manager::SavedPasswordsPresenter>(
+          IOSChromeAffiliationServiceFactory::GetForProfile(profile),
+          IOSChromeProfilePasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSPasskeyModelFactory::GetForProfile(profile)));
+}
+}  // namespace
+
 // static
 IOSChromePasswordCheckManagerFactory*
 IOSChromePasswordCheckManagerFactory::GetInstance() {
@@ -46,14 +62,11 @@ IOSChromePasswordCheckManagerFactory::~IOSChromePasswordCheckManagerFactory() =
 scoped_refptr<RefcountedKeyedService>
 IOSChromePasswordCheckManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  return base::MakeRefCounted<IOSChromePasswordCheckManager>(
-      profile->GetPrefs(),
-      IOSChromeBulkLeakCheckServiceFactory::GetForProfile(profile),
-      std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForProfile(profile),
-          IOSChromeProfilePasswordStoreFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSChromeAccountPasswordStoreFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSPasskeyModelFactory::GetForProfile(profile)));
+  return BuildInstance(profile);
+}
+
+// static
+IOSChromePasswordCheckManagerFactory::TestingFactory
+IOSChromePasswordCheckManagerFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildInstance);
 }

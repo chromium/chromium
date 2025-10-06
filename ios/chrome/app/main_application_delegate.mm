@@ -81,8 +81,10 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     _metricsMediator = [[MetricsMediator alloc] init];
     [_mainController setMetricsMediator:_metricsMediator];
     _appState = [[AppState alloc] initWithStartupInformation:_mainController];
-    _pushNotificationDelegate =
-        [[PushNotificationDelegate alloc] initWithAppState:_appState];
+    _pushNotificationDelegate = [[PushNotificationDelegate alloc]
+              initWithAppState:_appState
+        userNotificationCenter:UNUserNotificationCenter
+                                   .currentNotificationCenter];
     [_mainController setAppState:_appState];
   }
   return self;
@@ -147,6 +149,11 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // Any report captured from this point on should be noted as after terminate.
   crash_keys::SetCrashedAfterAppWillTerminate();
   base::ios::ScopedCriticalAction::ApplicationWillTerminate();
+
+  UNUserNotificationCenter* center =
+      [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = nil;
+  _pushNotificationDelegate = nil;
 
   // If `self.didFinishLaunching` is NO, that indicates that the app was
   // terminated before startup could be run. In this situation, skip running

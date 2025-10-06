@@ -19,6 +19,11 @@ class PushNotificationProfileServiceFactory
   static PushNotificationProfileServiceFactory* GetInstance();
   static PushNotificationProfileService* GetForProfile(ProfileIOS* profile);
 
+  // Returns the default factory used to build PushNotificationProfileService.
+  // Can be registered with AddTestingFactory to use real instances during
+  // testing.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<PushNotificationProfileServiceFactory>;
 

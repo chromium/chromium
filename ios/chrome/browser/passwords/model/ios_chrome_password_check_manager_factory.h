@@ -18,6 +18,7 @@ class IOSChromePasswordCheckManagerFactory
   static scoped_refptr<IOSChromePasswordCheckManager> GetForProfile(
       ProfileIOS* profile);
   static IOSChromePasswordCheckManagerFactory* GetInstance();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<IOSChromePasswordCheckManagerFactory>;
