@@ -143,7 +143,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'mac-m1_mini_2020-perf-pgo',
     'mac-m2-pro-perf',
     'mac-m3-pro-perf',
-    'mac-m4-mini-perf',
+    'mac-m4-mini-processor-perf',
     'win-10-processor-perf',
     'win-10_amd_laptop-perf',
     'win-10_laptop_low_end-processor-perf',
@@ -1135,6 +1135,10 @@ BUILDERS = {
             'synthetic_product_name':
                 'Mac16,10_arm64-64-Apple_M4_apple m4_32768_APPLE SSD AP2048Z',
         },
+    },
+    'mac-m4-mini-processor-perf': {
+        'platform': 'linux',
+        'perf_processor': True,
     },
     'win-10_amd_laptop-perf': {
         'tests': [

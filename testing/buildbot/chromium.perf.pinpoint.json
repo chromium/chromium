@@ -1472,8 +1472,7 @@
         "merge": {
           "args": [
             "--lightweight",
-            "--skip-perf",
-            "--upload-skia-json"
+            "--skip-perf"
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1508,6 +1507,7 @@
       }
     ]
   },
+  "mac-m4-mini-processor-perf": {},
   "win-10-perf": {
     "isolated_scripts": [
       {

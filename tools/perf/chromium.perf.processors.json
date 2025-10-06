@@ -18,6 +18,15 @@
       "script": "//tools/perf/process_perf_results.py"
     }
   },
+  "mac-m4-mini-processor-perf": {
+    "merge": {
+      "args": [
+        "--lightweight",
+        "--upload-skia-json"
+      ],
+      "script": "//tools/perf/process_perf_results.py"
+    }
+  },
   "win-10-processor-perf": {
     "merge": {
       "args": [
