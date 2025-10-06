@@ -23,7 +23,8 @@ class SavedPasswordsPresenter;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Called when the user confirms the export flow.
-- (void)startExport API_AVAILABLE(ios(26.0));
+- (void)startExportWithSecurityDomainSecrets:
+    (NSArray<NSData*>*)securityDomainSecrets API_AVAILABLE(ios(26.0));
 
 @end
 

@@ -33,10 +33,12 @@
 #pragma mark - Public
 
 // Called when the user confirms the export flow.
-- (void)startExport {
-  _credentialExporter =
-      [[CredentialExporter alloc] initWithWindow:_window
-                         savedPasswordsPresenter:_savedPasswordsPresenter];
+- (void)startExportWithSecurityDomainSecrets:
+    (NSArray<NSData*>*)securityDomainSecrets {
+  _credentialExporter = [[CredentialExporter alloc]
+               initWithWindow:_window
+      savedPasswordsPresenter:_savedPasswordsPresenter
+        securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets];
   [_credentialExporter startExport];
 }
 

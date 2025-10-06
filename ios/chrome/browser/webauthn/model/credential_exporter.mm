@@ -21,11 +21,16 @@
 
   // Used to fetch the user's saved passwords for export.
   raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
+
+  // Secrets for passkey security domain needed for decryption.
+  // TODO(crbug.com/444112223): Ensure this is in memory only for decryption.
+  NSArray<NSData*>* _securityDomainSecrets;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
        savedPasswordsPresenter:
-           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter {
+           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+         securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
   CHECK(window);
   CHECK(savedPasswordsPresenter);
 
@@ -34,6 +39,7 @@
     _window = window;
     _credentialExportManager = [[CredentialExportManager alloc] init];
     _savedPasswordsPresenter = savedPasswordsPresenter;
+    _securityDomainSecrets = securityDomainSecrets;
   }
   return self;
 }
