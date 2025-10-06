@@ -946,6 +946,7 @@ select:-internal-list-box {
       field-sizing: -internal-auto-base(initial, content);
       border: -internal-auto-base(1px solid light-dark(#767676, #858585), 1px solid currentColor);
       box-sizing: -internal-auto-base(border-box, initial);
+      block-size: -internal-auto-base(initial, calc(max(24px, 1lh) * attr(size type(<integer>), 4)));
     }
     @supports not blink-feature(CustomizableSelectInPage) {
       border-radius: 2px;
