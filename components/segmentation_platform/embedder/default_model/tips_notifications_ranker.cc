@@ -38,18 +38,14 @@ constexpr LabelPair<TipsNotificationsRanker::Label> kTipsNotificationsLabels[] =
      {TipsNotificationsRanker::kBottomOmniboxTipIdx, kBottomOmnibox}};
 
 // Enum values for histograms.
-constexpr std::array<int32_t, 1> kEnumValueForEnhancedSafeBrowsingUsage{
-    /*EnhancedSafeBrowsing=*/1};
-
 constexpr std::array<int32_t, 1> kEnumValueForQuickDeleteMagicStackImpression{
     /*QuickDelete=*/9};
 
 constexpr FeaturePair<TipsNotificationsRanker::Feature>
     kTipsNotificationsRankerFeatures[] = {
         {TipsNotificationsRanker::kEnhancedSafeBrowsingUseCountIdx,
-         features::UMAEnum("SafeBrowsing.Settings.UserAction.Default",
-                           28,
-                           kEnumValueForEnhancedSafeBrowsingUsage)},
+         features::UserAction("SafeBrowsing.Settings.EnhancedProtectionClicked",
+                              28)},
         {TipsNotificationsRanker::kQuickDeleteMagicStackShownCountIdx,
          features::UMAEnum("MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
                            28,
