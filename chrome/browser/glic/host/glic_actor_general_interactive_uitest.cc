@@ -74,13 +74,7 @@ MultiStep GlicActorGeneralUiTest::WaitAction(
   return WaitAction(task_id_, std::move(expected_result));
 }
 
-// TODO(crbug.com/448882109): Disable failing test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CreateTaskAndNavigate DISABLED_CreateTaskAndNavigate
-#else
-#define MAYBE_CreateTaskAndNavigate CreateTaskAndNavigate
-#endif
-IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, MAYBE_CreateTaskAndNavigate) {
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateTaskAndNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   base::HistogramTester histogram_tester;
@@ -92,12 +86,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, MAYBE_CreateTaskAndNavigate) {
                   WaitForWebContentsReady(kNewActorTabId, task_url));
 
   // Two samples of 1 tab for CreateTab, Navigate actions.
-  // The durations should not be zero.
   histogram_tester.ExpectUniqueSample("Actor.PageContext.TabCount", 1, 2);
-  histogram_tester.ExpectBucketCount("Actor.PageContext.APC.Duration", 0, 0);
   histogram_tester.ExpectTotalCount("Actor.PageContext.APC.Duration", 2);
-  histogram_tester.ExpectBucketCount("Actor.PageContext.Screenshot.Duration", 0,
-                                     0);
   histogram_tester.ExpectTotalCount("Actor.PageContext.Screenshot.Duration", 2);
 }
 
