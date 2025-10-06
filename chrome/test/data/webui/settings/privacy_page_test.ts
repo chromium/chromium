@@ -756,8 +756,8 @@ suite('HappinessTrackingSurveys', function() {
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 
-  test('PermissionsTrigger', async function() {
-    page.$.permissionsLinkRow.click();
+  test('SiteSettingsTrigger', async function() {
+    page.$.siteSettingsLinkRow.click();
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);

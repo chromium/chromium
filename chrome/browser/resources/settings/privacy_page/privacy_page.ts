@@ -42,7 +42,7 @@ import {getTemplate} from './privacy_page.html.js';
 export interface SettingsPrivacyPageElement {
   $: {
     clearBrowsingData: CrLinkRowElement,
-    permissionsLinkRow: CrLinkRowElement,
+    siteSettingsLinkRow: CrLinkRowElement,
     securityLinkRow: CrLinkRowElement,
   };
 }
@@ -165,7 +165,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     focusWithoutInk(toFocus);
   }
 
-  private onPermissionsPageClick_() {
+  private onSiteSettingsLinkRowClick_() {
     this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
@@ -276,7 +276,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     }
 
     if (routes.SITE_SETTINGS) {
-      map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
+      map.set(routes.SITE_SETTINGS.path, '#siteSettingsLinkRow');
     }
 
     return map;
@@ -347,7 +347,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsWebPrinting':
       case 'siteSettingsWindowManagement':
       case 'siteSettingsZoomLevels':
-        triggerId = 'permissionsLinkRow';
+        triggerId = 'siteSettingsLinkRow';
         break;
       case 'privacySandbox':
       case 'privacySandboxAdMeasurement':
