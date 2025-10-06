@@ -1446,23 +1446,17 @@ TEST_F(TransportSecurityStateStaticTest, PreloadedPins) {
   EXPECT_TRUE(OnlyPinningInStaticState("doubleclick.net"));
   EXPECT_TRUE(OnlyPinningInStaticState("googlegroups.com"));
 
-  // Facebook has pinning and hsts on facebook.com, but only pinning on
-  // subdomains.
-  EXPECT_TRUE(state.GetStaticPKPState("facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  // Facebook is not pinned but has hsts only on facebook.com.
+  EXPECT_FALSE(state.GetStaticPKPState("facebook.com", &pkp_state));
   EXPECT_TRUE(StaticShouldRedirect("facebook.com"));
-
-  EXPECT_TRUE(state.GetStaticPKPState("foo.facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  EXPECT_FALSE(state.GetStaticPKPState("foo.facebook.com", &pkp_state));
   EXPECT_FALSE(StaticShouldRedirect("foo.facebook.com"));
 
-  // www.facebook.com and subdomains have both pinning and hsts.
-  EXPECT_TRUE(state.GetStaticPKPState("www.facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  // www.facebook.com and subdomains are not pinned, but do have hsts.
+  EXPECT_FALSE(state.GetStaticPKPState("www.facebook.com", &pkp_state));
   EXPECT_TRUE(StaticShouldRedirect("www.facebook.com"));
 
-  EXPECT_TRUE(state.GetStaticPKPState("foo.www.facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  EXPECT_FALSE(state.GetStaticPKPState("foo.www.facebook.com", &pkp_state));
   EXPECT_TRUE(StaticShouldRedirect("foo.www.facebook.com"));
 }
 
