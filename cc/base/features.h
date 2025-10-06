@@ -222,6 +222,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimDirectReceiverIpc);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kOverscrollBehaviorRespectedOnAllScrollContainers);
 
+// When enabled, the overscroll effect will display on non-root scrollers.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOverscrollEffectOnNonRootScrollers);
+
 // A kill switch in case skipping finish causes unexpected issues.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink);
 
