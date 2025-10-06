@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/icc_profile.h"
@@ -360,7 +361,7 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     // ContentColorUsage. BT2020 primaries and PQ transfer function require a
     // 10-bit buffer.
     display_color_spaces = gfx::DisplayColorSpaces(
-        gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::RGBA_1010102);
+        gfx::ColorSpace::CreateHDR10(), viz::SinglePlaneFormat::kRGBA_1010102);
     // TODO(b/165822222): Set initial luminance values based on display
     // brightness
     display_color_spaces.SetSDRMaxLuminanceNits(
