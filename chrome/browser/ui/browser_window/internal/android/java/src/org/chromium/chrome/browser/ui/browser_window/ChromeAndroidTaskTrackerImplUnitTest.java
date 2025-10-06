@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID;
 
 import android.app.ActivityManager;
@@ -47,6 +48,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -581,5 +583,61 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // task2 was the last activated, so task1 (the second to last) should be activated.
         verify(activityManager2, never()).moveTaskToFront(eq(task2.getId()), anyInt());
         verify(activityManager1).moveTaskToFront(eq(task1.getId()), anyInt());
+    }
+
+    @Test
+    public void obtainTask_fromPendingState_dispatchesPendingShowInactive() {
+        doTestDispatchPendingShowInactiveOrDeactivate(PendingAction.SHOW_INACTIVE);
+    }
+
+    @Test
+    public void obtainTask_fromPendingState_dispatchesPendingDeactivate() {
+        doTestDispatchPendingShowInactiveOrDeactivate(PendingAction.DEACTIVATE);
+    }
+
+    private void doTestDispatchPendingShowInactiveOrDeactivate(@PendingAction int action) {
+        assert action == PendingAction.SHOW_INACTIVE || action == PendingAction.DEACTIVATE;
+        // Arrange: Create live task and make it the top resumed task.
+        int initialTopResumedTaskId = 0;
+        var initialTopResumedTask =
+                obtainTaskWithMockDeps(initialTopResumedTaskId, /* pendingId= */ null);
+        initialTopResumedTask.onTopResumedActivityChangedWithNative(true);
+        var mockWindowAndroid =
+                assumeNonNull(initialTopResumedTask.getActivityWindowAndroidForTesting());
+        var mockActivity = assumeNonNull(mockWindowAndroid.getActivity().get());
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        // Arrange: Create pending task.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var pendingTask = mChromeAndroidTaskTracker.createPendingTask(mockParams);
+        // Arrange: Request SHOW_INACTIVE or DEACTIVATE on the pending task.
+        if (action == PendingAction.SHOW_INACTIVE) {
+            pendingTask.showInactive();
+        } else {
+            pendingTask.deactivate();
+        }
+
+        // Act: Simulate newly created activity gains focus.
+        mFakeTime.advanceMillis(100);
+        var newTask = obtainTaskWithMockDeps(/* taskId= */ 2, pendingTask.getPendingId());
+        newTask.onTopResumedActivityChangedWithNative(true);
+
+        // Assert: Penultimately activated task gets activated.
+        verify(mockActivityManager).moveTaskToFront(initialTopResumedTaskId, 0);
+    }
+
+    private ChromeAndroidTaskImpl obtainTaskWithMockDeps(int taskId, @Nullable Integer pendingId) {
+        var mockActivityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var mockProfile = mock(Profile.class);
+        var mockTabModel = mock(TabModel.class);
+        when(mockTabModel.getProfile()).thenReturn(mockProfile);
+        return (ChromeAndroidTaskImpl)
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL,
+                        mockActivityWindowAndroid,
+                        mockTabModel,
+                        pendingId);
     }
 }

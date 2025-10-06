@@ -23,6 +23,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -30,6 +32,7 @@ import android.os.Build;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.view.WindowMetrics;
 
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -753,16 +756,7 @@ public class ChromeAndroidTaskImplUnitTest {
         when(mockActivity.isInMultiWindowMode()).thenReturn(true);
 
         // Mock getMaximizedBounds().
-        var mockMaxWindowMetrics = mock(WindowMetrics.class);
-        var mockMaxWindowInsets = mock(WindowInsets.class);
-        when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(mockMaxWindowMetrics);
-        when(mockMaxWindowMetrics.getWindowInsets()).thenReturn(mockMaxWindowInsets);
-        var tappableInsets = Insets.of(0, 10, 0, 20);
-        when(mockMaxWindowInsets.getInsets(WindowInsets.Type.tappableElement()))
-                .thenReturn(tappableInsets);
-        var fullscreenBounds = new Rect(0, 0, 1920, 1080);
-        when(mockMaxWindowMetrics.getBounds()).thenReturn(fullscreenBounds);
-        var maximizedBounds = new Rect(0, 10, 1920, 1060);
+        var maximizedBounds = mockMaximizedBounds(mockWindowManager);
 
         // Act.
         chromeAndroidTask.maximize();
@@ -785,10 +779,6 @@ public class ChromeAndroidTaskImplUnitTest {
                         /* taskId= */ 1);
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var mockActivityWindowAndroid =
-                chromeAndroidTaskWithMockDeps
-                        .mActivityWindowAndroidMocks
-                        .mMockActivityWindowAndroid;
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
 
@@ -804,15 +794,7 @@ public class ChromeAndroidTaskImplUnitTest {
         when(mockWindowMetrics.getBounds()).thenReturn(currentBounds);
 
         // Mock getMaximizedBounds().
-        var mockMaxWindowMetrics = mock(WindowMetrics.class);
-        var mockMaxWindowInsets = mock(WindowInsets.class);
-        when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(mockMaxWindowMetrics);
-        when(mockMaxWindowMetrics.getWindowInsets()).thenReturn(mockMaxWindowInsets);
-        var tappableInsets = Insets.of(0, 10, 0, 20);
-        when(mockMaxWindowInsets.getInsets(WindowInsets.Type.tappableElement()))
-                .thenReturn(tappableInsets);
-        var fullscreenBounds = new Rect(0, 0, 1920, 1080);
-        when(mockMaxWindowMetrics.getBounds()).thenReturn(fullscreenBounds);
+        mockMaximizedBounds(mockWindowManager);
 
         // Act & Assert.
         assertFalse(chromeAndroidTask.isMaximized());
@@ -1173,7 +1155,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void setBounds_whenPending_enqueuesPendingAction() {
+    public void setBounds_whenPending_nonEmptyBounds_enqueuesPendingAction() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1188,6 +1170,22 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 PendingAction.SET_BOUNDS, pendingActionManager.getPendingActionsForTesting()[0]);
         assertEquals(taskBounds, pendingActionManager.getPendingBoundsInDp());
+    }
+
+    @Test
+    public void setBounds_whenPending_emptyBounds_ignoresPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+
+        // Act.
+        task.setBoundsInDp(new Rect());
+
+        // Assert.
+        var pendingActionManager = task.getPendingActionManagerForTesting();
+        assertEquals(PendingAction.NONE, pendingActionManager.getPendingActionsForTesting()[0]);
+        assertNull(pendingActionManager.getPendingBoundsInDp());
     }
 
     @Test
@@ -1317,7 +1315,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void getRestoredBoundsInDp_whenPending_withPendingSetBounds_returnsPendingBounds() {
+    public void getRestoredBoundsInDp_whenPending_withNonEmptyBounds_returnsPendingBounds() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -1325,6 +1323,39 @@ public class ChromeAndroidTaskImplUnitTest {
         // Request SET_BOUNDS in pending state.
         var bounds = new Rect(100, 100, 600, 800);
         task.setBoundsInDp(bounds);
+
+        // Act and Assert.
+        assertEquals(bounds, task.getRestoredBoundsInDp());
+    }
+
+    @Test
+    public void
+            getRestoredBoundsInDp_whenPending_withNonEmptyRestoredBounds_returnsPendingRestoredBounds() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request SET_BOUNDS, MAXIMIZE, and RESTORE in pending state.
+        var bounds = new Rect(100, 100, 600, 800);
+        task.setBoundsInDp(bounds);
+        task.maximize();
+        task.restore();
+
+        // Act and Assert.
+        assertEquals(bounds, task.getRestoredBoundsInDp());
+    }
+
+    @Test
+    public void
+            getRestoredBoundsInDp_whenPending_withoutPendingRestoredBounds_returnsInitialBounds() {
+        // Arrange.
+        var bounds = new Rect(100, 100, 600, 800);
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, bounds, WindowShowState.DEFAULT);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Request RESTORE in pending state.
+        task.restore();
 
         // Act and Assert.
         assertEquals(bounds, task.getRestoredBoundsInDp());
@@ -1417,5 +1448,257 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act and Assert.
         assertTrue(task.isVisible());
+    }
+
+    @Test
+    public void setActivityWindowAndroid_fromPendingState_dispatchesPendingShow() {
+        // Arrange: Create pending task.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Arrange: Request SHOW on a pending task.
+        task.show();
+        int taskId = 2;
+        // Arrange: Setup WindowAndroid.
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var mockActivity = activityWindowAndroid.getActivity().get();
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
+
+        // Act.
+        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+
+        // Assert.
+        verify(mockActivityManager).moveTaskToFront(taskId, 0);
+    }
+
+    @Test
+    public void setActivityWindowAndroid_fromPendingState_dispatchesPendingClose() {
+        // Arrange: Create pending task.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Arrange: Request CLOSE on a pending task.
+        task.close();
+        int taskId = 2;
+        // Arrange: Setup WindowAndroid.
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var mockActivity = activityWindowAndroid.getActivity().get();
+
+        // Act.
+        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+
+        // Assert.
+        verify(mockActivity).finishAndRemoveTask();
+    }
+
+    @Test
+    public void setActivityWindowAndroid_fromPendingState_dispatchesPendingActivate() {
+        // Arrange: Create pending task.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        // Arrange: Request ACTIVATE on a pending task.
+        task.activate();
+        // Arrange: Setup WindowAndroid.
+        int taskId = 2;
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var mockActivity = activityWindowAndroid.getActivity().get();
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+
+        // Act.
+        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+
+        // Assert.
+        verify(mockActivityManager).moveTaskToFront(taskId, 0);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void setActivityWindowAndroid_fromPendingState_dispatchesPendingMaximize() {
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1, /* mockNatives= */ true, /* isPendingTask= */ true);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        // Arrange: Request MAXIMIZE on a pending task.
+        chromeAndroidTask.maximize();
+        // Arrange: Setup WindowAndroid and mock maximized bounds.
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        var mockActivity = activityWindowAndroid.getActivity().get();
+        when(mockActivity.isInMultiWindowMode()).thenReturn(true);
+        var maximizedBounds =
+                mockMaximizedBounds(
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityWindowAndroidMocks
+                                .mMockWindowManager);
+
+        // Act.
+        chromeAndroidTask.setActivityWindowAndroid(
+                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+
+        // Assert.
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        var capturedBounds = boundsCaptor.getValue();
+        assertEquals(maximizedBounds, capturedBounds);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void setActivityWindowAndroid_fromPendingState_dispatchesPendingMinimize() {
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1, /* mockNatives= */ true, /* isPendingTask= */ true);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        // Arrange: Request MINIMIZE on a pending task.
+        chromeAndroidTask.minimize();
+        // Arrange: Setup WindowAndroid.
+        int taskId = 2;
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var mockActivity = activityWindowAndroid.getActivity().get();
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
+
+        // Act.
+        chromeAndroidTask.setActivityWindowAndroid(
+                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+
+        // Assert.
+        verify(mockActivity).moveTaskToBack(true);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void
+            setActivityWindowAndroid_fromPendingState_withNonEmptyPendingBounds_dispatchesPendingRestore() {
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1, /* mockNatives= */ true, /* isPendingTask= */ true);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        // Arrange: Setup display parameters.
+        var displayAndroid =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
+        float dipScale = 2.0f;
+        when(displayAndroid.getDipScale()).thenReturn(dipScale);
+        // Arrange: Sequentially request SET_BOUNDS, MAXIMIZE, and RESTORE on a pending task.
+        Rect pendingBoundsInDp = new Rect(10, 20, 800, 600);
+        chromeAndroidTask.setBoundsInDp(pendingBoundsInDp);
+        chromeAndroidTask.maximize();
+        chromeAndroidTask.restore();
+        // Arrange: Setup WindowAndroid.
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+
+        // Act.
+        chromeAndroidTask.setActivityWindowAndroid(
+                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+
+        // Assert.
+        Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        assertEquals(expectedBoundsInPx, boundsCaptor.getValue());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void
+            setActivityWindowAndroid_fromPendingState_withEmptyPendingBounds_ignoresPendingRestore() {
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1, /* mockNatives= */ true, /* isPendingTask= */ true);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        // Arrange: Request RESTORE on a pending task.
+        chromeAndroidTask.restore();
+        // Arrange: Setup WindowAndroid.
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+
+        // Act.
+        chromeAndroidTask.setActivityWindowAndroid(
+                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+
+        // Assert.
+        verify(apiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void setActivityWindowAndroid_fromPendingState_dispatchesPendingSetBounds() {
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1, /* mockNatives= */ true, /* isPendingTask= */ true);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        // Arrange: Setup display parameters.
+        var displayAndroid =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
+        float dipScale = 2.0f;
+        when(displayAndroid.getDipScale()).thenReturn(dipScale);
+        // Arrange: Request SET_BOUNDS on a pending task.
+        Rect pendingBoundsInDp = new Rect(10, 20, 800, 600);
+        chromeAndroidTask.setBoundsInDp(pendingBoundsInDp);
+        // Arrange: Setup WindowAndroid.
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+
+        // Act.
+        chromeAndroidTask.setActivityWindowAndroid(
+                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+
+        // Assert.
+        Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        assertEquals(expectedBoundsInPx, boundsCaptor.getValue());
+    }
+
+    /**
+     * This method sets up mock insets and window metrics to simulate and return maximized window
+     * bounds when {@link WindowManager#getMaximumWindowMetrics()} is invoked from {@code
+     * mockWindowManager}.
+     */
+    private static Rect mockMaximizedBounds(WindowManager mockWindowManager) {
+        var mockMaxWindowMetrics = mock(WindowMetrics.class);
+        var mockMaxWindowInsets = mock(WindowInsets.class);
+        when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(mockMaxWindowMetrics);
+        when(mockMaxWindowMetrics.getWindowInsets()).thenReturn(mockMaxWindowInsets);
+        var tappableInsets = Insets.of(0, 10, 0, 20);
+        when(mockMaxWindowInsets.getInsets(WindowInsets.Type.tappableElement()))
+                .thenReturn(tappableInsets);
+        var fullscreenBounds = new Rect(0, 0, 1920, 1080);
+        when(mockMaxWindowMetrics.getBounds()).thenReturn(fullscreenBounds);
+        return new Rect(0, 10, 1920, 1060);
     }
 }

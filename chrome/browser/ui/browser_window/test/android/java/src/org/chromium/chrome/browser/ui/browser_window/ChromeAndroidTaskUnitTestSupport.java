@@ -67,9 +67,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
         /**
          * Mock {@link AndroidBrowserWindow.Natives}.
          *
-         * <p>This is {@code null} if {@link #createChromeAndroidTaskWithMockDeps(int, boolean)} was
-         * called with {@code mockNatives} set to false, in which case the test is expected to run
-         * the real native code.
+         * <p>This is {@code null} if {@link #createChromeAndroidTaskWithMockDeps(int, boolean,
+         * boolean)} was called with {@code mockNatives} set to false, in which case the test is
+         * expected to run the real native code.
          */
         final AndroidBrowserWindow.@Nullable Natives mMockAndroidBrowserWindowNatives;
 
@@ -120,9 +120,10 @@ public final class ChromeAndroidTaskUnitTestSupport {
 
     private ChromeAndroidTaskUnitTestSupport() {}
 
-    /** See {@link #createChromeAndroidTaskWithMockDeps(int, boolean)}. */
+    /** See {@link #createChromeAndroidTaskWithMockDeps(int, boolean, boolean)}. */
     public static ChromeAndroidTaskWithMockDeps createChromeAndroidTaskWithMockDeps(int taskId) {
-        return createChromeAndroidTaskWithMockDeps(taskId, /* mockNatives= */ true);
+        return createChromeAndroidTaskWithMockDeps(
+                taskId, /* mockNatives= */ true, /* isPendingTask= */ false);
     }
 
     /**
@@ -132,10 +133,14 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * @param mockNatives Whether to mock {@code @NativeMethods}. Set this to false if the test
      *     needs to run native code, such as in .cc unit tests. Tests that set this to false must
      *     initialize a Native ProfileManager with a valid profile.
+     * @param isPendingTask If true, the returned {@link ChromeAndroidTask} will be in the pending
+     *     state. The returned mock dependencies will not be connected with the pending {@link
+     *     ChromeAndroidTask}. To connect the mocks with the pending {@link ChromeAndroidTask}, pass
+     *     them to {@link ChromeAndroidTask#setActivityWindowAndroid}.
      * @return A new instance of {@link ChromeAndroidTaskWithMockDeps}.
      */
     public static ChromeAndroidTaskWithMockDeps createChromeAndroidTaskWithMockDeps(
-            int taskId, boolean mockNatives) {
+            int taskId, boolean mockNatives, boolean isPendingTask) {
         Profile profile =
                 mockNatives ? mock(Profile.class) : ProfileManager.getLastUsedRegularProfile();
         TabModel tabModel = mock(TabModel.class);
@@ -144,11 +149,19 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var activityWindowAndroidMocks = createActivityWindowAndroidMocks(taskId);
         var mockAndroidBrowserWindowNatives =
                 mockNatives ? createMockAndroidBrowserWindowNatives() : null;
-        var chromeAndroidTask =
-                new ChromeAndroidTaskImpl(
-                        BrowserWindowType.NORMAL,
-                        activityWindowAndroidMocks.mMockActivityWindowAndroid,
-                        tabModel);
+        ChromeAndroidTask chromeAndroidTask;
+        if (isPendingTask) {
+            chromeAndroidTask =
+                    new ChromeAndroidTaskImpl(
+                            /* pendingId= */ IdSequencer.next(),
+                            createMockAndroidBrowserWindowCreateParams());
+        } else {
+            chromeAndroidTask =
+                    new ChromeAndroidTaskImpl(
+                            BrowserWindowType.NORMAL,
+                            activityWindowAndroidMocks.mMockActivityWindowAndroid,
+                            tabModel);
+        }
         var mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
         var mockApiDelegate = mock(AconfigFlaggedApiDelegate.class);

@@ -37,7 +37,9 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
         // BrowserWindowInterface pointer that ExtensionWindowControllerBridge depends on.
         mChromeAndroidTask =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                                FAKE_CHROME_ANDROID_TASK_ID, /* mockNatives= */ false)
+                                FAKE_CHROME_ANDROID_TASK_ID,
+                                /* mockNatives= */ false,
+                                /* isPendingTask= */ false)
                         .mChromeAndroidTask;
 
         mExtensionWindowControllerBridge =

@@ -77,11 +77,20 @@ final class PendingActionManager {
      * requested) or after a primary action.
      */
     @GuardedBy("mPendingActionsLock")
-    private final @PendingAction int[] mPendingActions = {PendingAction.NONE, PendingAction.NONE};
+    private @PendingAction int[] mPendingActions = {PendingAction.NONE, PendingAction.NONE};
 
-    /** Tracks the size a window should have when it's fully initialized. */
+    /**
+     * Tracks the size a window should have when it is fully initialized based on a SET_BOUNDS
+     * request.
+     */
     @GuardedBy("mPendingActionsLock")
     private @Nullable Rect mPendingBoundsInDp;
+
+    /**
+     * Tracks the size a window should have when it is fully initialized based on a RESTORE request.
+     */
+    @GuardedBy("mPendingActionsLock")
+    private @Nullable Rect mPendingRestoredBoundsInDp;
 
     /**
      * Requests an action to be performed on the pending task. Use this for actions that do not
@@ -127,6 +136,21 @@ final class PendingActionManager {
         requestGlobalOverrideAction(PendingAction.SET_BOUNDS);
         synchronized (mPendingActionsLock) {
             mPendingBoundsInDp = boundsInDp;
+            // Cache last requested bounds for potential subsequent restoration. Pending restored
+            // bounds will be cleared after all pending actions are dispatched.
+            mPendingRestoredBoundsInDp = mPendingBoundsInDp;
+        }
+    }
+
+    @Nullable Rect getPendingBoundsInDp() {
+        synchronized (mPendingActionsLock) {
+            return mPendingBoundsInDp;
+        }
+    }
+
+    @Nullable Rect getPendingRestoredBoundsInDp() {
+        synchronized (mPendingActionsLock) {
+            return mPendingRestoredBoundsInDp;
         }
     }
 
@@ -142,6 +166,17 @@ final class PendingActionManager {
                 return mPendingActions[0] == action;
             }
             return mPendingActions[1] == action;
+        }
+    }
+
+    @PendingAction
+    int[] getAndClearPendingActions() {
+        synchronized (mPendingActionsLock) {
+            var actions = mPendingActions;
+            mPendingActions = new int[] {PendingAction.NONE, PendingAction.NONE};
+            mPendingBoundsInDp = null;
+            mPendingRestoredBoundsInDp = null;
+            return actions;
         }
     }
 
@@ -249,12 +284,6 @@ final class PendingActionManager {
     int[] getPendingActionsForTesting() {
         synchronized (mPendingActionsLock) {
             return mPendingActions;
-        }
-    }
-
-    @Nullable Rect getPendingBoundsInDp() {
-        synchronized (mPendingActionsLock) {
-            return mPendingBoundsInDp;
         }
     }
 
