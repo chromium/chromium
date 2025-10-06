@@ -924,12 +924,11 @@ class VideoTextureBacking : public cc::TextureBacking {
     return raster_context_provider_;
   }
 
-  bool BeginAccess(gpu::raster::RasterInterface* ri) {
+  void BeginAccess(gpu::raster::RasterInterface* ri) {
     CHECK(!ri_access_);
     CHECK(raster_context_provider()->ContextCapabilities().gpu_rasterization);
     ri_access_ =
         shared_image_->BeginRasterAccess(ri, sync_token_, /*readonly=*/true);
-    return true;
   }
 
   void clear_access() {
@@ -1907,16 +1906,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
     cache_->coded_size = video_frame->coded_size();
 
-    // In OOPR mode, we can keep the entire TextureBacking. In non-OOPR,
-    // we can recycle the mailbox/texture, but have to replace the SkImage.
     paint_image_builder.set_texture_backing(cache_->texture_backing,
                                             cc::PaintImage::GetNextContentId());
-
-    bool success = cache_->texture_backing->BeginAccess(ri);
-    if (!success) {
-      cache_.reset();
-      return false;
-    }
+    cache_->texture_backing->BeginAccess(ri);
   } else {
     cache_.emplace(video_frame->unique_id());
     paint_image_builder.set_paint_image_generator(
