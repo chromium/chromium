@@ -109,6 +109,8 @@ constexpr char kDriveSlidesIconResourceName[] =
     "//resources/cr_components/searchbox/icons/drive_slides.svg";
 constexpr char kDriveVideoIconResourceName[] =
     "//resources/cr_components/searchbox/icons/drive_video.svg";
+constexpr char kEnterpriseIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/enterprise.svg";
 constexpr char kExtensionAppIconResourceName[] =
     "//resources/cr_components/searchbox/icons/extension_app.svg";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -465,9 +467,7 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
   } else if (icon.name == omnibox::kDriveVideoIcon.name) {
     return kDriveVideoIconResourceName;
   } else if (icon.name == omnibox::kEnterpriseIcon.name) {
-    // TODO(crbug.com/446953332): Add icon. Not necessary ATM because IPH
-    //   matches aren't shown in webUI.
-    NOTREACHED();
+    return kEnterpriseIconResourceName;
   } else if (icon.name == omnibox::kExtensionAppIcon.name) {
     return kExtensionAppIconResourceName;
   } else if (icon.name == omnibox::kIncognitoCr2023Icon.name) {
