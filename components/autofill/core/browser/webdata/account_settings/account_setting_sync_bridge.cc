@@ -107,6 +107,14 @@ AccountSettingSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
+void AccountSettingSyncBridge::ApplyDisableSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  store_->DeleteAllDataAndMetadata(base::BindOnce(
+      &AccountSettingSyncBridge::ReportErrorIfSet, weak_factory_.GetWeakPtr()));
+  settings_.clear();
+}
+
 std::unique_ptr<syncer::DataBatch> AccountSettingSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   // ACCOUNT_SETTING is read-only, so `GetDataForCommit()` is not needed.

@@ -196,6 +196,19 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
               Optional(HasStringSetting("name2", "string")));
 }
 
+TEST_F(AccountSettingSyncBridgeTest, ApplyDisableSyncChanges) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
+  ASSERT_THAT(bridge().GetSetting("name"),
+              Optional(HasStringSetting("name", "value")));
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  // Expect that the change was applied immediately.
+  EXPECT_FALSE(bridge().GetSetting("name"));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridgeAnsWaitForModelToSync();
+  EXPECT_FALSE(bridge().GetSetting("name"));
+}
+
 TEST_F(AccountSettingSyncBridgeTest, GetAllDataForDebugging) {
   ASSERT_TRUE(
       StartSyncingWithServerData({CreateSettingSpecifics("name1", "string"),
