@@ -546,6 +546,7 @@ static_library("ui") {
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",

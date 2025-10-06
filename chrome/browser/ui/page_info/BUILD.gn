@@ -130,6 +130,7 @@ source_set("unit_tests") {
     "//components/permissions:permissions_common",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/strings:components_strings",
     "//components/subresource_filter/content/browser",

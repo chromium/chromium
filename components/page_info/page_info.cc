@@ -55,6 +55,7 @@
 #include "components/permissions/request_type.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/ssl_errors/error_info.h"
@@ -777,6 +778,19 @@ void PageInfo::OnSitePermissionChanged(
       content_settings::CanBeAutoRevokedAsUnusedPermission(
           type, info->delegate().ToValue(*setting), is_one_time)) {
     constraints.set_track_last_visit_for_autoexpiration(true);
+  }
+
+  // If notification permission changes from allowed to not allowed, log the
+  // histogram.
+  if (type == ContentSettingsType::NOTIFICATIONS &&
+      setting_old == CONTENT_SETTING_ALLOW &&
+      (!setting ||
+       ToContentSettingForMetrics(info, setting) == CONTENT_SETTING_ASK ||
+       ToContentSettingForMetrics(info, setting) == CONTENT_SETTING_BLOCK)) {
+    safe_browsing::SafeBrowsingMetricsCollector::
+        LogSafeBrowsingNotificationRevocationSourceHistogram(
+            safe_browsing::NotificationRevocationSource::
+                kUserManuallyChangedSiteSetting);
   }
 
   map->SetNarrowestContentSetting(primary_url, site_url_, type, setting,

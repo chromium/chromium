@@ -213,6 +213,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Standard one tap unsubscribe"/>
   <int value="3" label="One tap unsubscribe after suspicious content warning"/>
   <int value="4" label="Disruptive auto-revocation"/>
+  <int value="5" label="User manually changed site setting"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/safe_browsing_metrics_collector.h:NotificationRevocationSource) -->

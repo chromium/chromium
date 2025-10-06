@@ -45,6 +45,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
@@ -389,6 +390,7 @@ TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
 }
 
 TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
+  base::HistogramTester histograms;
   GURL kEmbedded1("https://embedded1.com");
   GURL kEmbedded2("https://embedded2.com");
 
@@ -497,6 +499,17 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
                                        /*is_one_time=*/false);
   EXPECT_EQ(expected_visible_permissions.size() + 1,
             last_permission_info_list().size());
+
+  // Changing NOTIFICATIONS from ALLOW to ASK logs the histogram.
+  histograms.ExpectTotalCount("SafeBrowsing.NotificationRevocationSource", 0);
+  page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
+                                       CONTENT_SETTING_ASK,
+                                       /*requesting_origin=*/std::nullopt,
+                                       /*is_one_time=*/false);
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
 }
 
 // Test suite for verifying that permissions granted through Page Info are
@@ -825,6 +838,7 @@ TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
 }
 
 TEST_F(PageInfoTest, OnPermissionsChanged) {
+  base::HistogramTester histograms;
   GURL kEmbedded("https://embedded.com");
 
   // Setup site permissions.
@@ -860,9 +874,9 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   // SetPermissionInfo() is called once initially, and then again every time
   // OnSitePermissionChanged() is called.
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(8);
+  EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(11);
 #else
-  EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(7);
+  EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(10);
 #endif
 
   // Execute code under tests.
@@ -921,6 +935,32 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
       kEmbedded, url(), ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
 #endif
+
+  // Changing NOTIFICATIONS from ALLOW to BLOCK logs the histogram.
+  histograms.ExpectTotalCount("SafeBrowsing.NotificationRevocationSource", 0);
+  page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
+                                       CONTENT_SETTING_BLOCK,
+                                       /*requesting_origin=*/std::nullopt,
+                                       /*is_one_time=*/false);
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
+
+  // Changing NOTIFICATIONS back to ALLOW then resetting to default (by passing
+  // in std::nullopt as `setting`) logs the histogram.
+  page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
+                                       CONTENT_SETTING_ALLOW,
+                                       /*requesting_origin=*/std::nullopt,
+                                       /*is_one_time=*/false);
+  page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
+                                       /*setting=*/std::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
+                                       /*is_one_time=*/false);
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                2);
 }
 
 TEST_F(PageInfoTest, OnChosenObjectDeleted) {
