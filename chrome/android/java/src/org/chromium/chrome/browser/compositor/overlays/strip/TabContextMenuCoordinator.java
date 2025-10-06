@@ -211,7 +211,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
                         .share(tabs.get(0), /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
             } else if (menuId == R.id.pin_tab_menu_id) {
                 for (Tab tab : tabs) {
-                    tabModel.pinTab(tab.getId());
+                    tabModel.pinTab(tab.getId(), /* showUngroupDialog= */ tabs.size() == 1);
                 }
             } else if (menuId == R.id.unpin_tab_menu_id) {
                 // Unpinning in reverse to maintain the order of the tabs.

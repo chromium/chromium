@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertEquals;
@@ -13,12 +16,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -54,6 +59,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.Journeys;
@@ -61,6 +67,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -91,6 +98,8 @@ public class TabModelImplTest {
     private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureDevicesDispatcherAndroidJni;
 
     @Mock private TabModelObserver mTabModelObserver;
+
+    @Mock private TabModelActionListener mTabModelActionListener;
 
     private String mTestUrl;
     private WebPageStation mPage;
@@ -1114,7 +1123,7 @@ public class TabModelImplTest {
                     TabModel tabModel =
                             mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
                     Tab tabToPin = tabModel.getTabAt(2);
-                    tabModel.pinTab(tabToPin.getId());
+                    tabModel.pinTab(tabToPin.getId(), /* showUngroupDialog= */ false);
 
                     assertTrue(tabToPin.getIsPinned());
                     assertEquals(tabToPin.getId(), tabModel.getTabAt(0).getId());
@@ -1138,11 +1147,11 @@ public class TabModelImplTest {
                     Tab tab1 = tabModel.getTabAt(1);
                     Tab tab2 = tabModel.getTabAt(2);
 
-                    tabModel.pinTab(tab1.getId());
+                    tabModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
 
                     assertEquals(tab1, tabModel.getTabAt(0));
 
-                    tabModel.pinTab(tab2.getId());
+                    tabModel.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
 
                     assertEquals(tab1, tabModel.getTabAt(0));
                     assertEquals(tab2, tabModel.getTabAt(1));
@@ -1173,9 +1182,9 @@ public class TabModelImplTest {
 
                     // Pin last 3 tabs.
                     // [D], [C], [B], A.
-                    tabModel.pinTab(tab3.getId());
-                    tabModel.pinTab(tab2.getId());
-                    tabModel.pinTab(tab1.getId());
+                    tabModel.pinTab(tab3.getId(), /* showUngroupDialog= */ false);
+                    tabModel.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
+                    tabModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
 
                     // Unpin the middle tab (Tab2).
                     // [D], [B], C, A.
@@ -1210,8 +1219,8 @@ public class TabModelImplTest {
 
                     // Pin 2 tabs.
                     // [B], [C], A, D.
-                    tabModel.pinTab(tab1.getId());
-                    tabModel.pinTab(tab2.getId());
+                    tabModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
+                    tabModel.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
                     assertTrue(tab1.getIsPinned());
                     assertTrue(tab2.getIsPinned());
 
@@ -1245,13 +1254,13 @@ public class TabModelImplTest {
                     Tab tab1 = tabModel.getTabAt(1);
                     Tab tab2 = tabModel.getTabAt(2);
 
-                    tabModel.pinTab(tab2.getId());
+                    tabModel.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
 
                     verify(mTabModelObserver).didMoveTab(tab2, 0, 2);
                     verify(mTabModelObserver).willChangePinState(tab2);
                     verify(mTabModelObserver).didChangePinState(tab2);
 
-                    tabModel.pinTab(tab1.getId());
+                    tabModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
 
                     verify(mTabModelObserver).didMoveTab(tab1, 1, 2);
                     verify(mTabModelObserver).willChangePinState(tab1);
@@ -1668,17 +1677,17 @@ public class TabModelImplTest {
                     Tab tab2 = mTabModelJni.getTabAt(2);
 
                     // Pin tab1. Order should be tab1, tab0, tab2
-                    mTabModelJni.pinTab(tab1.getId());
+                    mTabModelJni.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
                     assertTrue(tab1.getIsPinned());
                     assertEquals(0, mTabModelJni.indexOf(tab1));
                     assertEquals(1, mTabModelJni.indexOf(tab0));
                     assertEquals(2, mTabModelJni.indexOf(tab2));
 
                     // Pin tab1 again. Order should not change.
-                    mTabModelJni.pinTab(tab1.getId());
+                    mTabModelJni.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
 
                     // Pin tab2. It should move to right place
-                    mTabModelJni.pinTab(tab2.getId());
+                    mTabModelJni.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
                     assertTrue(tab2.getIsPinned());
                     assertEquals(0, mTabModelJni.indexOf(tab1));
                     assertEquals(1, mTabModelJni.indexOf(tab2));
@@ -1758,10 +1767,10 @@ public class TabModelImplTest {
 
                     assertEquals(0, tabModel.getPinnedTabsCount());
 
-                    tabModel.pinTab(tab1.getId());
+                    tabModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
                     assertEquals(1, tabModel.getPinnedTabsCount());
 
-                    tabModel.pinTab(tab2.getId());
+                    tabModel.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
                     assertEquals(2, tabModel.getPinnedTabsCount());
 
                     tabModel.unpinTab(tab1.getId());
@@ -1788,9 +1797,9 @@ public class TabModelImplTest {
                     Tab tab2 = tabModel.getTabAt(2);
                     Tab tab3 = tabModel.getTabAt(3);
 
-                    tabModel.pinTab(tab1.getId());
-                    tabModel.pinTab(tab2.getId());
-                    tabModel.pinTab(tab3.getId());
+                    tabModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
+                    tabModel.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
+                    tabModel.pinTab(tab3.getId(), /* showUngroupDialog= */ false);
 
                     assertEquals(0, tabModel.indexOf(tab1));
                     assertEquals(1, tabModel.indexOf(tab2));
@@ -1986,11 +1995,81 @@ public class TabModelImplTest {
                                     .build();
 
                     // Pin and unpin the tab.
-                    tabModel.pinTab(tabUnderInvestigation.getId());
+                    tabModel.pinTab(tabUnderInvestigation.getId(), /* showUngroupDialog= */ false);
                     tabModel.unpinTab(tabUnderInvestigation.getId());
 
                     // Verify that the histogram was recorded.
                     histogram.assertExpected();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testPinTabInGroup_ActionListener_Accept() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        createTabGroup(1, filter); // Group with 1 tab.
+        // 0:Tab0 | Group0: 1:Tab1
+
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModelJni.getTabAt(1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNotNull(tab1.getTabGroupId());
+
+                    mTabModelJni.pinTab(
+                            tab1.getId(), /* showUngroupDialog= */ true, mTabModelActionListener);
+                });
+        onViewWaiting(withText(R.string.delete_tab_group_action), /* checkRootDialog= */ true)
+                .perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mTabModelActionListener)
+                            .onConfirmationDialogResult(
+                                    eq(TabModelActionListener.DialogType.SYNC),
+                                    eq(ActionConfirmationResult.CONFIRMATION_POSITIVE));
+                    assertTrue(tab1.getIsPinned());
+                    assertNull(tab1.getTabGroupId());
+
+                    // [1:Tab1] | 0:Tab0
+                    assertEquals(0, mTabModelJni.indexOf(tab1));
+
+                    // Cleanup
+                    mTabModelJni.unpinTab(tab1.getId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testPinTabInGroup_ActionListener_Reject() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        createTabGroup(1, filter); // Group with 1 tab.
+        // 0:Tab0 | Group0: 1:Tab1
+
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModelJni.getTabAt(1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNotNull(tab1.getTabGroupId());
+
+                    mTabModelJni.pinTab(
+                            tab1.getId(), /* showUngroupDialog= */ true, mTabModelActionListener);
+                });
+        onViewWaiting(withText(R.string.cancel), /* checkRootDialog= */ true).perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    verify(mTabModelActionListener)
+                            .onConfirmationDialogResult(
+                                    eq(TabModelActionListener.DialogType.SYNC),
+                                    eq(ActionConfirmationResult.CONFIRMATION_NEGATIVE));
+                    assertEquals(1, mTabModelJni.indexOf(tab1));
+                    assertFalse(tab1.getIsPinned());
+                    assertNotNull(tab1.getTabGroupId());
                 });
     }
 }

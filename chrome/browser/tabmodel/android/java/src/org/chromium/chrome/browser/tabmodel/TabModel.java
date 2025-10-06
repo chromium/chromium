@@ -137,8 +137,26 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * Pins a tab to the model.
      *
      * @param tabId The id of the tab to pin.
+     * @param showUngroupDialog Whether to possibly show a dialog to the user when pinning the last
+     *     tab in a group.
      */
-    void pinTab(int tabId);
+    default void pinTab(int tabId, boolean showUngroupDialog) {
+        pinTab(tabId, showUngroupDialog, /* tabModelActionListener= */ null);
+    }
+
+    /**
+     * Pins a tab to the model.
+     *
+     * @param tabId The id of the tab to pin.
+     * @param showUngroupDialog Whether to possibly show a dialog to the user when pinning the last
+     *     tab in a group.
+     * @param tabModelActionListener A listener that is notified in response to the user actions
+     *     taken in the ungroup dialog (if shown).
+     */
+    void pinTab(
+            int tabId,
+            boolean showUngroupDialog,
+            @Nullable TabModelActionListener tabModelActionListener);
 
     /**
      * Unpins a tab from the model.

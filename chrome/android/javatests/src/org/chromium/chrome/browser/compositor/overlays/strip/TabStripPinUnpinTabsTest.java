@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -48,7 +49,10 @@ import java.util.Set;
 /** Instrumentation tests for pinning and unpinning tabs on LFF tab strip */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP)
+@EnableFeatures({
+    ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
+    ChromeFeatureList.ANDROID_PINNED_TABS
+})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class TabStripPinUnpinTabsTest {
@@ -162,27 +166,42 @@ public class TabStripPinUnpinTabsTest {
         mStripLayoutHelper =
                 TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab tabToPin = tabs[firstGroupedIndex];
+        TabGroupModelFilter groupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var tab = mTabModel.getTabById(tabToPin.getTabId());
+                    assertEquals(firstGroupedIndex, groupModelFilter.getTabModel().indexOf(tab));
+                    assertFalse(tabToPin.getIsPinned());
+                    assertNotNull(tab.getTabGroupId());
+                });
 
         // Open menu and pin tab.
-        StripLayoutTab tabToPin = tabs[firstGroupedIndex];
         showMenu(firstGroupedIndex);
         assertFalse("Tab should not be pinned.", tabToPin.getIsPinned());
         onView(withText(mPinTabMenuLabel)).check(matches(isDisplayed()));
         onView(withText(mPinTabMenuLabel)).perform(click());
 
         // Verify the tab being pinned is ungrouped.
-        TabGroupModelFilter groupModelFilter =
-                TabStripTestUtils.getTabGroupModelFilter(
-                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        assertFalse(
-                                "Tab should be ungrouped.",
-                                groupModelFilter.isTabInTabGroup(
-                                        mTabModel.getTabAt(firstGroupedIndex))));
+                () -> {
+                    assertFalse(
+                            "Tab should be ungrouped.",
+                            groupModelFilter.isTabInTabGroup(
+                                    mTabModel.getTabAt(firstGroupedIndex)));
+                    var tab = mTabModel.getTabById(tabToPin.getTabId());
+                    assertEquals(0, groupModelFilter.getTabModel().indexOf(tab));
+                    assertTrue(tabToPin.getIsPinned());
+                });
 
         // Verify the tab is pinned, moved to the front and has correct width.
-        verifyTabIsPinned(tabs, tabToPin, /* expectedDrawX= */ 0f, /* expectedIndex= */ 0);
+        verifyTabIsPinned(
+                mStripLayoutHelper.getStripLayoutTabsForTesting(),
+                tabToPin,
+                /* expectedDrawX= */ 0f,
+                /* expectedIndex= */ 0);
     }
 
     @Test

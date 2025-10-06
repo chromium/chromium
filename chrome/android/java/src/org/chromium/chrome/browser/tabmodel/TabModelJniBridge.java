@@ -543,7 +543,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         @TabId int tabId = tab.getId();
         if (tabId == Tab.INVALID_TAB_ID) return;
 
-        pinTab(tabId);
+        pinTab(tabId, /* showUngroupDialog= */ false);
     }
 
     @CalledByNative

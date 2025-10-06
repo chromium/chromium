@@ -298,7 +298,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
                 TAB_ID,
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
-        verify(mTabModel).pinTab(TAB_ID);
+        verify(mTabModel).pinTab(TAB_ID, /* showUngroupDialog= */ true);
     }
 
     @Test

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -11,8 +14,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
@@ -41,11 +48,14 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -1231,7 +1241,7 @@ public class TabCollectionTabModelImplTest {
                     @Override
                     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                         assertEquals(tab1, movedTab);
-                        assertEquals(0, prevFilterIndex);
+                        assertEquals(1, prevFilterIndex);
                         didMoveOutOfGroup.notifyCalled();
                     }
 
@@ -1239,7 +1249,7 @@ public class TabCollectionTabModelImplTest {
                     public void didRemoveTabGroup(
                             int tabId, Token tabGroupId, @DidRemoveTabGroupReason int reason) {
                         assertEquals(groupId, tabGroupId);
-                        assertEquals(DidRemoveTabGroupReason.PIN, reason);
+                        assertEquals(DidRemoveTabGroupReason.UNGROUP, reason);
                         didRemoveGroup.notifyCalled();
                     }
                 };
@@ -1247,7 +1257,7 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(groupObserver);
-                    mRegularModel.pinTab(tab1.getId());
+                    mRegularModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
                     mCollectionModel.removeTabGroupObserver(groupObserver);
                 });
 
@@ -1258,6 +1268,69 @@ public class TabCollectionTabModelImplTest {
         assertTrue(tab1.getIsPinned());
         assertNull(tab1.getTabGroupId());
         assertTabsInOrderAre(List.of(tab1, tab0));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testPinTabInGroup_ActionListener_Accept() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.createSingleTabGroup(tab1));
+        assertNotNull(tab1.getTabGroupId());
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        TabModelActionListener listener = mock(TabModelActionListener.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.pinTab(tab1.getId(), /* showUngroupDialog= */ true, listener);
+                });
+
+        onViewWaiting(withText(R.string.delete_tab_group_action), /* checkRootDialog= */ true)
+                .perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(listener)
+                            .onConfirmationDialogResult(
+                                    eq(DialogType.SYNC),
+                                    eq(ActionConfirmationResult.CONFIRMATION_POSITIVE));
+                    assertTrue(tab1.getIsPinned());
+                    assertNull(tab1.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab1, tab0));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testPinTabInGroup_ActionListener_Reject() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.createSingleTabGroup(tab1));
+        assertNotNull(tab1.getTabGroupId());
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        TabModelActionListener listener = mock(TabModelActionListener.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.pinTab(tab1.getId(), /* showUngroupDialog= */ true, listener);
+                });
+
+        onViewWaiting(withText(R.string.cancel), /* checkRootDialog= */ true).perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(listener)
+                            .onConfirmationDialogResult(
+                                    eq(DialogType.SYNC),
+                                    eq(ActionConfirmationResult.CONFIRMATION_NEGATIVE));
+                    assertFalse(tab1.getIsPinned());
+                    assertNotNull(tab1.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab1));
+                });
     }
 
     @Test
@@ -1286,7 +1359,7 @@ public class TabCollectionTabModelImplTest {
                     @Override
                     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                         assertEquals(tab0, movedTab);
-                        assertEquals(1, prevFilterIndex);
+                        assertEquals(0, prevFilterIndex);
                         didMoveOutOfGroup.notifyCalled();
                     }
 
@@ -1299,7 +1372,7 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(groupObserver);
 
-                    mRegularModel.pinTab(tab0.getId());
+                    mRegularModel.pinTab(tab0.getId(), /* showUngroupDialog= */ false);
 
                     mCollectionModel.removeTabGroupObserver(groupObserver);
 
@@ -2671,7 +2744,7 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mRegularModel.addObserver(observer);
                     if (isPinned) {
-                        mRegularModel.pinTab(changedTab.getId());
+                        mRegularModel.pinTab(changedTab.getId(), /* showUngroupDialog= */ false);
                     } else {
                         mRegularModel.unpinTab(changedTab.getId());
                     }

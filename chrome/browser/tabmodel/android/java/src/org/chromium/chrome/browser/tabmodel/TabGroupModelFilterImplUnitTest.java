@@ -2900,25 +2900,6 @@ public class TabGroupModelFilterImplUnitTest {
         assertFalse(mTabGroupModelFilter.willMergingCreateNewGroup(tabsToMerge));
     }
 
-    @Test
-    public void testWillChangePinState_TabWillPin_TabInExistingGroup() {
-        doReturn(false).when(mTab3).getIsPinned();
-
-        mTabGroupModelFilter.willChangePinState(mTab3);
-
-        verify(mTabUngrouper)
-                .ungroupTabs(List.of(mTab3), /* trailing= */ false, /* allowDialog= */ true);
-    }
-
-    @Test
-    public void testWillChangePinState_TabWillUnPin_TabNotIngroup_NoOp() {
-        doReturn(true).when(mTab1).getIsPinned();
-
-        mTabGroupModelFilter.willChangePinState(mTab1);
-
-        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean());
-    }
-
     private void verifyGroupCreationDialogShouldShow(VerificationMode mode) {
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId());
 

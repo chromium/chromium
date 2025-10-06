@@ -1140,6 +1140,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabmodel/TabPersistenceFileInfo.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabPersistencePolicy.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabPersistentStore.java",
+  "java/src/org/chromium/chrome/browser/tabmodel/TabPinnerActionListener.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabRemoverImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabUngrouperImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabbedModeTabPersistencePolicy.java",

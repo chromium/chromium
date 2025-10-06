@@ -1867,7 +1867,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId);
         if (url == null
                 && tabIdToBringToFront == Tab.INVALID_TAB_ID
-                && !hasTabWaitingForReparenting) return false;
+                && !hasTabWaitingForReparenting) {
+            return false;
+        }
 
         LoadUrlParams loadUrlParams =
                 IntentHandler.createLoadUrlParamsForIntent(url, intent, mIntentHandlingTimeMs);
@@ -1893,7 +1895,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         intent);
         boolean shouldPin = IntentHandler.getPinnedState(intent);
         if (shouldPin && !tab.getIsPinned()) {
-            getTabModelSelector().getModel(tab.isIncognito()).pinTab(tab.getId());
+            getTabModelSelector()
+                    .getModel(tab.isIncognito())
+                    .pinTab(tab.getId(), /* showUngroupDialog= */ false);
         }
         int destTabId = IntentHandler.getDestTabId(intent);
         if (destTabId != Tab.INVALID_TAB_ID) {
@@ -1939,7 +1943,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             Tab tab = processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
             if (isPinned[i] && !tab.getIsPinned()) {
-                tabModel.pinTab(tab.getId());
+                tabModel.pinTab(tab.getId(), /* showUngroupDialog= */ false);
             }
             tabs.add(tab);
         }
@@ -3991,7 +3995,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             PageTransition.AUTO_TOPLEVEL));
         } else if (id == R.id.pin_tab_menu_id) {
             TabModel tabModel = mTabModelSelector.getCurrentModel();
-            tabModel.pinTab(currentTab.getId());
+            tabModel.pinTab(currentTab.getId(), /* showUngroupDialog= */ true);
         } else if (id == R.id.unpin_tab_menu_id) {
             TabModel tabModel = mTabModelSelector.getCurrentModel();
             tabModel.unpinTab(currentTab.getId());

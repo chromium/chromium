@@ -204,7 +204,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 showTabListEditor.show(tab.getId());
                 recordUserActionWithPrefix("SelectTabs");
             } else if (menuId == R.id.pin_tab) {
-                tabModel.pinTab(tab.getId());
+                tabModel.pinTab(tab.getId(), /* showUngroupDialog= */ true);
                 recordUserActionWithPrefix("PinTab");
             } else if (menuId == R.id.unpin_tab) {
                 tabModel.unpinTab(tab.getId());
