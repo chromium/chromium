@@ -181,7 +181,7 @@ public class RecentlyClosedBridgeTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
             message = "crbug.com/355058571")
-    public void testOpenRecentlyClosedTab_InCurrentTab() {
+    public void testOpenRecentlyClosedTab_CurrentTabDisposition() {
         final String[] urls = new String[] {getUrl(TEST_PAGE_A), getUrl(TEST_PAGE_B)};
         final Tab tabA = mActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
         final Tab tabB = mActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
@@ -221,23 +221,24 @@ public class RecentlyClosedBridgeTest {
         // 2. tabC - now TEST_PAGE_B.
         final List<Tab> tabs = getAllTabs();
         Assert.assertEquals(2, tabs.size());
-        // Restored onto tab B.
-        Assert.assertEquals(tabC, tabs.get(1));
-        Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabC));
-        Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabC).getSpec());
+        // Restored in same position as tabC.
+        Tab newTabC = tabs.get(1);
+        Assert.assertNotEquals(tabC, newTabC);
+        Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(newTabC));
+        Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(newTabC).getSpec());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertNotNull(tabC.getWebContents());
+                    Assert.assertNotNull(newTabC.getWebContents());
                     // Should only have one navigation entry as it replaced TEST_PAGE_C.
                     Assert.assertEquals(
                             1,
-                            tabC.getWebContents()
+                            newTabC.getWebContents()
                                     .getNavigationController()
                                     .getNavigationHistory()
                                     .getEntryCount());
 
                     // Has renderer for foreground tab.
-                    Assert.assertNotNull(tabC.getWebContents().getRenderWidgetHostView());
+                    Assert.assertNotNull(newTabC.getWebContents().getRenderWidgetHostView());
                 });
     }
 
@@ -410,7 +411,7 @@ public class RecentlyClosedBridgeTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
             message = "crbug.com/355058571")
-    public void testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab() {
+    public void testOpenRecentlyClosedTab_FromGroupClosure_CurrentTabDisposition() {
         if (mTabGroupModelFilter == null) return;
 
         // Tab order is inverted in when closing.
@@ -445,7 +446,7 @@ public class RecentlyClosedBridgeTest {
                             mTabModel, group.getTabs().get(1), WindowOpenDisposition.CURRENT_TAB);
                 });
 
-        // 1. tabA restored over blank tab.
+        // 1. tabA state replaced blank tab.
         final List<Tab> tabs = getAllTabs();
         Assert.assertEquals(1, tabs.size());
         Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(0)));
@@ -463,7 +464,7 @@ public class RecentlyClosedBridgeTest {
                             WindowOpenDisposition.NEW_BACKGROUND_TAB);
                 });
 
-        // 1. tabA restored over blank tab.
+        // 1. tabA state replaced blank tab.
         // 2. tabB restored.
         tabs.clear();
         tabs.addAll(getAllTabs());
