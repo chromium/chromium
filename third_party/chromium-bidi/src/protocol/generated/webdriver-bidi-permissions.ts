@@ -45,7 +45,7 @@ export namespace Permissions {
     descriptor: Permissions.PermissionDescriptor;
     state: Permissions.PermissionState;
     origin: string;
-    topLevelOrigin?: string;
+    embeddedOrigin?: string;
     userContext?: string;
   };
 }
