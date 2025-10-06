@@ -4603,10 +4603,6 @@
       status: "experimental",
     },
     {
-      name: "SkipLineBreakItemWhenIsCollapsed",
-      status: "stable",
-    },
-    {
       name: "SkipOofItemForBreakCandidate",
       status: "stable",
     },

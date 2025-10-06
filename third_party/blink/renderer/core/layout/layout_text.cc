@@ -626,9 +626,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
         // ​​are equal, it signifies a collapsed range. In this case, we
         // should skip processing `item`.
         if (start > offset.end || end < offset.start ||
-            (RuntimeEnabledFeatures::
-                 SkipLineBreakItemWhenIsCollapsedEnabled() &&
-             item.IsLineBreak() && start == end)) {
+            (item.IsLineBreak() && start == end)) {
           is_last_end_included = false;
           continue;
         }
