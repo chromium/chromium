@@ -39,6 +39,7 @@ import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.test.espresso.intent.Intents;
@@ -318,111 +319,72 @@ public class AutofillProfilesFragmentTest {
                 plusAddressEntry.getSummary());
     }
 
+    /**
+     * Verifies that clicking the edit link for specific profile types launches an external URL.
+     *
+     * <p>This helper is for testing profiles that are not editable within the app, such as Home and
+     * Work addresses, which are managed in the user's Google Account. It checks that the preference
+     * displays the correct icon and that clicking the "Edit" link correctly fires an ACTION_VIEW
+     * intent for the specified URL.
+     *
+     * @param profile The profile to add and test.
+     * @param expectedWidgetLayout The expected resource ID for the preference's widget layout.
+     * @param expectedUrl The external URL that is expected to be launched for editing.
+     */
+    private void testExternalEditEntryPoint(
+            AutofillProfile profile, @LayoutRes int expectedWidgetLayout, String expectedUrl)
+            throws Exception {
+        mHelper.setProfile(profile);
+        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+
+        AutofillProfileEditorPreference profilePreference =
+                fragment.findPreference(profile.getInfo(FieldType.NAME_FULL));
+        assertNotNull(profilePreference);
+        assertEquals(expectedWidgetLayout, profilePreference.getWidgetLayoutResource());
+
+        // Edit a profile.
+        ThreadUtils.runOnUiThreadBlocking(profilePreference::performClick);
+
+        // Mock the intent that should be fired.
+        Instrumentation.ActivityResult result =
+                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        var intentMatcher = allOf(hasAction(Intent.ACTION_VIEW), hasData(Uri.parse(expectedUrl)));
+        intending(intentMatcher).respondWith(result);
+
+        // Click the "Edit" link and verify the correct intent was sent.
+        Context context = fragment.getContext();
+        onView(withText(context.getString(R.string.autofill_edit_address_label))).perform(click());
+        intended(intentMatcher);
+    }
+
     @Test
     @MediumTest
     @Feature({"Preferences"})
     public void testHomeEntry() throws Exception {
-        mHelper.setProfile(sHomeProfile);
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-
-        AutofillProfileEditorPreference homeProfilePreference =
-                autofillProfileFragment.findPreference(sHomeProfile.getInfo(FieldType.NAME_FULL));
-        assertNotNull(homeProfilePreference);
-        assertEquals(
+        testExternalEditEntryPoint(
+                sHomeProfile,
                 R.layout.autofill_settings_home_profile_icon,
-                homeProfilePreference.getWidgetLayoutResource());
-
-        // Edit a profile.
-        ThreadUtils.runOnUiThreadBlocking(homeProfilePreference::performClick);
-
-        // Define a fake result to return immediately when the intent is caught.
-        // This prevents the actual urls from being launched.
-        Instrumentation.ActivityResult ok_result =
-                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
-        var homeIntentMatcher =
-                allOf(
-                        hasAction(Intent.ACTION_VIEW),
-                        hasData(
-                                Uri.parse(
-                                        AutofillProfilesFragment
-                                                .GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL)));
-        intending(homeIntentMatcher).respondWith(ok_result);
-
-        // Try to find a view with "Link" and click on it.
-        Context context = autofillProfileFragment.getContext();
-        onView(withText(context.getString(R.string.autofill_edit_address_label))).perform(click());
-        intended(homeIntentMatcher);
+                AutofillProfilesFragment.GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL);
     }
 
     @Test
     @MediumTest
     @Feature({"Preferences"})
     public void testWorkEntry() throws Exception {
-        mHelper.setProfile(sWorkProfile);
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-
-        AutofillProfileEditorPreference workProfilePreference =
-                autofillProfileFragment.findPreference(sWorkProfile.getInfo(FieldType.NAME_FULL));
-        assertNotNull(workProfilePreference);
-        assertEquals(
+        testExternalEditEntryPoint(
+                sWorkProfile,
                 R.layout.autofill_settings_work_profile_icon,
-                workProfilePreference.getWidgetLayoutResource());
-
-        // Edit a profile.
-        ThreadUtils.runOnUiThreadBlocking(workProfilePreference::performClick);
-
-        // Define a fake result to return immediately when the intent is caught.
-        // This prevents the actual urls from being launched.
-        Instrumentation.ActivityResult ok_result =
-                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
-        var workIntentMatcher =
-                allOf(
-                        hasAction(Intent.ACTION_VIEW),
-                        hasData(
-                                Uri.parse(
-                                        AutofillProfilesFragment
-                                                .GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL)));
-        intending(workIntentMatcher).respondWith(ok_result);
-
-        // Try to find a view with "Link" and click on it.
-        Context context = autofillProfileFragment.getContext();
-        onView(withText(context.getString(R.string.autofill_edit_address_label))).perform(click());
-        intended(workIntentMatcher);
+                AutofillProfilesFragment.GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL);
     }
 
     @Test
     @MediumTest
     @Feature({"Preferences"})
     public void testAccountNameEmailEntry() throws Exception {
-        mHelper.setProfile(sAccountNameEmailProfile);
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-
-        AutofillProfileEditorPreference accountNameEmailPreference =
-                autofillProfileFragment.findPreference(
-                        sAccountNameEmailProfile.getInfo(FieldType.NAME_FULL));
-        assertNotNull(accountNameEmailPreference);
-        assertEquals(0, accountNameEmailPreference.getWidgetLayoutResource());
-
-        // Edit a profile.
-        ThreadUtils.runOnUiThreadBlocking(accountNameEmailPreference::performClick);
-
-        // Define a fake result to return immediately when the intent is caught.
-        // This prevents the actual urls from being launched.
-        Instrumentation.ActivityResult ok_result =
-                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
-        var nameEmailIntentMatcher =
-                allOf(
-                        hasAction(Intent.ACTION_VIEW),
-                        hasData(
-                                Uri.parse(
-                                        AutofillProfilesFragment
-                                                .GOOGLE_ACCOUNT_NAME_EMAIL_ADDRESS_EDIT_URL)));
-        intending(nameEmailIntentMatcher).respondWith(ok_result);
-
-        // Try to find a view with "Link" and click on it.
-        Context context = autofillProfileFragment.getContext();
-        onView(withText(context.getString(R.string.autofill_edit_address_label))).perform(click());
-        intended(nameEmailIntentMatcher);
+        testExternalEditEntryPoint(
+                sAccountNameEmailProfile,
+                0, // No widget layout resource
+                AutofillProfilesFragment.GOOGLE_ACCOUNT_NAME_EMAIL_ADDRESS_EDIT_URL);
     }
 
     @Test
