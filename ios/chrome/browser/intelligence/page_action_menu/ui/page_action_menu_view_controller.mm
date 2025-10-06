@@ -222,6 +222,8 @@ const CGFloat kFeatureRowVerticalPadding = 12;
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(dismissPageActionMenu)];
+  dismissButton.accessibilityIdentifier =
+      kAIHubDismissButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = dismissButton;
 }
 
@@ -402,7 +404,8 @@ const CGFloat kFeatureRowVerticalPadding = 12;
                           title:l10n_util::GetNSString(
                                     IDS_IOS_AI_HUB_LENS_LABEL)
                         enabled:[self.mutator isLensAvailableForTraitCollection:
-                                                  self.traitCollection]];
+                                                  self.traitCollection]
+        accessibilityIdentifier:kAIHubLensButtonAccessibilityIdentifier];
   [_lensButton addTarget:self
                   action:@selector(handleLensEntryPointTapped:)
         forControlEvents:UIControlEventTouchUpInside];
@@ -418,17 +421,20 @@ const CGFloat kFeatureRowVerticalPadding = 12;
     UIButton* readerModeButton =
         [self createSmallButtonWithIcon:readerModeImage
                                   title:readerModeLabelText
-                                enabled:[self.mutator isReaderModeAvailable]];
+                                enabled:[self.mutator isReaderModeAvailable]
+                accessibilityIdentifier:
+                    kAIHubReaderModeButtonAccessibilityIdentifier];
     [readerModeButton addTarget:self
                          action:@selector(handleReaderModeTapped:)
                forControlEvents:UIControlEventTouchUpInside];
     [stackView addArrangedSubview:readerModeButton];
   } else {
-    _BWGButton =
-        [self createSmallButtonWithIcon:[self askGeminiIcon]
-                                  title:l10n_util::GetNSString(
-                                            IDS_IOS_AI_HUB_GEMINI_LABEL)
-                                enabled:[self.mutator isGeminiAvailable]];
+    _BWGButton = [self
+        createSmallButtonWithIcon:[self askGeminiIcon]
+                            title:l10n_util::GetNSString(
+                                      IDS_IOS_AI_HUB_GEMINI_LABEL)
+                          enabled:[self.mutator isGeminiAvailable]
+          accessibilityIdentifier:kAIHubAskGeminiButtonAccessibilityIdentifier];
     [_BWGButton addTarget:self
                    action:@selector(handleBWGTapped:)
          forControlEvents:UIControlEventTouchUpInside];
@@ -467,6 +473,7 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   button.configuration = buttonConfiguration;
 
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.accessibilityIdentifier = kAIHubAskGeminiButtonAccessibilityIdentifier;
   [button addTarget:self
                 action:@selector(handleBWGTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -481,7 +488,8 @@ const CGFloat kFeatureRowVerticalPadding = 12;
 // disabled.
 - (UIButton*)createSmallButtonWithIcon:(UIImage*)image
                                  title:(NSString*)title
-                               enabled:(BOOL)enabled {
+                               enabled:(BOOL)enabled
+               accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   // Create the background config.
   UIBackgroundConfiguration* backgroundConfig =
       [UIBackgroundConfiguration clearConfiguration];
@@ -521,6 +529,7 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.accessibilityIdentifier = accessibilityIdentifier;
 
   [self updateButton:button enabled:enabled];
 

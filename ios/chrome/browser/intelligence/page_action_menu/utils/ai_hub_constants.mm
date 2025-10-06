@@ -9,3 +9,13 @@ NSString* const kAIHubBottomSheetAccessibilityIdentifier =
     @"kAIHubBottomSheetAccessibilityIdentifier";
 NSString* const kAIHubEntrypointAccessibilityIdentifier =
     @"kAIHubEntrypointAccessibilityIdentifier";
+NSString* const kAIHubLensButtonAccessibilityIdentifier =
+    @"kAIHubLensButtonAccessibilityIdentifier";
+NSString* const kAIHubReaderModeButtonAccessibilityIdentifier =
+    @"kAIHubReaderModeButtonAccessibilityIdentifier";
+NSString* const kAIHubAskGeminiButtonAccessibilityIdentifier =
+    @"kAIHubAskGeminiButtonAccessibilityIdentifier";
+NSString* const kAIHubDismissButtonAccessibilityIdentifier =
+    @"kAIHubDismissButtonAccessibilityIdentifier";
+NSString* const kGeminiDirectEntryPointAccessibilityIdentifier =
+    @"kGeminiDirectEntryPointAccessibilityIdentifier";

@@ -59,7 +59,6 @@ NSTimeInterval kAnimationDuration = 0.3;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _backgroundView = [[UIView alloc] init];
-    self.accessibilityIdentifier = kAIHubEntrypointAccessibilityIdentifier;
     self.pointerInteractionEnabled = YES;
     self.minimumDiameter = kMinimumWidth;
     self.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
@@ -68,9 +67,12 @@ NSTimeInterval kAnimationDuration = 0.3;
     if (IsDirectBWGEntryPoint()) {
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_BWG_ASK_GEMINI_ACCESSIBILITY_LABEL);
+      self.accessibilityIdentifier =
+          kGeminiDirectEntryPointAccessibilityIdentifier;
     } else {
       self.accessibilityLabel = l10n_util::GetNSString(
           IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL);
+      self.accessibilityIdentifier = kAIHubEntrypointAccessibilityIdentifier;
     }
 
     [self createBackgroundView];
