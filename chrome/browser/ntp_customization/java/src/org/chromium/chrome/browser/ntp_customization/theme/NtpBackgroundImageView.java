@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,7 +21,7 @@ import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
@@ -49,12 +49,12 @@ public class NtpBackgroundImageView extends ImageView {
     public void setBackground(
             Bitmap originalBitmap,
             @Nullable BackgroundImageInfo backgroundImageInfo,
-            @NtpCustomizationUtils.NtpBackgroundImageType int backgroundType) {
+            @NtpBackgroundImageType int backgroundType) {
         mOriginalBitmap = originalBitmap;
         mBackgroundImageType = backgroundType;
 
         switch (backgroundType) {
-            case CHROME_THEME:
+            case THEME_COLLECTION:
                 setScaleType(ImageView.ScaleType.CENTER_CROP);
                 setImageBitmap(originalBitmap);
                 break;

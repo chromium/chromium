@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.IntDef;
 import android.view.LayoutInflater;
 
 import androidx.activity.ComponentActivity;
@@ -27,30 +26,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Coordinator for the NTP appearance settings bottom sheet in the NTP customization. */
 @NullMarked
 public class NtpThemeCoordinator {
-
-    /** NTP appearance sections that are shown in the theme bottom sheet. */
-    @IntDef({
-        NTPThemeBottomSheetSection.CHROME_DEFAULT,
-        NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE,
-        NTPThemeBottomSheetSection.CHROME_COLORS,
-        NTPThemeBottomSheetSection.THEME_COLLECTIONS,
-        NTPThemeBottomSheetSection.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NTPThemeBottomSheetSection {
-        int CHROME_DEFAULT = 0;
-        int UPLOAD_AN_IMAGE = 1;
-        int CHROME_COLORS = 2;
-        int THEME_COLLECTIONS = 3;
-        int NUM_ENTRIES = 4;
-    }
-
     private final Context mContext;
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final Runnable mDismissBottomSheetRunnable;

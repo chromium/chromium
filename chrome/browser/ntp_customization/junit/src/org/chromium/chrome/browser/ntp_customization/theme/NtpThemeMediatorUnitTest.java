@@ -17,10 +17,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_COLORS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_DEFAULT;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
@@ -131,10 +131,7 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mNtpCustomizationConfigManager)
-                .onBackgroundColorChanged(
-                        eq(mContext),
-                        eq(null),
-                        eq(NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT));
+                .onBackgroundColorChanged(eq(mContext), eq(null), eq(DEFAULT));
     }
 
     @Test
@@ -175,11 +172,11 @@ public class NtpThemeMediatorUnitTest {
         mMediator.handleChromeDefaultSectionClick(mView);
 
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_DEFAULT, true)));
+                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(DEFAULT, true)));
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(UPLOAD_AN_IMAGE, false)));
+                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(IMAGE_FROM_DISK, false)));
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLORS, false)));
+                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLOR, false)));
     }
 
     @Test
@@ -220,11 +217,10 @@ public class NtpThemeMediatorUnitTest {
 
     @Test
     public void testInitTrailingIcon() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(
-                NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundImageType(CHROME_COLOR);
         createMediator(true);
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLORS, true)));
+                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLOR, true)));
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 

@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_COLORS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_DEFAULT;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.THEME_COLLECTIONS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -125,35 +124,35 @@ public class NtpThemeMediator {
                                 // image.
                                 ShareImageFileUtils.getBitmapFromUriAsync(
                                         mContext, uri, mOnImageSelectedCallback);
-                                updateTrailingIconVisibilityForSectionType(UPLOAD_AN_IMAGE);
+                                updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
                             });
         }
 
         mThemePropertyModel.set(
                 SECTION_ON_CLICK_LISTENER,
-                new Pair<>(CHROME_DEFAULT, this::handleChromeDefaultSectionClick));
+                new Pair<>(DEFAULT, this::handleChromeDefaultSectionClick));
         mThemePropertyModel.set(
                 SECTION_ON_CLICK_LISTENER,
-                new Pair<>(UPLOAD_AN_IMAGE, this::handleUploadAnImageSectionClick));
+                new Pair<>(IMAGE_FROM_DISK, this::handleUploadAnImageSectionClick));
         mThemePropertyModel.set(
                 SECTION_ON_CLICK_LISTENER,
-                new Pair<>(CHROME_COLORS, this::handleChromeColorsSectionClick));
+                new Pair<>(CHROME_COLOR, this::handleChromeColorsSectionClick));
         mThemePropertyModel.set(
                 SECTION_ON_CLICK_LISTENER,
-                new Pair<>(THEME_COLLECTIONS, this::handleThemeCollectionsSectionClick));
+                new Pair<>(THEME_COLLECTION, this::handleThemeCollectionsSectionClick));
     }
 
     /**
      * Updates the visibility of the trailing icon for each theme section. The icon is made visible
      * for the section that matches {@code sectionType}, and hidden for all other sections.
      *
-     * @param sectionType The {@link NTPThemeBottomSheetSection} to show the trailing icon for.
+     * @param sectionType The {@link NtpBackgroundImageType} to show the trailing icon for.
      */
     private void updateTrailingIconVisibilityForSectionType(
-            @NTPThemeBottomSheetSection int sectionType) {
-        for (int i = 0; i < NTPThemeBottomSheetSection.NUM_ENTRIES; i++) {
-            if (i == THEME_COLLECTIONS) {
-                if (sectionType != THEME_COLLECTIONS && mNtpThemeCollectionsCoordinator != null) {
+            @NtpBackgroundImageType int sectionType) {
+        for (int i = 0; i < NtpBackgroundImageType.NUM_ENTRIES; i++) {
+            if (i == THEME_COLLECTION) {
+                if (sectionType != THEME_COLLECTION && mNtpThemeCollectionsCoordinator != null) {
                     mNtpThemeCollectionsCoordinator.clearThemeCollectionSelection();
                 }
                 continue;
@@ -182,18 +181,16 @@ public class NtpThemeMediator {
 
     @VisibleForTesting
     void handleChromeDefaultSectionClick(View view) {
-        updateTrailingIconVisibilityForSectionType(CHROME_DEFAULT);
+        updateTrailingIconVisibilityForSectionType(DEFAULT);
 
         @NtpBackgroundImageType
         int currentBackgroundType = mNtpCustomizationConfigManager.getBackgroundImageType();
-        if (currentBackgroundType != NtpBackgroundImageType.DEFAULT) {
+        if (currentBackgroundType != DEFAULT) {
             // We need to update the app's theme when a customized background color is removed.
             mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
         }
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext,
-                /* colorInfo= */ null,
-                NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
+                mContext, /* colorInfo= */ null, DEFAULT);
     }
 
     @VisibleForTesting
@@ -212,7 +209,7 @@ public class NtpThemeMediator {
                             mBottomSheetDelegate,
                             mCallbackController.makeCancelable(
                                     () -> {
-                                        updateTrailingIconVisibilityForSectionType(CHROME_COLORS);
+                                        updateTrailingIconVisibilityForSectionType(CHROME_COLOR);
                                     }));
         }
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.CHROME_COLORS);
@@ -229,7 +226,7 @@ public class NtpThemeMediator {
                             mCallbackController.makeCancelable(
                                     () -> {
                                         updateTrailingIconVisibilityForSectionType(
-                                                THEME_COLLECTIONS);
+                                                THEME_COLLECTION);
                                     }));
         }
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.THEME_COLLECTIONS);
@@ -242,11 +239,8 @@ public class NtpThemeMediator {
 
     /** Sets the initial visibility of the trailing icon based on the current theme settings. */
     private void initTrailingIcon() {
-        @NtpCustomizationUtils.NtpBackgroundImageType
-        int imageType = NtpCustomizationUtils.getNtpBackgroundImageType();
-        @NTPThemeBottomSheetSection
-        int section = NtpCustomizationUtils.getSectionForBackgroundImageType(imageType);
-        updateTrailingIconVisibilityForSectionType(section);
+        @NtpBackgroundImageType int imageType = NtpCustomizationUtils.getNtpBackgroundImageType();
+        updateTrailingIconVisibilityForSectionType(imageType);
     }
 
     void setNtpThemeCollectionsCoordinatorForTesting(

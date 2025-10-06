@@ -9,8 +9,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -60,7 +60,7 @@ public class NtpBackgroundImageViewUnitTest {
 
     @Test
     public void testSetBackground_withChromeTheme() {
-        mBackgroundImageViewSpy.setBackground(mBitmap, null, CHROME_THEME);
+        mBackgroundImageViewSpy.setBackground(mBitmap, null, THEME_COLLECTION);
 
         verify(mBackgroundImageViewSpy).setScaleType(eq(ImageView.ScaleType.CENTER_CROP));
         verify(mBackgroundImageViewSpy).setImageBitmap(eq(mBitmap));

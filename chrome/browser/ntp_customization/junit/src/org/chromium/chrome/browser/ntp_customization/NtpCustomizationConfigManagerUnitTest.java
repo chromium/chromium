@@ -95,7 +95,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testOnBackgroundChanged_persistsStateAndNotifiesListener() {
-        int initialBackgroundImageType = NtpBackgroundImageType.CHROME_THEME;
+        int initialBackgroundImageType = NtpBackgroundImageType.THEME_COLLECTION;
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(initialBackgroundImageType);
         mNtpCustomizationConfigManager.addListener(mListener, mContext);
 

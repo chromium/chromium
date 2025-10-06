@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ButtonCompat;
@@ -152,9 +153,7 @@ public class NtpChromeColorsCoordinator {
                         || ntpThemeColorInfo.primaryColor != mPrimaryColor.intValue());
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundColorChanged(
-                        mContext,
-                        ntpThemeColorInfo,
-                        NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
+                        mContext, ntpThemeColorInfo, NtpBackgroundImageType.CHROME_COLOR);
         mOnChromeColorSelectedCallback.run();
     }
 

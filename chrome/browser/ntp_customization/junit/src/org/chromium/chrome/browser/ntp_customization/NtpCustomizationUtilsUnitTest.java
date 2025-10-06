@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
 
 import android.content.Context;
@@ -125,8 +126,7 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(
                 NtpBackgroundImageType.DEFAULT, NtpCustomizationUtils.getNtpBackgroundImageType());
 
-        @NtpBackgroundImageType
-        int imageType = NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+        @NtpBackgroundImageType int imageType = IMAGE_FROM_DISK;
         NtpCustomizationUtils.setNtpBackgroundImageType(imageType);
 
         assertEquals(imageType, NtpCustomizationUtils.getNtpBackgroundImageType());
@@ -272,7 +272,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorSetWithImage() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        NtpCustomizationUtils.setNtpBackgroundImageType(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setCustomizedPrimaryColor(Color.BLUE);
 
         assertEquals(
@@ -370,8 +370,7 @@ public class NtpCustomizationUtilsUnitTest {
         verify(mDrawable, never()).setTint(anyInt());
 
         // Verifies that color white is set for customized background images.
-        customizationConfigManager.setBackgroundImageTypeForTesting(
-                NtpBackgroundImageType.IMAGE_FROM_DISK);
+        customizationConfigManager.setBackgroundImageTypeForTesting(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
         verify(mDrawable).setTint(eq(Color.WHITE));
 
@@ -380,8 +379,7 @@ public class NtpCustomizationUtilsUnitTest {
         clearInvocations(mDrawable);
 
         // Verifies that color white is set for customized background images.
-        customizationConfigManager.setBackgroundImageTypeForTesting(
-                NtpBackgroundImageType.IMAGE_FROM_DISK);
+        customizationConfigManager.setBackgroundImageTypeForTesting(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
         verify(mDrawable).setTint(eq(Color.WHITE));
 

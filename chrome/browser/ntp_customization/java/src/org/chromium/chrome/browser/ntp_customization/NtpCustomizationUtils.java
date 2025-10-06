@@ -46,7 +46,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,6 +56,8 @@ import org.chromium.ui.util.ColorUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
 
@@ -68,13 +69,14 @@ public class NtpCustomizationUtils {
         NtpBackgroundImageType.DEFAULT,
         NtpBackgroundImageType.IMAGE_FROM_DISK,
         NtpBackgroundImageType.CHROME_COLOR,
-        NtpBackgroundImageType.CHROME_THEME
+        NtpBackgroundImageType.THEME_COLLECTION
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface NtpBackgroundImageType {
         int DEFAULT = 0;
         int IMAGE_FROM_DISK = 1;
         int CHROME_COLOR = 2;
-        int CHROME_THEME = 3;
+        int THEME_COLLECTION = 3;
         int NUM_ENTRIES = 4;
     }
 
@@ -543,29 +545,6 @@ public class NtpCustomizationUtils {
         }
 
         defaultGoogleLogoDrawable.setTint(tintColor);
-    }
-
-    /**
-     * Returns the corresponding {@link NTPThemeBottomSheetSection} for a given {@link
-     * NtpBackgroundImageType}.
-     *
-     * @param imageType The background image type.
-     */
-    public static @NTPThemeBottomSheetSection int getSectionForBackgroundImageType(
-            @NtpBackgroundImageType int imageType) {
-        switch (imageType) {
-            case NtpBackgroundImageType.DEFAULT:
-                return NTPThemeBottomSheetSection.CHROME_DEFAULT;
-            case NtpBackgroundImageType.IMAGE_FROM_DISK:
-                return NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
-            case NtpBackgroundImageType.CHROME_COLOR:
-                return NTPThemeBottomSheetSection.CHROME_COLORS;
-            case NtpBackgroundImageType.CHROME_THEME:
-                return NTPThemeBottomSheetSection.THEME_COLLECTIONS;
-            default:
-                assert false : "image type not supported!";
-                return NTPThemeBottomSheetSection.NUM_ENTRIES;
-        }
     }
 
     public static void resetSharedPreferenceForTesting() {
