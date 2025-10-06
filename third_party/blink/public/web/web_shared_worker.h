@@ -38,6 +38,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
@@ -101,7 +102,8 @@ class BLINK_EXPORT WebSharedWorker {
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
-          dip_reporting_observer);
+          dip_reporting_observer,
+      std::optional<NoiseToken> canvas_noise_token);
 
   // Sends a connect event to the SharedWorker context.
   virtual void Connect(int connection_request_id,

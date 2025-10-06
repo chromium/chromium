@@ -17,6 +17,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
@@ -55,6 +56,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -425,6 +427,9 @@ void SharedWorkerHost::Start(
     dip_reporter_->BindObserver(std::move(dip_reporting_remote));
   }
 
+  std::optional<blink::NoiseToken> canvas_noise_token =
+      GetOrCreateCanvasNoiseToken();
+
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
@@ -444,7 +449,8 @@ void SharedWorkerHost::Start(
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
       std::move(browser_interface_broker), ukm_source_id_,
       instance_.DoesRequireCrossSiteRequestForCookies(),
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
+      std::move(canvas_noise_token));
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
   }
@@ -568,6 +574,21 @@ void SharedWorkerHost::GetSandboxedFileSystemForBucket(
 storage::BucketClientInfo SharedWorkerHost::GetBucketClientInfo() const {
   return storage::BucketClientInfo{GetProcessHost()->GetDeprecatedID(),
                                    token()};
+}
+
+std::optional<blink::NoiseToken>
+SharedWorkerHost::GetOrCreateCanvasNoiseToken() {
+  BrowserContext* browser_context = GetProcessHost()->GetBrowserContext();
+  GURL top_url = GetStorageKey().top_level_site().GetURL();
+
+  if (!GetContentClient()->browser()->ShouldEnableCanvasNoise(browser_context,
+                                                              top_url)) {
+    return std::nullopt;
+  }
+  // TODO(https://crbug.com/442616874): Use StorageKeys to call GetToken(), once
+  // CanvasNoiseTokens are keyed by StorageKey instead of Origin.
+  return CanvasNoiseTokenData::GetToken(browser_context,
+                                        url::Origin::Create(top_url));
 }
 
 void SharedWorkerHost::AllowFileSystem(

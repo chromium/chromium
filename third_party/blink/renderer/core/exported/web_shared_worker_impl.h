@@ -41,6 +41,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/source_location.mojom-blink.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
@@ -131,7 +132,8 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
-          dip_reporting_observer);
+          dip_reporting_observer,
+      std::optional<blink::NoiseToken> canvas_noise_token);
 
   void DispatchPendingConnections();
   void ConnectToChannel(int connection_request_id,

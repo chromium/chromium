@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
@@ -63,7 +64,8 @@ class SharedWorkerFactoryImpl : public blink::mojom::SharedWorkerFactory {
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer) override;
+          dip_reporting_observer,
+      std::optional<blink::NoiseToken> canvas_noise_token) override;
 };
 
 }  // namespace content

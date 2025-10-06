@@ -122,7 +122,8 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer) override;
+          dip_reporting_observer,
+      std::optional<blink::NoiseToken> canvas_noise_token) override;
 
   struct CreateParams {
     CreateParams();

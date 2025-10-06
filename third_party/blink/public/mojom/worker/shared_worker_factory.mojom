@@ -11,6 +11,7 @@ import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
+import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
@@ -116,5 +117,12 @@ interface SharedWorkerFactory {
 
       // Used by a DocumentIsolationPolicyReporter to send reports to the
       // ReportingObservers.
-      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver);
+      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver,
+
+      // The 64 bit hash value used for canvas noising for this SharedWorker. A
+      // null indicates canvas noising should be disabled for this SharedWorker.
+      // This is the initial value used to indicate the enablement state of the
+      // canvas noising feature and the initial seed value the noising should use,
+      // and must be available to the renderer prior to JavaScript execution.
+      NoiseToken? canvas_noise_token);
 };

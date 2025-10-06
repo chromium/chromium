@@ -23,6 +23,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -228,6 +229,21 @@ class CanvasInterventionsBrowserTest
     return ParseTokenFromJsResult(js_result);
   }
 
+  std::optional<blink::NoiseToken> GetRendererTokenFromSharedWorker(
+      const content::ToRenderFrameHost& to_rfh) {
+    constexpr const char kScript[] = R"(
+  new Promise(resolve => {
+    worker.port.addEventListener('message', (event) => {
+      resolve(event.data);
+    }, { once: true });
+
+    worker.port.postMessage('get-canvas-noise-token');
+  });
+  )";
+    auto js_result = content::EvalJs(to_rfh, kScript);
+    return ParseTokenFromJsResult(js_result);
+  }
+
   std::optional<blink::NoiseToken> GetRendererTokenFromWorker(
       const content::ToRenderFrameHost& to_rfh) {
     constexpr const char kScript[] = R"(
@@ -239,7 +255,6 @@ class CanvasInterventionsBrowserTest
     worker.postMessage('get-canvas-noise-token');
   });
   )";
-
     auto js_result = content::EvalJs(to_rfh, kScript);
     return ParseTokenFromJsResult(js_result);
   }
@@ -670,6 +685,113 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
 
   // This should not crash.
   tracking_protection_settings->AddTrackingProtectionException(url);
+}
+
+IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest, SharedWorkerSameToken) {
+  GURL url = embedded_https_test_server().GetURL(
+      "a.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(GetRendererTokenFromSharedWorker(web_contents()), std::nullopt);
+    // TODO(https://crbug.com/442616874): change to EXPECT_EQ once we key canvas
+    // noise tokens with StorageKey.
+    EXPECT_NE(GetRendererTokenFromSharedWorker(web_contents()),
+              GetBrowserTokenFromPage(web_contents()));
+  } else {
+    EXPECT_EQ(GetRendererTokenFromSharedWorker(web_contents()), std::nullopt);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
+                       SharedWorkerDifferentTabSameToken) {
+  GURL url = embedded_https_test_server().GetURL(
+      "a.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::WebContents* other_tab = chrome::AddSelectedTabWithURL(
+      GetBrowser(), url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  EXPECT_TRUE(content::WaitForLoadStop(other_tab));
+
+  auto first_tab_token = GetRendererTokenFromSharedWorker(web_contents());
+  auto second_tab_token = GetRendererTokenFromSharedWorker(other_tab);
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(first_tab_token, std::nullopt);
+    // TODO(https://crbug.com/442616874): change to EXPECT_EQ once we key canvas
+    // noise tokens with StorageKey.
+    EXPECT_NE(first_tab_token, GetBrowserTokenFromPage(web_contents()));
+  } else {
+    EXPECT_EQ(first_tab_token, std::nullopt);
+  }
+
+  EXPECT_EQ(first_tab_token, second_tab_token);
+}
+
+IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
+                       SharedWorkerRegularAndIncognitoDifferentToken) {
+  if (GetParam().browser_mode == BrowserMode::kIncognito) {
+    GTEST_SKIP() << "This test tests both profiles";
+  }
+
+  GURL url = embedded_https_test_server().GetURL(
+      "a.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto browser_token = GetRendererTokenFromSharedWorker(web_contents());
+
+  content::WebContents* incognito_contents =
+      CreateIncognitoBrowser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(incognito_contents, url));
+
+  auto incognito_browser_token =
+      GetRendererTokenFromSharedWorker(incognito_contents);
+
+  if (GetParam().feature_state == FeatureState::kDisabled) {
+    EXPECT_EQ(browser_token, incognito_browser_token);
+  } else {
+    EXPECT_NE(browser_token, incognito_browser_token);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
+                       SharedWorkerSubframeSameToken) {
+  GURL main_frame_url = embedded_https_test_server().GetURL(
+      "a.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  auto main_frame_shw_token = GetRendererTokenFromSharedWorker(web_contents());
+
+  CreateChildFrame();
+  auto* iframe = content::ChildFrameAt(web_contents(), 0);
+  ASSERT_TRUE(iframe);
+
+  GURL iframe_url = embedded_https_test_server().GetURL(
+      "b.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(iframe, iframe_url));
+  iframe = content::ChildFrameAt(web_contents(), 0);
+  ASSERT_TRUE(iframe);
+  auto iframe_shw_token = GetRendererTokenFromSharedWorker(iframe);
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(iframe_shw_token, std::nullopt);
+    // TODO(https://crbug.com/442616874): change to EXPECT_EQ once we key canvas
+    // noise tokens with StorageKey.
+    EXPECT_NE(iframe_shw_token, GetBrowserTokenFromPage(web_contents()));
+  } else {
+    EXPECT_EQ(iframe_shw_token, std::nullopt);
+  }
+
+  EXPECT_EQ(iframe_shw_token, main_frame_shw_token);
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
