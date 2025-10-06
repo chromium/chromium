@@ -802,6 +802,29 @@ public class AutofillProfilesFragmentTest {
                 R.id.payments_edit_cancel_button, /* waitForPreferenceUpdate= */ false);
     }
 
+    /**
+     * Verifies that profile icons are shown correctly for the currently established sign-in and
+     * sync state.
+     *
+     * @param expectedLocalIconLayout The expected widget layout for the local/sync profile.
+     */
+    private void verifyAddressProfileIcons(@LayoutRes int expectedLocalIconLayout)
+            throws Exception {
+        // Trigger the address profile list to be rebuilt with the new state.
+        mHelper.setProfile(sAccountProfile);
+
+        // The account profile icon is always hidden.
+        AutofillProfileEditorPreference accountProfilePreference =
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
+        assertEquals(0, accountProfilePreference.getWidgetLayoutResource());
+
+        // The local/sync profile icon visibility depends on the sync state.
+        AutofillProfileEditorPreference localOrSyncProfilePreference =
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
+        assertEquals(
+                expectedLocalIconLayout, localOrSyncProfilePreference.getWidgetLayoutResource());
+    }
+
     @Test
     @MediumTest
     @Feature({"Preferences"})
@@ -810,17 +833,9 @@ public class AutofillProfilesFragmentTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
-        setUpMockSyncService(false, new HashSet());
+        setUpMockSyncService(false, new HashSet<>());
 
-        // Trigger address profile list rebuild.
-        mHelper.setProfile(sAccountProfile);
-        AutofillProfileEditorPreference accountProfilePreference =
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(0, accountProfilePreference.getWidgetLayoutResource());
-
-        AutofillProfileEditorPreference localOrSyncProfilePreference =
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(0, localOrSyncProfilePreference.getWidgetLayoutResource());
+        verifyAddressProfileIcons(/* expectedLocalIconLayout= */ 0);
     }
 
     @Test
@@ -828,39 +843,19 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     public void testLocalProfiles_NoSync() throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
-        setUpMockSyncService(false, new HashSet());
+        setUpMockSyncService(false, new HashSet<>());
 
-        // Trigger address profile list rebuild.
-        mHelper.setProfile(sAccountProfile);
-        AutofillProfileEditorPreference accountProfilePreference =
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(0, accountProfilePreference.getWidgetLayoutResource());
-
-        AutofillProfileEditorPreference localOrSyncProfilePreference =
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(
-                R.layout.autofill_settings_local_profile_icon,
-                localOrSyncProfilePreference.getWidgetLayoutResource());
+        verifyAddressProfileIcons(R.layout.autofill_settings_local_profile_icon);
     }
 
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testDisplayedProfileIcons__AddressesNotSynced() throws Exception {
+    public void testDisplayedProfileIcons_AddressesNotSynced() throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
-        setUpMockSyncService(true, new HashSet());
+        setUpMockSyncService(true, new HashSet<>());
 
-        // Trigger address profile list rebuild.
-        mHelper.setProfile(sAccountProfile);
-        AutofillProfileEditorPreference accountProfilePreference =
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(0, accountProfilePreference.getWidgetLayoutResource());
-
-        AutofillProfileEditorPreference localOrSyncProfilePreference =
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(
-                R.layout.autofill_settings_local_profile_icon,
-                localOrSyncProfilePreference.getWidgetLayoutResource());
+        verifyAddressProfileIcons(R.layout.autofill_settings_local_profile_icon);
     }
 
     @Test
@@ -870,15 +865,7 @@ public class AutofillProfilesFragmentTest {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
         setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
 
-        // Trigger address profile list rebuild.
-        mHelper.setProfile(sAccountProfile);
-        AutofillProfileEditorPreference accountProfilePreference =
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(0, accountProfilePreference.getWidgetLayoutResource());
-
-        AutofillProfileEditorPreference localOrSyncProfilePreference =
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
-        assertEquals(0, localOrSyncProfilePreference.getWidgetLayoutResource());
+        verifyAddressProfileIcons(/* expectedLocalIconLayout= */ 0);
     }
 
     @Test
