@@ -474,7 +474,10 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // has started, or completed.
   bool enqueue_scroll_events_ = true;
 
-  // Cached value of the kUpdateScrollPredictorInputMapping feature flag.
+  // Cached value of the (kUpdateScrollPredictorInputMapping &
+  // kRefactorCompositorThreadEventQueue) feature flag. (Feature
+  // UpdateScrollPredictorInputMapping needs RefactorCompositorThreadEventQueue
+  // to be enabled).
   const bool update_scroll_predictor_;
 
   // `cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents`:

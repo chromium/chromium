@@ -28,7 +28,8 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
       delete;
   ~CompositorThreadEventQueue();
 
-  // Adds an event to the queue.
+  // Adds an event to the queue. The event may be coalesced with the last event
+  // if kRefactorCompositorThreadEventQueue is disabled.
   void Queue(std::unique_ptr<EventWithCallback> event);
 
   std::unique_ptr<EventWithCallback> Pop();

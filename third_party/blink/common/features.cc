@@ -2064,6 +2064,9 @@ BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
 // cross-origin requests.
 BASE_FEATURE(kReducedReferrerGranularity, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRefactorCompositorThreadEventQueue,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE_PARAM(std::string,
                    kUserAgentFrozenBuildVersion,
                    &kReduceUserAgentMinorVersion,
