@@ -174,8 +174,8 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
   NSDictionary<NSString*, NSNumber*>* capabilities =
       [coder decodeObjectOfClasses:capabilityClasses
                             forKey:kCoderUserCapabilityKey];
-  return [self initWithUserEmail:gaiaID
-                          gaiaID:userEmail
+  return [self initWithUserEmail:userEmail
+                          gaiaID:gaiaID
                     userFullName:userFullName
                    userGivenName:userGivenName
                     capabilities:capabilities];
