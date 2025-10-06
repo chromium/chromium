@@ -100,6 +100,7 @@
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
@@ -1502,25 +1503,17 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
                               {*std::move(maybe_compose_suggestion)});
       return;
     }
+  } else if (IsTriggerSourceOnlyRelevantForCompose(trigger_source)) {
+    std::move(callback).Run(/*show_suggestions=*/true,
+                            /*suggestions=*/{});
+    return;
   }
 
-  // Whether or not to request single field form fill suggestions.
-  const bool should_offer_single_field_form_fill =
-      trigger_source !=
-      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick;
-
-  // Whether or not to show plus address suggestions.
   const bool should_offer_plus_addresses =
       plus_addresses && autofill_field &&
       (autofill_field->Type().GetGroups().contains(FieldTypeGroup::kEmail) ||
        autofill_field->Type().GetTypes().contains(FieldType::USERNAME) ||
        autofill_field->Type().GetTypes().contains(FieldType::SINGLE_USERNAME));
-
-  // Early return to avoid running password form classifications.
-  if (!should_offer_plus_addresses && !should_offer_single_field_form_fill) {
-    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
-    return;
-  }
 
   const PasswordFormClassification password_form_classification =
       client().ClassifyAsPasswordForm(*this, form.global_id(),
@@ -1542,49 +1535,41 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
       weak_ptr_factory_.GetWeakPtr(),
       AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
       password_form_classification.type, form.global_id(), field,
-      should_offer_single_field_form_fill, std::move(callback),
-      std::move(plus_address_suggestions));
+      std::move(callback), std::move(plus_address_suggestions));
 
-  if (should_offer_single_field_form_fill) {
-    // Generating single field suggestions.
-    auto on_suggestions_returned = base::BindOnce(
-        [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
-           FieldGlobalId field_id, const std::vector<Suggestion>& suggestions) {
-          std::move(callback).Run(suggestions);
-        },
-        std::move(on_single_field_suggestions_callback));
-    if (form_structure && autofill_field &&
-        client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager() &&
-        client()
-            .GetPaymentsAutofillClient()
-            ->GetMerchantPromoCodeManager()
-            ->OnGetSingleFieldSuggestions(*form_structure, field,
-                                          *autofill_field, client(),
-                                          on_suggestions_returned)) {
-      return;
-    }
-    if (form_structure && autofill_field &&
-        client().GetPaymentsAutofillClient()->GetIbanManager() &&
-        client()
-            .GetPaymentsAutofillClient()
-            ->GetIbanManager()
-            ->OnGetSingleFieldSuggestions(*form_structure, field,
-                                          *autofill_field, client(),
-                                          on_suggestions_returned)) {
-      return;
-    }
-    // Autocomplete suggestions have to be generated last since they have to
-    // take the ownership of `on_suggestions_returned`.
-    // Even if no autocomplete suggestions are generated,
-    // `on_suggestions_returned` is still called with an empty list of
-    // suggestions.
-    client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
-        form, form_structure, field, autofill_field, client(),
-        std::move(on_suggestions_returned));
-  } else {
-    std::move(on_single_field_suggestions_callback)
-        .Run(/*single_field_suggestions=*/{});
+  // Generating single field suggestions.
+  auto on_suggestions_returned = base::BindOnce(
+      [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
+         FieldGlobalId field_id, const std::vector<Suggestion>& suggestions) {
+        std::move(callback).Run(suggestions);
+      },
+      std::move(on_single_field_suggestions_callback));
+  if (form_structure && autofill_field &&
+      client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager() &&
+      client()
+          .GetPaymentsAutofillClient()
+          ->GetMerchantPromoCodeManager()
+          ->OnGetSingleFieldSuggestions(*form_structure, field, *autofill_field,
+                                        client(), on_suggestions_returned)) {
+    return;
   }
+  if (form_structure && autofill_field &&
+      client().GetPaymentsAutofillClient()->GetIbanManager() &&
+      client()
+          .GetPaymentsAutofillClient()
+          ->GetIbanManager()
+          ->OnGetSingleFieldSuggestions(*form_structure, field, *autofill_field,
+                                        client(), on_suggestions_returned)) {
+    return;
+  }
+  // Autocomplete suggestions have to be generated last since they have to
+  // take the ownership of `on_suggestions_returned`.
+  // Even if no autocomplete suggestions are generated,
+  // `on_suggestions_returned` is still called with an empty list of
+  // suggestions.
+  client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
+      form, form_structure, field, autofill_field, client(),
+      std::move(on_suggestions_returned));
 }
 
 void BrowserAutofillManager::
@@ -1593,7 +1578,6 @@ void BrowserAutofillManager::
         PasswordFormClassification::Type password_form_type,
         const FormGlobalId& form_id,
         const FormFieldData& field,
-        bool should_offer_single_field_form_fill,
         OnGenerateSuggestionsCallback callback,
         std::vector<Suggestion> plus_address_suggestions,
         std::vector<Suggestion> single_field_suggestions) {
@@ -1613,7 +1597,7 @@ void BrowserAutofillManager::
     // suggestions.
     // TODO(crbug.com/381994105): Consider adding
     // `should_offer_autofill_on_typing()` to `FormFieldData`.
-    if (should_offer_single_field_form_fill && field.should_autocomplete() &&
+    if (field.should_autocomplete() &&
         base::FeatureList::IsEnabled(
             features::kAutofillAddressSuggestionsOnTyping)) {
       // Try to build `Suggestion::kAddressEntryOnTyping` suggestions.

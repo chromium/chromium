@@ -567,7 +567,6 @@ class BrowserAutofillManager : public AutofillManager {
       PasswordFormClassification::Type password_form_type,
       const FormGlobalId& form_id,
       const FormFieldData& field,
-      bool should_offer_single_field_form_fill,
       OnGenerateSuggestionsCallback callback,
       std::vector<Suggestion> plus_address_suggestions,
       std::vector<Suggestion> single_field_suggestions);
