@@ -53,26 +53,6 @@ static_assert(File::FROM_BEGIN == SEEK_SET && File::FROM_CURRENT == SEEK_CUR &&
 
 namespace {
 
-#if BUILDFLAG(IS_APPLE)
-// When enabled, `F_FULLFSYNC` is not used in `File::Flush`. Instead,
-// `F_BARRIERFSYNC` or `flush()` is used (depending on the
-// "MacEfficientFileFlushUseBarrier" param). See
-// https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
-BASE_FEATURE(kMacEfficientFileFlush, base::FEATURE_ENABLED_BY_DEFAULT);
-
-const FeatureParam<bool> kMacEfficientFileFlushUseBarrier{
-    &kMacEfficientFileFlush, "MacEfficientFileFlushUseBarrier", true};
-
-enum class MacFileFlushMechanism {
-  kFlush,
-  kFullFsync,
-  kBarrierFsync,
-};
-
-std::atomic<MacFileFlushMechanism> g_mac_file_flush_mechanism{
-    MacFileFlushMechanism::kFullFsync};
-#endif  // BUILDFLAG(IS_APPLE)
-
 #if BUILDFLAG(IS_ANDROID)
 #define OffsetType off64_t
 // In case __USE_FILE_OFFSET64 is not used, the `File` methods in this file need
@@ -533,22 +513,6 @@ File File::Duplicate() const {
   return File(std::move(other_fd), async());
 }
 
-#if BUILDFLAG(IS_APPLE)
-void File::InitializeFeatures() {
-  if (FeatureList::IsEnabled(kMacEfficientFileFlush)) {
-    // "relaxed" because there is no dependency between these memory operations
-    // and other memory operations.
-    if (kMacEfficientFileFlushUseBarrier.Get()) {
-      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kBarrierFsync,
-                                       std::memory_order_relaxed);
-    } else {
-      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kFlush,
-                                       std::memory_order_relaxed);
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_APPLE)
-
 // Static.
 File::Error File::OSErrorToFileError(int saved_errno) {
   switch (saved_errno) {
@@ -700,40 +664,20 @@ bool File::Flush() {
   // On macOS and iOS, fsync() is guaranteed to send the file's data to the
   // underlying storage device, but may return before the device actually writes
   // the data to the medium. When used by database systems, this may result in
-  // unexpected data loss. Depending on experiment state, this function may use
-  // F_BARRIERFSYNC or F_FULLFSYNC to provide stronger guarantees than fsync().
+  // unexpected data loss. This function uses F_BARRIERFSYNC to provide stronger
+  // guarantees than fsync().
   //
   // See documentation:
   // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
   //
-  // "relaxed" because there is no dependency between this memory operation and
-  // other memory operations.
-  switch (g_mac_file_flush_mechanism.load(std::memory_order_relaxed)) {
-    case MacFileFlushMechanism::kBarrierFsync: {
-      if (!HANDLE_EINTR(fcntl(file_.get(), F_BARRIERFSYNC))) {
-        return true;
-      }
-      // Fall back to `fsync()` in case of failure.
-      break;
-    }
-    case MacFileFlushMechanism::kFullFsync: {
-      if (!HANDLE_EINTR(fcntl(file_.get(), F_FULLFSYNC))) {
-        return true;
-      }
-      // Fall back to `fsync()` in case of failure.
-      break;
-    }
-    case MacFileFlushMechanism::kFlush: {
-      // Fall back to `fsync()`.
-      break;
-    }
+  if (!HANDLE_EINTR(fcntl(file_.get(), F_BARRIERFSYNC))) {
+    return true;
   }
 
-  // `fsync()` if `F_BARRIERFSYNC` or `F_FULLFSYNC` failed, or if the mechanism
-  // is `kFlush`. Some file systems do not support `F_FULLFSYNC` /
+  // `fsync()` if `F_BARRIERFSYNC` failed. Some file systems do not support
   // `F_BARRIERFSYNC` but we cannot use the error code as a definitive indicator
-  // that it's the case, so we'll keep trying `F_FULLFSYNC` / `F_BARRIERFSYNC`
-  // for every call to this method when it's the case. See the CL description at
+  // that it's the case, so we'll keep trying `F_BARRIERFSYNC` for every call to
+  // this method when it's the case. See the CL description at
   // https://crrev.com/c/1400159 for details.
   return !HANDLE_EINTR(fsync(file_.get()));
 #else

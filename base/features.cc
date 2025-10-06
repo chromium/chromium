@@ -210,7 +210,6 @@ void Init(EmitThreadControllerProfilerMetadata
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  File::InitializeFeatures();
   MessagePumpCFRunLoopBase::InitializeFeatures();
 
 // Kqueue is not used for ios blink.
