@@ -1357,17 +1357,9 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     }
   }
 
-  KURL sender(event->origin());
-  if (!GetContentSecurityPolicy()->AllowConnectToSource(
-          sender, sender, RedirectStatus::kNoRedirect,
-          ReportingDisposition::kSuppressReporting)) {
-    UseCounter::Count(
-        this, WebFeature::kPostMessageIncomingWouldBeBlockedByConnectSrc);
-  }
-
   if (event->IsOriginCheckRequiredToAccessData()) {
     scoped_refptr<SecurityOrigin> sender_security_origin =
-        SecurityOrigin::Create(sender);
+        SecurityOrigin::CreateFromString(event->origin());
     if (!sender_security_origin->IsSameOriginWith(GetSecurityOrigin())) {
       event = MessageEvent::CreateError(event->origin(), event->source());
     }
@@ -1380,7 +1372,7 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
       event = MessageEvent::CreateError(event->origin(), event->source());
     } else {
       scoped_refptr<SecurityOrigin> sender_origin =
-          SecurityOrigin::Create(sender);
+          SecurityOrigin::CreateFromString(event->origin());
       if (!sender_origin->IsSameOriginWith(GetSecurityOrigin())) {
         UseCounter::Count(
             this, WebFeature::kMessageEventSharedArrayBufferSameAgentCluster);
