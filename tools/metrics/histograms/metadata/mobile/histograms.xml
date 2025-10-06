@@ -236,6 +236,8 @@ chromium-metrics-reviews@google.com.
     <variant name="TabGroupIndicatorEntry" summary="Tab Group Indicator Entry"/>
     <variant name="TabGroupIndicatorNTPEntry"
         summary="Tab Group Indicator on NTP Entry"/>
+    <variant name="TabGroupOverflowMenu"
+        summary="Tab Group button in the Overflow Menu"/>
     <variant name="TabGroupsPanelEntry" summary="Tab group panel entry"/>
     <variant name="TabGroupViewEntry"
         summary="Tab group view entry in tab grid"/>

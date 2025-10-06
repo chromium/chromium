@@ -275,6 +275,7 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="Image on a Reader Mode page"/>
   <int value="35" label="Image-Link on a Reader Mode page"/>
   <int value="36" label="Link on a Reader Mode page"/>
+  <int value="37" label="Tab Group button in the Overflow Menu"/>
 </enum>
 
 <enum name="IOSShareAction">
