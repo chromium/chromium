@@ -92,6 +92,8 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
 
 }  // namespace
 
+// TODO(https://crbug.com/340623286): Convert this test suite to use the
+// `ProfileManagementDisclaimerService`.
 class UserPolicySigninServiceTest : public InProcessBrowserTest {
  public:
   UserPolicySigninServiceTest()
@@ -307,7 +309,6 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     return http_response;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer embedded_test_server_;
   FakeGaia fake_gaia_;
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server_;
@@ -368,7 +369,8 @@ void TestTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
   NOTREACHED();
 }
 
-// Disabled for Win11 arm64 flakes: https://crbug.com/340623286
+// TODO(https://crbug.com/340623286): Convert this test to use the
+// `ProfileManagementDisclaimerService`.
 IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed());
@@ -393,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
   EXPECT_TRUE(signin_client()->IsRevokeSyncConsentAllowed());
 }
 
-// Disabled for Win11 arm64 flakes: https://crbug.com/340623286
+// TODO(https://crbug.com/340623286): Convert this test to use the
+// `ProfileManagementDisclaimerService`.
 IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile()));
@@ -423,7 +426,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
   EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
 }
 
-// Disabled for Win11 arm64 flakes: https://crbug.com/340623286
+// TODO(https://crbug.com/340623286): Convert this test to use the
+// `ProfileManagementDisclaimerService`.
 IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
                        DISABLED_AcceptManagementDeclineSync) {
   TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
@@ -460,6 +464,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
   TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
 }
 
+// This test can be deleted once syncer::kReplaceSyncPromosWithSignInPromos is
+// launched.
 class UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled
     : public UserPolicySigninServiceTest {
  public:
