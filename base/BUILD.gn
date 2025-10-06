@@ -4394,7 +4394,6 @@ if (enable_nocompile_tests) {
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ref_nocompile.nc",
       "callback_list_nocompile.nc",
       "check_nocompile.nc",
-      "containers/adapters_nocompile.nc",
       "containers/buffer_iterator_nocompile.nc",
       "containers/checked_iterators_nocompile.nc",
       "containers/contains_nocompile.nc",
@@ -4439,6 +4438,11 @@ if (enable_nocompile_tests) {
       "unsafe_buffers_nocompile.nc",
       "values_nocompile.nc",
     ]
+    if (use_cxx23) {
+      sources += [ "containers/adapters_nocompile_cpp23.nc" ]
+    } else {
+      sources += [ "containers/adapters_nocompile.nc" ]
+    }
     deps = [ ":base" ]
   }
 }
