@@ -15,11 +15,6 @@ namespace views::features {
 BASE_FEATURE(kAnnounceTextAdditionalAttributes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use a high-contrast style for ink drops when in platform high-contrast mode,
-// including full opacity and a high-contrast color
-BASE_FEATURE(kEnablePlatformHighContrastInkDrop,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If mouse cursor is over different window Windows will not start a Drag
 // and drop. This feature moves the cursor to the location of a touch on
 // press-down so that by the time a Drag and drop is started, the cursor will

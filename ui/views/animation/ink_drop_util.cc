@@ -12,7 +12,6 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/view.h"
-#include "ui/views/views_features.h"
 
 namespace views {
 
@@ -63,9 +62,7 @@ bool UsingPlatformHighContrastInkDrop(const View* view) {
   return native_theme->forced_colors() !=
              ui::ColorProviderKey::ForcedColors::kNone &&
          native_theme->preferred_contrast() ==
-             ui::NativeTheme::PreferredContrast::kMore &&
-         base::FeatureList::IsEnabled(
-             features::kEnablePlatformHighContrastInkDrop);
+             ui::NativeTheme::PreferredContrast::kMore;
 }
 
 }  // namespace views
