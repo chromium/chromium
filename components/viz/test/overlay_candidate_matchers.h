@@ -51,6 +51,10 @@ testing::Matcher<const OverlayCandidate&> OverlayIsFullScreen();
 testing::Matcher<const OverlayCandidate&> OverlayTargetRectIs(
     const gfx::RectF& expected);
 
+// Return the count of non-primary-plane overlays in `candidate_list`.
+size_t NumOverlaysExcludingPrimaryPlane(
+    const OverlayCandidateList& candidate_list);
+
 }  // namespace test
 
 }  // namespace viz

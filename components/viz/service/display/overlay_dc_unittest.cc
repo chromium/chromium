@@ -2682,7 +2682,7 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
 
     EXPECT_TRUE(overlay_processor_->IsOverlaySupported());
 
-    output_surface_plane_ = OverlayCandidate();
+    output_surface_plane_ = GetDefaultPrimaryPlane(gfx::Size(256, 256));
   }
 
   void TearDown() override {
@@ -2690,8 +2690,11 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
     OverlayProcessorTestBase::TearDown();
   }
 
-  std::optional<OverlayCandidate>& GetOutputSurfacePlane() {
-    return output_surface_plane_;
+  std::optional<OverlayCandidate> GetDefaultPrimaryPlane(
+      const gfx::Size& primary_plane_size) {
+    return overlay_processor_->ProcessOutputSurfaceAsOverlay(
+        primary_plane_size, primary_plane_size, SinglePlaneFormat::kBGRA_8888,
+        gfx::ColorSpace::CreateSRGB(), false, 1.0, gpu::Mailbox());
   }
 
   std::optional<OverlayCandidate> output_surface_plane_;
@@ -2842,7 +2845,8 @@ class OverlayProcessorWinSurfacePlaneTest
                                                      &damage_rect_);
     }
 
-    output_surface_plane_ = OverlayCandidate();
+    output_surface_plane_ =
+        GetDefaultPrimaryPlane(render_passes->back()->output_rect.size());
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), render_passes, SkM44(), render_pass_filters,
         render_pass_backdrop_filters,
@@ -3287,8 +3291,8 @@ class OverlayProcessorWinDelegatedCompositingTest
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
-        &candidates, &damage_rect_, &content_bounds_);
+        std::move(surface_damage_rect_list), output_surface_plane_, &candidates,
+        &damage_rect_, &content_bounds_);
 
     overlay_processor_->AdjustOutputSurfaceOverlay(output_surface_plane_);
     const bool delegation_succeeded = !output_surface_plane_.has_value();

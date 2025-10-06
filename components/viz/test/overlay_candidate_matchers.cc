@@ -111,6 +111,13 @@ testing::Matcher<const OverlayCandidate&> OverlayTargetRectIs(
                            ApproximatelyEquals(expected));
 }
 
+size_t NumOverlaysExcludingPrimaryPlane(
+    const OverlayCandidateList& candidate_list) {
+  return std::ranges::count_if(candidate_list, [](const auto& overlay) {
+    return !overlay.is_root_render_pass;
+  });
+}
+
 }  // namespace test
 
 }  // namespace viz
