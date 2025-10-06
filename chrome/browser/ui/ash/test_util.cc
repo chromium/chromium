@@ -85,13 +85,8 @@ void ChromeOSBrowserUITest::SetOverviewMode(bool enable) {
   }
 }
 
-bool ChromeOSBrowserUITest::IsSnapWindowSupported() {
-  return true;
-}
-
 void ChromeOSBrowserUITest::SnapWindow(aura::Window* window,
                                        ash::SnapPosition position) {
-  CHECK(IsSnapWindowSupported());
   ash::SplitViewTestApi().SnapWindow(window, position);
 }
 
@@ -99,12 +94,7 @@ void ChromeOSBrowserUITest::PinWindow(aura::Window* window, bool trusted) {
   ash::PinWindow(window, trusted);
 }
 
-bool ChromeOSBrowserUITest::IsIsShelfVisibleSupported() {
-  return true;
-}
-
 bool ChromeOSBrowserUITest::IsShelfVisible() {
-  CHECK(IsIsShelfVisibleSupported());
   return ash::ShelfTestApi().IsVisible();
 }
 

@@ -271,10 +271,6 @@ using BrowserFrameViewChromeOSTouchTestWithWebUiTabStrip =
 
 IN_PROC_BROWSER_TEST_F(BrowserFrameViewChromeOSTouchTestWithWebUiTabStrip,
                        TabletSplitViewNonClientHitTest) {
-  if (!IsSnapWindowSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
   views::Widget* widget = browser_view->GetWidget();
@@ -294,10 +290,6 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewChromeOSTouchTestWithWebUiTabStrip,
 
 IN_PROC_BROWSER_TEST_F(BrowserFrameViewChromeOSTouchTestWithWebUiTabStrip,
                        TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip) {
-  if (!IsSnapWindowSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
   const int expect_y =
@@ -972,10 +964,6 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, TopViewInset) {
 // tablet mode.
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        BrowserHeaderVisibilityInTabletModeTest) {
-  if (!IsSnapWindowSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::Widget* widget = browser_view->GetWidget();
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
@@ -1309,10 +1297,6 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
                        BrowserHeaderVisibilityInTabletModeTest) {
-  if (!IsSnapWindowSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
 
@@ -1339,10 +1323,6 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
 // in tablet mode.
 IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
                        BrowserAppHeaderVisibilityInTabletModeTest) {
-  if (!IsSnapWindowSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   Browser* browser2 =
       CreateBrowserForApp("test_browser_app", browser()->profile());
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
@@ -1525,10 +1505,6 @@ using LockedFullscreenBrowserFrameViewChromeOSTest =
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenNotLockedForOnTask) {
-  if (!IsIsShelfVisibleSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   browser()->SetLockedForOnTask(false);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -1569,10 +1545,6 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenLockedForOnTask) {
-  if (!IsIsShelfVisibleSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   browser()->SetLockedForOnTask(true);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());

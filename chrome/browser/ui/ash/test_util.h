@@ -47,17 +47,11 @@ class ChromeOSBrowserUITest : public MixinBasedInProcessBrowserTest {
   static void EnterOverviewMode();
   static void ExitOverviewMode();
 
-  // Checks whether the `SnapWindow` method can be called.
-  static bool IsSnapWindowSupported();
-
   // Snaps the given window to the given part of the screen
   static void SnapWindow(aura::Window* window, ash::SnapPosition position);
 
   // Pins the given window. This is also known as locked fullscreen mode.
   static void PinWindow(aura::Window* window, bool trusted);
-
-  // Checks whether the `IsShelfVisible` method can be called.
-  static bool IsIsShelfVisibleSupported();
 
   // Checks whether the ChromeOS UI currently shows the shelf (on the primary
   // display).

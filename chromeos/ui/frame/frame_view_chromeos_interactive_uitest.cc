@@ -95,9 +95,6 @@ IN_PROC_BROWSER_TEST_F(FrameViewChromeOSUiTest,
 
 IN_PROC_BROWSER_TEST_F(FrameViewChromeOSUiTest,
                        TabletModeTitlebarHideForSnappedWindow) {
-  if (!IsSnapWindowSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
   // TODO(https://crbug.com/325001477) Lacros updates inactive windows' state
   // late on tablet state change, so we have to wait for activation before
   // entering tablet mode so that there isn't a delay.

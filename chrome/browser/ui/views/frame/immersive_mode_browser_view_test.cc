@@ -286,10 +286,6 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 // hidden, and the fullscreen control popup doesn't show up).
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                        RegularToLockedFullscreenDisablesImmersive) {
-  if (!IsIsShelfVisibleSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   EnterImmersiveFullscreenMode(browser());
 
   // Set locked fullscreen state.
@@ -317,10 +313,6 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 // fullscreen control popup doesn't show up).
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                        LockedFullscreenDisablesImmersive) {
-  if (!IsIsShelfVisibleSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   EXPECT_FALSE(browser_view->GetWidget()->IsFullscreen());
 
@@ -346,10 +338,6 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 // Test the shelf visibility affected by entering and exiting tab fullscreen and
 // immersive fullscreen.
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest, TabAndBrowserFullscreen) {
-  if (!IsIsShelfVisibleSupported()) {
-    GTEST_SKIP() << "Ash is too old.";
-  }
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
 
   ASSERT_TRUE(
