@@ -43,22 +43,6 @@ class BrowserList {
   using const_iterator = BrowserVector::const_iterator;
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;
 
-  struct BrowsersOrderedByActivationRange {
-    const raw_ref<const BrowserList> browser_list;
-
-    const_reverse_iterator begin() const {
-      return browser_list->begin_browsers_ordered_by_activation();
-    }
-    const_reverse_iterator end() const {
-      return browser_list->end_browsers_ordered_by_activation();
-    }
-
-   private:
-    // Stack allocated only to reduce risk of out of bounds lifetime with
-    // |browser_list|.
-    STACK_ALLOCATED();
-  };
-
   BrowserList(const BrowserList&) = delete;
   BrowserList& operator=(const BrowserList&) = delete;
 
