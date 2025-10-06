@@ -10732,24 +10732,6 @@
             ]
         }
     ],
-    "FasterBackgroundFreezing": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "DelayForBackgroundTabFreezingMills": "60000"
-                    },
-                    "enable_features": [
-                        "stop-in-background"
-                    ]
-                }
-            ]
-        }
-    ],
     "FedCmSegmentationPlatform": [
         {
             "platforms": [

@@ -1226,6 +1226,10 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
 }
 
 TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
+  // Disabling StopInBackground (Android only) makes this easier to test as
+  // WebSockets are not exempt from background freezing.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kStopInBackground);
   InitializeTrialParams();
   std::unique_ptr<PageSchedulerImpl> page_scheduler =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);

@@ -55,7 +55,7 @@ constexpr base::TimeDelta kThrottlingDelayAfterBackgrounding =
 // etc. after the renderer has been backgrounded. This is used only if
 // background suspension is enabled.
 constexpr base::TimeDelta kDefaultDelayForBackgroundTabFreezing =
-    base::Minutes(5);
+    base::Minutes(1);
 
 // Duration of a throttled wake up.
 constexpr base::TimeDelta kThrottledWakeUpDuration = base::Milliseconds(3);
