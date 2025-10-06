@@ -658,4 +658,55 @@ TEST_F(ValuableSyncBridgeTest,
               UnorderedElementsAre(local_vehicle));
 }
 
+// Tests that `EntityInstanceChanged()` does nothing when flight and vehicle
+// sync features are disabled.
+TEST_F(ValuableSyncBridgeTest,
+       EntityInstanceChanged_DoesNothingWhenFeaturesDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({}, {syncer::kSyncWalletFlightReservations,
+                                     syncer::kSyncWalletVehicleRegistrations});
+  const EntityInstance vehicle = GetServerVehicleEntityInstance();
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+}
+
+// Tests that `EntityInstanceChanged()` ignores local entities.
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_IgnoresLocalEntities) {
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  const EntityInstance vehicle = GetLocalVehicleEntityInstance();
+
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+}
+
+// Tests that `EntityInstanceChanged()` handles ADD and UPDATE changes.
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = GetServerVehicleEntityInstance();
+
+  EXPECT_CALL(mock_processor(), Put(_, _, _));
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+
+  EXPECT_CALL(mock_processor(), Put(_, _, _));
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::UPDATE, vehicle.guid(), vehicle));
+}
+
+// Tests that `EntityInstanceChanged()` crashes on REMOVE change.
+TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_Remove) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = GetServerVehicleEntityInstance();
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        bridge().EntityInstanceChanged(EntityInstanceChange(
+            EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
+      },
+      ".*");
+}
+
 }  // namespace autofill
