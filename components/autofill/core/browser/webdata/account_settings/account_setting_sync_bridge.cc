@@ -15,6 +15,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
+#include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/account_setting_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -28,6 +29,14 @@ namespace {
     change_processor()->ReportError(*error); \
     return;                                  \
   }
+
+std::unique_ptr<syncer::EntityData> CreateEntityData(
+    const sync_pb::AccountSettingSpecifics& specifics) {
+  auto entity = std::make_unique<syncer::EntityData>();
+  entity->name = specifics.name();
+  entity->specifics.mutable_account_setting()->CopyFrom(specifics);
+  return entity;
+}
 
 }  // namespace
 
@@ -106,8 +115,12 @@ std::unique_ptr<syncer::DataBatch> AccountSettingSyncBridge::GetDataForCommit(
 
 std::unique_ptr<syncer::DataBatch>
 AccountSettingSyncBridge::GetAllDataForDebugging() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const auto& [name, specifics] : settings_) {
+    batch->Put(name, CreateEntityData(specifics));
+  }
+  return batch;
 }
 
 bool AccountSettingSyncBridge::IsEntityDataValid(

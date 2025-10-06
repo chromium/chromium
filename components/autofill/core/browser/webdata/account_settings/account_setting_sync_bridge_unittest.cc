@@ -31,11 +31,25 @@ namespace {
 using SettingSpecifics = sync_pb::AccountSettingSpecifics;
 using ::testing::_;
 using ::testing::Optional;
+using ::testing::UnorderedElementsAre;
 
 syncer::EntityData EntityFromSpecifics(const SettingSpecifics& specifics) {
   syncer::EntityData entity;
   *entity.specifics.mutable_account_setting() = specifics;
   return entity;
+}
+
+// Assumes that `batch` only contains entities with `SettingSpecifics` and
+// extracts them into a vector.
+std::vector<SettingSpecifics> ExtractSpecificsFromBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<SettingSpecifics> specifics;
+  while (batch->HasNext()) {
+    std::unique_ptr<syncer::EntityData> entity = batch->Next().second;
+    CHECK(entity->specifics.has_account_setting());
+    specifics.push_back(entity->specifics.account_setting());
+  }
+  return specifics;
 }
 
 class AccountSettingSyncBridgeTest : public testing::Test {
@@ -180,6 +194,17 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   EXPECT_FALSE(bridge().GetSetting("name1"));
   EXPECT_THAT(bridge().GetSetting("name2"),
               Optional(HasStringSetting("name2", "string")));
+}
+
+TEST_F(AccountSettingSyncBridgeTest, GetAllDataForDebugging) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name1", "string"),
+                                  CreateSettingSpecifics("name2", true),
+                                  CreateSettingSpecifics("name3", 123)}));
+  EXPECT_THAT(ExtractSpecificsFromBatch(bridge().GetAllDataForDebugging()),
+              UnorderedElementsAre(HasStringSetting("name1", "string"),
+                                   HasBoolSetting("name2", true),
+                                   HasIntSetting("name3", 123)));
 }
 
 }  // namespace
