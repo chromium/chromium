@@ -7,8 +7,7 @@
 
 #include "base/feature_list.h"
 
-namespace web {
-namespace features {
+namespace web::features {
 
 // Used to crash the browser if unexpected URL change is detected.
 // https://crbug.com/841105.
@@ -60,13 +59,6 @@ BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 // fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenScrollThreshold);
 
-// A flag parameter to set the number of pixels to use as the threshold.
-extern const char kFullscreenScrollThresholdAmount[];
-
-// Returns true if SmoothScrollingDefault is disabled and
-// FullscreenScrollThreshold is enabled.
-bool IsFullscreenScrollThresholdEnabled();
-
 // Feature flag that force the use of the synthesized native WKWebView
 // session instead of the (maybe inexistent) saved native session. The
 // purpose of this flag it to allow to testing this code path.
@@ -75,9 +67,6 @@ BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 // Feature flag to enable detecting destroyed NavigationContexts. This is
 // intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kDetectDestroyedNavigationContexts);
-
-// When true, an option to enable Web Inspector should be present in Settings.
-bool IsWebInspectorSupportEnabled();
 
 // Feature flag to disable the raccoon.
 BASE_DECLARE_FEATURE(kDisableRaccoon);
@@ -101,7 +90,17 @@ BASE_DECLARE_FEATURE(kLogCrWebJavaScriptErrors);
 // When enabled, JavaScript errors will crash the application.
 BASE_DECLARE_FEATURE(kAssertOnJavaScriptErrors);
 
-}  // namespace features
-}  // namespace web
+// A flag parameter to set the number of pixels to use as the threshold.
+inline constexpr char kFullscreenScrollThresholdAmount[] =
+    "fullscreen_scroll_threshold_amount";
+
+// Returns true if SmoothScrollingDefault is disabled and
+// FullscreenScrollThreshold is enabled.
+bool IsFullscreenScrollThresholdEnabled();
+
+// When true, an option to enable Web Inspector should be present in Settings.
+bool IsWebInspectorSupportEnabled();
+
+}  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
