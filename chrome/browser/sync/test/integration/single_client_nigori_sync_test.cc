@@ -876,12 +876,13 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(decrypted_keys.cross_user_sharing_private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
-  std::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
-      syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-          raw_private_key);
-  EXPECT_TRUE(private_key.has_value());
+  std::optional<base::span<uint8_t, X25519_PRIVATE_KEY_LEN>> fixed_private_key =
+      base::span(raw_private_key).to_fixed_extent<X25519_PRIVATE_KEY_LEN>();
+  ASSERT_TRUE(fixed_private_key);
+
+  syncer::CrossUserSharingPublicPrivateKeyPair private_key(*fixed_private_key);
   EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
-              testing::ElementsAreArray(private_key->GetRawPublicKey()));
+              testing::ElementsAreArray(private_key.GetRawPublicKey()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -984,12 +985,13 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(decrypted_keys.cross_user_sharing_private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
-  std::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
-      syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-          raw_private_key);
-  EXPECT_TRUE(private_key.has_value());
+  std::optional<base::span<uint8_t, X25519_PRIVATE_KEY_LEN>> fixed_private_key =
+      base::span(raw_private_key).to_fixed_extent<X25519_PRIVATE_KEY_LEN>();
+  ASSERT_TRUE(fixed_private_key);
+
+  syncer::CrossUserSharingPublicPrivateKeyPair private_key(*fixed_private_key);
   EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
-              testing::ElementsAreArray(private_key->GetRawPublicKey()));
+              testing::ElementsAreArray(private_key.GetRawPublicKey()));
 }
 
 IN_PROC_BROWSER_TEST_F(

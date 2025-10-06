@@ -32,21 +32,10 @@ CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair() {
   return CrossUserSharingPublicPrivateKeyPair();
 }
 
-// static
-std::optional<CrossUserSharingPublicPrivateKeyPair>
-CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-    base::span<const uint8_t> private_key) {
-  if (private_key.size() != X25519_PRIVATE_KEY_LEN) {
-    return std::nullopt;
-  }
-  return CrossUserSharingPublicPrivateKeyPair(private_key);
-}
-
 CrossUserSharingPublicPrivateKeyPair::CrossUserSharingPublicPrivateKeyPair(
-    base::span<const uint8_t> private_key) {
-  CHECK_EQ(static_cast<size_t>(X25519_PRIVATE_KEY_LEN), private_key.size());
+    base::span<const uint8_t, X25519_PRIVATE_KEY_LEN> private_key) {
   CHECK(EVP_HPKE_KEY_init(key_.get(), EVP_hpke_x25519_hkdf_sha256(),
-                          private_key.data(), X25519_PRIVATE_KEY_LEN));
+                          private_key.data(), private_key.size()));
 }
 
 CrossUserSharingPublicPrivateKeyPair::CrossUserSharingPublicPrivateKeyPair() {

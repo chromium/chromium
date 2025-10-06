@@ -63,36 +63,15 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
 
 TEST(CrossUserSharingPublicPrivateKeyPairTest, CreateByImportShouldSucceed) {
   std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN, 0xDE);
+  std::optional<base::span<uint8_t, X25519_PRIVATE_KEY_LEN>> fixed_key =
+      base::span(private_key).to_fixed_extent<X25519_PRIVATE_KEY_LEN>();
+  ASSERT_TRUE(fixed_key);
 
-  std::optional<CrossUserSharingPublicPrivateKeyPair> key =
-      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
-
-  ASSERT_TRUE(key.has_value());
-
+  CrossUserSharingPublicPrivateKeyPair key(*fixed_key);
   std::array<uint8_t, X25519_PRIVATE_KEY_LEN> raw_private_key =
-      key->GetRawPrivateKey();
+      key.GetRawPrivateKey();
 
   EXPECT_THAT(private_key, testing::ElementsAreArray(raw_private_key));
-}
-
-TEST(CrossUserSharingPublicPrivateKeyPairTest,
-     CreateByImportShouldFailOnShorterKey) {
-  std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN - 1, 0xDE);
-
-  std::optional<CrossUserSharingPublicPrivateKeyPair> key =
-      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
-
-  EXPECT_FALSE(key.has_value());
-}
-
-TEST(CrossUserSharingPublicPrivateKeyPairTest,
-     CreateByImportShouldFailOnLongerKey) {
-  std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN + 1, 0xDE);
-
-  std::optional<CrossUserSharingPublicPrivateKeyPair> key =
-      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
-
-  EXPECT_FALSE(key.has_value());
 }
 
 TEST(CrossUserSharingPublicPrivateKeyPairTest, ShouldEncryptAndDecrypt) {

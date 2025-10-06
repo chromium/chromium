@@ -28,11 +28,7 @@ sync_pb::CrossUserSharingPrivateKey KeyPairToPrivateKeyProto(
 
 CrossUserSharingPublicPrivateKeyPair CloneKeyPair(
     const CrossUserSharingPublicPrivateKeyPair& key_pair) {
-  std::optional<CrossUserSharingPublicPrivateKeyPair> clone =
-      CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-          key_pair.GetRawPrivateKey());
-  CHECK(clone.has_value());
-  return std::move(clone.value());
+  return CrossUserSharingPublicPrivateKeyPair(key_pair.GetRawPrivateKey());
 }
 
 }  // namespace
@@ -91,16 +87,13 @@ bool CrossUserSharingKeys::HasKeyPair(uint32_t key_pair_version) const {
 
 bool CrossUserSharingKeys::AddKeyPairFromProto(
     const sync_pb::CrossUserSharingPrivateKey& key) {
-  std::vector<uint8_t> private_key(key.x25519_private_key().begin(),
-                                   key.x25519_private_key().end());
-  std::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
-      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
-
-  if (!key_pair.has_value()) {
+  std::optional<base::span<const uint8_t, X25519_PRIVATE_KEY_LEN>> fixed_key =
+      base::as_byte_span(key.x25519_private_key())
+          .to_fixed_extent<X25519_PRIVATE_KEY_LEN>();
+  if (!fixed_key) {
     return false;
   }
-
-  SetKeyPair(std::move(key_pair.value()), key.version());
+  SetKeyPair(CrossUserSharingPublicPrivateKeyPair(*fixed_key), key.version());
   return true;
 }
 
