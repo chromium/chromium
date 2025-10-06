@@ -346,18 +346,17 @@ void FireStorageAccessHistogram(StorageAccessResult result) {
   UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests4", result);
 }
 
-bool DomainIsHostOnly(const std::string& domain_string) {
+bool DomainIsHostOnly(std::string_view domain_string) {
   return (domain_string.empty() || domain_string[0] != '.');
 }
 
-std::string CookieDomainAsHost(const std::string& cookie_domain) {
+std::string CookieDomainAsHost(std::string_view cookie_domain) {
   if (DomainIsHostOnly(cookie_domain))
-    return cookie_domain;
-  return cookie_domain.substr(1);
+    return std::string(cookie_domain);
+  return std::string(cookie_domain.substr(1));
 }
 
-std::string GetEffectiveDomain(const std::string& scheme,
-                               const std::string& host) {
+std::string GetEffectiveDomain(std::string_view scheme, std::string_view host) {
   if (scheme == "http" || scheme == "https" || scheme == "ws" ||
       scheme == "wss") {
     return registry_controlled_domains::GetDomainAndRegistry(
@@ -647,9 +646,9 @@ std::string CanonPathWithString(const GURL& url, std::string_view path_string) {
   return url_path.substr(0, idx);
 }
 
-GURL CookieDomainAndPathToURL(const std::string& domain,
-                              const std::string& path,
-                              const std::string& source_scheme) {
+GURL CookieDomainAndPathToURL(std::string_view domain,
+                              std::string_view path,
+                              std::string_view source_scheme) {
   // Note: domain_no_dot could be empty for e.g. file cookies.
   std::string domain_no_dot = CookieDomainAsHost(domain);
   if (domain_no_dot.empty() || source_scheme.empty())
@@ -658,27 +657,27 @@ GURL CookieDomainAndPathToURL(const std::string& domain,
       {source_scheme, url::kStandardSchemeSeparator, domain_no_dot, path}));
 }
 
-GURL CookieDomainAndPathToURL(const std::string& domain,
-                              const std::string& path,
+GURL CookieDomainAndPathToURL(std::string_view domain,
+                              std::string_view path,
                               bool is_https) {
   return CookieDomainAndPathToURL(
       domain, path,
       std::string(is_https ? url::kHttpsScheme : url::kHttpScheme));
 }
 
-GURL CookieDomainAndPathToURL(const std::string& domain,
-                              const std::string& path,
+GURL CookieDomainAndPathToURL(std::string_view domain,
+                              std::string_view path,
                               CookieSourceScheme source_scheme) {
   return CookieDomainAndPathToURL(domain, path,
                                   source_scheme == CookieSourceScheme::kSecure);
 }
 
-GURL CookieOriginToURL(const std::string& domain, bool is_https) {
+GURL CookieOriginToURL(std::string_view domain, bool is_https) {
   return CookieDomainAndPathToURL(domain, "/", is_https);
 }
 
 GURL SimulatedCookieSource(const CanonicalCookie& cookie,
-                           const std::string& source_scheme) {
+                           std::string_view source_scheme) {
   return CookieDomainAndPathToURL(cookie.Domain(), cookie.Path(),
                                   source_scheme);
 }
@@ -759,7 +758,7 @@ bool IsOnPath(const std::string_view cookie_path, const std::string_view url_pat
   return true;
 }
 
-CookiePrefix GetCookiePrefix(const std::string& name) {
+CookiePrefix GetCookiePrefix(std::string_view name) {
   constexpr std::string_view kSecurePrefix("__Secure-");
   constexpr std::string_view kHostPrefix("__Host-");
   constexpr std::string_view kHttpPrefix("__Http-");
@@ -840,7 +839,7 @@ bool IsCookiePartitionedValid(const GURL& url,
   return result;
 }
 
-void ParseRequestCookieLine(const std::string& header_value,
+void ParseRequestCookieLine(std::string_view header_value,
                             ParsedRequestCookies* parsed_cookies) {
   std::string::const_iterator i = header_value.begin();
   while (i != header_value.end()) {
@@ -895,7 +894,7 @@ std::string SerializeRequestCookieLine(
 }
 
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
-    const std::string& http_method,
+    std::string_view http_method,
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
     const std::optional<url::Origin>& initiator,
@@ -1104,7 +1103,7 @@ ComputeFirstPartySetMetadataMaybeAsync(
 }
 
 CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
-HttpMethodStringToEnum(const std::string& in) {
+HttpMethodStringToEnum(std::string_view in) {
   using HttpMethod =
       CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod;
   if (in == "GET")
