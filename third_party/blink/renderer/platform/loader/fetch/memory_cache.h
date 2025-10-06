@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -70,7 +71,8 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
 // stylesheets, etc.
 class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
                                           public MemoryCacheDumpClient,
-                                          public MemoryPressureListener {
+                                          public MemoryPressureListener,
+                                          public base::MemoryConsumer {
  public:
   explicit MemoryCache(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   MemoryCache(const MemoryCache&) = delete;
@@ -167,6 +169,10 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel) override;
 
+  // base::MemoryConsumer:
+  void OnReleaseMemory() override;
+  void OnUpdateMemoryLimit() override;
+
  private:
   // A URL-based map of all resources that are in the cache (including the
   // freshest version of objects that are currently being referenced by a Web
@@ -206,8 +212,16 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   double CalculateResourceValue(const Resource* resource) const;
 
+  std::unique_ptr<base::ScopedMemoryConsumerRegistration>
+      scoped_memory_consumer_registration_;
+
   // The number of bytes currently consumed by resources in the cache.
   size_t size_ = 0;
+
+  // The maximum size of `strong_references_` or `tiered_strong_references_`.
+  // This limit decreases or increases when notified by the MemoryConsumer
+  // interface.
+  size_t strong_references_max_size_;
 
   // An LRU linked list. The tail contains the most recent items. When
   // an item is accessed via `ResourceAccessed` it is moved to the end
@@ -227,6 +241,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, LRU);
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest,
                            ClearStrongReferences);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest,
+                           ChangeMemoryCacheSize);
 };
 
 // Sets the global cache, used to swap in a test instance. Saves the old

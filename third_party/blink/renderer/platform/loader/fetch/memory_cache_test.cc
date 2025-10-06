@@ -33,6 +33,7 @@
 #include <string_view>
 #include <variant>
 
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,6 +130,7 @@ class MemoryCacheTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   Persistent<ResourceFetcher> fetcher_;
   Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
@@ -388,6 +390,32 @@ TEST_F(MemoryCacheStrongReferenceTest, ClearStrongReferences) {
   MemoryCache::Get()->SaveStrongReference(resource);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
   MemoryCache::Get()->ClearStrongReferences();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+}
+
+TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
+  // Memory cache has a non-null max size, but is empty.
+  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+
+  // Add a resource.
+  const KURL kURL("http://test/resource1");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(kURL, ResourceType::kRaw);
+  MemoryCache::Get()->SaveStrongReference(resource);
+
+  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+
+  // Change the memory limit. This will reduce the max size to zero, but not
+  // clear anything yet.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(0);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+
+  // ReleaseMemory notification. This actually calls PruneStrongReferences();
+  test_memory_consumer_registry_.NotifyReleaseMemory();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }
 

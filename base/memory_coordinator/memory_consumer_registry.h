@@ -38,6 +38,7 @@ class BASE_EXPORT RegisteredMemoryConsumer {
 // global registry for the current process.
 class BASE_EXPORT MemoryConsumerRegistry {
  public:
+  static bool Exists();
   static MemoryConsumerRegistry& Get();
   static void Set(MemoryConsumerRegistry* instance);
 

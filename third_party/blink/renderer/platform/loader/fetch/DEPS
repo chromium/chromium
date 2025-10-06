@@ -1,5 +1,6 @@
 include_rules = [
   "+base/containers/flat_set.h",
+  "+base/memory_coordinator",
   "+components/subresource_filter/core/common/scoped_rule.h",
   "+net/base/auth.h",
   "+net/base/ip_endpoint.h",

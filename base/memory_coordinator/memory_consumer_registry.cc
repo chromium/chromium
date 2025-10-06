@@ -28,6 +28,11 @@ RegisteredMemoryConsumer::RegisteredMemoryConsumer(
     : memory_consumer_(memory_consumer) {}
 
 // static
+bool MemoryConsumerRegistry::Exists() {
+  return g_memory_consumer_registry;
+}
+
+// static
 MemoryConsumerRegistry& MemoryConsumerRegistry::Get() {
   CHECK(g_memory_consumer_registry);
   return *g_memory_consumer_registry;

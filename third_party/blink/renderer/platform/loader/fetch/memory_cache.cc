@@ -28,6 +28,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/memory_consumer_registry.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
@@ -47,6 +49,28 @@
 namespace blink {
 
 namespace {
+
+// The set of traits that describes the behavior of MemoryCache.
+constexpr base::MemoryConsumerTraits kMemoryCacheTraits = {
+    .supports_memory_limit =
+        base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
+    .in_process = base::MemoryConsumerTraits::InProcess::kYes,
+    .estimated_memory_usage =
+        base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    .release_memory_cost =
+        base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    .recreate_memory_cost = base::MemoryConsumerTraits::RecreateMemoryCost::kNA,
+    .information_retention =
+        base::MemoryConsumerTraits::InformationRetention::kLossless,
+    .memory_release_behavior =
+        base::MemoryConsumerTraits::MemoryReleaseBehavior::kIdempotent,
+    .execution_type = base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    .release_gc_references =
+        base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
+    .garbage_collects_v8_heap =
+        base::MemoryConsumerTraits::GarbageCollectsV8Heap::kNo,
+};
+
 // Use function-local statics to cache the feature parameters. This avoids
 // global constructors and ensures the .Get() call happens only once.
 double GetFrequencyWeight() {
@@ -181,7 +205,18 @@ MemoryCache* MemoryCache::Get() {
 
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : strong_references_prune_duration_(
+    : scoped_memory_consumer_registration_(
+          (base::SingleThreadTaskRunner::GetMainThreadDefault()
+               ->RunsTasksInCurrentSequence() &&
+           base::MemoryConsumerRegistry::Exists())
+              ? std::make_unique<base::ScopedMemoryConsumerRegistration>(
+                    "MemoryCache",
+                    kMemoryCacheTraits,
+                    this)
+              : nullptr),
+      strong_references_max_size_(
+          features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get()),
+      strong_references_prune_duration_(
           kMemoryCacheStrongReferencePruneDelay.Get()),
       task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
@@ -525,6 +560,19 @@ void MemoryCache::OnMemoryPressure(
   }
 }
 
+void MemoryCache::OnReleaseMemory() {
+  PruneStrongReferences();
+}
+
+void MemoryCache::OnUpdateMemoryLimit() {
+  // It is important to not do any memory management in this function. The max
+  // size is updated to the requested limit without calling
+  // PruneStrongReferences().
+  strong_references_max_size_ =
+      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get() *
+      memory_limit_ratio();
+}
+
 void MemoryCache::SaveTieredStrongReference(Resource* resource) {
   if (tiered_strong_references_.Contains(resource)) {
     return;
@@ -562,8 +610,7 @@ void MemoryCache::PruneTieredStrongReferences() {
   // the O(N log N) sorting step is not a bottleneck in production.
   SCOPED_UMA_HISTOGRAM_TIMER("MemoryCache.PruneTieredStrongReferences.Time");
 
-  const size_t max_threshold = static_cast<size_t>(
-      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
+  const size_t max_threshold = strong_references_max_size_;
 
   // Enforce a maximum lifetime for all strong references.
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -622,8 +669,7 @@ void MemoryCache::PruneStrongReferences() {
   SCOPED_UMA_HISTOGRAM_TIMER("MemoryCache.PruneStrongReferences.Time");
 
   DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
-  static const size_t max_threshold = static_cast<size_t>(
-      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
+  const size_t max_threshold = strong_references_max_size_;
 
   base::TimeTicks last_ticks;
   size_t strong_reference_total_size = 0;
