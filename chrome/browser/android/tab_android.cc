@@ -338,20 +338,6 @@ void TabAndroid::SetWindowSessionID(SessionID window_id) {
   session_tab_helper->SetWindowID(session_window_id_);
 }
 
-std::unique_ptr<content::WebContents> TabAndroid::SwapWebContents(
-    std::unique_ptr<content::WebContents> new_contents,
-    bool did_start_load,
-    bool did_finish_load) {
-  content::WebContents* old_contents = web_contents_.get();
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabImpl_swapWebContents(env, weak_java_tab_.get(env),
-                               new_contents->GetJavaWebContents(),
-                               did_start_load, did_finish_load);
-  DCHECK_EQ(web_contents_, new_contents);
-  new_contents.release();
-  return base::WrapUnique(old_contents);
-}
-
 bool TabAndroid::IsCustomTab() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isCustomTab(env, weak_java_tab_.get(env));

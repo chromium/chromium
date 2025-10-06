@@ -10,7 +10,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
@@ -1838,71 +1837,6 @@ class TabImpl implements Tab {
                 BackgroundColorChangeOrigin.NUM_ENTRIES);
         for (TabObserver observer : mObservers) {
             observer.onBackgroundColorChanged(this, mTabBackgroundColor);
-        }
-    }
-
-    /**
-     * This is currently used by recent tabs when restoring tabs.
-     *
-     * @deprecated This method is deprecated and should not be used. The intent is to align with
-     *     desktop platforms where a WebContents is assigned to a Tab and they remain 1:1 for the
-     *     lifetime of the Tab. The remaining uses of this method are being removed.
-     */
-    @Deprecated
-    @CalledByNative
-    void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
-        boolean hasWebContents = mContentView != null && mWebContents != null;
-        assumeNonNull(mContentView);
-        Rect original =
-                hasWebContents
-                        ? new Rect(0, 0, mContentView.getWidth(), mContentView.getHeight())
-                        : new Rect();
-        for (TabObserver observer : mObservers) observer.webContentsWillSwap(this);
-        if (hasWebContents) {
-            assumeNonNull(mWebContents);
-            mWebContents.updateWebContentsVisibility(Visibility.HIDDEN);
-        }
-        Context appContext = ContextUtils.getApplicationContext();
-        Rect bounds = original.isEmpty() ? TabUtils.estimateContentSize(appContext) : null;
-        if (bounds != null) original.set(bounds);
-
-        if (hasWebContents) {
-            assumeNonNull(mWebContents);
-            mWebContents.setFocus(false);
-        }
-        destroyWebContents(false /* do not delete native web contents */);
-        hideNativePage(
-                false,
-                () -> {
-                    // Size of the new content is zero at this point. Set the view size in advance
-                    // so that next onShow() call won't send a resize message with zero size
-                    // to the renderer process. This prevents the size fluttering that may confuse
-                    // Blink and break rendered result (see http://crbug.com/340987).
-                    webContents.setSize(original.width(), original.height());
-
-                    if (bounds != null) {
-                        assert mNativeTabAndroid != 0;
-                        TabImplJni.get()
-                                .onPhysicalBackingSizeChanged(
-                                        mNativeTabAndroid,
-                                        webContents,
-                                        bounds.right,
-                                        bounds.bottom);
-                    }
-                    initWebContents(webContents);
-                    updateWebContentsVisibility();
-                });
-
-        if (didStartLoad) {
-            // Simulate the PAGE_LOAD_STARTED notification that we did not get.
-            didStartPageLoad(getUrl());
-
-            // Simulate the PAGE_LOAD_FINISHED notification that we did not get.
-            if (didFinishLoad) didFinishPageLoad(getUrl());
-        }
-
-        for (TabObserver observer : mObservers) {
-            observer.onWebContentsSwapped(this, didStartLoad, didFinishLoad);
         }
     }
 
