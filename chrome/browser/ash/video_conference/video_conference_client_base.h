@@ -44,7 +44,7 @@ class VideoConferenceClientBase
   void GetMediaApps(GetMediaAppsCallback callback) override;
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled,
+      bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
   void StopAllScreenShare() override;
 
@@ -63,8 +63,8 @@ class VideoConferenceClientBase
   // to distinguish between different kinds of applications.
   virtual apps::AppType GetAppType(const AppIdString& app_id) = 0;
 
-  bool camera_system_disabled_{false};
-  bool microphone_system_disabled_{false};
+  bool camera_system_enabled_{true};
+  bool microphone_system_enabled_{true};
 
   // This records a list of AppState; each represents a video conference app.
   std::map<AppIdString, AppState> id_to_app_state_;

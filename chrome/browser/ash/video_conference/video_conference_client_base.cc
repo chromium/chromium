@@ -80,15 +80,15 @@ void VideoConferenceClientBase::GetMediaApps(GetMediaAppsCallback callback) {
 }
 void VideoConferenceClientBase::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled,
+    bool enabled,
     SetSystemMediaDeviceStatusCallback callback) {
   switch (device) {
     case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
-      camera_system_disabled_ = disabled;
+      camera_system_enabled_ = enabled;
       std::move(callback).Run(true);
       return;
     case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
-      microphone_system_disabled_ = disabled;
+      microphone_system_enabled_ = enabled;
       std::move(callback).Run(true);
       return;
     case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:

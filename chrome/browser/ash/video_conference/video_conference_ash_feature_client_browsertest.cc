@@ -235,10 +235,10 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAshfeatureClientTest,
   // video_conference_manager_ash.
   ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-      /*disabled=*/true);
+      /*enabled=*/false);
   ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-      /*disabled=*/true);
+      /*enabled=*/false);
 
   FakeVideoConferenceTrayController* fake_try_controller =
       static_cast<FakeVideoConferenceTrayController*>(

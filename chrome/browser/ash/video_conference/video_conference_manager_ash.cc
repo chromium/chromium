@@ -106,10 +106,10 @@ void VideoConferenceManagerAsh::ReturnToApp(const base::UnguessableToken& id) {
 
 void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled) {
+    bool enabled) {
   for (auto& [_, client_wrapper] : client_id_to_wrapper_) {
     client_wrapper.SetSystemMediaDeviceStatus(
-        device, disabled, base::BindOnce([](bool success) {
+        device, enabled, base::BindOnce([](bool success) {
           if (!success) {
             LOG(ERROR)
                 << "VideoConferenceClient::SetSystemMediaDeviceStatus was "

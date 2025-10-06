@@ -36,11 +36,10 @@ void VideoConferenceClientWrapper::ReturnToApp(
 
 void VideoConferenceClientWrapper::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled,
+    bool enabled,
     crosapi::mojom::VideoConferenceManagerClient::
         SetSystemMediaDeviceStatusCallback callback) {
-  cpp_client_->SetSystemMediaDeviceStatus(device, disabled,
-                                          std::move(callback));
+  cpp_client_->SetSystemMediaDeviceStatus(device, enabled, std::move(callback));
 }
 
 void VideoConferenceClientWrapper::StopAllScreenShare() {

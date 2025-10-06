@@ -48,7 +48,7 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
   void ReturnToApp(const base::UnguessableToken& id) override;
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled) override;
+      bool enabled) override;
   void StopAllScreenShare() override;
   void CreateBackgroundImage() override;
 

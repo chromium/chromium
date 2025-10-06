@@ -111,14 +111,14 @@ void VideoConferenceAshFeatureClient::OnVmDeviceUpdated(
   // This will be an AnchoredNudge, which is only visible if the tray is
   // visible; so we have to call this after HandleMediaUsageUpdate.
   if (device_type == VmCameraMicManager::DeviceType::kCamera && is_capturing &&
-      camera_system_disabled_) {
+      !camera_system_enabled_) {
     video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
         crosapi::mojom::VideoConferenceMediaDevice::kCamera,
         base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
   }
 
   if (device_type == VmCameraMicManager::DeviceType::kMic && is_capturing &&
-      microphone_system_disabled_) {
+      !microphone_system_enabled_) {
     video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
         crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
         base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());

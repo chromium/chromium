@@ -444,7 +444,7 @@ class ASH_EXPORT CaptureModeController
                    ReturnToAppCallback callback) override;
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled,
+      bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
   void StopAllScreenShare() override;
 

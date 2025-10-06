@@ -1537,15 +1537,15 @@ void CaptureModeController::ReturnToApp(const base::UnguessableToken& token,
 
 void CaptureModeController::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled,
+    bool enabled,
     SetSystemMediaDeviceStatusCallback callback) {
   switch (device) {
     case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
-      is_camera_muted_ = disabled;
+      is_camera_muted_ = !enabled;
       std::move(callback).Run(true);
       return;
     case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
-      is_microphone_muted_ = disabled;
+      is_microphone_muted_ = !enabled;
       std::move(callback).Run(true);
       return;
     case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:

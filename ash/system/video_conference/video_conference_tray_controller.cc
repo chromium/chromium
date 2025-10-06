@@ -507,7 +507,7 @@ void VideoConferenceTrayController::OnCameraHWPrivacySwitchStateChanged(
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
         crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-        /*disabled=*/GetCameraMuted());
+        /*enabled=*/!GetCameraMuted());
   }
 
   // Attempt recording "Use while disabled" nudge action when camera is unmuted.
@@ -534,7 +534,7 @@ void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
         crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-        /*disabled=*/GetCameraMuted());
+        /*enabled=*/!GetCameraMuted());
   }
 
   // Attempt recording "Use while disabled" nudge action when camera is unmuted.
@@ -570,7 +570,7 @@ void VideoConferenceTrayController::OnInputMuteChanged(
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
         crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-        /*disabled=*/mute_on);
+        /*enabled=*/!mute_on);
   }
 
   microphone_muted_by_hardware_switch_ =

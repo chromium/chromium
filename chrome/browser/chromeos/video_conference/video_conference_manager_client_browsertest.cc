@@ -68,12 +68,12 @@ class FakeVideoConferenceManagerClient
     return VideoConferenceManagerClientImpl::GetAggregatedPermissions();
   }
 
-  bool camera_system_disabled() {
-    return media_listener_->camera_system_disabled_;
+  bool camera_system_enabled() {
+    return media_listener_->camera_system_enabled_;
   }
 
-  bool microphone_system_disabled() {
-    return media_listener_->microphone_system_disabled_;
+  bool microphone_system_enabled() {
+    return media_listener_->microphone_system_enabled_;
   }
 
   crosapi::mojom::VideoConferenceMediaUsageStatusPtr& status() {
@@ -248,32 +248,32 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
   ASSERT_TRUE(controller);
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
 
-  EXPECT_FALSE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+  EXPECT_TRUE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-      /*disabled=*/true);
-  EXPECT_TRUE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+      /*enabled=*/false);
+  EXPECT_FALSE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-      /*disabled=*/true);
-  EXPECT_TRUE(client.camera_system_disabled());
-  EXPECT_TRUE(client.microphone_system_disabled());
+      /*enabled=*/false);
+  EXPECT_FALSE(client.camera_system_enabled());
+  EXPECT_FALSE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-      /*disabled=*/false);
-  EXPECT_TRUE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+      /*enabled=*/true);
+  EXPECT_FALSE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-      /*disabled=*/false);
-  EXPECT_FALSE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+      /*enabled=*/true);
+  EXPECT_TRUE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 }
 
 // Tests client updates relating to adding and removing VC web apps and title
