@@ -28,13 +28,15 @@ class TestPageContentExtractionService : public PageContentExtractionService {
  public:
   explicit TestPageContentExtractionService(
       content::BrowserContext* browser_context)
-      : PageContentExtractionService() {}
+      : PageContentExtractionService(/*os_crypt_async=*/nullptr,
+                                     browser_context->GetPath()) {}
   ~TestPageContentExtractionService() override = default;
 
   void OnPageContentExtracted(
       content::Page& page,
       const optimization_guide::proto::AnnotatedPageContent&
-          annotated_page_content) override {
+          annotated_page_content,
+      std::optional<int> tab_id) override {
     last_extracted_content_ = annotated_page_content;
     extraction_count_++;
     if (quit_closure_) {

@@ -127,6 +127,13 @@ void PageContentAnnotationsWebContentsObserver::
   }
 }
 
+void PageContentAnnotationsWebContentsObserver::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (auto* annotated_page_content_request = GetAnnotatedPageContentRequest()) {
+    annotated_page_content_request->OnVisibilityChanged(visibility);
+  }
+}
+
 void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (auto* annotated_page_content_request = GetAnnotatedPageContentRequest()) {

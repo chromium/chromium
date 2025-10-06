@@ -4,6 +4,8 @@
 
 source_set("extraction_service") {
   sources = [
+    "page_content_cache_handler.cc",
+    "page_content_cache_handler.h",
     "page_content_extraction_service.h",
     "page_content_extraction_service_factory.h",
     "page_content_extraction_types.h",
@@ -14,6 +16,8 @@ source_set("extraction_service") {
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/core",
+    "//content/public/browser",
   ]
 }
 

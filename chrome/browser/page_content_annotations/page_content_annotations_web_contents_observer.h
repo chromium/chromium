@@ -59,6 +59,7 @@ class PageContentAnnotationsWebContentsObserver
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   // Invoked when related searches have been extracted for |visit|.
   void OnRelatedSearchesExtracted(

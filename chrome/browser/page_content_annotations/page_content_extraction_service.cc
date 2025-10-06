@@ -4,8 +4,11 @@
 
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
+#include "chrome/browser/page_content_annotations/page_content_cache_handler.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -13,9 +16,18 @@
 
 namespace page_content_annotations {
 
-PageContentExtractionService::PageContentExtractionService() = default;
+PageContentExtractionService::PageContentExtractionService(
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    const base::FilePath& profile_path) {
+  if (base::FeatureList::IsEnabled(features::kPageContentCache)) {
+    page_content_cache_handler_ =
+        std::make_unique<PageContentCacheHandler>(os_crypt_async, profile_path);
+  }
+}
 
-PageContentExtractionService::~PageContentExtractionService() = default;
+PageContentExtractionService::~PageContentExtractionService() {
+  ClearAllUserData();
+}
 
 void PageContentExtractionService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -35,29 +47,78 @@ bool PageContentExtractionService::ShouldEnablePageContentExtraction() const {
 
 void PageContentExtractionService::OnPageContentExtracted(
     content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+    const optimization_guide::proto::AnnotatedPageContent& page_content,
+    std::optional<int> tab_id) {
   for (auto& observer : observers_) {
     observer.OnPageContentExtracted(page, page_content);
   }
+
+  if (!page_content_cache_handler_) {
+    return;
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
+  if (!web_contents) {
+    return;
+  }
+
+  page_content_cache_handler_->ProcessPageContentExtraction(
+      tab_id, web_contents, page_content);
 }
 
 std::optional<ExtractedPageContentResult>
 PageContentExtractionService::GetExtractedPageContentAndEligibilityForPage(
     content::Page& page) {
-  // Get web contents for page.
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
+  return GetCachedContentsFromWebContents(
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+}
+
+void PageContentExtractionService::OnTabClosed(int64_t tab_id) {
+  if (page_content_cache_handler_) {
+    page_content_cache_handler_->OnTabClosed(tab_id);
+  }
+}
+
+void PageContentExtractionService::OnVisibilityChanged(
+    std::optional<int64_t> tab_id,
+    content::WebContents* web_contents,
+    content::Visibility visibility) {
+  if (page_content_cache_handler_) {
+    std::optional<ExtractedPageContentResult> extracted_result =
+        GetCachedContentsFromWebContents(web_contents);
+    if (extracted_result) {
+      page_content_cache_handler_->OnVisibilityChanged(
+          tab_id, web_contents, visibility,
+          std::move(extracted_result->page_content));
+    }
+  }
+}
+
+void PageContentExtractionService::OnNewNavigation(
+    std::optional<int64_t> tab_id,
+    content::WebContents* web_contents) {
+  if (page_content_cache_handler_) {
+    page_content_cache_handler_->OnNewNavigation(tab_id, web_contents);
+  }
+}
+
+std::optional<ExtractedPageContentResult>
+PageContentExtractionService::GetCachedContentsFromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::nullopt;
+  }
   PageContentAnnotationsWebContentsObserver* observer =
       PageContentAnnotationsWebContentsObserver::FromWebContents(web_contents);
-  if (!observer) {
-    return std::nullopt;
+  if (observer) {
+    AnnotatedPageContentRequest* request =
+        observer->GetAnnotatedPageContentRequest();
+    if (request) {
+      return request->GetCachedContentAndEligibility();
+    }
   }
-  AnnotatedPageContentRequest* request =
-      observer->GetAnnotatedPageContentRequest();
-  if (!request) {
-    return std::nullopt;
-  }
-  return request->GetCachedContentAndEligibility();
+  return std::nullopt;
 }
 
 }  // namespace page_content_annotations
