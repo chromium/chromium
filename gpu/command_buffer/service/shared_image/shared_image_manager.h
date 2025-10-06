@@ -28,8 +28,6 @@ class VulkanContextProvider;
 namespace gfx {
 class D3DSharedFence;
 }
-
-#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #endif
 
 namespace gpu {
@@ -164,9 +162,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   }
 
 #if BUILDFLAG(IS_WIN)
-  GpuMemoryBufferFactoryDXGI* gpu_memory_buffer_factory() {
-    return gpu_memory_buffer_factory_.get();
-  }
+  scoped_refptr<base::SingleThreadTaskRunner> io_runner() { return io_runner_; }
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -209,15 +205,12 @@ class GPU_GLES2_EXPORT SharedImageManager
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
 #endif
 
 #if BUILDFLAG(IS_OZONE)
   bool supports_overlays_on_ozone_ = false;
   scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  std::unique_ptr<GpuMemoryBufferFactoryDXGI> gpu_memory_buffer_factory_;
 #endif
 
   THREAD_CHECKER(thread_checker_);

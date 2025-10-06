@@ -642,6 +642,13 @@ bool SharedImageFactory::IsD3DSharedImageSupported() const {
       context_state_->GetD3D11Device().Get(), gpu_preferences_);
 }
 
+GpuMemoryBufferFactoryDXGI*
+SharedImageFactory::GetGpuMemoryBufferFactoryDXGI() {
+  static auto* factory =
+      new GpuMemoryBufferFactoryDXGI(shared_image_manager_->io_runner());
+  return factory;
+}
+
 bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          const Mailbox& back_buffer_mailbox,
                                          viz::SharedImageFormat format,
@@ -718,9 +725,8 @@ SharedImageFactory::CreateNativeGpuMemoryBufferHandle(
   return OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
       shared_image_manager_->vulkan_context_provider(), size, format, usage);
 #else
-  auto* gmb_factory = shared_image_manager_->gpu_memory_buffer_factory();
-  CHECK(gmb_factory);
-  return gmb_factory->CreateNativeGmbHandle(size, format, usage);
+  return GetGpuMemoryBufferFactoryDXGI()->CreateNativeGmbHandle(size, format,
+                                                                usage);
 #endif
 }
 #endif
@@ -729,10 +735,9 @@ bool SharedImageFactory::CopyNativeBufferToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
 #if BUILDFLAG(IS_WIN)
-  auto* gmb_factory = shared_image_manager_->gpu_memory_buffer_factory();
-  CHECK(gmb_factory);
-  return gmb_factory->FillSharedMemoryRegionWithBufferContents(
-      std::move(buffer_handle), std::move(shared_memory));
+  return GetGpuMemoryBufferFactoryDXGI()
+      ->FillSharedMemoryRegionWithBufferContents(std::move(buffer_handle),
+                                                 std::move(shared_memory));
 #else
   return false;
 #endif

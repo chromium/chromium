@@ -37,6 +37,7 @@ class SharedContextState;
 class SharedImageBackingFactory;
 class SharedImageCopyManager;
 class D3DImageBackingFactory;
+class GpuMemoryBufferFactoryDXGI;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
@@ -199,6 +200,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                                gfx::BufferUsage usage);
 #if BUILDFLAG(IS_WIN)
   bool IsD3DSharedImageSupported() const;
+  GpuMemoryBufferFactoryDXGI* GetGpuMemoryBufferFactoryDXGI();
 #endif
 
   raw_ptr<SharedImageManager> shared_image_manager_;
