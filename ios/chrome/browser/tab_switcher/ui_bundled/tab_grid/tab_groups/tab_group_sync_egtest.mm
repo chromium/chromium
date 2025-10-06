@@ -240,9 +240,16 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 0.");
 }
 
+// TODO(crbug.com/449704034): Flaky on iphone simulator.
 // Tests that renaming a group in the tab grid reflects the change in the
 // Tab Groups panel.
 - (void)testRenameGroupInTabGrid {
+#if TARGET_OS_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Flaky on iphone");
+  }
+#endif
+
   [ChromeEarlGreyUI openTabGrid];
 
   // Create a tab group with an item at 0.
