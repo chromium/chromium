@@ -10,6 +10,7 @@
 
 #import "base/allocator/partition_alloc_support.h"
 #import "base/check_op.h"
+#import "base/debug/asan_service.h"
 #import "base/feature_list.h"
 #import "base/features.h"
 #import "base/files/file_path.h"
@@ -375,6 +376,13 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   segmentation_platform::UkmDatabaseClientHolder::GetClientInstance(nullptr)
       .StartObservation();
+
+  // The AsanService causes ASAN errors to emit additional information. It is
+  // helpful on its own. It is also required by ASAN BackupRefPtr when
+  // reconfiguring PartitionAlloc below.
+#if defined(ADDRESS_SANITIZER)
+  base::debug::AsanService::GetInstance()->Initialize();
+#endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   base::allocator::PartitionAllocSupport::Get()

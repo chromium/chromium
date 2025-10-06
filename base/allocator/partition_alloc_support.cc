@@ -1051,10 +1051,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   // Configure ASAN hooks to report the `MiraclePtr status`. This is enabled
   // only if BackupRefPtr is normally enabled in the current process for the
-  // current platform. Note that CastOS and iOS aren't protected by BackupRefPtr
+  // current platform. Note that CastOS is not protected by BackupRefPtr
   // a the moment, so they are excluded.
-#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && !PA_BUILDFLAG(IS_CASTOS) && \
-    !PA_BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && !PA_BUILDFLAG(IS_CASTOS)
   if (ShouldEnableFeatureOnProcess(
           base::features::kBackupRefPtrEnabledProcessesParam.Get(),
           process_type)) {
@@ -1070,7 +1069,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                                                EnableExtractionCheck(false),
                                                EnableInstantiationCheck(false));
   }
-#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && !PA_BUILDFLAG(IS_CASTOS)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   auto bucket_distribution = allocator_shim::BucketDistribution::kNeutral;
