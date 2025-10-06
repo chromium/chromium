@@ -1363,6 +1363,9 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
     }
     KillFormFocus();
   }
+  if (caret_) {
+    caret_->SetVisible(has_focus);
+  }
 }
 
 AccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {

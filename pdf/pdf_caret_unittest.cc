@@ -120,6 +120,7 @@ class PdfCaretTest : public testing::Test {
 
   void InitializeCaretAtChar(const PageCharacterIndex& index) {
     caret_ = std::make_unique<PdfCaret>(&client_, index);
+    caret_->SetVisible(true);
   }
 
   RegionData GetRegionData(const gfx::Point& location) {
@@ -264,6 +265,30 @@ TEST_F(PdfCaretTest, SetEnabled) {
   TestDrawCaret(kTestChar0Caret);
 
   caret().SetEnabled(false);
+  TestDrawCaretFails(kTestChar0Caret);
+
+  GetPdfTestTaskEnvironment().FastForwardBy(PdfCaret::kDefaultBlinkInterval);
+  TestDrawCaretFails(kTestChar0Caret);
+}
+
+TEST_F(PdfCaretTest, SetVisible) {
+  SetUpPagesWithCharCounts({1});
+  SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
+  InitializeCaretAtChar(kTestChar0);
+
+  caret().SetEnabled(true);
+
+  TestDrawCaret(kTestChar0Caret);
+
+  caret().SetVisible(false);
+
+  TestDrawCaretFails(kTestChar0Caret);
+
+  caret().SetVisible(true);
+
+  TestDrawCaret(kTestChar0Caret);
+
+  caret().SetVisible(false);
   TestDrawCaretFails(kTestChar0Caret);
 
   GetPdfTestTaskEnvironment().FastForwardBy(PdfCaret::kDefaultBlinkInterval);
@@ -436,9 +461,6 @@ TEST_F(PdfCaretTest, OnGeometryChanged) {
   SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
-
-  EXPECT_EQ(gfx::Rect(), client().invalidated_rect());
-
   caret().SetEnabled(true);
 
   EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());

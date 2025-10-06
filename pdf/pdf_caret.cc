@@ -47,6 +47,15 @@ void PdfCaret::SetEnabled(bool enabled) {
   RefreshDisplayState();
 }
 
+void PdfCaret::SetVisible(bool visible) {
+  if (is_visible_ == visible) {
+    return;
+  }
+
+  is_visible_ = visible;
+  RefreshDisplayState();
+}
+
 void PdfCaret::SetBlinkInterval(base::TimeDelta interval) {
   if (interval.is_negative()) {
     return;
@@ -72,7 +81,7 @@ void PdfCaret::SetChar(const PageCharacterIndex& next_char) {
 
 void PdfCaret::SetCharAndDraw(const PageCharacterIndex& next_char) {
   SetChar(next_char);
-  if (enabled_) {
+  if (ShouldDrawCaret()) {
     RefreshDisplayState();
   }
 }
@@ -99,7 +108,7 @@ bool PdfCaret::MaybeDrawCaret(const RegionData& region,
 }
 
 void PdfCaret::OnGeometryChanged() {
-  if (!enabled_) {
+  if (!ShouldDrawCaret()) {
     return;
   }
 
@@ -130,20 +139,24 @@ bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
   }
 }
 
+bool PdfCaret::ShouldDrawCaret() const {
+  return enabled_ && is_visible_;
+}
+
 void PdfCaret::RefreshDisplayState() {
   blink_timer_.Stop();
-  if (enabled_ && blink_interval_.is_positive()) {
+  is_blink_visible_ = ShouldDrawCaret();
+  if (is_blink_visible_ && blink_interval_.is_positive()) {
     blink_timer_.Start(FROM_HERE, blink_interval_, this,
                        &PdfCaret::OnBlinkTimerFired);
   }
-  is_blink_visible_ = enabled_;
   if (!caret_screen_rect_.IsEmpty()) {
     client_->InvalidateRect(caret_screen_rect_);
   }
 }
 
 void PdfCaret::OnBlinkTimerFired() {
-  CHECK(enabled_);
+  CHECK(ShouldDrawCaret());
   CHECK(blink_interval_.is_positive());
   is_blink_visible_ = !is_blink_visible_;
   if (!caret_screen_rect_.IsEmpty()) {

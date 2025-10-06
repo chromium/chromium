@@ -2973,6 +2973,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkPrintTest, testing::Values(false));
 
 class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
  public:
+  static constexpr gfx::Size kHelloWorldExpectedVisiblePageSize{266, 266};
   PDFiumEngineCaretTest() = default;
   PDFiumEngineCaretTest(const PDFiumEngineCaretTest&) = delete;
   PDFiumEngineCaretTest& operator=(const PDFiumEngineCaretTest&) = delete;
@@ -2999,6 +3000,7 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
       // Plugin size chosen so all pages of the document are visible.
       engine_->PluginSizeUpdated({1024, 4096});
       engine_->SetCaretBrowsingEnabled(true);
+      engine_->UpdateFocus(true);
     }
     return engine_.get();
   }
@@ -3018,11 +3020,28 @@ TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
 
   engine->SetCaretBrowsingEnabled(false);
 
-  constexpr gfx::Size kHelloWorldExpectedVisiblePageSize{266, 266};
   DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
                           kHelloWorldExpectedVisiblePageSize);
 
   engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, UpdateFocus) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+
+  engine->UpdateFocus(false);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kHelloWorldExpectedVisiblePageSize);
+
+  engine->UpdateFocus(true);
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
                                               "hello_world_caret.png");

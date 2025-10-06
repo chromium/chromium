@@ -1330,7 +1330,9 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   PDFiumPrint print_;
 
-  // The text caret on the PDF, excluding AcroForms.
+  // The text caret on the PDF, excluding AcroForms. Once initialized, it will
+  // not be destroyed until the destructor is called. The caret needs to store
+  // state, such as its position, blink interval, etc.
   std::unique_ptr<PdfCaret> caret_;
 
   // The list of text fragments to highlight on the PDF.

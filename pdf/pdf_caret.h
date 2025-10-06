@@ -47,9 +47,18 @@ class PdfCaret {
   PdfCaret& operator=(const PdfCaret&) = delete;
   ~PdfCaret();
 
-  // Sets whether the caret is enabled. No-op if state does not change. If
-  // `enabled` is true, the caret will be drawn, hidden otherwise.
+  // Sets whether the caret is enabled. No-op if state does not change. Draws
+  // the caret if it should be visible, hides it otherwise. See
+  // `ShouldDrawCaret()` for when the caret will be visible.
   void SetEnabled(bool enabled);
+
+  // Sets whether the caret should be visible. No-op if state does not change.
+  // Draws the caret if it should be visible, hides it otherwise. Note that even
+  // if `visible` is true, the caret may still be hidden if the caret is
+  // disabled. This state can be desired if the caller wants the caret to be
+  // visible again on re-enable. See `ShouldDrawCaret()` for when the caret will
+  // be visible.
+  void SetVisible(bool visible);
 
   // Sets how often the caret should blink. If the interval is set to 0, the
   // caret will not blink. No-op if `interval` is negative.
@@ -82,9 +91,13 @@ class PdfCaret {
   bool OnKeyDown(const blink::WebKeyboardEvent& event);
 
  private:
+  // Returns whether the caret should be drawn. It should only be drawn when the
+  // caret is enabled and set as visible.
+  bool ShouldDrawCaret() const;
+
   // Refreshes the caret's display state, drawing or hiding the caret depending
-  // on the value of `enabled_` and resetting the blink timer depending on
-  // the value of `is_blinking_`.
+  // on the value of `ShouldDrawCaret()` and resetting the blink timer depending
+  // on the value of `is_blinking_`.
   void RefreshDisplayState();
 
   // Called by `blink_timer_` to toggle caret visibility.
@@ -179,6 +192,9 @@ class PdfCaret {
 
   // Whether the caret is enabled.
   bool enabled_ = false;
+
+  // Whether the caret is visible.
+  bool is_visible_ = false;
 
   // Whether the caret is visible on screen, taking into account blinking.
   bool is_blink_visible_ = false;
