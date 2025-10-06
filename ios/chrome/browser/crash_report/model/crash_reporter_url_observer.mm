@@ -112,7 +112,12 @@ CrashReporterURLObserver::CrashReporterURLObserver(
   }
 }
 
-CrashReporterURLObserver::~CrashReporterURLObserver() {}
+CrashReporterURLObserver::~CrashReporterURLObserver() {
+  CHECK(!WebStateListObserver::IsInObserverList() &&
+        !web::WebStateObserver::IsInObserverList())
+      << "CrashReporterURLObserver needs to be removed from "
+         "observer lists before their destruction.";
+}
 
 #pragma mark - Group operations
 
