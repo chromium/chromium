@@ -81,22 +81,6 @@ ContentTestSuite::ContentTestSuite(int argc, char** argv)
   // Reproducer:AttributionManagerImplTest.SendReport_RecordsTimeFromLastNavigation_Failure
   disable_field_trial("AttributionReportNavigationBasedRetry");
 
-  // TODO(447306270) Enable testing for this field trial feature.
-  // Reproducer:AuctionRunnerTest.OneBidOne404
-  disable_field_trial("FledgeSellerWorkletThreadPool");
-
-  // TODO(447306903) Enable testing for this field trial feature.
-  // Reproducer:AuctionRunnerTest.ExecutionModeGroupByOriginClickiness
-  disable_field_trial("FledgeBidderUseBalancingThreadSelector");
-
-  // TODO(447306271) Enable testing for this field trial feature.
-  // Reproducer:AuctionRunnerTest.PrivateAggregationRequestForEventFilteringIdNonKAnon
-  disable_field_trial("CookieDeprecationFacilitatedTesting");
-
-  // TODO(447306904) Enable testing for this field trial feature.
-  // Reproducer:AuctionRunnerTest.TrustedScoringSignalsJointBatchedRequests
-  disable_field_trial("FledgeSellerSignalsRequestsOneAtATime");
-
   // TODO(447306905) Enable testing for this field trial feature.
   // Reproducer:BiddingAndAuctionSerializerTest.SerializeWithTooSmallRequestSize
   disable_field_trial("FledgeEnableSampleDebugReportOnCookieSetting");
@@ -110,14 +94,6 @@ ContentTestSuite::ContentTestSuite(int argc, char** argv)
   // TODO(447305317) Enable testing for this field trial feature.
   // Reproducer:NavigationPolicyContainerBuilderTest.MHTMLSandboxFlags
   disable_field_trial("MHTML_Improvements");
-
-  // TODO(447306955) Enable testing for this field trial feature.
-  // Reproducer:SellerWorkletTest.ReportResultTextConversions
-  disable_field_trial("FledgeTextConversionHelpers");
-
-  // TODO(447306906) Enable testing for this field trial feature.
-  // Reproducer:BidderWorkletTest.GenerateBidInterestGroupCreativeScanningMetadata
-  disable_field_trial("FledgeTrustedSignalsKVv1CreativeScanning");
 
   // TODO(447306273) Enable testing for this field trial feature.
   // Reproducer:FileSystemAccessFileHandleImplRequestPermissionTest.RequestWrite_Denied
