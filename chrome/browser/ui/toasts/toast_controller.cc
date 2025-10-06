@@ -70,6 +70,9 @@ bool ToastController::IsShowingToast() const {
 }
 
 bool ToastController::CanShowToast(ToastId toast_id) const {
+  if(!base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
+    return false;
+  }
   if (static_cast<toasts::ToastAlertLevel>(
           g_browser_process->local_state()->GetInteger(
               prefs::kToastAlertLevel)) ==

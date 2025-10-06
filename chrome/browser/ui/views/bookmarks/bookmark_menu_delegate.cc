@@ -1230,6 +1230,9 @@ MenuItemView* BookmarkMenuDelegate::UpdateOtherNodeSeparator() {
 
 void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
   CHECK(!menu->HasSubmenu() || menu->GetSubmenu()->children().empty());
+  if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+      return;
+  }
   ui::ImageModel bookmarks_side_panel_icon = ui::ImageModel::FromVectorIcon(
       kBookmarksSidePanelIcon, ui::kColorMenuIcon,
       ui::SimpleMenuModel::kDefaultIconSize);

@@ -11,6 +11,8 @@
 
 namespace toast_features {
 
+BASE_DECLARE_FEATURE(kToastFramework);
+
 // Individual toasts
 BASE_DECLARE_FEATURE(kLinkCopiedToast);
 BASE_DECLARE_FEATURE(kImageCopiedToast);

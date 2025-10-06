@@ -11,6 +11,11 @@
 namespace toast_features {
 
 // Enables the link copied confirmation toast.
+BASE_FEATURE(kToastFramework,
+             "ToastFramework",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the link copied confirmation toast.
 BASE_FEATURE(kLinkCopiedToast,
              "LinkCopiedToast",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -123,7 +123,7 @@
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(safe_browsing::kDownloadBubble)},
     {"power-bookmarks-side-panel", "Power bookmarks side panel",
-     "Enables the power bookmarks version of the bookmarks side panel content.", kOsDesktop,
+     "Disables nag about side panel bookmark list.", kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPowerBookmarksSidePanel)},
 	{"windows11-mica-titlebar",
      "Windows 11 Mica Taskbar",
@@ -255,4 +255,8 @@
      "Classic Extension View",
      "Disables the puzzle icon and shows all extensions in the toolbar.",
      kOsDesktop, SINGLE_VALUE_TYPE("classic-extension-view")},
+    {"top-chrome-toasts",
+     "Top Chrome Toasts",
+     "Determine whether Top Chrome Toasts (small messages that appear near the top of the window, such as \"Link copied\", appear or not.",
+     kOsDesktop, FEATURE_VALUE_TYPE(toast_features::kToastFramework)},
 #endif  // SUPERMIUM_FLAG_ENTRIES_H_
