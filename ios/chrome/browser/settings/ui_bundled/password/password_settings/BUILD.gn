@@ -53,6 +53,7 @@ source_set("password_settings") {
     "//ios/chrome/browser/signin/model:trusted_vault",
     "//ios/chrome/browser/signin/model:trusted_vault_factory",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/webauthn/coordinator:export_coordinator",
     "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/reauthentication",

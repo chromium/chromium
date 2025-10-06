@@ -13,3 +13,20 @@ source_set("coordinator") {
   deps = [ "//ios/chrome/browser/webauthn/model" ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("export_coordinator") {
+  sources = [
+    "credential_export_coordinator.h",
+    "credential_export_coordinator.mm",
+    "credential_export_mediator.h",
+    "credential_export_mediator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//components/password_manager/core/browser/ui",
+    "//ios/chrome/browser/webauthn/model",
+    "//ios/chrome/browser/webauthn/ui",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
