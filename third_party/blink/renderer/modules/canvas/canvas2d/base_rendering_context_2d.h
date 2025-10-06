@@ -166,7 +166,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   V8GPUTextureFormat getTextureFormat() const;
 
   virtual bool CanCreateResourceProvider() = 0;
-  virtual bool IsResourceProviderValid() { NOTREACHED(); }
   virtual CanvasResourceProvider* GetOrCreateResourceProvider() = 0;
 
   String lang() const;
@@ -250,6 +249,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void SetRestoreFailedCallbackForTesting(base::RepeatingClosure callback) {
     on_restore_failed_callback_for_testing_ = std::move(callback);
   }
+
+  bool IsResourceProviderValid();
 
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;

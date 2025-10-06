@@ -696,10 +696,6 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
   return resource_provider_->ProduceCanvasResource(reason);
 }
 
-bool CanvasRenderingContext2D::IsResourceProviderValid() {
-  return resource_provider_ && resource_provider_->IsValid();
-}
-
 const std::optional<cc::PaintRecord>&
 CanvasRenderingContext2D::GetLastRecordingForCanvas2D() {
   auto* provider = GetResourceProvider();

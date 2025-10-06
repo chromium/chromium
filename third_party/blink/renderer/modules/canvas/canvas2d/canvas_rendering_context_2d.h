@@ -183,7 +183,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
-  bool IsResourceProviderValid() override;
   const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() override;
 
   int Width() const final;
