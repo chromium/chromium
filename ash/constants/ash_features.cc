@@ -279,6 +279,9 @@ BASE_FEATURE(kBocaScreenSharingTeacher, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables sharing student's screen in the Boca app.
 BASE_FEATURE(kBocaScreenSharingStudent, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables sharing host audio in the Boca app.
+BASE_FEATURE(kBocaHostAudio, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -2564,6 +2567,10 @@ bool IsBocaScreenSharingTeacherEnabled() {
 
 bool IsBocaScreenSharingStudentEnabled() {
   return base::FeatureList::IsEnabled(kBocaScreenSharingStudent);
+}
+
+bool IsBocaHostAudioEnabled() {
+  return base::FeatureList::IsEnabled(kBocaHostAudio);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
