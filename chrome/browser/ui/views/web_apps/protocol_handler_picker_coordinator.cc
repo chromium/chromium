@@ -145,8 +145,9 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
   std::unique_ptr<ui::DialogModel> dialog_model =
       CreateProtocolHandlerPickerDialog(
           protocol_url, app_entries, initiator_origin,
-          base::BindOnce(&ProtocolHandlerPickerCoordinator::OnPickerClosed,
-                         weak_factory_.GetWeakPtr(), protocol_url));
+          base::BindOnce(
+              &ProtocolHandlerPickerCoordinator::OnPreferredHandlerSelected,
+              weak_factory_.GetWeakPtr(), protocol_url));
 
   views::BubbleDialogModelHost* model_host =
       views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
@@ -176,15 +177,12 @@ bool ProtocolHandlerPickerCoordinator::HasOpenDialogWidget() const {
   return dialog_ && !dialog_->IsClosed();
 }
 
-void ProtocolHandlerPickerCoordinator::OnPickerClosed(
+void ProtocolHandlerPickerCoordinator::OnPreferredHandlerSelected(
     const GURL& protocol_url,
-    std::optional<ProtocolHandlerPickerDialogResult> result) {
-  if (!result) {
-    return;
-  }
-  const auto& app_id = result->selected_app_id;
-  if (result->remember_choice) {
-    proxy_->SetProtocolLinkPreference(app_id, protocol_url.GetScheme());
+    const std::string& app_id,
+    bool remember_choice) {
+  if (remember_choice) {
+    proxy_->SetProtocolLinkPreference(app_id, protocol_url.scheme());
   }
   LaunchApp(protocol_url, app_id);
 }

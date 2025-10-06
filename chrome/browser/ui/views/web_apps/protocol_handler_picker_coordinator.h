@@ -50,8 +50,9 @@ class ProtocolHandlerPickerCoordinator {
       const GURL& protocol_url,
       const std::optional<url::Origin>& initiating_origin,
       ProtocolHandlerPickerDialogEntries app_entries);
-  void OnPickerClosed(const GURL& protocol_url,
-                      std::optional<ProtocolHandlerPickerDialogResult> result);
+  void OnPreferredHandlerSelected(const GURL& protocol_url,
+                                  const std::string& app_id,
+                                  bool remember_selection);
   bool HasOpenDialogWidget() const;
   void CloseDialogWidget(views::Widget::ClosedReason reason);
 
