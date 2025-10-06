@@ -210,6 +210,9 @@ chromium-metrics-reviews@google.com.
 <enum name="NotificationRevocationSource">
   <int value="0" label="Social engineering blocklist"/>
   <int value="1" label="Manual safe browsing revocation"/>
+  <int value="2" label="Standard one tap unsubscribe"/>
+  <int value="3" label="One tap unsubscribe after suspicious content warning"/>
+  <int value="4" label="Disruptive auto-revocation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/safe_browsing_metrics_collector.h:NotificationRevocationSource) -->

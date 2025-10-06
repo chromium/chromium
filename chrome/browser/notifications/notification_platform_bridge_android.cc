@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,7 +201,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
           &NotificationDisplayServiceImpl::ProfileLoadedCallback,
           NotificationOperation::kClick, notification_type, origin,
           notification_id, std::move(action_index), std::move(reply),
-          std::nullopt /* by_user */,
+          std::nullopt /* by_user */, std::nullopt /* is_suspicious */,
           base::BindOnce(
               &NotificationPlatformBridgeAndroid::OnNotificationProcessed,
               weak_factory_.GetWeakPtr(), notification_id)));
@@ -243,7 +244,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
           &NotificationDisplayServiceImpl::ProfileLoadedCallback,
           NotificationOperation::kClose, notification_type, GURL(origin),
           notification_id, std::nullopt /* action index */,
-          std::nullopt /* reply */, by_user,
+          std::nullopt /* reply */, by_user, std::nullopt /* is_suspicious */,
           base::BindOnce(
               &NotificationPlatformBridgeAndroid::OnNotificationProcessed,
               weak_factory_.GetWeakPtr(), notification_id)));
@@ -255,7 +256,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
     jint java_notification_type,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    jboolean incognito,
+    jboolean is_suspicious) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 
@@ -268,7 +270,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
                      NotificationOperation::kDisablePermission,
                      notification_type, GURL(origin), notification_id,
                      std::nullopt /* action index */, std::nullopt /* reply */,
-                     std::nullopt /* by_user */, base::DoNothing()));
+                     std::nullopt /* by_user */, is_suspicious,
+                     base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
@@ -294,7 +297,7 @@ void NotificationPlatformBridgeAndroid::OnReportNotificationAsSafe(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      notification_id, std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
@@ -313,7 +316,7 @@ void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      notification_id, std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
@@ -332,7 +335,7 @@ void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      notification_id, std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
@@ -351,7 +354,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
                      NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
                      /*notification_id=*/"", std::nullopt /* action index */,
                      std::nullopt /* reply */, std::nullopt /* by_user */,
-                     base::DoNothing()));
+                     std::nullopt /* is_suspicious */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(

@@ -67,7 +67,8 @@ void DoProcessMacNotificationResponse(
                 static_cast<NotificationHandler::Type>(info->meta->type),
                 std::move(info->meta->origin_url),
                 std::move(info->meta->id->id), std::move(action_index),
-                std::move(info->reply), /*by_user=*/true, base::DoNothing());
+                std::move(info->reply), /*by_user=*/true,
+                /*is_suspicious=*/false, base::DoNothing());
   profile_manager->LoadProfile(
       NotificationPlatformBridge::GetProfileBaseNameFromProfileId(
           info->meta->id->profile->id),

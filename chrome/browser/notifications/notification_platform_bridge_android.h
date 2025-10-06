@@ -73,13 +73,13 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
 
   // Called by the Java implementation when the user commits to unsubscribing
   // from notification from this origin.
-  void OnNotificationDisablePermission(
-      JNIEnv* env,
-      std::string& otification_id,
-      jint java_notification_type,
-      std::string& origin,
-      std::string& profile_id,
-      jboolean incognito);
+  void OnNotificationDisablePermission(JNIEnv* env,
+                                       std::string& otification_id,
+                                       jint java_notification_type,
+                                       std::string& origin,
+                                       std::string& profile_id,
+                                       jboolean incognito,
+                                       jboolean is_suspicious);
 
   // Called by Java tests for testing both suspicious and non-suspicious
   // notification behaviour when showing warnings for suspicious notifications

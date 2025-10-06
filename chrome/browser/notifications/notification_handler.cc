@@ -31,7 +31,8 @@ void NotificationHandler::OnClick(Profile* profile,
 void NotificationHandler::DisableNotifications(
     Profile* profile,
     const GURL& origin,
-    const std::optional<std::string>& notification_id) {
+    const std::optional<std::string>& notification_id,
+    const std::optional<bool>& is_suspicious) {
   NOTREACHED();
 }
 

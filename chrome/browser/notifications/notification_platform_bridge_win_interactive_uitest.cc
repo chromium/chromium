@@ -148,7 +148,8 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
                        const std::string& notification_id,
                        const std::optional<int>& action_index,
                        const std::optional<std::u16string>& reply,
-                       const std::optional<bool>& by_user) {
+                       const std::optional<bool>& by_user,
+                       const std::optional<bool>& is_suspicious) {
     last_operation_ = operation;
     last_notification_type_ = notification_type;
     last_origin_ = origin;

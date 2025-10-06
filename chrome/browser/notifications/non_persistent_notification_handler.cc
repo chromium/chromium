@@ -129,7 +129,8 @@ void NonPersistentNotificationHandler::DidDispatchClickEvent(
 void NonPersistentNotificationHandler::DisableNotifications(
     Profile* profile,
     const GURL& origin,
-    const std::optional<std::string>& notification_id) {
+    const std::optional<std::string>& notification_id,
+    const std::optional<bool>& is_suspicious) {
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
           profile, origin, origin, ContentSettingsType::NOTIFICATIONS,

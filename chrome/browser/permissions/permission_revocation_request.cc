@@ -257,9 +257,10 @@ void PermissionRevocationRequest::OnSafeBrowsingVerdictReceived(
       NotifyCallback(Outcome::PERMISSION_REVOKED_DUE_TO_DISRUPTIVE_BEHAVIOR);
     }
 
-    base::UmaHistogramEnumeration("SafeBrowsing.NotificationRevocationSource",
-                                  safe_browsing::NotificationRevocationSource::
-                                      kManualSafeBrowsingRevocation);
+    safe_browsing::SafeBrowsingMetricsCollector::
+        LogSafeBrowsingNotificationRevocationSourceHistogram(
+            safe_browsing::NotificationRevocationSource::
+                kManualSafeBrowsingRevocation);
   } else {
     NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
   }

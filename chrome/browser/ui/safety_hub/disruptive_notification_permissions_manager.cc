@@ -25,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/notifications_engagement_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
@@ -571,6 +572,10 @@ void DisruptiveNotificationPermissionsManager::RevokeNotifications(
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "HasReportedMetricsBeforeRevocation",
       revocation_entry.has_reported_proposal);
+  safe_browsing::SafeBrowsingMetricsCollector::
+      LogSafeBrowsingNotificationRevocationSourceHistogram(
+          safe_browsing::NotificationRevocationSource::
+              kDisruptiveAutoRevocation);
 }
 
 void DisruptiveNotificationPermissionsManager::DisplayNotification() {

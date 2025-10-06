@@ -304,9 +304,10 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   timer_.Stop();
   if (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     ExecuteAbusiveNotificationAutoRevocation(hcsm_.get(), url, clock_);
-    base::UmaHistogramEnumeration("SafeBrowsing.NotificationRevocationSource",
-                                  safe_browsing::NotificationRevocationSource::
-                                      kSocialEngineeringBlocklist);
+    safe_browsing::SafeBrowsingMetricsCollector::
+        LogSafeBrowsingNotificationRevocationSourceHistogram(
+            safe_browsing::NotificationRevocationSource::
+                kSocialEngineeringBlocklist);
   }
   // Update user pref that stores the time of the last successful blocklist
   // check.

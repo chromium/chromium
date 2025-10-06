@@ -96,6 +96,18 @@ public class NotificationPlatformBridgeTest {
                     "SafeBrowsing.SuspiciousNotificationWarning."
                             + "ShowOriginalNotifications.SuspiciousNotificationsDroppedCount";
 
+    private static final String SAFE_BROWSING_NOTIFICATION_REVOCATION_SOURCE_HISTOGRAM_NAME =
+            "SafeBrowsing.NotificationRevocationSource";
+    // These represent the values logged in the
+    // `SAFE_BROWSING_NOTIFICATION_REVOCATION_SOURCE_HISTOGRAM_NAME` histogram. The values are
+    // defined in the safe_browsing::NotificationRevocationSource enum class.
+    // Enum value corresponding to a revocation happening when a user unsubscribes on a notification
+    // where a suspicious content warning was NOT shown.
+    private static final int STANDARD_ONE_TAP_UNSUBSCRIBE_EVENT = 2;
+    // Enum value corresponding to a revocation happening when a user unsubscribes on a notification
+    // where a suspicious content warning was shown.
+    private static final int SUSPICIOUS_WARNING_ONE_TAP_UNSUBSCRIBE_EVENT = 3;
+
     @Before
     public void setUp() {
         SiteEngagementService.setParamValuesForTesting();
@@ -750,6 +762,13 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
     public void testNotificationProvisionalUnsubscribeAndCommit() throws Exception {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SAFE_BROWSING_NOTIFICATION_REVOCATION_SOURCE_HISTOGRAM_NAME,
+                                STANDARD_ONE_TAP_UNSUBSCRIBE_EVENT)
+                        .build();
+
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
@@ -782,6 +801,9 @@ public class NotificationPlatformBridgeTest {
         // This should have caused notifications permission to become reset.
         Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
         checkThatShowNotificationIsDenied();
+
+        // Validate histogram is logged correctly.
+        histogramWatcher.assertExpected();
     }
 
     /**
@@ -1581,6 +1603,9 @@ public class NotificationPlatformBridgeTest {
                         .expectIntRecord(
                                 SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
                                 0)
+                        .expectIntRecord(
+                                SAFE_BROWSING_NOTIFICATION_REVOCATION_SOURCE_HISTOGRAM_NAME,
+                                SUSPICIOUS_WARNING_ONE_TAP_UNSUBSCRIBE_EVENT)
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1668,6 +1693,9 @@ public class NotificationPlatformBridgeTest {
                                 SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
                                 SuspiciousNotificationWarningInteractions
                                         .REPORT_UNWARNED_NOTIFICATION_AS_SPAM)
+                        .expectIntRecord(
+                                SAFE_BROWSING_NOTIFICATION_REVOCATION_SOURCE_HISTOGRAM_NAME,
+                                STANDARD_ONE_TAP_UNSUBSCRIBE_EVENT)
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1741,6 +1769,9 @@ public class NotificationPlatformBridgeTest {
                                 SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
                                 SuspiciousNotificationWarningInteractions.WARNING_SHOWN,
                                 SuspiciousNotificationWarningInteractions.UNSUBSCRIBE)
+                        .expectIntRecord(
+                                SAFE_BROWSING_NOTIFICATION_REVOCATION_SOURCE_HISTOGRAM_NAME,
+                                SUSPICIOUS_WARNING_ONE_TAP_UNSUBSCRIBE_EVENT)
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1838,6 +1869,9 @@ public class NotificationPlatformBridgeTest {
                         .expectIntRecord(
                                 SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
                                 0)
+                        .expectIntRecord(
+                                SAFE_BROWSING_NOTIFICATION_REVOCATION_SOURCE_HISTOGRAM_NAME,
+                                SUSPICIOUS_WARNING_ONE_TAP_UNSUBSCRIBE_EVENT)
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(

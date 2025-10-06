@@ -67,11 +67,13 @@ class NotificationHandler {
 
   // Called when notifications of the given origin have to be disabled. The
   // |notification_id| is included on Android and indicates the notification
-  // that led to further notifications being disabled.
+  // that led to further notifications being disabled. The |is_suspicious|
+  // parameter is used for logging metrics.
   virtual void DisableNotifications(
       Profile* profile,
       const GURL& origin,
-      const std::optional<std::string>& notification_id);
+      const std::optional<std::string>& notification_id,
+      const std::optional<bool>& is_suspicious);
 
   // Called when the settings page for the given origin has to be opened.
   virtual void OpenSettings(Profile* profile, const GURL& origin);

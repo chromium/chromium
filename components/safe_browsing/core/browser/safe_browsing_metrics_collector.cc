@@ -73,6 +73,14 @@ void SafeBrowsingMetricsCollector::Shutdown() {
   pref_change_registrar_.RemoveAll();
 }
 
+// static
+void SafeBrowsingMetricsCollector::
+    LogSafeBrowsingNotificationRevocationSourceHistogram(
+        NotificationRevocationSource source) {
+  base::UmaHistogramEnumeration("SafeBrowsing.NotificationRevocationSource",
+                                source);
+}
+
 void SafeBrowsingMetricsCollector::StartLogging() {
   base::TimeDelta log_interval = base::Days(kMetricsLoggingIntervalDay);
   base::Time last_log_time =

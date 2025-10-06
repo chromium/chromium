@@ -159,7 +159,7 @@ public class NotificationPlatformBridge {
         public final String webApkPackage;
         public final @Nullable String channelId;
 
-        public NotificationIdentifyingAttributes(
+        NotificationIdentifyingAttributes(
                 String notificationId,
                 @NotificationType int notificationType,
                 String origin,
@@ -284,7 +284,7 @@ public class NotificationPlatformBridge {
                 notificationManager.cancel(attributes.notificationId, PLATFORM_ID);
                 // Check if the committed unsubscribe action is facilitated by a notification
                 // warning. If it is, then log metrics and cleanup static maps.
-                NotificationContentDetectionManager.onUnsubscribeMaybeCommittedAfterWarning(
+                NotificationContentDetectionManager.onPreUnsubscribeMaybeCommittedAfterWarning(
                         attributes.notificationId, attributes.origin);
                 return true;
             case NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION:
@@ -312,8 +312,8 @@ public class NotificationPlatformBridge {
                         SuspiciousNotificationWarningInteractions
                                 .REPORT_WARNED_NOTIFICATION_AS_SPAM);
                 // Reporting a warned notification also commits the unsubscribe action that is
-                // facilitated by the warning, so call this to log metrics and cleanup static maps.
-                NotificationContentDetectionManager.onUnsubscribeMaybeCommittedAfterWarning(
+                // facilitated by the warning, so call this to log metrics.
+                NotificationContentDetectionManager.onPreUnsubscribeMaybeCommittedAfterWarning(
                         attributes.notificationId, attributes.origin);
                 return true;
             case NotificationConstants.ACTION_REPORT_UNWARNED_NOTIFICATION_AS_SPAM:
@@ -1701,7 +1701,12 @@ public class NotificationPlatformBridge {
                         identifyingAttributes.notificationType,
                         identifyingAttributes.origin,
                         identifyingAttributes.profileId,
-                        identifyingAttributes.incognito);
+                        identifyingAttributes.incognito,
+                        NotificationContentDetectionManager.isNotificationSuspicious(
+                                identifyingAttributes.notificationId,
+                                identifyingAttributes.origin));
+        NotificationContentDetectionManager.removeOriginFromSuspiciousMap(
+                identifyingAttributes.origin);
         var backups =
                 sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
         NotificationUmaTracker.getInstance()
@@ -1909,7 +1914,8 @@ public class NotificationPlatformBridge {
                 @NotificationType int notificationType,
                 @JniType("std::string") String origin,
                 @JniType("std::string") @Nullable String profileId,
-                boolean incognito);
+                boolean incognito,
+                boolean isSuspicious);
 
         void onNotificationShowOriginalNotification(
                 long nativeNotificationPlatformBridgeAndroid,

@@ -533,10 +533,13 @@ public class NotificationContentDetectionManager {
         }
     }
 
-    static void onUnsubscribeMaybeCommittedAfterWarning(String notificationId, String origin) {
+    static void onPreUnsubscribeMaybeCommittedAfterWarning(String notificationId, String origin) {
         // Record when the unsubscribe is completed.
         recordInteractionForUMAIfSuspicious(
                 origin, notificationId, SuspiciousNotificationWarningInteractions.UNSUBSCRIBE);
+    }
+
+    static void removeOriginFromSuspiciousMap(String origin) {
         sSuspiciousNotificationsMap.remove(origin);
         sWarningNotificationAttributesByOrigin.remove(origin);
     }
@@ -680,7 +683,7 @@ public class NotificationContentDetectionManager {
         mNotificationManager = notificationManager;
     }
 
-    private static boolean isNotificationSuspicious(String notificationId, String origin) {
+    static boolean isNotificationSuspicious(String notificationId, String origin) {
         if (sSuspiciousNotificationsMap.containsKey(origin)) {
             return sSuspiciousNotificationsMap.get(origin).contains(notificationId);
         }

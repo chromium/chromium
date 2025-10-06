@@ -21,6 +21,7 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/constants.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -51,6 +52,8 @@ constexpr char kNotificationCountHistogram[] =
     "NotificationCount";
 constexpr char kRevokedWebsitesCountHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevokedWebsitesCount";
+constexpr char kSafeBrowsingNotificationRevocationSourceHistogram[] =
+    "SafeBrowsing.NotificationRevocationSource";
 
 base::TimeDelta GetRevocationsLifetime() {
   return content_settings::features::
@@ -443,6 +446,10 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "HasReportedMetricsBeforeRevocation",
       true, 1);
+  t.ExpectBucketCount(
+      kSafeBrowsingNotificationRevocationSourceHistogram,
+      safe_browsing::NotificationRevocationSource::kDisruptiveAutoRevocation,
+      1);
 
   // After that, no new metrics are reported since there is no notification
   // content setting exception.

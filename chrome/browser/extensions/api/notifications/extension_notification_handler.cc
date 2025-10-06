@@ -108,7 +108,8 @@ void ExtensionNotificationHandler::OnClick(
 void ExtensionNotificationHandler::DisableNotifications(
     Profile* profile,
     const GURL& origin,
-    const std::optional<std::string>& notification_id) {
+    const std::optional<std::string>& notification_id,
+    const std::optional<bool>& is_suspicious) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::APPLICATION, origin.GetHost());
   NotifierStateTrackerFactory::GetForProfile(profile)->SetNotifierEnabled(

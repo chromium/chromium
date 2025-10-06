@@ -7227,6 +7227,7 @@ test("unit_tests") {
     "//components/safe_browsing/content/common:interfaces_shared_cpp_sources",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db",
     "//components/safe_browsing/core/browser/db:test_database_manager",

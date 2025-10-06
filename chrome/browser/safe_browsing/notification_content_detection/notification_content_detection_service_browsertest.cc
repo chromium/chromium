@@ -589,7 +589,8 @@ IN_PROC_BROWSER_TEST_P(
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
   handler->DisableNotifications(browser()->profile(), GURL(kNonAllowlistedUrl),
-                                /*notification_id=*/std::nullopt);
+                                /*notification_id=*/std::nullopt,
+                                /*is_suspicious=*/false);
   NotificationPermissionContext::UpdatePermission(
       browser()->profile(), GURL(kNonAllowlistedUrl), CONTENT_SETTING_ALLOW);
 
