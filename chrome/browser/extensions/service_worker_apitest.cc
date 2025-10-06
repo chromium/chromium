@@ -2208,6 +2208,47 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnUpdatedSplit) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       UnloadSplitModeExtensionStopsWorkers) {
+  Browser* browser_incognito =
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(browser_incognito);
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Incognito Test Extension",
+    "version": "0.1",
+    "manifest_version": 3,
+    "background": {"service_worker": "worker.js"},
+    "incognito": "split"
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"),
+                     R"(// Intentionally left blank.)");
+
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  std::vector<WorkerId> regular_workers =
+      ProcessManager::Get(profile())->GetAllWorkersIdsForTesting();
+  content::BrowserContext* incognito_context = browser_incognito->profile();
+  std::vector<WorkerId> incognito_workers =
+      ProcessManager::Get(incognito_context)->GetAllWorkersIdsForTesting();
+  EXPECT_EQ(regular_workers.size(), 1ul);
+  EXPECT_EQ(incognito_workers.size(), 1ul);
+
+  // Ensure unloading the extension stops both workers.
+  UnloadExtension(extension->id());
+
+  regular_workers =
+      ProcessManager::Get(profile())->GetAllWorkersIdsForTesting();
+  incognito_workers =
+      ProcessManager::Get(incognito_context)->GetAllWorkersIdsForTesting();
+  EXPECT_EQ(regular_workers.size(), 0ul);
+  EXPECT_EQ(incognito_workers.size(), 0ul);
+}
+
 // Test extension with OnInstalled listener can be successfully updated when,
 // 1) Was allowed in incognito.
 // 2) An incognito window was open.

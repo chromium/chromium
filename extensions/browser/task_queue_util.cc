@@ -103,7 +103,8 @@ void DoTaskQueueFunction(content::BrowserContext* browser_context,
 
   // There is a separate task queue for the off-the-record context
   // for any extension running in split mode.
-  if (!ExtensionsBrowserClient::Get()->HasOffTheRecordContext(
+  if (browser_context->IsOffTheRecord() ||
+      !ExtensionsBrowserClient::Get()->HasOffTheRecordContext(
           browser_context) ||
       !IncognitoInfo::IsSplitMode(extension) ||
       !ExtensionsBrowserClient::Get()->IsExtensionIncognitoEnabled(
