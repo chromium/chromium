@@ -164,7 +164,7 @@ StarboardPlayerManager::StarboardPlayerManager(
       drm_resource_(std::move(drm_resource)),
       starboard_(starboard),
       client_(client),
-      stats_tracker_(client),
+      stats_tracker_(client, cast_metrics_helper),
       task_runner_(std::move(media_task_runner)),
       demuxer_stream_reader_(
           audio_stream,

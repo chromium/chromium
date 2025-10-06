@@ -46,7 +46,6 @@ source_set("starboard_renderer") {
     ":geometry_change_handler",
     ":starboard_player_manager",
     "//base",
-    "//chromecast/base/metrics",
     "//chromecast/media/service:video_geometry_setter_service",
     "//chromecast/starboard/media/media:starboard_api_wrapper",
     "//media",
@@ -97,6 +96,7 @@ source_set("client_stats_tracker") {
     "//chromecast/starboard/media/media:starboard_api_wrapper",
     "//media",
   ]
+  deps = [ "//chromecast/base/metrics" ]
 }
 
 source_set("starboard_buffering_tracker") {
