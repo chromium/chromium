@@ -89,7 +89,7 @@ try_.presubmit_builder(
     name = "reclient-config-deployment-verifier",
     executable = "recipe:reclient_config_deploy_check/tester",
     properties = {
-        "fetch_script": "buildtools/reclient_cfgs/fetch_reclient_cfgs.py",
+        "fetch_script": "buildtools/reclient_cfgs/configure_reclient_cfgs.py",
         "rbe_project": [
             {
                 "name": "rbe-chromium-trusted",
