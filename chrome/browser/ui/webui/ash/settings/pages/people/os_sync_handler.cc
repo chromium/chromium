@@ -75,6 +75,12 @@ void OSSyncHandler::OnStateChanged(syncer::SyncService* service) {
   PushSyncPrefs();
 }
 
+void OSSyncHandler::OnSyncShutdown(syncer::SyncService* service) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
+}
+
 void OSSyncHandler::HandleDidNavigateToOsSyncPage(
     const base::Value::List& args) {
   HandleOsSyncPrefsDispatch(args);

@@ -179,6 +179,7 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // content::WebContentsObserver implementation
   void BeforeUnloadDialogCancelled() override;

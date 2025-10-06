@@ -285,6 +285,12 @@ void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
   SendAboutInfoAndEntityCounts();
 }
 
+void SyncInternalsMessageHandler::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
+}
+
 void SyncInternalsMessageHandler::OnProtocolEvent(
     const syncer::ProtocolEvent& event) {
   base::Value::Dict dict = event.ToValue(include_specifics_);

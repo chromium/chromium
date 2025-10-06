@@ -114,6 +114,7 @@ class ProductSpecificationsHandler
 
   // syncer::SyncServiceObserver impl:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   mojo::Remote<product_specifications::mojom::Page> remote_page_;

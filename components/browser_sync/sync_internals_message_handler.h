@@ -142,6 +142,7 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // syncer::ProtocolEventObserver implementation.
   void OnProtocolEvent(const syncer::ProtocolEvent& e) override;

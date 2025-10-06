@@ -173,4 +173,10 @@ void ProductSpecificationsHandler::OnStateChanged(syncer::SyncService* sync) {
   }
 }
 
+void ProductSpecificationsHandler::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
+}
+
 }  // namespace commerce

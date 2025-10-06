@@ -64,6 +64,7 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler,
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // bookmarks::BookmarkModelObserver
   void BookmarkModelLoaded(bool ids_reassigned) override;

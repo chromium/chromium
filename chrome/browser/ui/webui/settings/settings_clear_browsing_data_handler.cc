@@ -373,6 +373,12 @@ void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {
   UpdateSyncState();
 }
 
+void ClearBrowsingDataHandler::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
+}
+
 void ClearBrowsingDataHandler::UpdateSyncState() {
   FireWebUIListener("update-sync-state", CreateSyncStateEvent());
 }

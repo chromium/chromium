@@ -37,6 +37,7 @@ class OSSyncHandler : public content::WebUIMessageHandler,
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* service) override;
+  void OnSyncShutdown(syncer::SyncService* service) override;
 
   // Callbacks from the page. Visible for testing.
   void HandleDidNavigateToOsSyncPage(const base::Value::List& args);

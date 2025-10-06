@@ -448,6 +448,13 @@ void BookmarksMessageHandler::OnStateChanged(
   }
 }
 
+void BookmarksMessageHandler::OnSyncShutdown(
+    syncer::SyncService* sync_service) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
+}
+
 void BookmarksMessageHandler::ExtensiveBookmarkChangesBeginning() {
   batch_updates_ongoing_ = true;
 }
