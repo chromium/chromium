@@ -19,16 +19,12 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_FOLDING_HASH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_FOLDING_HASH_H_
 
 // Case-insensitive hash lookups, using the Unicode case folding algorithm.
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -60,13 +56,13 @@ struct CaseFoldingHashReader {
 
   static inline uint64_t Read64(const uint8_t* ptr) {
     const T* p = reinterpret_cast<const T*>(ptr);
-    return FoldCase(p[0]) | (FoldCase(p[1]) << 16) | (FoldCase(p[2]) << 32) |
-           (FoldCase(p[3]) << 48);
+    return UNSAFE_TODO(FoldCase(p[0]) | (FoldCase(p[1]) << 16) |
+                       (FoldCase(p[2]) << 32) | (FoldCase(p[3]) << 48));
   }
 
   static inline uint64_t Read32(const uint8_t* ptr) {
     const T* p = reinterpret_cast<const T*>(ptr);
-    return FoldCase(p[0]) | (FoldCase(p[1]) << 16);
+    return UNSAFE_TODO(FoldCase(p[0]) | (FoldCase(p[1]) << 16));
   }
 
   static inline uint64_t ReadSmall(const uint8_t* ptr, size_t k) {
@@ -106,8 +102,8 @@ class CaseFoldingHash {
 
   static unsigned GetHash(StringImpl* str) {
     if (str->Is8Bit())
-      return GetHash(str->Characters8(), str->length());
-    return GetHash(str->Characters16(), str->length());
+      return GetHash(UNSAFE_TODO(str->Characters8()), str->length());
+    return GetHash(UNSAFE_TODO(str->Characters16()), str->length());
   }
 
   static unsigned GetHash(const LChar* data, unsigned length) {
