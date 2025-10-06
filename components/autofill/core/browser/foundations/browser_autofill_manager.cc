@@ -810,7 +810,7 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
       otp_manager_(
-          new OtpManagerImpl(this,
+          new OtpManagerImpl(*this,
                              driver->GetAutofillClient().GetSmsOtpBackend())),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)) {}
@@ -2651,7 +2651,7 @@ void BrowserAutofillManager::Reset() {
   credit_card_access_manager_.reset();
   // Forget cached OTPs after a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(
-      this, driver().GetAutofillClient().GetSmsOtpBackend());
+      *this, driver().GetAutofillClient().GetSmsOtpBackend());
   account_name_email_strike_manager_ =
       std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();

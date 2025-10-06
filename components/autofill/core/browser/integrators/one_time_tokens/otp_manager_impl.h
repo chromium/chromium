@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -34,9 +35,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   using GetOtpSuggestionsCallback =
       base::OnceCallback<void(std::vector<std::string>)>;
 
-  // TODO(crbug.com/446680359): Take a reference instead of a pointer for owner
-  // to remove null-checks.
-  OtpManagerImpl(BrowserAutofillManager* owner,
+  OtpManagerImpl(BrowserAutofillManager& owner,
                  one_time_tokens::SmsOtpBackend* sms_otp_backend);
   OtpManagerImpl(const OtpManagerImpl&) = delete;
   OtpManagerImpl& operator=(const OtpManagerImpl&) = delete;
@@ -63,7 +62,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   bool IsOtpDeliveryBlocked();
 
   // The owning BrowserAutofillManager.
-  raw_ptr<BrowserAutofillManager> owner_;
+  raw_ref<BrowserAutofillManager> owner_;
 
   // May be nullptr on platforms that don't support SMS OTP fetching.
   raw_ptr<one_time_tokens::SmsOtpBackend> sms_otp_backend_ = nullptr;

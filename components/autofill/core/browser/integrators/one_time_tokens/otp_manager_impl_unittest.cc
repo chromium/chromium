@@ -100,26 +100,10 @@ class OtpManagerImplTest : public testing::Test,
   MockSmsOtpBackend sms_otp_backend_;
 };
 
-// Tests that `GetOtpSuggestions` returns no results if the OtpManagerImpl has
-// no `SmsOtpBackend`.
-TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoBackend) {
-  OtpManagerImpl otp_manager(&autofill_manager(), nullptr);
-
-  // Notifying the OTP manager about the OTP field would trigger an SMS fetch
-  // if there was an SMS backend registered.
-  AddFormWithOtpField();
-
-  // As no SMS backend is registered, we get the an empty response.
-  base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(future.GetCallback());
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_TRUE(future.Get().empty());
-}
-
 // Tests that no query is issued to the SMS backend if a form does not contain
 // an OTP field.
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoQueryIssued) {
-  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_backend_);
 
   // As the form has no OTP field, SMS backend is not queried.
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
@@ -136,7 +120,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoQueryIssued) {
 // `SmsOtpBackend` the first time it is called, and that the results are
 // correctly passed to the callback.
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_TriggersFirstRetrieval) {
-  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_backend_);
 
   // Prepare the handling of SMS requests from the SMS backend.
   one_time_tokens::OtpFetchReply reply = GetDefaultOtpFetchReply();
@@ -156,7 +140,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_TriggersFirstRetrieval) {
 // Tests that `GetOtpSuggestions` waits with the callback if an SMS OTP
 // retrieval is in progress.
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_DoesNotTriggerWhileInProgress) {
-  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_backend_);
 
   // Prepare the handling of SMS requests from the SMS backend.
   one_time_tokens::OtpFetchReply reply = GetDefaultOtpFetchReply();
@@ -188,7 +172,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_DoesNotTriggerWhileInProgress) {
 // Tests that `GetOtpSuggestions` immediately returns any OTPs that have
 // already been fetched.
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_FetchesSmsOnlyOnce) {
-  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_backend_);
 
   // Prepare the handling of SMS requests from the SMS backend.
   one_time_tokens::OtpFetchReply reply = GetDefaultOtpFetchReply();
@@ -219,7 +203,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FetchesSmsOnlyOnce) {
 // Tests that if `GetOtpSuggestions` is called twice, only the callback from
 // the second call is run when OTPs are fetched.
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
-  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_backend_);
 
   // Prepare the handling of SMS requests from the SMS backend.
   one_time_tokens::OtpFetchReply reply = GetDefaultOtpFetchReply();
@@ -261,7 +245,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
 
 // Tests that an empty OTP value received from the backend is not stored.
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_EmptyOtpIsNotStored) {
-  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_backend_);
 
   // Prepare a reply with an empty OTP.
   one_time_tokens::OtpFetchReply reply = one_time_tokens::OtpFetchReply(
@@ -283,7 +267,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_EmptyOtpIsNotStored) {
 
 // Tests that `GetOtpSuggestions` filters out expired OTPs.
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_FiltersExpiredOtps) {
-  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_backend_);
 
   // Prepare the reply from the SMS backend.
   one_time_tokens::OtpFetchReply reply = one_time_tokens::OtpFetchReply(

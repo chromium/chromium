@@ -31,12 +31,10 @@ void FilterExpiredOtps(std::vector<one_time_tokens::OneTimeToken>& otps) {
 
 }  // namespace
 
-OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager* owner,
+OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
                                one_time_tokens::SmsOtpBackend* sms_otp_backend)
     : owner_(owner), sms_otp_backend_(sms_otp_backend) {
-  if (owner_) {
-    autofill_manager_observation_.Observe(owner);
-  }
+  autofill_manager_observation_.Observe(&owner);
 
   // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
   // case no real backend is triggered. The feature definition should migrate to
@@ -131,7 +129,7 @@ void OtpManagerImpl::OnOtpRetrievalComplete(
                   });
     otp_suggestions_.push_back(reply.otp_value.value());
 
-    if (owner_ && owner_->GetMetricState().has_value()) {
+    if (owner_->GetMetricState().has_value()) {
       owner_->GetMetricState()->otp_form_event_logger.OnOtpAvailable();
     }
   }
@@ -147,7 +145,7 @@ void OtpManagerImpl::OnOtpRetrievalComplete(
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
-  return owner_ && owner_->client().DocumentUsedWebOTP();
+  return owner_->client().DocumentUsedWebOTP();
 }
 
 }  // namespace autofill
