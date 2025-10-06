@@ -30,7 +30,8 @@
 ] interface Geolocation {
     [
         LogActivity,
-        MeasureAs=GeolocationGetCurrentPosition
+        MeasureAs=GeolocationGetCurrentPosition,
+        ImplementedAs=getCurrentPositionForBindings
     ] void getCurrentPosition(
         PositionCallback successCallback,
         optional PositionErrorCallback? errorCallback = null,
@@ -38,7 +39,8 @@
 
     [
         LogActivity,
-        MeasureAs=GeolocationWatchPosition
+        MeasureAs=GeolocationWatchPosition,
+        ImplementedAs=watchPositionForBindings
     ] long watchPosition(
         PositionCallback successCallback,
         optional PositionErrorCallback? errorCallback = null,

@@ -66,31 +66,55 @@ HTMLGeolocationElement::CreateEmbeddedPermissionRequestDescriptor() {
   return descriptor;
 }
 
+Geolocation* HTMLGeolocationElement::GetGeolocation() {
+  auto* dom_window = GetDocument().domWindow();
+  if (!dom_window) {
+    return nullptr;
+  }
+  return Geolocation::geolocation(*dom_window->navigator());
+}
+
 void HTMLGeolocationElement::AttributeChanged(
     const AttributeModificationParams& params) {
-  // The autolocate attribute is exclusive to the geolocation element, other
-  // attributes will be handled by the HTMLPermissionElement.
+  // The autolocate and the watch attributes are exclusive to the geolocation
+  // element, other attributes will be handled by the HTMLPermissionElement.
   if (params.name == html_names::kAutolocateAttr) {
     GetCurrentPosition();
+  }
+  if (params.name == html_names::kWatchAttr) {
+    if (params.new_value) {
+      WatchPosition();
+    } else {
+      auto* geolocation = GetGeolocation();
+      if (!geolocation) {
+        return;
+      }
+      geolocation->clearWatch(watch_id_);
+      watch_id_ = 0;
+    }
   }
   HTMLPermissionElement::AttributeChanged(params);
 }
 
 void HTMLGeolocationElement::GetCurrentPosition() {
-  auto* dom_window = GetDocument().domWindow();
-  if (!dom_window) {
-    return;
-  }
-  auto* geolocation = Geolocation::geolocation(*dom_window->navigator());
+  auto* geolocation = GetGeolocation();
   if (!geolocation) {
     return;
   }
-  // TODO(@ravjit): Discuss with the team how much timeout we should set.
-  geolocation->RequestPosition(
+  geolocation->GetCurrentPosition(
       blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
                            WrapWeakPersistent(this)));
 }
 
+void HTMLGeolocationElement::WatchPosition() {
+  auto* geolocation = GetGeolocation();
+  if (!geolocation) {
+    return;
+  }
+  watch_id_ = geolocation->WatchPosition(
+      blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
+                           WrapWeakPersistent(this)));
+}
 void HTMLGeolocationElement::CurrentPositionCallback(
     base::expected<Geoposition*, GeolocationPositionError*> position) {
   if (position.has_value()) {

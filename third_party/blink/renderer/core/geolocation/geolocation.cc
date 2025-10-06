@@ -210,9 +210,10 @@ void Geolocation::RecordOriginTypeAccess() const {
   }
 }
 
-void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
-                                     V8PositionErrorCallback* error_callback,
-                                     const PositionOptions* options) {
+void Geolocation::getCurrentPositionForBindings(
+    V8PositionCallback* success_callback,
+    V8PositionErrorCallback* error_callback,
+    const PositionOptions* options) {
   if (options->enableHighAccuracy()) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
@@ -239,9 +240,23 @@ void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
   StartRequest(notifier);
 }
 
-int Geolocation::watchPosition(V8PositionCallback* success_callback,
-                               V8PositionErrorCallback* error_callback,
-                               const PositionOptions* options) {
+void Geolocation::GetCurrentPosition(
+    base::RepeatingCallback<
+        void(base::expected<Geoposition*, GeolocationPositionError*>)> callback,
+    const PositionOptions* options) {
+  if (!GetFrame()) {
+    return;
+  }
+  auto* notifier =
+      MakeGarbageCollected<GeoNotifierBlink>(this, options, callback);
+  one_shots_->insert(notifier);
+  StartRequest(notifier);
+}
+
+int Geolocation::watchPositionForBindings(
+    V8PositionCallback* success_callback,
+    V8PositionErrorCallback* error_callback,
+    const PositionOptions* options) {
   if (options->enableHighAccuracy()) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
@@ -260,30 +275,30 @@ int Geolocation::watchPosition(V8PositionCallback* success_callback,
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kAdScriptInStackOnWatchGeoLocation);
   }
+  return WatchPositionInternal(notifier);
+}
 
+int Geolocation::WatchPosition(
+    base::RepeatingCallback<
+        void(base::expected<Geoposition*, GeolocationPositionError*>)> callback,
+    const PositionOptions* options) {
+  if (!GetFrame()) {
+    return 0;
+  }
+  auto* notifier =
+      MakeGarbageCollected<GeoNotifierBlink>(this, options, callback);
+  return WatchPositionInternal(notifier);
+}
+
+int Geolocation::WatchPositionInternal(GeoNotifier* notifier) {
   int watch_id;
   // Keep asking for the next id until we're given one that we don't already
   // have.
   do {
     watch_id = GetExecutionContext()->CircularSequentialID();
   } while (!watchers_->Add(watch_id, notifier));
-
   StartRequest(notifier);
-
   return watch_id;
-}
-
-void Geolocation::RequestPosition(
-    base::RepeatingCallback<
-        void(base::expected<Geoposition*, GeolocationPositionError*>)> callback,
-    const PositionOptions* options) {
-  if (!GetFrame()) {
-    return;
-  }
-  auto* notifier =
-      MakeGarbageCollected<GeoNotifierBlink>(this, options, callback);
-  one_shots_->insert(notifier);
-  StartRequest(notifier);
 }
 
 void Geolocation::StartRequest(GeoNotifier* notifier) {
