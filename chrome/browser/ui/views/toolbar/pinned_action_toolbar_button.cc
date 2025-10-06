@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
-#include "ui/actions/action_utils.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -393,7 +392,8 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
   // item, use the stateful image. Otherwise, use the action item's image.
   ui::ImageModel image_model;
 
-  if (IsActionItemClass<actions::StatefulImageActionItem>(action_item)) {
+  if (actions::IsActionItemClass<actions::StatefulImageActionItem>(
+          action_item)) {
     image_model = static_cast<actions::StatefulImageActionItem*>(action_item)
                       ->GetStatefulImage();
   } else {

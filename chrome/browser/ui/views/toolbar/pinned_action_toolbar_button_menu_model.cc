@@ -23,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
-#include "ui/actions/action_utils.h"
 #include "ui/actions/actions.h"
 #include "ui/menus/simple_menu_model.h"
 

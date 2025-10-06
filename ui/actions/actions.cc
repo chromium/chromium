@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/no_destructor.h"
-#include "ui/actions/action_utils.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 

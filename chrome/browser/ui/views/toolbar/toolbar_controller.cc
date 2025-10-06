@@ -31,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/paint_vector_icon.h"
