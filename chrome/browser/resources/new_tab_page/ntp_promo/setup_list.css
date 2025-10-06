@@ -15,9 +15,8 @@
   --setup-list-border-radius: 12px;
   --setup-list-item-spacing: 12px;
   --setup-list-margin: 8px;
-  --setup-list-padding: 12px;
   --setup-list-separator-color: var(--color-sys-base-container);
-  --setup-list-separator-size: 2px;
+  --setup-list-separator-size: 1px;
 }
 
 #promos {
