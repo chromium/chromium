@@ -26,7 +26,7 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
   NSData* data = [NSKeyedArchiver archivedDataWithRootObject:identities
                                        requiringSecureCoding:NO
                                                        error:&error];
-  DCHECK(!error);
+  CHECK(!error);
   NSString* string = [data base64EncodedStringWithOptions:
                                NSDataBase64EncodingEndLineWithCarriageReturn];
   return base::SysNSStringToUTF8(string);
@@ -80,10 +80,12 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
 
 - (instancetype)initWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID {
   if ((self = [super init])) {
+    CHECK(gaiaID);
+    CHECK(gaiaID.length);
     _gaiaID = gaiaID;
     _userEmail = [email copy];
     NSArray* split = [email componentsSeparatedByString:@"@"];
-    DCHECK_EQ(split.count, 2ul);
+    CHECK_EQ(split.count, 2ul);
     _userFullName = split[0];
     _userGivenName = split[0];
     _hasValidAuth = YES;
