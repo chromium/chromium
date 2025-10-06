@@ -311,6 +311,7 @@ test("display_unittests") {
     "//base",
     "//base/test:test_support",
     "//cc/base",
+    "//components/viz/common/resources:shared_image_format",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",

@@ -5,15 +5,15 @@
 #include "ui/display/manager/managed_display_info.h"
 
 #include "base/test/gtest_util.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
+#include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-
-#include "ui/display/manager/touch_device_manager.h"
 
 namespace display {
 
@@ -43,7 +43,7 @@ TEST_F(DisplayInfoTest, CreateFromSpec) {
   EXPECT_EQ(gfx::Size(288, 380), info.size_in_pixel());
   EXPECT_EQ(Display::ROTATE_0, info.GetActiveRotation());
   EXPECT_EQ(gfx::DisplayColorSpaces(gfx::ColorSpace::CreateHDR10(),
-                                    gfx::BufferFormat::BGRA_1010102),
+                                    viz::SinglePlaneFormat::kBGRA_1010102),
             info.display_color_spaces());
   EXPECT_EQ(gfx::Insets::TLBR(5, 3, 5, 3), info.overscan_insets_in_dip());
 
