@@ -348,11 +348,33 @@ void FieldClassificationModelHandler::GetModelPredictionsForForms(
     std::vector<FormData> forms,
     const GeoIpCountryCode& client_country,
     base::OnceCallback<void(std::vector<ModelPredictions>)> callback) {
-  auto barrier_callback = base::BarrierCallback<ModelPredictions>(
-      forms.size(), std::move(callback));
-  for (FormData& form : std::move(forms)) {
-    GetModelPredictionsForForm(std::move(form), client_country,
-                               barrier_callback);
+  // `base::BarrierCallback` is not guaranteed to gather the results in order so
+  // we have to sort them.
+  using IndexAndOutput = std::pair<size_t, ModelPredictions>;
+  auto sort_results =
+      base::BindOnce([](std::vector<IndexAndOutput> indexed_predictions)
+                         -> std::vector<ModelPredictions> {
+        std::ranges::sort(indexed_predictions,
+                          [](IndexAndOutput& a, IndexAndOutput& b) {
+                            return a.first < b.first;
+                          });
+        return base::ToVector(std::move(indexed_predictions),
+                              [](IndexAndOutput& p) -> ModelPredictions&& {
+                                return std::move(p.second);
+                              });
+      });
+  auto barrier_callback = base::BarrierCallback<IndexAndOutput>(
+      forms.size(), std::move(sort_results).Then(std::move(callback)));
+  for (size_t form_index = 0; form_index < forms.size(); ++form_index) {
+    GetModelPredictionsForForm(
+        std::move(forms[form_index]), client_country,
+        base::BindOnce(
+            [](size_t form_index,
+               ModelPredictions prediction) -> IndexAndOutput {
+              return {form_index, std::move(prediction)};
+            },
+            form_index)
+            .Then(barrier_callback));
   }
 }
 
