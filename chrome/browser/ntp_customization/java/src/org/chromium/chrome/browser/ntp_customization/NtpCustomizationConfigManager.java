@@ -344,7 +344,9 @@ public class NtpCustomizationConfigManager {
      * @param context The current Activity context. It is themed and can provide the correct color.
      */
     public @ColorInt int getBackgroundColor(Context context) {
-        if (!mIsInitialized) return getDefaultBackgroundColor(context);
+        if (!mIsInitialized || mBackgroundColor == NtpCustomizationConfigManager.COLOR_NOT_SET) {
+            return getDefaultBackgroundColor(context);
+        }
 
         return mBackgroundColor;
     }
