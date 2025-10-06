@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/files/file_util.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -54,14 +57,21 @@ void ChooseFileTabHelper::StopChoosingFiles(NSArray<NSURL*>* file_urls,
   controller_.reset();
 }
 
+void ChooseFileTabHelper::SetFileUploadPanelHandler(
+    id<FileUploadPanelCommands> file_upload_panel_handler) {
+  file_upload_panel_handler_ = file_upload_panel_handler;
+}
+
 void ChooseFileTabHelper::RunOpenPanel(
     WKOpenPanelParameters* parameters,
     WKFrameInfo* frame,
     base::OnceCallback<void(NSArray<NSURL*>*)> completion)
     API_AVAILABLE(ios(18.4)) {
+  CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
   // TODO(crbug.com/441659098): Show the open panel and let the user select
   // files.
   std::move(completion).Run(nil);
+  [file_upload_panel_handler_ showFileUploadPanel];
 }
 
 void ChooseFileTabHelper::SetLastChooseFileEvent(ChooseFileEvent event) {

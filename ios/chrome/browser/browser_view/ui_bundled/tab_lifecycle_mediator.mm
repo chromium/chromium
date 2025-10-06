@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
+#import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -56,6 +57,7 @@
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/model/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/model/repost_form_tab_helper_delegate.h"
@@ -298,6 +300,14 @@
         FullscreenController::FromBrowser(self.browser);
     findTabHelper->SetFullscreenController(fullscreenController);
   }
+
+  if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
+    ChooseFileTabHelper* chooseFileTabHelper =
+        ChooseFileTabHelper::FromWebState(webState);
+    CHECK(chooseFileTabHelper);
+    chooseFileTabHelper->SetFileUploadPanelHandler(
+        HandlerForProtocol(_commandDispatcher, FileUploadPanelCommands));
+  }
 }
 
 - (void)webStateRemoved:(web::WebState*)webState {
@@ -427,6 +437,13 @@
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
   if (findTabHelper) {
     findTabHelper->SetFullscreenController(nullptr);
+  }
+
+  if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
+    ChooseFileTabHelper* chooseFileTabHelper =
+        ChooseFileTabHelper::FromWebState(webState);
+    CHECK(chooseFileTabHelper);
+    chooseFileTabHelper->SetFileUploadPanelHandler(nil);
   }
 }
 

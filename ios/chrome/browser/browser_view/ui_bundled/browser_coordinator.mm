@@ -236,6 +236,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
+#import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -377,6 +378,7 @@ const char kChromeAppStoreUrl[] =
     EnhancedCalendarCommands,
     EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
+    FileUploadPanelCommands,
     FindInPageCommands,
     FormInputAccessoryCoordinatorNavigator,
     BWGCommands,
@@ -899,6 +901,11 @@ const char kChromeAppStoreUrl[] =
   [self stopSaveToPhotos];
   [self hideSaveToDrive];
   [self hideDriveFilePicker];
+  if (@available(iOS 18.4, *)) {
+    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
+      [self hideFileUploadPanel];
+    }
+  }
   if (IsDownloadListEnabled()) {
     [self hideDownloadList];
   }
@@ -1187,6 +1194,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(EnhancedCalendarCommands),
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
+    @protocol(FileUploadPanelCommands),
     @protocol(FindInPageCommands),
     @protocol(BWGCommands),
     @protocol(ReaderModeCommands),
@@ -1794,6 +1802,11 @@ const char kChromeAppStoreUrl[] =
   _dataControlsDialogCoordinator = nil;
 
   [self hideDriveFilePicker];
+  if (@available(iOS 18.4, *)) {
+    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
+      [self hideFileUploadPanel];
+    }
+  }
   [self hideContextualSheet];
   [self dismissEditAddressBottomSheet];
   [self dismissLensPromo];
@@ -2896,6 +2909,18 @@ const char kChromeAppStoreUrl[] =
     }
   }
   std::move(deactivateReader).Run();
+}
+
+#pragma mark - FileUploadPanelCommands
+
+- (void)showFileUploadPanel API_AVAILABLE(ios(18.4)) {
+  CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
+  // TODO(crbug.com/441659098): Start the FileUploadPanelCoordinator.
+}
+
+- (void)hideFileUploadPanel API_AVAILABLE(ios(18.4)) {
+  CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
+  // TODO(crbug.com/441659098): Stop the FileUploadPanelCoordinator.
 }
 
 #pragma mark - FindInPageCommands

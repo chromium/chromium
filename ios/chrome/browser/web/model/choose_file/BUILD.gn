@@ -23,6 +23,7 @@ source_set("choose_file") {
     ":choose_file_file_utils",
     ":choose_file_js",
     "//base",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -58,9 +59,11 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

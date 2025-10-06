@@ -11,6 +11,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 class ChooseFileController;
+@protocol FileUploadPanelCommands;
 @class WKOpenPanelParameters;
 @class WKFrameInfo;
 
@@ -37,6 +38,9 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
                          NSString* display_string = nil,
                          UIImage* icon_image = nil);
 
+  // Sets the file upload panel handler.
+  void SetFileUploadPanelHandler(
+      id<FileUploadPanelCommands> file_upload_panel_handler);
   // Displays a file upload panel and calls `completion` with file URLs selected
   // by the user. `parameters` describe the file upload control which initiated
   // the call from `frame`.
@@ -102,6 +106,9 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
 
   // Latest `ChooseFileEvent` received from JavaScript.
   std::optional<ChooseFileEvent> last_choose_file_event_;
+
+  // Handler to show/hide the file upload panel UI.
+  __weak id<FileUploadPanelCommands> file_upload_panel_handler_ = nil;
 
   // URLs of files ready to be submitted using `StopChoosingFiles`. This can be
   // used to reuse a local copy for a file instead of downloading it again. The

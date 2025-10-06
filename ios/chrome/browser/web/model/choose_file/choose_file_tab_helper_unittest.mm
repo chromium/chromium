@@ -6,13 +6,19 @@
 
 #import <memory>
 
+#import "base/functional/callback_helpers.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Test suite for ChooseFileTabHelper.
 class ChooseFileTabHelperTest : public PlatformTest {
@@ -29,6 +35,18 @@ class ChooseFileTabHelperTest : public PlatformTest {
   raw_ptr<ChooseFileTabHelper, DanglingUntriaged> tab_helper_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
+
+// Tests that calling `RunOpenPanel()` invokes the file upload panel handler.
+TEST_F(ChooseFileTabHelperTest, RunOpenPanel) {
+  if (@available(iOS 18.4, *)) {
+    base::test::ScopedFeatureList scoped_feature_list{kIOSCustomFileUploadMenu};
+    id handler = OCMProtocolMock(@protocol(FileUploadPanelCommands));
+    OCMExpect([handler showFileUploadPanel]);
+    tab_helper_->SetFileUploadPanelHandler(handler);
+    tab_helper_->RunOpenPanel(nil, nil, base::DoNothing());
+    EXPECT_OCMOCK_VERIFY(handler);
+  }
+}
 
 // Tests that calling `StopChoosingFiles()` submits file selection and that
 // `IsChoosingFiles()` returns false afterwards.
