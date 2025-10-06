@@ -86,6 +86,9 @@ class TypeTool : public ToolBase {
       KeyParams key_params);
   mojom::ActionResultPtr SimulateKeyPress(TypeTool::KeyParams params);
 
+  void OnFocusingClickComplete(ValidatedResult validated_result,
+                               ToolFinishedCallback callback,
+                               mojom::ActionResultPtr click_result);
   void ContinueIncrementalTyping(ToolFinishedCallback callback);
 
   mojom::TypeActionPtr action_;

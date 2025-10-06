@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -88,8 +89,14 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
   journal_->Log(task_id_, "ClickTool::Execute",
                 JournalDetailsBuilder().Add("point", click_point).Build());
 
-  mojom::ActionResultPtr result = CreateAndDispatchClick(
-      button, click_count, click_point, frame_->GetWebFrame()->FrameWidget());
+  CreateAndDispatchClick(
+      button, click_count, click_point, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&ClickTool::OnActionComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClickTool::OnActionComplete(ToolFinishedCallback callback,
+                                 mojom::ActionResultPtr result) {
   std::move(callback).Run(std::move(result));
 }
 

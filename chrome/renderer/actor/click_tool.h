@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
@@ -43,7 +44,12 @@ class ClickTool : public ToolBase {
   using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
 
+  void OnActionComplete(ToolFinishedCallback callback,
+                        mojom::ActionResultPtr result);
+
   mojom::ClickActionPtr action_;
+
+  base::WeakPtrFactory<ClickTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

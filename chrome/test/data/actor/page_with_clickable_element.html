@@ -69,10 +69,13 @@
   });
 
   let mouse_event_log = [];
+  let mouse_event_timestamps = [];
 
   // Log all mouse events in the format: Event[Element#ID]
-  const log_handler =
-    e => mouse_event_log.push(`${e.type}[${e.target.tagName}#${e.target.id}]`);
+  const log_handler = e => {
+    mouse_event_log.push(`${e.type}[${e.target.tagName}#${e.target.id}]`);
+    mouse_event_timestamps.push(performance.now());
+  };
 
   document.addEventListener('click', log_handler);
   document.addEventListener('mousedown', log_handler);

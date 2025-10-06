@@ -72,6 +72,8 @@ class ToolBase {
   // interactions.
   virtual bool SupportsPaintStability() const;
 
+  content::RenderFrame* frame() const { return &frame_.get(); }
+
  protected:
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.

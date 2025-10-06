@@ -57,7 +57,8 @@ class ActorClickToolBrowserTest
           ::features::kActorPaintStabilityMode.GetName(paint_stability_mode)},
          {::features::kActorGeneralPageStabilityMode.name,
           ::features::kActorGeneralPageStabilityMode.GetName(
-              general_page_stability_mode)}});
+              general_page_stability_mode)},
+         {features::kGlicActorClickDelay.name, "200ms"}});
   }
 
   ~ActorClickToolBrowserTest() override = default;
@@ -369,6 +370,30 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest,
   ExpectOkResult(result);
 
   EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_Delay) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> body_id = GetDOMNodeId(*main_frame(), "body");
+  ASSERT_TRUE(body_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), body_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  const double mousedown_timestamp =
+      EvalJs(main_frame(), "mouse_event_timestamps[0]").ExtractDouble();
+  const double mouseup_timestamp =
+      EvalJs(main_frame(), "mouse_event_timestamps[1]").ExtractDouble();
+  const base::TimeDelta delta =
+      base::Milliseconds(mouseup_timestamp - mousedown_timestamp);
+
+  EXPECT_GE(delta, features::kGlicActorClickDelay.Get());
 }
 
 INSTANTIATE_TEST_SUITE_P(

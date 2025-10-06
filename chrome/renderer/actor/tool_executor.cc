@@ -36,7 +36,9 @@ using content::RenderFrame;
 namespace actor {
 
 ToolExecutor::ToolExecutor(RenderFrame* frame, Journal& journal)
-    : frame_(*frame), journal_(journal) {}
+    : frame_(*frame), journal_(journal) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
+}
 
 ToolExecutor::~ToolExecutor() {
   if (completion_callback_) {

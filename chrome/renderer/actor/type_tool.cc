@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -308,10 +309,17 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   gfx::PointF coordinate = validated_result->target;
   journal_->Log(task_id_, "TypeTool::Execute::Focus",
                 JournalDetailsBuilder().Add("coord", coordinate).Build());
-  mojom::ActionResultPtr click_result =
-      CreateAndDispatchClick(blink::WebMouseEvent::Button::kLeft, 1, coordinate,
-                             frame_->GetWebFrame()->FrameWidget());
+  CreateAndDispatchClick(
+      blink::WebMouseEvent::Button::kLeft, 1, coordinate,
+      weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&TypeTool::OnFocusingClickComplete,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(validated_result), std::move(callback)));
+}
 
+void TypeTool::OnFocusingClickComplete(ValidatedResult validated_result,
+                                       ToolFinishedCallback callback,
+                                       mojom::ActionResultPtr click_result) {
   // Cancel rest of typing if initial click failed.
   if (!IsOk(*click_result)) {
     journal_->Log(

@@ -6,9 +6,14 @@
 
 #include <sstream>
 
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/renderer/actor/tool_base.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -20,10 +25,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/latency/latency_info.h"
-
-namespace {
-constexpr base::TimeDelta kClickDelay = base::Milliseconds(50);
-}
 
 namespace actor {
 
@@ -117,10 +118,23 @@ bool IsNodeWithinViewport(const blink::WebNode& node) {
   return !rect.IsEmpty();
 }
 
-mojom::ActionResultPtr CreateAndDispatchClick(WebMouseEvent::Button button,
-                                              int count,
-                                              const gfx::PointF& click_point,
-                                              WebFrameWidget* widget) {
+void CreateAndDispatchClick(
+    WebMouseEvent::Button button,
+    int count,
+    const gfx::PointF& click_point,
+    base::WeakPtr<ToolBase> tool,
+    base::OnceCallback<void(mojom::ActionResultPtr)> on_complete) {
+  if (!tool) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(on_complete),
+                       MakeResult(mojom::ActionResultCode::kExecutorDestroyed,
+                                  /*requires_page_stabilization=*/true,
+                                  "Tool destroyed before click.")));
+    return;
+  }
+
+  WebFrameWidget* widget = tool->frame()->GetWebFrame()->FrameWidget();
   WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown,
                            WebInputEvent::kNoModifiers, ui::EventTimeForNow());
   mouse_down.button = button;
@@ -137,25 +151,54 @@ mojom::ActionResultPtr CreateAndDispatchClick(WebMouseEvent::Button button,
       WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
 
   if (result == WebInputEventResult::kHandledSuppressed) {
-    return MakeResult(mojom::ActionResultCode::kClickSuppressed,
-                      /*requires_page_stabilization=*/false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(on_complete),
+                       MakeResult(mojom::ActionResultCode::kClickSuppressed,
+                                  /*requires_page_stabilization=*/false)));
+    return;
   }
 
   mouse_up.SetType(WebInputEvent::Type::kMouseUp);
-  mouse_up.SetTimeStamp(mouse_down.TimeStamp() + kClickDelay);
 
-  // TODO(crbug.com/402082828): Delay the mouse up to simulate natural click
-  // after ToolExecutor lifetime update.
+  const base::TimeDelta delay = features::kGlicActorClickDelay.Get();
 
-  result = widget->HandleInputEvent(
-      WebCoalescedInputEvent(std::move(mouse_up), ui::LatencyInfo()));
-
-  if (result == WebInputEventResult::kHandledSuppressed) {
-    return MakeResult(mojom::ActionResultCode::kClickSuppressed,
-                      /*requires_page_stabilization=*/true);
-  }
-
-  return MakeOkResult();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](blink::WebMouseEvent mouse_up, base::WeakPtr<ToolBase> tool,
+             base::OnceCallback<void(mojom::ActionResultPtr)> on_complete) {
+            if (!tool) {
+              std::move(on_complete)
+                  .Run(MakeResult(mojom::ActionResultCode::kExecutorDestroyed,
+                                  /*requires_page_stabilization=*/true,
+                                  "Tool destroyed before mouse up."));
+              return;
+            }
+            blink::WebLocalFrame* web_frame = tool->frame()->GetWebFrame();
+            if (!web_frame || !web_frame->FrameWidget()) {
+              std::move(on_complete)
+                  .Run(MakeResult(
+                      mojom::ActionResultCode::kFrameWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "WebFrame or WebFrameWidget was null before mouse up."));
+              return;
+            }
+            mouse_up.SetTimeStamp(ui::EventTimeForNow());
+            WebInputEventResult result =
+                web_frame->FrameWidget()->HandleInputEvent(
+                    WebCoalescedInputEvent(std::move(mouse_up),
+                                           ui::LatencyInfo()));
+            if (result == WebInputEventResult::kHandledSuppressed) {
+              std::move(on_complete)
+                  .Run(MakeResult(mojom::ActionResultCode::kClickSuppressed,
+                                  /*requires_page_stabilization=*/true));
+              return;
+            }
+            std::move(on_complete).Run(MakeOkResult());
+          },
+          std::move(mouse_up), std::move(tool), std::move(on_complete)),
+      delay);
 }
 
 std::string NodeToDebugSring(const blink::WebNode& node) {
