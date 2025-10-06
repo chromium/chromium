@@ -109,6 +109,7 @@ SyncCycleSnapshot MakeDefaultSyncCycleSnapshot() {
 class MockSyncServiceObserver : public SyncServiceObserver {
  public:
   MOCK_METHOD(void, OnStateChanged, (SyncService * sync), (override));
+  MOCK_METHOD(void, OnSyncShutdown, (SyncService * sync), (override));
 };
 
 class TestSyncServiceObserver : public SyncServiceObserver {
@@ -119,6 +120,7 @@ class TestSyncServiceObserver : public SyncServiceObserver {
     setup_in_progress_ = sync->IsSetupInProgress();
     auth_error_ = sync->GetAuthError();
   }
+  void OnSyncShutdown(SyncService* sync) override { NOTREACHED(); }
 
   bool setup_in_progress() const { return setup_in_progress_; }
   GoogleServiceAuthError auth_error() const { return auth_error_; }

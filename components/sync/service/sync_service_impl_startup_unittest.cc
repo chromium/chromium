@@ -39,6 +39,7 @@ class MockSyncServiceObserver : public SyncServiceObserver {
   MockSyncServiceObserver() = default;
 
   MOCK_METHOD(void, OnStateChanged, (SyncService*), (override));
+  MOCK_METHOD(void, OnSyncShutdown, (SyncService*), (override));
 };
 
 }  // namespace

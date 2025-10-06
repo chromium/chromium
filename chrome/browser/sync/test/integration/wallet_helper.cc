@@ -629,3 +629,8 @@ void FullUpdateTypeProgressMarkerChecker::OnSyncCycleCompleted(
     syncer::SyncService* sync) {
   CheckExitCondition();
 }
+
+void FullUpdateTypeProgressMarkerChecker::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  NOTREACHED();
+}

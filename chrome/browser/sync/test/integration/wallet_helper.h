@@ -191,6 +191,7 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
 
   // syncer::SyncServiceObserver:
   void OnSyncCycleCompleted(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   const base::Time min_required_progress_marker_timestamp_;
