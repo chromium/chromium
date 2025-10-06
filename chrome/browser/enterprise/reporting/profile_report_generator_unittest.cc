@@ -264,7 +264,7 @@ TEST_F(ProfileReportGeneratorTest,
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
-TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
+TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscateByDefault) {
   base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
       test_future;
   generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
@@ -296,6 +296,46 @@ TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
   auto report3 = test_future.Take();
   EXPECT_NE(report->id(), report3->id());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ProfileReportGeneratorTest, ProfileIdNotObfuscatedInAffiliatedProfile) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(GetProfileName(), report->name());
+  EXPECT_EQ(profile()->GetPath().AsUTF8Unsafe(), report->id());
+  EXPECT_TRUE(report->is_detail_available());
+}
+
+TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscatedInUnaffiliatedProfile) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId2});
+
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(GetProfileName(), report->name());
+  EXPECT_NE(profile()->GetPath().AsUTF8Unsafe(), report->id());
+  EXPECT_TRUE(report->is_detail_available());
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {
   // Users' profile info is collected by default.
