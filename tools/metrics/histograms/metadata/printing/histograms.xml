@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.{StatusReason}.PrintJobSuccess"
-    enum="BooleanSuccess" expires_after="2025-11-03">
+    enum="BooleanSuccess" expires_after="2026-11-03">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
