@@ -29,8 +29,6 @@ class StrikeDatabase;
 
 namespace payments::facilitated {
 
-class FacilitatedPaymentsNetworkInterface;
-
 // A mock for the facilitated payment "client" interface.
 class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
  public:
@@ -47,10 +45,6 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (const, override));
   MOCK_METHOD(autofill::PaymentsDataManager*,
               GetPaymentsDataManager,
-              (),
-              (override));
-  MOCK_METHOD(FacilitatedPaymentsNetworkInterface*,
-              GetFacilitatedPaymentsNetworkInterface,
               (),
               (override));
   MOCK_METHOD(MultipleRequestFacilitatedPaymentsNetworkInterface*,

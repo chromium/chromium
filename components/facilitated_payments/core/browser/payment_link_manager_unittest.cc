@@ -33,6 +33,7 @@
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -77,10 +78,13 @@ class PaymentLinkManagerTest : public testing::Test {
     payments_data_manager_.SetPrefService(pref_service_.get());
     payments_data_manager_.SetSyncServiceForTest(&sync_service_);
     test_strike_database_ = std::make_unique<autofill::TestStrikeDatabase>();
+    payments_network_interface_ = std::make_unique<
+        MockMultipleRequestFacilitatedPaymentsNetworkInterface>(
+        *identity_test_env_.identity_manager(), payments_data_manager_);
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(&payments_data_manager_));
-    ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
-        .WillByDefault(testing::Return(&payments_network_interface_));
+    ON_CALL(client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
+        .WillByDefault(testing::Return(payments_network_interface_.get()));
     ON_CALL(client_, IsInLandscapeMode).WillByDefault(testing::Return(false));
     ON_CALL(client_, IsFoldable).WillByDefault(testing::Return(false));
     ON_CALL(client_, GetCoreAccountInfo)
@@ -120,6 +124,7 @@ class PaymentLinkManagerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  signin::IdentityTestEnvironment identity_test_env_;
   MockFacilitatedPaymentsClient client_;
   optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
   // Order matters here because `payment_link_manager_` keeps a reference
@@ -128,7 +133,8 @@ class PaymentLinkManagerTest : public testing::Test {
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
   autofill::TestPaymentsDataManager payments_data_manager_;
-  MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
+  std::unique_ptr<MockMultipleRequestFacilitatedPaymentsNetworkInterface>
+      payments_network_interface_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<autofill::TestStrikeDatabase> test_strike_database_;
 };
@@ -639,11 +645,11 @@ TEST_F(PaymentLinkManagerTest, LogGetClientTokenResultAndLatency) {
 TEST_F(
     PaymentLinkManagerTest,
     SendInitiatePaymentRequest_PaymentsNetworkInterfaceNotAvailable_InitiatePaymentNotTriggered) {
-  EXPECT_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
+  EXPECT_CALL(client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
       .Times(1)
       .WillOnce(testing::Return(nullptr));
 
-  EXPECT_CALL(payments_network_interface_,
+  EXPECT_CALL(*payments_network_interface_,
               InitiatePayment(testing::_, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(client_, ShowErrorScreen);
@@ -654,7 +660,7 @@ TEST_F(
 // Test that LogInitiatePaymentAttempt is logged correctly.
 TEST_F(PaymentLinkManagerTest, LogInitiatePaymentAttempt) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(payments_network_interface_,
+  EXPECT_CALL(*payments_network_interface_,
               InitiatePayment(testing::_, testing::_, testing::_));
 
   test_api(*payment_link_manager_).SendInitiatePaymentRequest();

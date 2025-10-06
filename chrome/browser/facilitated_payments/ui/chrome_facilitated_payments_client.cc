@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/android/device_delegate_android.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
-#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
@@ -75,23 +74,6 @@ ChromeFacilitatedPaymentsClient::GetPaymentsDataManager() {
   autofill::PersonalDataManager* pdm =
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context);
   return pdm ? &pdm->payments_data_manager() : nullptr;
-}
-
-payments::facilitated::FacilitatedPaymentsNetworkInterface*
-ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsNetworkInterface() {
-  if (!facilitated_payments_network_interface_) {
-    Profile* profile =
-        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-    if (!profile) {
-      return nullptr;
-    }
-    facilitated_payments_network_interface_ = std::make_unique<
-        payments::facilitated::FacilitatedPaymentsNetworkInterface>(
-        profile->GetURLLoaderFactory(),
-        IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile()),
-        GetPaymentsDataManager(), profile->IsOffTheRecord());
-  }
-  return facilitated_payments_network_interface_.get();
 }
 
 payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface*

@@ -8,29 +8,10 @@
 #include <memory>
 
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
-#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace payments::facilitated {
-
-class MockFacilitatedPaymentsNetworkInterface
-    : public FacilitatedPaymentsNetworkInterface {
- public:
-  using RequestId =
-      base::StrongAlias<struct autofill::payments::RequestIdTag, std::string>;
-
-  MockFacilitatedPaymentsNetworkInterface();
-  ~MockFacilitatedPaymentsNetworkInterface() override;
-
-  MOCK_METHOD(
-      void,
-      InitiatePayment,
-      (std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>,
-       InitiatePaymentResponseCallback,
-       const std::string&),
-      (override));
-};
 
 class MockMultipleRequestFacilitatedPaymentsNetworkInterface
     : public MultipleRequestFacilitatedPaymentsNetworkInterface {

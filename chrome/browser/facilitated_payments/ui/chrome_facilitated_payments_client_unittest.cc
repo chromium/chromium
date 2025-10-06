@@ -104,8 +104,10 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, GetPaymentsDataManager) {
 }
 
 TEST_F(ChromeFacilitatedPaymentsClientTest,
-       GetFacilitatedPaymentsNetworkInterface) {
-  EXPECT_NE(nullptr, base_client().GetFacilitatedPaymentsNetworkInterface());
+       GetMultipleRequestFacilitatedPaymentsNetworkInterface) {
+  EXPECT_NE(
+      nullptr,
+      base_client().GetMultipleRequestFacilitatedPaymentsNetworkInterface());
 }
 
 // Test the client forwards call to show Pix FOP selector to the controller.

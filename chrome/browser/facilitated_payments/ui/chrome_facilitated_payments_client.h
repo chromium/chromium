@@ -79,8 +79,6 @@ class ChromeFacilitatedPaymentsClient
   // This returns nullptr if the `Profile` associated is null.
   autofill::PaymentsDataManager* GetPaymentsDataManager() final;
   // This returns nullptr if the `Profile` associated is null.
-  payments::facilitated::FacilitatedPaymentsNetworkInterface*
-  GetFacilitatedPaymentsNetworkInterface() final;
   payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface*
   GetMultipleRequestFacilitatedPaymentsNetworkInterface() final;
   // This returns std::nullopt if the `Profile` associated is null.
@@ -123,8 +121,6 @@ class ChromeFacilitatedPaymentsClient
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;
 
-  std::unique_ptr<payments::facilitated::FacilitatedPaymentsNetworkInterface>
-      facilitated_payments_network_interface_;
   std::unique_ptr<
       payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface>
       multiple_request_facilitated_payments_network_interface_;

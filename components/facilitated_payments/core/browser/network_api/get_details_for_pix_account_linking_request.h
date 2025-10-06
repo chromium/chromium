@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
-#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 
 namespace payments::facilitated {
 
