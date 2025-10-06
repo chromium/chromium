@@ -155,6 +155,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
 NavigationEntryScreenshot::~NavigationEntryScreenshot() {
   if (cache_) {
     cache_->OnNavigationEntryGone(unique_id_);
+    cache_ = nullptr;
   }
   if (read_back_needed_ || compression_task_) {
     auto observer_list =
