@@ -11,7 +11,6 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/bitrate.h"
 
@@ -169,12 +168,7 @@ std::string VideoBitrateAllocation::ToString() const {
 
 bool VideoBitrateAllocation::operator==(
     const VideoBitrateAllocation& other) const {
-  if (sum_bitrate_ != other.sum_bitrate_) {
-    return false;
-  }
-  return UNSAFE_TODO(memcmp(bitrates_.data(), other.bitrates_.data(),
-                            (bitrates_.size() *
-                             sizeof(decltype(bitrates_)::value_type)))) == 0;
+  return sum_bitrate_ == other.sum_bitrate_ && bitrates_ == other.bitrates_;
 }
 
 }  // namespace media
