@@ -122,7 +122,8 @@ enum DesktopCaptureImplementation {
   kScreenCaptureKitDeviceMac = 2,
   kDesktopCaptureDeviceMac = 3,
   kLegacyDesktopCaptureDevice = 4,
-  kImplementationCount = 5,
+  kNativeMacOSPickerCaptureDevice = 5,
+  kImplementationCount = 6,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -148,7 +149,11 @@ enum DesktopCaptureImplementationAndType {
   kLegacyDesktopCaptureDeviceTypeScreen = 17,
   kLegacyDesktopCaptureDeviceTypeWindow = 18,
   kLegacyDesktopCaptureDeviceTypeWebContents = 19,
-  kMaxValue = kLegacyDesktopCaptureDeviceTypeWebContents,
+  kNativeMacOSPickerCaptureDeviceTypeNone = 20,
+  kNativeMacOSPickerCaptureDeviceTypeScreen = 21,
+  kNativeMacOSPickerCaptureDeviceTypeWindow = 22,
+  kNativeMacOSPickerCaptureDeviceTypeWebContents = 23,
+  kMaxValue = kNativeMacOSPickerCaptureDeviceTypeWebContents,
 };
 
 void ReportDesktopCaptureImplementationAndType(
@@ -177,7 +182,7 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
   if (picker) {
     device_out = picker->CreateDevice(desktop_id);
     if (device_out) {
-      return kScreenCaptureKitDeviceMac;
+      return kNativeMacOSPickerCaptureDevice;
     }
     return kNoImplementation;
   }

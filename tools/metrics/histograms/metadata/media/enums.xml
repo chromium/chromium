@@ -573,6 +573,10 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="LegacyDesktopCaptureDeviceTypeScreen"/>
   <int value="18" label="LegacyDesktopCaptureDeviceTypeWindow"/>
   <int value="19" label="LegacyDesktopCaptureDeviceTypeWebContents"/>
+  <int value="20" label="NativeMacOSPickerCaptureDeviceTypeNone"/>
+  <int value="21" label="NativeMacOSPickerCaptureDeviceTypeScreen"/>
+  <int value="22" label="NativeMacOSPickerCaptureDeviceTypeWindow"/>
+  <int value="23" label="NativeMacOSPickerCaptureDeviceTypeWebContents"/>
 </enum>
 
 <enum name="DeviceEnumerationResult">
