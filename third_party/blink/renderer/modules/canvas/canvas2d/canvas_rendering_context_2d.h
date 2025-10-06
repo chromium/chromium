@@ -183,13 +183,13 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
-  bool IsCanvas2DResourceProviderValid() override;
+  bool IsResourceProviderValid() override;
   const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() override;
 
   int Width() const final;
   int Height() const final;
 
-  bool CanCreateCanvas2dResourceProvider() final;
+  bool CanCreateResourceProvider() final;
 
   RespectImageOrientationEnum RespectImageOrientation() const final;
 
@@ -271,7 +271,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
-  CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
+  CanvasResourceProvider* GetOrCreateResourceProvider() override;
   void SetCanvas2DResourceProviderForTesting(
       std::unique_ptr<CanvasResourceProvider> provider,
       const gfx::Size& size);

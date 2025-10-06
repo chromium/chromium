@@ -272,7 +272,7 @@ void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
       (!SharedGpuContext::IsGpuCompositingEnabled() &&
        SharedGpuContext::SharedImageInterfaceProvider())) {
     RestoreGuard context_is_being_restored(*this);
-    if (GetOrCreateCanvas2DResourceProvider()) {
+    if (GetOrCreateResourceProvider()) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
@@ -592,7 +592,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     return;
   }
 
-  if (isContextLost() || !CanCreateCanvas2dResourceProvider()) [[unlikely]] {
+  if (isContextLost() || !CanCreateResourceProvider()) [[unlikely]] {
     return;
   }
 
@@ -806,7 +806,7 @@ scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  if (!IsCanvas2DResourceProviderValid()) {
+  if (!IsResourceProviderValid()) {
     return nullptr;
   }
 
@@ -1477,7 +1477,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // accelerated SharedImage provider, we won't be able to transfer the canvas.
   // In that case, WebGPU access is not possible.
   CanvasResourceProviderSharedImage* provider =
-      GetOrCreateCanvas2DResourceProvider()->AsSharedImageProvider();
+      GetOrCreateResourceProvider()->AsSharedImageProvider();
   if (!provider || !provider->IsAccelerated()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Unable to transfer canvas to GPU.");

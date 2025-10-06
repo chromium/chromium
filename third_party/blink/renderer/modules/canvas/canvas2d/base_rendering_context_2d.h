@@ -165,9 +165,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   // before `transferToGPUTexture` is first called.
   V8GPUTextureFormat getTextureFormat() const;
 
-  virtual bool CanCreateCanvas2dResourceProvider() = 0;
-  virtual bool IsCanvas2DResourceProviderValid() { NOTREACHED(); }
-  virtual CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() = 0;
+  virtual bool CanCreateResourceProvider() = 0;
+  virtual bool IsResourceProviderValid() { NOTREACHED(); }
+  virtual CanvasResourceProvider* GetOrCreateResourceProvider() = 0;
 
   String lang() const;
   void setLang(const String&);

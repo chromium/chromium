@@ -133,7 +133,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
 
   // Make sure surface is ready for painting: fix the rendering mode now
   // because it will be too late during the paint invalidation phase.
-  if (!GetOrCreateCanvas2DResourceProvider()) {
+  if (!GetOrCreateResourceProvider()) {
     return;
   }
   resource_provider_->FlushCanvas(reason);
@@ -156,16 +156,16 @@ int OffscreenCanvasRenderingContext2D::Height() const {
   return Host()->Size().height();
 }
 
-bool OffscreenCanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
+bool OffscreenCanvasRenderingContext2D::CanCreateResourceProvider() {
   const CanvasRenderingContextHost* const host = Host();
   if (host == nullptr || host->Size().IsEmpty()) [[unlikely]] {
     return false;
   }
-  return !!GetOrCreateCanvas2DResourceProvider();
+  return !!GetOrCreateResourceProvider();
 }
 
 CanvasResourceProvider*
-OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
+OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
   DCHECK(Host() && Host()->IsOffscreenCanvas());
   OffscreenCanvas* host = HostAsOffscreenCanvas();
   if (host == nullptr) [[unlikely]] {
@@ -295,7 +295,7 @@ void OffscreenCanvasRenderingContext2D::Reset() {
 
 scoped_refptr<CanvasResource>
 OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
-  CanvasResourceProvider* provider = GetOrCreateCanvas2DResourceProvider();
+  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
   if (!provider) {
     return nullptr;
   }
@@ -343,7 +343,7 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
     return nullptr;
   }
 
-  if (!GetOrCreateCanvas2DResourceProvider()) {
+  if (!GetOrCreateResourceProvider()) {
     return nullptr;
   }
   scoped_refptr<StaticBitmapImage> image = GetImage(FlushReason::kTransfer);
@@ -385,8 +385,8 @@ Color OffscreenCanvasRenderingContext2D::GetCurrentColor() const {
 
 MemoryManagedPaintCanvas*
 OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
-  if (!is_valid_size_ || isContextLost() ||
-      !GetOrCreateCanvas2DResourceProvider()) [[unlikely]] {
+  if (!is_valid_size_ || isContextLost() || !GetOrCreateResourceProvider())
+      [[unlikely]] {
     return nullptr;
   }
   return GetPaintCanvas();

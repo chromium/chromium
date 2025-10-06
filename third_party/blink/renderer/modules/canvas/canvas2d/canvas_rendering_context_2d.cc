@@ -442,7 +442,7 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     }
   } else {
     // If we have no provider, try creating one.
-    provider = GetOrCreateCanvas2DResourceProvider();
+    provider = GetOrCreateResourceProvider();
     if (provider == nullptr) [[unlikely]] {
       return nullptr;
     }
@@ -690,13 +690,13 @@ scoped_refptr<CanvasResource>
 CanvasRenderingContext2D::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  if (!IsCanvas2DResourceProviderValid()) {
+  if (!IsResourceProviderValid()) {
     return nullptr;
   }
   return resource_provider_->ProduceCanvasResource(reason);
 }
 
-bool CanvasRenderingContext2D::IsCanvas2DResourceProviderValid() {
+bool CanvasRenderingContext2D::IsResourceProviderValid() {
   return resource_provider_ && resource_provider_->IsValid();
 }
 
@@ -709,8 +709,8 @@ CanvasRenderingContext2D::GetLastRecordingForCanvas2D() {
   return provider->LastRecording();
 }
 
-bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
-  return GetOrCreateCanvas2DResourceProvider();
+bool CanvasRenderingContext2D::CanCreateResourceProvider() {
+  return GetOrCreateResourceProvider();
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
@@ -720,7 +720,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
         GetHibernationHandler()->GetImage());
   }
 
-  if (!IsCanvas2DResourceProviderValid()) {
+  if (!IsResourceProviderValid()) {
     return nullptr;
   }
 
@@ -934,7 +934,7 @@ void CanvasRenderingContext2D::PreFinalizeFrame() {
   // TODO(crbug.com/40280152): Analyze whether this call is redundant (i.e.,
   // whether the CRP is guaranteed to always be present).
   if (canvas() && canvas()->LowLatencyEnabled() && canvas()->IsDirty()) {
-    GetOrCreateCanvas2DResourceProvider();
+    GetOrCreateResourceProvider();
   }
 }
 
@@ -1050,7 +1050,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   }
 
   if (page_is_visible && IsHibernating()) {
-    GetOrCreateCanvas2DResourceProvider();  // Rude awakening
+    GetOrCreateResourceProvider();  // Rude awakening
   }
 
   if (!element->IsPageVisible()) {
@@ -1321,7 +1321,7 @@ CanvasResourceProvider* CanvasRenderingContext2D::GetResourceProvider() const {
 }
 
 CanvasResourceProvider*
-CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
+CanvasRenderingContext2D::GetOrCreateResourceProvider() {
   HTMLCanvasElement* const element = canvas();
   if (!element) [[unlikely]] {
     return nullptr;
