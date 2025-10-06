@@ -11663,20 +11663,8 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source,
     }
     for (Member<Element> upstream : AllSourceInterestInvokers(*this)) {
       // This is the target of an interest invoker, which was just de-hovered or
-      // blurred. There are two possibilities:
-      // 1. The upstream invoker is either not an ancestor of this target
-      //    element, or it, too, lost hover/focus. In either case, we need to
-      //    cancel any InterestGained tasks, and schedule an InterestLost task.
-      // 2. The upstream invoker is an ancestor of this target element, we're
-      //    handling a de-hover (not a keyboard blur), and the upstream invoker
-      //    is still hovered. I.e. we moved the mouse off of the target popover
-      //    and back into a descendant of the invoker. In this case, since
-      //    SetFocused() will never be called on the actual invoker, we should
-      //    be careful not to schedule the interestlost task.
-      upstream->GetInvokerData()->CancelInterestGainedTask();
-      if (source == InterestSource::kBlur || !upstream->IsHovered()) {
-        upstream->ScheduleInterestLostTask();
-      }
+      // blurred. Schedule an InterestLost task.
+      upstream->ScheduleInterestLostTask();
     }
   }
 }
