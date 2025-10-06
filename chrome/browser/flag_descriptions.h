@@ -2386,11 +2386,6 @@ extern const char kTintCompositedContentDescription[];
 extern const char kTLSTrustAnchorIDsName[];
 extern const char kTLSTrustAnchorIDsDescription[];
 
-#if !BUILDFLAG(IS_ANDROID)
-extern const char kPinnedTabToastOnCloseName[];
-extern const char kPinnedTabToastOnCloseDescription[];
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kTopControlsRefactorName[];
 extern const char kTopControlsRefactorDescription[];

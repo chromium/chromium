@@ -45,7 +45,6 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          {plus_addresses::features::kPlusAddressesEnabled, {}},
          {safe_browsing::kEsbAsASyncedSetting, {}},
          {data_sharing::features::kDataSharingFeature, {}},
-         {toast_features::kPinnedTabToastOnClose, {}},
          {features::kGlicActorUi, {{features::kGlicActorUiToastName, "true"}}}},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();

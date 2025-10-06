@@ -31,9 +31,6 @@ BASE_FEATURE(kLensOverlayToast, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enabled the clear browsing data confirmation toast.
 BASE_FEATURE(kClearBrowsingDataToast, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the pinned tab closing notification toast.
-BASE_FEATURE(kPinnedTabToastOnClose, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // static
 bool IsEnabled(const base::Feature& feature) {
   return base::FeatureList::IsEnabled(feature);

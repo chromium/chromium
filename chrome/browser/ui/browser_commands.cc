@@ -1165,11 +1165,6 @@ void CloseTab(BrowserWindowInterface* browser) {
     return;
   }
 
-  if (!toast_features::IsEnabled(toast_features::kPinnedTabToastOnClose)) {
-    CloseSelectedTabAndRecordTabCountMetric(browser);
-    return;
-  }
-
   ToastController* toast_controller = browser->GetFeatures().toast_controller();
   if (!toast_controller) {
     CloseSelectedTabAndRecordTabCountMetric(browser);

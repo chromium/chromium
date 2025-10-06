@@ -4139,13 +4139,6 @@ const char kTLSTrustAnchorIDsDescription[] =
     "This option configures TLS Trust Anchor IDs, allowing compatible servers "
     "to select between available certificates issued by different CAs.";
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kPinnedTabToastOnCloseName[] = "Pinned Tab Toast On Close";
-const char kPinnedTabToastOnCloseDescription[] =
-    "Enable to show a confirmation toast that displays when a pinned tab is "
-    "closed via the keyboard shortcut.";
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 const char kTopControlsRefactorName[] = "Top Controls Refactor";
 const char kTopControlsRefactorDescription[] =

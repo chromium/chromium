@@ -121,7 +121,6 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeatures(
         {toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
          toast_features::kReadingListToast,
-         toast_features::kPinnedTabToastOnClose,
          plus_addresses::features::kPlusAddressesEnabled},
         // Disable `kAiModeOmniboxEntryPoint` as it changes the focus and popup
         // opening order of the omnibox. If it launches, updates the tests to

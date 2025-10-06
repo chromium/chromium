@@ -261,13 +261,11 @@ void ToastService::RegisterToasts(
             .Build());
   }
 
-  if (toast_features::IsEnabled(toast_features::kPinnedTabToastOnClose)) {
-    toast_registry_->RegisterToast(
-        ToastId::kClosePinnedTab,
-        ToastSpecification::Builder(kKeepIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
-            .SetToastAsActionable()
-            .Build());
-  }
+  toast_registry_->RegisterToast(
+      ToastId::kClosePinnedTab,
+      ToastSpecification::Builder(kKeepIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
+          .SetToastAsActionable()
+          .Build());
 
   if (features::kGlicActorUiToast.Get()) {
     toast_registry_->RegisterToast(
