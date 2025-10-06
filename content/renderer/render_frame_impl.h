@@ -780,6 +780,11 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetSubresourceLoadCallback(SubresourceLoadCallback callback) override;
   void SetLoadFromMemoryCacheCallback(
       LoadFromMemoryCacheCallback callback) override;
+  void SetDidStartResponseCallback(DidStartResponseCallback callback) override;
+  void SetDidCompleteResponseCallback(
+      DidCompleteResponseCallback callback) override;
+  void SetDidCancelResponseCallback(
+      DidCancelResponseCallback callback) override;
 
  protected:
   explicit RenderFrameImpl(CreateParams params);
@@ -1260,6 +1265,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // The callback to send the loaded resource info from memory cache to the
   // browser process through PageLoadMetrics.
   LoadFromMemoryCacheCallback load_from_memory_cache_callback_;
+  // The callback to handle response. These are used in `DidStartResponse()`,
+  // `DidCompleteResponse()`, and `DidCancelResponse()`, respectively.
+  DidStartResponseCallback did_start_response_callback_;
+  DidCompleteResponseCallback did_complete_response_callback_;
+  DidCancelResponseCallback did_cancel_response_callback_;
 
   // The text selection the last time DidChangeSelection got called. May contain
   // additional characters before and after the selected text, for IMEs. The

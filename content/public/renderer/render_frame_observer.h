@@ -275,6 +275,10 @@ class CONTENT_EXPORT RenderFrameObserver {
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
   // |request_id| uniquely identifies the request within this render frame.
+  //
+  // TODO(crbug.com/404425954): `DidStartResponse()`, `DidCompleteResponse()`,
+  // `DidCancelResponse()` are going to be deprecated. Use callback setters in
+  // `RenderFrame` instead.
   virtual void DidStartResponse(
       const url::SchemeHostPort& final_response_url,
       int request_id,

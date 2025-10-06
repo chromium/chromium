@@ -15787,8 +15787,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DidObserveNewFeatureUsageImprovement",
-                        "DidObserveSubresourceLoadImprovement"
+                        "MetricsRenderFrameObserverImprovement"
                     ]
                 }
             ]

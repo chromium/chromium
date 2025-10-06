@@ -127,6 +127,16 @@ MetricsRenderFrameObserver::MetricsRenderFrameObserver(
     render_frame->SetLoadFromMemoryCacheCallback(base::BindRepeating(
         &MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache,
         weak_factory_.GetWeakPtr()));
+
+    render_frame->SetDidStartResponseCallback(
+        base::BindRepeating(&MetricsRenderFrameObserver::DidStartResponse,
+                            weak_factory_.GetWeakPtr()));
+    render_frame->SetDidCompleteResponseCallback(
+        base::BindRepeating(&MetricsRenderFrameObserver::DidCompleteResponse,
+                            weak_factory_.GetWeakPtr()));
+    render_frame->SetDidCancelResponseCallback(
+        base::BindRepeating(&MetricsRenderFrameObserver::DidCancelResponse,
+                            weak_factory_.GetWeakPtr()));
   }
 }
 

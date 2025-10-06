@@ -4551,22 +4551,38 @@ void RenderFrameImpl::DidStartResponse(
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination,
     bool is_ad_resource) {
-  for (auto& observer : observers_) {
-    observer.DidStartResponse(final_response_url, request_id, *response_head,
-                              request_destination, is_ad_resource);
+  if (did_start_response_callback_) {
+    did_start_response_callback_.Run(final_response_url, request_id,
+                                     *response_head, request_destination,
+                                     is_ad_resource);
+  } else {
+    for (auto& observer : observers_) {
+      observer.DidStartResponse(final_response_url, request_id, *response_head,
+                                request_destination, is_ad_resource);
+    }
   }
 }
 
 void RenderFrameImpl::DidCompleteResponse(
     int request_id,
     const network::URLLoaderCompletionStatus& status) {
-  for (auto& observer : observers_)
-    observer.DidCompleteResponse(request_id, status);
+  if (did_complete_response_callback_) {
+    did_complete_response_callback_.Run(request_id, status);
+  } else {
+    for (auto& observer : observers_) {
+      observer.DidCompleteResponse(request_id, status);
+    }
+  }
 }
 
 void RenderFrameImpl::DidCancelResponse(int request_id) {
-  for (auto& observer : observers_)
-    observer.DidCancelResponse(request_id);
+  if (did_cancel_response_callback_) {
+    did_cancel_response_callback_.Run(request_id);
+  } else {
+    for (auto& observer : observers_) {
+      observer.DidCancelResponse(request_id);
+    }
+  }
 }
 
 void RenderFrameImpl::DidReceiveTransferSizeUpdate(int resource_id,
@@ -4637,6 +4653,21 @@ void RenderFrameImpl::SetSubresourceLoadCallback(
 void RenderFrameImpl::SetLoadFromMemoryCacheCallback(
     LoadFromMemoryCacheCallback callback) {
   load_from_memory_cache_callback_ = std::move(callback);
+}
+
+void RenderFrameImpl::SetDidStartResponseCallback(
+    DidStartResponseCallback callback) {
+  did_start_response_callback_ = std::move(callback);
+}
+
+void RenderFrameImpl::SetDidCompleteResponseCallback(
+    DidCompleteResponseCallback callback) {
+  did_complete_response_callback_ = std::move(callback);
+}
+
+void RenderFrameImpl::SetDidCancelResponseCallback(
+    DidCancelResponseCallback callback) {
+  did_cancel_response_callback_ = std::move(callback);
 }
 
 void RenderFrameImpl::DidObserveNewFeatureUsage(
