@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 23
+version_major: 25
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -394,6 +394,7 @@ trust_anchors {
 # CN=ISRG Root X1, O=Internet Security Research Group, C=US
 trust_anchors {
   sha256_hex: "96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6"
+  trust_anchor_id: "\x82\xdf\x13\x02\x01"  # 44947.2.1
 }
 
 # CN=Izenpe.com, O=IZENPE S.A., C=ES
@@ -664,6 +665,7 @@ trust_anchors {
 # CN=ISRG Root X2, O=Internet Security Research Group, C=US
 trust_anchors {
   sha256_hex: "69729b8e15a86efc177a57afb7171dfc64add28c2fca8cf1507e34453ccb1470"
+  trust_anchor_id: "\x82\xdf\x13\x02\x06"  # 44947.2.6
 }
 
 # CN=NAVER Global Root Certification Authority, O=NAVER BUSINESS PLATFORM Corp., C=KR
@@ -1448,4 +1450,103 @@ additional_certs {
 additional_certs {
   sha256_hex: "fe95a24e7f94978e58d99350ab7ab789774a987cd25187c128c191d207523bb1"
   eutl: true
+}
+
+# "CN=WR1, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "b10b6f00e609509e8700f6d34687a2bfce38ea05a8fdf1cdc40c3a2a0d0d0e45"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x05"  # 11129.9.5
+}
+
+# "CN=WR2, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "e6fe22bf45e4f0d3b85c59e02c0f495418e1eb8d3210f788d48cd5e1cb547cd4"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x06"  # 11129.9.6
+}
+
+# "CN=WR3, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "2fe357db13751ff9160e87354975b3407498f41c9bd16a48657866e6e5a9b4c7"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x07"  # 11129.9.7
+}
+
+# "CN=WR4, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "dc9416c2f855126d6de977677538f2f967ff4998e90dfa435a17219be077fc06"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x08"  # 11129.9.8
+}
+
+# "CN=WR5, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "ae0fc852280f1b87cedaf73cfb84cf106efec88e8294253af352ed4034460d7b"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x09"  # 11129.9.9
+}
+
+# "CN=WE1, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "1dfc1605fbad358d8bc844f76d15203fac9ca5c1a79fd4857ffaf2864fbebf96"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x0a"  # 11129.9.10
+}
+
+# "CN=WE2, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "9c3f2fd11c57d7c649ad5a0932c0f0d29756f6a0a1c74c43e1e89a62d64cd320"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x0b"  # 11129.9.11
+}
+
+# "CN=WE3, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "9f819a4c876e12dc84e6fe0e37c1a69b137094b453fa98449398f4b71f4d0092"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x0c"  # 11129.9.12
+}
+
+# "CN=WE4, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "d0c97e56c7b0ba812d944ad771f7799b5d4144a2327a4e416554f7ee2aa0aeae"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x0d"  # 11129.9.13
+}
+
+# "CN=WE5, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "847409e63526f162753ac49f75218efaafa7d5c94ade9095ce72e7f6b6e3ac99"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x0e"  # 11129.9.14
+}
+
+# "CN=AE1, O=Google Trust Services, C=US"
+additional_certs {
+  sha256_hex: "812c212e9e45dc5005c7f47411183f5fb2ff1baee184d3354b2e93d78c280164"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\xd6\x79\x09\x0f"  # 11129.9.15
 }
