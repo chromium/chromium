@@ -412,6 +412,9 @@ bool UsbDeviceToPrinter(const UsbDeviceInfo& device_info,
   entry->printer.SetUri(UsbPrinterUri(device_info));
   entry->printer.set_id(CreateUsbPrinterId(device_info));
   entry->printer.set_supports_ippusb(UsbDeviceSupportsIppusb(device_info));
+  entry->printer.set_usb_device_id(chromeos::Printer::UsbDeviceId(
+      device_info.vendor_id, device_info.product_id));
+
   return true;
 }
 

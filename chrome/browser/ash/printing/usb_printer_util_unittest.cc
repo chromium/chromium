@@ -56,6 +56,17 @@ TEST(UsbPrinterUtilTest, UsbDeviceToPrinterWithEmptySerialNumber) {
   EXPECT_THAT(entry.printer.uri().GetNormalized(), HasSubstr("?serial=?"));
 }
 
+TEST(UsbPrinterUtilTest, UsbDeviceToPrinter_UsbDeviceId) {
+  UsbDeviceInfo device_info;
+  device_info.vendor_id = 1;
+  device_info.product_id = 2;
+
+  PrinterDetector::DetectedPrinter entry;
+  ASSERT_TRUE(UsbDeviceToPrinter(device_info, &entry));
+  EXPECT_THAT(entry.printer.usb_device_id(),
+              chromeos::Printer::UsbDeviceId(1, 2));
+}
+
 TEST(UsbPrinterUtilTest, GuessEffectiveMakeAndModelDuplicatedManufacturer) {
   UsbDeviceInfo device_info;
   device_info.manufacturer_name = u"bixolon";
