@@ -24413,21 +24413,6 @@
             ]
         }
     ],
-    "SupportMultipleServerRequestsForPixPayments": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SupportMultipleServerRequestsForPixPayments"
-                    ]
-                }
-            ]
-        }
-    ],
     "SuppressMemoryListeners": [
         {
             "platforms": [

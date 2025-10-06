@@ -259,29 +259,14 @@ void PixManager::OnGetClientToken(base::TimeTicks start_time,
 }
 
 void PixManager::SendInitiatePaymentRequest() {
-  if (base::FeatureList::IsEnabled(
-          kSupportMultipleServerRequestsForPixPayments)) {
-    if (auto* payments_network_interface =
-            client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface()) {
-      LogInitiatePaymentAttempt(kPaymentsType);
-      payments_network_interface->InitiatePayment(
-          std::move(initiate_payment_request_details_),
-          base::BindOnce(&PixManager::OnInitiatePaymentResponseReceived,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         base::TimeTicks::Now()),
-          client_->GetPaymentsDataManager()->app_locale());
-    }
-  } else {
-    if (auto* payments_network_interface =
-            client_->GetFacilitatedPaymentsNetworkInterface()) {
-      LogInitiatePaymentAttempt(kPaymentsType);
-      payments_network_interface->InitiatePayment(
-          std::move(initiate_payment_request_details_),
-          base::BindOnce(&PixManager::OnInitiatePaymentResponseReceived,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         base::TimeTicks::Now()),
-          client_->GetPaymentsDataManager()->app_locale());
-    }
+  if (auto* payments_network_interface =
+          client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface()) {
+    LogInitiatePaymentAttempt(kPaymentsType);
+    payments_network_interface->InitiatePayment(
+        std::move(initiate_payment_request_details_),
+        base::BindOnce(&PixManager::OnInitiatePaymentResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+        client_->GetPaymentsDataManager()->app_locale());
   }
 }
 

@@ -28,13 +28,7 @@ BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.
 BASE_FEATURE(kEwalletPayments, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
-// When enabled, Pix will be able to send multiple server request at a time.
-BASE_FEATURE(kSupportMultipleServerRequestsForPixPayments,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_ANDROID)
 // When enabled, Chrome will offer an app list when a supported payment link is
 // detected. Users can choose the payment app they want to
 // use and be redirected to the chosen app to complete the payment flow.

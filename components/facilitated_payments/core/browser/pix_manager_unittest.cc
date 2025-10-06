@@ -1305,17 +1305,10 @@ TEST_P(PixManagerTestForUiScreens, ScreenClosedByUser) {
 }
 
 // Test the PixManager works with the FacilitatedPaymentsNetworkInterface
-// correctly. Param denotes whether it uses the multiple request version of the
-// interface.
-class PixManagerPaymentsNetworkInterfaceTest
-    : public PixManagerTest,
-      public testing::WithParamInterface<bool> {
+// correctly.
+class PixManagerPaymentsNetworkInterfaceTest : public PixManagerTest {
  public:
   PixManagerPaymentsNetworkInterfaceTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        kSupportMultipleServerRequestsForPixPayments, GetParam());
-    payments_network_interface_ =
-        std::make_unique<MockFacilitatedPaymentsNetworkInterface>();
     multiple_request_payments_network_interface_ = std::make_unique<
         MockMultipleRequestFacilitatedPaymentsNetworkInterface>(
         *identity_test_env_.identity_manager(), *payments_data_manager_);
@@ -1323,41 +1316,25 @@ class PixManagerPaymentsNetworkInterfaceTest
 
   void SetUp() override {
     PixManagerTest::SetUp();
-    ON_CALL(*client_, GetFacilitatedPaymentsNetworkInterface)
-        .WillByDefault(testing::Return(payments_network_interface_.get()));
     ON_CALL(*client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(
             multiple_request_payments_network_interface_.get()));
   }
 
  protected:
-  bool IsUsingMultipleRequestsInterface() const { return GetParam(); }
-
-  std::unique_ptr<MockFacilitatedPaymentsNetworkInterface>
-      payments_network_interface_;
   std::unique_ptr<MockMultipleRequestFacilitatedPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         PixManagerPaymentsNetworkInterfaceTest,
-                         testing::Bool());
-
 // Test that SendInitiatePaymentRequest initiates payment using the
 // FacilitatedPaymentsNetworkInterface.
-TEST_P(PixManagerPaymentsNetworkInterfaceTest, SendInitiatePaymentRequest) {
+TEST_F(PixManagerPaymentsNetworkInterfaceTest, SendInitiatePaymentRequest) {
   base::HistogramTester histogram_tester;
-  if (IsUsingMultipleRequestsInterface()) {
-    EXPECT_CALL(*multiple_request_payments_network_interface_,
-                InitiatePayment(testing::_, testing::_, testing::_));
-  } else {
-    EXPECT_CALL(*payments_network_interface_,
-                InitiatePayment(testing::_, testing::_, testing::_));
-  }
+  EXPECT_CALL(*multiple_request_payments_network_interface_,
+              InitiatePayment(testing::_, testing::_, testing::_));
 
   pix_manager_->SendInitiatePaymentRequest();
 
@@ -1371,7 +1348,7 @@ TEST_P(PixManagerPaymentsNetworkInterfaceTest, SendInitiatePaymentRequest) {
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` call has failure
 // result, purchase action is not invoked. Instead, an error message is
 // shown.
-TEST_P(PixManagerPaymentsNetworkInterfaceTest,
+TEST_F(PixManagerPaymentsNetworkInterfaceTest,
        OnInitiatePaymentResponseReceived_FailureResponse) {
   base::HistogramTester histogram_tester;
   pix_manager_->SendInitiatePaymentRequest();
@@ -1403,7 +1380,7 @@ TEST_P(PixManagerPaymentsNetworkInterfaceTest,
 // Test that if the response from
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` has empty action
 // token, purchase action is not invoked. Instead, an error message is shown.
-TEST_P(PixManagerPaymentsNetworkInterfaceTest,
+TEST_F(PixManagerPaymentsNetworkInterfaceTest,
        OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
   pix_manager_->SendInitiatePaymentRequest();
@@ -1432,7 +1409,7 @@ TEST_P(PixManagerPaymentsNetworkInterfaceTest,
 
 // Test that if the core account is std::nullopt, purchase action is not
 // invoked. Instead, an error message is shown.
-TEST_P(PixManagerPaymentsNetworkInterfaceTest,
+TEST_F(PixManagerPaymentsNetworkInterfaceTest,
        OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
   pix_manager_->SendInitiatePaymentRequest();
@@ -1462,7 +1439,7 @@ TEST_P(PixManagerPaymentsNetworkInterfaceTest,
 
 // Test that if the user is logged out, purchase action is not invoked.
 // Instead, an error message is shown.
-TEST_P(PixManagerPaymentsNetworkInterfaceTest,
+TEST_F(PixManagerPaymentsNetworkInterfaceTest,
        OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
   pix_manager_->SendInitiatePaymentRequest();
@@ -1492,7 +1469,7 @@ TEST_P(PixManagerPaymentsNetworkInterfaceTest,
 
 // Test that the purchase action is invoked after receiving a success response
 // from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call.
-TEST_P(PixManagerPaymentsNetworkInterfaceTest,
+TEST_F(PixManagerPaymentsNetworkInterfaceTest,
        OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered) {
   base::HistogramTester histogram_tester;
   pix_manager_->SendInitiatePaymentRequest();
@@ -1517,12 +1494,8 @@ TEST_P(PixManagerPaymentsNetworkInterfaceTest,
 
 // Test that refreshing the page will cancel pending initiate payment request
 // callback.
-TEST_P(PixManagerPaymentsNetworkInterfaceTest, Reset) {
-  if (IsUsingMultipleRequestsInterface()) {
-    EXPECT_CALL(*multiple_request_payments_network_interface_, InitiatePayment);
-  } else {
-    EXPECT_CALL(*payments_network_interface_, InitiatePayment);
-  }
+TEST_F(PixManagerPaymentsNetworkInterfaceTest, Reset) {
+  EXPECT_CALL(*multiple_request_payments_network_interface_, InitiatePayment);
 
   pix_manager_->SendInitiatePaymentRequest();
   pix_manager_->Reset();

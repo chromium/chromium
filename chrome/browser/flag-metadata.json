@@ -9558,11 +9558,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "support-multiple-server-requests-for-pix-payments",
-    "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "support-tool-screenshot",
     "owners": [ "//chrome/browser/support_tool/OWNERS" ],
     "expiry_milestone": 140

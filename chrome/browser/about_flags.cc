@@ -11647,15 +11647,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsIphDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsIph)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"support-multiple-server-requests-for-pix-payments",
-     flag_descriptions::kSupportMultipleServerRequestsForPixPaymentsName,
-     flag_descriptions::kSupportMultipleServerRequestsForPixPaymentsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         payments::facilitated::kSupportMultipleServerRequestsForPixPayments)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-card-info-runtime-retrieval",
      flag_descriptions::kAutofillEnableCardInfoRuntimeRetrievalName,
      flag_descriptions::kAutofillEnableCardInfoRuntimeRetrievalDescription,

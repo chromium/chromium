@@ -3159,9 +3159,6 @@ extern const char kStrictSiteIsolationDescription[];
 extern const char kSupervisedUserInterstitialWithoutApprovalsName[];
 extern const char kSupervisedUserInterstitialWithoutApprovalsDescription[];
 
-extern const char kSupportMultipleServerRequestsForPixPaymentsName[];
-extern const char kSupportMultipleServerRequestsForPixPaymentsDescription[];
-
 extern const char kHistoryPaneAndroidName[];
 extern const char kHistoryPaneAndroidDescription[];
 

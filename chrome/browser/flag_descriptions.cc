@@ -5457,12 +5457,6 @@ const char kSupervisedUserInterstitialWithoutApprovalsDescription[] =
     "Enabling #allow-non-family-link-url-filter-mode is also required for "
     "users who do not sign-in.";
 
-const char kSupportMultipleServerRequestsForPixPaymentsName[] =
-    "Support multiple server requests for Pix payments";
-const char kSupportMultipleServerRequestsForPixPaymentsDescription[] =
-    "When enabled, the network interface with Google Payments supports "
-    "handling multiple concurrent requests for Pix flows.";
-
 const char kHistoryPaneAndroidName[] = "History Pane Android";
 const char kHistoryPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays History.";
