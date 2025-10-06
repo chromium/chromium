@@ -20,6 +20,7 @@ namespace content {
 struct CONTENT_EXPORT DesktopMediaID {
  public:
   enum Type { TYPE_NONE, TYPE_SCREEN, TYPE_WINDOW, TYPE_WEB_CONTENTS };
+  enum class AudioType { kNone, kSystem, kApplication };
 
   using Id = intptr_t;
 
@@ -75,6 +76,8 @@ struct CONTENT_EXPORT DesktopMediaID {
 
   // This records whether the desktop share has sound or not.
   bool audio_share = false;
+  // This records the type of audio share, if any.
+  AudioType window_audio_type = AudioType::kNone;
 };
 
 }  // namespace content

@@ -154,6 +154,18 @@ bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
   return picker_->dialog_->IsAudioSharingApprovedByUser();
 }
 
+bool DesktopMediaPickerViewsTestApi::IsScreenAudioOffered() const {
+  return picker_->dialog_->is_screen_audio_offered_;
+}
+bool DesktopMediaPickerViewsTestApi::IsWindowAudioOffered() const {
+  return picker_->dialog_->window_audio_type_offered_ !=
+         content::DesktopMediaID::AudioType::kNone;
+}
+content::DesktopMediaID::AudioType
+DesktopMediaPickerViewsTestApi::GetWindowAudioType() const {
+  return picker_->dialog_->window_audio_type_offered_;
+}
+
 views::MdTextButton* DesktopMediaPickerViewsTestApi::GetReselectButton() {
   return picker_->dialog_->reselect_button_;
 }

@@ -174,6 +174,12 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   //   but no such sources were available.
   std::optional<int> CountSourcesOfType(DesktopMediaList::Type type);
 
+  int GetLabelForWindowPaneAudioToggle() const;
+
+  // Returns true if `window_audio_type_offered_` is not
+  // `content::DesktopMediaID::AudioType::AUDIO_TYPE_NONE`.
+  bool IsWindowAudioOffered() const;
+
 #if BUILDFLAG(IS_MAC)
   void OnPermissionUpdate(bool has_permission);
   void RecordPermissionInteractionUma() const;
@@ -184,12 +190,20 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   const DesktopMediaPicker::Params::RequestSource request_source_;
   const std::u16string app_name_;
   const bool audio_requested_;
-  const bool exclude_system_audio_requested_;  // JS-exposed as systemAudio.
-  const bool exclude_window_audio_requested_;  // JS-exposed as windowAudio.
-  const bool is_system_audio_offered_;
-  const bool is_window_audio_offered_;
-  const bool suppress_local_audio_playback_;  // Effective only if audio shared.
-  const bool restrict_own_audio_;             // Effective only if audio shared.
+  // JS-exposed as systemAudio.
+  const bool screen_exclude_system_audio_requested_;
+  // Indicates whether audio is currently being offered for screen captures.
+  const bool is_screen_audio_offered_;
+  // JS-exposed as windowAudio.
+  const blink::mojom::WindowAudioPreference window_audio_type_requested_;
+  // Indicates whether audio is currently being offered for window captures.
+  const content::DesktopMediaID::AudioType window_audio_type_offered_;
+  // If set to true, audio is captured, but is no longer played out over the
+  // user's local speakers. Effective only if audio shared.
+  const bool suppress_local_audio_playback_;
+  // If set to true, audio produced by Chromium should be excluded from the
+  // captured audio track. Effective only if audio shared.
+  const bool restrict_own_audio_;
   const content::GlobalRenderFrameHostId capturer_global_id_;
 
   raw_ptr<DesktopMediaPickerImpl> parent_;
