@@ -182,9 +182,6 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 
-extern const char kContentNotificationExperimentName[];
-extern const char kContentNotificationExperimentDescription[];
-
 extern const char kContentNotificationProvisionalIgnoreConditionsName[];
 extern const char kContentNotificationProvisionalIgnoreConditionsDescription[];
 

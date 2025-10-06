@@ -494,8 +494,6 @@ extern const char kContentPushNotificationsExperimentType[];
 // Feature flag to enable the content notifications.
 BASE_DECLARE_FEATURE(kContentPushNotifications);
 
-// Feature flag to enable Content Notification experiments.
-BASE_DECLARE_FEATURE(kContentNotificationExperiment);
 
 // Feature flag to enable Content Notification Provisional without any
 // conditions.
@@ -625,9 +623,6 @@ bool IsFeedAblationEnabled();
 
 // YES when Follow UI Update is enabled.
 bool IsFollowUIUpdateEnabled();
-
-// YES if content push notification experiments are enabled.
-bool IsContentNotificationExperimentEnabled();
 
 // YES when any of the content push notification variations are enabled.
 bool IsContentPushNotificationsEnabled();

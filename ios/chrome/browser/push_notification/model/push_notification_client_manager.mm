@@ -144,10 +144,8 @@ std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
   std::vector<PushNotificationClientId> client_ids = {
       PushNotificationClientId::kCommerce, PushNotificationClientId::kTips};
-  if (IsContentNotificationExperimentEnabled()) {
-    client_ids.push_back(PushNotificationClientId::kContent);
-    client_ids.push_back(PushNotificationClientId::kSports);
-  }
+  client_ids.push_back(PushNotificationClientId::kContent);
+  client_ids.push_back(PushNotificationClientId::kSports);
   if (IsSafetyCheckNotificationsEnabled()) {
     client_ids.push_back(PushNotificationClientId::kSafetyCheck);
   }
@@ -186,22 +184,21 @@ void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
     AddPushNotificationClient(std::move(client));
   }
 
-  if (IsContentNotificationExperimentEnabled()) {
-    std::unique_ptr<ContentNotificationClient> client;
+  std::unique_ptr<ContentNotificationClient> content_notification_client;
 
-    if (IsMultiProfilePushNotificationHandlingEnabled()) {
-      CHECK(profile_);
+  if (IsMultiProfilePushNotificationHandlingEnabled()) {
+    CHECK(profile_);
 
-      client = std::make_unique<ContentNotificationClient>(profile_);
-    } else {
-      client = std::make_unique<ContentNotificationClient>();
-    }
-
-    CHECK_EQ(client->GetClientScope(),
-             PushNotificationClientScope::kPerProfile);
-
-    AddPushNotificationClient(std::move(client));
+    content_notification_client =
+        std::make_unique<ContentNotificationClient>(profile_);
+  } else {
+    content_notification_client = std::make_unique<ContentNotificationClient>();
   }
+
+  CHECK_EQ(content_notification_client->GetClientScope(),
+           PushNotificationClientScope::kPerProfile);
+
+  AddPushNotificationClient(std::move(content_notification_client));
 
   if (IsSafetyCheckNotificationsEnabled()) {
     if (IsMultiProfilePushNotificationHandlingEnabled() && profile_) {

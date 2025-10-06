@@ -117,10 +117,7 @@ bool IsGoogleDefaultSearchEngine(ProfileIOS* profile) {
     }
   }
 
-  // Only start doing the content notification user eligibility check if
-  // the content notification experiment is enabled.
-  if (IsContentNotificationExperimentEnabled() &&
-      IsContentNotificationProvisionalEnabled(
+  if (IsContentNotificationProvisionalEnabled(
           isUserSignedIn, IsGoogleDefaultSearchEngine(profile),
           profile->GetPrefs())) {
     // This method does not show an UI prompt to the user as provisional

@@ -238,8 +238,7 @@ using base::UserMetricsAction;
     return true;
   }
 
-  if (!IsContentNotificationExperimentEnabled() ||
-      !IsContentNotificationPromoEnabled([self isUserSignedIn],
+  if (!IsContentNotificationPromoEnabled([self isUserSignedIn],
                                          self.isDefaultSearchEngine,
                                          self.prefService)) {
     return false;

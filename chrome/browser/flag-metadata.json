@@ -1909,11 +1909,6 @@
   "expiry_milestone": 145
   },
   {
-    "name": "content-notification-experiment",
-    "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "content-notification-provisional-ignore-conditions",
     "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
     "expiry_milestone": 135

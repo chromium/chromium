@@ -406,12 +406,6 @@ const char kContentPushNotificationsExperimentType[] =
 
 BASE_FEATURE(kContentPushNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kContentNotificationExperiment, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsContentNotificationExperimentEnabled() {
-  return base::FeatureList::IsEnabled(kContentNotificationExperiment);
-}
-
 BASE_FEATURE(kContentNotificationProvisionalIgnoreConditions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

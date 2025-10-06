@@ -311,11 +311,6 @@ const char kCollaborationMessagingDescription[] =
     "including features such as recent activity, dirty dots, and description "
     "action chips.";
 
-const char kContentNotificationExperimentName[] =
-    "Content Notification Experiment";
-const char kContentNotificationExperimentDescription[] =
-    "Enable Content Notification Experiment.";
-
 const char kContentNotificationProvisionalIgnoreConditionsName[] =
     "Content Notification Provisional Ignore Conditions";
 const char kContentNotificationProvisionalIgnoreConditionsDescription[] =
