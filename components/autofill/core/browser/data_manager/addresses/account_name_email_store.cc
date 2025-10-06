@@ -15,6 +15,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -241,7 +242,9 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
     return ProfileUpdateBlockReason::kUserSignedOut;
   }
 
-  if (!sync_service_observer_.GetSource()->IsSyncFeatureActive()) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      !sync_service_observer_.GetSource()->IsSyncFeatureEnabled()) {
     return ProfileUpdateBlockReason::kSyncDisabled;
   }
 

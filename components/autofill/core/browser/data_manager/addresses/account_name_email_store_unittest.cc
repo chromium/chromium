@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,9 +45,9 @@ constexpr std::string_view kTestName2 = "Thomas Jefferson";
 constexpr std::string_view kTestEmailAddress2 = "thomas.jefferson@gmail.com";
 constexpr GaiaId::Literal kFakeGaiaId("1234567890");
 
-class AccountNameEmailStoreTest : public testing::Test {
+class AccountNameEmailStoreCoreTest : public testing::Test {
  public:
-  AccountNameEmailStoreTest()
+  AccountNameEmailStoreCoreTest()
       : prefs_(test::PrefServiceForTesting()),
         identity_manager_(identity_test_env_.identity_manager()),
         store_(test_adm_, *identity_manager_, sync_service_, *prefs_) {}
@@ -114,9 +115,10 @@ class AccountNameEmailStoreTest : public testing::Test {
   }
   syncer::TestSyncService& sync_service() { return sync_service_; }
 
+ protected:
+  base::test::ScopedFeatureList features_;
+
  private:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillEnableSupportForNameAndEmail};
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -135,6 +137,14 @@ MATCHER_P2(IsCorrectAccountNameEmail, name_full, email, "") {
          arg->GetRawInfo(EMAIL_ADDRESS) == email &&
          arg->GetAddressCountryCode().value().empty();
 }
+
+class AccountNameEmailStoreTest : public AccountNameEmailStoreCoreTest {
+ public:
+  AccountNameEmailStoreTest() {
+    features_.InitWithFeatures(
+        {features::kAutofillEnableSupportForNameAndEmail}, {});
+  }
+};
 
 // Tests that a new `kAccountNameEmail` profile isn't created when an empty
 // `AccountInfo` is passed into the `MaybeUpdateOrCreateAccountNameEmail`
@@ -593,10 +603,19 @@ TEST_F(AccountNameEmailStoreTest,
                                             base::UTF8ToUTF16(info.email))));
 }
 
+class AccountNameEmailStoreSyncTest : public AccountNameEmailStoreCoreTest {
+ public:
+  AccountNameEmailStoreSyncTest() {
+    features_.InitWithFeatures(
+        {features::kAutofillEnableSupportForNameAndEmail},
+        {syncer::kReplaceSyncPromosWithSignInPromos});
+  }
+};
+
 // Tests that kAccountNameEmail profile exists only if sync-the-feature is
 // enabled.
 // TODO(crbug.com/40066949): Remove once kSync gets removed.
-TEST_F(AccountNameEmailStoreTest, SyncTheFeatureState) {
+TEST_F(AccountNameEmailStoreSyncTest, SyncTheFeatureState) {
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service().FireStateChanged();
 
