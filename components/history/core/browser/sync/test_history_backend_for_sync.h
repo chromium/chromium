@@ -47,7 +47,10 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   bool GetURLByID(URLID url_id, URLRow* url_row) override;
   bool GetVisitByID(VisitID visit_id, VisitRow* visit_row) override;
   bool GetVisitSource(const VisitID visit_id, VisitSource* source) override;
-  bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;
+  bool GetMostRecentVisitForURL(
+      URLID id,
+      VisitRow* visit_row,
+      VisitQuery404sPolicy policy_for_404_visits) override;
   bool GetLastVisitByTime(base::Time visit_time, VisitRow* visit_row) override;
   VisitVector GetRedirectChain(VisitRow visit) override;
   bool GetForeignVisit(const std::string& originator_cache_guid,

@@ -823,7 +823,8 @@ void HistorySyncBridge::OnURLsModified(HistoryBackend* history_backend,
 
   for (const URLRow& url_row : changed_urls) {
     VisitRow visit_row;
-    if (history_backend_->GetMostRecentVisitForURL(url_row.id(), &visit_row) &&
+    if (history_backend_->GetMostRecentVisitForURL(
+            url_row.id(), &visit_row, VisitQuery404sPolicy::kInclude404s) &&
         visit_row.originator_cache_guid.empty()) {
       // It's the URL corresponding to a local visit - probably the title got
       // updated.

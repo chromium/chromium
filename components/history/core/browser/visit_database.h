@@ -175,11 +175,14 @@ class VisitDatabase {
                                VisitVector* visits);
 
   // Returns the visit ID for the most recent visit of the given URL ID, or 0
-  // if there is no visit for the URL.
+  // if there is no visit for the URL. Includes or excludes 404 visits according
+  // to `policy_for_404_visits`.
   //
   // If non-NULL, the given visit row will be filled with the information of
   // the found visit. When no visit is found, the row will be unchanged.
-  VisitID GetMostRecentVisitForURL(URLID url_id, VisitRow* visit_row);
+  VisitID GetMostRecentVisitForURL(URLID url_id,
+                                   VisitRow* visit_row,
+                                   VisitQuery404sPolicy policy_for_404_visits);
 
   // Returns the `max_results` most recent visit sessions for `url_id`. Includes
   // or excludes visits with an HTTP response code of 404 according to

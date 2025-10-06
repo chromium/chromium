@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "components/history/core/browser/history_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -135,10 +136,22 @@ bool TestHistoryBackendForSync::GetVisitSource(const VisitID visit_id,
   return false;
 }
 
-bool TestHistoryBackendForSync::GetMostRecentVisitForURL(URLID id,
-                                                         VisitRow* visit_row) {
+bool TestHistoryBackendForSync::GetMostRecentVisitForURL(
+    URLID id,
+    VisitRow* visit_row,
+    VisitQuery404sPolicy policy_for_404_visits) {
   *visit_row = VisitRow();
   for (const VisitRow& candidate : visits_) {
+    VisitContextAnnotations context_annotations;
+    if (context_annotations_.count(candidate.visit_id)) {
+      context_annotations = context_annotations_[candidate.visit_id];
+
+      int http_response_code = context_annotations.on_visit.response_code;
+      if (policy_for_404_visits == VisitQuery404sPolicy::kExclude404s &&
+          http_response_code == 404) {
+        continue;
+      }
+    }
     if (candidate.url_id == id &&
         (candidate.visit_time > visit_row->visit_time ||
          (candidate.visit_time == visit_row->visit_time &&

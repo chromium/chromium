@@ -660,7 +660,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // methods.
 
   // TODO(manukh): DEPRECATED (see above comment)
-  bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;
+  bool GetMostRecentVisitForURL(
+      URLID id,
+      VisitRow* visit_row,
+      VisitQuery404sPolicy policy_for_404_visits) override;
 
   QueryURLAndVisitsResult GetMostRecentVisitsForGurl(
       GURL url,

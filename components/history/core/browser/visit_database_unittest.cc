@@ -11,6 +11,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_annotations_database.h"
 #include "components/history/core/browser/visited_link_database.h"
@@ -241,7 +242,9 @@ TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_NoVisits) {
 
   // Should return 0 when there are no visits.
   VisitRow out_visit;
-  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit), 0U);
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit,
+                                     VisitQuery404sPolicy::kInclude404s),
+            0U);
   EXPECT_EQ(out_visit.visit_id, 0U);
 }
 
@@ -261,7 +264,9 @@ TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_Simple) {
 
   // The more recent visit should be returned.
   VisitRow out_visit;
-  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit), 1U);
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit,
+                                     VisitQuery404sPolicy::kInclude404s),
+            1U);
   EXPECT_EQ(out_visit.visit_time, kNow - base::Days(1));
 }
 
@@ -283,7 +288,9 @@ TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_Tied) {
   // ID among the tied visits to be returned consistently. (These expectations
   // will flake if the tiebreaker isn't consistent.)
   VisitRow out_visit;
-  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit), 2U);
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit,
+                                     VisitQuery404sPolicy::kInclude404s),
+            2U);
   EXPECT_EQ(out_visit.visit_time, kNow);
 }
 
@@ -298,6 +305,42 @@ TEST_F(VisitDatabaseTest, GetMostRecentVisitsForURL_NoVisits) {
   ASSERT_TRUE(GetMostRecentVisitsForURL(
       kUrlId, 1, VisitQuery404sPolicy::kExclude404s, &out_visits));
   EXPECT_EQ(out_visits.size(), 0U);
+}
+
+TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_404Policy) {
+  const URLID kUrlId = 1U;
+  const base::Time kNow = Time::Now();
+  VisitContextAnnotations context_annotations_non_404;
+  context_annotations_non_404.on_visit = {.response_code = 500};
+  VisitContextAnnotations context_annotations_404;
+  context_annotations_404.on_visit = {.response_code = 404};
+
+  // Add a non-404 visit for the URL.
+  VisitRow visit;
+  visit.url_id = kUrlId;
+  visit.visit_id = 1;
+  visit.visit_time = kNow - base::Days(2);
+  ASSERT_TRUE(AddVisit(&visit, SOURCE_BROWSED));
+  ASSERT_EQ(1, visit.visit_id);
+
+  // Add a visit with a 404 response code for the URL.
+  VisitRow visit_404;
+  visit_404.url_id = kUrlId;
+  visit_404.visit_id = 2;
+  visit_404.visit_time = kNow - base::Days(1);
+  ASSERT_TRUE(AddVisit(&visit_404, SOURCE_BROWSED));
+  AddContextAnnotationsForVisit(visit_404.visit_id, context_annotations_404);
+
+  // When including 404s, the 404 visit should be returned as the recent visit.
+  VisitRow out_visit;
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit,
+                                     VisitQuery404sPolicy::kInclude404s),
+            2U);
+  EXPECT_EQ(out_visit.visit_time, kNow - base::Days(1));
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit,
+                                     VisitQuery404sPolicy::kExclude404s),
+            1U);
+  EXPECT_EQ(out_visit.visit_time, kNow - base::Days(2));
 }
 
 TEST_F(VisitDatabaseTest, GetMostRecentVisitsForURL_Simple) {

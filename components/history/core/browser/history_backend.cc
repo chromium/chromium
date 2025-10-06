@@ -1672,9 +1672,12 @@ bool HistoryBackend::CanAddURL(const GURL& url) const {
   return delegate_->CanAddURL(url);
 }
 
-bool HistoryBackend::GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) {
+bool HistoryBackend::GetMostRecentVisitForURL(
+    URLID id,
+    VisitRow* visit_row,
+    VisitQuery404sPolicy policy_for_404_visits) {
   if (db_)
-    return db_->GetMostRecentVisitForURL(id, visit_row);
+    return db_->GetMostRecentVisitForURL(id, visit_row, policy_for_404_visits);
   return false;
 }
 
@@ -2855,7 +2858,8 @@ RedirectList HistoryBackend::QueryRedirectsFrom(const GURL& from_url) {
     return {};
 
   URLID from_url_id = db_->GetRowForURL(from_url, nullptr);
-  VisitID cur_visit = db_->GetMostRecentVisitForURL(from_url_id, nullptr);
+  VisitID cur_visit = db_->GetMostRecentVisitForURL(
+      from_url_id, nullptr, VisitQuery404sPolicy::kExclude404s);
   if (!cur_visit)
     return {};  // No visits for URL.
 
@@ -2869,7 +2873,9 @@ RedirectList HistoryBackend::QueryRedirectsTo(const GURL& to_url) {
     return {};
 
   URLID to_url_id = db_->GetRowForURL(to_url, nullptr);
-  VisitID cur_visit = db_->GetMostRecentVisitForURL(to_url_id, nullptr);
+  // TODO: crbug.com/448407141 Take in a 404 policy param and pass in here
+  VisitID cur_visit = db_->GetMostRecentVisitForURL(
+      to_url_id, nullptr, VisitQuery404sPolicy::kInclude404s);
   if (!cur_visit)
     return {};  // No visits for URL.
 
