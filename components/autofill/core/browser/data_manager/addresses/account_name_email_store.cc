@@ -41,8 +41,6 @@ AccountNameEmailStore::AccountNameEmailStore(
     syncer::SyncService& sync_service,
     PrefService& pref_service)
     : address_data_manager_(address_data_manager),
-      identity_manager_(identity_manager),
-      sync_service_(sync_service),
       pref_service_(pref_service) {
   identity_manager_observer_.Observe(&identity_manager);
   sync_service_observer_.Observe(&sync_service);
@@ -58,8 +56,12 @@ AccountNameEmailStore::~AccountNameEmailStore() = default;
 
 void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
+  if (!identity_manager_observer_.GetSource()) {
+    return;
+  }
   const std::optional<CoreAccountInfo>& primary_info =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      identity_manager_observer_.GetSource()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
   if (!primary_info.has_value() ||
       (!primary_info->IsEmpty() && info.gaia != primary_info->gaia)) {
     return;
@@ -67,10 +69,13 @@ void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
   MaybeUpdateOrCreateAccountNameEmail();
 }
 
+void AccountNameEmailStore::OnIdentityManagerShutdown(
+    signin::IdentityManager*) {
+  identity_manager_observer_.Reset();
+}
+
 void AccountNameEmailStore::OnSyncShutdown(syncer::SyncService*) {
-  // Unreachable, since the service owning this instance is Shutdown() before
-  // the SyncService.
-  NOTREACHED();
+  sync_service_observer_.Reset();
 }
 
 void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
@@ -108,18 +113,21 @@ void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
 }
 
 void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail() {
-  if (GetBlockAccountNameEmailUpdateReason().has_value()) {
+  if (!identity_manager_observer_.GetSource() ||
+      GetBlockAccountNameEmailUpdateReason().has_value()) {
     return;
   }
 
   const std::optional<CoreAccountInfo>& core_info =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      identity_manager_observer_.GetSource()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
   if (!core_info.has_value()) {
     return;
   }
 
   const std::optional<AccountInfo>& extended_info =
-      identity_manager_->FindExtendedAccountInfo(core_info.value());
+      identity_manager_observer_.GetSource()->FindExtendedAccountInfo(
+          core_info.value());
   if (!extended_info.has_value()) {
     return;
   }
@@ -224,17 +232,23 @@ std::string AccountNameEmailStore::HashAccountInfo(
 
 std::optional<AccountNameEmailStore::ProfileUpdateBlockReason>
 AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
-  if (sync_service_->GetTransportState() ==
+  if (!sync_service_observer_.GetSource()) {
+    return ProfileUpdateBlockReason::kSyncDisabled;
+  }
+
+  if (sync_service_observer_.GetSource()->GetTransportState() ==
       syncer::SyncService::TransportState::DISABLED) {
     return ProfileUpdateBlockReason::kUserSignedOut;
   }
 
-  if (!sync_service_->IsSyncFeatureActive()) {
+  if (!sync_service_observer_.GetSource()->IsSyncFeatureActive()) {
     return ProfileUpdateBlockReason::kSyncDisabled;
   }
 
-  if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kAutofill)) {
+  if (!sync_service_observer_.GetSource()
+           ->GetUserSettings()
+           ->GetSelectedTypes()
+           .Has(syncer::UserSelectableType::kAutofill)) {
     return ProfileUpdateBlockReason::kAutofillSyncToggleDisabled;
   }
 
@@ -242,7 +256,7 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
     return ProfileUpdateBlockReason::kDataNotLoaded;
   }
 
-  switch (sync_service_->GetDownloadStatusFor(
+  switch (sync_service_observer_.GetSource()->GetDownloadStatusFor(
       syncer::DataType::PRIORITY_PREFERENCES)) {
     case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates:
       return ProfileUpdateBlockReason::kDataNotLoaded;

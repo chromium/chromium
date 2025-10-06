@@ -62,6 +62,8 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // Called when the account's extended information (e.g. full name) is
   // updated. Used to keep the kAccountNameEmail profile up to date.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // syncer::SyncServiceObserver:
   void OnSyncShutdown(syncer::SyncService* sync) override;
@@ -118,9 +120,9 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // profile will be removed.
   void OnCounterPrefUpdated();
 
+  // `this` is owned by `address_data_manager_`, so `address_data_manager_` will
+  // outlive this class.
   const raw_ref<AddressDataManager> address_data_manager_;
-  const raw_ref<signin::IdentityManager> identity_manager_;
-  const raw_ref<syncer::SyncService> sync_service_;
   raw_ref<PrefService> pref_service_;
 
   // Used to update the `kAccountNameEmail` profile when the account name
