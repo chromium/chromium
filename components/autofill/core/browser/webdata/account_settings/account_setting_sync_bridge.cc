@@ -7,7 +7,11 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
+#include "base/sequence_checker.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -16,10 +20,28 @@
 
 namespace autofill {
 
+namespace {
+
+// Macro to simplify reporting errors raised by ModelTypeStore operations.
+#define RETURN_IF_ERROR(error)               \
+  if (error) {                               \
+    change_processor()->ReportError(*error); \
+    return;                                  \
+  }
+
+}  // namespace
+
 AccountSettingSyncBridge::AccountSettingSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceDataTypeStoreFactory store_factory)
-    : DataTypeSyncBridge(std::move(change_processor)) {}
+    : DataTypeSyncBridge(std::move(change_processor)) {
+  std::move(store_factory)
+      .Run(syncer::ACCOUNT_SETTING,
+           base::BindOnce(&AccountSettingSyncBridge::OnStoreCreated,
+                          weak_factory_.GetWeakPtr()));
+}
+
+AccountSettingSyncBridge::~AccountSettingSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 AccountSettingSyncBridge::CreateMetadataChangeList() {
@@ -67,6 +89,37 @@ std::string AccountSettingSyncBridge::GetClientTag(
 std::string AccountSettingSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
   return entity_data.specifics.account_setting().name();
+}
+
+void AccountSettingSyncBridge::OnStoreCreated(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore> store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RETURN_IF_ERROR(error);
+  store_ = std::move(store);
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&AccountSettingSyncBridge::StartSyncingWithDataAndMetadata,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void AccountSettingSyncBridge::StartSyncingWithDataAndMetadata(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore::RecordList> data,
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RETURN_IF_ERROR(error);
+  // Initialize the `settings_` with the `data`.
+  std::vector<std::pair<std::string, sync_pb::AccountSettingSpecifics>>
+      processed_entries;
+  for (const syncer::DataTypeStore::Record& record : *data) {
+    if (sync_pb::AccountSettingSpecifics specifics;
+        specifics.ParseFromString(record.value)) {
+      processed_entries.emplace_back(record.id, std::move(specifics));
+    }
+  }
+  settings_ = base::flat_map<std::string, sync_pb::AccountSettingSpecifics>(
+      std::move(processed_entries));
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
 }  // namespace autofill
