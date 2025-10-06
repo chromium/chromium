@@ -2300,7 +2300,8 @@ void GridLayoutAlgorithm::PlaceGridItems(
   // decorations).
   if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
        Style().HasGapRule()) ||
-      out_unfragmented_gap_geometry) {
+      (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled() &&
+       out_unfragmented_gap_geometry)) {
     gap_accumulator = GapAccumulator();
     gap_accumulator->BuildGapGeometry(layout_data);
 
@@ -2422,7 +2423,8 @@ void GridLayoutAlgorithm::PlaceGridItems(
       // If `out_unfragmented_gap_geometry` is present we just want to record
       // the initial position of all gaps for the purposes of fragmentation.
       // Don't add these to the builder.
-      if (out_unfragmented_gap_geometry) {
+      if (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled() &&
+          out_unfragmented_gap_geometry) {
         *out_unfragmented_gap_geometry = gap_geometry;
       } else {
         container_builder_.SetGapGeometry(gap_geometry);
@@ -3020,7 +3022,9 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
                  max_item_block_end - cloned_block_start_decoration);
   }
 
-  PlaceGaps();
+  if (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled()) {
+    PlaceGaps();
+  }
 
   if (has_subsequent_children)
     container_builder_.SetHasSubsequentChildren();
