@@ -272,6 +272,11 @@ MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {
 void MandatoryReauthBubbleControllerImpl::UpdatePageActionIcon() {
 // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
+  // If WebContents is being destroyed, `TabFeatures` may have been already
+  // destroyed. This check prevents a UAF.
+  if (web_contents()->IsBeingDestroyed()) {
+    return;
+  }
   if (!IsPageActionMigrated(PageActionIconType::kMandatoryReauth)) {
     AutofillBubbleControllerBase::UpdatePageActionIcon();
   }
