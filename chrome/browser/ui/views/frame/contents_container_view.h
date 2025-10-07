@@ -44,8 +44,8 @@ namespace enterprise_watermark {
 class WatermarkView;
 }  // namespace enterprise_watermark
 
-// ContentsContainerView is owned by MultiContentsView and holds the
-// ContentsWebView and the outlines and minitoolbar when in split view.
+// ContentsContainerView holds the ContentsWebView and the outlines and
+// minitoolbar when in split view.
 class ContentsContainerView : public views::View,
                               public views::LayoutDelegate,
                               public views::ViewObserver {
