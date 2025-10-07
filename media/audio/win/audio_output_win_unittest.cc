@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <windows.h>
 
 #include <mmsystem.h>
@@ -56,7 +61,10 @@ static int ClearData(base::TimeDelta /* delay */,
 // expected and if any error has been reported.
 class TestSourceBasic : public AudioOutputStream::AudioSourceCallback {
  public:
-  TestSourceBasic() = default;
+  TestSourceBasic()
+      : callback_count_(0),
+        had_error_(0) {
+  }
   // AudioSourceCallback::OnMoreData implementation:
   int OnMoreData(base::TimeDelta /* delay */,
                  base::TimeTicks /* delay_timestamp */,
@@ -83,11 +91,11 @@ class TestSourceBasic : public AudioOutputStream::AudioSourceCallback {
   }
 
  private:
-  int callback_count_ = 0;
-  int had_error_ = 0;
+  int callback_count_;
+  int had_error_;
 };
 
-constexpr int kMaxNumBuffers = 3;
+const int kMaxNumBuffers = 3;
 // Specializes TestSourceBasic to simulate a source that blocks for some time
 // in the OnMoreData callback.
 class TestSourceLaggy : public TestSourceBasic {
@@ -109,6 +117,48 @@ class TestSourceLaggy : public TestSourceBasic {
 
  private:
   int lag_in_ms_;
+};
+
+// Helper class to memory map an entire file. The mapping is read-only. Don't
+// use for gigabyte-sized files. Attempts to write to this memory generate
+// memory access violations.
+class ReadOnlyMappedFile {
+ public:
+  explicit ReadOnlyMappedFile(const wchar_t* file_name)
+      : fmap_(NULL), start_(nullptr), size_(0) {
+    HANDLE file = ::CreateFileW(file_name, GENERIC_READ, FILE_SHARE_READ, NULL,
+                                OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (INVALID_HANDLE_VALUE == file)
+      return;
+    fmap_ = ::CreateFileMappingW(file, NULL, PAGE_READONLY, 0, 0, NULL);
+    ::CloseHandle(file);
+    if (!fmap_)
+      return;
+    start_ = reinterpret_cast<char*>(::MapViewOfFile(fmap_, FILE_MAP_READ,
+                                                     0, 0, 0));
+    if (!start_)
+      return;
+    MEMORY_BASIC_INFORMATION mbi = {0};
+    ::VirtualQuery(start_, &mbi, sizeof(mbi));
+    size_ = mbi.RegionSize;
+  }
+  ~ReadOnlyMappedFile() {
+    if (start_) {
+      ::UnmapViewOfFile(start_);
+      ::CloseHandle(fmap_);
+    }
+  }
+  // Returns true if the file was successfully mapped.
+  bool is_valid() const { return (start_ && (size_ > 0)); }
+  // Returns the size in bytes of the mapped memory.
+  uint32_t size() const { return size_; }
+  // Returns the memory backing the file.
+  const void* GetChunkAt(uint32_t offset) { return &start_[offset]; }
+
+ private:
+  HANDLE fmap_;
+  raw_ptr<char, AllowPtrArithmetic> start_;
+  uint32_t size_;
 };
 
 class WinAudioTest : public ::testing::Test {
@@ -278,10 +328,10 @@ TEST_F(WinAudioTest, PCMWaveStreamPlay200HzTone22Kss) {
 TEST_F(WinAudioTest, PushSourceFile16KHz) {
   ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info_->HasAudioOutputDevices());
 
-  static constexpr int kSampleRate = 16000;
+  static const int kSampleRate = 16000;
   SineWaveAudioSource source(1, 200.0, kSampleRate);
   // Compute buffer size for 100ms of audio.
-  constexpr uint32_t kSamples100ms = (kSampleRate / 1000) * 100;
+  const uint32_t kSamples100ms = (kSampleRate / 1000) * 100;
   // Restrict SineWaveAudioSource to 100ms of samples.
   source.CapSamples(kSamples100ms);
 
@@ -399,8 +449,8 @@ TEST_F(WinAudioTest, PCMWaveStreamPendingBytes) {
   NiceMock<MockAudioSourceCallback> source;
   EXPECT_TRUE(oas->Open());
 
-  constexpr base::TimeDelta delay_100_ms = base::Milliseconds(100);
-  constexpr base::TimeDelta delay_200_ms = base::Milliseconds(200);
+  const base::TimeDelta delay_100_ms = base::Milliseconds(100);
+  const base::TimeDelta delay_200_ms = base::Milliseconds(200);
 
   // Audio output stream has either a double or triple buffer scheme. We expect
   // the delay to reach up to 200 ms depending on the number of buffers used.
@@ -448,9 +498,9 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
         expected_packet_count_(expected_packet_count) {
     // Setup AudioBus wrapping data we'll receive over the sync socket.
     packet_size_ = AudioBus::CalculateMemorySize(params);
-    data_ = base::AlignedUninit<uint8_t>(
-        packet_size_ + sizeof(AudioOutputBufferParameters),
-        AudioBus::kChannelAlignment);
+    data_.reset(static_cast<float*>(
+        base::AlignedAlloc(packet_size_ + sizeof(AudioOutputBufferParameters),
+                           AudioBus::kChannelAlignment)));
     audio_bus_ = AudioBus::WrapMemory(params, output_buffer()->audio);
   }
   ~SyncSocketSource() override {}
@@ -468,7 +518,9 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
       output_buffer()->params.delay_us = delay.InMicroseconds();
       output_buffer()->params.delay_timestamp_us =
           (delay_timestamp - base::TimeTicks()).InMicroseconds();
-      uint32_t size = socket_->Receive(data_);
+      const size_t span_size = packet_size_ / sizeof(decltype(*data_.get()));
+      uint32_t size = socket_->Receive(base::as_writable_bytes(
+          base::allow_nonunique_obj, base::span(data_.get(), span_size)));
       ++current_packet_count_;
 
       DCHECK_EQ(static_cast<size_t>(size) % sizeof(float), 0U);
@@ -482,8 +534,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
   int packet_size() const { return packet_size_; }
 
   AudioOutputBuffer* output_buffer() const {
-    return reinterpret_cast<AudioOutputBuffer*>(
-        const_cast<uint8_t*>(data_.data()));
+    return reinterpret_cast<AudioOutputBuffer*>(data_.get());
   }
 
   // AudioSourceCallback::OnError implementation:
@@ -493,7 +544,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
   raw_ptr<base::SyncSocket> socket_;
   const AudioParameters params_;
   size_t packet_size_;
-  base::AlignedHeapArray<uint8_t> data_;
+  std::unique_ptr<float, base::AlignedFreeDeleter> data_;
   std::unique_ptr<AudioBus> audio_bus_;
 
   // This test produces a fixed number of packets, we need these so we know
@@ -527,11 +578,10 @@ DWORD __stdcall SyncSocketThread(void* context) {
   SyncThreadContext& ctx = *(reinterpret_cast<SyncThreadContext*>(context));
 
   // Setup AudioBus wrapping data we'll pass over the sync socket.
-  CHECK_EQ(ctx.packet_size_bytes % sizeof(float), 0U);
-  auto data = base::AlignedUninit<float>(ctx.packet_size_bytes / sizeof(float),
-                                         AudioBus::kChannelAlignment);
+  std::unique_ptr<float, base::AlignedFreeDeleter> data(static_cast<float*>(
+      base::AlignedAlloc(ctx.packet_size_bytes, AudioBus::kChannelAlignment)));
   std::unique_ptr<AudioBus> audio_bus =
-      AudioBus::WrapMemory(ctx.channels, ctx.frames, data);
+      AudioBus::WrapMemory(ctx.channels, ctx.frames, data.get());
 
   SineWaveAudioSource sine(1, ctx.sine_freq, ctx.sample_rate);
 
@@ -549,8 +599,9 @@ DWORD __stdcall SyncSocketThread(void* context) {
     sine.OnMoreData(delay, delay_timestamp, {}, audio_bus.get());
 
     // Send the audio data to the Audio Stream.
-    ctx.socket->Send(
-        base::as_bytes(base::allow_nonunique_obj, base::span(data)));
+    // SAFETY: `data`'s allocation has size `ctx.packet_size_bytes`.
+    ctx.socket->Send(UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<uint8_t*>(data.get()), ctx.packet_size_bytes)));
   }
 
   return 0;
@@ -567,11 +618,11 @@ DWORD __stdcall SyncSocketThread(void* context) {
 TEST_F(WinAudioTest, SyncSocketBasic) {
   ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info_->HasAudioOutputDevices());
 
-  static constexpr int sample_rate = AudioParameters::kAudioCDSampleRate;
-  static constexpr uint32_t kSamples20ms = sample_rate / 50;
+  static const int sample_rate = AudioParameters::kAudioCDSampleRate;
+  static const uint32_t kSamples20ms = sample_rate / 50;
   // We want 2 seconds of audio, which means we need 100 packets as each packet
   // contains 20ms worth of audio samples.
-  static constexpr int kPackets2s = 100;
+  static const int kPackets2s = 100;
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Mono(), sample_rate,
                          kSamples20ms);

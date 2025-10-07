@@ -130,10 +130,11 @@ std::unique_ptr<AudioBus> AudioBus::CreateWrapper(int channels) {
 
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(int channels,
                                                int frames,
-                                               base::span<float> data) {
+                                               void* data) {
   // |data| must be aligned by AudioBus::kChannelAlignment.
   CHECK(IsAligned(data));
-  return base::WrapUnique(new AudioBus(channels, frames, data));
+  return base::WrapUnique(
+      new AudioBus(channels, frames, static_cast<float*>(data)));
 }
 
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,

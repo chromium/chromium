@@ -56,7 +56,7 @@ class MEDIA_EXPORT AudioBus {
   // returned AudioBus.  |data| must be aligned by kChannelAlignment.
   static std::unique_ptr<AudioBus> WrapMemory(int channels,
                                               int frames,
-                                              base::span<float> data);
+                                              void* data);
   static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
                                               void* data);
   static std::unique_ptr<const AudioBus> WrapReadOnlyMemory(
