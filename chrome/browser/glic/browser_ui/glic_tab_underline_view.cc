@@ -306,7 +306,9 @@ class GlicTabUnderlineView::UnderlineViewUpdater
       case UpdateUnderlineReason::kContextAccessIndicatorOff: {
         // Underline should be hidden, with exception to pinned tabs while the
         // glic panel remains open.
-        if (IsUnderlineTabPinned() && IsGlicWindowShowing()) {
+        if (IsUnderlineTabPinned() &&
+            (!base::FeatureList::IsEnabled(features::kGlicMultiInstance) ||
+             IsGlicWindowShowing())) {
           break;
         }
         HideUnderline();
@@ -359,8 +361,10 @@ class GlicTabUnderlineView::UnderlineViewUpdater
         // the set of pinned tabs.
         if (!underline_view_->IsShowing()) {
           // Pinned tab underlines should only be visible while the glic panel
-          // is open.
-          if (IsGlicWindowShowing()) {
+          // is open. For multi-instance this is controlled via the pinned tabs
+          // api.
+          if (base::FeatureList::IsEnabled(features::kGlicMultiInstance) ||
+              IsGlicWindowShowing()) {
             ShowAndAnimateUnderline();
           }
         } else {
@@ -417,9 +421,16 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   void AnimateUnderline() { underline_view_->ResetAnimationCycle(); }
 
   void ShowOrAnimatePinnedUnderline() {
-    // Pinned underlines should never be visible if the glic window is closed.
-    if (!IsUnderlineTabPinned() || !IsGlicWindowShowing()) {
+    if (!IsUnderlineTabPinned()) {
       return;
+    }
+    // For multi-instance, we rely on the umbrella sharing manager behavior to
+    // determine when to show or not show underlines via the pinned tabs api.
+    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      // Pinned underlines should never be visible if the glic window is closed.
+      if (!IsGlicWindowShowing()) {
+        return;
+      }
     }
     if (underline_view_->IsShowing()) {
       AnimateUnderline();
