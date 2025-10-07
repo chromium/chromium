@@ -24,9 +24,9 @@ class ASH_PUBLIC_EXPORT ArcNotificationsHostInitializer {
 
   static ArcNotificationsHostInitializer* Get();
 
-  virtual void SetArcNotificationManagerInstance(
-      std::unique_ptr<ArcNotificationManagerBase> manager_instance) = 0;
-  virtual ArcNotificationManagerBase* GetArcNotificationManagerInstance() = 0;
+  virtual void SetArcNotificationManager(
+      std::unique_ptr<ArcNotificationManagerBase> arc_notification_manager) = 0;
+  virtual ArcNotificationManagerBase* GetArcNotificationManager() = 0;
 
   // Adds and removes an observer.
   virtual void AddObserver(Observer* observer) = 0;

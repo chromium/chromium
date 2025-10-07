@@ -44,9 +44,9 @@ class ASH_EXPORT MessageCenterController
   ~MessageCenterController() override;
 
   // ArcNotificationsHostInitializer:
-  void SetArcNotificationManagerInstance(
-      std::unique_ptr<ArcNotificationManagerBase> manager_instance) override;
-  ArcNotificationManagerBase* GetArcNotificationManagerInstance() override;
+  void SetArcNotificationManager(std::unique_ptr<ArcNotificationManagerBase>
+                                     arc_notification_manager) override;
+  ArcNotificationManagerBase* GetArcNotificationManager() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

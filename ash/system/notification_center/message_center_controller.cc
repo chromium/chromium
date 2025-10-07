@@ -138,10 +138,10 @@ MessageCenterController::~MessageCenterController() {
   message_center::MessageCenter::Shutdown();
 }
 
-void MessageCenterController::SetArcNotificationManagerInstance(
-    std::unique_ptr<ArcNotificationManagerBase> manager_instance) {
+void MessageCenterController::SetArcNotificationManager(
+    std::unique_ptr<ArcNotificationManagerBase> arc_notification_manager) {
   CHECK(!arc_notification_manager_);
-  arc_notification_manager_ = std::move(manager_instance);
+  arc_notification_manager_ = std::move(arc_notification_manager);
   arc_notification_manager_->Init(
       std::make_unique<ArcNotificationManagerDelegateImpl>(),
       Shell::Get()
@@ -157,7 +157,7 @@ void MessageCenterController::SetArcNotificationManagerInstance(
 }
 
 ArcNotificationManagerBase*
-MessageCenterController::GetArcNotificationManagerInstance() {
+MessageCenterController::GetArcNotificationManager() {
   return arc_notification_manager_.get();
 }
 
