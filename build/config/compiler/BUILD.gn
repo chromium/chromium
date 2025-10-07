@@ -752,7 +752,7 @@ config("compiler") {
       assert(!use_cxx23)
       cflags_cc += [ "/std:c++17" ]
     } else if (use_cxx23) {
-      cflags_cc += [ "/std:c++23" ]
+      cflags_cc += [ "/std:c++23preview" ]
     } else {
       cflags_cc += [ "/std:c++20" ]
     }
