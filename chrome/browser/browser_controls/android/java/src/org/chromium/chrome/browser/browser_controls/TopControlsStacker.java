@@ -175,6 +175,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * @param animate Whether animate the browser controls size change.
      */
     public void requestLayerUpdate(boolean animate) {
+        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
+
         recalculateHeights();
         updateTopControlsHeight(animate);
 
@@ -285,6 +287,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints,
             boolean shouldUpdateOffsets) {
+        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
+
         if (mTopControlsOffsetTagInfo == offsetTagsInfo && mBrowserControlsState == constraints) {
             return;
         }
