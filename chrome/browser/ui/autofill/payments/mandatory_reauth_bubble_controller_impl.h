@@ -73,6 +73,9 @@ class MandatoryReauthBubbleControllerImpl
                    base::OnceClosure cancel_mandatory_reauth_callback,
                    base::RepeatingClosure close_mandatory_reauth_callback);
 
+  // Logs opt in metrics when the bubble is closed.
+  void LogBubbleCloseOptInMetrics(PaymentsUiClosedReason reason);
+
   base::OnceClosure accept_mandatory_reauth_callback_;
   base::OnceClosure cancel_mandatory_reauth_callback_;
   base::RepeatingClosure close_mandatory_reauth_callback_;

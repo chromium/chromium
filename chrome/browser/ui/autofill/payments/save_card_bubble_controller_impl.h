@@ -216,6 +216,9 @@ class SaveCardBubbleControllerImpl
   // inactive, effectively ending the save card flow.
   void EndSaveCardPromptFlow();
 
+  // Logs metrics when the bubble is closed.
+  void LogBubbleCloseMetrics(PaymentsUiClosedReason reason);
+
   // Tied to the profile and outlive this object.
   const raw_ref<PaymentsDataManager> payments_data_manager_;
   const raw_ptr<syncer::SyncService> sync_service_;

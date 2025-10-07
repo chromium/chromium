@@ -96,6 +96,9 @@ class FilledCardInformationBubbleControllerImpl
   void LogFilledCardInformationBubbleFieldClicked(
       FilledCardInformationBubbleField field) const;
 
+  // Logs metrics when the bubble is closed.
+  void LogBubbleCloseMetrics(PaymentsUiClosedReason closed_reason);
+
   // Returns whether the webcontents related to the controller is active.
   bool IsWebContentsActive();
 

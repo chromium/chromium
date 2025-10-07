@@ -229,10 +229,8 @@ void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
       /*navigation_handle_callback=*/{});
 }
 
-void FilledCardInformationBubbleControllerImpl::OnBubbleClosed(
+void FilledCardInformationBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
-  ResetBubbleViewAndInformBubbleManager();
-
   // Log bubble result according to the closed reason.
   autofill_metrics::FilledCardInformationBubbleResult metric;
   switch (closed_reason) {
@@ -249,7 +247,12 @@ void FilledCardInformationBubbleControllerImpl::OnBubbleClosed(
   }
   autofill_metrics::LogFilledCardInformationBubbleResultMetric(
       metric, is_user_gesture_);
+}
 
+void FilledCardInformationBubbleControllerImpl::OnBubbleClosed(
+    PaymentsUiClosedReason closed_reason) {
+  ResetBubbleViewAndInformBubbleManager();
+  LogBubbleCloseMetrics(closed_reason);
   UpdatePageActionIcon();
 }
 

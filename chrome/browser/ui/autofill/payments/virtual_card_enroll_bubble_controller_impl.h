@@ -104,6 +104,9 @@ class VirtualCardEnrollBubbleControllerImpl
                    base::OnceClosure accept_virtual_card_callback,
                    base::OnceClosure decline_virtual_card_callback);
 
+  // Log metrics when the bubble is closed.
+  void LogBubbleCloseMetrics(PaymentsUiClosedReason closed_reason);
+
   // Contains the UI assets shown in the virtual card enrollment view.
   std::unique_ptr<VirtualCardEnrollUiModel> ui_model_;
 

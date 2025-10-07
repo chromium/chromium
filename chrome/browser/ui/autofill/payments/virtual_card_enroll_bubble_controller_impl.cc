@@ -208,17 +208,8 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 #endif
 }
 
-void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
+void VirtualCardEnrollBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
-  ResetBubbleViewAndInformBubbleManager();
-  UpdatePageActionIcon();
-
-  // If the dialog is to be shown again because user clicked on links, do not
-  // log metrics.
-  if (reprompt_required_) {
-    return;
-  }
-
   auto get_metric = [](PaymentsUiClosedReason reason) {
     switch (reason) {
       case PaymentsUiClosedReason::kAccepted:
@@ -268,6 +259,20 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
         ui_model_->enrollment_fields().virtual_card_enrollment_source,
         is_user_gesture_, ui_model_->enrollment_fields().previously_declined);
   }
+}
+
+void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
+    PaymentsUiClosedReason closed_reason) {
+  ResetBubbleViewAndInformBubbleManager();
+  UpdatePageActionIcon();
+
+  // If the dialog is to be shown again because user clicked on links, do not
+  // log metrics.
+  if (reprompt_required_) {
+    return;
+  }
+
+  LogBubbleCloseMetrics(closed_reason);
 
 #if !BUILDFLAG(IS_ANDROID)
   // If the bubble is closed with the enrollment_status_ as

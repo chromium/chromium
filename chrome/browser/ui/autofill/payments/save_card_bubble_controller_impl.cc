@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -533,18 +534,8 @@ void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
                               chrome::kPaymentsSubPage);
 }
 
-void SaveCardBubbleControllerImpl::OnBubbleClosed(
+void SaveCardBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
-  ResetBubbleViewAndInformBubbleManager();
-
-  // If the dialog should be re-shown, do not change the bubble type or log
-  // metrics.
-  // TODO(crbug.com/316391673): Determine if we should track metrics on the
-  // usage of this member.
-  if (was_url_opened_) {
-    return;
-  }
-
   autofill_metrics::LegacySaveCardPromptResult legacy_metric =
       GetMetric<autofill_metrics::LegacySaveCardPromptResult>(closed_reason);
 
@@ -583,6 +574,21 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     case PaymentsBubbleType::kManageCards:
       break;
   }
+}
+
+void SaveCardBubbleControllerImpl::OnBubbleClosed(
+    PaymentsUiClosedReason closed_reason) {
+  ResetBubbleViewAndInformBubbleManager();
+
+  // If the dialog should be re-shown, do not change the bubble type or log
+  // metrics.
+  // TODO(crbug.com/316391673): Determine if we should track metrics on the
+  // usage of this member.
+  if (was_url_opened_) {
+    return;
+  }
+
+  LogBubbleCloseMetrics(closed_reason);
 
   // If the bubble is closed with the current_bubble_type_ as
   // kUploadComplete, transition the current_bubble_type_ to kInactive, reset

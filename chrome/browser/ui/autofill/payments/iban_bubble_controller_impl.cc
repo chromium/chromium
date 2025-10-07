@@ -21,6 +21,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -304,25 +305,8 @@ void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
   OnBubbleClosed(PaymentsUiClosedReason::kClosed);
 }
 
-void IbanBubbleControllerImpl::OnBubbleClosed(
+void IbanBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
-  if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
-      current_bubble_type_ == IbanBubbleType::kUploadSave) {
-    if (closed_reason == PaymentsUiClosedReason::kCancelled) {
-      std::move(save_iban_prompt_callback_)
-          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
-                   kDeclined,
-               /*nickname=*/u"");
-    } else if (closed_reason == PaymentsUiClosedReason::kClosed) {
-      std::move(save_iban_prompt_callback_)
-          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
-                   kIgnored,
-               /*nickname=*/u"");
-    }
-  }
-
-  ResetBubbleViewAndInformBubbleManager();
-
   auto get_metric = [](PaymentsUiClosedReason reason) {
     switch (reason) {
       case PaymentsUiClosedReason::kAccepted:
@@ -359,6 +343,28 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
         break;
     }
   }
+}
+
+void IbanBubbleControllerImpl::OnBubbleClosed(
+    PaymentsUiClosedReason closed_reason) {
+  if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
+      current_bubble_type_ == IbanBubbleType::kUploadSave) {
+    if (closed_reason == PaymentsUiClosedReason::kCancelled) {
+      std::move(save_iban_prompt_callback_)
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kDeclined,
+               /*nickname=*/u"");
+    } else if (closed_reason == PaymentsUiClosedReason::kClosed) {
+      std::move(save_iban_prompt_callback_)
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kIgnored,
+               /*nickname=*/u"");
+    }
+  }
+
+  ResetBubbleViewAndInformBubbleManager();
+
+  LogBubbleCloseMetrics(closed_reason);
 
   if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
     current_bubble_type_ = IbanBubbleType::kInactive;
