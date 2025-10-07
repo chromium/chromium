@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "components/origin_matcher/origin_matcher.h"
-#include "components/origin_matcher/origin_matcher.mojom.h"
 #include "components/origin_matcher/origin_matcher_internal.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+
+// List below origin_matcher_internal.h, so OriginMatcherRule's a complete type.
+#include "components/origin_matcher/origin_matcher.mojom.h"
 
 namespace mojo {
 

@@ -6,13 +6,15 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/origin_matcher/features.h"
-#include "components/origin_matcher/origin_matcher.mojom.h"
 #include "components/origin_matcher/origin_matcher_internal.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
+
+// List below origin_matcher_internal.h, so OriginMatcherRule's a complete type.
+#include "components/origin_matcher/origin_matcher.mojom.h"
 
 namespace origin_matcher {
 
