@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.GrammarChecker.Check.Event"
-    enum="Boolean" expires_after="2025-11-09">
+    enum="Boolean" expires_after="2026-04-01">
   <owner>jiwan@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>The result of grammar check, which can be OK or ERROR.</summary>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2025-10-12">
+    expires_after="2026-04-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.NumWorkerProcess" units="count"
-    expires_after="2025-11-09">
+    expires_after="2026-04-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
