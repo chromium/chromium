@@ -12,15 +12,15 @@ import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import '../controls/collapse_radio_button.js';
+import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_settings/site_list.js';
-import './collapse_radio_button.js';
 import './do_not_track_toggle.js';
-import '../controls/settings_radio_group.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';

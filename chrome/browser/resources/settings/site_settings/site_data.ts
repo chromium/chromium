@@ -10,8 +10,8 @@
 import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import '../controls/collapse_radio_button.js';
 import '../controls/settings_radio_group.js';
-import '../privacy_page/collapse_radio_button.js';
 import '../settings_page/settings_subpage.js';
 import './site_list.js';
 import './site_settings_shared.css.js';
@@ -20,8 +20,8 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsCollapseRadioButtonElement} from '../controls/collapse_radio_button.js';
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';

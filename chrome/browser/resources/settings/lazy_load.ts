@@ -186,6 +186,7 @@ export {getTimePeriodString, SettingsClearBrowsingDataTimePicker} from './clear_
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsOtherGoogleDataDialogElement} from './clear_browsing_data_dialog/other_google_data_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
+export {SettingsCollapseRadioButtonElement} from './controls/collapse_radio_button.js';
 export {ControlledButtonElement} from './controls/controlled_button.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
 export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
@@ -217,7 +218,6 @@ export {SettingsSyncEncryptionOptionsElement} from './people_page/sync_encryptio
 export {SettingsSyncPageElement} from './people_page/sync_page.js';
 export {NetworkPredictionOptions} from './performance_page/constants.js';
 export {SettingsAntiAbusePageElement} from './privacy_page/anti_abuse_page.js';
-export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
 export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {CrLottieElement} from './privacy_page/cr_lottie.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';

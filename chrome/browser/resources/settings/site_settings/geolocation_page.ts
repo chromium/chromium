@@ -11,9 +11,9 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './category_setting_exceptions.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
+import '../controls/collapse_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../privacy_icons.html.js';
-import '../privacy_page/collapse_radio_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
