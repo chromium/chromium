@@ -14,7 +14,6 @@
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/cannot_discard_reason.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/memory_pressure/reclaim_target.h"
 #include "components/memory_pressure/unnecessary_discard_monitor.h"
 #include "components/performance_manager/public/features.h"

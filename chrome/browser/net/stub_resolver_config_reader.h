@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/net/dns_over_https_config_source.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "services/network/public/mojom/host_resolver.mojom-forward.h"
 
 class PrefRegistrySimple;
 class PrefService;

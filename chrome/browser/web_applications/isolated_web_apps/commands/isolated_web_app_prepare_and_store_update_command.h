@@ -30,7 +30,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
 

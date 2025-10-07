@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

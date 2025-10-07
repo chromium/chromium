@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "chrome/services/file_util/public/mojom/constants.mojom.h"
 
 class SingleFileTarReaderTest;
 

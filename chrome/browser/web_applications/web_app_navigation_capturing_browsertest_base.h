@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 
 class Browser;
 class GURL;

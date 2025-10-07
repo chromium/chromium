@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_METRICS_H_
 
-#include "chromeos/ash/experiences/arc/mojom/webapk.mojom-forward.h"
 
 namespace apps {
 

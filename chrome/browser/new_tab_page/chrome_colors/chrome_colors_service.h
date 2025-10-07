@@ -11,7 +11,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/mojom/themes.mojom.h"
 
 class TestChromeColorsService;
 

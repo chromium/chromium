@@ -7,7 +7,6 @@
 
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace tabs_api {

@@ -14,7 +14,6 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "content/public/browser/push_messaging_service.h"
-#include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
 // This class enables push subscription refreshes as defined in the docs:
 // https://w3c.github.io/push-api/#subscription-refreshes

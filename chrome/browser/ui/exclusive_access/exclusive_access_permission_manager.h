@@ -14,7 +14,6 @@
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace content {
 class PermissionController;

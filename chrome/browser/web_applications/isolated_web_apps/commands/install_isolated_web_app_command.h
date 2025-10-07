@@ -36,7 +36,6 @@
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
 

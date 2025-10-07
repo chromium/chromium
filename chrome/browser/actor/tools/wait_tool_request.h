@@ -10,7 +10,6 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
 class ToolRequestVisitorFunctor;

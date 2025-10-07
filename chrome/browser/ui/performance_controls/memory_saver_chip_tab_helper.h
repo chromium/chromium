@@ -8,7 +8,6 @@
 #include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"

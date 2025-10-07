@@ -17,7 +17,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
-#include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {

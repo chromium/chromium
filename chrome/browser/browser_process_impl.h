@@ -34,7 +34,6 @@
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
-#include "services/network/public/mojom/network_service.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/upgrade_detector/build_state.h"

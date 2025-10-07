@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 
 namespace extensions {

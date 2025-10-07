@@ -20,7 +20,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;

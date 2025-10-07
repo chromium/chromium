@@ -7,7 +7,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/actor/ui/actor_overlay.mojom.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"

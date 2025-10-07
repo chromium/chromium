@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_client_base.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 
 namespace ash {
 

@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace ash {
 

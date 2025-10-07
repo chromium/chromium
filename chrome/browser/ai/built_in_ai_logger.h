@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "components/optimization_guide/core/optimization_guide_common.mojom-shared.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 
 // Wrapper that logs a stream to OptimizationGuideLogger during destruction.

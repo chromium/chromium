@@ -14,8 +14,6 @@
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/ui_test_input.h"
 #include "chrome/browser/vr/vr_export.h"
-#include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
-#include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "device/vr/util/sliding_average.h"
 
 namespace base {
@@ -53,7 +51,6 @@ class VR_EXPORT BrowserRenderer {
       std::optional<UiVisibilityState> visibility_expectation);
 
  private:
-
   void Draw(FrameType frame_type,
             base::TimeTicks current_time,
             const gfx::Transform& head_pose);

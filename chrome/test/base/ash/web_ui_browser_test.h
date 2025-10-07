@@ -17,7 +17,6 @@
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace {
 class WebUITestMessageHandler;

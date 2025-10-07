@@ -9,7 +9,6 @@
 #include <string>
 
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/common/actor.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace actor {

@@ -13,7 +13,6 @@
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
-#include "chromeos/ash/experiences/arc/mojom/memory.mojom-forward.h"
 
 namespace content {
 class BrowserContext;

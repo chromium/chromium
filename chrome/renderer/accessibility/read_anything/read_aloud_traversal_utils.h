@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_position.h"
 
 // Utilities for traversing the accessibility tree for Read Aloud.

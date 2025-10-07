@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "third_party/blink/public/mojom/content_extraction/inner_html.mojom-forward.h"
 
 namespace content {
 class RenderFrameHost;

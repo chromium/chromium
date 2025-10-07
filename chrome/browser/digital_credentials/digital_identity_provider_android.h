@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/public/browser/digital_identity_provider.h"
-#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "url/origin.h"
 
 namespace content {
