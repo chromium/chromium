@@ -237,10 +237,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()
                 && ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
             mTabStateStoreIsAuthoritative =
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE,
-                            "authoritative_read_source",
-                            false);
+                    ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue();
             // Temporary variable usage to avoid unused variable warning.
             Log.i(TAG, "mTabStateStoreIsAuthoritative: " + mTabStateStoreIsAuthoritative);
 

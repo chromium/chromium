@@ -1051,6 +1051,8 @@ public abstract class ChromeFeatureList {
                     TAB_MODEL_INIT_FIXES,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sTabStorageSqlitePrototype =
+            newCachedFlag(TAB_STORAGE_SQLITE_PROTOTYPE, false);
     public static final CachedFlag sTabStripDensityChangeAndroid =
             newCachedFlag(TAB_STRIP_DENSITY_CHANGE_ANDROID, true);
     public static final CachedFlag sTabStripIncognitoMigration =
@@ -1238,6 +1240,7 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
                     sTabModelInitFixes,
+                    sTabStorageSqlitePrototype,
                     sTabStripDensityChangeAndroid,
                     sTabStripIncognitoMigration,
                     sTabWindowManagerReportIndicesMismatch,
@@ -1370,8 +1373,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, true);
-    public static final MutableFlagWithSafeDefault sTabStorageSqlitePrototype =
-            newMutableFlagWithSafeDefault(TAB_STORAGE_SQLITE_PROTOTYPE, false);
     public static final MutableFlagWithSafeDefault sTabStripLayoutOptimization =
             newMutableFlagWithSafeDefault(TAB_STRIP_LAYOUT_OPTIMIZATION, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
@@ -1708,6 +1709,11 @@ public abstract class ChromeFeatureList {
                     "start_surface_return_time_on_tablet_seconds",
                     14400); // 4 hours
 
+    public static final BooleanCachedFeatureParam
+            sTabStorageSqlitePrototypeAuthoritativeReadSource =
+                    newBooleanCachedFeatureParam(
+                            TAB_STORAGE_SQLITE_PROTOTYPE, "authoritative_read_source", false);
+
     public static final StringCachedFeatureParam sTabStripLayoutOptimizationOemAllowlist =
             newStringCachedFeatureParam(
                     TAB_STRIP_LAYOUT_OPTIMIZATION, "custom_headers_oem_allowlist", "");
@@ -1821,6 +1827,7 @@ public abstract class ChromeFeatureList {
                     sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabGroupListContainment,
+                    sTabStorageSqlitePrototypeAuthoritativeReadSource,
                     sTabStripLayoutOptimizationOemAllowlist,
                     sTabStripLayoutOptimizationOemDenylist,
                     sTabStripLayoutOptimizationOnExternalDisplay,
