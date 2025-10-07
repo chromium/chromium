@@ -200,6 +200,8 @@ source_set("tab") {
     "tab_state_storage_service.h",
     "tab_storage_package.h",
     "tab_storage_packager.h",
+    "tab_storage_type.h",
+    "tab_storage_util.h",
     "web_contents_state.h",
   ]
   deps = [
@@ -224,6 +226,7 @@ source_set("impl") {
     "tab_state_storage_database.cc",
     "tab_state_storage_service.cc",
     "tab_storage_package.cc",
+    "tab_storage_util.cc",
     "web_contents_state.cc",
   ]
   deps = [
@@ -236,5 +239,17 @@ source_set("impl") {
     "//components/tabs:public",
     "//content/public/browser",
     "//sql",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_storage_util_unittest.cc" ]
+  deps = [
+    ":tab",
+    "//base",
+    "//chrome/browser",
+    "//components/tabs:public",
+    "//testing/gtest",
   ]
 }

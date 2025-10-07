@@ -109,7 +109,7 @@ bool TabStateStorageDatabase::Initialize() {
 }
 
 bool TabStateStorageDatabase::SaveNode(int id,
-                                       int type,
+                                       TabStorageType type,
                                        std::string payload,
                                        std::string children) {
   CHECK(db_);
@@ -130,7 +130,7 @@ bool TabStateStorageDatabase::SaveNode(int id,
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertTabSql));
 
   write_statement.BindInt(0, id);
-  write_statement.BindInt(1, type);
+  write_statement.BindInt(1, static_cast<int>(type));
   write_statement.BindBlob(2, std::move(payload));
   write_statement.BindBlob(3, std::move(children));
 
@@ -150,7 +150,7 @@ std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {
   while (select_statement.Step()) {
     NodeState entry;
     entry.id = select_statement.ColumnInt(0);
-    entry.type = select_statement.ColumnInt(1);
+    entry.type = static_cast<TabStorageType>(select_statement.ColumnInt(1));
     select_statement.ColumnBlobAsString(2, &entry.payload);
     select_statement.ColumnBlobAsString(3, &entry.children);
     entries.emplace_back(std::move(entry));

@@ -10,6 +10,7 @@
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
+#include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -50,8 +51,7 @@ void TabStateStorageService::Save(const TabInterface* tab) {
   DCHECK(package) << "Packager should return a package";
 
   int storage_id = GetOrCreateStorageId(tab);
-  // TODO(https://crbug.com/448875689): Create a type enum.
-  tab_backend_->Save(storage_id, 1, std::move(package));
+  tab_backend_->Save(storage_id, TabStorageType::kTab, std::move(package));
 }
 
 void TabStateStorageService::Save(const TabCollection* collection) {
@@ -64,8 +64,8 @@ void TabStateStorageService::Save(const TabCollection* collection) {
   DCHECK(package) << "Packager should return a package";
 
   int storage_id = GetOrCreateStorageId(collection);
-  // TODO(https://crbug.com/448875689): Create a type enum.
-  tab_backend_->Save(storage_id, 2, std::move(package));
+  TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
+  tab_backend_->Save(storage_id, type, std::move(package));
 }
 
 void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {
@@ -80,7 +80,7 @@ void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
   int max_storage_id = 0;
   for (auto& entry : entries) {
     max_storage_id = std::max(max_storage_id, entry.id);
-    if (entry.type == 1) {
+    if (entry.type == TabStorageType::kTab) {
       tabs_pb::TabState tab_state;
       if (tab_state.ParseFromString(entry.payload)) {
         tab_states.emplace_back(std::move(tab_state));

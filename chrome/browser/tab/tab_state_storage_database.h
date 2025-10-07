@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/tab/tab_storage_type.h"
 
 namespace sql {
 class Database;
@@ -21,7 +22,7 @@ namespace tabs {
 // Each row may be a tab or parent collection.
 struct NodeState {
   int id;
-  int type;
+  TabStorageType type;
   std::string payload;
   std::string children;
 };
@@ -38,7 +39,10 @@ class TabStateStorageDatabase {
   bool Initialize();
 
   // Saves a node to the database.
-  bool SaveNode(int id, int type, std::string payload, std::string children);
+  bool SaveNode(int id,
+                TabStorageType type,
+                std::string payload,
+                std::string children);
 
   // Loads all nodes from the database.
   std::vector<NodeState> LoadAllNodes();
