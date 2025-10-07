@@ -48,6 +48,7 @@ suite('PrivacyPageIndex', function() {
           isGuest: false,
           isPrivacySandboxRestricted: false,
           isPrivacySandboxRestrictedNoticeEnabled: false,
+          showPersistentPermissions: false,
         },
         overrides || {}));
     resetPageVisibilityForTesting();
@@ -518,6 +519,15 @@ suite('PrivacyPageIndex', function() {
       return testViewsForRoute(
           routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
           ['siteSettingsFederatedIdentityApi'], 'privacy');
+    });
+
+    test('RoutingFileSystemWriteDetails', async function() {
+      assertFalse(loadTimeData.getBoolean('showPersistentPermissions'));
+      await createPrivacyPageIndex({showPersistentPermissions: true});
+
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS,
+          ['siteSettingsFilesystemWriteDetails'], 'privacy');
     });
 
     test('RoutingHandTracking', async function() {
