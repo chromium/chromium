@@ -367,119 +367,133 @@ luci.builder_health_notifier(
     owner_email = "chrome-browser-infra-team@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = True,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chrome-fuchsia-engprod@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "clank-build@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "clank-engprod@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chrome-gpu-infra@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "angle-team@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "browser-automation-staff@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "cronet-team@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
+
 luci.builder_health_notifier(
     owner_email = "cronet-sheriff@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "bling-engprod@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
-)
-
-luci.builder_health_notifier(
-    owner_email = "chrome-skia-graphite@google.com",
-    ignore_buckets = ["try"],
-    notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chromeos-chrome-build@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "core-devices-eng@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chrome-fuzzing-core@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "v8-infra@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chrome-desktop-engprod@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chrome-build-team@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "cast-eng@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chrome-linux-engprod@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
     owner_email = "chrome-security-architecture@google.com",
     ignore_buckets = ["try"],
     notify_all_healthy = False,
+    gardened_builders_only = True,
 )
 
 luci.builder_health_notifier(
