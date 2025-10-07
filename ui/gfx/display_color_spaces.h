@@ -75,6 +75,11 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   void SetOutputBufferFormats(gfx::BufferFormat buffer_format_no_alpha,
                               gfx::BufferFormat buffer_format_with_alpha);
 
+  // Set the format for all color usages to |format_no_alpha| when alpha is not
+  // needed and |format_with_alpha| when alpha is needed.
+  void SetOutputFormats(viz::SharedImageFormat format_no_alpha,
+                        viz::SharedImageFormat format_with_alpha);
+
   // Retrieve parameters for a specific usage and alpha.
   ColorSpace GetOutputColorSpace(ContentColorUsage color_usage,
                                  bool needs_alpha) const;

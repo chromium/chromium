@@ -95,6 +95,14 @@ void DisplayColorSpaces::SetOutputBufferFormats(
   }
 }
 
+void DisplayColorSpaces::SetOutputFormats(
+    viz::SharedImageFormat format_no_alpha,
+    viz::SharedImageFormat format_with_alpha) {
+  SetOutputBufferFormats(
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format_no_alpha),
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format_with_alpha));
+}
+
 void DisplayColorSpaces::SetOutputColorSpaceAndFormat(
     ContentColorUsage color_usage,
     bool needs_alpha,
