@@ -145,30 +145,17 @@ IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
           [[UISceneActivationRequestOptions alloc] init];
       options.requestingScene = origin_browser->GetSceneState().scene;
 
-      if (@available(iOS 17, *)) {
-        UISceneSessionActivationRequest* request =
-            [UISceneSessionActivationRequest
-                requestWithSession:target_scene_state.scene.session];
-        request.options = options;
-        [[UIApplication sharedApplication]
-            activateSceneSessionForRequest:request
-                              errorHandler:^(NSError* error) {
-                                LOG(ERROR) << base::SysNSStringToUTF8(
-                                    error.localizedDescription);
-                                NOTREACHED();
-                              }];
-
-      } else {
-        [[UIApplication sharedApplication]
-            requestSceneSessionActivation:target_scene_state.scene.session
-                             userActivity:nil
-                                  options:options
-                             errorHandler:^(NSError* error) {
-                               LOG(ERROR) << base::SysNSStringToUTF8(
-                                   error.localizedDescription);
-                               NOTREACHED();
-                             }];
-      }
+      UISceneSessionActivationRequest* request =
+          [UISceneSessionActivationRequest
+              requestWithSession:target_scene_state.scene.session];
+      request.options = options;
+      [[UIApplication sharedApplication]
+          activateSceneSessionForRequest:request
+                            errorHandler:^(NSError* error) {
+                              LOG(ERROR) << base::SysNSStringToUTF8(
+                                  error.localizedDescription);
+                              NOTREACHED();
+                            }];
 
       if (!target_scene_state.UIEnabled) {
         return std::nullopt;

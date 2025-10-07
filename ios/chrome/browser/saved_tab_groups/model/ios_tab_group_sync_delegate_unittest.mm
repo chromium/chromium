@@ -741,28 +741,17 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   scene_state.UIEnabled = NO;
   UIApplication* app = [UIApplication sharedApplication];
   id app_mock = OCMPartialMock(app);
-  if (@available(iOS 17, *)) {
-    id request_arg =
-        [OCMArg checkWithBlock:^BOOL(UISceneSessionActivationRequest* request) {
-          return request.session == scene_state.scene.session &&
-                 request.options.requestingScene ==
-                     browser_same_profile_->GetSceneState().scene;
-        }];
-    OCMStub([app_mock activateSceneSessionForRequest:request_arg
-                                        errorHandler:[OCMArg any]])
-        .andDo(^(NSInvocation* invocation) {
-          scene_state.UIEnabled = YES;
-        });
-  } else {
-    OCMStub([app_mock requestSceneSessionActivation:scene_state.scene.session
-                                       userActivity:nil
-                                            options:[OCMArg any]
-                                       errorHandler:[OCMArg any]])
-        .andDo(^(NSInvocation* invocation) {
-          scene_state.UIEnabled = YES;
-        });
-  }
-
+  id request_arg =
+      [OCMArg checkWithBlock:^BOOL(UISceneSessionActivationRequest* request) {
+        return request.session == scene_state.scene.session &&
+               request.options.requestingScene ==
+                   browser_same_profile_->GetSceneState().scene;
+      }];
+  OCMStub([app_mock activateSceneSessionForRequest:request_arg
+                                      errorHandler:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        scene_state.UIEnabled = YES;
+      });
   OCMStub([mock_application_handler_
       displayTabGridInMode:TabGridOpeningMode::kRegular]);
   OCMStub([mock_tab_groups_handler_ showTabGroup:local_tab_group]);
