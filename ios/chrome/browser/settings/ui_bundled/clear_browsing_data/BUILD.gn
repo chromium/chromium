@@ -30,7 +30,7 @@ source_set("clear_browsing_data") {
     "time_range_selector_table_view_controller.mm",
   ]
   deps = [
-    ":ui_constants",
+    ":constants",
     ":util",
     "//components/application_locale_storage",
     "//components/browsing_data/core",
@@ -94,10 +94,10 @@ source_set("clear_browsing_data") {
   ]
 }
 
-source_set("ui_constants") {
+source_set("constants") {
   sources = [
-    "clear_browsing_data_ui_constants.h",
-    "clear_browsing_data_ui_constants.mm",
+    "quick_delete_constants.h",
+    "quick_delete_constants.mm",
   ]
 }
 
@@ -185,7 +185,7 @@ source_set("eg2_tests") {
     "quick_delete_egtest.mm",
   ]
   deps = [
-    ":ui_constants",
+    ":constants",
     "//base/test:test_support",
     "//components/browsing_data/core",
     "//components/browsing_data/core:cookie_or_cache_deletion_choice",
@@ -200,7 +200,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
-    "//ios/chrome/browser/settings/ui_bundled/cells:clear_browsing_data_constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

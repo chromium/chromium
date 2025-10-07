@@ -59,15 +59,6 @@ source_set("cells") {
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
   ]
-
-  public_deps = [ ":clear_browsing_data_constants" ]
-}
-
-source_set("clear_browsing_data_constants") {
-  sources = [
-    "clear_browsing_data_constants.h",
-    "clear_browsing_data_constants.mm",
-  ]
 }
 
 source_set("public") {

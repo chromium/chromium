@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/table_view_pop_up_cell.h"
