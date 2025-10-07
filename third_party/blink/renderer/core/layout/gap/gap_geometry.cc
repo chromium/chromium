@@ -408,28 +408,21 @@ LayoutUnit GapGeometry::ComputeEndOffsetForFlexOrMulticolCrossGap(
       main_gaps[main_gap_running_index_].GetCrossGapBeforeEnd();
 
   // If the cross gap does not fall before the currently tracked main gap,
-  // advance `main_gap_running_index_` to the next main gap.
+  // advance `main_gap_running_index_` to the next main gap that has cross
+  // gap(s) before it.
   if (cross_gap_index > last_cross_before_index) {
-    ++main_gap_running_index_;
+    do {
+      ++main_gap_running_index_;
 
-    if (GetContainerType() == ContainerType::kMultiColumn) {
       if (main_gap_running_index_ == main_gaps.size()) {
         main_gap_running_index_ = kNotFound;
         return content_block_end_;
       }
-
-      CHECK_LE(main_gap_running_index_, main_gaps.size());
-
-      if (main_gaps[main_gap_running_index_].IsEndSpannerMainGap()) {
-        // Main gaps placed at the end of spanners don't have any cross gaps
-        // associated with them, so we skip them.
-        ++main_gap_running_index_;
-        if (main_gap_running_index_ == main_gaps.size()) {
-          main_gap_running_index_ = kNotFound;
-          return content_block_end_;
-        }
-      }
-    }
+      // Main gaps placed at the end of spanners don't have any cross gaps
+      // associated with them, so we skip them. The same may be the case at the
+      // beginning of spanners, if a spanner was pushed to the next row, so that
+      // it follows a row gap.
+    } while (!main_gaps[main_gap_running_index_].HasCrossGapsBefore());
   }
 
   CHECK_LT(main_gap_running_index_, main_gaps.size());
