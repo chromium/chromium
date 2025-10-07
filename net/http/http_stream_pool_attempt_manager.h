@@ -181,8 +181,10 @@ class HttpStreamPool::AttemptManager
   // or failure.
   size_t NotifiedRequestJobCount() const { return notified_jobs_.size(); }
 
-  // Returns the number of in-flight TCP based attempts.
-  size_t TcpBasedAttemptCount() const { return tcp_based_attempts_.size(); }
+  // Returns the number of in-flight TCP based attempt slots.
+  size_t TcpBasedAttemptSlotCount() const {
+    return tcp_based_attempt_slots_.size();
+  }
 
   // Cancels all in-flight TCP based attempts.
   void CancelTcpBasedAttempts(StreamSocketCloseReason reason);
@@ -351,11 +353,36 @@ class HttpStreamPool::AttemptManager
       std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt,
       std::optional<size_t> max_attempts = std::nullopt);
 
+  // Creates and starts a TCP based attempt.
+  void CreateAndStartTcpBasedAttempt(bool using_tls,
+                                     IPEndPoint ip_endpoint,
+                                     TcpBasedAttemptSlot* slot);
+
+  // Finds or allocates a TcpBasedAttemptSlot for `ip_endpoint`. If under the
+  // group limit, allocates a new slot. Otherwise, tries to find an existing
+  // slot that doesn't have an attempt for the same address family as
+  // `ip_endpoint`. Returns nullptr when there is no available slot.
+  TcpBasedAttemptSlot* FindTcpBasedAttemptSlot(const IPEndPoint& ip_endpoint);
+
+  // Cancels `raw_slot` and removes it from `tcp_based_attempt_slots_`.
+  void CancelTcpBasedAttemptSlot(
+      TcpBasedAttemptSlot* raw_slot,
+      std::optional<StreamSocketCloseReason> reason = std::nullopt);
+
   // Returns true if there are pending jobs and the pool and the group
   // haven't reached stream limits. If the pool reached the stream limit, may
   // close idle sockets in other groups. Also may cancel preconnects or trigger
   // `spdy_throttle_timer_`.
   bool IsTcpBasedAttemptReady();
+
+  // When an attempt to one address faimily (e.g., IPv4) is slow, this allows a
+  // new attempt to the other address family (e.g. IPv6) to be started in
+  // parallel. This is allowed even if the group's stream limit has been reached
+  // because the new attempt reuses the same "slot" as the slow attempt.
+  //
+  // Returns true if there is a slow attempt for one address family and no
+  // corresponding attempt for the other has been started yet.
+  bool CanStartFallbackTcpBasedAttempt() const;
 
   // Actual implementation of IsConnectionAttemptReady(), without having side
   // effects.
@@ -385,7 +412,8 @@ class HttpStreamPool::AttemptManager
   // preconnects.
   size_t CalculateRequiredTcpBasedAttemptForPreconnect() const;
 
-  // Returns the number of TCP based attempts that are not considered as slow.
+  // Returns the number of TCP based attempt slots that are not considered as
+  // slow.
   size_t NonSlowTcpBasedAttemptCount() const;
 
   // Returns a QUIC endpoint to make a connection attempt. See the comments in
@@ -457,9 +485,15 @@ class HttpStreamPool::AttemptManager
   // limit.
   raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
 
-  // Transfers the ownership of `raw_attempt` to the caller.
+  // Transfers the ownership of `raw_slot` to the caller.
+  std::unique_ptr<TcpBasedAttemptSlot> ExtractTcpBasedAttemptSlot(
+      TcpBasedAttemptSlot* raw_slot);
+
+  // Transfers the ownership of `raw_attempt` to the caller. If `rv` is OK, also
+  // removes the corresponding slot from `tcp_based_attempt_slots_`.
   std::unique_ptr<TcpBasedAttempt> ExtractTcpBasedAttempt(
-      TcpBasedAttempt* raw_attempt);
+      TcpBasedAttempt* raw_attempt,
+      int rv);
 
   void HandleTcpBasedAttemptFailure(
       std::unique_ptr<TcpBasedAttempt> tcp_based_attempt,
@@ -489,6 +523,8 @@ class HttpStreamPool::AttemptManager
   // Mark QUIC brokenness if QUIC attempts failed but TCP/TLS attempts succeeded
   // or not attempted.
   void MaybeMarkQuicBroken();
+
+  base::Value::Dict GetTcpBasedAttemptSlotsAsValue() const;
 
   // Returns true when this can complete.
   bool CanComplete() const;
@@ -565,10 +601,8 @@ class HttpStreamPool::AttemptManager
   // from the newest job.
   std::optional<SSLConfig> base_ssl_config_;
 
-  std::set<std::unique_ptr<TcpBasedAttempt>, base::UniquePtrComparator>
-      tcp_based_attempts_;
-  // The number of in-flight TCP based attempts that are treated as slow.
-  size_t slow_tcp_based_attempt_count_ = 0;
+  std::set<std::unique_ptr<TcpBasedAttemptSlot>, base::UniquePtrComparator>
+      tcp_based_attempt_slots_;
 
   base::OneShotTimer spdy_throttle_timer_;
   bool spdy_throttle_delay_passed_ = false;

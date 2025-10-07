@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -260,7 +261,17 @@ void HttpStreamPool::DecrementTotalHandedOutStreamCount() {
 }
 
 void HttpStreamPool::IncrementTotalConnectingStreamCount() {
-  CHECK(EnsureTotalActiveStreamCountBelowLimit());
+  // TODO(crbug.com/383606724): Change this `if` to CHECK() once we stabilize
+  // the implementation.
+  if (!EnsureTotalActiveStreamCountBelowLimit()) {
+    base::debug::Alias(&total_handed_out_stream_count_);
+    base::debug::Alias(&total_idle_stream_count_);
+    base::debug::Alias(&total_connecting_stream_count_);
+    NOTREACHED() << "handed_out=" << total_handed_out_stream_count_
+                 << ", idle=" << total_idle_stream_count_
+                 << ", connecting=" << total_connecting_stream_count_
+                 << ", limit=" << max_stream_sockets_per_pool_;
+  }
   ++total_connecting_stream_count_;
   TRACE_COUNTER("net.stream", "HttpStreamPoolTotalConnectingStreams",
                 total_connecting_stream_count_);

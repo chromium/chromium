@@ -158,6 +158,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE AttemptManager;
   class NET_EXPORT_PRIVATE IPEndPointStateTracker;
   class NET_EXPORT_PRIVATE TcpBasedAttempt;
+  class NET_EXPORT_PRIVATE TcpBasedAttemptSlot;
   class NET_EXPORT_PRIVATE QuicAttempt;
   struct NET_EXPORT_PRIVATE QuicAttemptOutcome {
     explicit QuicAttemptOutcome(int result) : result(result) {}
