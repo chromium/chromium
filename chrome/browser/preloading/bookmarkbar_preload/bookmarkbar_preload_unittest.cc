@@ -82,7 +82,7 @@ class BookmarkBarPreloadPipelineManagerTest
 
 // Test that a search related url is ignored by the prerender BookmarkBar
 // trigger.
-TEST_F(BookmarkBarPreloadPipelineManagerTest, DisallowSearchUrlBookmarkBar) {
+TEST_F(BookmarkBarPreloadPipelineManagerTest, PrerenderDisallowSearchUrl) {
   base::HistogramTester histogram_tester;
   GURL prerendering_url = GetSearchSuggestionUrl("prer", "prerender");
   bookmarkbar_preload_manager()->StartPrerender(prerendering_url);
@@ -90,6 +90,17 @@ TEST_F(BookmarkBarPreloadPipelineManagerTest, DisallowSearchUrlBookmarkBar) {
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar", true, 1);
+}
+
+// Test that a search related url is ignored by the prefetch BookmarkBar
+// trigger.
+TEST_F(BookmarkBarPreloadPipelineManagerTest, PrefetchDisallowSearchUrl) {
+  base::HistogramTester histogram_tester;
+  GURL prefetch_url = GetSearchSuggestionUrl("pref", "prefetch");
+  bookmarkbar_preload_manager()->StartPrefetch(prefetch_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.Prefetch.IsPrefetchingSRPUrl.Embedder_BookmarkBar", true, 1);
 }
 
 }  // namespace
