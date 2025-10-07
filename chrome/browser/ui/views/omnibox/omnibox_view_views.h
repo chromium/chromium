@@ -65,6 +65,17 @@ class OmniboxViewViews
       public views::TextfieldController,
       public ui::CompositorObserver,
       public TemplateURLServiceObserver {
+  // TODO(crbug.com/392015004): Remove this macro once it gets fixed.
+  //
+  // Both `OmniboxView` and `views::Textfield` (*1) have the
+  // `ADVANCED_MEMORY_SAFETY_CHECKS` macro, hence there is ambiguity about which
+  // `operator new` should be used (although the two `operator new` are
+  // eventually equivalent). Choose `OmniboxView` with no deep reason.
+  //
+  // (*1) Note that `views::Textfield` inherits from `views::View`, which has
+  // the `ADVANCED_MEMORY_SAFETY_CHECKS` macro.
+  INHERIT_MEMORY_SAFETY_CHECKS(OmniboxView);
+
   METADATA_HEADER(OmniboxViewViews, views::Textfield)
 
  public:

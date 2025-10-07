@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -31,6 +32,9 @@ class OmniboxEditModel;
 class OmniboxViewMacTest;
 
 class OmniboxView {
+  // TODO(crbug.com/392015004): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   using IconFetchedCallback = base::OnceCallback<void(const gfx::Image& icon)>;
 

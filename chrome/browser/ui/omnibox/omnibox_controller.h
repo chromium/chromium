@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/safety_checks.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -19,6 +20,9 @@ class OmniboxView;
 // This class controls the various services that can modify the content of the
 // omnibox, including `AutocompleteController` and `OmniboxEditModel`.
 class OmniboxController : public AutocompleteController::Observer {
+  // TODO(crbug.com/392015004): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   OmniboxController(OmniboxView* view,
                     std::unique_ptr<OmniboxClient> client,
