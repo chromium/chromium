@@ -34,7 +34,7 @@ BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicEnableAutoLoginDialogs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicEnableAutoLoginDialogs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
