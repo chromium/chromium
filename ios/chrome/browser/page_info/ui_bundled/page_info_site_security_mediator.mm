@@ -10,7 +10,6 @@
 #import "components/ssl_errors/error_info.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_constants.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_site_security_description.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"

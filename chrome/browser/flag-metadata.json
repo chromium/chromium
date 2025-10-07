@@ -6123,16 +6123,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ios-page-info-last-visited",
-    "owners": [
-      "fsenra@google.com",
-      "cristianciacu@google.com",
-      "chrome-browser-privacy-team@google.com",
-      "bling-flags@google.com"
-    ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "ios-price-tracking-notification-promo-card",
     "owners": [
       "davidjm@google.com",
@@ -6163,14 +6153,6 @@
       "bling-gsu-pod@google.com"
     ],
     "expiry_milestone": 136
-  },
-  {
-    "name": "ios-quick-delete",
-    "owners": [
-      "fsenra@google.com",
-      "chrome-browser-privacy-team@google.com"
-    ],
-    "expiry_milestone": 137
   },
   {
     "name": "ios-reactivation-notifications",

@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
-#import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_app_interface.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_constants.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_app_interface.h"
@@ -153,7 +152,6 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   config.features_enabled.push_back(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
-  config.features_enabled.push_back(kPageInfoLastVisitedIOS);
   config.additional_args.push_back(
       std::string("-") +
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);

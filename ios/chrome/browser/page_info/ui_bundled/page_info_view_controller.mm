@@ -154,12 +154,10 @@ const char kTrackingProtectionSettingsURL[] =
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  if (IsPageInfoLastVisitedIOSEnabled()) {
-    // The Last Visited timestamp needs to be updated when the view is first
-    // loaded and subsequencenly since there could have been deletions performed
-    // on the Last Visited or History UI.
-    [self.pageInfoHistoryMutator lastVisitedTimestampNeedsUpdate];
-  }
+  // The Last Visited timestamp needs to be updated when the view is first
+  // loaded and subsequencenly since there could have been deletions performed
+  // on the Last Visited or History UI.
+  [self.pageInfoHistoryMutator lastVisitedTimestampNeedsUpdate];
 }
 
 #pragma mark - LegacyChromeTableViewController
@@ -204,9 +202,9 @@ const char kTrackingProtectionSettingsURL[] =
     [self updateSnapshotForAboutThisSite:snapshot];
   }
 
-  // Append cell for the Last Visited row only if the `kPageInfoLastVisitedIOS`
-  // flag is enabled and the Last Visited timestamp is available.
-  if (IsPageInfoLastVisitedIOSEnabled() && _lastVisitedTimestamp) {
+  // Append cell for the Last Visited row only if the flag is enabled and the
+  // Last Visited timestamp is available.
+  if (_lastVisitedTimestamp) {
     [snapshot
         appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
     [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]
@@ -244,7 +242,6 @@ const char kTrackingProtectionSettingsURL[] =
           showAboutThisSitePage:_aboutThisSiteInfo.moreAboutURL];
       break;
     case ItemIdentifierLastVisited:
-      CHECK(IsPageInfoLastVisitedIOSEnabled());
       [self.pageInfoPresentationHandler showLastVisitedPage];
       break;
     case ItemIdentifierTrackingProtection: {
@@ -733,8 +730,6 @@ const char kTrackingProtectionSettingsURL[] =
 #pragma mark - PageInfoHistoryConsumer
 
 - (void)setLastVisitedTimestamp:(std::optional<base::Time>)lastVisited {
-  CHECK(IsPageInfoLastVisitedIOSEnabled());
-
   if (lastVisited.has_value()) {
     _lastVisitedTimestamp = base::SysUTF16ToNSString(
         page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(

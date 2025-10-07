@@ -1244,10 +1244,6 @@ const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";
 
-const char kPageInfoLastVisitedIOSName[] = "Last Visited in Page Info for iOS";
-const char kPageInfoLastVisitedIOSDescription[] =
-    "Shows the Last Visited row in Page Info for iOS.";
-
 const char kPageContentAnnotationsPersistSalientImageMetadataName[] =
     "Page content annotations - Persist salient image metadata";
 const char kPageContentAnnotationsPersistSalientImageMetadataDescription[] =
