@@ -453,18 +453,21 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         viewportRect.bottom = windowViewportRect.bottom;
                     }
 
-                    int leftOffset = 0;
+                    int initialLeftOffset = 0;
+                    int finalLeftOffset = 0;
                     int initialTopOffset = 0;
                     int finalTopOffset = 0;
                     if (isShrink) {
                         initialRect = viewportRect;
                         finalRect = coordinator.getTabThumbnailRect(tabId);
-                        leftOffset = initialRect.left;
+                        initialLeftOffset = initialRect.left;
+                        finalLeftOffset = hubRect.left;
                         finalTopOffset = hubRect.top;
                     } else {
                         initialRect = coordinator.getTabThumbnailRect(tabId);
                         finalRect = viewportRect;
-                        leftOffset = finalRect.left;
+                        initialLeftOffset = hubRect.left;
+                        finalLeftOffset = finalRect.left;
                         initialTopOffset = hubRect.top;
                     }
 
@@ -474,8 +477,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         useFallbackAnimation = true;
                     }
                     // Ignore left offset and just ensure the width is correct. See crbug/1502437.
-                    initialRect.offset(-leftOffset, -initialTopOffset);
-                    finalRect.offset(-leftOffset, -finalTopOffset);
+                    initialRect.offset(-initialLeftOffset, -initialTopOffset);
+                    finalRect.offset(-finalLeftOffset, -finalTopOffset);
                     animationDataSupplier.set(
                             ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                                     initialRect,
