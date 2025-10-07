@@ -18,7 +18,17 @@ component("renderer") {
     "secure_embed_web_plugin.h",
   ]
 
-  deps = [ "//third_party/blink/public:blink" ]
+  deps = [
+    "//base",
+    "//cc/paint",
+    "//components/secure_embed/common:constants",
+    "//content/public/renderer",
+    "//mojo/public/cpp/bindings",
+    "//skia",
+    "//third_party/blink/public:blink",
+    "//ui/gfx/geometry:geometry_skia",
+    "//v8:v8_headers",
+  ]
 
   public_deps = [ "//components/secure_embed/common:mojom" ]
 }

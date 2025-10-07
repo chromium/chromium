@@ -39,10 +39,16 @@ SecureEmbedWebPlugin::~SecureEmbedWebPlugin() = default;
 
 bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
+
+  if (host_) {
+    // TODO(secure-embed): pass the real content_id.
+    host_->Attach(0);
+  }
   return true;
 }
 
 void SecureEmbedWebPlugin::Destroy() {
+  host_.reset();
   delete this;
 }
 

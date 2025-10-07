@@ -11,5 +11,5 @@ interface SecureEmbed {
 
 // Implemented by Browser. Available on RenderFrameHost.
 interface SecureEmbedHost {
-  SetSecureEmbedRemote(pending_remote<SecureEmbed> remote);
+  Attach(int64 content_id);
 };

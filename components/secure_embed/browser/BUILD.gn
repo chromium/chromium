@@ -16,6 +16,12 @@ component("browser") {
     "secure_embed_host.h",
   ]
 
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+
   public_deps = [ "//components/secure_embed/common:mojom" ]
 }
 
@@ -24,13 +30,26 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "secure_embed_browsertest.cc" ]
+  sources = [
+    "secure_embed_browsertest.cc",
+    "secure_embed_web_plugin_browsertest.cc",
+  ]
 
-  public_deps = [
+  deps = [
+    ":browser",
+    "//base",
     "//base/test:test_support",
+    "//components/secure_embed/common:mojom",
     "//content/public/browser",
     "//content/shell:content_shell_lib",
     "//content/test:browsertest_support",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/gfx",
+    "//url",
   ]
 }

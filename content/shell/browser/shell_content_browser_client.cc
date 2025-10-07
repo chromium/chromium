@@ -692,8 +692,8 @@ void ShellContentBrowserClient::
           [](content::RenderFrameHost* render_frame_host,
              mojo::PendingAssociatedReceiver<
                  secure_embed::mojom::SecureEmbedHost> receiver) {
-            secure_embed::SecureEmbedHost::BindSecureEmbedHost(
-                render_frame_host, std::move(receiver));
+            secure_embed::SecureEmbedHost::Create(render_frame_host,
+                                                  std::move(receiver));
           },
           &render_frame_host));
 #endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
