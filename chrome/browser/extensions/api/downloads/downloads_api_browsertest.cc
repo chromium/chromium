@@ -209,7 +209,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
     }
 
    private:
-    raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
+    raw_ptr<Profile> profile_;
     std::string event_name_;
     std::string json_args_;
     base::Value args_;
@@ -283,7 +283,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   base::Time last_wait_;
   std::unique_ptr<Event> waiting_for_;
   base::circular_deque<std::unique_ptr<Event>> events_;
-  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_;
   base::OnceClosure quit_closure_;
 };
 
@@ -332,13 +332,10 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
 
 class DownloadExtensionTest : public ExtensionApiTest {
  public:
-  DownloadExtensionTest()
-      : extension_(nullptr),
-        incognito_browser_(nullptr),
-        current_browser_(nullptr) {}
-
+  DownloadExtensionTest() = default;
   DownloadExtensionTest(const DownloadExtensionTest&) = delete;
   DownloadExtensionTest& operator=(const DownloadExtensionTest&) = delete;
+  ~DownloadExtensionTest() override = default;
 
  protected:
   // Used with CreateHistoryDownloads
@@ -413,6 +410,12 @@ class DownloadExtensionTest : public ExtensionApiTest {
   void TearDownOnMainThread() override {
     EventRouter::Get(current_browser()->profile())
         ->RemoveObserverForTesting(events_listener_.get());
+    events_listener_.reset();
+    // Avoid dangling pointers.
+    extension_ = nullptr;
+    second_extension_ = nullptr;
+    current_browser_ = nullptr;
+    incognito_browser_ = nullptr;
     ExtensionApiTest::TearDownOnMainThread();
   }
 
@@ -766,10 +769,10 @@ class DownloadExtensionTest : public ExtensionApiTest {
     return extension;
   }
 
-  raw_ptr<const Extension, DanglingUntriaged> extension_;
-  raw_ptr<const Extension, DanglingUntriaged> second_extension_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> current_browser_;
+  raw_ptr<const Extension> extension_ = nullptr;
+  raw_ptr<const Extension> second_extension_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
+  raw_ptr<Browser> current_browser_ = nullptr;
   std::unique_ptr<DownloadsEventsListener> events_listener_;
 
   std::unique_ptr<net::test_server::ControllableHttpResponse> first_download_;
