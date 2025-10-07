@@ -91,6 +91,7 @@ bool GetAppOutputInternal(
   if (!process.IsValid()) {
     return false;
   }
+  still_waiting(process, {});
 
   // Close our writing end of pipe now. Otherwise later read would not be able
   // to detect end of child's output.
@@ -140,14 +141,7 @@ bool GetAppOutputInternal(
       // The process ended, so continue reading as long as there is data
       // available.
     }
-
-    if (process_exited) {
-      // Exit and return from the function.
-      break;
-    }
-
-    still_waiting(process, {});
-  } while (timer.Elapsed() < timeout);
+  } while (!process_exited && (timer.Elapsed() < timeout));
 
   if (final_status) {
     *final_status = process_exited ? TERMINATION_STATUS_NORMAL_TERMINATION
