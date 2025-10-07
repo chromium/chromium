@@ -11,6 +11,7 @@
 
 #include "base/android/android_info.h"
 #include "base/android/callback_android.h"
+#include "base/android/device_info.h"
 #include "base/android/jni_string.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -167,6 +168,20 @@ gfx::RectF GetSelectionRect(const ui::TouchSelectionController& controller) {
   rect.Union(controller.GetStartHandleRect());
   rect.Union(controller.GetEndHandleRect());
   return rect;
+}
+
+bool IsTooltipsEnabled() {
+  if (!base::FeatureList::IsEnabled(kTooltips)) {
+    return false;
+  }
+
+  // Only show on desktop devices up to B due to tooltips bug b/445244223.
+  if (base::android::android_info::sdk_int() <=
+      base::android::android_info::SDK_VERSION_BAKLAVA) {
+    return base::android::device_info::is_desktop();
+  }
+
+  return true;
 }
 
 void WakeUpGpu(GpuProcessHost* host) {
@@ -727,7 +742,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
     widget_host->input_router()->MakeActive();
   }
 
-  if (base::FeatureList::IsEnabled(kTooltips)) {
+  if (IsTooltipsEnabled()) {
     cursor_manager_ = std::make_unique<input::CursorManager>(this);
   }
 }
@@ -1319,7 +1334,7 @@ int RenderWidgetHostViewAndroid::GetMouseWheelMinimumGranularity() const {
 }
 
 void RenderWidgetHostViewAndroid::UpdateCursor(const ui::Cursor& cursor) {
-  if (base::FeatureList::IsEnabled(kTooltips)) {
+  if (IsTooltipsEnabled()) {
     GetCursorManager()->UpdateCursor(this, cursor);
   }
   view_.OnCursorChanged(cursor);
@@ -1787,7 +1802,7 @@ void RenderWidgetHostViewAndroid::Destroy() {
 
 void RenderWidgetHostViewAndroid::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text) {
-  if (!base::FeatureList::IsEnabled(kTooltips)) {
+  if (!IsTooltipsEnabled()) {
     return;
   }
 
@@ -1798,7 +1813,7 @@ void RenderWidgetHostViewAndroid::UpdateTooltipUnderCursor(
 
 void RenderWidgetHostViewAndroid::UpdateTooltip(
     const std::u16string& tooltip_text) {
-  if (!base::FeatureList::IsEnabled(kTooltips)) {
+  if (!IsTooltipsEnabled()) {
     return;
   }
   if (tooltip_observer_for_testing_) {
