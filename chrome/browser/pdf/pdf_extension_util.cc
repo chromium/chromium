@@ -320,7 +320,7 @@ base::Value::Dict GetAdditionalData(content::BrowserContext* context) {
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   const bool save_to_drive_enabled =
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSaveToDrive) &&
-      !Profile::FromBrowserContext(context)->IsIncognitoProfile();
+      !Profile::FromBrowserContext(context)->IsOffTheRecord();
   dict.Set("pdfSaveToDrive", save_to_drive_enabled);
   dict.Set("pdfSaveToDriveHelpCenterURL",
            chrome::kPdfViewerSaveToDriveHelpCenterURL);
