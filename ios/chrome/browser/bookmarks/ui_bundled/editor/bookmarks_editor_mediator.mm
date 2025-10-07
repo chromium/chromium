@@ -227,7 +227,7 @@
   }
 
   [self.snackbarCommandsHandler
-      showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
+      showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoSnackbar(
                               self.bookmark, name, url, _originalFolder,
                               self.folder, _bookmarkModel.get(), self.profile,
                               _authenticationService, _syncService)];
@@ -258,7 +258,7 @@
     //  Temporary fix for crbug.com/1444667
     [self.snackbarCommandsHandler
         showSnackbarMessageOverBrowserToolbar:
-            bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+            bookmark_utils_ios::DeleteBookmarksWithUndoSnackbar(
                 nodes, _bookmarkModel.get(), self.profile, FROM_HERE)];
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   }

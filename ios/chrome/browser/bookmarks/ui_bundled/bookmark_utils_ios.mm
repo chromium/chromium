@@ -262,7 +262,7 @@ NSString* messageForAddingBookmarksInFolder(
   }
 }
 
-SnackbarMessage* UpdateBookmarkWithUndoToast(
+SnackbarMessage* UpdateBookmarkWithUndoSnackbar(
     const BookmarkNode* node,
     NSString* title,
     const GURL& url,
@@ -302,7 +302,7 @@ SnackbarMessage* UpdateBookmarkWithUndoToast(
       wrapper, text, "MobileBookmarkManagerUpdatedBookmarkUndone");
 }
 
-SnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
+SnackbarMessage* CreateBookmarkAtPositionWithUndoSnackbar(
     NSString* title,
     const GURL& url,
     const BookmarkNode* folder,
@@ -331,7 +331,7 @@ SnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
                                     "MobileBookmarkManagerAddedBookmarkUndone");
 }
 
-SnackbarMessage* UpdateBookmarkPositionWithUndoToast(
+SnackbarMessage* UpdateBookmarkPositionWithUndoSnackbar(
     const BookmarkNode* node,
     const BookmarkNode* folder,
     size_t position,
@@ -375,7 +375,7 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
                            bookmark_model->root_node(), location);
 }
 
-SnackbarMessage* DeleteBookmarksWithUndoToast(
+SnackbarMessage* DeleteBookmarksWithUndoSnackbar(
     const std::set<const BookmarkNode*>& nodes,
     bookmarks::BookmarkModel* bookmark_model,
     ProfileIOS* profile,
@@ -423,7 +423,7 @@ bool MoveBookmarks(const std::vector<const BookmarkNode*>& bookmarks_to_move,
   return did_perform_move;
 }
 
-SnackbarMessage* MoveBookmarksWithUndoToast(
+SnackbarMessage* MoveBookmarksWithUndoSnackbar(
     const std::vector<const BookmarkNode*>& bookmarks_to_move,
     bookmarks::BookmarkModel* model,
     const BookmarkNode* destination_folder,

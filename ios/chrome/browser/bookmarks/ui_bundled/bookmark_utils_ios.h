@@ -80,7 +80,7 @@ bool UpdateBookmark(const bookmarks::BookmarkNode* node,
 // undo the performed action. Returns nil if there's nothing to undo.
 // TODO(crbug.com/40137712): Refactor to include position and replace two
 // functions below.
-SnackbarMessage* UpdateBookmarkWithUndoToast(
+SnackbarMessage* UpdateBookmarkWithUndoSnackbar(
     const bookmarks::BookmarkNode* node,
     NSString* title,
     const GURL& url,
@@ -94,7 +94,7 @@ SnackbarMessage* UpdateBookmarkWithUndoToast(
 // Creates a new bookmark with `title`, `url`, at `position` under parent
 // `folder`. Returns a snackbar with an undo action. Returns nil if operation
 // failed or there's nothing to undo.
-SnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
+SnackbarMessage* CreateBookmarkAtPositionWithUndoSnackbar(
     NSString* title,
     const GURL& url,
     const bookmarks::BookmarkNode* folder,
@@ -104,7 +104,7 @@ SnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
 
 // Updates a bookmark node position, and returns a snackbar with an undo action.
 // Returns nil if the operation wasn't successful or there's nothing to undo.
-SnackbarMessage* UpdateBookmarkPositionWithUndoToast(
+SnackbarMessage* UpdateBookmarkPositionWithUndoSnackbar(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
     size_t position,
@@ -114,7 +114,7 @@ SnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 // Deletes all nodes in `bookmarks` from `bookmark_model` and returns a snackbar
 // with an undo action. Returns nil if the operation wasn't successful or
 // there's nothing to undo.
-SnackbarMessage* DeleteBookmarksWithUndoToast(
+SnackbarMessage* DeleteBookmarksWithUndoSnackbar(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     bookmarks::BookmarkModel* bookmark_model,
     ProfileIOS* profile,
@@ -128,7 +128,7 @@ void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
 // Move all `bookmarks_to_move` to the given `folder`, and returns a snackbar
 // with an undo action. Returns nil if the operation wasn't successful or
 // there's nothing to undo.
-SnackbarMessage* MoveBookmarksWithUndoToast(
+SnackbarMessage* MoveBookmarksWithUndoSnackbar(
     const std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* destination_folder,

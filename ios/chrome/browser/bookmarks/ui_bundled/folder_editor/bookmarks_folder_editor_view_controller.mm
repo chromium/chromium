@@ -279,7 +279,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   std::set<const BookmarkNode*> editedNodes;
   editedNodes.insert(_folder);
   [self.snackbarCommandsHandler
-      showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+      showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoSnackbar(
                               editedNodes, _bookmarkModel.get(), self.profile,
                               FROM_HERE)];
   [self.delegate bookmarksFolderEditorDidDeleteEditedFolder:self];
@@ -306,7 +306,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::AutoReset<BOOL> autoReset(&_ignoresOwnMove, YES);
       std::vector<const BookmarkNode*> bookmarksVector{_folder};
       [self.snackbarCommandsHandler
-          showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
+          showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoSnackbar(
                                   bookmarksVector, _bookmarkModel.get(),
                                   _parentFolder, self.profile,
                                   _authService->GetWeakPtr(), _syncService)];
