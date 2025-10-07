@@ -1824,4 +1824,17 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
   EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(Scripting::kNone));
 }
 
+TEST(MediaQueryEvaluatorTest, TestQueriesWithUndefinedCustomMedias) {
+  MediaValuesCached::MediaValuesCachedData data;
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
+
+  MediaQueryEvaluatorTestCase test_cases[] = {
+      {"(--undefined)", false},
+  };
+
+  TestMQEvaluator(test_cases, media_query_evaluator);
+}
+
 }  // namespace blink

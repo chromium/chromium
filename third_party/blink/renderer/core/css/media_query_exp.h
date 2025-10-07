@@ -282,6 +282,7 @@ class CORE_EXPORT MediaQueryExp {
                               bool supports_element_dependent);
   static MediaQueryExp Create(const AtomicString& media_feature,
                               const MediaQueryExpBounds&);
+  static MediaQueryExp Create(const AtomicString& custom_media);
   static MediaQueryExp Create(const MediaQueryExpValue& reference_value,
                               const MediaQueryExpBounds&);
   static MediaQueryExp Invalid() { return MediaQueryExp(); }
@@ -293,9 +294,10 @@ class CORE_EXPORT MediaQueryExp {
   bool IsValid() const { return type_ != Type::kInvalid; }
   bool HasMediaFeature() const { return type_ == Type::kMediaFeature; }
   bool HasStyleRange() const { return type_ == Type::kStyleRange; }
+  bool IsCustomMedia() const { return type_ == Type::kCustomMedia; }
 
   const AtomicString& MediaFeature() const {
-    DCHECK(HasMediaFeature());
+    DCHECK(HasMediaFeature() || IsCustomMedia());
     return media_feature_;
   }
 
@@ -323,11 +325,13 @@ class CORE_EXPORT MediaQueryExp {
   unsigned GetUnitFlags() const;
 
  private:
-  enum class Type { kMediaFeature, kStyleRange, kInvalid };
+  enum class Type { kMediaFeature, kCustomMedia, kStyleRange, kInvalid };
 
   MediaQueryExp() = default;
   MediaQueryExp(const String& media_feature, const MediaQueryExpValue&);
-  MediaQueryExp(const String& media_feature, const MediaQueryExpBounds&);
+  MediaQueryExp(const String& media_feature,
+                const MediaQueryExpBounds&,
+                Type type);
   MediaQueryExp(const CSSUnparsedDeclarationValue& reference_value,
                 const MediaQueryExpBounds&);
 
@@ -393,7 +397,7 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   void Trace(Visitor*) const override;
 
   const String& Name() const {
-    DCHECK(HasMediaFeature());
+    DCHECK(HasMediaFeature() || IsCustomMedia());
     return exp_.MediaFeature();
   }
 
@@ -404,6 +408,7 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
 
   bool HasMediaFeature() const { return exp_.HasMediaFeature(); }
   bool HasStyleRange() const { return exp_.HasStyleRange(); }
+  bool IsCustomMedia() const { return exp_.IsCustomMedia(); }
 
   const MediaQueryExpBounds& Bounds() const { return exp_.Bounds(); }
 

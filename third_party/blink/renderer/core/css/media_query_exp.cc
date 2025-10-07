@@ -462,13 +462,13 @@ MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)
 MediaQueryExp::MediaQueryExp(const String& media_feature,
                              const MediaQueryExpValue& value)
     : MediaQueryExp(media_feature,
-                    MediaQueryExpBounds(MediaQueryExpComparison(value))) {}
+                    MediaQueryExpBounds(MediaQueryExpComparison(value)),
+                    Type::kMediaFeature) {}
 
 MediaQueryExp::MediaQueryExp(const String& media_feature,
-                             const MediaQueryExpBounds& bounds)
-    : type_(Type::kMediaFeature),
-      media_feature_(media_feature),
-      bounds_(bounds) {}
+                             const MediaQueryExpBounds& bounds,
+                             Type type)
+    : type_(type), media_feature_(media_feature), bounds_(bounds) {}
 
 MediaQueryExp::MediaQueryExp(const CSSUnparsedDeclarationValue& reference_value,
                              const MediaQueryExpBounds& bounds)
@@ -615,7 +615,11 @@ const char* MediaQueryOperatorToString(MediaQueryOperator op) {
 
 MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
                                     const MediaQueryExpBounds& bounds) {
-  return MediaQueryExp(media_feature, bounds);
+  return MediaQueryExp(media_feature, bounds, Type::kMediaFeature);
+}
+
+MediaQueryExp MediaQueryExp::Create(const AtomicString& custom_media) {
+  return MediaQueryExp(custom_media, MediaQueryExpBounds(), Type::kCustomMedia);
 }
 
 MediaQueryExp MediaQueryExp::Create(const MediaQueryExpValue& reference_value,
@@ -645,16 +649,18 @@ String MediaQueryExp::Serialize() const {
   // <mf-boolean> e.g. (color)
   // <mf-plain>  e.g. (width: 100px)
   if (!bounds_.IsRange()) {
-    if (HasMediaFeature()) {
+    if (HasMediaFeature() || IsCustomMedia()) {
       result.Append(media_feature_);
     } else {
       result.Append(reference_value_->CssText());
     }
     if (bounds_.right.IsValid()) {
+      DCHECK(!IsCustomMedia());
       result.Append(": ");
       result.Append(bounds_.right.value.CssText());
     }
   } else {
+    DCHECK(!IsCustomMedia());
     if (bounds_.left.IsValid()) {
       result.Append(bounds_.left.value.CssText());
       result.Append(" ");

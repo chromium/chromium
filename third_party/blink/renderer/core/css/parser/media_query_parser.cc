@@ -402,6 +402,13 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     // <mf-boolean> = <mf-name>
     if (!feature_name.IsNull() && stream.AtEnd() &&
         feature_set.IsAllowedWithoutValue(feature_name, execution_context_)) {
+      if (RuntimeEnabledFeatures::CSSCustomMediaEnabled() &&
+          CSSVariableParser::IsValidVariableName(feature_name) &&
+          !feature_set.IsAllowedWithValue(feature_name)) {
+        // custom media query
+        return MakeGarbageCollected<MediaQueryFeatureExpNode>(
+            MediaQueryExp::Create(feature_name));
+      }
       return MakeGarbageCollected<MediaQueryFeatureExpNode>(
           MediaQueryExp::Create(feature_name, MediaQueryExpBounds()));
     }
