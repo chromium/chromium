@@ -46,7 +46,7 @@ std::string_view EntityTypeToMetricsString(EntityType type) {
       return "FlightReservation";
   }
 }
-// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntityType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Ai.EntityType)
 
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&

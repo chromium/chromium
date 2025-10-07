@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
       summary="Emitted for vehicle information forms only."/>
 </variants>
 
-<!-- LINT.ThenChange(//components/autofill/core/browser/data_model/autofill_ai/entity_type.cc:EntityType) -->
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.cc:EntityTypeToMetricsString) -->
 
 <variants name="Autofill.Ai.PromptTypes">
   <variant name="SavePrompt"
