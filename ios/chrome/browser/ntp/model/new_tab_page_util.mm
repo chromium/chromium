@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -27,7 +27,7 @@ bool IsVisibleURLNewTabPage(web::WebState* web_state) {
   // On construction, NewTabPageTabHelper::IsActive() is initialized based
   // on the visible URL, so for unrealized WebState, check whether the URL
   // corresponds to an NTP URL.
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       return IsUrlNtp(web_state->GetVisibleURL());
     }

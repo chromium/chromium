@@ -1,6 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/infobars/model",
-  "+ios/chrome/browser/tabs/model/features.h",
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
 ]
 

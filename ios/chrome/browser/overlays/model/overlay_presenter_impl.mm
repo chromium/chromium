@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/web/common/features.h"
 
 #pragma mark - Factory method
 
@@ -171,7 +171,7 @@ OverlayRequestQueueImpl* OverlayPresenterImpl::GetQueueForWebState(
   if (!web_state) {
     return nullptr;
   }
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       return nullptr;
     }

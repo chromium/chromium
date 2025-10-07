@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/sessions/model/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
@@ -208,7 +208,7 @@ void LegacySessionRestorationService::Disconnect(Browser* browser) {
   SessionRestorationBrowserAgent::RemoveFromBrowser(browser);
 
   // Stop observing the WebStates for realization is needed.
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     WebStateList* list = browser->GetWebStateList();
     const int list_count = list->count();
     for (int index = 0; index < list_count; ++index) {
@@ -346,7 +346,7 @@ void LegacySessionRestorationService::WebStateListDidChange(
 void LegacySessionRestorationService::WebStateRealized(
     web::WebState* web_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   web_state_observations_.RemoveObservation(web_state);
   WebStateInserted(web_state);
 }
@@ -354,14 +354,14 @@ void LegacySessionRestorationService::WebStateRealized(
 void LegacySessionRestorationService::WebStateDestroyed(
     web::WebState* web_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   web_state_observations_.RemoveObservation(web_state);
 }
 
 void LegacySessionRestorationService::WebStateInserted(
     web::WebState* web_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       web_state_observations_.AddObservation(web_state);
       return;
@@ -374,7 +374,7 @@ void LegacySessionRestorationService::WebStateInserted(
 void LegacySessionRestorationService::WebStateDetached(
     web::WebState* web_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       web_state_observations_.RemoveObservation(web_state);
       return;

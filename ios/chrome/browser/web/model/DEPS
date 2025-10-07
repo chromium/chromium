@@ -42,7 +42,6 @@ include_rules = [
   "+ios/chrome/browser/ssl/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/tab_insertion/model",
-  "+ios/chrome/browser/tabs/model/features.h",
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
   "+ios/chrome/browser/text_selection/model",
   "+ios/chrome/browser/translate/model",

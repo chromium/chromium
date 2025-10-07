@@ -205,14 +205,6 @@ source_set("tab_sync_util") {
   ]
 }
 
-source_set("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("dependency_installer") {
   sources = [
     "tabs_dependency_installer.h",
@@ -221,10 +213,10 @@ source_set("dependency_installer") {
     "tabs_dependency_installer_bridge.mm",
   ]
   deps = [
-    ":features",
     "//base",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
   ]
@@ -242,7 +234,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":dependency_installer",
-    ":features",
     ":model",
     ":synced_tabs",
     ":tab_sync_util",
@@ -279,6 +270,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/synced_sessions/model:test_support",
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/test:test_support",
+    "//ios/web/common:features",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

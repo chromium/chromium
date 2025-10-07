@@ -436,10 +436,10 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/common/crash_report",
     "//ios/chrome/test/app:test_support",
     "//ios/components/security_interstitials",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//services/network:test_support",
   ]

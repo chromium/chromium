@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -27,7 +27,7 @@ bool WaitForRealizationToInstallDependencies(
       return true;
 
     case TabsDependencyInstaller::Policy::kAccordingToFeature:
-      return CreateTabHelperOnlyForRealizedWebStates();
+      return web::features::CreateTabHelperOnlyForRealizedWebStates();
   }
 }
 

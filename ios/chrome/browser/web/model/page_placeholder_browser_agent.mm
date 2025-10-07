@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 
 PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
@@ -79,19 +79,19 @@ void PagePlaceholderBrowserAgent::WebStateListDidChange(
 }
 
 void PagePlaceholderBrowserAgent::WebStateRealized(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   web_state_observations_.RemoveObservation(web_state);
   AddPlaceholderToWebState(web_state);
 }
 
 void PagePlaceholderBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
-  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  CHECK(web::features::CreateTabHelperOnlyForRealizedWebStates());
   web_state_observations_.RemoveObservation(web_state);
 }
 
 void PagePlaceholderBrowserAgent::WebStateInserted(web::WebState* web_state,
                                                    bool force_placeholder) {
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       web_state_observations_.AddObservation(web_state);
       return;
@@ -104,7 +104,7 @@ void PagePlaceholderBrowserAgent::WebStateInserted(web::WebState* web_state,
 }
 
 void PagePlaceholderBrowserAgent::WebStateRemoved(web::WebState* web_state) {
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       web_state_observations_.RemoveObservation(web_state);
       return;

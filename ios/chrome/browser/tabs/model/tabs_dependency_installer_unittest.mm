@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -40,12 +40,12 @@ class ScopedFeatureListHelper {
     switch (state) {
       case FeatureState::kEnabled:
         scoped_feature_list_.InitAndEnableFeature(
-            kCreateTabHelperOnlyForRealizedWebStates);
+            web::features::kCreateTabHelperOnlyForRealizedWebStates);
         break;
 
       case FeatureState::kDisabled:
         scoped_feature_list_.InitAndDisableFeature(
-            kCreateTabHelperOnlyForRealizedWebStates);
+            web::features::kCreateTabHelperOnlyForRealizedWebStates);
         break;
     }
   }
