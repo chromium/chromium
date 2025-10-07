@@ -1285,22 +1285,6 @@ bool ShouldWaitForDebuggerInWindowOpen() {
   return false;
 }
 
-DevtoolsOverriddenOutputParams ApplyEmulationOverrides(
-    DevToolsAgentHostImpl* agent_host,
-    net::HttpRequestHeaders* headers) {
-  DevtoolsOverriddenOutputParams output_params;
-  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
-    bool ua_overridden = false;
-    bool accept_language_overridden = false;
-    emulation->ApplyOverrides(headers, &ua_overridden,
-                              &accept_language_overridden);
-
-    output_params.user_agent_overridden |= ua_overridden;
-    output_params.accept_language_overridden |= accept_language_overridden;
-  }
-  return output_params;
-}
-
 namespace {
 // This is a helper function used in ApplyNetworkRequestOverrides and
 // ApplyUserAgentMetadataOverrides to help correctly set network request header
@@ -1344,14 +1328,17 @@ void ApplyNetworkRequestOverrides(
                             devtools_accepted_stream_types, referrer_override);
   }
 
-  DevtoolsOverriddenOutputParams output_params =
-      ApplyEmulationOverrides(agent_host, headers);
-  if (devtools_user_agent_overridden) {
-    *devtools_user_agent_overridden = output_params.user_agent_overridden;
-  }
-  if (devtools_accept_language_overridden) {
-    *devtools_accept_language_overridden =
-        output_params.accept_language_overridden;
+  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
+    bool ua_overridden = false;
+    bool accept_language_overridden = false;
+    emulation->ApplyOverrides(headers, &ua_overridden,
+                              &accept_language_overridden);
+    if (devtools_user_agent_overridden) {
+      *devtools_user_agent_overridden |= ua_overridden;
+    }
+    if (devtools_accept_language_overridden) {
+      *devtools_accept_language_overridden |= accept_language_overridden;
+    }
   }
 }
 
