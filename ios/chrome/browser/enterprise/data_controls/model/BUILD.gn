@@ -8,13 +8,20 @@ assert(enterprise_data_controls)
 
 source_set("model") {
   sources = [
+    "data_controls_pasteboard_manager.h",
+    "data_controls_pasteboard_manager.mm",
     "data_controls_tab_helper.h",
     "data_controls_tab_helper.mm",
+    "pasteboard_observer.h",
+    "pasteboard_observer.mm",
   ]
   deps = [
+    ":ios_rules_service",
     "//base",
     "//components/enterprise/data_controls/core/browser",
+    "//components/open_from_clipboard:open_from_clipboard_impl",
     "//ios/chrome/browser/enterprise/data_controls/utils",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/components/enterprise/data_controls:features",
@@ -46,6 +53,7 @@ source_set("ios_rules_service") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "data_controls_pasteboard_manager_unittest.mm",
     "data_controls_tab_helper_unittest.mm",
     "ios_rules_service_unittest.mm",
   ]
@@ -65,6 +73,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

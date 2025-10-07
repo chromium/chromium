@@ -8,7 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
-#import "ios/chrome/browser/enterprise/data_controls/utils/clipboard_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/enterprise/data_controls/features.h"
@@ -36,6 +36,7 @@ void DataControlsTabHelper::ShouldAllowCopy(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   const GURL& source_url = web_state_->GetLastCommittedURL();
+
   CopyPolicyVerdicts verdicts =
       IsCopyAllowedByPolicy(source_url, metadata, profile);
 
@@ -73,11 +74,14 @@ void DataControlsTabHelper::ShouldAllowPaste(
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   const GURL& destination_url = web_state_->GetLastCommittedURL();
 
-  // TODO(crbug.com/439549626): Pass the source URL and profile when available.
-  const GURL source_url;
-  PastePolicyVerdict policy_verdict = IsPasteAllowedByPolicy(
-      /*source_url=*/source_url, destination_url, metadata,
-      /*source_profile=*/nullptr, profile);
+  DataControlsPasteboardManager* pasteboard_manager =
+      DataControlsPasteboardManager::GetInstance();
+  PasteboardSource source =
+      pasteboard_manager->GetCurrentPasteboardItemsSource();
+
+  PastePolicyVerdict policy_verdict =
+      IsPasteAllowedByPolicy(source.source_url, destination_url, metadata,
+                             source.source_profile, profile);
 
   switch (policy_verdict.verdict.level()) {
     case Rule::Level::kWarn:
@@ -140,7 +144,13 @@ void DataControlsTabHelper::FinishCopy(const GURL& source_url,
     allowed = bypassed;
   }
 
-  // TODO(crbug.com/439549626): Store metadata for allowed operations.
+  if (allowed) {
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+    auto* pasteboard_manager = DataControlsPasteboardManager::GetInstance();
+    pasteboard_manager->SetNextPasteboardItemsSource(source_url, profile);
+  }
+
   std::move(callback).Run(allowed);
 }
 

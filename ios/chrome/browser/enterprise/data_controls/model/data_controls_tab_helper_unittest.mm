@@ -7,20 +7,27 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
 #import "ios/chrome/test/fakes/fake_data_controls_commands_handler.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace data_controls {
 
@@ -37,14 +44,42 @@ class DataControlsTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    profile_ = TestProfileIOS::Builder().Build();
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
     web_state_ = std::make_unique<web::FakeWebState>();
-    web_state_->SetBrowserState(profile_.get());
+    web_state_->SetBrowserState(profile_);
     feature_list_.InitAndEnableFeature(kEnableClipboardDataControlsIOS);
+  }
+
+  void TearDown() override {
+    DataControlsPasteboardManager::GetInstance()->ResetForTesting();
+    PlatformTest::TearDown();
   }
 
   DataControlsTabHelper* tab_helper() {
     return DataControlsTabHelper::GetOrCreateForWebState(web_state_.get());
+  }
+
+  bool ShouldAllowCopy(DataControlsTabHelper* tab_helper) {
+    base::RunLoop run_loop;
+    bool result;
+    tab_helper->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
+      result = allowed;
+      run_loop.Quit();
+    }));
+    run_loop.Run();
+    return result;
+  }
+
+  bool ShouldAllowPaste(DataControlsTabHelper* tab_helper) {
+    base::RunLoop run_loop;
+    bool result;
+    tab_helper->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+      result = allowed;
+      run_loop.Quit();
+    }));
+    run_loop.Run();
+    return result;
   }
 
   void SetCopyBlockRule() {
@@ -102,6 +137,30 @@ class DataControlsTabHelperTest : public PlatformTest {
                       })"});
   }
 
+  void SetPasteBlockForSourceRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                        "and": [
+                              {
+                                "destinations": {
+                                  "urls": [
+                                    "allow.com"
+                                  ]
+                                }
+                              },
+                              {
+                                "sources": {
+                                  "urls": [
+                                    "other.com"
+                                  ]
+                                }
+                              }
+                            ],
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "BLOCK"}
+                        ]
+                      })"});
+  }
+
   void SetPasteWarnRule() {
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                         "destinations": {
@@ -113,9 +172,77 @@ class DataControlsTabHelperTest : public PlatformTest {
                       })"});
   }
 
+  void SetPasteBlockFromIncognitoRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                        "and": [
+                          {
+                            "destinations": {
+                              "urls": [
+                                "block.com"
+                              ]
+                            }
+                          },
+                          {
+                            "sources": {
+                              "incognito": true
+                            }
+                          }
+                        ],
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "BLOCK"}
+                        ]
+                      })"});
+  }
+
+  void SetPasteBlockFromOtherProfileRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                        "and": [
+                          {
+                            "destinations": {
+                              "urls": [
+                                "block.com"
+                              ]
+                            }
+                          },
+                          {
+                            "sources": {
+                              "other_profile": true
+                            }
+                          }
+                        ],
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "BLOCK"}
+                        ]
+                      })"});
+  }
+
+  void SetPasteBlockFromOSClipboardRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                        "and": [
+                          {
+                            "destinations": {
+                              "urls": [
+                                "block.com"
+                              ]
+                            }
+                          },
+                          {
+                            "sources": {
+                              "os_clipboard": true
+                            }
+                          }
+                        ],
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "BLOCK"}
+                        ]
+                      })"});
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
 
@@ -350,6 +477,101 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_OtherUrl) {
     run_loop.Quit();
   }));
   run_loop.Run();
+}
+
+// Tests that paste is blocked when a rule blocks pasting from a specific
+// source URL.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedForSource) {
+  // Set a rule to block copying from other.com and pasting into allow.com.
+  SetPasteBlockForSourceRule();
+
+  // Simulate copying from other.com.
+  web_state_->SetCurrentURL(GURL(kOtherUrl));
+  EXPECT_TRUE(ShouldAllowCopy(tab_helper()));
+
+  UIPasteboard.generalPasteboard.string = @"copied content";
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
+        return DataControlsPasteboardManager::GetInstance()
+            ->GetCurrentPasteboardItemsSource()
+            .source_profile;
+      }));
+
+  // Simulate pasting to allow.com
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+  EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+}
+
+// Tests that paste is blocked when a rule is set to block pasting from an
+// incognito profile to a specific destination.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromIncognito) {
+  SetPasteBlockFromIncognitoRule();
+
+  // Get the incognito profile.
+  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
+  auto incognito_web_state = std::make_unique<web::FakeWebState>();
+  incognito_web_state->SetBrowserState(incognito_profile);
+  DataControlsTabHelper* incognito_tab_helper =
+      DataControlsTabHelper::GetOrCreateForWebState(incognito_web_state.get());
+
+  // Simulate copying from the incognito profile.
+  incognito_web_state->SetCurrentURL(GURL(kOtherUrl));
+  EXPECT_TRUE(ShouldAllowCopy(incognito_tab_helper));
+
+  UIPasteboard.generalPasteboard.string = @"copied content";
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
+        return DataControlsPasteboardManager::GetInstance()
+            ->GetCurrentPasteboardItemsSource()
+            .source_profile;
+      }));
+
+  // Simulate pasting to kBlockedUrl in the non-incognito profile.
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+}
+
+// Tests that paste is blocked when a rule is set to block pasting from another
+// profile to a specific destination.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
+  SetPasteBlockFromOtherProfileRule();
+
+  // Create a second profile.
+  ProfileIOS* source_profile = profile_manager_.AddProfileWithBuilder(
+      std::move(TestProfileIOS::Builder().SetName("SourceProfile")));
+  auto source_web_state = std::make_unique<web::FakeWebState>();
+  source_web_state->SetBrowserState(source_profile);
+  DataControlsTabHelper* source_tab_helper =
+      DataControlsTabHelper::GetOrCreateForWebState(source_web_state.get());
+
+  // Simulate copying from the second profile.
+  source_web_state->SetCurrentURL(GURL(kOtherUrl));
+  EXPECT_TRUE(ShouldAllowCopy(source_tab_helper));
+
+  UIPasteboard.generalPasteboard.string = @"copied content";
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
+        return DataControlsPasteboardManager::GetInstance()
+            ->GetCurrentPasteboardItemsSource()
+            .source_profile;
+      }));
+
+  // Simulate pasting to kBlockedUrl in the primary profile.
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+}
+
+// Tests that paste is blocked when a rule is set to block pasting from the OS
+// clipboard to a specific destination.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOSClipboard) {
+  SetPasteBlockFromOSClipboardRule();
+
+  // Simulate pasting to kBlockedUrl.
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
 }
 
 // Tests that paste is allowed when a "BLOCK" rule is set but the feature is
