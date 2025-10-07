@@ -11,14 +11,13 @@
 
 // This has to be included first.
 // See http://code.google.com/p/googletest/issues/detail?id=371
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/gpu/vaapi/test_utils.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 #include "media/gpu/vaapi/vaapi_image_decoder_test_common.h"
@@ -27,6 +26,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/parsers/vp8_parser.h"
 #include "media/parsers/webp_parser.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libwebp/src/src/webp/decode.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -142,9 +142,9 @@ TEST_P(VaapiWebPDecoderTest, DecodeAndExportAsNativePixmapDmaBuf) {
   ASSERT_GT(exported_pixmap->byte_size, 0u);
 
   gfx::NativePixmapHandle handle = exported_pixmap->pixmap->ExportHandle();
-  ASSERT_EQ(gfx::NumberOfPlanesForLinearBufferFormat(
-                exported_pixmap->pixmap->GetBufferFormat()),
-            handle.planes.size());
+  viz::SharedImageFormat si_format =
+      viz::GetSharedImageFormat(exported_pixmap->pixmap->GetBufferFormat());
+  ASSERT_EQ(si_format.NumberOfPlanes(), static_cast<int>(handle.planes.size()));
 
   std::unique_ptr<vaapi_test_utils::DecodedImage> hw_decoded_webp =
       vaapi_test_utils::NativePixmapToDecodedImage(

@@ -2,4 +2,5 @@ include_rules = [
   "+third_party/skia/include",
   "+components/headless/display_util",
   "+components/headless/screen_info",
+  "+components/viz/common/resources",
 ]

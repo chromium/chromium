@@ -994,7 +994,10 @@ test("gfx_unittests") {
       "linux/fontconfig_util_unittest.cc",
       "linux/native_pixmap_dmabuf_unittest.cc",
     ]
-    deps += [ "//third_party/fontconfig" ]
+    deps += [
+      "//components/viz/common/resources:shared_image_format",
+      "//third_party/fontconfig",
+    ]
   }
 
   if (is_fuchsia) {

@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -156,7 +157,8 @@ class TestPixmap : public gfx::NativePixmap {
   uint64_t GetBufferFormatModifier() const override { return 0; }
   gfx::BufferFormat GetBufferFormat() const override { return format_; }
   size_t GetNumberOfPlanes() const override {
-    return gfx::NumberOfPlanesForLinearBufferFormat(format_);
+    viz::SharedImageFormat si_format = viz::GetSharedImageFormat(format_);
+    return si_format.NumberOfPlanes();
   }
   bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
