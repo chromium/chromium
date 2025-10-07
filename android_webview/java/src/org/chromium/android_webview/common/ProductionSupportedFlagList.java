@@ -234,6 +234,9 @@ public final class ProductionSupportedFlagList {
                 "Enables retrieval of the emoji font through GMS Core "
                         + "improving emoji glyph coverage."),
         Flag.baseFeature(
+                BlinkFeatures.WIDTH_AND_HEIGHT_AS_PRESENTATION_ATTRIBUTES_ON_NESTED_SVG,
+                "Enables width and height as presentation attributes on nested svg."),
+        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME,
                 "Enable lazily initializing framework Autofill wrapper."),
         Flag.baseFeature(
