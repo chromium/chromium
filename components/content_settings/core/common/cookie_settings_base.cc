@@ -333,7 +333,7 @@ CookieSettingsBase::TpcdMetadataSourceToAllowMechanism(
 
 bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     const ContentSettingsForOneType& cookie_settings,
-    const std::string& domain,
+    std::string_view domain,
     net::CookieSourceScheme scheme) const {
   // Cookies with an unknown (kUnset) scheme will be treated as having a not
   // secure scheme.
@@ -370,9 +370,9 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     // While we don't know on which top-frame-origin a cookie was set, we still
     // use exceptions that only specify a secondary pattern to handle cookies
     // that match this pattern.
-    const std::string& host = entry.primary_pattern.MatchesAllHosts()
-                                  ? entry.secondary_pattern.GetHost()
-                                  : entry.primary_pattern.GetHost();
+    std::string_view host = entry.primary_pattern.MatchesAllHosts()
+                                ? entry.secondary_pattern.GetHost()
+                                : entry.primary_pattern.GetHost();
     if (net::cookie_util::IsDomainMatch(domain, host)) {
       if (entry.GetContentSetting() == CONTENT_SETTING_ALLOW) {
         return false;
@@ -443,7 +443,7 @@ bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
 
 net::CookieAccessSemantics
 CookieSettingsBase::GetCookieAccessSemanticsForDomain(
-    const std::string& cookie_domain) const {
+    std::string_view cookie_domain) const {
   ContentSetting setting = GetSettingForLegacyCookieAccess(cookie_domain);
   DCHECK(IsValidSettingForLegacyAccess(setting));
   switch (setting) {
@@ -457,7 +457,7 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
 }
 
 net::CookieScopeSemantics CookieSettingsBase::GetCookieScopeSemanticsForDomain(
-    const std::string& cookie_domain) const {
+    std::string_view cookie_domain) const {
   ContentSetting setting = GetSettingForLegacyCookieScope(cookie_domain);
   DCHECK(IsValidSettingForLegacyAccess(setting));
   switch (setting) {
@@ -931,7 +931,7 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
 }
 
 ContentSetting CookieSettingsBase::GetSettingForLegacyCookieAccess(
-    const std::string& cookie_domain) const {
+    std::string_view cookie_domain) const {
   // The content setting patterns are treated as domains, not URLs, so the
   // scheme is irrelevant (so we can just arbitrarily pass false).
   GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
@@ -943,7 +943,7 @@ ContentSetting CookieSettingsBase::GetSettingForLegacyCookieAccess(
 }
 
 ContentSetting CookieSettingsBase::GetSettingForLegacyCookieScope(
-    const std::string& cookie_domain) const {
+    std::string_view cookie_domain) const {
   // The content setting patterns are treated as registrable domains, not URLs,
   // so the scheme is irrelevant (so we can just arbitrarily pass false).
   net::SchemefulSite registrable_domain(net::cookie_util::CookieOriginToURL(

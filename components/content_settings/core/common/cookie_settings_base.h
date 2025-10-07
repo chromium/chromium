@@ -279,7 +279,7 @@ class CookieSettingsBase {
   // This may be called on any thread.
   bool ShouldDeleteCookieOnExit(
       const ContentSettingsForOneType& cookie_settings,
-      const std::string& domain,
+      std::string_view domain,
       net::CookieSourceScheme scheme) const;
 
   // Returns true if the page identified by (`url`, `site_for_cookies`,
@@ -340,21 +340,21 @@ class CookieSettingsBase {
   // Legacy behavior is based on the domain of the cookie itself, effectively
   // the domain of the requested URL, which may be embedded in another domain.
   net::CookieAccessSemantics GetCookieAccessSemanticsForDomain(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Gets the setting that controls whether legacy access is allowed for a given
   // cookie domain. The |cookie_domain| can be provided as the direct output of
   // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
   // removed.
   ContentSetting GetSettingForLegacyCookieAccess(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Gets the setting that controls whether legacy scope is allowed for a given
   // cookie domain. The `cookie_domain` can be provided as the direct output of
   // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
   // removed.
   ContentSetting GetSettingForLegacyCookieScope(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Returns the cookie legacy scope (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The `cookie_domain` can be provided as the
@@ -364,7 +364,7 @@ class CookieSettingsBase {
   // Legacy behavior is based on the domain of the cookie itself, effectively
   // the domain of the requested URL, which may be embedded in another domain.
   net::CookieScopeSemantics GetCookieScopeSemanticsForDomain(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.
@@ -564,7 +564,7 @@ class CookieSettingsBase {
 
   // Returns whether |scheme| is always allowed to access 3p cookies.
   virtual bool IsThirdPartyCookiesAllowedScheme(
-      const std::string& scheme) const = 0;
+      std::string_view scheme) const = 0;
 };
 
 }  // namespace content_settings

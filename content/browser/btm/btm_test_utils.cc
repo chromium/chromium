@@ -528,7 +528,7 @@ bool TpcBlockingBrowserClient::MitigationsEnabledFor3pcd() const {
 }
 
 bool TpcBlockingBrowserClient::IsThirdPartyCookiesAllowedScheme(
-    const std::string& scheme) const {
+    std::string_view scheme) const {
   return false;
 }
 

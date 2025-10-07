@@ -357,7 +357,7 @@ ContentSetting CookieSettings::GetContentSetting(
 }
 
 bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
-    const std::string& scheme) const {
+    std::string_view scheme) const {
   return base::Contains(ContentSettingsRegistry::GetInstance()
                             ->Get(ContentSettingsType::COOKIES)
                             ->third_party_cookie_allowed_secondary_schemes(),

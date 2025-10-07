@@ -366,8 +366,7 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
 
   bool MitigationsEnabledFor3pcd() const override;
 
-  bool IsThirdPartyCookiesAllowedScheme(
-      const std::string& scheme) const override;
+  bool IsThirdPartyCookiesAllowedScheme(std::string_view scheme) const override;
 
  private:
   bool block_3pcs_ = false;

@@ -85,7 +85,7 @@ class CallbackCookieSettings : public CookieSettingsBase {
   bool MitigationsEnabledFor3pcd() const override { return false; }
 
   bool IsThirdPartyCookiesAllowedScheme(
-      const std::string& scheme) const override {
+      std::string_view scheme) const override {
     return false;
   }
 

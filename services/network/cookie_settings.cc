@@ -382,8 +382,8 @@ ContentSetting CookieSettings::GetContentSetting(
 }
 
 bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
-    const std::string& scheme) const {
-  return base::Contains(third_party_cookies_allowed_schemes_, scheme);
+    std::string_view scheme) const {
+  return third_party_cookies_allowed_schemes_.contains(scheme);
 }
 
 bool CookieSettings::ShouldBlockThirdPartyCookies(
