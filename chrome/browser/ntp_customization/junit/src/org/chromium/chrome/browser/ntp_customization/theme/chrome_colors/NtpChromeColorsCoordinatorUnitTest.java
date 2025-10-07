@@ -191,7 +191,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.LIGHT_BLUE);
         @ColorInt Integer primaryColor = colorInfo.primaryColor;
-        NtpCustomizationUtils.setCustomizedPrimaryColor(primaryColor);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
         assertEquals(primaryColor, NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
 

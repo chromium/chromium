@@ -217,7 +217,8 @@ public class NtpCustomizationConfigManager {
         // Picks the primary color for the bitmap and saves it to the SharedPreference.
         @ColorInt Integer primaryColor = NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
         if (primaryColor != null) {
-            NtpCustomizationUtils.setCustomizedPrimaryColor(primaryColor.intValue());
+            NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(
+                    primaryColor.intValue());
         }
     }
 
@@ -244,8 +245,9 @@ public class NtpCustomizationConfigManager {
                     assumeNonNull(colorInfo).backgroundColor,
                     /* fromInitialization= */ false,
                     oldType);
-            NtpCustomizationUtils.setBackgroundColor(colorInfo.backgroundColor);
-            NtpCustomizationUtils.setCustomizedPrimaryColor(colorInfo.primaryColor);
+            NtpCustomizationUtils.setBackgroundColorToSharedPreference(colorInfo.backgroundColor);
+            NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(
+                    colorInfo.primaryColor);
         } else if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
             notifyBackgroundColorChanged(
                     getDefaultBackgroundColor(context), /* fromInitialization= */ false, oldType);

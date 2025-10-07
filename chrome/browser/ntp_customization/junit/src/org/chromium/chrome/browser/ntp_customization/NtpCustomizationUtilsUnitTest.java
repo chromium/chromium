@@ -215,7 +215,7 @@ public class NtpCustomizationUtilsUnitTest {
                 defaultColor,
                 NtpCustomizationUtils.getBackgroundColorFromSharedPreference(defaultColor));
 
-        NtpCustomizationUtils.setBackgroundColor(color);
+        NtpCustomizationUtils.setBackgroundColorToSharedPreference(color);
         assertEquals(
                 color, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(defaultColor));
 
@@ -231,7 +231,7 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpCustomizationConfigManager.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
-        NtpCustomizationUtils.setCustomizedPrimaryColor(color);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(color);
         assertEquals(color, NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
     }
 
@@ -245,7 +245,7 @@ public class NtpCustomizationUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_wrongImageType() {
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
-        NtpCustomizationUtils.setCustomizedPrimaryColor(Color.RED);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
         assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
     }
 
@@ -263,7 +263,7 @@ public class NtpCustomizationUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorSet() {
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
-        NtpCustomizationUtils.setCustomizedPrimaryColor(Color.RED);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
 
         assertEquals(
                 Color.RED, (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
@@ -273,7 +273,7 @@ public class NtpCustomizationUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorSetWithImage() {
         NtpCustomizationUtils.setNtpBackgroundImageType(IMAGE_FROM_DISK);
-        NtpCustomizationUtils.setCustomizedPrimaryColor(Color.BLUE);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.BLUE);
 
         assertEquals(
                 Color.BLUE, (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
@@ -411,7 +411,7 @@ public class NtpCustomizationUtilsUnitTest {
         verify(mDrawable, never()).setTint(anyInt());
 
         // Verifies that the saved primary color is set for customized color themes if exists.
-        NtpCustomizationUtils.setCustomizedPrimaryColor(primaryColor);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
         assertEquals(
                 primaryColor,
                 NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor().intValue());

@@ -91,7 +91,7 @@ public class NtpThemeColorUtilsUnitTest {
     public void testInitColorsListAndFindPrimaryColorIndex_customPrimaryColorWithBackgroundColor() {
         @ColorInt int primaryColor = ContextCompat.getColor(mContext, R.color.default_red);
         @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);
-        NtpCustomizationUtils.setBackgroundColor(backgroundColor);
+        NtpCustomizationUtils.setBackgroundColorToSharedPreference(backgroundColor);
 
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
                 primaryColor, /* expectedIndex= */ 2, /* expectedSize= */ 3);

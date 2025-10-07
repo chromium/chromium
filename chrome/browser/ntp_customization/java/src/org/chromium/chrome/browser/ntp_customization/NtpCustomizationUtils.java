@@ -421,7 +421,7 @@ public class NtpCustomizationUtils {
      * @param color The new background color.
      */
     @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
-    public static void setBackgroundColor(@ColorInt int color) {
+    public static void setBackgroundColorToSharedPreference(@ColorInt int color) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, color);
     }
@@ -438,7 +438,7 @@ public class NtpCustomizationUtils {
      *
      * @param color The new primary theme color.
      */
-    public static void setCustomizedPrimaryColor(@ColorInt int color) {
+    public static void setCustomizedPrimaryColorToSharedPreference(@ColorInt int color) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR, color);
     }
