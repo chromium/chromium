@@ -33,6 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/mac/screen_mac_headless.h"
@@ -164,9 +165,10 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
     if (enable_hdr) {
       bool needs_alpha_values[] = {true, false};
       for (const auto& needs_alpha : needs_alpha_values) {
-        display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+        display_color_spaces.SetOutputColorSpaceAndFormat(
             gfx::ContentColorUsage::kHDR, needs_alpha,
-            gfx::ColorSpace::CreateExtendedSRGB(), gfx::BufferFormat::RGBA_F16);
+            gfx::ColorSpace::CreateExtendedSRGB(),
+            viz::SinglePlaneFormat::kRGBA_F16);
       }
       display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_lum_relative);
     }
