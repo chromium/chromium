@@ -250,13 +250,6 @@ bool PinnedActionToolbarButton::ShouldShowEphemerallyInToolbar() {
   return should_show_in_toolbar_ || has_anchor_;
 }
 
-void PinnedActionToolbarButton::SetIsPinnable(bool is_pinnable) {
-  if (is_pinnable_ == is_pinnable) {
-    return;
-  }
-  is_pinnable_ = is_pinnable;
-}
-
 void PinnedActionToolbarButton::SetActionEngaged(bool action_engaged) {
   if (!IsActive()) {
     SetProperty(
@@ -346,16 +339,10 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
       action_item->GetProperty(kActionItemUnderlineIndicatorKey));
 
   OnViewChangedImpl(action_item);
-
-  bool is_pinnable =
-      action_item->GetProperty(actions::kActionItemPinnableKey) !=
-      static_cast<int>(actions::ActionPinnableState::kNotPinnable);
-
-  if (!is_pinnable && action_view_->IsPinned()) {
-    action_view_->SetVisible(false);
-  }
-
-  action_view_->SetIsPinnable(is_pinnable);
+  action_view_->SetIsPinnable(
+      action_item->GetProperty(actions::kActionItemPinnableKey) ==
+      std::underlying_type_t<actions::ActionPinnableState>(
+          actions::ActionPinnableState::kPinnable));
   action_view_->SetIsActionShowingBubble(action_item->GetIsShowingBubble());
 }
 
