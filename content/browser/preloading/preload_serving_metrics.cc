@@ -38,10 +38,21 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
     const bool is_potential_match =
         meaningful_prefetch_match_metrics &&
         meaningful_prefetch_match_metrics->IsPotentialMatch();
+    const bool is_potential_match_with_ahead_of_prerender =
+        is_potential_match &&
+        meaningful_prefetch_match_metrics
+            ->prefetch_potential_candidate_serving_result_ahead_of_prerender
+            .has_value();
 
     base::UmaHistogramBoolean(
         WITH(prefix, "PrefetchMatchMetrics.IsPotentialMatch"),
         is_potential_match);
+    if (is_prerender_initial_navigation) {
+      base::UmaHistogramBoolean(
+          WITH(prefix,
+               "PrefetchMatchMetrics.IsPotentialMatch.WithAheadOfPrerender"),
+          is_potential_match_with_ahead_of_prerender);
+    }
 
     if (!is_potential_match) {
       return;
@@ -104,24 +115,17 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
           time_from_prefetch_container_added_to_match_start);
     }
 
-    if (is_prerender_initial_navigation) {
-      base::UmaHistogramBoolean(
+    if (is_prerender_initial_navigation &&
+        prefetch_match_metrics
+            .prefetch_potential_candidate_serving_result_ahead_of_prerender
+            .has_value()) {
+      base::UmaHistogramEnumeration(
           WITH(prefix,
-               "PrefetchMatchMetrics.IsPotentialMatch.WithAheadOfPrerender"),
+               "PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender."
+               "PotentialCandidateServingResult"),
           prefetch_match_metrics
               .prefetch_potential_candidate_serving_result_ahead_of_prerender
-              .has_value());
-      if (prefetch_match_metrics
-              .prefetch_potential_candidate_serving_result_ahead_of_prerender
-              .has_value()) {
-        base::UmaHistogramEnumeration(
-            WITH(prefix,
-                 "PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender."
-                 "PotentialCandidateServingResult"),
-            prefetch_match_metrics
-                .prefetch_potential_candidate_serving_result_ahead_of_prerender
-                .value());
-      }
+              .value());
     }
   }();
 }
