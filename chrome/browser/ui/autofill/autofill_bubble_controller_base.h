@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -54,6 +55,15 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void WebContentsDestroyed() override;
 
  protected:
+  bool IsBubbleManagerEnabled() const {
+#if !BUILDFLAG(IS_ANDROID)
+    return base::FeatureList::IsEnabled(
+        features::kAutofillShowBubblesBasedOnPriorities);
+#else
+    return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
   virtual std::optional<PageActionIconType> GetPageActionIconType() = 0;
 
   // Subclasses should implement this method to actually show the bubble and

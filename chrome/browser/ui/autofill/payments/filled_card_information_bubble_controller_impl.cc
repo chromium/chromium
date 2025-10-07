@@ -360,8 +360,7 @@ void FilledCardInformationBubbleControllerImpl::PrimaryPageChanged(
 
 void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowBubblesBasedOnPriorities)) {
+  if (IsBubbleManagerEnabled()) {
     // BubbleManager will handle the effects of tab changes.
     return;
   }

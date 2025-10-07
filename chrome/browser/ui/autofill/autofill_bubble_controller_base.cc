@@ -27,8 +27,7 @@ AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowBubblesBasedOnPriorities)) {
+  if (IsBubbleManagerEnabled()) {
     // BubbleManager will handle the effects of tab changes.
     return;
   }
@@ -81,8 +80,7 @@ bool AutofillBubbleControllerBase::MaySetUpBubble() {
 #if BUILDFLAG(IS_ANDROID)
   return true;
 #else  // BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillShowBubblesBasedOnPriorities)) {
+  if (!IsBubbleManagerEnabled()) {
     return true;
   }
 
@@ -93,8 +91,7 @@ bool AutofillBubbleControllerBase::MaySetUpBubble() {
 
 void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowBubblesBasedOnPriorities)) {
+  if (IsBubbleManagerEnabled()) {
     if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
       manager->RequestShowController(*this, force_show);
     }
