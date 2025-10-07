@@ -40,6 +40,7 @@
 #include "ui/gfx/test/sk_gmock_support.h"
 
 namespace web_app {
+
 class ManifestSilentUpdateCommandTest : public WebAppTest {
  public:
   const GURL kDefaultIconUrl = GURL("https://example.com/path/def_icon.png");
@@ -166,6 +167,19 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     base::ReadFileToString(path, &png_data);
     return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data))
         .AsBitmap();
+  }
+
+  std::vector<int> GetStoredIconSizesForPurpose(
+      const google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>&
+          downloaded_icons,
+      sync_pb::WebAppIconInfo_Purpose purpose) {
+    for (const auto& info : downloaded_icons) {
+      if (info.purpose() == purpose) {
+        const auto& sizes_field = info.icon_sizes();
+        return std::vector<int>(sizes_field.begin(), sizes_field.end());
+      }
+    }
+    return {};
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -866,14 +880,14 @@ TEST_F(ManifestSilentUpdateCommandTest,
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
-  new_icon.sizes = {{96, 96}};
+  new_icon.sizes = {{30, 30}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
   new_manifest->icons = {new_icon};
 
-  // Set icon in content. Setting the icon color to YELLOW to trigger a more
-  // than 10% image diff.
-  SkBitmap updated_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  // Set icon in content. Setting the icon color to YELLOW and changing the icon
+  // size to trigger a more than 10% image diff.
+  SkBitmap updated_bitmap = gfx::test::CreateBitmap(30, SK_ColorYELLOW);
   web_contents_manager()
       .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
       .bitmaps = {updated_bitmap};
@@ -888,15 +902,27 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->url(),
             GURL("https://example2.com/path/def_icon.png"));
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->purpose(),
-            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
-  EXPECT_EQ(pending_update_info->manifest_icons().begin()->size_in_px(), 96);
+            sync_pb::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->size_in_px(), 30);
 
   EXPECT_EQ(pending_update_info->trusted_icons_size(), 1);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->url(),
             GURL("https://example2.com/path/def_icon.png"));
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->purpose(),
-            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
-  EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
+            sync_pb::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 30);
+
+  // There are 6 sizes that will be generated as per SizesToGenerate() in the
+  // web app icon manager. With the new icon of size 30, that will be 7
+  // downloaded icon sizes in total.
+  EXPECT_THAT(GetStoredIconSizesForPurpose(
+                  pending_update_info->downloaded_manifest_icons(),
+                  sync_pb::WebAppIconInfo_Purpose_ANY),
+              testing::UnorderedElementsAre(30, 32, 48, 64, 96, 128, 256));
+  EXPECT_THAT(GetStoredIconSizesForPurpose(
+                  pending_update_info->downloaded_trusted_icons(),
+                  sync_pb::WebAppIconInfo_Purpose_ANY),
+              testing::UnorderedElementsAre(30, 32, 48, 64, 96, 128, 256));
 
   // Verify pending update icon bitmaps are written to disk.
   EXPECT_TRUE(
@@ -905,7 +931,7 @@ TEST_F(ManifestSilentUpdateCommandTest,
       base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
   SkBitmap disk_bitmap =
       LoadTestPNGAsBitmap(GetAppPendingTrustedIconsDir(profile(), app_id)
-                              .Append(FILE_PATH_LITERAL("Icons/96.png")));
+                              .Append(FILE_PATH_LITERAL("Icons/30.png")));
   EXPECT_THAT(disk_bitmap, gfx::test::EqualsBitmap(updated_bitmap));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -957,14 +983,14 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->url(),
             GURL("https://example2.com/path/def_icon.png"));
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->purpose(),
-            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+            sync_pb::WebAppIconInfo_Purpose_ANY);
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->size_in_px(), 96);
 
   EXPECT_EQ(pending_update_info->trusted_icons_size(), 1);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->url(),
             GURL("https://example2.com/path/def_icon.png"));
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->purpose(),
-            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+            sync_pb::WebAppIconInfo_Purpose_ANY);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
 
   // Verify pending update icon bitmaps are written to disk.
@@ -1026,14 +1052,14 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->url(),
             GURL("https://example2.com/path/def_icon.png"));
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->purpose(),
-            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+            sync_pb::WebAppIconInfo_Purpose_ANY);
   EXPECT_EQ(pending_update_info->manifest_icons().begin()->size_in_px(), 96);
 
   EXPECT_EQ(pending_update_info->trusted_icons_size(), 1);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->url(),
             GURL("https://example2.com/path/def_icon.png"));
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->purpose(),
-            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+            sync_pb::WebAppIconInfo_Purpose_ANY);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
 
   // Verify pending update icon bitmaps are written to disk.

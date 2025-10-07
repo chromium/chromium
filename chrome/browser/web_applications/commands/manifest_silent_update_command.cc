@@ -87,11 +87,7 @@ ConvertIconPurposeToManifestImagePurpose(apps::IconInfo::Purpose app_purpose) {
 void CopyIconsToPendingUpdateInfo(
     const std::vector<apps::IconInfo>& icon_infos,
     google::protobuf::RepeatedPtrField<sync_pb::WebAppIconInfo>*
-        destination_icons,
-    google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>*
-        destination_size_map) {
-  std::map<sync_pb::WebAppIconInfo::Purpose, std::vector<int32_t>>
-      sizes_by_purpose;
+        destination_icons) {
   for (const auto& icon_info : icon_infos) {
     sync_pb::WebAppIconInfo* pending_icon = destination_icons->Add();
 
@@ -100,21 +96,7 @@ void CopyIconsToPendingUpdateInfo(
         ConvertIconPurposeToSyncPurpose(icon_info.purpose);
     pending_icon->set_purpose(icon_purpose);
     if (icon_info.square_size_px.has_value()) {
-      const int32_t icon_size = icon_info.square_size_px.value();
-      pending_icon->set_size_in_px(icon_size);
-      sizes_by_purpose[icon_purpose].push_back(icon_size);
-    }
-  }
-
-  for (const auto& [purpose, sizes] : sizes_by_purpose) {
-    if (!sizes.empty()) {
-      proto::DownloadedIconSizeInfo* downloaded_icon_info =
-          destination_size_map->Add();
-
-      downloaded_icon_info->set_purpose(purpose);
-      for (int32_t size : sizes) {
-        downloaded_icon_info->add_icon_sizes(size);
-      }
+      pending_icon->set_size_in_px(icon_info.square_size_px.value());
     }
   }
 }
@@ -144,6 +126,39 @@ bool NoThrottleForSilentIconUpdates(
 
   return (new_icon_check_time > (*previous_time_for_silent_icon_update +
                                  kDelayForTenPercentIconDiffSilentUpdate));
+}
+
+google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+GetIconSizesPerPurposeForBitmaps(const IconBitmaps& icon_bitmaps) {
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  for (const auto& [size, _] : icon_bitmaps.any) {
+    downloaded_icon_info_any->add_icon_sizes(size);
+  }
+
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_maskable =
+      purpose_size_maps.Add();
+  downloaded_icon_info_maskable->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose_MASKABLE);
+  for (const auto& [size, _] : icon_bitmaps.maskable) {
+    downloaded_icon_info_maskable->add_icon_sizes(size);
+  }
+
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_monochrome =
+      purpose_size_maps.Add();
+  downloaded_icon_info_monochrome->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose_MONOCHROME);
+  for (const auto& [size, _] : icon_bitmaps.monochrome) {
+    downloaded_icon_info_monochrome->add_icon_sizes(size);
+  }
+
+  CHECK_EQ(static_cast<size_t>(purpose_size_maps.size()), kIconPurposes.size());
+
+  return purpose_size_maps;
 }
 
 }  // namespace
@@ -844,14 +859,16 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
       pending_update_info = proto::PendingUpdateInfo();
     }
     GetMutableDebugValue().Set("greater_than_ten_percent", true);
-    CopyIconsToPendingUpdateInfo(
-        new_install_info_->trusted_icons,
-        pending_update_info->mutable_trusted_icons(),
-        pending_update_info->mutable_downloaded_trusted_icons());
-    CopyIconsToPendingUpdateInfo(
-        new_install_info_->manifest_icons,
-        pending_update_info->mutable_manifest_icons(),
-        pending_update_info->mutable_downloaded_manifest_icons());
+    CopyIconsToPendingUpdateInfo(new_install_info_->trusted_icons,
+                                 pending_update_info->mutable_trusted_icons());
+    CopyIconsToPendingUpdateInfo(new_install_info_->manifest_icons,
+                                 pending_update_info->mutable_manifest_icons());
+
+    *pending_update_info->mutable_downloaded_trusted_icons() =
+        GetIconSizesPerPurposeForBitmaps(
+            new_install_info_->trusted_icon_bitmaps);
+    *pending_update_info->mutable_downloaded_manifest_icons() =
+        GetIconSizesPerPurposeForBitmaps(new_install_info_->icon_bitmaps);
     pending_trusted_icon_bitmaps_ = new_install_info_->trusted_icon_bitmaps;
     pending_manifest_icon_bitmaps_ = new_install_info_->icon_bitmaps;
 
