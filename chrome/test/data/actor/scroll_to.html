@@ -27,12 +27,18 @@
         left: 180vw;
         top: 180vw;
       }
+      #offscreen-fixed {
+        left: 400px;
+        position: fixed;
+        top: 1500px;
+      }
     </style>
   </head>
   <body>
-    <div id="in-viewport">in-viewport</div>
+    <div id="in-viewport" aria-label="in-viewport">in-viewport</div>
     <div id="out-of-viewport">out-of-viewport</div>
-    <div id="fixed">fixed</div>
+    <div id="fixed" aria-label="fixed">fixed</div>
     <div id="display-none">display-none</div>
+    <div id="offscreen-fixed" aria-label="offscreen-fixed">offscreen-fixed</div>
   </body>
 </html>

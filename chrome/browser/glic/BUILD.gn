@@ -413,6 +413,7 @@ source_set("interactive_ui_tests") {
     "host/glic_actor_mouse_move_tool_interactive_uitest.cc",
     "host/glic_actor_navigation_tool_interactive_uitest.cc",
     "host/glic_actor_script_tool_interactive_uitest.cc",
+    "host/glic_actor_scroll_to_tool_interactive_uitest.cc",
     "host/glic_actor_scroll_tool_interactive_uitest.cc",
     "host/glic_actor_select_tool_interactive_uitest.cc",
     "host/glic_actor_task_management_interactive_uitest.cc",

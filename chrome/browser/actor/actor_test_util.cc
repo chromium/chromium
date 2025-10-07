@@ -270,6 +270,9 @@ Actions MakeScroll(RenderFrameHost& rfh,
 Actions MakeScrollTo(RenderFrameHost& rfh, int content_node_id) {
   Actions actions;
   ScrollToAction* scroll_to = actions.add_actions()->mutable_scroll_to();
+  auto* tab = TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(&rfh));
+  scroll_to->set_tab_id(tab->GetHandle().raw_value());
   scroll_to->mutable_target()->set_content_node_id(content_node_id);
   scroll_to->mutable_target()
       ->mutable_document_identifier()
