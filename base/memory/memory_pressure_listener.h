@@ -184,13 +184,6 @@ class BASE_EXPORT AsyncMemoryPressureListener {
 // Note: In the future, this will be always called synchronously.
 class BASE_EXPORT MemoryPressureListener {
  public:
-  // MemoryPressureLevel used to be defined here instead of in
-  // base/memory/memory_pressure_level.h. The using statements here avoids the
-  // needs to refactor the whole codebase.
-  // TODO(pmonette): Delete this MemoryPressureLevel alias.
-  using MemoryPressureLevel = MemoryPressureLevel;
-  using enum MemoryPressureLevel;
-
   using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
 
   MemoryPressureListener(const Location& creation_location,
