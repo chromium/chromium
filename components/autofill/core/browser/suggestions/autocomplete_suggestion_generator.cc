@@ -129,14 +129,6 @@ void AutocompleteSuggestionGenerator::GenerateSuggestions(
                            std::move(suggestion_data));
                      });
 
-  // If there is only one suggestion that is the exact same string as
-  // what is in the input box, then don't show the suggestion.
-  if (autocomplete_entries.size() == 1 &&
-      trigger_field.value() == autocomplete_entries[0].key().value()) {
-    std::move(callback).Run({FillingProduct::kAutocomplete, {}});
-    return;
-  }
-
   std::vector<Suggestion> suggestions;
   suggestions.reserve(autocomplete_entries.size());
   for (const AutocompleteEntry& entry : autocomplete_entries) {
@@ -175,6 +167,16 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
       static_cast<const WDResult<std::vector<AutocompleteEntry>>*>(
           result.get());
   std::vector<AutocompleteEntry> entries = autocomplete_result->GetValue();
+
+  // If there is only one entry that is the exact same string as what is in the
+  // input box, then don't offer it as a suggestion.
+  if (entries.size() == 1 &&
+      query_handler.prefix == entries.front().key().value()) {
+    std::move(query_handler.on_suggestions_returned)
+        .Run({SuggestionDataSource::kAutocomplete, {}});
+    return;
+  }
+
   std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
       base::ToVector(std::move(entries), [](AutocompleteEntry& entry) {
         return SuggestionGenerator::SuggestionData(std::move(entry));
