@@ -429,10 +429,8 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
                             const gfx::Point& host_location);
 
   // Overridden from CompositorObserver:
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnCompositingChildResizing() final;
-  void OnChildResizeActivated() final;
-#endif
+  void OnCompositingAckDeprecated(ui::Compositor* compositor) final;
+  void OnCompositingChildResizing(ui::Compositor* compositor) final;
   void OnFrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) final;
   void OnSetPreferredRefreshRate(ui::Compositor*,
