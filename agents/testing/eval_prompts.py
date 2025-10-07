@@ -51,7 +51,8 @@ def _check_uncommitted_changes(cwd):
 
 def _build_chromium(cwd):
     logging.info('Running `gn gen out/Default`')
-    subprocess.check_call(['gn', 'gen', 'out/Default'], cwd=cwd)
+    subprocess.check_call(
+        ['gn', 'gen', 'out/Default', '--args=use_remoteexec=true'], cwd=cwd)
     logging.info('Running `autoninja -C out/Default`')
     subprocess.check_call(['autoninja', '-C', 'out/Default'], cwd=cwd)
     logging.info('Finished building')

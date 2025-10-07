@@ -75,7 +75,9 @@ class BuildChromiumUnittest(fake_filesystem_unittest.TestCase):
         """Tests that the correct commands are called to build chromium."""
         eval_prompts._build_chromium('/tmp/src')
         mock_check_call.assert_has_calls([
-            mock.call(['gn', 'gen', 'out/Default'], cwd='/tmp/src'),
+            mock.call(
+                ['gn', 'gen', 'out/Default', '--args=use_remoteexec=true'],
+                cwd='/tmp/src'),
             mock.call(['autoninja', '-C', 'out/Default'], cwd='/tmp/src'),
         ])
 
