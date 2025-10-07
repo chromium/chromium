@@ -83,7 +83,7 @@ class DragSession {
 
   update(e: DragEvent) {
     const dragOverElement = e.composedPath().find(target => {
-      return target instanceof PowerBookmarkRowElement;
+      return target instanceof PowerBookmarkRowElement && !target.bookmark.url;
     }) as PowerBookmarkRowElement;
 
     if (!dragOverElement) {
@@ -97,8 +97,7 @@ class DragSession {
 
     this.resetState_();
 
-    const dragOverBookmark = dragOverElement.bookmark;
-    let dropTargetBookmark = dragOverBookmark;
+    let dropTargetBookmark = dragOverElement.bookmark;
 
     const invalidDropTarget = dropTargetBookmark.unmodifiable ||
         dropTargetBookmark.url ||
@@ -121,7 +120,7 @@ class DragSession {
       return;
     }
 
-    if (dragOverBookmark.url) {
+    if (invalidDropTarget) {
       this.delegate_.getFallbackDropTargetElement().setAttribute(
           DROP_POSITION_ATTR, DropPosition.INTO);
     } else {

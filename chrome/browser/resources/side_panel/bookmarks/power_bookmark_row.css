@@ -9,7 +9,11 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
-:host([drop-position='into']) cr-url-list-item {
+:host {
+  display: block;
+}
+
+:host([drop-position='into']) {
   background: var(--cr-hover-background-color);
 }
 
