@@ -78,7 +78,6 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/dcomp_image_backing_factory.h"
-#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -642,13 +641,6 @@ bool SharedImageFactory::IsD3DSharedImageSupported() const {
       context_state_->GetD3D11Device().Get(), gpu_preferences_);
 }
 
-GpuMemoryBufferFactoryDXGI*
-SharedImageFactory::GetGpuMemoryBufferFactoryDXGI() {
-  static auto* factory =
-      new GpuMemoryBufferFactoryDXGI(shared_image_manager_->io_runner());
-  return factory;
-}
-
 bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          const Mailbox& back_buffer_mailbox,
                                          viz::SharedImageFormat format,
@@ -725,8 +717,8 @@ SharedImageFactory::CreateNativeGpuMemoryBufferHandle(
   return OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
       shared_image_manager_->vulkan_context_provider(), size, format, usage);
 #else
-  return GetGpuMemoryBufferFactoryDXGI()->CreateNativeGmbHandle(size, format,
-                                                                usage);
+  return D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
+      shared_image_manager_->io_runner(), size, format, usage);
 #endif
 }
 #endif
@@ -735,9 +727,9 @@ bool SharedImageFactory::CopyNativeBufferToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
 #if BUILDFLAG(IS_WIN)
-  return GetGpuMemoryBufferFactoryDXGI()
-      ->FillSharedMemoryRegionWithBufferContents(std::move(buffer_handle),
-                                                 std::move(shared_memory));
+  return D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
+      shared_image_manager_->io_runner(), std::move(buffer_handle),
+      std::move(shared_memory));
 #else
   return false;
 #endif

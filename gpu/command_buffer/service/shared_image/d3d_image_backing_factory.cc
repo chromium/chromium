@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -33,6 +34,12 @@
 namespace gpu {
 
 namespace {
+
+GpuMemoryBufferFactoryDXGI* GetGpuMemoryBufferFactoryDXGI(
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner) {
+  static auto* factory = new GpuMemoryBufferFactoryDXGI(io_runner);
+  return factory;
+}
 
 // Formats supported by CreateSharedImage() for uploading initial data.
 bool IsFormatSupportedForInitialData(viz::SharedImageFormat format) {
@@ -216,6 +223,26 @@ D3DImageBackingFactory::SwapChainBackings::SwapChainBackings(
 D3DImageBackingFactory::SwapChainBackings&
 D3DImageBackingFactory::SwapChainBackings::operator=(
     D3DImageBackingFactory::SwapChainBackings&&) = default;
+
+// static
+gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage) {
+  return GetGpuMemoryBufferFactoryDXGI(io_runner)->CreateNativeGmbHandle(
+      size, format, usage);
+}
+
+// static
+bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  return GetGpuMemoryBufferFactoryDXGI(io_runner)
+      ->FillSharedMemoryRegionWithBufferContents(std::move(buffer_handle),
+                                                 std::move(shared_memory));
+}
 
 // static
 bool D3DImageBackingFactory::IsD3DSharedImageSupported(

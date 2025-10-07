@@ -15,6 +15,8 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -47,6 +49,17 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   D3DImageBackingFactory& operator=(const D3DImageBackingFactory&) = delete;
 
   ~D3DImageBackingFactory() override;
+
+  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage);
+
+  static bool CopyNativeBufferToSharedMemoryAsync(
+      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory);
 
   // Returns true if D3D shared images are supported and this factory should be
   // used. Generally this means Skia-GL, passthrough decoder, and ANGLE-D3D11.
