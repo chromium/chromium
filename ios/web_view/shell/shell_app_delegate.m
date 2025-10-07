@@ -57,12 +57,35 @@
 
 - (BOOL)application:(UIApplication*)application
     shouldSaveSecureApplicationState:(NSCoder*)coder {
-  return NO;
+  return YES;
 }
 
 - (BOOL)application:(UIApplication*)application
     shouldRestoreSecureApplicationState:(NSCoder*)coder {
-  return NO;
+  return YES;
+}
+
+- (void)application:(UIApplication*)application
+    didDecodeRestorableStateWithCoder:(NSCoder*)coder {
+}
+
+- (void)application:(UIApplication*)application
+    willEncodeRestorableStateWithCoder:(NSCoder*)coder {
+}
+
+- (UIViewController*)application:(UIApplication*)application
+    viewControllerWithRestorationIdentifierPath:
+        (NSArray<NSString*>*)identifierComponents
+                                          coder:(NSCoder*)coder {
+  const NSUInteger identifiersCount = identifierComponents.count;
+  if (identifiersCount > 0) {
+    NSString* identifier = identifierComponents[identifiersCount - 1];
+    UIViewController* rootViewController = self.window.rootViewController;
+    if ([identifier isEqualToString:rootViewController.restorationIdentifier]) {
+      return rootViewController;
+    }
+  }
+  return nil;
 }
 
 @end
