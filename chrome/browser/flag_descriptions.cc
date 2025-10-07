@@ -988,14 +988,6 @@ const char kAutofillSharedStorageServerCardDataDescription[] =
     "When enabled, the cached server credit card data from autofill will be "
     "pushed into the shared storage database for the payments origin.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kAutofillSyncEwalletAccountsName[] =
-    "Sync eWallet accounts from Google Payments";
-const char kAutofillSyncEwalletAccountsDescription[] =
-    "When enabled, eWallet accounts are synced from the Google Payments "
-    "servers and displayed on the payment methods settings page.";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 const char kAutofillUnmaskCardRequestTimeoutName[] =
     "Timeout for the credit card unmask request";
 const char kAutofillUnmaskCardRequestTimeoutDescription[] =
@@ -5117,11 +5109,6 @@ const char kEnableClipboardDataControlsAndroidDescription[] =
     "Enables the enterprise data controls on Android for restricting copy and "
     "paste actions for the clipboard.";
 
-const char kEwalletPaymentsName[] = "Enable eWallet payments";
-const char kEwalletPaymentsDescription[] =
-    "When enabled, Chrome will offer to pay with eWallet accounts if a payment "
-    "link is detected.";
-
 const char kExternalNavigationDebugLogsName[] =
     "External Navigation Debug Logs";
 const char kExternalNavigationDebugLogsDescription[] =
@@ -5279,10 +5266,6 @@ const char kOmniboxShortcutsAndroidName[] = "Omnibox shortcuts on Android";
 const char kOmniboxShortcutsAndroidDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "
     "on Android";
-
-const char kPaymentLinkDetectionName[] = "Enable payment link detection";
-const char kPaymentLinkDetectionDescription[] =
-    "Enables payment link detection in the DOM.";
 
 const char kPCCTMinimumHeightName[] =
     "Change the minimum height of pCCT to 30%.";

@@ -583,11 +583,6 @@ extern const char kAutofillManualTestingDataDescription[];
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kAutofillSyncEwalletAccountsName[];
-extern const char kAutofillSyncEwalletAccountsDescription[];
-#endif  // BUILDFLAG(IS_ANDROID)
-
 extern const char kAutofillPaymentsFieldSwappingName[];
 extern const char kAutofillPaymentsFieldSwappingDescription[];
 
@@ -2956,9 +2951,6 @@ extern const char kEnableClipboardDataControlsAndroidDescription[];
 extern const char kEnableClientCertificateProvisioningOnAndroidName[];
 extern const char kEnableClientCertificateProvisioningOnAndroidDescription[];
 
-extern const char kEwalletPaymentsName[];
-extern const char kEwalletPaymentsDescription[];
-
 extern const char kExternalNavigationDebugLogsName[];
 extern const char kExternalNavigationDebugLogsDescription[];
 
@@ -3062,9 +3054,6 @@ extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
 
 extern const char kOmniboxShortcutsAndroidName[];
 extern const char kOmniboxShortcutsAndroidDescription[];
-
-extern const char kPaymentLinkDetectionName[];
-extern const char kPaymentLinkDetectionDescription[];
 
 extern const char kPCCTMinimumHeightName[];
 extern const char kPCCTMinimumHeightDescription[];
