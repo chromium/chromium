@@ -216,6 +216,12 @@ bool ShouldTakeInformedRestoreScreenshot() {
         ScreenshotOnShutdownStatus::kFailedInLockScreen);
     return false;
   }
+  if (session_controller->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedSessionIsNotActive);
+    return false;
+  }
   if (session_controller->IsUserGuest() ||
       session_controller->IsUserPublicAccount()) {
     RecordScreenshotOnShutdownStatus(
