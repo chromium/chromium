@@ -3682,6 +3682,7 @@ chromium-metrics-reviews@google.com.
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The duration between the hardware timestamp and the start of event
     processing on the main thread for a meaningful input. Excludes scrolls.
