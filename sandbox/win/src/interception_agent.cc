@@ -21,8 +21,6 @@
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 
-namespace sandbox {
-
 namespace {
 
 // Returns true if target lies between base and base + range.
@@ -31,18 +29,9 @@ bool IsWithinRange(const void* base, size_t range, const void* target) {
   return reinterpret_cast<const char*>(target) < end;
 }
 
-bool CompareNames(std::wstring_view current_name, std::wstring_view name) {
-  if (current_name.empty()) {
-    return false;
-  }
-  auto result = EqualUnicodeString(current_name, name);
-  if (!result) {
-    return false;
-  }
-  return *result;
-}
-
 }  // namespace
+
+namespace sandbox {
 
 // The list of intercepted functions back-pointers.
 SANDBOX_INTERCEPT OriginalFunctions g_originals;
@@ -76,17 +65,33 @@ bool InterceptionAgent::Init(SharedMemory* shared_memory) {
   return true;
 }
 
-bool InterceptionAgent::OnDllLoad(std::wstring_view full_path,
-                                  std::wstring_view name,
+bool InterceptionAgent::DllMatch(const UNICODE_STRING* full_path,
+                                 const UNICODE_STRING* name,
+                                 const DllPatchInfo* dll_info) {
+  UNICODE_STRING current_name;
+  current_name.Length = static_cast<USHORT>(
+      GetNtExports()->wcslen(dll_info->dll_name) * sizeof(wchar_t));
+  current_name.MaximumLength = current_name.Length;
+  current_name.Buffer = const_cast<wchar_t*>(dll_info->dll_name);
+
+  BOOLEAN case_insensitive = TRUE;
+  if (full_path && !GetNtExports()->RtlCompareUnicodeString(
+                       &current_name, full_path, case_insensitive)) {
+    return true;
+  }
+  return name && !GetNtExports()->RtlCompareUnicodeString(&current_name, name,
+                                                          case_insensitive);
+}
+
+bool InterceptionAgent::OnDllLoad(const UNICODE_STRING* full_path,
+                                  const UNICODE_STRING* name,
                                   void* base_address) {
   DllPatchInfo* dll_info = interceptions_->dll_list;
   size_t i = 0;
   for (; i < interceptions_->num_intercepted_dlls; i++) {
-    std::wstring_view current_name(dll_info->dll_name, dll_info->dll_name_len);
-    if (CompareNames(current_name, full_path) ||
-        CompareNames(current_name, name)) {
+    if (DllMatch(full_path, name, dll_info))
       break;
-    }
+
     dll_info = reinterpret_cast<DllPatchInfo*>(
         reinterpret_cast<char*>(dll_info) + dll_info->record_bytes);
   }

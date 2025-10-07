@@ -10,9 +10,8 @@
 #define SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
 
 #include <windows.h>
-#include <winternl.h>
 
-#include <string_view>
+#include <winternl.h>
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -54,8 +53,7 @@ class InterceptionAgent {
   // full_path is the (optional) full name of the module being loaded and name
   // is the internal module name. If full_path is provided, it will be used
   // before the internal name to determine if we care about this dll.
-  bool OnDllLoad(std::wstring_view full_path,
-                 std::wstring_view name,
+  bool OnDllLoad(const UNICODE_STRING* full_path, const UNICODE_STRING* name,
                  void* base_address);
 
   // Performs cleanup when a dll is unloaded.
@@ -66,6 +64,11 @@ class InterceptionAgent {
 
   // Performs initialization of the singleton.
   bool Init(SharedMemory* shared_memory);
+
+  // Returns true if we are interested on this dll. dll_info is an entry of the
+  // list of intercepted dlls.
+  bool DllMatch(const UNICODE_STRING* full_path, const UNICODE_STRING* name,
+                const DllPatchInfo* dll_info);
 
   // Performs the patching of the dll loaded at base_address.
   // The patches to perform are described on dll_info, and thunks is the thunk
