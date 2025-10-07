@@ -191,28 +191,26 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
   return true;
 }
 
-bool LensUrlMatcher::SubdomainsMatchHash(std::string str) {
+bool LensUrlMatcher::SubdomainsMatchHash(std::string_view str) {
   // Remove any periods from the start and end of the hostname.
   size_t start = str.find_first_not_of('.');
   if (start == std::string::npos) {
     return false;
   }
   size_t end = str.find_last_not_of('.');
-  return SubdomainsMatchHash(
-      std::string_view(str).substr(start, 1 + end - start));
-}
-
-bool LensUrlMatcher::SubdomainsMatchHash(std::string_view str) {
-  if (MatchesHash(str)) {
-    return true;
+  std::string_view domain =
+      std::string_view(str).substr(start, 1 + end - start);
+  while (true) {
+    if (MatchesHash(domain)) {
+      return true;
+    }
+    size_t found = domain.find('.');
+    if (found == std::string::npos) {
+      // Top-level domain.
+      return false;
+    }
+    domain = domain.substr(found + 1);
   }
-
-  size_t found = str.find('.');
-  if (found == std::string::npos) {
-    // Top-level domain.
-    return false;
-  }
-  return SubdomainsMatchHash(str.substr(found + 1));
 }
 
 bool LensUrlMatcher::MatchesHash(std::string_view str) {
