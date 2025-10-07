@@ -67,7 +67,6 @@ import './site_settings/local_network_access_page.js';
 import './site_settings/microphone_page.js';
 import './site_settings/midi_devices_page.js';
 import './site_settings/notifications_page.js';
-import './site_settings_page/site_settings_page.js';
 import './site_settings/payment_handler_page.js';
 import './site_settings/pdf_documents_page.js';
 import './site_settings/popups_page.js';
@@ -79,6 +78,7 @@ import './site_settings/settings_category_default_radio_group.js';
 import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/site_details_permission_device_entry.js';
+import './site_settings/site_settings_page.js';
 // <if expr="is_chromeos">
 import './site_settings/smart_card_readers_page.js';
 // </if>
@@ -243,8 +243,8 @@ export {ResetDialogPage, SettingsSecurityKeysResetDialogElement} from './privacy
 export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './privacy_page/security_keys_set_pin_dialog.js';
 export {SecurityKeysSubpageElement} from './privacy_page/security_keys_subpage.js';
 export {HttpsFirstModeSetting, SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
-export {SecuritySettingsBundleSetting, SettingsSecurityPageV2Element} from './privacy_page/security_page_v2.js';
 export {SecurityPageFeatureRowElement} from './privacy_page/security_page_feature_row.js';
+export {SecuritySettingsBundleSetting, SettingsSecurityPageV2Element} from './privacy_page/security_page_v2.js';
 export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
 export {PrivacySandboxInterestItemElement} from './privacy_sandbox/privacy_sandbox_interest_item.js';
@@ -283,6 +283,7 @@ export {NotificationsPageElement} from './site_settings/notifications_page.js';
 export {PdfDocumentsPageElement} from './site_settings/pdf_documents_page.js';
 export {ProtectedContentPageElement} from './site_settings/protected_content_page.js';
 export {AppHandlerEntry, AppProtocolEntry, HandlerEntry, ProtocolEntry, ProtocolHandlersElement} from './site_settings/protocol_handlers.js';
+export {SettingsRecentSitePermissionsElement} from './site_settings/recent_site_permissions.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';
 export {SettingsSiteDataElement} from './site_settings/site_data.js';
 export {SiteDetailsElement} from './site_settings/site_details.js';
@@ -291,6 +292,8 @@ export {SiteDetailsPermissionDeviceEntryElement} from './site_settings/site_deta
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
+export {defaultSettingLabel} from './site_settings/site_settings_list.js';
+export {SettingsSiteSettingsPageElement} from './site_settings/site_settings_page.js';
 export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ThirdPartyCookieBlockingSetting, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 // <if expr="is_chromeos">
 export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
@@ -301,9 +304,6 @@ export {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElemen
 export {V8PageElement} from './site_settings/v8_page.js';
 export {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
-export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';
-export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
-export {SettingsSiteSettingsPageElement} from './site_settings_page/site_settings_page.js';
 // <if expr="not is_chromeos">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';

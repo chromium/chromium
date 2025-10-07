@@ -229,6 +229,7 @@ build_webui("build") {
     "site_settings/popups_page.ts",
     "site_settings/protected_content_page.ts",
     "site_settings/protocol_handlers.ts",
+    "site_settings/recent_site_permissions.ts",
     "site_settings/sensors_page.ts",
     "site_settings/serial_ports_page.ts",
     "site_settings/settings_category_default_radio_group.ts",
@@ -239,6 +240,8 @@ build_webui("build") {
     "site_settings/site_entry.ts",
     "site_settings/site_list_entry.ts",
     "site_settings/site_list.ts",
+    "site_settings/site_settings_list.ts",
+    "site_settings/site_settings_page.ts",
     "site_settings/sound_page.ts",
     "site_settings/storage_access_page.ts",
     "site_settings/storage_access_site_list_entry.ts",
@@ -251,9 +254,6 @@ build_webui("build") {
     "site_settings/web_printing_page.ts",
     "site_settings/window_management_page.ts",
     "site_settings/zoom_levels.ts",
-    "site_settings_page/recent_site_permissions.ts",
-    "site_settings_page/site_settings_list.ts",
-    "site_settings_page/site_settings_page.ts",
     "your_saved_info_page/your_saved_info_page.ts",
     "your_saved_info_page/your_saved_info_page_index.ts",
   ]
@@ -424,8 +424,8 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_page/search_engine_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
+    "site_settings/site_review_shared.css",
     "site_settings/site_settings_shared.css",
-    "site_settings_page/site_review_shared.css",
   ]
 
   ts_composite = true
