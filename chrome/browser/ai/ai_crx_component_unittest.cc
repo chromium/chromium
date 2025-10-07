@@ -223,4 +223,28 @@ TEST_F(AICrxComponentTest, ObservesComponentsMidDownload) {
   }
 }
 
+TEST_F(AICrxComponentTest, DownloadedBytesWontExceedTotalBytes) {
+  AIModelDownloadProgressManager manager;
+  AITestUtils::FakeMonitor monitor;
+  AITestUtils::FakeComponent& component = CreateComponent("component_id", 100);
+
+  manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                      AICrxComponent::FromComponentIds(
+                          &component_update_service_, {component.id()}));
+
+  // Send a zero, so that the `AIModelDownloadProgressManager` sends the first
+  // update. This ensures that the already downloaded bytes is zero.
+  SendUpdate(component, ComponentState::kDownloading, 0);
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+  FastForwardBy(base::Milliseconds(51));
+
+  // Sending an update that exceeds the component's total bytes is clamped to
+  // the component's total bytes.
+  SendUpdate(component, ComponentState::kDownloading,
+             component.total_bytes() * 2);
+  monitor.ExpectReceivedNormalizedUpdate(component.total_bytes(),
+                                         component.total_bytes());
+  FastForwardBy(base::Milliseconds(51));
+}
+
 }  // namespace on_device_ai

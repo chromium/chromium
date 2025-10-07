@@ -104,7 +104,8 @@ void AICrxComponent::OnEvent(const component_updater::CrxUpdateItem& item) {
     return;
   }
 
-  SetDownloadedBytes(item.downloaded_bytes);
+  // Crx components may send downloaded_bytes that exceed the total_bytes.
+  SetDownloadedBytes(std::min(item.downloaded_bytes, item.total_bytes));
   SetTotalBytes(item.total_bytes);
 }
 
