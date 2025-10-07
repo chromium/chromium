@@ -10012,6 +10012,13 @@
     "expiry_milestone": 144
   },
   {
+    "name": "trusted-web-activity-contacts-delegation",
+    "owners": [
+      "yixie@chromium.org"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ui-automation-provider",
     "owners": [
       "benjamin.beaudry@microsoft.com",

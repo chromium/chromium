@@ -13277,6 +13277,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableKeyboardAccessoryChipRedesign)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"trusted-web-activity-contacts-delegation",
+     flag_descriptions::kTrustedWebActivityContactsDelegationName,
+     flag_descriptions::kTrustedWebActivityContactsDelegationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTrustedWebActivityContactsDelegation)}
+#endif
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

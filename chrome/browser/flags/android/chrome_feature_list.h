@@ -276,6 +276,7 @@ BASE_DECLARE_FEATURE(kToolbarSnapshotRefactor);
 BASE_DECLARE_FEATURE(kToolbarStaleCaptureBugFix);
 BASE_DECLARE_FEATURE(kToolbarTabletResizeRefactor);
 BASE_DECLARE_FEATURE(kTouchToSearchCallout);
+BASE_DECLARE_FEATURE(kTrustedWebActivityContactsDelegation);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUmaSessionCorrectnessFixes);

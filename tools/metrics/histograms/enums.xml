@@ -8406,6 +8406,8 @@ from previous Chrome versions.
   <int value="-2050829390" label="LensRegionSearchStaticPage:enabled"/>
   <int value="-2050039250"
       label="JourneysOnDeviceClusteringContentClustering:enabled"/>
+  <int value="-2049843624"
+      label="TrustedWebActivityContactsDelegation:disabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
   <int value="-2048873628" label="UseToastManager:enabled"/>
   <int value="-2048829250" label="LanguagePacksInOobe:disabled"/>
@@ -11819,6 +11821,7 @@ from previous Chrome versions.
   <int value="-846670837" label="QuickAppAccessTestUI:enabled"/>
   <int value="-846618756" label="AutofillEnableAmountExtraction:disabled"/>
   <int value="-846321831" label="OmniboxSiteSearch:enabled"/>
+  <int value="-845084369" label="TrustedWebActivityContactsDelegation:enabled"/>
   <int value="-844786349" label="ClipboardHistoryNudgeSessionReset:enabled"/>
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>

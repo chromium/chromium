@@ -5473,6 +5473,12 @@ const char kToolbarSnapshotRefactorName[] = "Toolbar Snapshot Refactor";
 const char kToolbarSnapshotRefactorDescription[] =
     "Updates the margin and snapshotting of the Toolbar on Android.";
 
+const char kTrustedWebActivityContactsDelegationName[] =
+    "TWA contact picker delegation";
+const char kTrustedWebActivityContactsDelegationDescription[] =
+    "When enabled, contacts information requests for Trusted Web Activities "
+    "will be delegated to the app.";
+
 const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
     "Use recommended AHardwareBuffer usage flags from Vulkan";
 const char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =

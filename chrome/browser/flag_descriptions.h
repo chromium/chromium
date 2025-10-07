@@ -3178,6 +3178,9 @@ extern const char kTabStripMouseCloseResizeDelayDescription[];
 extern const char kToolbarSnapshotRefactorName[];
 extern const char kToolbarSnapshotRefactorDescription[];
 
+extern const char kTrustedWebActivityContactsDelegationName[];
+extern const char kTrustedWebActivityContactsDelegationDescription[];
+
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 
