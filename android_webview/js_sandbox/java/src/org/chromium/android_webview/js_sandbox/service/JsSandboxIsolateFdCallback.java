@@ -13,11 +13,13 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateSyncCallback;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.IOException;
 
 /** Callback for the native code to report a JavaScript evaluation outcome using FDs. */
 @JNINamespace("android_webview")
+@NullMarked
 public class JsSandboxIsolateFdCallback {
     private static final String TAG = "JsSandboxIsolateFdCallback";
 
