@@ -6,13 +6,12 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AutofillSettingsReferrer, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import {AutofillSettingsReferrer, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';

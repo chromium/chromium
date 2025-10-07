@@ -8,8 +8,8 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 

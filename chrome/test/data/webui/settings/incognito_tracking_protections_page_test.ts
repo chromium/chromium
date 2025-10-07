@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {IncognitoTrackingProtectionsPageElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, Router, resetRouterForTesting,MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
 import {assertTrue, assertFalse, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';

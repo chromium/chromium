@@ -5,11 +5,10 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsDoNotTrackToggleElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';

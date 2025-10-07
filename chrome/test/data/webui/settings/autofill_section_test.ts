@@ -5,7 +5,6 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
 import {AutofillAddressOptInChange, AutofillManagerImpl, CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
@@ -13,7 +12,7 @@ import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-te
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {CrLinkRowElement} from 'chrome://settings/settings.js';
-import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';

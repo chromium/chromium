@@ -5,12 +5,11 @@
 // clang-format off
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, SignedInState, StatusAction, SyncBrowserProxyImpl, Router, routes, resetRouterForTesting} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, SignedInState, StatusAction, SyncBrowserProxyImpl, Router, routes, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';

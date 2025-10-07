@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {GeolocationPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl, SettingsState} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

@@ -5,10 +5,9 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DefaultBrowserBrowserProxy, DefaultBrowserInfo, SettingsDefaultBrowserPageElement} from 'chrome://settings/settings.js';
-import {DefaultBrowserBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {DefaultBrowserBrowserProxyImpl, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // clang-format on
 
 /**

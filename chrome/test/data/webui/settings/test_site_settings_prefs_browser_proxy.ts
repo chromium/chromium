@@ -8,9 +8,9 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {StorageAccessSiteException, AppProtocolEntry, ChooserType, HandlerEntry, OriginFileSystemGrants, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {SiteSettingsPref} from './test_util.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import {createOriginInfo, createSiteGroup,createSiteSettingsPrefs, getContentSettingsTypeFromChooserType} from './test_util.js';
 // clang-format on
 

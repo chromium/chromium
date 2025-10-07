@@ -5,11 +5,10 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {PrivacyGuideStep} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertTrue, assertNotReached} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

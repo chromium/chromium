@@ -4,11 +4,10 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsPrivacyGuidePageElement, ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

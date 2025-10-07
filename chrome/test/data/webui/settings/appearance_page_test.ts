@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CustomizeColorSchemeModeClientRemote, SettingsAppearancePageElement, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, SystemTheme} from 'chrome://settings/settings.js';
+import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, loadTimeData, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
