@@ -70,7 +70,7 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
     ash::ProfileHelper::Get();  // Instantiate
     LogIn(kAccountId1);
 
-    window_.reset(CreateTestWindowInShellWithId(0));
+    window_.reset(CreateTestWindowInShell({.window_id = 0}));
     window_->Show();
 
     multi_user_window_manager_browser_adaptor_ =

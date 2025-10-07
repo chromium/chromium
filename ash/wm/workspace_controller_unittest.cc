@@ -123,7 +123,7 @@ class WorkspaceControllerTest : public AshTestBase {
   }
 
   aura::Window* CreatePopupLikeWindow(const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShellWithBounds(bounds);
+    aura::Window* window = CreateTestWindowInShellWithBounds({bounds});
     window->Show();
     return window;
   }
@@ -759,7 +759,8 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnCreate) {
 // transient child.
 TEST_F(WorkspaceControllerTest, AutoPlacingMovesTransientChild) {
   // Create an auto-positioned window.
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   gfx::Rect desktop_area = window1->parent()->bounds();
   WindowState::Get(window1.get())->SetWindowPositionManaged(true);
   // Hide and then show |window1| to trigger auto-positioning logic.
@@ -787,7 +788,8 @@ TEST_F(WorkspaceControllerTest, AutoPlacingMovesTransientChild) {
 
   // Create and show a second window forcing the first window and its child to
   // move.
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState::Get(window2.get())->SetWindowPositionManaged(true);
   // Hide and then show |window2| to trigger auto-positioning logic.
   window2->Hide();
@@ -810,11 +812,13 @@ TEST_F(WorkspaceControllerTest, AutoPlacingMovesTransientChild) {
 TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
   // Test 1: In case there is no manageable window, no window should shift.
 
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   // Trigger the auto window placement function by making it visible.
   // Note that the bounds are getting changed while it is invisible.
   window2->Hide();
@@ -834,7 +838,8 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
   // Test 2: Set up two managed windows and check their auto positioning.
   window1_state->SetWindowPositionManaged(true);
 
-  std::unique_ptr<aura::Window> window3(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<aura::Window> window3(
+      CreateTestWindowInShell({.window_id = 2}));
   WindowState::Get(window3.get())->SetWindowPositionManaged(true);
   // To avoid any auto window manager changes due to SetBounds, the window
   // gets first hidden and then shown again.
@@ -857,7 +862,8 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
 
   // Test 3: Set up a manageable and a non manageable window and check
   // positioning.
-  std::unique_ptr<aura::Window> window4(CreateTestWindowInShellWithId(3));
+  std::unique_ptr<aura::Window> window4(
+      CreateTestWindowInShell({.window_id = 3}));
   // To avoid any auto window manager changes due to SetBounds, the window
   // gets first hidden and then shown again.
   window1->Hide();
@@ -886,10 +892,12 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
 
 // Test the proper usage of user window movement interaction.
 TEST_F(WorkspaceControllerTest, TestUserMovedWindowRepositioning) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
   window1->Hide();
   window2->Hide();
@@ -982,7 +990,8 @@ TEST_F(WorkspaceControllerTest, TestSingleWindowsRestoredBounds) {
 // Test that user placed windows go back to their user placement after the user
 // closes all other windows.
 TEST_F(WorkspaceControllerTest, TestUserHandledWindowRestore) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   gfx::Rect user_pos = gfx::Rect(16, 42, 640, 320);
   window1->SetBounds(user_pos);
   WindowState* window1_state = WindowState::Get(window1.get());
@@ -991,7 +1000,8 @@ TEST_F(WorkspaceControllerTest, TestUserHandledWindowRestore) {
   gfx::Rect desktop_area = window1->parent()->bounds();
 
   // Create a second window to let the auto manager kick in.
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
   window1->Hide();
   window2->Hide();
@@ -1069,13 +1079,15 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
 
 // Test that a window from normal to minimize will repos the remaining.
 TEST_F(WorkspaceControllerTest, ToMinimizeRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2_state->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
@@ -1101,12 +1113,14 @@ TEST_F(WorkspaceControllerTest, ToMinimizeRepositionsRemaining) {
 
 // Test that minimizing an initially maximized window will repos the remaining.
 TEST_F(WorkspaceControllerTest, MaxToMinRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2_state->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
@@ -1125,13 +1139,15 @@ TEST_F(WorkspaceControllerTest, MaxToMinRepositionsRemaining) {
 
 // Test that nomral, maximize, minimizing will repos the remaining.
 TEST_F(WorkspaceControllerTest, NormToMaxToMinRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2_state->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 40, 256, 512));
@@ -1161,13 +1177,15 @@ TEST_F(WorkspaceControllerTest, NormToMaxToMinRepositionsRemaining) {
 
 // Test that nomral, maximize, normal will repos the remaining.
 TEST_F(WorkspaceControllerTest, NormToMaxToNormRepositionsRemaining) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->SetWindowPositionManaged(true);
   gfx::Rect desktop_area = window1->parent()->bounds();
 
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState::Get(window2.get())->SetWindowPositionManaged(true);
   window2->SetBounds(gfx::Rect(32, 40, 256, 512));
 
@@ -1197,11 +1215,13 @@ TEST_F(WorkspaceControllerTest, NormToMaxToNormRepositionsRemaining) {
 TEST_F(WorkspaceControllerTest, AnimatedNormToMaxToNormRepositionsRemaining) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0}));
   window1->Hide();
   window1->SetBounds(gfx::Rect(16, 32, 640, 320));
   gfx::Rect desktop_area = window1->parent()->bounds();
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 1}));
   window2->Hide();
   window2->SetBounds(gfx::Rect(32, 48, 256, 512));
 
@@ -1310,7 +1330,8 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
 // window (crbug.com/692175).
 TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
   // Create an auto-positioned window.
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState* window_state = WindowState::Get(window.get());
   window_state->SetWindowPositionManaged(true);
   window->SetBounds(gfx::Rect(10, 20, 100, 200));

@@ -171,8 +171,8 @@ TEST_F(MouseCursorEventFilterTest, CursorDeviceScaleFactor) {
 // (http://crbug.com/855163).
 TEST_F(MouseCursorEventFilterTest, CursorVisibilityWontFlip) {
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, 1234, gfx::Rect(5, 5, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {5, 5, 100, 100}, .window_id = 1234}));
   window->Show();
   window->SetCapture();
 

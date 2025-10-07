@@ -382,7 +382,7 @@ void MultiUserWindowManagerBrowserAdaptorTest::SetUpForThisManyWindows(
 
   ASSERT_TRUE(windows_.empty());
   for (int i = 0; i < windows; i++) {
-    windows_.push_back(CreateTestWindowInShellWithId(i));
+    windows_.push_back(CreateTestWindowInShell({.window_id = i}));
     windows_[i]->Show();
   }
 }
@@ -1655,7 +1655,7 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, FindBrowserWithActiveWindow) {
           kAccountIdA));
   Browser::CreateParams params(profile, true);
   std::unique_ptr<Browser> browser(CreateTestBrowser(
-      CreateTestWindowInShellWithId(0), gfx::Rect(16, 32, 640, 320), &params));
+      CreateTestWindowInShell({.window_id = 0}), {16, 32, 640, 320}, &params));
   browser->window()->Activate();
   // Manually set last active browser in BrowserList for testing.
   BrowserList::GetInstance()->SetLastActive(browser.get());

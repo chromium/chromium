@@ -2306,12 +2306,13 @@ TEST_F(ShelfLayoutManagerTest,
 TEST_F(ShelfLayoutManagerTest, ShutdownHandlesWindowActivation) {
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
-  aura::Window* window1 = CreateTestWindowInShellWithId(0);
+  aura::Window* window1 = CreateTestWindowInShell({.window_id = 0});
   window1->SetBounds(gfx::Rect(0, 0, 100, 100));
   window1->SetProperty(aura::client::kShowStateKey,
                        ui::mojom::WindowShowState::kMaximized);
   window1->Show();
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 0}));
   window2->SetBounds(gfx::Rect(0, 0, 100, 100));
   window2->Show();
   wm::ActivateWindow(window1);

@@ -3394,7 +3394,8 @@ TEST_P(EventRewriterTest, TestRewriteNonNativeEvent) {
 
 TEST_P(EventRewriterTest, TopRowKeysAreFunctionKeys) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 1}));
   wm::ActivateWindow(window.get());
 
   // Create a simulated keypress of F1 targetted at the window.

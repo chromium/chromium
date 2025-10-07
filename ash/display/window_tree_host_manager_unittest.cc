@@ -547,7 +547,7 @@ TEST_F(WindowTreeHostManagerHistogramTest,
 
 TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   // Creates windows to catch activation change event.
-  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShell({.window_id = 1}));
   w1->Focus();
 
   TestObserver observer;
@@ -715,7 +715,7 @@ display::ManagedDisplayInfo CreateMirroredDisplayInfo(
 
 TEST_F(WindowTreeHostManagerTest, MirrorToDockedWithFullscreen) {
   // Creates windows to catch activation change event.
-  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShell({.window_id = 1}));
   w1->Focus();
 
   // Docked mode.
@@ -765,7 +765,7 @@ TEST_F(WindowTreeHostManagerTest, MirrorToDockedWithFullscreen) {
 
 TEST_F(WindowTreeHostManagerTest, BoundsUpdated) {
   // Creates windows to catch activation change event.
-  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShell({.window_id = 1}));
   w1->Focus();
 
   TestObserver observer;

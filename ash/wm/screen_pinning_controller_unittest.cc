@@ -45,7 +45,7 @@ class TestClientControlledStateDelegate
 using ScreenPinningControllerTest = AshTestBase;
 
 TEST_F(ScreenPinningControllerTest, IsPinned) {
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   wm::ActivateWindow(w1);
 
   window_util::PinWindow(w1, /* trusted */ false);
@@ -53,8 +53,8 @@ TEST_F(ScreenPinningControllerTest, IsPinned) {
 }
 
 TEST_F(ScreenPinningControllerTest, OnlyOnePinnedWindow) {
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
-  aura::Window* w2 = CreateTestWindowInShellWithId(1);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1});
   wm::ActivateWindow(w1);
 
   window_util::PinWindow(w1, /* trusted */ false);
@@ -68,8 +68,8 @@ TEST_F(ScreenPinningControllerTest, OnlyOnePinnedWindow) {
 }
 
 TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
-  aura::Window* w2 = CreateTestWindowInShellWithId(1);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1});
   wm::ActivateWindow(w1);
 
   window_util::PinWindow(w1, /* trusted */ false);
@@ -174,7 +174,7 @@ TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
 }
 
 TEST_F(ScreenPinningControllerTest, TrustedPinnedWithAccelerator) {
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   wm::ActivateWindow(w1);
 
   window_util::PinWindow(w1, /* trusted */ true);
@@ -192,7 +192,7 @@ TEST_F(ScreenPinningControllerTest, ExitUnifiedDisplay) {
 
   UpdateDisplay("400x300, 500x400");
 
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   wm::ActivateWindow(w1);
   auto* window_state = WindowState::Get(w1);
 
@@ -233,12 +233,12 @@ TEST_F(ScreenPinningControllerTest, CleanUpObserversAndDimmer) {
   EXPECT_EQ(container->children().size(), 0u);
 
   // Add a sibling window. It should not crash.
-  CreateTestWindowInShellWithId(2);
+  CreateTestWindowInShell({.window_id = 2});
 }
 
 TEST_F(ScreenPinningControllerTest, AllowWindowOnTopOfPinnedWindowForOnTask) {
-  aura::Window* const w1 = CreateTestWindowInShellWithId(0);
-  aura::Window* const w2 = CreateTestWindowInShellWithId(1);
+  aura::Window* const w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* const w2 = CreateTestWindowInShell({.window_id = 1});
   wm::ActivateWindow(w1);
 
   window_util::PinWindow(w1, /*trusted=*/false);

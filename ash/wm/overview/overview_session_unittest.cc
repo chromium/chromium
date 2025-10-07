@@ -508,9 +508,12 @@ TEST_P(OverviewSessionTest, MinimizeDuringOverview) {
 // Tests that the ordering of windows is stable across different overview
 // sessions even when the windows have the same bounds.
 TEST_P(OverviewSessionTest, WindowsOrder) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
-  std::unique_ptr<aura::Window> window3(CreateTestWindowInShellWithId(3));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 2}));
+  std::unique_ptr<aura::Window> window3(
+      CreateTestWindowInShell({.window_id = 3}));
 
   // The order of windows in overview mode is MRU.
   WindowState::Get(window1.get())->Activate();

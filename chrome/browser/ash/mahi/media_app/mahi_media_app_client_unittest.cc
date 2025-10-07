@@ -158,12 +158,12 @@ TEST_F(MahiMediaAppClientTest, WindowDestroying) {
 TEST_F(MahiMediaAppClientTest, WindowFocus) {
   aura::test::TestWindowDelegate wd1;
   wd1.set_can_focus(true);
-  std::unique_ptr<aura::Window> window_1(
-      CreateTestWindowInShellWithDelegate(&wd1, -1, gfx::Rect(10, 10, 50, 50)));
+  std::unique_ptr<aura::Window> window_1(CreateTestWindowInShell(
+      {.delegate = &wd1, .bounds = {10, 10, 50, 50}, .window_id = -1}));
   aura::test::TestWindowDelegate wd2;
   wd2.set_can_focus(true);
-  std::unique_ptr<aura::Window> window_2(
-      CreateTestWindowInShellWithDelegate(&wd2, -2, gfx::Rect(70, 70, 50, 50)));
+  std::unique_ptr<aura::Window> window_2(CreateTestWindowInShell(
+      {.delegate = &wd2, .bounds = {70, 70, 50, 50}, .window_id = -2}));
 
   // `window_2` has focus.
   aura::client::FocusClient* focus_client =
@@ -207,8 +207,8 @@ TEST_F(MahiMediaAppClientTest, WindowFocus) {
 TEST_F(MahiMediaAppClientTest, PdfRename) {
   aura::test::TestWindowDelegate wd;
   wd.set_can_focus(true);
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithDelegate(&wd, -1, gfx::Rect(10, 10, 50, 50)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &wd, .bounds = gfx::Rect(10, 10, 50, 50), .window_id = -1}));
 
   // `window` has focus.
   aura::client::FocusClient* focus_client =

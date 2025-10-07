@@ -131,11 +131,7 @@ const int kMaximumWindowWidth = WindowSizerChromeOS::kMaximumWindowWidth;
 const int kWindowTilePixels = WindowSizer::kWindowTilePixels;
 
 std::unique_ptr<Browser> CreateTestBrowser(aura::Window* window,
-                                           const gfx::Rect& bounds,
                                            Browser::CreateParams* params) {
-  if (!bounds.IsEmpty()) {
-    window->SetBounds(bounds);
-  }
   std::unique_ptr<Browser> browser =
       chrome::CreateBrowserWithAuraTestWindowForParams(base::WrapUnique(window),
                                                        params);
@@ -403,14 +399,15 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewWindows) {
   // existing windows.
   Browser::CreateParams params2(&profile_, true);
   std::unique_ptr<Browser> browser2 = (CreateTestBrowser(
-      CreateTestWindowInShellWithId(0), gfx::Rect(16, 32, 640, 320), &params2));
+      CreateTestWindowInShell({.bounds = {16, 32, 640, 320}, .window_id = 0}),
+      &params2));
   BrowserWindow* browser_window = browser2->window();
 
   // Creating a popup to make sure it does not interfere with the positioning.
   Browser::CreateParams params_popup(Browser::TYPE_POPUP, &profile_, true);
-  std::unique_ptr<Browser> browser_popup(
-      CreateTestBrowser(CreateTestWindowInShellWithId(1),
-                        gfx::Rect(16, 32, 128, 256), &params_popup));
+  std::unique_ptr<Browser> browser_popup(CreateTestBrowser(
+      CreateTestWindowInShell({.bounds = {16, 32, 128, 256}, .window_id = 1}),
+      &params_popup));
 
   browser_window->Show();
 
@@ -536,7 +533,8 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewWindowsOnMultipleDisplays) {
   // Create browser windows that are used as reference.
   Browser::CreateParams params(&profile_, true);
   std::unique_ptr<Browser> browser(CreateTestBrowser(
-      CreateTestWindowInShellWithId(0), gfx::Rect(10, 10, 200, 200), &params));
+      CreateTestWindowInShell({.bounds = {10, 10, 200, 200}, .window_id = 0}),
+      &params));
   BrowserWindow* browser_window = browser->window();
   gfx::NativeWindow native_window = browser_window->GetNativeWindow();
   browser_window->Show();
@@ -544,9 +542,9 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewWindowsOnMultipleDisplays) {
             ash::Shell::GetRootWindowForNewWindows());
 
   Browser::CreateParams another_params(&profile_, true);
-  std::unique_ptr<Browser> another_browser(
-      CreateTestBrowser(CreateTestWindowInShellWithId(1),
-                        gfx::Rect(400, 10, 300, 300), &another_params));
+  std::unique_ptr<Browser> another_browser(CreateTestBrowser(
+      CreateTestWindowInShell({.bounds = {400, 10, 300, 300}, .window_id = 1}),
+      &another_params));
   BrowserWindow* another_browser_window = another_browser->window();
   gfx::NativeWindow another_native_window =
       another_browser_window->GetNativeWindow();

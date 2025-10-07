@@ -3111,7 +3111,8 @@ TEST_P(AppListPresenterTest, HideOnFocusOut) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
@@ -3879,7 +3880,8 @@ TEST_F(AppListPresenterHomeLauncherTest,
        RunZeroStateSearchWhenShownAfterMinimizingWindows) {
   EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
   GetAppListTestHelper()->CheckVisibility(false);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
 
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(false);
@@ -4007,7 +4009,8 @@ TEST_F(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
   // Show app list in non-tablet mode. Move focus to another window.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
@@ -4116,9 +4119,10 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
   // Show app list in tablet mode. Maximize all windows.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0)),
-      window2(CreateTestWindowInShellWithId(1)),
-      window3(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0})),
+      window2(CreateTestWindowInShell({.window_id = 1})),
+      window3(CreateTestWindowInShell({.window_id = 2}));
   WindowState* state1 = WindowState::Get(window1.get());
   WindowState* state2 = WindowState::Get(window2.get());
   WindowState* state3 = WindowState::Get(window3.get());
@@ -4153,7 +4157,8 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndsSplitViewMode) {
   // Show app list in tablet mode. Enter split view mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
@@ -4167,7 +4172,8 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
   // Show app list in tablet mode. Enter overview mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -4185,8 +4191,10 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> dummy_window(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> dummy_window(
+      CreateTestWindowInShell({.window_id = 1}));
 
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
@@ -4279,7 +4287,8 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EXPECT_EQ(nullptr, window_util::GetActiveWindow());
 
   // Activate a window.
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState::Get(window.get())->Activate();
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 

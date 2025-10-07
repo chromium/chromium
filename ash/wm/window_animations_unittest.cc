@@ -146,7 +146,8 @@ TEST_F(WindowAnimationsTest, HideShowBrightnessGrayscaleAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   window->Show();
   EXPECT_TRUE(window->layer()->visible());
 
@@ -175,7 +176,8 @@ TEST_F(WindowAnimationsTest, HideShowBrightnessGrayscaleAnimation) {
 }
 
 TEST_F(WindowAnimationsTest, LayerTargetVisibility) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
 
   // Layer target visibility changes according to Show/Hide.
   window->Show();
@@ -190,7 +192,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
   window->SetBounds(gfx::Rect(5, 10, 320, 240));
   window->Show();
 
@@ -247,7 +249,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBoundsFromTransform) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
   window->SetBounds(gfx::Rect(10, 10, 320, 240));
   gfx::Transform half_size;
   half_size.Translate(10, 10);
@@ -356,7 +358,7 @@ TEST_F(WindowAnimationsTest, LockAnimationDuration) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
   Layer* layer = window->layer();
   window->SetBounds(gfx::Rect(5, 10, 320, 240));
   window->Show();
@@ -434,7 +436,8 @@ TEST_F(WindowAnimationsTest, SlideOutAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   window->SetBounds(gfx::Rect(0, 0, 100, 100));
   window->Show();
   EXPECT_TRUE(window->layer()->visible());
@@ -454,7 +457,8 @@ TEST_F(WindowAnimationsTest, FadeInAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   window->SetBounds(gfx::Rect(0, 0, 100, 100));
   window->Hide();
   EXPECT_FALSE(window->layer()->visible());
@@ -473,7 +477,8 @@ TEST_F(WindowAnimationsTest, SlideOutAnimationPlaysTwiceForPipWindow) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   window->SetBounds(gfx::Rect(8, 8, 100, 100));
 
   WindowState* window_state = WindowState::Get(window.get());
@@ -508,7 +513,8 @@ TEST_F(WindowAnimationsTest, ResetAnimationAfterDismissingArcPip) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   window->SetBounds(gfx::Rect(8, 8, 100, 100));
 
   WindowState* window_state = WindowState::Get(window.get());
@@ -550,7 +556,7 @@ TEST_F(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
-  std::unique_ptr<Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
   window->SetBounds(gfx::Rect(10, 10, 200, 200));
   window->Show();
   window->layer()->GetAnimator()->StopAnimating();

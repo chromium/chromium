@@ -906,8 +906,9 @@ class InputTestDelegate : public aura::test::TestWindowDelegate {
 
   void RunTest(AshTestBase* test_base) {
     std::unique_ptr<aura::Window> window(
-        test_base->CreateTestWindowInShellWithDelegate(
-            this, 0, gfx::Rect(0, 0, 100, 100)));
+        test_base->CreateTestWindowInShell({.delegate = this,
+                                            .bounds = gfx::Rect(0, 0, 100, 100),
+                                            .window_id = 0}));
     window->Show();
 
     GenerateEvents(window.get());

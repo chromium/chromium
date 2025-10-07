@@ -32,6 +32,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/env.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/display/display.h"
 #include "ui/events/event_constants.h"
@@ -185,16 +186,17 @@ class AshTestBase : public testing::Test {
 
   // Versions of the functions in aura::test:: that go through our shell
   // StackingController instead of taking a parent.
-  aura::Window* CreateTestWindowInShellWithId(int id);
+  aura::Window* CreateTestWindowInShell(aura::test::WindowBuilderParams params);
+
   aura::Window* CreateTestWindowInShellWithBounds(const gfx::Rect& bounds);
   aura::Window* CreateTestWindowInShellWithDelegate(
       aura::WindowDelegate* delegate,
-      int id,
+      int window_id,
       const gfx::Rect& bounds);
   aura::Window* CreateTestWindowInShellWithDelegateAndType(
       aura::WindowDelegate* delegate,
       aura::client::WindowType type,
-      int id,
+      int window_id,
       const gfx::Rect& bounds);
 
   // Attach |window| to the current shell's root window.

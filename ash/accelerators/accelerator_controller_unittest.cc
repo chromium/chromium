@@ -2294,8 +2294,8 @@ class PreferredReservedAcceleratorsTest : public AshTestBase {
 };
 
 TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithFullscreen) {
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
-  aura::Window* w2 = CreateTestWindowInShellWithId(1);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1});
   wm::ActivateWindow(w1);
 
   WMEvent fullscreen(WM_EVENT_FULLSCREEN);
@@ -2342,8 +2342,8 @@ TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithFullscreen) {
 }
 
 TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithPinned) {
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
-  aura::Window* w2 = CreateTestWindowInShellWithId(1);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1});
   wm::ActivateWindow(w1);
 
   {
@@ -2737,7 +2737,7 @@ class SystemShortcutBehaviorTest : public AcceleratorControllerTest {
 
 TEST_F(SystemShortcutBehaviorTest, StandardSearchBasedAcceleratorProcessing) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 
@@ -2766,7 +2766,7 @@ TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcuts) {
 
 TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcutsFullscreenOnly) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 
@@ -2819,7 +2819,7 @@ TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcutsFullscreenOnly) {
 
 TEST_F(SystemShortcutBehaviorTest, AllowSearchBasedPassthrough) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 
@@ -2855,7 +2855,7 @@ TEST_F(SystemShortcutBehaviorTest, AllowSearchBasedPassthrough) {
 
 TEST_F(SystemShortcutBehaviorTest, AllowSearchBasedPassthroughFullscreenOnly) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 
@@ -3633,7 +3633,8 @@ TEST_P(MediaSessionAcceleratorTest, MediaPlaybackAcceleratorsBehavior) {
   for (ui::KeyboardCode key : media_keys) {
     // If the media session service integration is enabled then media keys will
     // be handled in ash.
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
+    std::unique_ptr<aura::Window> window(
+        CreateTestWindowInShell({.window_id = 1}));
     {
       ui::KeyEvent press_key(ui::EventType::kKeyPressed, key, ui::EF_NONE);
       ui::Event::DispatcherApi dispatch_helper(&press_key);

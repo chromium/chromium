@@ -70,7 +70,8 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
+    std::unique_ptr<aura::Window> window(
+        CreateTestWindowInShell({.window_id = 1}));
     wm::ActivateWindow(window.get());
 
     profile_ = std::make_unique<TestingProfile>();

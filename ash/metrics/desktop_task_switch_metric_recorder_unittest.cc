@@ -307,7 +307,8 @@ int DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::GetActionCount()
 
 aura::Window* DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::
     CreatePositionableWindowInShellWithBounds(const gfx::Rect& bounds) {
-  return CreateTestWindowInShellWithDelegate(&test_window_delegate_, 0, bounds);
+  return CreateTestWindowInShell(
+      {.delegate = &test_window_delegate_, .bounds = bounds, .window_id = 0});
 }
 
 // Verify a user action is recorded when a positionable window is activated by

@@ -276,7 +276,7 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindowBaseCases) {
       WindowCycleController::WindowCyclingDirection::kForward);
 
   // Create a single test window.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
@@ -292,7 +292,7 @@ TEST_F(WindowCycleControllerTest, SingleWindowNotActive) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Create a single test window.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
@@ -312,9 +312,9 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindow) {
 
   // Set up several windows to use to test cycling.  Create them in reverse
   // order so they are stacked 0 over 1 over 2.
-  std::unique_ptr<Window> window2(CreateTestWindowInShellWithId(2));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window2(CreateTestWindowInShell({.window_id = 2}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
 
   // Simulate pressing and releasing Alt-tab.
@@ -424,7 +424,7 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindow) {
 
   modal_window.reset();
   std::unique_ptr<Window> skip_overview_window(
-      CreateTestWindowInShellWithId(-3));
+      CreateTestWindowInShell({.window_id = -3}));
   skip_overview_window->SetProperty(kHideInOverviewKey, true);
   wm::ActivateWindow(window0.get());
   wm::ActivateWindow(skip_overview_window.get());
@@ -441,8 +441,8 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindow) {
 // Cycles between a maximized and normal window.
 TEST_F(WindowCycleControllerTest, MaximizedWindow) {
   // Create a couple of test windows.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->Maximize();
   window1_state->Activate();
@@ -466,8 +466,8 @@ TEST_F(WindowCycleControllerTest, MaximizedWindow) {
 // Cycles to a minimized window.
 TEST_F(WindowCycleControllerTest, Minimized) {
   // Create a couple of test windows.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
   WindowState* window0_state = WindowState::Get(window0.get());
   WindowState* window1_state = WindowState::Get(window1.get());
 
@@ -495,8 +495,8 @@ TEST_F(WindowCycleControllerTest, Minimized) {
 // rather than the second.
 TEST_F(WindowCycleControllerTest, AllAreMinimized) {
   // Create a couple of test windows.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
   WindowState* window0_state = WindowState::Get(window0.get());
   WindowState* window1_state = WindowState::Get(window1.get());
 
@@ -526,8 +526,8 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopWindow) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Set up several windows to use to test cycling.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
 
   Window* top_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AlwaysOnTopContainer);
@@ -554,8 +554,8 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopMultiWindow) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Set up several windows to use to test cycling.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
 
   Window* top_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AlwaysOnTopContainer);
@@ -590,7 +590,7 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopMultipleRootWindows) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Create two windows in the primary root.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   EXPECT_EQ(root_windows[0], window0->GetRootWindow());
   Window* top_container0 =
       Shell::GetContainer(root_windows[0], kShellWindowId_AlwaysOnTopContainer);
@@ -600,7 +600,7 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopMultipleRootWindows) {
 
   // Move the active root window to the secondary root and create two windows.
   display::ScopedDisplayForNewWindows display_for_new_windows(root_windows[1]);
-  std::unique_ptr<Window> window2(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<Window> window2(CreateTestWindowInShell({.window_id = 2}));
   EXPECT_EQ(root_windows[1], window2->GetRootWindow());
 
   Window* top_container1 =
@@ -636,9 +636,9 @@ TEST_F(WindowCycleControllerTest, MostRecentlyUsed) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Set up several windows to use to test cycling.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
-  std::unique_ptr<Window> window2(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<Window> window2(CreateTestWindowInShell({.window_id = 2}));
 
   wm::ActivateWindow(window0.get());
 
@@ -672,8 +672,10 @@ TEST_F(WindowCycleControllerTest, MostRecentlyUsed) {
 TEST_F(WindowCycleControllerTest, SelectingHidesAppList) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
-  std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window0(
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
   wm::ActivateWindow(window0.get());
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplay().id());
@@ -698,8 +700,10 @@ TEST_F(WindowCycleControllerTest, SelectingDoesNotHideAppListInTabletMode) {
   EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(Shell::Get()->app_list_controller()->IsHomeScreenVisible());
 
-  std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window0(
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
   wm::ActivateWindow(window0.get());
 
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
@@ -715,8 +719,10 @@ TEST_F(WindowCycleControllerTest, SelectingDoesNotHideAppListInTabletMode) {
 TEST_F(WindowCycleControllerTest, CyclePreservesMinimization) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
-  std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window0(
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
   wm::ActivateWindow(window1.get());
   WindowState::Get(window1.get())->Minimize();
   wm::ActivateWindow(window0.get());
@@ -739,8 +745,8 @@ TEST_F(WindowCycleControllerTest, CyclePreservesMinimization) {
 
 // Tests that the tab key events are not sent to the window.
 TEST_F(WindowCycleControllerTest, TabKeyNotLeaked) {
-  std::unique_ptr<Window> w0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> w1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> w0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> w1(CreateTestWindowInShell({.window_id = 1}));
   EventCounter event_count;
   w0->AddPreTargetHandler(&event_count);
   w1->AddPreTargetHandler(&event_count);
@@ -762,8 +768,8 @@ TEST_F(WindowCycleControllerTest, TabKeyNotLeaked) {
 // keypresses, which means the window cycle event filter should not handle
 // the tab press else it prevents cycling past that window.
 TEST_F(WindowCycleControllerTest, TabPastFullscreenWindow) {
-  std::unique_ptr<Window> w0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> w1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> w0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> w1(CreateTestWindowInShell({.window_id = 1}));
   WMEvent maximize_event(WM_EVENT_FULLSCREEN);
 
   // To make this test work with or without the new alt+tab selector we make
@@ -981,8 +987,8 @@ TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
 // A regression test for crbug.com/1160676. Tests that the alt-key release
 // to quit alt-tab is acknowledged by the accelerator controller.
 TEST_F(WindowCycleControllerTest, AltKeyRelease) {
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
   wm::ActivateWindow(window1.get());
 
   // Press Alt and start cycling.
@@ -1016,8 +1022,8 @@ TEST_F(WindowCycleControllerTest, AltKeyRelease) {
 
 // Tests if tray bubbles will be closed when alt-tab cycling starts.
 TEST_F(WindowCycleControllerTest, AltKeyReleaseOnSystemTrayOpen) {
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
 
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1748,8 +1754,8 @@ TEST_F(WindowCycleControllerTest, TapSelect) {
 // Tests that releasing alt key while continuing tapping on the window cycle
 // list doesn't lead to a crash. Regression test for https://crbug.com/1228381.
 TEST_F(WindowCycleControllerTest, AltReleaseWithoutReleasingTap) {
-  std::unique_ptr<Window> w0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> w1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> w0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> w1(CreateTestWindowInShell({.window_id = 1}));
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Start window cycling by press Alt + Tab key.
@@ -1776,8 +1782,8 @@ TEST_F(WindowCycleControllerTest, AltReleaseWithoutReleasingTap) {
 TEST_F(WindowCycleControllerTest, ArrowKeyBeforeCycleViewUI) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  std::unique_ptr<Window> w0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> w1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> w0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> w1(CreateTestWindowInShell({.window_id = 1}));
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Enable initial delay for testing so that once it starts cycling, the cycle

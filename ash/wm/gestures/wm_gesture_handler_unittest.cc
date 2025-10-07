@@ -358,7 +358,7 @@ TEST_F(WmGestureHandlerTest, LockedModeNoSwitchDesk) {
   ASSERT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Pin a window to current desk.
-  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
   wm::ActivateWindow(w1);
   window_util::PinWindow(w1, /*trusted=*/false);
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());

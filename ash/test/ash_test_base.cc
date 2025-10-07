@@ -391,8 +391,13 @@ std::unique_ptr<aura::Window> AshTestBase::CreateToplevelTestWindow(
           bounds_in_screen));
 }
 
-aura::Window* AshTestBase::CreateTestWindowInShellWithId(int id) {
-  return CreateTestWindowInShellWithDelegate(NULL, id, gfx::Rect());
+aura::Window* AshTestBase::CreateTestWindowInShell(
+    aura::test::WindowBuilderParams params) {
+  return TestWindowBuilder(params)
+      .SetWindowTitle(u"Window " + base::NumberToString16(params.window_id))
+      .AllowAllWindowStates()
+      .Build()
+      .release();
 }
 
 aura::Window* AshTestBase::CreateTestWindowInShellWithBounds(
@@ -402,10 +407,13 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithBounds(
 
 aura::Window* AshTestBase::CreateTestWindowInShellWithDelegate(
     aura::WindowDelegate* delegate,
-    int id,
+    int window_id,
     const gfx::Rect& bounds) {
-  return CreateTestWindowInShellWithDelegateAndType(
-      delegate, aura::client::WINDOW_TYPE_NORMAL, id, bounds);
+  return CreateTestWindowInShell(
+      {.delegate = delegate,
+       .bounds = bounds,
+       .window_type = aura::client::WINDOW_TYPE_NORMAL,
+       .window_id = window_id});
 }
 
 aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
@@ -413,14 +421,10 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
     aura::client::WindowType type,
     int id,
     const gfx::Rect& bounds) {
-  return TestWindowBuilder({.delegate = delegate,
-                            .bounds = bounds,
-                            .window_type = type,
-                            .window_id = id})
-      .SetWindowTitle(u"Window " + base::NumberToString16(id))
-      .AllowAllWindowStates()
-      .Build()
-      .release();
+  return CreateTestWindowInShell({.delegate = delegate,
+                                  .bounds = bounds,
+                                  .window_type = type,
+                                  .window_id = id});
 }
 
 void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {

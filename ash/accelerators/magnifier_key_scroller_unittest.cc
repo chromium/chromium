@@ -46,8 +46,8 @@ using MagnifierKeyScrollerTest = AshTestBase;
 
 TEST_F(MagnifierKeyScrollerTest, Basic) {
   KeyEventDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, 0, gfx::Rect(10, 10, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {10, 10, 100, 100}, .window_id = 0}));
   wm::ActivateWindow(window.get());
 
   MagnifierKeyScroller::ScopedEnablerForTest scoped;

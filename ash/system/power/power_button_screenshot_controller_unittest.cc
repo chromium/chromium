@@ -148,7 +148,7 @@ class PowerButtonScreenshotControllerWithSystemKeysTest
     PowerButtonScreenshotControllerTest::SetUp();
     if (GetParam()) {
       aura::Window* window =
-          CreateTestWindowInShellWithDelegate(&delegate_, 1, gfx::Rect());
+          CreateTestWindowInShell({.delegate = &delegate_, .window_id = 1});
       window->SetProperty(ash::kCanConsumeSystemKeysKey, true);
     }
   }
@@ -269,7 +269,7 @@ TEST_F(PowerButtonScreenshotControllerTest, WindowWithSystemKeys) {
 
   KeyEventWindowDelegate delegate;
   std::unique_ptr<aura::Window> window = base::WrapUnique(
-      CreateTestWindowInShellWithDelegate(&delegate, 1, gfx::Rect()));
+      CreateTestWindowInShell({.delegate = &delegate, .window_id = 1}));
   window->SetProperty(ash::kCanConsumeSystemKeysKey, true);
   ::wm::ActivateWindow(window.get());
 
