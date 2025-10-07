@@ -46,13 +46,15 @@ v8::Local<v8::Object> CreatePointerHolder(const void* ptr) {
       object_template
           ->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext())
           .ToLocalChecked();
-  holder->SetAlignedPointerInInternalField(0, const_cast<void*>(ptr));
+  holder->SetAlignedPointerInInternalField(0, const_cast<void*>(ptr),
+                                           v8::kEmbedderDataTypeTagDefault);
   return holder;
 }
 
 template <typename T>
 T* GetPointerFromHolder(v8::Local<v8::Object> holder) {
-  return reinterpret_cast<T*>(holder->GetAlignedPointerFromInternalField(0));
+  return reinterpret_cast<T*>(holder->GetAlignedPointerFromInternalField(
+      0, v8::kEmbedderDataTypeTagDefault));
 }
 
 // Sets up the environment necessary to execute V8 code.
