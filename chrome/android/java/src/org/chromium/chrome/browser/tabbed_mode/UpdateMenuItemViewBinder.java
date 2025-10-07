@@ -16,7 +16,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -38,8 +37,6 @@ class UpdateMenuItemViewBinder {
 
     /** Handles binding the view and models changes. */
     public static void bind(PropertyModel model, View view, PropertyKey key) {
-        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
-
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
             assert id == R.id.update_menu_id;

@@ -13,8 +13,6 @@ import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** This is a helper class for app menu. */
 @NullMarked
@@ -108,26 +106,5 @@ public class AppMenuUtil {
                     }
                 });
         return animation;
-    }
-
-    /**
-     * builds a enter animation of a standard menu item.
-     *
-     * @param model The model containing the data for the view.
-     * @param view The view to be animated.
-     * @param key The key of the property to be bound.
-     */
-    public static void bindStandardItemEnterAnimation(
-            PropertyModel model, View view, PropertyKey key) {
-        if (key == AppMenuItemProperties.SUPPORT_ENTER_ANIMATION) {
-            if (model.get(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION)) {
-                int position = model.get(AppMenuItemProperties.POSITION);
-                view.setTag(
-                        R.id.menu_item_enter_anim_id,
-                        buildStandardItemEnterAnimator(view, position));
-            } else {
-                view.setTag(R.id.menu_item_enter_anim_id, null);
-            }
-        }
     }
 }

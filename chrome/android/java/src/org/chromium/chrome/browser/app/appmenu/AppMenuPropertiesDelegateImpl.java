@@ -292,7 +292,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public PropertyModel buildModelForDivider(@IdRes int id) {
         return new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
                 .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                .with(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true)
                 .build();
     }
 
@@ -320,7 +319,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 .with(AppMenuItemProperties.ENABLED, true)
                 .with(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(id))
                 .with(AppMenuItemProperties.ICON_SHOW_BADGE, shouldShowBadgeOnMenuItemIcon(id))
-                .with(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true)
                 .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
                 .with(AppMenuItemProperties.TITLE_CONDENSED, getContentDescription(id))
                 .with(AppMenuItemProperties.MANAGED, isMenuItemManaged(id));

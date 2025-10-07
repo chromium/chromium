@@ -70,10 +70,6 @@ public class AppMenuItemProperties {
     /** The the menu item's position in the menu. */
     static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey("POSITION");
 
-    /** Whether the menu item support enter animation when menu just opened. */
-    public static final WritableBooleanPropertyKey SUPPORT_ENTER_ANIMATION =
-            new WritableBooleanPropertyKey("SUPPORT_ENTER_ANIMATION");
-
     /** The click handler for the menu item. */
     public static final WritableObjectPropertyKey<@Nullable AppMenuClickHandler> CLICK_HANDLER =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true, "CLICK_HANDLER");
@@ -120,7 +116,6 @@ public class AppMenuItemProperties {
                 ICON_COLOR_RES,
                 ICON_SHOW_BADGE,
                 POSITION,
-                SUPPORT_ENTER_ANIMATION,
                 CLICK_HANDLER,
                 MENU_ICON_AT_START,
                 ADDITIONAL_ICONS

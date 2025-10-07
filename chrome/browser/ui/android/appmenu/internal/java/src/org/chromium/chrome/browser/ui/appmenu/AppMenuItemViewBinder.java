@@ -52,8 +52,6 @@ class AppMenuItemViewBinder {
     };
 
     public static void bindStandardItem(PropertyModel model, View view, PropertyKey key) {
-        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
-
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
             view.setId(id);
