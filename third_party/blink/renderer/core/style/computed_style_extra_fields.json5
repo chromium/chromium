@@ -297,15 +297,6 @@
       reset_on_new_style: true,
       custom_compare: true,
     },
-    // Used by ::highlight
-    {
-      name: "PseudoArgument",
-      field_template: "external",
-      field_group: "*",
-      type_name: "AtomicString",
-      include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
-      default_value: "g_null_atom",
-    },
     {
       name: "CustomHighlightNames",
       field_template: "external",

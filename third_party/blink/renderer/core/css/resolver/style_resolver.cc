@@ -1534,7 +1534,6 @@ void StyleResolver::InitStyle(Element& element,
   } else {
     state.StyleBuilder().SetStyleType(style_request.pseudo_id);
   }
-  state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
   // For highlight inheritance, propagate link visitedness, forced-colors
   // status, the font and the line height from the originating element. The
@@ -2810,13 +2809,6 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       }
     }
   }
-
-  // This is needed because pseudo_argument is copied to the
-  // state.StyleBuilder() as part of a raredata field when copying
-  // non-inherited values from the cached result. The argument isn't a style
-  // property per se, it represents the argument to the matching element which
-  // should remain unchanged.
-  state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
   return CacheSuccess(key, cached_matched_properties);
 }

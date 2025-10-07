@@ -868,7 +868,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
     DCHECK_EQ(StyleType(), kPseudoIdNone);
 
-    for (const auto& pseudo_style : *GetPseudoElementStyleCache()) {
+    for (const auto& [key, pseudo_style] : *GetPseudoElementStyleCache()) {
       if (func(*pseudo_style)) {
         return true;
       }
