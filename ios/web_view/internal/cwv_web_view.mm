@@ -157,7 +157,7 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 }  // namespace
 
 // Used to serialize the protobuf message and the WebStateID.
-@interface CWVWebViewProtobufStorage : NSObject <NSCoding>
+@interface CWVWebViewProtobufStorage : NSObject <NSSecureCoding>
 
 - (instancetype)initWithProto:(web::proto::WebStateStorage)storage
                    webStateID:(web::WebStateID)webStateID
@@ -233,6 +233,10 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   return _storage;
 }
 
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
 @end
 
 // Helper used to manage the serialization of CWVWebView's WebState.
@@ -278,8 +282,9 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 
 - (std::unique_ptr<web::WebState>)createWebStateWithCoder:(NSCoder*)coder {
   _cachedProtobufStorage =
-      base::apple::ObjCCastStrict<CWVWebViewProtobufStorage>(
-          [coder decodeObjectForKey:kProtobufStorageKey]);
+      base::apple::ObjCCastStrict<CWVWebViewProtobufStorage>([coder
+          decodeObjectOfClass:[CWVWebViewProtobufStorage class]
+                       forKey:kProtobufStorageKey]);
 
   // If data can't be loaded, return a brand new WebState. Since sending
   // a message to nil is well-defined in Objective-C, this also cover
