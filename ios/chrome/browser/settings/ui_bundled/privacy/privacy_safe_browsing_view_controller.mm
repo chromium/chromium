@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
@@ -164,6 +165,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
   cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+
+  UIColor* selectedColor =
+      [UIColor colorNamed:kTextfieldHighlightBackgroundColor];
+
+  if (![cell.selectedBackgroundView.backgroundColor isEqual:selectedColor]) {
+    UIView* selectedBackgroundView = [[UIView alloc] init];
+    selectedBackgroundView.backgroundColor = selectedColor;
+    cell.selectedBackgroundView = selectedBackgroundView;
+  }
 
   TableViewInfoButtonCell* infoCell =
       base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);

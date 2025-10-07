@@ -10,14 +10,14 @@
 @interface ChromeTableViewStyler : NSObject
 
 // The background color for the table view.
-@property(nonatomic, readwrite, strong) UIColor* tableViewBackgroundColor;
+@property(nonatomic, readonly, strong) UIColor* tableViewBackgroundColor;
 // The background color for the cell. It overrides `tableViewBackgroundColor`
 // for the cell background if it is not nil.
-@property(nonatomic, readwrite, strong) UIColor* cellBackgroundColor;
+@property(nonatomic, readonly, strong) UIColor* cellBackgroundColor;
 // Text colors.
-@property(nonatomic, readwrite, strong) UIColor* cellTitleColor;
+@property(nonatomic, readonly, strong) UIColor* cellTitleColor;
 // Cell highlight color.
-@property(nonatomic, readwrite, strong) UIColor* cellHighlightColor;
+@property(nonatomic, readonly, strong) UIColor* cellHighlightColor;
 
 @end
 

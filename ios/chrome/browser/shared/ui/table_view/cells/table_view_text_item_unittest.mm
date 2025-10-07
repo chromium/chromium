@@ -57,21 +57,6 @@ TEST_F(TableViewTextItemTest, MaskedTextLabels) {
   EXPECT_NSEQ(kMaskedPassword, textCell.textLabel.text);
 }
 
-TEST_F(TableViewTextItemTest, ConfigureLabelColorWithProperty) {
-  TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:0];
-  UIColor* textColor = UIColor.blueColor;
-  item.textColor = textColor;
-  TableViewTextCell* cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewTextCell class]]);
-
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = UIColor.redColor;
-  styler.tableViewBackgroundColor = testColor;
-  [item configureCell:cell withStyler:styler];
-  EXPECT_NSEQ(textColor, cell.textLabel.textColor);
-  EXPECT_NSNE(testColor, cell.textLabel.textColor);
-}
-
 TEST_F(TableViewTextItemTest, ConfigureLabelColorWithDefaultColor) {
   TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:0];
   TableViewTextCell* cell = [[[item cellClass] alloc] init];

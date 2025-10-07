@@ -61,8 +61,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (self) {
     _delegate = delegate;
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kGridBackgroundColor];
   }
   return self;
 }
@@ -73,6 +71,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
   self.view.accessibilityIdentifier =
       kSuggestedActionsViewControllerAccessibilityIdentifier;
+  self.tableView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
   self.tableView.estimatedRowHeight = kEstimatedRowMaxHeight;
   self.tableView.estimatedSectionHeaderHeight = 0.0;

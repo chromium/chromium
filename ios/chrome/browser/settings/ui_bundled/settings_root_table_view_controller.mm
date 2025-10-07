@@ -171,9 +171,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                animated:YES];
 
   [super viewDidLoad];
-  self.styler.cellBackgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  self.styler.cellTitleColor = [UIColor colorNamed:kTextPrimaryColor];
   self.tableView.estimatedSectionHeaderHeight = kEstimatedHeaderFooterHeight;
   self.tableView.estimatedRowHeight = kSettingsCellDefaultHeight;
   self.tableView.estimatedSectionFooterHeight = kEstimatedHeaderFooterHeight;

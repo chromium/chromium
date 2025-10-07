@@ -112,9 +112,8 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.styler.tableViewBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.tableView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.allowsSelection = NO;
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
@@ -196,6 +195,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
   if (itemType == ItemTypeAddressProfileSaveUpdateButton) {

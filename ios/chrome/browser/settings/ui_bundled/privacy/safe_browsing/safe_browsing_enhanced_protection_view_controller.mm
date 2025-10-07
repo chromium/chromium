@@ -99,7 +99,6 @@ const CGFloat kSymbolSize = 20;
   self.tableView.separatorColor = UIColor.clearColor;
   self.title =
       l10n_util::GetNSString(IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE);
-  self.styler.cellBackgroundColor = UIColor.clearColor;
   [self loadModel];
 }
 
@@ -145,7 +144,7 @@ const CGFloat kSymbolSize = 20;
       "MobileSafeBrowsingEnhancedProtectionSettingsBack"));
 }
 
-#pragma mark - CollectionViewController
+#pragma mark - TableViewController
 
 - (void)loadModel {
   [super loadModel];
@@ -202,6 +201,14 @@ const CGFloat kSymbolSize = 20;
     linkView.delegate = self;
   }
   return view;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  cell.backgroundColor = UIColor.clearColor;
+  return cell;
 }
 
 #pragma mark - UITableViewDelegate

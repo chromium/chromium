@@ -89,8 +89,6 @@ bool TooNarrowForBanner(UIView* view) {
   NSLayoutConstraint* _tableViewHeightConstraint;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   NSDiffableDataSourceSnapshot* _snapshot;
-  ChromeTableViewStyler* _tableViewStyler;
-  ChromeTableViewStyler* _highlightTableViewStyler;
   // The `viewWillLayoutSubviews` is invoked on creation, dismissal, and
   // backward navigation of the NotificationsBannerViewController. To prevent
   // the view controller styling aspects of the view that will be carried over
@@ -388,7 +386,8 @@ bool TooNarrowForBanner(UIView* view) {
       [TableViewCellContentConfiguration legacyDequeueTableViewCell:_tableView];
   TableViewMultiDetailTextItem* detailItem =
       base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
-  [detailItem configureCell:cell withStyler:[self tableViewStyler]];
+  [detailItem configureCell:cell
+                 withStyler:[[ChromeTableViewStyler alloc] init]];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
   return cell;
@@ -398,26 +397,6 @@ bool TooNarrowForBanner(UIView* view) {
 - (void)updateTableViewHeightConstraint {
   [_tableView layoutIfNeeded];
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
-}
-
-// ChromeTableViewStyler for the cells.
-- (ChromeTableViewStyler*)tableViewStyler {
-  if (!_tableViewStyler) {
-    _tableViewStyler = [[ChromeTableViewStyler alloc] init];
-    _tableViewStyler.cellBackgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  }
-  return _tableViewStyler;
-}
-
-// Styler for highlighted cells.
-- (ChromeTableViewStyler*)highlightTableViewStyler {
-  if (!_highlightTableViewStyler) {
-    _highlightTableViewStyler = [[ChromeTableViewStyler alloc] init];
-    _highlightTableViewStyler.cellBackgroundColor =
-        [UIColor colorNamed:kBlueHaloColor];
-  }
-  return _highlightTableViewStyler;
 }
 
 // Configures the banner based on the view's size.
@@ -444,10 +423,12 @@ bool TooNarrowForBanner(UIView* view) {
 - (void)configureCell:(LegacyTableViewCell*)cell
                  item:(TableViewItem*)item
            identifier:(NotificationsItemIdentifier)identifier {
-  ChromeTableViewStyler* styler = identifier == self.highlightedItem
-                                      ? [self highlightTableViewStyler]
-                                      : [self tableViewStyler];
+  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
+  cell.backgroundColor =
+      (identifier == self.highlightedItem)
+          ? [UIColor colorNamed:kBlueHaloColor]
+          : [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 }
 
 @end

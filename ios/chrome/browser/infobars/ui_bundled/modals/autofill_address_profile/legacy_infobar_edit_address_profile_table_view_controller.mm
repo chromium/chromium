@@ -51,7 +51,6 @@
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.estimatedRowHeight = 56;
   [self.tableView
@@ -93,6 +92,7 @@
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   return [self.handler cell:cell
           forRowAtIndexPath:indexPath
            withTextDelegate:self];

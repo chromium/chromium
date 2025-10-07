@@ -69,8 +69,6 @@
 - (void)start {
   self.viewController = [[PrivacySafeBrowsingViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  self.viewController.styler.cellHighlightColor =
-      [UIColor colorNamed:kTextfieldHighlightBackgroundColor];
   self.viewController.presentationDelegate = self;
   self.mediator = [[PrivacySafeBrowsingMediator alloc]
       initWithUserPrefService:self.profile->GetPrefs()];

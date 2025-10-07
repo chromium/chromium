@@ -76,15 +76,6 @@ bool ShouldResizeViewForPopover(
          modal_presentation_style == UIModalPresentationPopover;
 }
 
-// Returns the color to use for the table view's background.
-UIColor* GetBackgroundColor() {
-  if (@available(iOS 26, *)) {
-    return UIColor.clearColor;
-  }
-
-  return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-}
-
 }  // namespace
 
 @interface FallbackViewController ()
@@ -126,11 +117,11 @@ UIColor* GetBackgroundColor() {
 }
 
 - (void)viewDidLoad {
-  // Super's `viewDidLoad` uses `styler.tableViewBackgroundColor` so it needs to
-  // be set before.
-  self.styler.tableViewBackgroundColor = GetBackgroundColor();
-
   [super viewDidLoad];
+
+  if (@available(iOS 26, *)) {
+    self.tableView.backgroundColor = UIColor.clearColor;
+  }
 
   // Remove extra spacing on top of sections.
   self.tableView.sectionHeaderTopPadding = 0;

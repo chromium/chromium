@@ -29,22 +29,6 @@ TEST_F(TableViewItemTest, ConfigureCellPortsAccessibilityProperties) {
   EXPECT_NSEQ(@"test_identifier", [cell accessibilityIdentifier]);
 }
 
-TEST_F(TableViewItemTest, NoBackgroundColorIfBackgroundViewIsPresent) {
-  TableViewItem* item = [[TableViewItem alloc] initWithType:0];
-  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
-
-  // If a background view is present on the cell, the styler's background color
-  // should be ignored.
-  cell.backgroundView = [[UIView alloc] init];
-
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = UIColor.redColor;
-  styler.tableViewBackgroundColor = testColor;
-  [item configureCell:cell withStyler:styler];
-  EXPECT_FALSE([testColor isEqual:cell.backgroundColor]);
-}
-
 TEST_F(TableViewItemTest, ConfigureCellAccessoryViewProperties) {
   UIImageView* expectedImage = [[UIImageView alloc]
       initWithImage:DefaultSymbolTemplateWithPointSize(

@@ -75,7 +75,6 @@ const CGFloat kDefaultHeight = 70;
   self.tableView.estimatedRowHeight = kDefaultHeight;
   self.tableView.sectionFooterHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedSectionFooterHeight = kDefaultHeight;
-  self.styler.cellTitleColor = [UIColor colorNamed:kTextPrimaryColor];
 }
 
 #pragma mark - SettingsRootTableViewController
