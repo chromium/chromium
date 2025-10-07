@@ -58,8 +58,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.BenchmarkDuration" units="ms"
     expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     Records the time it takes to run the benchmark in
     OnDeviceModelService.GetEstimatedPerformanceClass(). Logged whenever
@@ -69,8 +70,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.BenchmarkEstimatedTokensPerSecond.{Stage}"
     units="tk/s" expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The estimated tokens per second this device can achieve during {Stage}.
     Logged whenever OnDeviceModelService.GetEstimatedPerformanceClass() is
@@ -84,8 +86,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.BenchmarkSuccess" enum="Boolean"
     expires_after="2026-02-22">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     Records whether there was an error running the tokens per second benchmark.
     Logged whenever OnDeviceModelService.GetEstimatedPerformanceClass() is
@@ -95,8 +98,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.BenchmarkVeryLowReason"
     enum="VeryLowPerformanceReason" expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     Records the reason the benchmark returned kVeryLow performance class. Logged
     whenever kVeryLow performance class is returned from running the benchmark.
@@ -105,8 +109,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.DeviceHeapSize.{GpuType}" units="MB"
     expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The maxiumum GPU heap size for a device with {GpuType} GPU. Logged whenever
     OnDeviceModelService.GetEstimatedPerformanceClass() is called.
@@ -165,8 +170,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.GpuBlockedReason" enum="GpuBlockedReason"
     expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     Records the reason the GPU was blocked in OnDeviceModelService. Logged
     whenever ChromeML::IsGpuBlocked() is called.
@@ -175,8 +181,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.GpuErrorReason" enum="GpuErrorReason"
     expires_after="2026-04-05">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     Records a fatal error received by the OnDeviceModelService. Logged whenever
     the service crashes due to a GPU error.
@@ -185,8 +192,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.LoadModelDuration" units="ms"
     expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     Records the time it takes to load a model in the OnDeviceModelService.
     Logged every time a model is successfully loaded.
@@ -205,8 +213,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.MaxBufferSize.{GpuType}" units="MB"
     expires_after="2025-10-26">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The maxiumum buffer size for a device with {GpuType} GPU. Logged whenever
     OnDeviceModelService.GetEstimatedPerformanceClass() is called.
@@ -219,8 +228,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.QueueTime.{Priority}" units="ms"
     expires_after="2026-04-09">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     Records the time a task for a session with {Priority} priority spent in the
     queue in the OnDeviceModelService. Logged each time a task is run for a
@@ -234,8 +244,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.SystemRAM.{GpuType}" units="MB"
     expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The total system memory for a device with {GpuType} GPU. Logged whenever
     OnDeviceModelService.GetEstimatedPerformanceClass() is called.
@@ -248,8 +259,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.TokenCount.Input{Type}" units="tokens"
     expires_after="2026-04-08">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The number of {Type} tokens processed by the OnDeviceModel as a chunk of
     input. Note that for some types of input (e.g. images and audio) there is
@@ -266,8 +278,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.TokenCount.{Stage}" units="tokens"
     expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The number of {Stage} tokens processed by the OnDeviceModel. Logged each
     time the OnDeviceModel processes {Stage}.
@@ -281,8 +294,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.TokensPerSecond.Input{Type}" units="tk/s"
     expires_after="2026-04-08">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The tokens per second seen when processing a chunk of {Type} input. Note
     that for some types of input (e.g. images and audio) there is considerably
@@ -299,8 +313,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.TokensPerSecond.{Stage}" units="tk/s"
     expires_after="2026-03-01">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The tokens per second seen when processing {Stage}. Logged each time the
     OnDeviceModel processes {Stage}.
@@ -314,8 +329,9 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.TotalTime.Input{Type}" units="ms"
     expires_after="2026-04-08">
-  <owner>cduvall@chromium.org</owner>
+  <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The total time taken when processing a chunk of {Type} input. Note that for
     some types of input (e.g. images and audio) there is considerably more work
