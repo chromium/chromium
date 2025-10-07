@@ -14,7 +14,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -97,8 +96,8 @@ public class TabStripGroupContextMenuTest {
 
     @After
     public void tearDown() {
-        // Click anywhere to dismiss menu if has not already been dismissed.
-        onView(isRoot()).perform(click());
+        // Dismiss any remaining context menu.
+        ThreadUtils.runOnUiThreadBlocking(() -> mStripLayoutHelper.dismissContextMenu());
 
         // Dismiss any visible dialogs(crbug.com/394606261). Clicking anywhere to dismiss the popup
         // menu may unintentionally trigger a menu item (e.g. "Ungroup"), which can show a dialog.

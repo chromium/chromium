@@ -2253,7 +2253,8 @@ public class StripLayoutHelper
                 || (mCloseButtonMenu != null && mCloseButtonMenu.isShowing());
     }
 
-    private void dismissContextMenu() {
+    @VisibleForTesting
+    void dismissContextMenu() {
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
         if (mCloseButtonMenu != null) mCloseButtonMenu.dismiss();
