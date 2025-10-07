@@ -168,10 +168,13 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(AutofillAiEntityType) -->
 
 <enum name="AutofillAiEntityType">
+<!-- Generated from components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+Called by update_autofill_enums.py.-->
+
   <int value="0" label="Passport"/>
-  <int value="1" label="Driver's License"/>
-  <int value="2" label="Vehicle Information"/>
-  <int value="3" label="National ID Card"/>
+  <int value="1" label="Driver's license"/>
+  <int value="2" label="Vehicle"/>
+  <int value="3" label="National Id Card"/>
   <int value="4" label="Known Traveler Number"/>
   <int value="5" label="Redress Number"/>
   <int value="6" label="Flight Reservation"/>

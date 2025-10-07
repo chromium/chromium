@@ -229,3 +229,15 @@ def CheckRegexTranspilerGoldenFiles(input_api, output_api):
       "Regex transpiler golden files don't match. "
       "Regenerate the outputs at {}.".format(relative_test_dir))]
   return []
+
+def CheckAutofillAiSchema(input_api, output_api):
+  """Reminds to run update_autofill_enums.py when the schema changes."""
+  if (IsComponentsAutofillFileAffected(input_api, "entity_schema.json")):
+    return [
+        output_api.PresubmitPromptWarning(
+            'You modified the Autofill AI schema. If you added an entity,'
+            ' re-run `tools/metrics/histograms/update_autofill_enums.py`.'
+        )
+    ]
+
+  return []

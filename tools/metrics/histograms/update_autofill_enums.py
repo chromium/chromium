@@ -2,8 +2,11 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Scans components/autofill/core/browser/field_types.h for FieldTypes
-and updates histograms that are calculated from this enum.
+"""Synchronizes Autofill's enums.xml and histograms.xml with the code.
+
+- Scans components/autofill/core/browser/field_types.h for FieldTypes
+  and updates histograms that are calculated from this enum.
+- Updates enums derived from the Autofill AI schema.
 """
 
 import optparse
@@ -14,12 +17,17 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import path_util
 
+AUTOFILL_AI_ENTITY_DIR = \
+    'components/autofill/core/browser/data_model/autofill_ai'
+sys.path.append(path_util.GetInputFile(AUTOFILL_AI_ENTITY_DIR))
+from entity_schema_parser import parse_entity_schema
+
 import update_histogram_enum
 
 FIELD_TYPES_PATH = 'components/autofill/core/browser/field_types.h'
 FIELD_PREDICTION_GROUPS_PATH = \
     'components/autofill/core/browser/metrics/prediction_quality_metrics.cc'
-
+ENTITY_SCHEMA_PATH = AUTOFILL_AI_ENTITY_DIR + '/entity_schema.json'
 
 def ReadEnum(filename, first_line, last_line_exclusive):
   """Extracts an enum from a file.
@@ -121,6 +129,13 @@ def GenerateFillingAcceptanceByFieldType(server_field_types):
   return result
 
 
+def GenerateAutofillAiEntityType():
+  result = {}
+  schema = parse_entity_schema(path_util.GetInputFile(ENTITY_SCHEMA_PATH))
+  for enum_id, entity in enumerate(schema):
+    result[enum_id] = entity['name']
+  return result
+
 if __name__ == '__main__':
   server_field_types = ReadFieldTypes(FIELD_TYPES_PATH)
 
@@ -160,3 +175,8 @@ if __name__ == '__main__':
       FIELD_TYPES_PATH,
       os.path.basename(__file__),
       update_comment=False)
+
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
+      'AutofillAiEntityType', GenerateAutofillAiEntityType(),
+      ENTITY_SCHEMA_PATH, os.path.basename(__file__))
