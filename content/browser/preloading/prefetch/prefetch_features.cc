@@ -86,7 +86,6 @@ const base::FeatureParam<size_t>
         &kPrefetchMultipleActiveSetSizeLimitForBase,
         "prefetch_multiple_active_set_size_limit_for_base_value", 2};
 
-// Currently this feature is disabled for https://crbug.com/444634885.
-BASE_FEATURE(kPreloadServingMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
