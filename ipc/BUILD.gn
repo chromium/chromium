@@ -22,8 +22,6 @@ component("ipc") {
     "param_traits_macros.h",
     "param_traits_read_macros.h",
     "param_traits_write_macros.h",
-    "tracing_helpers.h",
-    "tracing_helpers_internal.h",
   ]
 
   if (use_blink) {
@@ -47,8 +45,6 @@ component("ipc") {
       "ipc_sender.h",
       "ipc_sync_channel.cc",
       "ipc_sync_channel.h",
-      "trace_ipc_message.cc",
-      "trace_ipc_message.h",
       "urgent_message_observer.h",
     ]
   }
@@ -226,7 +222,6 @@ if (use_blink) {
       "ipc_message_utils_unittest.cc",
       "ipc_mojo_bootstrap_unittest.cc",
       "ipc_sync_channel_unittest.cc",
-      "tracing_helpers_unittest.cc",
     ]
 
     if (is_posix || is_fuchsia) {

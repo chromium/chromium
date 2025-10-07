@@ -178,7 +178,6 @@
 #include "ipc/constants.mojom.h"
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "ipc/trace_ipc_message.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "media/media_buildflags.h"

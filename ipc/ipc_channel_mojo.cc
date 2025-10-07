@@ -24,7 +24,6 @@
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
-#include "ipc/trace_ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"

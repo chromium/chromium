@@ -22,13 +22,6 @@
 #include "base/task/common/task_annotator.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
-#include "ipc/tracing_helpers.h"
-
-#define IPC_MESSAGE_ID_CLASS(id) ((id) >> 16)
-#define IPC_MESSAGE_ID_LINE(id) ((id) & 0xffff)
-
-// This corresponds to an enum value from IPCMessageStart.
-#define IPC_MESSAGE_CLASS(message) IPC_MESSAGE_ID_CLASS((message).type())
 
 #endif  // IPC_IPC_MESSAGE_MACROS_H_
 
