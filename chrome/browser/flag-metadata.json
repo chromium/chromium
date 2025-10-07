@@ -6619,7 +6619,7 @@
     "owners": [
       "cthomp@chromium.org",
       "ortuno@chromium.org",
-      "chrome-security-web-and-net@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 144
   },
@@ -6628,7 +6628,16 @@
     "owners": [
       "cthomp@chromium.org",
       "hchao@chromium.org",
-      "chrome-security-web-and-net@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 148
+  },
+  {
+    "name": "local-network-access-check-webtransport",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 148
   },

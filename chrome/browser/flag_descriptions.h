@@ -4659,6 +4659,9 @@ extern const char kLocalNetworkAccessChecksWebRTCDescription[];
 extern const char kLocalNetworkAccessChecksWebSocketsName[];
 extern const char kLocalNetworkAccessChecksWebSocketsDescription[];
 
+extern const char kLocalNetworkAccessChecksWebTransportName[];
+extern const char kLocalNetworkAccessChecksWebTransportDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kTaskManagerClankName[];
 extern const char kTaskManagerClankDescription[];

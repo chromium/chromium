@@ -9164,6 +9164,8 @@ from previous Chrome versions.
   <int value="-1795137192" label="AccessibilityManifestV3GoogleTts:disabled"/>
   <int value="-1794801189" label="VcStudioLook:disabled"/>
   <int value="-1794783272" label="PdfViewerDocumentProperties:disabled"/>
+  <int value="-1794204230"
+      label="LocalNetworkAccessChecksWebTransport:disabled"/>
   <int value="-1793587118"
       label="CompressionDictionaryTransportOverHttp1:enabled"/>
   <int value="-1793010019" label="DesktopPWAsKeepAlive:enabled"/>
@@ -18970,6 +18972,7 @@ from previous Chrome versions.
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:enabled"/>
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>
   <int value="1702090999" label="ClearOldBrowsingData:disabled"/>
+  <int value="1702653578" label="LocalNetworkAccessChecksWebTransport:enabled"/>
   <int value="1702985369"
       label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>
   <int value="1703206814" label="CloseAllTabsModalDialog:disabled"/>
