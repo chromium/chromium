@@ -1333,8 +1333,9 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/css-anchor-position-2/#anchored
       name: "CSSFallbackContainerQueries",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/417306102
