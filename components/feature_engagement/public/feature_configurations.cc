@@ -2030,9 +2030,13 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(EQUAL, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.blocked_by.type = BlockedBy::Type::NONE;
+
+    // Show max of one time per week.
     config.trigger = EventConfig("reader_mode_distill_in_app_iph_triggered",
                                  Comparator(EQUAL, 0), 7, 7);
+    // Show max of three times per year.
     config.event_configs.insert(
         EventConfig("reader_mode_distill_in_app_iph_triggered",
                     Comparator(LESS_THAN, 3), 360, 360));
