@@ -1849,6 +1849,10 @@ bool WebGLRenderingContextBase::
   // context_provider_wrapper, so it's important to call that first as it can
   // invalidate the weak pointer.
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!context_provider_wrapper) {
+    return false;
+  }
+
   auto size = Host()->Size();
   auto format = GetSharedImageFormat();
 
@@ -1859,10 +1863,6 @@ bool WebGLRenderingContextBase::
   bool using_swap_chain =
       GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
   if (!using_swap_chain && !using_webgl_image_chromium) {
-    return false;
-  }
-
-  if (!context_provider_wrapper) {
     return false;
   }
 
