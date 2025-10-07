@@ -125,10 +125,6 @@ MessageCenterController::MessageCenterController() {
 }
 
 MessageCenterController::~MessageCenterController() {
-  for (auto& observer : observers_) {
-    observer.OnArcNotificationInitializerDestroyed(this);
-  }
-
   // These members all depend on the MessageCenter instance, so must be
   // destroyed first.
   all_popup_blocker_.reset();

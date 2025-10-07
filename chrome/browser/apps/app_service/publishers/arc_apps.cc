@@ -1340,10 +1340,6 @@ void ArcApps::OnSetArcNotificationsInstance(
   notification_observation_.Observe(arc_notification_manager);
 }
 
-// TODO(crbug.com/442761233): Remove this.
-void ArcApps::OnArcNotificationInitializerDestroyed(
-    ash::ArcNotificationsHostInitializer* initializer) {}
-
 void ArcApps::OnNotificationUpdated(const std::string& notification_id,
                                     const std::string& app_id) {
   if (app_id.empty()) {

@@ -181,8 +181,6 @@ class ArcApps : public KeyedService,
   // ash::ArcNotificationsHostInitializer::Observer overrides.
   void OnSetArcNotificationsInstance(
       ash::ArcNotificationManagerBase* arc_notification_manager) override;
-  void OnArcNotificationInitializerDestroyed(
-      ash::ArcNotificationsHostInitializer* initializer) override;
 
   // ArcNotificationManagerBase::Observer overrides.
   void OnNotificationUpdated(const std::string& notification_id,

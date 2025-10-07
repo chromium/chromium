@@ -20,13 +20,6 @@ class ASH_PUBLIC_EXPORT ArcNotificationsHostInitializer {
     // Invoked when ARC notifications instance is ready.
     virtual void OnSetArcNotificationsInstance(
         ArcNotificationManagerBase* arc_notification_manager) = 0;
-
-    // Invoked when the ArcNotificationsHostInitializer object (the thing that
-    // this observer observes) will be destroyed. In response, the observer,
-    // |this|, should call "RemoveObserver(this)", whether directly or
-    // indirectly (e.g. via ScopedObservation::Reset).
-    virtual void OnArcNotificationInitializerDestroyed(
-        ArcNotificationsHostInitializer* initializer) = 0;
   };
 
   static ArcNotificationsHostInitializer* Get();
