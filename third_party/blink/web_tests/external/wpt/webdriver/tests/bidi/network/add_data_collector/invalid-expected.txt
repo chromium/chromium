@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_params_data_types_entry_invalid_value[request]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+Harness: the test ran to completion.
+

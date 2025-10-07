@@ -163,6 +163,7 @@
         BiDiModule["Network"] = "network";
         BiDiModule["Script"] = "script";
         BiDiModule["Session"] = "session";
+        BiDiModule["Speculation"] = "speculation";
     })(BiDiModule || (BiDiModule = {}));
     var Script$2;
     (function (Script) {
@@ -7426,6 +7427,7 @@
             await Promise.all([
                 this.#cdpTarget.toggleNetworkIfNeeded(),
                 this.#cdpTarget.toggleDeviceAccessIfNeeded(),
+                this.#cdpTarget.togglePreloadIfNeeded(),
             ]);
         }
         async locateNodes(params) {
@@ -8222,6 +8224,7 @@
         #windowId;
         #deviceAccessEnabled = false;
         #cacheDisableState = false;
+        #preloadEnabled = false;
         #fetchDomainStages = {
             request: false,
             response: false,
@@ -8306,6 +8309,7 @@
                 this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                 this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                 this.toggleDeviceAccessIfNeeded(),
+                this.togglePreloadIfNeeded(),
             ]);
             for (const result of results) {
                 if (result instanceof Error) {
@@ -8425,6 +8429,23 @@
             catch (err) {
                 this.#logger?.(LogType.debugError, err);
                 this.#deviceAccessEnabled = !enabled;
+                if (!this.#isExpectedError(err)) {
+                    throw err;
+                }
+            }
+        }
+        async togglePreloadIfNeeded() {
+            const enabled = this.isSubscribedTo(Speculation.EventNames.PrefetchStatusUpdated);
+            if (this.#preloadEnabled === enabled) {
+                return;
+            }
+            this.#preloadEnabled = enabled;
+            try {
+                await this.#cdpClient.sendCommand(enabled ? 'Preload.enable' : 'Preload.disable');
+            }
+            catch (err) {
+                this.#logger?.(LogType.debugError, err);
+                this.#preloadEnabled = !enabled;
                 if (!this.#isExpectedError(err)) {
                     throw err;
                 }
@@ -8762,9 +8783,10 @@
         #preloadScriptStorage;
         #realmStorage;
         #configStorage;
+        #speculationProcessor;
         #defaultUserContextId;
         #logger;
-        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, configStorage, bluetoothProcessor, preloadScriptStorage, defaultUserContextId, logger) {
+        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, configStorage, bluetoothProcessor, speculationProcessor, preloadScriptStorage, defaultUserContextId, logger) {
             this.#cdpConnection = cdpConnection;
             this.#browserCdpClient = browserCdpClient;
             this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
@@ -8775,6 +8797,7 @@
             this.#networkStorage = networkStorage;
             this.#configStorage = configStorage;
             this.#bluetoothProcessor = bluetoothProcessor;
+            this.#speculationProcessor = speculationProcessor;
             this.#realmStorage = realmStorage;
             this.#defaultUserContextId = defaultUserContextId;
             this.#logger = logger;
@@ -8894,6 +8917,7 @@
             const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#configStorage, userContext, this.#logger);
             this.#networkStorage.onCdpTargetCreated(target);
             this.#bluetoothProcessor.onCdpTargetCreated(target);
+            this.#speculationProcessor.onCdpTargetCreated(target);
             return target;
         }
         #workers = new Map();
@@ -9066,10 +9090,11 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    const MAX_TOTAL_COLLECTED_SIZE = 200 * 1000 * 1000;
+    const MAX_TOTAL_COLLECTED_SIZE = 200_000_000;
     class CollectorsStorage {
         #collectors = new Map();
-        #requestCollectors = new Map();
+        #responseCollectors = new Map();
+        #requestBodyCollectors = new Map();
         #logger;
         constructor(logger) {
             this.#logger = logger;
@@ -9083,36 +9108,52 @@
             this.#collectors.set(collectorId, params);
             return collectorId;
         }
-        isCollected(requestId, collectorId) {
+        isCollected(requestId, dataType, collectorId) {
             if (collectorId !== undefined && !this.#collectors.has(collectorId)) {
                 throw new NoSuchNetworkCollectorException(`Unknown collector ${collectorId}`);
             }
-            const requestCollectors = this.#requestCollectors.get(requestId);
-            if (requestCollectors === undefined || requestCollectors.size === 0) {
+            if (dataType === undefined) {
+                return (this.isCollected(requestId, "response" , collectorId) ||
+                    this.isCollected(requestId, "request" , collectorId));
+            }
+            const requestToCollectorsMap = this.#getRequestToCollectorMap(dataType).get(requestId);
+            if (requestToCollectorsMap === undefined ||
+                requestToCollectorsMap.size === 0) {
                 return false;
             }
             if (collectorId === undefined) {
                 return true;
             }
-            if (!this.#requestCollectors.get(requestId)?.has(collectorId)) {
+            if (!requestToCollectorsMap.has(collectorId)) {
                 return false;
             }
             return true;
         }
-        disown(requestId, collectorId) {
-            if (collectorId !== undefined) {
-                this.#requestCollectors.get(requestId)?.delete(collectorId);
-            }
-            if (collectorId === undefined ||
-                this.#requestCollectors.get(requestId)?.size === 0) {
-                this.#requestCollectors.delete(requestId);
+        #getRequestToCollectorMap(dataType) {
+            switch (dataType) {
+                case "response" :
+                    return this.#responseCollectors;
+                case "request" :
+                    return this.#requestBodyCollectors;
+                default:
+                    throw new UnsupportedOperationException(`Unsupported data type ${dataType}`);
             }
         }
-        #shouldCollectRequest(collectorId, request, topLevelBrowsingContext, userContext) {
-            if (!this.#collectors.has(collectorId)) {
+        disownData(requestId, dataType, collectorId) {
+            const requestToCollectorsMap = this.#getRequestToCollectorMap(dataType);
+            if (collectorId !== undefined) {
+                requestToCollectorsMap.get(requestId)?.delete(collectorId);
+            }
+            if (collectorId === undefined ||
+                requestToCollectorsMap.get(requestId)?.size === 0) {
+                requestToCollectorsMap.delete(requestId);
+            }
+        }
+        #shouldCollectRequest(collectorId, request, dataType, topLevelBrowsingContext, userContext) {
+            const collector = this.#collectors.get(collectorId);
+            if (collector === undefined) {
                 throw new NoSuchNetworkCollectorException(`Unknown collector ${collectorId}`);
             }
-            const collector = this.#collectors.get(collectorId);
             if (collector.userContexts &&
                 !collector.userContexts.includes(userContext)) {
                 return false;
@@ -9121,17 +9162,26 @@
                 !collector.contexts.includes(topLevelBrowsingContext)) {
                 return false;
             }
-            if (collector.maxEncodedDataSize < request.bytesReceived) {
-                this.#logger?.(LogType.debug, `Request ${request.id} is too big for the collector ${collectorId}`);
+            if (!collector.dataTypes.includes(dataType)) {
                 return false;
             }
-            this.#logger?.(LogType.debug, `Collector ${collectorId} collected request ${request.id}`);
+            if (dataType === "request"  &&
+                request.bodySize > collector.maxEncodedDataSize) {
+                this.#logger?.(LogType.debug, `Request's ${request.id} body size is too big for the collector ${collectorId}`);
+                return false;
+            }
+            if (dataType === "response"  &&
+                request.bytesReceived > collector.maxEncodedDataSize) {
+                this.#logger?.(LogType.debug, `Request's ${request.id} response is too big for the collector ${collectorId}`);
+                return false;
+            }
+            this.#logger?.(LogType.debug, `Collector ${collectorId} collected ${dataType} of ${request.id}`);
             return true;
         }
-        collectIfNeeded(request, topLevelBrowsingContext, userContext) {
-            const collectorIds = [...this.#collectors.keys()].filter((collectorId) => this.#shouldCollectRequest(collectorId, request, topLevelBrowsingContext, userContext));
+        collectIfNeeded(request, dataType, topLevelBrowsingContext, userContext) {
+            const collectorIds = [...this.#collectors.keys()].filter((collectorId) => this.#shouldCollectRequest(collectorId, request, dataType, topLevelBrowsingContext, userContext));
             if (collectorIds.length > 0) {
-                this.#requestCollectors.set(request.id, new Set(collectorIds));
+                this.#getRequestToCollectorMap(dataType).set(request.id, new Set(collectorIds));
             }
         }
         removeDataCollector(collectorId) {
@@ -9139,17 +9189,26 @@
                 throw new NoSuchNetworkCollectorException(`Collector ${collectorId} does not exist`);
             }
             this.#collectors.delete(collectorId);
-            const releasedRequests = [];
-            for (const [requestId, collectorIds] of this.#requestCollectors) {
+            const affectedRequests = [];
+            for (const [requestId, collectorIds] of this.#responseCollectors) {
                 if (collectorIds.has(collectorId)) {
                     collectorIds.delete(collectorId);
                     if (collectorIds.size === 0) {
-                        this.#requestCollectors.delete(requestId);
-                        releasedRequests.push(requestId);
+                        this.#responseCollectors.delete(requestId);
+                        affectedRequests.push(requestId);
                     }
                 }
             }
-            return releasedRequests;
+            for (const [requestId, collectorIds] of this.#requestBodyCollectors) {
+                if (collectorIds.has(collectorId)) {
+                    collectorIds.delete(collectorId);
+                    if (collectorIds.size === 0) {
+                        this.#requestBodyCollectors.delete(requestId);
+                        affectedRequests.push(requestId);
+                    }
+                }
+            }
+            return affectedRequests;
         }
     }
 
@@ -9276,6 +9335,11 @@
         #isDataUrl() {
             return this.url.startsWith('data:');
         }
+        #isNonInterceptable() {
+            return (
+            this.#isDataUrl() ||
+                this.#servedFromCache);
+        }
         get #method() {
             return (this.#requestOverrides?.method ??
                 this.#request.info?.request.method ??
@@ -9302,7 +9366,7 @@
             }
             return cookies;
         }
-        get #bodySize() {
+        get bodySize() {
             let bodySize = 0;
             if (typeof this.#requestOverrides?.bodySize === 'number') {
                 bodySize = this.#requestOverrides.bodySize;
@@ -9403,7 +9467,8 @@
             this.waitNextPhase = new Deferred();
         }
         #interceptsInPhase(phase) {
-            if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
+            if (this.#isNonInterceptable() ||
+                !this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
                 return new Set();
             }
             return this.#networkStorage.getInterceptsForPhase(this, phase);
@@ -9426,9 +9491,7 @@
                 Boolean(this.#request.extraInfo) ||
                 this.#servedFromCache ||
                 Boolean(this.#response.info && !this.#response.hasExtraInfo);
-            const noInterceptionExpected =
-            this.#isDataUrl() ||
-                this.#servedFromCache;
+            const noInterceptionExpected = this.#isNonInterceptable();
             const requestInterceptionExpected = !noInterceptionExpected &&
                 this.#isBlockedInPhase("beforeRequestSent" );
             const requestInterceptionCompleted = !requestInterceptionExpected ||
@@ -9459,6 +9522,7 @@
         }
         onRequestWillBeSentEvent(event) {
             this.#request.info = event;
+            this.#networkStorage.collectIfNeeded(this, "request" );
             this.#emitEventsIfReady();
         }
         onRequestWillBeSentExtraInfoEvent(event) {
@@ -9478,7 +9542,7 @@
         onResponseReceivedEvent(event) {
             this.#response.hasExtraInfo = event.hasExtraInfo;
             this.#response.info = event.response;
-            this.#networkStorage.collectIfNeeded(this);
+            this.#networkStorage.collectIfNeeded(this, "response" );
             this.#emitEventsIfReady();
         }
         onServedFromCache() {
@@ -9769,7 +9833,7 @@
                 headers,
                 cookies: this.#cookies,
                 headersSize: computeHeadersSize(headers),
-                bodySize: this.#bodySize,
+                bodySize: this.bodySize,
                 destination: this.#getDestination(),
                 initiatorType: this.#getInitiatorType(),
                 timings: this.#timings,
@@ -10035,24 +10099,37 @@
             }
         }
         async getCollectedData(params) {
-            if (!this.#collectorsStorage.isCollected(params.request, params.collector)) {
-                if (params.collector !== undefined) {
-                    throw new NoSuchNetworkDataException(`Collector ${params.collector} didn't collect data for request ${params.request}`);
-                }
-                throw new NoSuchNetworkDataException(`No collected data for request ${params.request}`);
+            if (!this.#collectorsStorage.isCollected(params.request, params.dataType, params.collector)) {
+                throw new NoSuchNetworkDataException(params.collector === undefined
+                    ? `No collected ${params.dataType} data`
+                    : `Collector ${params.collector} didn't collect ${params.dataType} data`);
             }
             if (params.disown && params.collector === undefined) {
                 throw new InvalidArgumentException('Cannot disown collected data without collector ID');
             }
             const request = this.getRequestById(params.request);
             if (request === undefined) {
-                throw new NoSuchNetworkDataException(`No data for request ${params.request}`);
+                throw new NoSuchNetworkDataException(`No data for ${params.request}`);
             }
-            const responseBody = await request.cdpClient.sendCommand('Network.getResponseBody', { requestId: request.id });
+            let result = undefined;
+            switch (params.dataType) {
+                case "response" :
+                    result = await this.#getCollectedResponseData(request);
+                    break;
+                case "request" :
+                    result = await this.#getCollectedRequestData(request);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(`Unsupported data type ${params.dataType}`);
+            }
             if (params.disown && params.collector !== undefined) {
-                this.#collectorsStorage.disown(params.request, params.collector);
+                this.#collectorsStorage.disownData(request.id, params.dataType, params.collector);
                 this.disposeRequest(request.id);
             }
+            return result;
+        }
+        async #getCollectedResponseData(request) {
+            const responseBody = await request.cdpClient.sendCommand('Network.getResponseBody', { requestId: request.id });
             return {
                 bytes: {
                     type: responseBody.base64Encoded ? 'base64' : 'string',
@@ -10060,8 +10137,17 @@
                 },
             };
         }
-        collectIfNeeded(request) {
-            this.#collectorsStorage.collectIfNeeded(request, request.cdpTarget.topLevelId, this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
+        async #getCollectedRequestData(request) {
+            const requestPostData = await request.cdpClient.sendCommand('Network.getRequestPostData', { requestId: request.id });
+            return {
+                bytes: {
+                    type: 'string',
+                    value: requestPostData.postData,
+                },
+            };
+        }
+        collectIfNeeded(request, dataType) {
+            this.#collectorsStorage.collectIfNeeded(request, dataType, request.cdpTarget.topLevelId, this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
                 .userContext);
         }
         getInterceptionStages(browsingContextId) {
@@ -10173,10 +10259,10 @@
             releasedRequests.map((request) => this.disposeRequest(request));
         }
         disownData(params) {
-            if (!this.#collectorsStorage.isCollected(params.request, params.collector)) {
-                throw new NoSuchNetworkDataException(`Collector ${params.collector} didn't collect data for request ${params.request}`);
+            if (!this.#collectorsStorage.isCollected(params.request, params.dataType, params.collector)) {
+                throw new NoSuchNetworkDataException(`Collector ${params.collector} didn't collect ${params.dataType} data`);
             }
-            this.#collectorsStorage.disown(params.request, params.collector);
+            this.#collectorsStorage.disownData(params.request, params.dataType, params.collector);
             this.disposeRequest(params.request);
         }
     }
@@ -10445,6 +10531,9 @@
                     break;
                 case BiDiModule.Script:
                     addEvents(Object.values(Script$2.EventNames));
+                    break;
+                case BiDiModule.Speculation:
+                    addEvents(Object.values(Speculation.EventNames));
                     break;
                 default:
                     allEvents.add(event);
@@ -10832,6 +10921,62 @@
     _a$2 = EventManager;
 
     /**
+     * Copyright 2025 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    class SpeculationProcessor {
+        #eventManager;
+        #logger;
+        constructor(eventManager, logger) {
+            this.#eventManager = eventManager;
+            this.#logger = logger;
+        }
+        onCdpTargetCreated(cdpTarget) {
+            cdpTarget.cdpClient.on('Preload.prefetchStatusUpdated', (event) => {
+                let prefetchStatus;
+                switch (event.status) {
+                    case 'Running':
+                        prefetchStatus = "pending" ;
+                        break;
+                    case 'Ready':
+                        prefetchStatus = "ready" ;
+                        break;
+                    case 'Success':
+                        prefetchStatus = "success" ;
+                        break;
+                    case 'Failure':
+                        prefetchStatus = "failure" ;
+                        break;
+                    default:
+                        this.#logger?.(LogType.debugWarn, `Unknown prefetch status: ${event.status}`);
+                        return;
+                }
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: 'speculation.prefetchStatusUpdated',
+                    params: {
+                        context: event.initiatingFrameId,
+                        url: event.prefetchUrl,
+                        status: prefetchStatus,
+                    },
+                }, cdpTarget.id);
+            });
+        }
+    }
+
+    /**
      * Copyright 2021 Google LLC.
      * Copyright (c) Microsoft Corporation.
      *
@@ -10856,6 +11001,7 @@
         #realmStorage = new RealmStorage();
         #preloadScriptStorage = new PreloadScriptStorage();
         #bluetoothProcessor;
+        #speculationProcessor;
         #logger;
         #handleIncomingMessage = (message) => {
             void this.#commandProcessor.processCommand(message).catch((error) => {
@@ -10880,6 +11026,7 @@
             this.#eventManager = new EventManager(this.#browsingContextStorage, userContextStorage);
             const networkStorage = new NetworkStorage(this.#eventManager, this.#browsingContextStorage, browserCdpClient, logger);
             this.#bluetoothProcessor = new BluetoothProcessor(this.#eventManager, this.#browsingContextStorage);
+            this.#speculationProcessor = new SpeculationProcessor(this.#eventManager, this.#logger);
             this.#commandProcessor = new CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, userContextStorage, parser, async (options) => {
                 await browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
                     ignore: options.acceptInsecureCerts ?? false,
@@ -10889,7 +11036,7 @@
                     userPromptHandler: options.unhandledPromptBehavior,
                     prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,
                 });
-                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, logger);
+                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, this.#speculationProcessor, this.#preloadScriptStorage, defaultUserContextId, logger);
                 await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
                     discover: true,
                 });
@@ -15535,7 +15682,7 @@
             descriptor: Permissions.PermissionDescriptorSchema,
             state: Permissions.PermissionStateSchema,
             origin: z.string(),
-            topLevelOrigin: z.string().optional(),
+            embeddedOrigin: z.string().optional(),
             userContext: z.string().optional(),
         }));
     })(Permissions$1 || (Permissions$1 = {}));
@@ -16872,7 +17019,7 @@
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
-        Network.DataTypeSchema = z.literal('response');
+        Network.DataTypeSchema = z.lazy(() => z.enum(['request', 'response']));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.FetchTimingInfoSchema = z.lazy(() => z.object({
