@@ -882,22 +882,17 @@ class VideoTextureBacking : public cc::TextureBacking {
                                          kPremul_SkAlphaType,
                                          color_space.ToSkColorSpace())) {
     raster_context_provider_ = std::move(raster_context_provider);
+    CHECK(raster_context_provider_->ContextCapabilities().gpu_rasterization);
     auto* sii = raster_context_provider_->SharedImageInterface();
 
-    // This SI is used to cache the VideoFrame. We will eventually read out
-    // its contents into a destination GL texture via the GLES2 interface.
+    // This SI is used to cache the VideoFrame. We copy the contents of the
+    // source VideoFrame into the cached SI over the raster interface and will
+    // eventually read out its contents into a destination GL texture via the
+    // GLES2 interface.
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ;
-    // We copy the contents of the source VideoFrame *into* the
-    // cached SI over the raster interface - the usage bits depend on
-    // whether OOP-Raster is enabled.
-    flags |= gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-    if (raster_context_provider_->ContextCapabilities().gpu_rasterization) {
-      flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    } else {
-      flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
-    }
-
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     shared_image_ =
         sii->CreateSharedImage({SHARED_IMAGE_FORMAT, coded_size, color_space,
                                 flags, "PaintCanvasVideoRenderer"},
@@ -926,7 +921,6 @@ class VideoTextureBacking : public cc::TextureBacking {
 
   void BeginAccess(gpu::raster::RasterInterface* ri) {
     CHECK(!ri_access_);
-    CHECK(raster_context_provider()->ContextCapabilities().gpu_rasterization);
     ri_access_ =
         shared_image_->BeginRasterAccess(ri, sync_token_, /*readonly=*/true);
   }
