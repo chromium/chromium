@@ -45,10 +45,6 @@ class BaseLayoutAlgorithmTest
 
   static const PhysicalBoxFragment* CurrentFragmentFor(const LayoutBlockFlow*);
 
-  static void VerifyGapIntersections(
-      const Vector<GapIntersectionList>& expected_intersections,
-      const Vector<GapIntersectionList>& intersections);
-
   // The following are for the optimized version of GapDecorations. Once the
   // optimized version is implemented, we can remove all the other unused
   // methods from the old version (crbug.com/436140061).

@@ -16,16 +16,6 @@
 
 namespace blink {
 
-// Represents the direction in which a GapIntersecion is blocked. When
-// considering column gaps, `kBefore` means a GapIntersection is blocked by a
-// spanning item upwards and `kAfter` means it is blocked downwards. When
-// considering row gaps, `kBefore` means a GapIntersection is blocked by a
-// spanning item to the left and `kAfter` means it is blocked to the right.
-enum class BlockedGapDirection {
-  kBefore,
-  kAfter,
-};
-
 // This bitmask indicates whether an intersection is blocked due to the presence
 // of a spanning item in one or both directions. When considering column gaps,
 // `kBlockedBefore` means the intersection is blocked by a spanning item
@@ -58,38 +48,6 @@ class CORE_EXPORT BlockedStatus {
   wtf_size_t status_{kNone};
 };
 
-// GapIntersection points are used to paint gap decorations. An intersection
-// point occurs:
-// 1. At the center of an intersection between a gap and the container edge.
-// 2. At the center of an intersection between gaps in different directions.
-// https://drafts.csswg.org/css-gaps-1/#layout-painting
-class GapIntersection {
- public:
-  GapIntersection() = default;
-  GapIntersection(LayoutUnit inline_offset, LayoutUnit block_offset)
-      : inline_offset(inline_offset), block_offset(block_offset) {}
-
-  GapIntersection(LayoutUnit inline_offset,
-                  LayoutUnit block_offset,
-                  bool is_at_edge_of_container)
-      : inline_offset(inline_offset),
-        block_offset(block_offset),
-        is_at_edge_of_container(is_at_edge_of_container) {}
-
-  String ToString(bool verbose = false) const;
-
-  LayoutUnit inline_offset;
-  LayoutUnit block_offset;
-
-  // Represents whether the intersection point is blocked before or after due to
-  // the presence of a spanning item.
-  bool is_blocked_before = false;
-  bool is_blocked_after = false;
-
-  bool is_at_edge_of_container = false;
-};
-
-using GapIntersectionList = Vector<GapIntersection>;
 using MainGaps = Vector<MainGap>;
 using CrossGaps = Vector<CrossGap>;
 
@@ -132,9 +90,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
               MainGaps&& main_gaps,
               LayoutUnit content_block_start,
               LayoutUnit content_block_end)
-      : column_intersections_(other.column_intersections_),
-        row_intersections_(other.row_intersections_),
-        inline_gap_size_(other.inline_gap_size_),
+      : inline_gap_size_(other.inline_gap_size_),
         block_gap_size_(other.block_gap_size_),
         container_type_(other.container_type_),
         main_gaps_(std::move(main_gaps)),
@@ -152,27 +108,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   void Trace(Visitor* visitor) const {}
 
-  void SetGapIntersections(GridTrackSizingDirection track_direction,
-                           Vector<GapIntersectionList>&& intersection_list);
-
-  const Vector<GapIntersectionList>& GetGapIntersections(
-      GridTrackSizingDirection track_direction) const;
-
   // Computes the physical bounding rect for gap decorations ink overflow.
   PhysicalRect ComputeInkOverflowForGaps(WritingDirectionMode writing_direction,
                                          const PhysicalSize& container_size,
                                          LayoutUnit inline_thickness,
                                          LayoutUnit block_thickness) const;
-
-  // Computes the physical bounding rect for gap decorations ink overflow.
-  //
-  // TODO(samomekarajr): Rename this to ComputeInkOverflowForGaps and remove the
-  // other function during cleanup.
-  PhysicalRect ComputeInkOverflowForGapsOptimized(
-      WritingDirectionMode writing_direction,
-      const PhysicalSize& container_size,
-      LayoutUnit inline_thickness,
-      LayoutUnit block_thickness) const;
 
   ContainerType GetContainerType() const { return container_type_; }
 
@@ -182,15 +122,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void SetBlockGapSize(LayoutUnit size) { block_gap_size_ = size; }
   LayoutUnit GetBlockGapSize() const { return block_gap_size_; }
 
-  String IntersectionsToString(GridTrackSizingDirection track_direction,
-                               bool verbose = false) const;
-
-  // TODO(crbug.com/436140061): These methods are being used to implement the
-  // optimized version of GapDecorations. Once the optimized version is
-  // implemented, we can remove all the other unused methods from the old
-  // version.
-  // See third_party/blink/renderer/core/layout/gap/README.md for more
-  // information.
 
   void SetContentInlineOffsets(LayoutUnit start_offset, LayoutUnit end_offset);
   LayoutUnit GetContentInlineStart() const { return content_inline_start_; }
@@ -344,14 +275,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   bool MulticolCrossGapIntersectionsEndAtSpanner(
       wtf_size_t intersection_index,
       const Vector<LayoutUnit>& intersections) const;
-
-  // TODO(samomekarajr): Potential optimization. This can be a single
-  // Vector<GapIntersection> if we exclude intersection points at the edge of
-  // the container. We can check the "blocked" status of edge intersection
-  // points to determine if we should draw from edge of the container to that
-  // intersection.
-  Vector<GapIntersectionList> column_intersections_;
-  Vector<GapIntersectionList> row_intersections_;
 
   // In flex it refers to the gap between flex items, and in grid it
   // refers to the column gutter size.
