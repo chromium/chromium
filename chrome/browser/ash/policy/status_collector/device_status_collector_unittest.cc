@@ -340,6 +340,9 @@ const char kTestCauseKernel[] = "kernel";
 const char kTestCauseEC[] = "embedded-controller";
 const char kTestCauseOther[] = "other";
 
+// Constant for mocked kernel key version.
+const char kMockedKernelKeyVersion[] = "0x00010009";
+
 class TestingDeviceStatusCollectorOptions {
  public:
   TestingDeviceStatusCollectorOptions() = default;
@@ -1809,6 +1812,23 @@ TEST_F(DeviceStatusCollectorTest, WriteProtectSwitch) {
       ash::system::kFirmwareWriteProtectCurrentValueOff);
   GetStatus();
   EXPECT_FALSE(device_status_.write_protect_switch());
+}
+
+TEST_F(DeviceStatusCollectorTest, KernelKeyVersionNotSet) {
+  // Expect the kernel key version to be missing when not set.
+  GetStatus();
+  EXPECT_FALSE(device_status_.tpm_version_info().has_kernel_key_version());
+}
+
+TEST_F(DeviceStatusCollectorTest, KernelKeyVersionSet) {
+  // Set the kernel key version.
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kKernelKeyVersion,
+                                                kMockedKernelKeyVersion);
+
+  // Expect the kernel key version info to be set.
+  GetStatus();
+  EXPECT_EQ(device_status_.tpm_version_info().kernel_key_version(),
+            kMockedKernelKeyVersion);
 }
 
 TEST_F(DeviceStatusCollectorTest, VersionInfo) {
