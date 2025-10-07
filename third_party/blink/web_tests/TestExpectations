@@ -1665,7 +1665,6 @@ crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Cr
 crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
 crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
 crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
-crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
 
 # Sheriff 2020-02-06
 
@@ -4171,8 +4170,6 @@ crbug.com/347071495 external/wpt/svg/animations/conditional-processing-01.html [
 crbug.com/347071495 external/wpt/svg/animations/switch-animation-02.html [ Failure ]
 crbug.com/347804255 [ Mac14 ] virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
 crbug.com/347804255 [ Win11-arm64 ] virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
-crbug.com/347055177 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Timeout ]
-crbug.com/347055177 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Timeout ]
 crbug.com/347055177 external/wpt/geolocation/getCurrentPosition_permission_allow.https.html [ Timeout ]
 crbug.com/347055177 external/wpt/geolocation/non-fully-active.https.html [ Timeout ]
 crbug.com/345936780 [ Mac12 ] external/wpt/editing/other/exec-command-with-text-editor.tentative.html?type=text [ Timeout ]
@@ -4496,8 +4493,6 @@ crbug.com/626703 [ Win10.20h2 ] wpt_internal/geolocation-api/watchPosition-page-
 crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/element-meta-refresh.optional.sub.html [ Timeout ]
 crbug.com/331556923 external/wpt/geolocation-API/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/331556923 external/wpt/geolocation-API/enabled-by-permission-policy-attribute.https.sub.html [ Timeout ]
-crbug.com/331556923 external/wpt/geolocation-API/enabled-by-permissions-policy.https.sub.html [ Timeout ]
-crbug.com/331556923 external/wpt/geolocation-API/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
@@ -9741,3 +9736,11 @@ crbug.com/448507881 [ Linux ] virtual/css-anchor-update-enabled/external/wpt/css
 # Gardener 2025-10-02
 crbug.com/427523525 [ Mac ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
 crbug.com/427523525 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
+
+# Gardener 2025-10-06
+# crbug.com/449751911 failure pass for linux debug, crbug.com/331556923 and crbug.com/347055177 for timeouts and failures on all platforms
+crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
+crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
+crbug.com/449751911 [ Debug Linux ] virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-animated-image.tentative.html [ Failure Pass ]
+# crbug.com/449751911 failure pass for linux debug, crbug.com/805756 for timeouts on all platforms.
+crbug.com/449751911 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Failure Pass Timeout ]
