@@ -101,7 +101,7 @@ int PlaybackRateShifter::FillFrames(int num_frames,
                                            amount, playback_rate_);
 
     for (size_t c = 0; c < num_channels_; ++c) {
-      std::copy_n(rate_shifter_output_->channel(c), amount,
+      std::copy_n(rate_shifter_output_->channel_span(c).data(), amount,
                   channel_data[c] + total_filled);
     }
     total_filled += filled;
@@ -139,7 +139,7 @@ int PlaybackRateShifter::DrainBufferedData(int num_frames,
     int to_copy = rate_shifter_->FillBuffer(rate_shifter_output_.get(), 0,
                                             amount, playback_rate_);
     for (size_t c = 0; c < num_channels_; ++c) {
-      std::copy_n(rate_shifter_output_->channel(c), to_copy,
+      std::copy_n(rate_shifter_output_->channel_span(c).data(), to_copy,
                   channel_data[c] + filled);
     }
     filled += to_copy;

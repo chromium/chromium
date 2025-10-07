@@ -136,8 +136,8 @@ class WavMixerInputSource : public MixerInput::Source {
     CHECK_LE(num_frames, buffer->frames());
     if (num_frames < buffer->frames()) {
       std::vector<float*> channel_data;
-      for (int i = 0; i < buffer->channels(); ++i) {
-        channel_data.push_back(buffer->channel(i));
+      for (auto channel : buffer->AllChannels()) {
+        channel_data.push_back(channel.data());
       }
       std::unique_ptr<::media::AudioBus> buffer_wrapper =
           ::media::AudioBus::WrapVector(num_frames, channel_data);

@@ -106,7 +106,7 @@ bool ConvertPlanarData(int channels,
       reinterpret_cast<const typename Traits::ValueType*>(data);
   for (int c = 0; c < channels; ++c) {
     const typename Traits::ValueType* source = base_data + c * frames;
-    float* dest = audio->channel(c);
+    auto dest = audio->channel_span(c);
     for (int f = 0; f < frames; ++f) {
       dest[f] = Traits::ToFloat(source[f]);
     }
@@ -127,7 +127,7 @@ bool ConvertPlanarFloat(int channels,
   const float* base_data = reinterpret_cast<const float*>(data);
   for (int c = 0; c < channels; ++c) {
     const float* source = base_data + c * frames;
-    std::copy(source, source + frames, audio->channel(c));
+    std::copy(source, source + frames, audio->channel_span(c).data());
   }
   return true;
 }

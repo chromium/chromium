@@ -1064,19 +1064,19 @@ int MixerInputConnection::FillAudioPlaybackFrames(
       return 0;
     }
 
-    int write_offset = 0;
+    size_t write_offset = 0;
     if (remaining_silence_frames_ > 0) {
       buffer->ZeroFramesPartial(0, remaining_silence_frames_);
       filled += remaining_silence_frames_;
       num_frames -= remaining_silence_frames_;
-      write_offset = remaining_silence_frames_;
+      write_offset = static_cast<size_t>(remaining_silence_frames_);
       remaining_silence_frames_ = 0;
     }
 
     CHECK_LE(num_channels_, kMaxChannels);
     float* channels[kMaxChannels];
     for (int c = 0; c < num_channels_; ++c) {
-      channels[c] = buffer->channel(c) + write_offset;
+      channels[c] = buffer->channel_span(c).subspan(write_offset).data();
     }
     filled += rate_shifter_.FillFrames(num_frames, playback_absolute_timestamp,
                                        channels);

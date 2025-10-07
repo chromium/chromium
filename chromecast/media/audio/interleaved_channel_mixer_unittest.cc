@@ -44,9 +44,10 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
 
   auto original = ::media::AudioBus::Create(num_input_channels, kNumFrames);
   for (int c = 0; c < num_input_channels; ++c) {
+    auto channel = original->channel_span(c);
     for (int f = 0; f < kNumFrames; ++f) {
-      original->channel(c)[f] = std::pow(-1, f + c) * 0.01 +
-                                c / static_cast<float>(num_input_channels * 10);
+      channel[f] = std::pow(-1, f + c) * 0.01 +
+                   c / static_cast<float>(num_input_channels * 10);
     }
   }
 
