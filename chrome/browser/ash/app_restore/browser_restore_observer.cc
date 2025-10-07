@@ -121,7 +121,6 @@ void BrowserRestoreObserver::OnBrowserAdded(Browser* browser) {
   // browser, skip opening the same browser.
   if (browser->creation_source() ==
       Browser::CreationSource::kLastAndUrlsStartupPref) {
-    CHECK(on_session_restored_callback_subscription_);
     on_session_restored_callback_subscription_ = {};
   }
 }
