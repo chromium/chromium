@@ -7066,6 +7066,21 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
 <translation id="5627270992026554674">Impeça que docentes usem a lista de estudantes da turma do Google Sala de Aula.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
+<translation id="5630952076819481843">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites para o Chrome selecionar um certificado do cliente automaticamente. O valor é uma matriz de dicionários JSON convertidos em strings, cada um com o formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, em que <ph name="URL_PATTERN_PLACEHOLDER" /> é um padrão de configuração de conteúdo. <ph name="FILTER_PLACEHOLDER" /> restringe quais certificados do cliente podem ser selecionados automaticamente pelo navegador. Seja qual for o filtro usado, apenas os certificados correspondentes à solicitação do servidor serão selecionados. No Android, o Chrome só pode selecionar certificados do cliente que ele mesmo provisionou. Ele não pode acessar certificados instalados no nível do sistema operacional.
+
+      Exemplos de uso da seção <ph name="FILTER_PLACEHOLDER" />:
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, apenas certificados do cliente emitidos por um certificado com o CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> serão selecionados.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> tiver as seções <ph name="ISSUER_STRING_VALUE" /> e <ph name="SUBJECT_STRING_VALUE" /> ao mesmo tempo, apenas certificados do cliente que satisfaçam ambas as condições serão selecionados.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> tiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com o valor <ph name="FILTER_STRING_ORGANIZATION" />, um certificado vai precisar de pelo menos uma organização correspondente ao valor especificado para ser selecionado.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> tiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com um valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, um certificado vai precisar de pelo menos uma unidade organizacional correspondente ao valor especificado para ser selecionado.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="EMPTY_DICTIONARY" />, a seleção de certificados do cliente não será restringida de nenhuma outra forma. Os filtros fornecidos pelo servidor da Web ainda se aplicam.
+
+      Se a política não for definida, não haverá seleção automática para nenhum site.</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
 <translation id="5634032995857968056">Ativar o sandbox do contêiner do app Renderer</translation>
 <translation id="5638334542697444045">Não permitir o uso do tethering instantâneo</translation>
@@ -8210,6 +8225,14 @@ vão falhar e usar, na tela de <ph name="LOG_IN" />, apenas a
 resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6338982178236723271">Enviar informações do sistema</translation>
 <translation id="6339355882150329269">Não considerar o usuário como inativo durante a reprodução de vídeos</translation>
+<translation id="6347110299837147365">Esta política permite que os administradores criptografem o cache http do navegador no disco.
+No momento, só há suporte para Windows.
+
+Quando esta política está ativada, o cache do navegador é criptografado.
+
+Quando esta política está desativada ou não é definida, o cache do navegador não é criptografado.
+
+A criptografia do cache do navegador pode afetar o desempenho.</translation>
 <translation id="6352714113109004581">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
 
       Se esta política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> vai ser aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários vão ser aplicadas.

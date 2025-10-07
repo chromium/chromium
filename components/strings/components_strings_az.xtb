@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">Məlumatı idarə edin</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 pəncərə}other{# pəncərə}}</translation>
 <translation id="232390861414237658">Google Pay ilə istifadə üçün yadda saxlanıldıqda Chrome-da edilən satınalmalar üçün bu kartı avtomatik doldurun</translation>
+<translation id="2326283484705860548">Artıq Google Pulqabıdakı daha çox məlumatı avtomatik doldura bilərsiniz</translation>
 <translation id="2328651992442742497">İcazə verilib (defolt)</translation>
 <translation id="2328955282645810595">İnşaat və elektrik alətləri</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> tarixində bitir</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">Kopyalanmış şəkil</translation>
 <translation id="2347764072711098973">Ödənişi hissə-hissə etmək üçün Affirm, Zip və ya Klarna-dan istifadə edin</translation>
 <translation id="2348509731468399833">Qiymət izləmə dayandı.</translation>
+<translation id="2348836501965732644">Məlumatlarınızı idarə edin və ya bu təklifləri Ayarlarda söndürün</translation>
 <translation id="2349957959687031096">"Anonim tab açın" düyməsi, aktivləşdirərək yeni anonim tab açıb, gizli baxın</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> hostuna <ph name="REPLACED_HANDLER_TITLE" /> əvəzinə <ph name="PROTOCOL" /> linklərinin açılması icazəsi verilsin?</translation>
 <translation id="2351718832234620840">Bu server onun <ph name="DOMAIN" /> domeni olduğunu sübut edə bilmədi, çünki o, Chromium və ya veb-trafikin şifrələnməsi üçün sistem konfiqurasiyanız tərəfindən etibar edilməyən təhlükəsizlik sertifikatından istifadə edir. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>

@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">ठीक</translation>
 <translation id="5062321486222145940">Google डिस्क इंस्टॉल करें</translation>
 <translation id="5067540696062462445">डाउनलोड</translation>
+<translation id="5070314445039955096">इस साइट को छोड़ने पर, "<ph name="SITE_DOMAIN" />" से जुड़ी अनुमतियों को रीसेट करके बंद कर दिया जाएगा</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} में से {position} पेमेंट का तरीका}one{{count} में से {position} पेमेंट का तरीका}other{{count} में से {position} पेमेंट के तरीके}}</translation>
 <translation id="5075939510584558547">एन्क्रिप्ट (सुरक्षित) किए बिना सेव करें</translation>
 <translation id="5076534614343816664">कीमत को ट्रैक करने की सुविधा</translation>

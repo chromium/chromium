@@ -6539,6 +6539,21 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 <translation id="5625771176514429288">指定プラットフォームで Chrome アプリを実行できる。</translation>
 <translation id="5627270992026554674">教師に Google Classroom のクラス名簿の使用を許可しない。</translation>
 <translation id="5630352020869108293">最後のセッションを復元する</translation>
+<translation id="5630952076819481843">このポリシーでは、Chrome でクライアント証明書を自動的に選択できるサイトを指定する URL パターンのリストを作成できます。値は文字列変換した JSON 辞書の配列で、それぞれ <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> の形式で指定します。<ph name="URL_PATTERN_PLACEHOLDER" /> は、コンテンツを設定するパターンです。<ph name="FILTER_PLACEHOLDER" /> は、ブラウザで自動的に選択されるクライアント証明書の発行元を限定するフィルタです。なお、フィルタの設定にかかわらず、サーバーの証明書リクエストに一致する証明書のみが選択されます。Android の場合、選択できるのは Chrome でプロビジョニングしたクライアント証明書のみです。オペレーティング システム レベルでインストールされた証明書にはアクセスできません。
+
+      <ph name="FILTER_PLACEHOLDER" /> セクションの使用例:
+
+      * <ph name="FILTER_PLACEHOLDER" /> に <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" /> を設定した場合、発行元の CommonName が <ph name="ISSUER_CN_PLACEHOLDER" /> であるクライアント証明書のみが選択されます。
+
+      * <ph name="FILTER_PLACEHOLDER" /> に <ph name="ISSUER_STRING_VALUE" /> と <ph name="SUBJECT_STRING_VALUE" /> の両方のセクションを含めた場合は、両方の条件を満たすクライアント証明書のみが選択されます。
+
+      * <ph name="FILTER_PLACEHOLDER" /> に <ph name="SUBJECT_STRING_VALUE" /> セクションと <ph name="FILTER_STRING_ORGANIZATION" /> の値を含めた場合は、指定した値に一致する組織を少なくとも 1 つ含む証明書が選択されます。
+
+      * <ph name="FILTER_PLACEHOLDER" /> に <ph name="SUBJECT_STRING_VALUE" /> セクションと <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> の値を含めた場合は、指定した値に一致する組織部門を少なくとも 1 つ含む証明書が選択されます。
+
+      * <ph name="FILTER_PLACEHOLDER" /> に <ph name="EMPTY_DICTIONARY" /> を設定した場合、クライアント証明書の選択に追加の条件は適用されません。ウェブサーバーによって提供されたフィルタは引き続き適用されます。
+
+      このポリシーを未設定のままにした場合、どのサイトについても証明書の自動選択は行われません。</translation>
 <translation id="5633871703004128675">「テキストカーソルによるハイライト表示」のユーザー補助機能を有効にする</translation>
 <translation id="5634032995857968056">レンダラアプリ コンテナのサンドボックスを有効にする</translation>
 <translation id="5638334542697444045">インスタント テザリングの使用をユーザーに許可しない</translation>

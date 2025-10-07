@@ -159,6 +159,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1726477445370128854">Você pode navegar e fazer buscas mais rápido quando o Chrome pré-carrega páginas que acredita serem de seu interesse</translation>
 <translation id="1728803206919861584">Salvar chave de acesso fora da navegação anônima?</translation>
 <translation id="1732514748744806741">Vamos avisar você se as senhas forem comprometidas</translation>
+<translation id="1737694586321018892">Usar o nível mais alto de segurança do Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site enviou muitas notificações recentemente}one{# site enviou muitas notificações recentemente}other{# sites enviaram muitas notificações recentemente}}</translation>
 <translation id="1749561566933687563">Sincronize seus favoritos</translation>
 <translation id="1750238553597293878">Continue usando as senhas na sua Conta do Google</translation>
@@ -975,6 +976,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="549660026907543296">Participar como <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Página inferior de atividade recente</translation>
 <translation id="5526281268548144413">Não é possível fechar em várias janelas</translation>
+<translation id="5532536403031755365">Adicione uma camada extra de segurança contra ameaças on-line com a proteção reforçada</translation>
 <translation id="5548606607480005320">Confirmação de segurança</translation>
 <translation id="5554520618550346933">Quando você usa uma senha, o Chrome avisa se ela foi publicada on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem mesmo o Google.</translation>
 <translation id="5555525474779371165">Escolha sua proteção no Navegação segura</translation>
@@ -1832,6 +1834,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9133397713400217035">Navegar off-line</translation>
 <translation id="9143389653531441385">Inscrever-se com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Faça login novamente</translation>
+<translation id="9148564897242852377">Alternar seleção de guias</translation>
 <translation id="9157212632995922070">Escolha uma conta para continuar no site <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartilhar apenas o conteúdo</translation>
 <translation id="9161172953291434881">Você confia seus dados a este site?</translation>

@@ -2888,6 +2888,7 @@
 <translation id="2950666755714083615">Зареєструватися</translation>
 <translation id="2953210795988451570">Система безпеки більше не оновлюватиметься. Перейдіть на новий пристрій Chromebook.</translation>
 <translation id="2953218713108551165">Сповіщення для сайту <ph name="SITE" /> заборонено. Під час наступного відвідування ви знову побачите запит.</translation>
+<translation id="2955048943983973430">Пов’язані сервіси Google</translation>
 <translation id="2956070239128776395">Розділ розміщено в групі: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Це розширення не можна перевірити у Вебмагазині Chrome. Щоб використовувати його, увімкніть режим розробника.</translation>
 <translation id="2958721676848865875">Застереження щодо пакування розширення</translation>
@@ -4644,6 +4645,7 @@
 <translation id="4151503145138736576">Немає офлайн-сховища, у якому можна звільнити місце</translation>
 <translation id="4152011295694446843">Тут відображатимуться ваші закладки</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
+<translation id="4153858337812834972">Нещодавні вкладки</translation>
 <translation id="4154658846204884961">Комета</translation>
 <translation id="4154664944169082762">Відбитки</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – лівий екран</translation>
@@ -4948,6 +4950,7 @@
 <translation id="437809255587011096">Указувати стиль тексту</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4378308539633073595">Прокрутити вперед</translation>
+<translation id="4378363201814870400">Керуйте даними для автозаповнення, такими як паролі, способи оплати, адреси й посвідчення особи, щоб швидше переглядати вебсторінки.</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4378556263712303865">Заявка пристрою</translation>
 <translation id="4378589147979399051">Керуйте курсором миші за допомогою основної клавіатури</translation>
@@ -7114,6 +7117,7 @@
 <translation id="5919305207330938913">Усі зібрані дані використовуватимуться згідно з <ph name="BEGIN_LINK" />Політикою конфіденційності Google<ph name="END_LINK" />.</translation>
 <translation id="5919486630433391408">Адміністратор вимкнув оновлення мікропрограм.</translation>
 <translation id="5920543303088087579">Ваш адміністратор заборонив під’єднуватися до цієї мережі</translation>
+<translation id="5922493635960054020">Блокувати доступ до оптимізатора JavaScript на нових сайтах. Потрібно ввімкнути Безпечний перегляд.</translation>
 <translation id="5922963926582976524">Від’єднати мережу миттєвої точки доступу</translation>
 <translation id="5924047253200400718">Довідка<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Запитувати, перш ніж копіювати або переміщувати файли Microsoft на Google Диск</translation>

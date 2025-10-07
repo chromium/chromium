@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">情報を管理</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 つのウィンドウ}other{# つのウィンドウ}}</translation>
 <translation id="232390861414237658">このカードを Google Pay で使用できるように保存すると、Chrome で購入する際に自動入力されます</translation>
+<translation id="2326283484705860548">より多くの Google ウォレットの情報を自動入力できるようになりました</translation>
 <translation id="2328651992442742497">許可（デフォルト）</translation>
 <translation id="2328955282645810595">建設用工具、動力工具</translation>
 <translation id="2330137317877982892">「<ph name="CREDIT_CARD" />」の有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">コピーした画像</translation>
 <translation id="2347764072711098973">Affirm、Zip、または Klarna を使って分割払いをご利用いただけます</translation>
 <translation id="2348509731468399833">価格のトラッキングを停止しました。</translation>
+<translation id="2348836501965732644">[設定] で情報を管理したり、入力候補を表示しないよう設定したりできます</translation>
 <translation id="2349957959687031096">[シークレット タブを開く] ボタンです。実行すると、新しいシークレット タブを開いてシークレット モードでブラウジングできます</translation>
 <translation id="2350796302381711542">すべての <ph name="PROTOCOL" /> リンクを <ph name="REPLACED_HANDLER_TITLE" /> ではなく <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
 <translation id="2351718832234620840">このサーバーは、Chromium またはウェブ トラフィック暗号化のシステム構成で信頼されていないセキュリティ証明書を使用しているため、<ph name="DOMAIN" /> であることを証明できませんでした。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。</translation>

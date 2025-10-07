@@ -200,6 +200,9 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="5671188105328420281">Chromium – wskazówki</translation>
 <translation id="5688047395118852662">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="5700709190537129682">Chromium nie może sprawdzić Twoich haseł</translation>
+<translation id="5731004036450828399">Aby zabezpieczyć klucze dostępu, musisz najpierw utworzyć kod PIN przywracania.
+
+        Klucze są zapisywane w Menedżerze haseł, dzięki czemu możesz ich używać w Chromium na dowolnym urządzeniu.</translation>
 <translation id="584550191241316896">Zalogowano w Chromium</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5889847953983052353">Po włączeniu:
@@ -267,6 +270,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Wybrane dane zostały usunięte z Chromium i synchronizowanych urządzeń. Inne rodzaje historii przeglądania, takie jak wyszukiwania i aktywność w innych usługach Google, mogą być nadal dostępne na Twoim koncie Google na history.google.com</translation>
 <translation id="7395825497086981028">Hasło zostanie zapisane w menedżerze haseł na koncie <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Ten klucz dostępu zostanie zapisany w Menedżerze haseł na koncie <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Otwórz Chromium</translation>
 <translation id="7531461704633548377">Z Chromium</translation>
 <translation id="7554983317097061001">Wskazówka dotycząca Chromium: przenieś Chromium do Docka</translation>
@@ -300,6 +304,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="8254729934443216898">Poznaj nowe funkcje, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="8293572045658095405">Jesteś w trybie incognito w Chromium</translation>
 <translation id="830951810931292870">Otwiera wpisane adresy URL w Chromium w trybie incognito.</translation>
+<translation id="8385503371191508165">Zacznij zapisywać klucze dostępu w Menedżerze haseł</translation>
 <translation id="8390323835464055390">Logowanie się za pomocą zapisanych haseł i kluczy dostępu z dowolnej aplikacji dzięki autouzupełnianiu w Chromium</translation>
 <translation id="8409374867500149834">Korzystasz z najlepszych zabezpieczeń Chromium przed szkodliwymi stronami</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minutę. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}few{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minuty. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}many{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minut. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}other{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minuty. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}}</translation>

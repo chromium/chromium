@@ -1046,6 +1046,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disque</translation>
 <translation id="5067540696062462445">Téléchargements</translation>
+<translation id="5070314445039955096">Les autorisations de « <ph name="SITE_DOMAIN" /> » seront désactivées lorsque vous quitterez ce site</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} mode de paiement sur {count}}one{{position} mode de paiement sur {count}}other{{position} modes de paiement sur {count}}}</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
 <translation id="5076534614343816664">Suivi des prix</translation>

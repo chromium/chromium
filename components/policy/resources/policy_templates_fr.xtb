@@ -7865,6 +7865,14 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="ALLO
 AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela pourrait affecter d'autres règles liées à la géolocalisation (<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />, par exemple). Plus précisément, si cette règle est définie sur <ph name="DISALLOW" />, les options <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> et <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> de la règle <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> ne fonctionneront pas correctement et n'utiliseront que la résolution de localisation basée sur <ph name="IP" /> sur l'écran de connexion (<ph name="LOG_IN" />).</translation>
 <translation id="6338982178236723271">Transmettre les informations système</translation>
 <translation id="6339355882150329269">Ne pas considérer l'utilisateur comme inactif pendant la lecture de la vidéo</translation>
+<translation id="6347110299837147365">Cette règle permet aux administrateurs de chiffrer le cache HTTP du navigateur sur le disque.
+Actuellement disponible sur Windows uniquement.
+
+Lorsque cette règle est activée, le cache du navigateur est chiffré.
+
+Si elle est désactivée ou qu'elle n'est pas configurée, le cache du navigateur n'est pas chiffré.
+
+Le chiffrement du cache du navigateur peut avoir un impact sur les performances.</translation>
 <translation id="6352714113109004581">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent demander aux utilisateurs de leur accorder l'accès à un appareil HID.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.

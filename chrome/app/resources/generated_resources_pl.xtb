@@ -1002,6 +1002,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="166278006618318542">Algorytm klucza publicznego podmiotu</translation>
 <translation id="1662801900924515589">Aplikacja <ph name="APP" /> została zainstalowana</translation>
 <translation id="1663698992894057019">Przejdź na nowego Chromebooka, aby mieć dostęp do najnowszych zabezpieczeń i oprogramowania</translation>
+<translation id="1664497218584335032">Strona internetowa chce otworzyć ten link w aplikacji.</translation>
 <translation id="166454475160289583">Witryny bez pozwolenia na zastępowanie sygnałów z klawiatury</translation>
 <translation id="1665328953287874063">Aby odblokować urządzenie <ph name="DEVICE_TYPE" />, użyj hasła lub kodu PIN</translation>
 <translation id="1665859804801131136">Ekspresjonizm</translation>
@@ -2858,6 +2859,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2950666755714083615">Chcę się zarejestrować</translation>
 <translation id="2953210795988451570">Aktualizacje zabezpieczeń się zakończyły. Przejdź na nowego Chromebooka.</translation>
 <translation id="2953218713108551165">Witryna <ph name="SITE" /> nie może wysyłać powiadomień. Zapytamy Cię ponownie podczas następnej wizyty.</translation>
+<translation id="2955048943983973430">Powiązane usługi Google</translation>
 <translation id="2956070239128776395">Sekcja umieszczona w grupie: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Aby używać tego rozszerzenia, którego Chrome Web Store nie może sprawdzić, włącz tryb programisty.</translation>
 <translation id="2958721676848865875">Ostrzeżenie o rozszerzeniu pakietu</translation>
@@ -4608,6 +4610,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4151503145138736576">Brak miejsca na dane offline do wyczyszczenia</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
+<translation id="4153858337812834972">Ostatnie karty</translation>
 <translation id="4154658846204884961">Kometa</translation>
 <translation id="4154664944169082762">Odciski cyfrowe</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – widok z lewej strony</translation>
@@ -4912,6 +4915,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="437809255587011096">Powiadom o nadaniu stylu tekstowi</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4378308539633073595">Przewiń do przodu</translation>
+<translation id="4378363201814870400">Zarządzaj informacjami do autouzupełniania – takimi jak hasła, formy płatności, adresy i dowody tożsamości – aby szybciej przeglądać internet.</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4378556263712303865">Przeznaczenie urządzenia</translation>
 <translation id="4378589147979399051">Sterowanie kursorem myszy za pomocą klawiatury głównej</translation>
@@ -6525,10 +6529,12 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5517304475148761050">Ta aplikacja wymaga dostępu do Sklepu Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Zawsze otwieraj linki <ph name="PROTOCOL_SCHEME" /> w tej aplikacji</translation>
 <translation id="5520605865175417976">Usuń działanie <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Czy to oczekiwana strona główna?</translation>
 <translation id="5522156646677899028">To rozszerzenie zawiera poważną lukę w zabezpieczeniach.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrator zainstalował rozszerzenie}few{Administrator zainstalował # rozszerzenia}many{Administrator zainstalował # rozszerzeń}other{Administrator zainstalował # rozszerzenia}}</translation>
+<translation id="5523203511530504754">Otwieraj linki <ph name="PROTOCOL_SCHEME" /> w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Dodane witryny będą zawsze aktywne i nie będą usuwane z pamięci w celu zwolnienia w niej miejsca</translation>
 <translation id="5523558474028191231">Nazwa może zawierać litery, cyfry i znaki specjalne, a liczba znaków nie może przekraczać <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526745900034778153">Zaloguj się ponownie, by wznowić synchronizację</translation>
@@ -7079,6 +7085,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5919305207330938913">Wszystkie zbierane dane są wykorzystywane zgodnie z <ph name="BEGIN_LINK" />Polityką prywatności<ph name="END_LINK" /> Google.</translation>
 <translation id="5919486630433391408">Aktualizacje oprogramowania zostały wyłączone przez administratora.</translation>
 <translation id="5920543303088087579">Możliwość połączenia się z tą siecią została wyłączona przez administratora</translation>
+<translation id="5922493635960054020">Blokuj dostęp do optymalizatora JavaScriptu na nowo odwiedzanych stronach internetowych Wymaga Bezpiecznego przeglądania</translation>
 <translation id="5922963926582976524">Odłącz sieć błyskawicznego hotspota</translation>
 <translation id="5924047253200400718">Pomoc<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pytaj przed skopiowaniem lub przeniesieniem plików Microsoft na Dysk Google</translation>
@@ -9558,6 +9565,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7663859337051362114">Dodaj profil eSIM</translation>
 <translation id="76641554187607347">Nie podłączono klawiatury</translation>
 <translation id="7664442418269614729">Używaj tej karty na iPhonie</translation>
+<translation id="7664822217939981459">Wybierz aplikację, w której chcesz otworzyć link <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Zarezerwuj rozmiar</translation>
 <translation id="7665369617277396874">Dodaj konto</translation>
 <translation id="7665445336029073980">Pełna historia pobierania</translation>
@@ -11176,6 +11184,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8750786237117206586">Zarządzanie ustawieniami dźwięku w ChromeOS Flex</translation>
 <translation id="8751034568832412184">Szkoła</translation>
 <translation id="8751329102746373229">Od administratora</translation>
+<translation id="875242763254084885">Witryna <ph name="ORIGIN" /> chce otworzyć ten link w aplikacji.</translation>
 <translation id="8752451679755290210">Automatyczne przechodzenie między elementami</translation>
 <translation id="8753948258138515839">Aplikacja Pliki zapewnia szybki dostęp do plików zapisanych na Dysku Google, urządzeniu z ChromeOS Flex lub w pamięci zewnętrznej.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Po uruchomieniu programu <ph name="PRODUCT_NAME" /> w obsługiwanym środowisku pulpitu są używane systemowe ustawienia serwera proxy. Jednak ten system nie jest obsługiwany lub wystąpił problem z zastosowaniem konfiguracji systemu.&lt;/p&gt;

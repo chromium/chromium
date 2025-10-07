@@ -159,6 +159,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1726477445370128854">Je kunt sneller browsen en zoeken als Chrome pagina's vooraf laadt waarvan Chrome denkt dat je ze misschien gaat bezoeken</translation>
 <translation id="1728803206919861584">Toegangssleutel buiten de incognitomodus opslaan?</translation>
 <translation id="1732514748744806741">Als je wachtwoorden zijn gehackt, laten we je dat weten</translation>
+<translation id="1737694586321018892">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site heeft recent veel meldingen gestuurd}other{# sites hebben recent veel meldingen gestuurd}}</translation>
 <translation id="1749561566933687563">Synchroniseer je bookmarks</translation>
 <translation id="1750238553597293878">Blijf de wachtwoorden in je Google-account gebruiken</translation>
@@ -974,6 +975,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="549660026907543296">Deelnemen als <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Blad onderaan met recente activiteit</translation>
 <translation id="5526281268548144413">Kunnen niet worden gesloten voor meerdere vensters</translation>
+<translation id="5532536403031755365">Een extra beveiligingslaag toevoegen tegen online dreigingen met Geoptimaliseerde beveiliging</translation>
 <translation id="5548606607480005320">Veiligheidscheck</translation>
 <translation id="5554520618550346933">Als je een wachtwoord gebruikt, waarschuwt Chrome je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
 <translation id="5555525474779371165">Je Safe Browsing-bescherming kiezen</translation>
@@ -1831,6 +1833,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9133397713400217035">Offline ontdekken</translation>
 <translation id="9143389653531441385">Aanmelden met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
+<translation id="9148564897242852377">Tabbladselectie aan-/uitzetten</translation>
 <translation id="9157212632995922070">Kies een account om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Alleen content delen</translation>
 <translation id="9161172953291434881">Vertrouw je deze site met je gegevens?</translation>

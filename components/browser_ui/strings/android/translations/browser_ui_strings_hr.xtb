@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Recite nam zašto ste dopustili kolačiće trećih strana i pomognite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Pošaljite svoje dojmove<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete zatražiti prikaz verzije web-lokacija za računala</translation>
 <translation id="1085696779717592361">Koristite Chrome prema zadanim postavkama</translation>
+<translation id="113098737392899175">Krećite se stranicama pomoću pokazivača za tekst kad je tipkovnica povezana</translation>
 <translation id="1178015372320901893">Donja tablica Moji prečaci</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -699,6 +700,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8803526663383843427">Kad je značajka uključena</translation>
 <translation id="8805385115381080995">Pregledavanje je brže jer je manja vjerojatnost da će web-lokacija tražiti da potvrdite da ste stvarna osoba</translation>
 <translation id="8816026460808729765">Blokiranje pristupa senzorima za web-lokacije</translation>
+<translation id="884765916894384048">Prelazak u pozadinu</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dopustiti kolačiće trećih strana, što znači da će biti manje zaštite pregledavanja, ali će značajke web-lokacije vjerojatnije funkcionirati prema očekivanjima.</translation>
 <translation id="8889294078294184559">Tijekom vašeg daljnjeg pregledavanja web-lokacije mogu provjeriti u Chromeu i od prethodne web-lokacije koju ste posjetili dobiti potvrdu da ste vjerojatno stvarna osoba</translation>

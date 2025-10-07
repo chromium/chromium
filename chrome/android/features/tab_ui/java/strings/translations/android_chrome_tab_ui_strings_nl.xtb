@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> tabbladgroep is niet meer beschikbaar}other{<ph name="TAB_GROUPS_COUNT_MANY" /> tabbladgroepen zijn niet meer beschikbaar}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tabblad gegroepeerd</translation>
+<translation id="1844381456014878100">Na 7 dagen inactiviteit</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="1909810060368225529">Opmerking: Wijzigingen in deze gedeelde tabbladgroep zijn zichtbaar voor iedereen. Iedereen kan wijzigingen aanbrengen in je gedeelde tabbladgroepen.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Tabblad vastzetten}other{Tabbladen vastzetten}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Toevoegen aan groep met de naam <ph name="TITLE_OF_GROUP" /> met <ph name="TAB_COUNT1" /> tabblad}other{Toevoegen aan groep met de naam <ph name="TITLE_OF_GROUP" /> met <ph name="TAB_COUNT1" /> tabbladen}}</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
 <translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
+<translation id="6957436309971790274">Na 21 dagen inactiviteit</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Tabbladgroep selecteren</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabblad delen}other{Tabbladen delen}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Informatie over deze winkel is op volledige hoogte geopend</translation>
 <translation id="8053770993984522566">Lijst met tabbladgroepen, geopend op halve hoogte</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
+<translation id="8138067144082174140">Na 14 dagen inactiviteit</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut geleden geüpdatet}other{<ph name="NUM_MINS_MANY" /> minuten geleden geüpdatet}}</translation>

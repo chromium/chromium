@@ -159,6 +159,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1726477445370128854">Du kan surfe og søke raskere når Chrome forhåndslaster sider du kanskje kommer til å besøke</translation>
 <translation id="1728803206919861584">Vil du lagre passnøkkelen utenfor Inkognito?</translation>
 <translation id="1732514748744806741">Vi sier fra hvis passordene dine blir utsatt for sikkerhetsbrudd</translation>
+<translation id="1737694586321018892">Få sterkest sikkerhet i Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 nettsted har sendt mange varsler i det siste}other{# nettsteder har sendt mange varsler i det siste}}</translation>
 <translation id="1749561566933687563">Synkroniser bokmerkene dine</translation>
 <translation id="1750238553597293878">Fortsett å bruke passordene i Google-kontoen din</translation>
@@ -974,6 +975,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="549660026907543296">Bli med som <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Felt nederst for nylig aktivitet</translation>
 <translation id="5526281268548144413">Kan ikke lukkes i flere vinduer</translation>
+<translation id="5532536403031755365">Legg til et ekstra lag med beskyttelse mot trusler på nettet med økt beskyttelse</translation>
 <translation id="5548606607480005320">Sikkerhetssjekk</translation>
 <translation id="5554520618550346933">Når du bruker et passord, advarer Chrome deg hvis passordet er publisert på nettet. Denne funksjonen holder passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="5555525474779371165">Velg Safe Browsing-beskyttelse</translation>

@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> gruppo di schede non più disponibile}other{<ph name="TAB_GROUPS_COUNT_MANY" /> gruppi di schede non più disponibili}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> scheda raggruppata</translation>
+<translation id="1844381456014878100">Dopo 7 giorni di inattività</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="1909810060368225529">Avviso: le modifiche a questo gruppo di schede condiviso sono visibili a tutti. Tutti possono apportare modifiche ai tuoi gruppi di schede condivisi</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Blocca scheda}other{Blocca schede}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Aggiungi al gruppo denominato <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> scheda}other{Aggiungi al gruppo denominato <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> schede}}</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
+<translation id="6957436309971790274">Dopo 21 giorni di inattività</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Seleziona un gruppo di schede.</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Condividi scheda}other{Condividi schede}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
 <translation id="8053770993984522566">Elenco dei gruppi di schede aperto nella parte inferiore dello schermo</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Aggiungi scheda al gruppo}other{Aggiungi schede al gruppo}}</translation>
+<translation id="8138067144082174140">Dopo 14 giorni di inattività</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Ultimo aggiornamento: <ph name="NUM_MINS_ONE" /> minuto fa}other{Ultimo aggiornamento: <ph name="NUM_MINS_MANY" /> minuti fa}}</translation>

@@ -1046,6 +1046,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5059136629401106827">U redu</translation>
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
 <translation id="5067540696062462445">Preuzimanja</translation>
+<translation id="5070314445039955096">Dopuštenja za web-lokaciju <ph name="SITE_DOMAIN" /> vratit će se na isključeno kad napustite ovu web-lokaciju.</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} od {count} načina plaćanja}one{{position} od {count} načina plaćanja}few{{position} od {count} načina plaćanja}other{{position} od {count} načina plaćanja}}</translation>
 <translation id="5075939510584558547">Spremite bez šifriranja</translation>
 <translation id="5076534614343816664">Praćenje cijene</translation>

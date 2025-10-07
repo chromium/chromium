@@ -200,6 +200,9 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="5671188105328420281">Nasveti za Chromium</translation>
 <translation id="5688047395118852662">Na tej kartici so prikazani predlogi, kako izkoristiti Chromium na najboljši način.</translation>
 <translation id="5700709190537129682">Chromium ne more preveriti vaših gesel</translation>
+<translation id="5731004036450828399">Če želite, da so ključi za dostop na varnem, morate najprej ustvariti obnovitveno kodo PIN.
+
+        Ključi za dostop so shranjeni v upravitelju gesel, kar pomeni, da jih lahko uporabljate v Chromiumu v poljubni napravi.</translation>
 <translation id="584550191241316896">Prijavljeni ste v Chromium</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5889847953983052353">Če je omogočeno:
@@ -267,6 +270,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Izbrani podatki so bili odstranjeni iz Chromiuma in sinhroniziranih naprav. V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na history.google.com.</translation>
 <translation id="7395825497086981028">Geslo bo shranjeno v Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Ta ključ za dostop bo shranjen v upravitelju gesel za <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Odprite Chromium</translation>
 <translation id="7531461704633548377">Iz Chromiuma</translation>
 <translation id="7554983317097061001">Nasvet za Chromium: Chromium premaknite v vrstico Dock</translation>
@@ -300,6 +304,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8254729934443216898">Raziščite nove funkcije, s katerimi boste lahko najbolje izkoristili Chromium.</translation>
 <translation id="8293572045658095405">Ste v anonimnem načinu Chromiuma</translation>
 <translation id="830951810931292870">Odpre vnesene URL-je v Chromiumu v anonimnem načinu.</translation>
+<translation id="8385503371191508165">Začnite shranjevati ključe za dostop z upraviteljem gesel</translation>
 <translation id="8390323835464055390">Prijavite se s shranjenimi gesli in ključi za dostop v kateri koli aplikaciji s samodejnim izpolnjevanjem prek Chromiuma</translation>
 <translation id="8409374867500149834">Uporabljate Chromiumovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}one{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}two{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuti. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}few{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minute. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}other{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minut. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}}</translation>

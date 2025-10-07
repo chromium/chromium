@@ -1236,6 +1236,7 @@
 <translation id="305162504811187366">Chrome 遠端桌面歷史記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
 <translation id="3052868890529250114">你通常可以經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>
+<translation id="3056660797732519147">「先買後付」錯誤畫面。鍵盤已隱藏。</translation>
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="3062655045399308513">刪除瀏覽資料…</translation>
 <translation id="3063453392496098461">無法安裝 VPN 背景服務。</translation>
@@ -1989,6 +1990,7 @@
 <translation id="4242981939686657948">如要使用進階的瀏覽記錄搜尋方式，請開啟</translation>
 <translation id="4244926541863471678">膜</translation>
 <translation id="4246517972543675653">海外留學</translation>
+<translation id="4250343410682686342">「先買後付」錯誤畫面已開啟，並顯示在整個畫面。</translation>
 <translation id="4250431568374086873">你與這個網站的連線可能有安全漏洞</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4250716950689692560">A4 x 4</translation>
@@ -2505,6 +2507,7 @@
 <translation id="5122786942953798871">信封 (棉紙)</translation>
 <translation id="5123063207673082822">週末</translation>
 <translation id="5123433949759960244">籃球</translation>
+<translation id="5124797626438336458">「先買後付」錯誤畫面已開啟，並顯示在畫面下半部。</translation>
 <translation id="5125575917473813637">編輯身分證件</translation>
 <translation id="5125751979347152379">網址無效。</translation>
 <translation id="512592033764059484">足球</translation>
@@ -4173,6 +4176,7 @@
 <translation id="7860345425589240791">請重新輸入<ph name="SIDE_OF_CARD" />的到期日和信用卡驗證碼</translation>
 <translation id="7862185352068345852">要離開網站嗎？</translation>
 <translation id="7865448901209910068">最佳速度</translation>
+<translation id="7865482168955081228">「先買後付」錯誤畫面已關閉。</translation>
 <translation id="7870281855125116701">已找到折扣</translation>
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
 <translation id="787226752901403048">登入 Chrome 即可分享及加入分頁群組，並與他人共同開發構想</translation>

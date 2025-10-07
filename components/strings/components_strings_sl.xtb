@@ -814,6 +814,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2321291402658100099">Upravljanje podatkov</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 okna}one{# okna}two{# oken}few{# oken}other{# oken}}</translation>
 <translation id="232390861414237658">Samodejno izpolnjevanje te kartice za nakupe v Chromu, ko je shranjena za uporabo z Googlom Pay</translation>
+<translation id="2326283484705860548">Zdaj lahko samodejno izpolnite več podatkov iz Google Denarnice</translation>
 <translation id="2328651992442742497">Dovoljeno (privzeto)</translation>
 <translation id="2328955282645810595">Gradbena in električna orodja</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, poteče <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2346319942568447007">Slika, ki ste jo kopirali</translation>
 <translation id="2347764072711098973">Plačujte v obrokih s storitvijo Affirm, Zip ali Klarna</translation>
 <translation id="2348509731468399833">Sledenje cenam je ustavljeno.</translation>
+<translation id="2348836501965732644">Upravljajte podatke ali izklopite te predloge v nastavitvah</translation>
 <translation id="2349957959687031096">Gumb za odpiranje anonimnega zavihka, aktivirajte, če želite odpreti nov anonimni zavihek za zasebno brskanje</translation>
 <translation id="2350796302381711542">Dovoli gostitelju <ph name="HANDLER_HOSTNAME" /> odpreti vse povezave za <ph name="PROTOCOL" /> namesto gostitelja <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />, ker uporablja varnostno potrdilo, ki mu Chromium ali konfiguracija sistema za šifriranje spletnega prometa ne zaupa. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
@@ -1237,6 +1239,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="305162504811187366">Zgodovina Oddaljenega namizja Chrome, vključno s časovnimi žigi, gostitelji in ID-ji sej odjemalca</translation>
 <translation id="3052868890529250114">S temi spletnimi mesti se običajno varno povežete, vendar Chrome varne povezave tokrat ni mogel uporabiti. Napadalec morda poskuša prisluškovati ali spremeniti vašo omrežno povezavo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Zaslon z napako za »Kupi zdaj, plačaj pozneje«. Tipkovnica je skrita.</translation>
 <translation id="3061707000357573562">Storitev za popravke</translation>
 <translation id="3062655045399308513">Izbriši podatke brskanja …</translation>
 <translation id="3063453392496098461">Namestitev storitev v ozadju za omrežje VPN ni uspela.</translation>
@@ -1452,6 +1455,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="340924996148642843">Primerjanje trenutno ni na voljo</translation>
 <translation id="3409896703495473338">Upravljanje varnostnih nastavitev</translation>
 <translation id="3411091017011773343">Naloži čez <ph name="HOURS" /> h</translation>
+<translation id="341134412449102894">Vaši podatki so shranjeni v aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Če uporabljate javno omrežje, je najvarneje, da to mesto obiščete pozneje. Tveganje je manjše, če uporabljate zaupanja vredno omrežje, denimo domače ali službeno omrežje Wi-Fi.</translation>
 <translation id="3414275587143250384">Porazdeljeno računalništvo in računalništvo v oblaku</translation>
 <translation id="3414952576877147120">Velikost:</translation>
@@ -1991,6 +1995,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4242981939686657948">Če želite zmogljivejši način iskanja po zgodovini brskanja, vklopite to:</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Študij v tujini</translation>
+<translation id="4250343410682686342">Zaslon z napako za »Kupi zdaj, plačaj pozneje« je odprt pri polni višini.</translation>
 <translation id="4250431568374086873">Povezava s tem mestom ni povsem varna.</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2512,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">Konec tedna</translation>
 <translation id="5123433949759960244">Košarkarska žoga</translation>
+<translation id="5124797626438336458">Zaslon z napako za »Kupi zdaj, plačaj pozneje« je odprt pri polovični višini.</translation>
 <translation id="5125575917473813637">Urejanje osebne izkaznice</translation>
 <translation id="5125751979347152379">Neveljaven spletni naslov.</translation>
 <translation id="512592033764059484">Nogomet</translation>
@@ -4175,6 +4181,7 @@ Dodatne podrobnosti:
 <translation id="7860345425589240791">Vnesite novi datum poteka veljavnosti in kodo CVC, ki je na <ph name="SIDE_OF_CARD" />.</translation>
 <translation id="7862185352068345852">Želite zapustiti spletno mesto?</translation>
 <translation id="7865448901209910068">Najboljša hitrost</translation>
+<translation id="7865482168955081228">Zaslon z napako za »Kupi zdaj, plačaj pozneje« je zaprt.</translation>
 <translation id="7870281855125116701">Popust je bil najden</translation>
 <translation id="7871445724586827387">Sprememba gesla za račun Google</translation>
 <translation id="787226752901403048">Prijavite se v Chrome, če želite deliti in se pridružiti skupinam zavihkov ter skupaj razvijati zamisli</translation>

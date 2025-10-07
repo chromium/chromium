@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">確定</translation>
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
 <translation id="5067540696062462445">下載</translation>
+<translation id="5070314445039955096">你離開「<ph name="SITE_DOMAIN" />」後，該網站的權限會重設為停用</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} 個付款方式，共 {count} 個}other{{position} 個付款方式，共 {count} 個}}</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
 <translation id="5076534614343816664">價格追蹤</translation>

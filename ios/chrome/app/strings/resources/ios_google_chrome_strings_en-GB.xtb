@@ -87,6 +87,9 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="2940565985148833945">Chrome tip: Search with Lens</translation>
 <translation id="2957447865124070833">Select <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Add bookmarks to Chrome</translation>
+<translation id="3027236223714901838">To keep your passkeys safe, you'll first need to create a recovery PIN.
+
+        Passkeys are saved in Google Password Manager, which lets you use them in Chrome on any device.</translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
 <translation id="3042447686908081308">Import to Chrome</translation>
 <translation id="3051521853355903257">Manage passwords in Chrome</translation>

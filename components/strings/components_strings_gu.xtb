@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">માહિતી મેનેજ કરો</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 વિન્ડો}one{# વિન્ડો}other{# વિન્ડો}}</translation>
 <translation id="232390861414237658">Google Pay વડે ઉપયોગ કરવા માટે જ્યારે આ કાર્ડની માહિતી સાચવેલી હોય, ત્યારે Chromeમાં કરેલી ખરીદીઓ માટે તેને ઑટોમૅટિક રીતે ભરો</translation>
+<translation id="2326283484705860548">હવે તમે Google Walletમાંથી ઑટોમૅટિક રીતે વધુ માહિતી ભરી શકો છો</translation>
 <translation id="2328651992442742497">મંજૂર (ડિફૉલ્ટ)</translation>
 <translation id="2328955282645810595">બાંધકામ અને પાવર ટૂલ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">તમે કૉપિ કરેલી છબી</translation>
 <translation id="2347764072711098973">સમય જતાં ચુકવણી કરવા માટે Affirm, Zip અથવા Klarnaનો ઉપયોગ કરો</translation>
 <translation id="2348509731468399833">કિંમતને ટ્રૅક કરવાનું બંધ કર્યું.</translation>
+<translation id="2348836501965732644">સેટિંગમાં જઈને તમારી માહિતી મેનેજ કરો અથવા આ સૂચનો બંધ કરો</translation>
 <translation id="2349957959687031096">'છૂપી વિન્ડો ખોલો' બટન, ખાનગી રીતે બ્રાઉઝ કરવા, નવી છૂપી વિન્ડો ખોલવા માટે સક્રિય કરો</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> ના બદલે <ph name="HANDLER_HOSTNAME" /> ને બધી <ph name="PROTOCOL" /> લિંક્સ ખોલવાની મંજૂરી આપીએ?</translation>
 <translation id="2351718832234620840">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે કારણ કે તે એવા સુરક્ષા સર્ટિફિકેટનો ઉપયોગ કરી રહ્યું છે જેનો Chromium અથવા વેબ ટ્રાફિક એન્ક્રિપ્શન માટેની તમારી સિસ્ટમની ગોઠવણી દ્વારા વિશ્વાસ કરવામાં આવતો નથી. આવું કદાચ કોઈ ખોટી ગોઠવણી અથવા કોઈ અટૅક કરનારાએ તમારા કનેક્શનમાં અવરોધ ઊભો કર્યો હોવાને કારણે થયું હોઈ શકે છે.</translation>
@@ -1237,6 +1239,7 @@
 <translation id="305162504811187366">ટાઇમસ્ટેમ્પ, હોસ્ટ અને ક્લાયન્ટ સત્ર ids સહિત Chrome રીમોટ ડેસ્કટૉપનો ઇતિહાસ</translation>
 <translation id="3052868890529250114">સામાન્ય રીતે તમને સુરક્ષિત રીતે બધી સાઇટ સાથે કનેક્ટ કરવામાં આવે છે, પરંતુ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ હુમલાખોર તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશ કરવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યો હોઈ શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
+<translation id="3056660797732519147">'હમણાં ખરીદો, પછીથી ચુકવો' ભૂલ બતાવતી સ્ક્રીન. કીબોર્ડ છુપાવેલું છે.</translation>
 <translation id="3061707000357573562">પૅચ સેવા</translation>
 <translation id="3062655045399308513">બ્રાઉઝિંગ ડેટા ડિલીટ કરી રહ્યાં છીએ...</translation>
 <translation id="3063453392496098461">VPNની બૅકગ્રાઉન્ડ સેવાઓનું ઇન્સ્ટૉલેશન નિષ્ફળ થયું.</translation>
@@ -1989,6 +1992,7 @@
 <translation id="4242981939686657948">તમારા બ્રાઉઝિંગ ઇતિહાસને શોધવાની એક વધુ શક્તિશાળી રીત માટે, ચાલુ કરો</translation>
 <translation id="4244926541863471678">ફિલ્મ</translation>
 <translation id="4246517972543675653">વિદેશમાં અભ્યાસ</translation>
+<translation id="4250343410682686342">'હમણાં ખરીદો, પછીથી ચુકવો' ભૂલ બતાવતી સ્ક્રીન સંપૂર્ણ ઊંચાઈએ ખુલી છે.</translation>
 <translation id="4250431568374086873">આ સાઇટ પરનું તમારું કનેક્શન પૂર્ણપણે સુરક્ષિત નથી</translation>
 <translation id="4250680216510889253">નહીં</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2505,6 +2509,7 @@
 <translation id="5122786942953798871">એન્વલપ (કૉટન)</translation>
 <translation id="5123063207673082822">વીકએન્ડ</translation>
 <translation id="5123433949759960244">બાસ્કેટબૉલ</translation>
+<translation id="5124797626438336458">'હમણાં ખરીદો, પછીથી ચુકવો' ભૂલ બતાવતી સ્ક્રીન અડધી ઊંચાઈએ ખુલી છે.</translation>
 <translation id="5125575917473813637">ઓળખ કાર્ડમાં ફેરફાર કરો</translation>
 <translation id="5125751979347152379">અમાન્ય URL.</translation>
 <translation id="512592033764059484">સૉકર</translation>
@@ -4171,6 +4176,7 @@
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> પર તમારી નવી સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>
 <translation id="7862185352068345852">સાઇટ છોડવી છે?</translation>
 <translation id="7865448901209910068">શ્રેષ્ઠ ઝડપ</translation>
+<translation id="7865482168955081228">'હમણાં ખરીદો, પછીથી ચુકવો' ભૂલ બતાવતી સ્ક્રીન બંધ છે.</translation>
 <translation id="7870281855125116701">ડિસ્કાઉન્ટ મળ્યું</translation>
 <translation id="7871445724586827387">Google એકાઉન્ટનો તમારો પાસવર્ડ બદલો</translation>
 <translation id="787226752901403048">ટૅબના ગ્રૂપ શેર કરવા અને તેમાં જોડાવા માટે Chrome માં સાઇન ઇન કરો અને સાથે મળીને આઇડિયા પર કાર્ય કરો</translation>

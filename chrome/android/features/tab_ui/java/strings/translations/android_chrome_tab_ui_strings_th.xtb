@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{กลุ่มแท็บ <ph name="TAB_GROUPS_COUNT_ONE" /> กลุ่มใช้งานไม่ได้อีกต่อไป}other{กลุ่มแท็บ <ph name="TAB_GROUPS_COUNT_MANY" /> กลุ่มใช้งานไม่ได้อีกต่อไป}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">จัดกลุ่มไว้ <ph name="TABS_COUNT_ONE" /> แท็บ</translation>
+<translation id="1844381456014878100">หลังจากไม่มีการใช้งาน 7 วัน</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="1909810060368225529">ประกาศ: ทุกคนจะเห็นการเปลี่ยนแปลงที่เกิดขึ้นกับกลุ่มแท็บที่แชร์นี้ ทุกคนจะเปลี่ยนแปลงกลุ่มแท็บที่แชร์ของคุณได้</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ปักหมุดแท็บ}other{ปักหมุดแท็บ}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{เพิ่มไปยังกลุ่มชื่อ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT1" /> แท็บ}other{เพิ่มไปยังกลุ่มชื่อ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT1" /> แท็บ}}</translation>
 <translation id="6818926723028410516">เลือกรายการ</translation>
 <translation id="6856809498882026482">ซ่อนโหมดเลือกหลายรายการ</translation>
+<translation id="6957436309971790274">หลังจากไม่มีการใช้งาน 21 วัน</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="709473454666962555">เลือกกลุ่มแท็บ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{แชร์แท็บ}other{แชร์แท็บ}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">เปิดข้อมูลเกี่ยวกับร้านนี้ที่ระดับเต็มความสูงของหน้าจอแล้ว</translation>
 <translation id="8053770993984522566">รายการกลุ่มแท็บที่เปิดอยู่แบบครึ่งหน้า</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่ม}other{เพิ่มแท็บไปยังกลุ่ม}}</translation>
+<translation id="8138067144082174140">หลังจากไม่มีการใช้งาน 14 วัน</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="8205266828577616993">เลื่อนแท็บขึ้น</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{อัปเดตเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{อัปเดตเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>

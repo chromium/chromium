@@ -159,6 +159,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1726477445370128854">Du kan browse og søge hurtigere, når Chrome forudindlæser sider, som Chrome tror, du kunne være interesseret i at besøge</translation>
 <translation id="1728803206919861584">Vil du gemme adgangsnøglen uden for inkognito?</translation>
 <translation id="1732514748744806741">Hvis dine adgangskoder kompromitteres, kontakter vi dig</translation>
+<translation id="1737694586321018892">Få Chromes stærkeste beskyttelse</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 website har for nylig sendt mange notifikationer}one{# website har for nylig sendt mange notifikationer}other{# websites har for nylig sendt mange notifikationer}}</translation>
 <translation id="1749561566933687563">Synkroniser dine bogmærker</translation>
 <translation id="1750238553597293878">Fortsæt med at bruge adgangskoderne på din Google-konto</translation>
@@ -974,6 +975,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="549660026907543296">Deltag som <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Felt i bunden med den seneste aktivitet</translation>
 <translation id="5526281268548144413">Kan ikke lukkes i flere vinduer</translation>
+<translation id="5532536403031755365">Bliv bedre sikret mod onlinetrusler med forbedret beskyttelse</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
 <translation id="5554520618550346933">Når du bruger en adgangskode, underretter Chrome dig, hvis den er blevet afsløret online. I forbindelse med dette krypteres dine adgangskoder og brugernavne, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>

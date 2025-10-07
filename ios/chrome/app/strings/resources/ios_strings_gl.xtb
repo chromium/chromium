@@ -1046,6 +1046,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
+<translation id="5070314445039955096">Os permisos de <ph name="SITE_DOMAIN" /> volverán desactivarse cando saias deste sitio</translation>
 <translation id="507187271399539513">{count,plural, =1{Método de pago {position} de {count}}other{Método de pago {position} de {count}}}</translation>
 <translation id="5075939510584558547">Gardar sen encriptación</translation>
 <translation id="5076534614343816664">Seguimento de prezos</translation>

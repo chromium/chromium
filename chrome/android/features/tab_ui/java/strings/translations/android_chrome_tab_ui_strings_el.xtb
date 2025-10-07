@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ομάδα καρτελών δεν είναι πλέον διαθέσιμη}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ομάδες καρτελών δεν είναι πλέον διαθέσιμες}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Μάθετε περισσότερα<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Ομαδοποιήθηκε <ph name="TABS_COUNT_ONE" /> καρτέλα</translation>
+<translation id="1844381456014878100">Μετά από 7 ημέρες αδράνειας</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="1909810060368225529">Σημείωση: Οι αλλαγές σε αυτή την κοινόχρηστη ομάδα καρτελών είναι ορατές σε όλους. Όλοι μπορούν να κάνουν αλλαγές στις κοινόχρηστες ομάδες καρτελών</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Καρφίτσωμα καρτέλας}other{Καρφίτσωμα καρτελών}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Προσθήκη στην ομάδα με όνομα <ph name="TITLE_OF_GROUP" /> και <ph name="TAB_COUNT1" /> καρτέλα}other{Προσθήκη στην ομάδα με όνομα <ph name="TITLE_OF_GROUP" /> και <ph name="TAB_COUNT1" /> καρτέλες}}</translation>
 <translation id="6818926723028410516">Επιλέξτε στοιχεία</translation>
 <translation id="6856809498882026482">Απόκρυψη λειτουργίας πολλαπλής επιλογής</translation>
+<translation id="6957436309971790274">Μετά από 21 ημέρες αδράνειας</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, <ph name="COLOR_NAME" /> χρώμα.}other{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, <ph name="COLOR_NAME" /> χρώμα.}}</translation>
 <translation id="709473454666962555">Επιλογή ομάδας καρτελών</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Κοινοποίηση καρτέλας}other{Κοινοποίηση καρτελών}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Άνοιγμα σε πλήρες ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>
 <translation id="8053770993984522566">Η λίστα ομάδων καρτελών άνοιξε στο μισό ύψος</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Προσθήκη καρτέλας σε ομάδα}other{Προσθήκη καρτελών σε ομάδα}}</translation>
+<translation id="8138067144082174140">Μετά από 14 ημέρες αδράνειας</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Ανάπτυξη ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Μετακίνηση καρτέλας επάνω</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Έγινε ενημέρωση πριν από <ph name="NUM_MINS_ONE" /> λεπτό}other{Έγινε ενημέρωση πριν από <ph name="NUM_MINS_MANY" /> λεπτά}}</translation>

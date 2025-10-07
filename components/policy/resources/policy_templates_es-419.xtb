@@ -8219,6 +8219,14 @@ no funcionarán y solo usarán la ubicación basada en <ph name="IP" />
 en la pantalla de <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Envía información sobre el sistema</translation>
 <translation id="6339355882150329269">No considerar al usuario como inactivo mientras se reproduce un video</translation>
+<translation id="6347110299837147365">Esta política permite que los administradores encripten la caché HTTP del navegador en el disco.
+Actualmente, solo se admite en Windows.
+
+Si habilitas esta política, se encriptará la caché del navegador.
+
+Si la inhabilitas o no la estableces, no se encriptará la caché del navegador.
+
+La encriptación de la caché del navegador puede afectar el rendimiento.</translation>
 <translation id="6352714113109004581">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen qué sitios pueden pedir a los usuarios permiso para acceder a un dispositivo HID.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.

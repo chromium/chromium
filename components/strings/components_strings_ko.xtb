@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">정보 관리</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{창 1개}other{창 #개}}</translation>
 <translation id="232390861414237658">Google Pay에서 사용하도록 저장하면 Chrome에서 구매 시 이 카드를 자동 완성합니다.</translation>
+<translation id="2326283484705860548">이제 Google 월렛에서 더 많은 정보를 자동 완성할 수 있습니다</translation>
 <translation id="2328651992442742497">허용(기본값)</translation>
 <translation id="2328955282645810595">건축 도구 및 공구</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, 만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">복사한 이미지</translation>
 <translation id="2347764072711098973">Affirm, Zip 또는 Klarna를 사용하여 할부로 결제하세요</translation>
 <translation id="2348509731468399833">가격 추적이 중지됨</translation>
+<translation id="2348836501965732644">설정에서 정보를 관리하거나 이러한 추천을 사용 중지하세요.</translation>
 <translation id="2349957959687031096">시크릿 탭 열기 버튼, 새 시크릿 탭을 열어 비공개로 탐색하려면 활성화하세요.</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" />에서 <ph name="REPLACED_HANDLER_TITLE" /> 대신 모든 <ph name="PROTOCOL" /> 링크를 열도록 허용하시겠습니까?</translation>
 <translation id="2351718832234620840">이 서버가 Chromium이나 웹 트래픽 암호화를 위한 시스템 구성에서 신뢰하지 않는 보안 인증서를 사용하고 있기 때문에 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
@@ -1237,6 +1239,7 @@
 <translation id="305162504811187366">타임스탬프, 호스트, 클라이언트 세션 ID를 포함한 Chrome 원격 데스크톱 기록</translation>
 <translation id="3052868890529250114">일반적으로 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
+<translation id="3056660797732519147">선구매 후지불 오류 화면입니다. 키보드가 숨겨졌습니다.</translation>
 <translation id="3061707000357573562">서비스 패치</translation>
 <translation id="3062655045399308513">인터넷 사용 기록 삭제…</translation>
 <translation id="3063453392496098461">VPN 백그라운드 서비스를 설치할 수 없습니다.</translation>
@@ -1991,6 +1994,7 @@
 <translation id="4242981939686657948">방문 기록 검색을 강화하려면 다음을 사용 설정해 주세요.</translation>
 <translation id="4244926541863471678">필름</translation>
 <translation id="4246517972543675653">해외 유학</translation>
+<translation id="4250343410682686342">선구매 후지불 오류 화면이 전체 높이로 열렸습니다.</translation>
 <translation id="4250431568374086873">이 사이트의 보안 연결(HTTPS)은 완벽하지 않습니다.</translation>
 <translation id="4250680216510889253">아니요</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2511,7 @@
 <translation id="5122786942953798871">봉투(면)</translation>
 <translation id="5123063207673082822">주말</translation>
 <translation id="5123433949759960244">농구공</translation>
+<translation id="5124797626438336458">선구매 후지불 오류 화면이 절반 높이로 열렸습니다.</translation>
 <translation id="5125575917473813637">신분증 수정</translation>
 <translation id="5125751979347152379">잘못된 URL입니다.</translation>
 <translation id="512592033764059484">축구</translation>
@@ -4174,6 +4179,7 @@
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />의 새 만료일과 CVC를 입력하세요.</translation>
 <translation id="7862185352068345852">사이트에서 나가시겠습니까?</translation>
 <translation id="7865448901209910068">최고 속도</translation>
+<translation id="7865482168955081228">선구매 후지불 오류 화면이 닫혔습니다.</translation>
 <translation id="7870281855125116701">할인 제품 찾음</translation>
 <translation id="7871445724586827387">Google 계정 비밀번호 변경</translation>
 <translation id="787226752901403048">Chrome에 로그인하여 탭 그룹을 공유하고, 탭 그룹에 참여하며, 아이디어를 함께 작업하세요.</translation>

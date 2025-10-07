@@ -1237,6 +1237,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="305162504811187366">loggen for Chrome Eksternt skrivebord, inkludert tidsstempler, verter og klientøkt-ID-er</translation>
 <translation id="3052868890529250114">Du pleier å ha en sikker tilkobling til nettsteder, men Chrome kunne ikke bruke en sikker tilkobling denne gangen. Det kan hende at angripere prøver å tyvlytte på eller modifisere nettverkstilkoblingen din. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Feilskjerm for Kjøp nå, betal senere. Tastaturet er skjult.</translation>
 <translation id="3061707000357573562">Feilrettingstjeneste</translation>
 <translation id="3062655045399308513">Slett nettlesingsdata…</translation>
 <translation id="3063453392496098461">Installasjonen av VPN-bakgrunnstjenester mislyktes.</translation>
@@ -1991,6 +1992,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4242981939686657948">For å få en bedre måte å søke i nettleserloggen på, slå på</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Utenlandsstudier</translation>
+<translation id="4250343410682686342">Feilskjermen for Kjøp nå, betal senere er åpnet i full høyde.</translation>
 <translation id="4250431568374086873">Tilkoblingen til dette nettstedet er ikke helt sikker</translation>
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5122786942953798871">Konvolutt (bomull)</translation>
 <translation id="5123063207673082822">Helg</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5124797626438336458">Feilskjermen for Kjøp nå, betal senere er åpnet i halv høyde.</translation>
 <translation id="5125575917473813637">Endre ID-kortet</translation>
 <translation id="5125751979347152379">Ugyldig nettadresse.</translation>
 <translation id="512592033764059484">Fotball</translation>
@@ -4174,6 +4177,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7860345425589240791">Skriv inn den nye utløpsdatoen og verifiseringskoden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vil du forlate nettstedet?</translation>
 <translation id="7865448901209910068">Beste hastighet</translation>
+<translation id="7865482168955081228">Feilskjermen for Kjøp nå, betal senere er lukket.</translation>
 <translation id="7870281855125116701">Fant en rabatt</translation>
 <translation id="7871445724586827387">Endre passordet for Google-kontoen din</translation>
 <translation id="787226752901403048">Logg på Chrome for å dele og bli med i fanegrupper og samarbeide om ideer</translation>

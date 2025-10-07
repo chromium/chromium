@@ -199,6 +199,9 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="5671188105328420281">Chromium mashlahatlari</translation>
 <translation id="5688047395118852662">Bu bildirgi Chromiumning barcha imkoniyatlaridan foydalanish yuzasidan takliflar chiqaradi.</translation>
 <translation id="5700709190537129682">Chromium parollaringizni tekshira olmadi</translation>
+<translation id="5731004036450828399">Kirish kodlarini xavfsiz saqlash uchun avval zaxiraviy PIN kod yaratish kerak.
+
+        Kirish kodlari Parollar menejerida saqlanadi va ulardan Chromiumda istalgan qurilmada foydalanish imkonini beradi.</translation>
 <translation id="584550191241316896">Chromium hisobiga kirilgan</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5889847953983052353">Yoniq boʻlsa:
@@ -266,6 +269,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Tanlangan ma’lumotlar Chromium va sinxronlangan qurilmalardan o‘chirildi. Google hisobingiz orqali amalga oshirilgan qidiruvlar, brauzer tarixi va boshqa internetdagi faoliyatingizni history.google.com sahifasi orqali ko‘rishingiz mumkin.</translation>
 <translation id="7395825497086981028">Parolingiz Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
+<translation id="7434848749522628428">Bu kirish kodi Parollar menejerida <ph name="USER_EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="7504829997542308412">Chromiumni oching</translation>
 <translation id="7531461704633548377">Chromiumdan</translation>
 <translation id="7554983317097061001">Chromium maslahati: Chromiumni ekranga mahkamlang</translation>
@@ -299,6 +303,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8254729934443216898">Chromiumdan unumli foydalanishga yordam beruvchi yangi funksiyalar bilan tanishing.</translation>
 <translation id="8293572045658095405">Siz Chromium Inkognito rejimidasiz</translation>
 <translation id="830951810931292870">Kiritilgan URL manzillar Chromium brauzerida Inkognito rejimda ochiladi.</translation>
+<translation id="8385503371191508165">Kirish kalitlarini Parollar menejerida saqlashni boshlang</translation>
 <translation id="8390323835464055390">Chromium avtomatik kiritishi orqali istalgan ilovada saqlangan parol va kalitlar bilan hisobga kiring</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}}</translation>

@@ -1046,6 +1046,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5059136629401106827">D'acord</translation>
 <translation id="5062321486222145940">Instal. de Google Drive</translation>
 <translation id="5067540696062462445">Baixades</translation>
+<translation id="5070314445039955096">Els permisos per a "<ph name="SITE_DOMAIN" />" es restabliran a desactivats quan surtis d'aquest lloc web</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} d’{count} forma de pagament}other{{position} de {count} formes de pagament}}</translation>
 <translation id="5075939510584558547">Desa sense encriptació</translation>
 <translation id="5076534614343816664">Seguiment de preus</translation>

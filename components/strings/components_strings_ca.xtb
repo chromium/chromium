@@ -1237,6 +1237,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="305162504811187366">Historial de l'Escriptori remot de Chrome, inclosos els amfitrions, les marques de temps i els identificadors de sessió de client</translation>
 <translation id="3052868890529250114">Normalment et connectes a llocs web de manera segura, però aquesta vegada Chrome no ha pogut utilitzar una connexió segura. És possible que un atacant estigui provant d'escoltar clandestinament o de modificar la connexió de xarxa. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Pantalla d'error de Compra ara, paga després. El teclat està amagat.</translation>
 <translation id="3061707000357573562">Servei de pedaç</translation>
 <translation id="3062655045399308513">Suprimeix les dades de navegació...</translation>
 <translation id="3063453392496098461">No s'han pogut instal·lar els serveis en segon pla de la VPN.</translation>
@@ -1991,6 +1992,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4242981939686657948">Per fer cerques a l'historial de navegació d'una manera més eficaç, activa</translation>
 <translation id="4244926541863471678">Pel·lícula</translation>
 <translation id="4246517972543675653">Estudis a l'estranger</translation>
+<translation id="4250343410682686342">La pantalla d'error de Compra ara, paga després està oberta a alçada completa.</translation>
 <translation id="4250431568374086873">La connexió amb aquest lloc web no és del tot segura</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5122786942953798871">Sobre (cotó)</translation>
 <translation id="5123063207673082822">Cap de setmana</translation>
 <translation id="5123433949759960244">Pilota de bàsquet</translation>
+<translation id="5124797626438336458">La pantalla d'error de Compra ara, paga després està oberta a mitja alçada.</translation>
 <translation id="5125575917473813637">Edita el document d'identitat</translation>
 <translation id="5125751979347152379">URL no vàlid.</translation>
 <translation id="512592033764059484">Futbol</translation>
@@ -4175,6 +4178,7 @@ Detalls addicionals:
 <translation id="7860345425589240791">Introdueix la nova data de caducitat i el CVC que figura al <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vols sortir del lloc web?</translation>
 <translation id="7865448901209910068">Velocitat òptima</translation>
+<translation id="7865482168955081228">La pantalla d'error de Compra ara, paga després està tancada.</translation>
 <translation id="7870281855125116701">S'ha trobat un descompte</translation>
 <translation id="7871445724586827387">Canvia la contrasenya del teu Compte de Google.</translation>
 <translation id="787226752901403048">Inicia la sessió a Chrome per compartir grups de pestanyes, unir-t'hi i col·laborar en idees</translation>

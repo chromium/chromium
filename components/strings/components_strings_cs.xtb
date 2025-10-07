@@ -1237,6 +1237,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="305162504811187366">Historie Vzdálené plochy Chrome, včetně časových razítek, hostitelů a ID relací klientů</translation>
 <translation id="3052868890529250114">K webům se obvykle připojujete zabezpečeně, ale tentokrát Chrome zabezpečené připojení použít nemohl. Je možné, že se nějaký útočník pokouší sledovat nebo upravovat vaše připojení k síti. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">U produktu <ph name="PRODUCT_NAME" /> klesla cena o <ph name="PRICE_DROP" /></translation>
+<translation id="3056660797732519147">Obrazovka s chybou procesu Koupit teď, zaplatit později. Klávesnice je skrytá.</translation>
 <translation id="3061707000357573562">Služba oprav</translation>
 <translation id="3062655045399308513">Vymazat údaje o prohlížení…</translation>
 <translation id="3063453392496098461">Instalace služeb VPN na pozadí selhala.</translation>
@@ -1987,6 +1988,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4242981939686657948">Pro lepší vyhledávání v historii prohlížení zapněte možnost</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Studium v zahraničí</translation>
+<translation id="4250343410682686342">Spodní panel chyby procesu „Koupit teď, zaplatit později“ otevřený na celou výšku.</translation>
 <translation id="4250431568374086873">Spojení s tímto webem není plně zabezpečené</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2503,6 +2505,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5122786942953798871">Obálka (bavlněná)</translation>
 <translation id="5123063207673082822">Víkend</translation>
 <translation id="5123433949759960244">Basketbal</translation>
+<translation id="5124797626438336458">Spodní panel chyby procesu „Koupit teď, zaplatit později“ otevřený na polovinu výšky.</translation>
 <translation id="5125575917473813637">Upravit průkaz totožnosti</translation>
 <translation id="5125751979347152379">Neplatná adresa URL.</translation>
 <translation id="512592033764059484">Fotbal</translation>
@@ -4169,6 +4172,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7860345425589240791">Zadejte nové datum konce platnosti a kód CVC na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Opustit web?</translation>
 <translation id="7865448901209910068">Nejlepší rychlost</translation>
+<translation id="7865482168955081228">Spodní panel chyby procesu „Koupit teď, zaplatit později“ je zavřený.</translation>
 <translation id="7870281855125116701">Byla nalezena sleva</translation>
 <translation id="7871445724586827387">Změnit heslo účtu Google</translation>
 <translation id="787226752901403048">Přihlaste se do Chromu, abyste mohli sdílet skupiny karet, připojovat se k nim a spolupracovat na různých nápadech</translation>

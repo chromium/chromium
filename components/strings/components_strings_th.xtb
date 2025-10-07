@@ -1239,6 +1239,7 @@
 <translation id="305162504811187366">ประวัติการใช้ Chrome Remote Desktop รวมถึงการประทับเวลา โฮสต์ และรหัสเซสชันไคลเอ็นต์</translation>
 <translation id="3052868890529250114">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์ต่างๆ อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">หน้าจอข้อผิดพลาดของ "ซื้อก่อน จ่ายทีหลัง" แป้นพิมพ์ซ่อนอยู่</translation>
 <translation id="3061707000357573562">แพตช์บริการ</translation>
 <translation id="3062655045399308513">ลบข้อมูลการท่องเว็บ...</translation>
 <translation id="3063453392496098461">ติดตั้งบริการ VPN ที่ทำงานอยู่เบื้องหลังไม่สำเร็จ</translation>
@@ -1992,6 +1993,7 @@
 <translation id="4242981939686657948">หากต้องการค้นหาประวัติการท่องเว็บด้วยวิธีที่มีประสิทธิภาพมากขึ้น ให้เปิด</translation>
 <translation id="4244926541863471678">ภาพยนตร์</translation>
 <translation id="4246517972543675653">การศึกษาต่อต่างประเทศ</translation>
+<translation id="4250343410682686342">หน้าจอข้อผิดพลาดของ "ซื้อก่อน จ่ายทีหลัง" เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="4250431568374086873">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัยโดยสมบูรณ์</translation>
 <translation id="4250680216510889253">ไม่</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2508,6 +2510,7 @@
 <translation id="5122786942953798871">ซอง (กระดาษใยฝ้าย)</translation>
 <translation id="5123063207673082822">วันสุดสัปดาห์</translation>
 <translation id="5123433949759960244">บาสเกตบอล</translation>
+<translation id="5124797626438336458">หน้าจอข้อผิดพลาดของ "ซื้อก่อน จ่ายทีหลัง" เปิดอยู่ครึ่งหน้าจอ</translation>
 <translation id="5125575917473813637">แก้ไขบัตรประจำตัว</translation>
 <translation id="5125751979347152379">URL ไม่ถูกต้อง</translation>
 <translation id="512592033764059484">ฟุตบอล</translation>
@@ -4176,6 +4179,7 @@
 <translation id="7860345425589240791">ป้อนวันที่หมดอายุใหม่และ CVC ที่<ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">ออกจากเว็บไซต์ไหม</translation>
 <translation id="7865448901209910068">เร็วที่สุด</translation>
+<translation id="7865482168955081228">หน้าจอข้อผิดพลาดของ "ซื้อก่อน จ่ายทีหลัง" ปิดอยู่</translation>
 <translation id="7870281855125116701">พบส่วนลด</translation>
 <translation id="7871445724586827387">เปลี่ยนรหัสผ่านของบัญชี Google</translation>
 <translation id="787226752901403048">ลงชื่อเข้าใช้ Chrome เพื่อแชร์และเข้าร่วมกลุ่มแท็บ รวมถึงทำงานร่วมกันเพื่อหาไอเดีย</translation>

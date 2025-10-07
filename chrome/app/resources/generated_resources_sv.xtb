@@ -1001,6 +1001,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="166278006618318542">Mottagarens publika nyckelalgoritm</translation>
 <translation id="1662801900924515589"><ph name="APP" /> har installerats</translation>
 <translation id="1663698992894057019">Uppgradera till en ny Chromebook för den senaste säkerheten och mjukvaran</translation>
+<translation id="1664497218584335032">Webbplatsen vill öppna den här länken i en app.</translation>
 <translation id="166454475160289583">Får inte åsidosätta indata från tangentbordet</translation>
 <translation id="1665328953287874063">Lås upp <ph name="DEVICE_TYPE" /> med ett lösenord eller en pinkod</translation>
 <translation id="1665859804801131136">Expressionism</translation>
@@ -4945,6 +4946,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="437809255587011096">Läs upp textformat</translation>
 <translation id="4378154925671717803">Mobil</translation>
 <translation id="4378308539633073595">Scrolla framåt</translation>
+<translation id="4378363201814870400">Hantera uppgifter för autofyll för snabbare surfning – information som lösenord, betalningsmetoder, adresser och ID-kort</translation>
 <translation id="4378551569595875038">Ansluter ...</translation>
 <translation id="4378556263712303865">Enhetsrekvirering</translation>
 <translation id="4378589147979399051">Styr muspekaren med det primära tangentbordet</translation>
@@ -6561,10 +6563,12 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5517304475148761050">Den här appen kräver åtkomst till Play Butik</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Öppna alltid <ph name="PROTOCOL_SCHEME" />-länkar i den här appen</translation>
 <translation id="5520605865175417976">Ta bort åtgärd <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Är det här den startsida du väntade dig?</translation>
 <translation id="5522156646677899028">Det förekommer en allvarlig säkerhetsbrist i det här tillägget.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ett tillägg har installerats av administratören}other{# tillägg har installerats av administratören}}</translation>
+<translation id="5523203511530504754">Öppna <ph name="PROTOCOL_SCHEME" />-länkar i <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Webbplatser du lägger till är alltid aktiva och minne frigörs inte från dem</translation>
 <translation id="5523558474028191231">Namnet kan innehålla bokstäver, siffror och specialtecken och får vara högst <ph name="MAX_CHARACTER_COUNT" /> tecken långt</translation>
 <translation id="5526745900034778153">Logga in igen för att fortsätta synkroniseringen</translation>
@@ -9593,6 +9597,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7663859337051362114">Lägg till eSIM-profil</translation>
 <translation id="76641554187607347">Inget tangentbord har anslutits</translation>
 <translation id="7664442418269614729">Använd det här kortet på din iPhone</translation>
+<translation id="7664822217939981459">Välj en app för att öppna <ph name="PROTOCOL_SCHEME" />-länken</translation>
 <translation id="7665082356120621510">Reservera storlek</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
 <translation id="7665445336029073980">Fullständig nedladdningshistorik</translation>
@@ -11215,6 +11220,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8750786237117206586">Hantera ljudinställningar för ChromeOS Flex</translation>
 <translation id="8751034568832412184">Skola</translation>
 <translation id="8751329102746373229">Från administratören</translation>
+<translation id="875242763254084885">Webbplatsen <ph name="ORIGIN" /> vill öppna den här länken i en app.</translation>
 <translation id="8752451679755290210">Flytta mellan objekt automatiskt</translation>
 <translation id="8753948258138515839">Med appen Filer kommer du snabbt åt filer som du har sparat på Google Drive, externa lagringsenheter eller din ChromeOS Flex-enhet.</translation>
 <translation id="8754200782896249056">&lt;p&gt;När <ph name="PRODUCT_NAME" /> körs i en skrivbordsmiljö som stöds används datorns proxyinställningar. Det kan hända att din dator inte stöds eller att det uppstod ett problem vid start av systemkonfigurationen.&lt;/p&gt;

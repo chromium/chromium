@@ -814,6 +814,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2321291402658100099">Upravljajte informacijama</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 prozora}one{# prozora}few{# prozora}other{# prozora}}</translation>
 <translation id="232390861414237658">Podaci o kartici se automatski popunjavaju za kupovine izvršene u Chromeu kada je kartica sačuvana za korištenje putem Google Paya</translation>
+<translation id="2326283484705860548">Sada možete automatski popunjavati više informacija iz Google Novčanika</translation>
 <translation id="2328651992442742497">Dozvoljeno je (zadano)</translation>
 <translation id="2328955282645810595">Građevinski i električni alati</translation>
 <translation id="2330137317877982892">Kartica <ph name="CREDIT_CARD" />, ističe <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2346319942568447007">Slika koju ste kopirali</translation>
 <translation id="2347764072711098973">Korištenje Affirma, Zipa ili Klarne za plaćanje u ratama</translation>
 <translation id="2348509731468399833">Praćenje cijene je zaustavljeno.</translation>
+<translation id="2348836501965732644">Upravljajte informacijama ili isključite ove prijedloge u Postavkama</translation>
 <translation id="2349957959687031096">Dugme Otvori anonimnu karticu, aktivirajte da otvorite novu anonimnu karticu i da privatno pregledate</translation>
 <translation id="2350796302381711542">Dozvoliti da <ph name="HANDLER_HOSTNAME" /> otvori sve linkove za <ph name="PROTOCOL" /> umjesto obrađivača <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Server nije mogao dokazati da je <ph name="DOMAIN" /> jer koristi sigurnosni certifikat koji Chromium ili konfiguracija sistema za šifriranje web saobraćaja ne smatraju pouzdanim. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
@@ -1237,6 +1239,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="305162504811187366">Historija Chrome udaljenog računara, uključujući vremenske oznake, host računare i ID-ove sesija klijenta</translation>
 <translation id="3052868890529250114">Inače se sigurno povezujete s ovom web lokacijom, ali Chrome ovaj put nije mogao koristiti sigurnu vezu. Moguće je da napadač pokušava prisluškivati ili izmijeniti vašu mrežnu vezu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Pad cijene od <ph name="PRICE_DROP" /> za proizvod <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Ekran greške naknadnog plaćanja. Tastatura je sakrivena.</translation>
 <translation id="3061707000357573562">Usluga za zakrpe</translation>
 <translation id="3062655045399308513">Izbrišite podatke pregledanja…</translation>
 <translation id="3063453392496098461">Instalacija VPN usluga u pozadini nije uspjela.</translation>
@@ -1991,6 +1994,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4242981939686657948">Za napredniji način pretraživanja historije pregledanja uključite</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Studiranje u inostranstvu</translation>
+<translation id="4250343410682686342">Ekran greške naknadnog plaćanja je otvoren u punoj visini.</translation>
 <translation id="4250431568374086873">Veza s ovom web lokacijom nije u potpunosti sigurna</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2511,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5122786942953798871">Koverta (pamuk)</translation>
 <translation id="5123063207673082822">Vikend</translation>
 <translation id="5123433949759960244">Košarka</translation>
+<translation id="5124797626438336458">Ekran greške naknadnog plaćanja je otvoren na pola visine.</translation>
 <translation id="5125575917473813637">Uredite ličnu karticu</translation>
 <translation id="5125751979347152379">Nevažeći URL.</translation>
 <translation id="512592033764059484">Fudbal</translation>
@@ -4175,6 +4180,7 @@ Dodatni detalji:
 <translation id="7860345425589240791">Unesite novi datum isteka i CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="7862185352068345852">Napustiti web lokaciju?</translation>
 <translation id="7865448901209910068">Najbolja brzina</translation>
+<translation id="7865482168955081228">Ekran greške naknadnog plaćanja je zatvoren.</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promijenite lozinku za Google račun</translation>
 <translation id="787226752901403048">Prijavite se u Chrome da dijelite grupe kartica, pridružujete im se i sarađujete na idejama</translation>

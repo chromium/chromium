@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ટૅબનું ગ્રૂપ હવે ઉપલબ્ધ નથી}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ટૅબનું ગ્રૂપ હવે ઉપલબ્ધ નથી}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ટૅબનું ગ્રૂપ હવે ઉપલબ્ધ નથી}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
+<translation id="1844381456014878100">7 દિવસ પછી નિષ્ક્રિય</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="1909810060368225529">નોટિસ: શેર કરેલા ટૅબના આ ગ્રૂપમાં કરવામાં આવેલા ફેરફારો દરેક વ્યક્તિ જોઈ શકે છે. દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબના ગ્રૂપમાં ફેરફારો કરી શકે છે</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ટૅબને પિન કરો}one{ટૅબને પિન કરો}other{ટૅબને પિન કરો}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> નામના ગ્રૂપમાં ઉમેરો}one{<ph name="TAB_COUNT1" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> નામના ગ્રૂપમાં ઉમેરો}other{<ph name="TAB_COUNT1" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> નામના ગ્રૂપમાં ઉમેરો}}</translation>
 <translation id="6818926723028410516">આઇટમ પસંદ કરો</translation>
 <translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
+<translation id="6957436309971790274">21 દિવસ પછી નિષ્ક્રિય</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના, શેર કરેલા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના, શેર કરેલા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના, શેર કરેલા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="709473454666962555">ટૅબનું ગ્રૂપ પસંદ કરો</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ટૅબ શેર કરો}one{ટૅબ શેર કરો}other{ટૅબ શેર કરો}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">આ સ્ટોર વિશેની માહિતી સંપૂર્ણ સ્ક્રીન પર ખુલી છે</translation>
 <translation id="8053770993984522566">ટૅબના ગ્રૂપની સૂચિ અડધી ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ગ્રૂપમાં ટૅબ ઉમેરો}one{ગ્રૂપમાં ટૅબ ઉમેરો}other{ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
+<translation id="8138067144082174140">14 દિવસ પછી નિષ્ક્રિય</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>

@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Ajuda'ns a millorar Chrome explicant-nos per què has permès les galetes de tercers. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Pots sol·licitar que es mostri la versió per a ordinadors dels llocs web</translation>
 <translation id="1085696779717592361">Utilitza Chrome de manera predeterminada</translation>
+<translation id="113098737392899175">Navega per les pàgines amb un cursor de text quan hi hagi un teclat connectat</translation>
 <translation id="1178015372320901893">Full inferior Les meves dreceres</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
@@ -699,6 +700,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8803526663383843427">Quan està activada</translation>
 <translation id="8805385115381080995">La navegació és més ràpida perquè és menys probable que un lloc web et demani que verifiquis que ets una persona real</translation>
 <translation id="8816026460808729765">Impedeix que els llocs web accedeixin als sensors</translation>
+<translation id="884765916894384048">Ves a la reproducció en segon pla</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="8889294078294184559">Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment</translation>

@@ -1046,6 +1046,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5059136629401106827">Oke</translation>
 <translation id="5062321486222145940">Instal Google Drive</translation>
 <translation id="5067540696062462445">Download</translation>
+<translation id="5070314445039955096">Izin "<ph name="SITE_DOMAIN" />" akan direset ke nonaktif saat Anda menutup situs ini</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} dari {count} metode pembayaran}other{{position} dari {count} metode pembayaran}}</translation>
 <translation id="5075939510584558547">Simpan tanpa enkripsi</translation>
 <translation id="5076534614343816664">Pemantauan harga</translation>

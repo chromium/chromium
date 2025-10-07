@@ -1237,6 +1237,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="305162504811187366">Historial de Escritorio Remoto de Chrome, incluidas las marcas de tiempo, los hosts y los IDs de sesión del cliente</translation>
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Pantalla de error de pago aplazado. Teclado oculto.</translation>
 <translation id="3061707000357573562">Aplicar parche a servicio</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación...</translation>
 <translation id="3063453392496098461">No se han podido instalar los servicios en segundo plano de VPN.</translation>
@@ -1991,6 +1992,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4242981939686657948">Para buscar en tu historial de navegación de forma más eficiente, activa</translation>
 <translation id="4244926541863471678">Película</translation>
 <translation id="4246517972543675653">Estudio en el extranjero</translation>
+<translation id="4250343410682686342">La pantalla de error de pago aplazado está abierta a altura completa.</translation>
 <translation id="4250431568374086873">Tu conexión con este sitio web no es completamente segura</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5123433949759960244">Balón de baloncesto</translation>
+<translation id="5124797626438336458">La pantalla de error de pago aplazado está abierta a media altura.</translation>
 <translation id="5125575917473813637">Editar documento de identidad</translation>
 <translation id="5125751979347152379">La URL no es válida.</translation>
 <translation id="512592033764059484">Fútbol</translation>
@@ -4175,6 +4178,7 @@ Más información:
 <translation id="7860345425589240791">Introduce la nueva fecha de vencimiento y el nuevo CVC que aparecen en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">¿Quieres salir del sitio web?</translation>
 <translation id="7865448901209910068">Mejor velocidad</translation>
+<translation id="7865482168955081228">La pantalla de error de pago aplazado está cerrada.</translation>
 <translation id="7870281855125116701">Descuento encontrado</translation>
 <translation id="7871445724586827387">Cambia la contraseña de tu cuenta de Google</translation>
 <translation id="787226752901403048">Inicia sesión en Chrome para compartir y unirte a grupos de pestañas, así como para trabajar juntos en ideas</translation>

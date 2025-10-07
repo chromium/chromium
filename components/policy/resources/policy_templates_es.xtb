@@ -7908,6 +7908,14 @@ Si no se establece esta política o se le asigna el valor <ph name="ALLOW" />, s
 ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en otras políticas relacionadas con la geolocalización (por ejemplo, <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />). En concreto, si se asigna el valor <ph name="DISALLOW" /> a esta política, las opciones <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> y <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> de la política <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> no funcionarán correctamente y solo usarán la resolución de ubicación basada en <ph name="IP" /> en la pantalla <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Ofrece información del sistema</translation>
 <translation id="6339355882150329269">No considerar que el usuario está inactivo durante la reproducción de vídeos</translation>
+<translation id="6347110299837147365">Esta política permite a los administradores cifrar la caché HTTP del navegador en el disco.
+Actualmente, solo es compatible con Windows.
+
+Si se habilita esta política, se cifrará la caché del navegador.
+
+Si se inhabilita esta política o no se define, no se cifrará la memoria caché del navegador.
+
+El cifrado de la memoria caché del navegador puede afectar al rendimiento.</translation>
 <translation id="6352714113109004581">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les permitan acceder a un dispositivo HID.
 
       Si no se establece la política, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios (si se ha definido). De lo contrario, se aplicará la configuración personal del usuario.

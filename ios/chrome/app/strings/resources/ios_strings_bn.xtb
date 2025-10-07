@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">ঠিক আছে</translation>
 <translation id="5062321486222145940">Google ড্রাইভ ইনস্টল করুন</translation>
 <translation id="5067540696062462445">ডাউনলোড</translation>
+<translation id="5070314445039955096">আপনি এই সাইট ছেড়ে বেরিয়ে এলে, "<ph name="SITE_DOMAIN" />"-এর সাথে সম্পর্কিত অনুমতি রিসেট হয়ে বন্ধ হয়ে যাবে</translation>
 <translation id="507187271399539513">{count,plural, =1{{count}টির মধ্যে {position} নম্বর পেমেন্ট পদ্ধতি}one{{count}টির মধ্যে {position} নম্বর পেমেন্ট পদ্ধতি}other{{count}টির মধ্যে {position} নম্বর পেমেন্ট পদ্ধতি}}</translation>
 <translation id="5075939510584558547">এনক্রিপশন না করে সেভ করুন</translation>
 <translation id="5076534614343816664">প্রাইস ট্র্যাকিং</translation>

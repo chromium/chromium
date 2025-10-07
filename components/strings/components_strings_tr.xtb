@@ -1237,6 +1237,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="305162504811187366">Zaman damgaları, ana makine ve istemci oturum kimlikleri dahil olmak üzere Chrome Uzaktan Masaüstü geçmişi</translation>
 <translation id="3052868890529250114">Sitelere genelde güvenli bir şekilde bağlanıyorsunuz, ancak Chrome bu kez güvenli bir bağlantı kuramadı. Bir saldırgan, ağ bağlantınızı gizlice izlemeye veya değiştirmeye çalışıyor olabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ürünün fiyatı <ph name="PRICE_DROP" /> düştü</translation>
+<translation id="3056660797732519147">Şimdi al sonra öde hata ekranı. Klavye gizli.</translation>
 <translation id="3061707000357573562">Yama Hizmeti</translation>
 <translation id="3062655045399308513">Tarama Verilerini Sil</translation>
 <translation id="3063453392496098461">VPN arka plan hizmetleri yüklenemedi.</translation>
@@ -1991,6 +1992,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4242981939686657948">Tarama geçmişinizde arama yapmanın daha etkili bir yolu için şunu etkinleştirin:</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Yurtdışı Eğitim Programları</translation>
+<translation id="4250343410682686342">"Şimdi al sonra öde" hata ekranı tam ekranda açıldı.</translation>
 <translation id="4250431568374086873">Bu siteye bağlantınız tam olarak güvenli değil</translation>
 <translation id="4250680216510889253">Hayır</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5122786942953798871">Zarf (Pamuk)</translation>
 <translation id="5123063207673082822">Hafta sonu</translation>
 <translation id="5123433949759960244">Basketbol</translation>
+<translation id="5124797626438336458">"Şimdi al sonra öde" hata ekranı ekranın yarısına kadar açıldı.</translation>
 <translation id="5125575917473813637">Kimlik kartını düzenleyin</translation>
 <translation id="5125751979347152379">Geçersiz URL.</translation>
 <translation id="512592033764059484">Futbol</translation>
@@ -4175,6 +4178,7 @@ Ek ayrıntılar:
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> yer alan yeni son kullanma tarihini ve CVC'yi girin</translation>
 <translation id="7862185352068345852">Siteden çıkılsın mı?</translation>
 <translation id="7865448901209910068">En iyi hız</translation>
+<translation id="7865482168955081228">"Şimdi al sonra öde" hata ekranı kapatıldı.</translation>
 <translation id="7870281855125116701">İndirim Bulundu</translation>
 <translation id="7871445724586827387">Google Hesabınızın şifresini değiştirin</translation>
 <translation id="787226752901403048">Sekme gruplarını paylaşmak, bunlara katılmak ve fikirler üzerinde birlikte çalışmak için Chrome'da oturum açın</translation>

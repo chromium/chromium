@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ciļņu grupa vairs nav pieejama.}zero{<ph name="TAB_GROUPS_COUNT_MANY" /> ciļņu grupas vairs nav pieejamas.}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ciļņu grupa vairs nav pieejama.}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ciļņu grupas vairs nav pieejamas.}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Uzzināt vairāk<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Grupēta <ph name="TABS_COUNT_ONE" /> cilne</translation>
+<translation id="1844381456014878100">Pēc septiņām neaktivitātes dienām</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
 <translation id="1909810060368225529">Paziņojums: šīs kopīgotās ciļņu grupas izmaiņas ir redzamas visiem. Ikviens var veikt izmaiņas jūsu kopīgotajās ciļņu grupās</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Piespraust cilni}zero{Piespraust cilnes}one{Piespraust cilnes}other{Piespraust cilnes}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilne}zero{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilnes}one{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilne}other{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilnes}}</translation>
 <translation id="6818926723028410516">Vienumu atlase</translation>
 <translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
+<translation id="6957436309971790274">Pēc 21 neaktivitātes dienas</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_ONE" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Atlasiet ciļņu grupu.</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Kopīgot cilni}zero{Kopīgot cilnes}one{Kopīgot cilnes}other{Kopīgot cilnes}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Informācija par šo veikalu ir atvērta pilna ekrāna augstumā</translation>
 <translation id="8053770993984522566">Ciļņu grupu saraksts, atvērts pusekrāna augstumā</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
+<translation id="8138067144082174140">Pēc 14 neaktivitātes dienām</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Atjaunināta pirms <ph name="NUM_MINS_ONE" /> minūtes}zero{Atjaunināta pirms <ph name="NUM_MINS_MANY" /> minūtēm}one{Atjaunināta pirms <ph name="NUM_MINS_MANY" /> minūtes}other{Atjaunināta pirms <ph name="NUM_MINS_MANY" /> minūtēm}}</translation>

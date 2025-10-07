@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Auta meitä parantamaan Chromea kertomalla, miksi sallit kolmannen osapuolen evästeet. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
+<translation id="113098737392899175">Siirry sivuilla tekstikohdistimen avulla, kun näppäimistö on yhdistetty</translation>
 <translation id="1178015372320901893">Omat pikakuvakkeet ‑alapaneeli</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1181037720776840403">Poista</translation>
@@ -699,6 +700,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8803526663383843427">Toiminnon ollessa päällä</translation>
 <translation id="8805385115381080995">Selaaminen on nopeampaa, koska sivusto ei todennäköisesti pyydä sinua vahvistamaan, että olet oikea ihminen</translation>
 <translation id="8816026460808729765">Estä sivustoja käyttämästä tunnistimia</translation>
+<translation id="884765916894384048">Siirry taustatoistoon</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
 <translation id="8889294078294184559">Kun jatkat selaamista, sivustot voivat Chromen avulla tarkistaa edelliseltä avaamasi sivustolta, että olet todennäköisesti oikea ihminen.</translation>

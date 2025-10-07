@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> flipahópur er ekki tiltækur lengur}one{<ph name="TAB_GROUPS_COUNT_MANY" /> flipahópur er ekki tiltækur lengur}other{<ph name="TAB_GROUPS_COUNT_MANY" /> flipahópar eru ekki tiltækir lengur}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Nánar<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> flipi flokkaður</translation>
+<translation id="1844381456014878100">Eftir sjö daga aðgerðaleysi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flipi}one{<ph name="TABS_COUNT_MANY" /> flipi}other{<ph name="TABS_COUNT_MANY" /> flipar}}</translation>
 <translation id="1909810060368225529">Tilkynning: Allir geta séð breytingar sem gerðar eru á þessum sameiginlega flipahópi. Allir geta gert breytingar á sameiginlegum flipahópum</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Festa flipa}one{Festa flipa}other{Festa flipa}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Bæta við hóp sem heitir <ph name="TITLE_OF_GROUP" /> með<ph name="TAB_COUNT1" /> flipa}one{Bæta við hóp sem heitir <ph name="TITLE_OF_GROUP" /> með<ph name="TAB_COUNT1" /> flipa}other{Bæta við hóp sem heitir <ph name="TITLE_OF_GROUP" /> með<ph name="TAB_COUNT1" /> flipum}}</translation>
 <translation id="6818926723028410516">Veldu atriði</translation>
 <translation id="6856809498882026482">Fela stillingu til að velja marga</translation>
+<translation id="6957436309971790274">Eftir 21 dags aðgerðaleysi</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Stækka sameiginlega flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_ONE" /> flipa.}one{Stækka sameiginlega flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}other{Stækka sameiginlega flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}}</translation>
 <translation id="709473454666962555">Velja flipahóp</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deila flipa}one{Deila flipum}other{Deila flipum}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Upplýsingar um þessa verslun opnaðar á öllum skjánum</translation>
 <translation id="8053770993984522566">Flipahópalisti, opinn í hálfri hæð</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Bæta flipa við hóp}one{Bæta flipum við hóp}other{Bæta flipum við hóp}}</translation>
+<translation id="8138067144082174140">Eftir 14 daga aðgerðaleysi</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Stækka flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_ONE" /> flipa.}one{Stækka flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}other{Stækka flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}}</translation>
 <translation id="8205266828577616993">Færa flipa upp</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Uppfært fyrir <ph name="NUM_MINS_ONE" /> mínútu}one{Uppfært fyrir <ph name="NUM_MINS_MANY" /> mínútu}other{Uppfært fyrir <ph name="NUM_MINS_MANY" /> mínútum}}</translation>

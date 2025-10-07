@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> हा टॅब गट आता उपलब्ध नाही}other{<ph name="TAB_GROUPS_COUNT_MANY" /> हे टॅब गट आता उपलब्ध नाहीत}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टॅब गटबद्ध केला आहे</translation>
+<translation id="1844381456014878100">७ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="1909810060368225529">नोटिस: शेअर केलेल्या या टॅब गट मधील बदल प्रत्येकासाठी दृश्यमान आहेत. सर्वजण तुमच्या शेअर केलेल्या टॅब गटांमध्ये बदल करू शकतात</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{टॅब पिन करा}other{टॅब पिन करा}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> नावाच्या गटामध्ये <ph name="TAB_COUNT1" /> टॅबसह जोडा}other{<ph name="TITLE_OF_GROUP" /> नावाच्या गटामध्ये <ph name="TAB_COUNT1" /> टॅबसह जोडा}}</translation>
 <translation id="6818926723028410516">आयटम निवडा</translation>
 <translation id="6856809498882026482">एकाहून अधिक निवड मोड लपवा</translation>
+<translation id="6957436309971790274">२१ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून शेअर केलेल्या <ph name="TITLE_OF_GROUP" /> टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून शेअर केलेल्या <ph name="TITLE_OF_GROUP" /> टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="709473454666962555">टॅब गट निवडा</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{टॅब शेअर करा}other{टॅब शेअर करा}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">या स्टोअरविषयी माहिती पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8053770993984522566">टॅब गट सूची, अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{गटामध्ये टॅब जोडा}other{गटामध्ये टॅब जोडा}}</translation>
+<translation id="8138067144082174140">१४ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}other{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}}</translation>
 <translation id="8205266828577616993">टॅब वर हलवा</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनिटापूर्वी अपडेट केला आहे}other{<ph name="NUM_MINS_MANY" /> मिनिटांपूर्वी अपडेट केला आहे}}</translation>

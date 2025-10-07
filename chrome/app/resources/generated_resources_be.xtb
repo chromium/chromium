@@ -2873,6 +2873,7 @@
 <translation id="2950666755714083615">Падпісацца</translation>
 <translation id="2953210795988451570">Абнаўленняў сістэмы бяспекі больш не будзе. Перайдзіце на новы Chromebook.</translation>
 <translation id="2953218713108551165">Сайту <ph name="SITE" /> забаронена адпраўляць апавяшчэнні. Пры наступным наведванні ў вас зноў запытаюць дазвол на іх адпраўку.</translation>
+<translation id="2955048943983973430">Звязаныя сэрвісы Google</translation>
 <translation id="2956070239128776395">Раздзел уложаны ў групу: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Уключыце рэжым распрацоўшчыка, каб выкарыстоўваць гэта пашырэнне, якое не было праверана вэб-крамай Chrome.</translation>
 <translation id="2958721676848865875">Папярэджанне аб пакаванні пашырэння</translation>
@@ -4627,6 +4628,7 @@
 <translation id="4151503145138736576">Няма пазасеткавага сховішча, у якім можна было б вызваліць месца</translation>
 <translation id="4152011295694446843">Вашы закладкі знаходзяцца тут</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
+<translation id="4153858337812834972">Нядаўнія ўкладкі</translation>
 <translation id="4154658846204884961">Камета</translation>
 <translation id="4154664944169082762">Лічбавыя адбіткі</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: левы экран</translation>
@@ -7101,6 +7103,7 @@
 <translation id="5919305207330938913">Усе сабраныя даныя будуць выкарыстоўвацца ў адпаведнасці з <ph name="BEGIN_LINK" />Палітыкай прыватнасці<ph name="END_LINK" /> Google.</translation>
 <translation id="5919486630433391408">Адміністратар выключыў абнаўленні ўбудаванага ПЗ.</translation>
 <translation id="5920543303088087579">Падключэнне да гэтай сеткі выключана адміністратарам</translation>
+<translation id="5922493635960054020">Доступ да ўдасканальніка JavaScript на сайтах, якія наведваюцца ўпершыню, будзе блакіравацца. Патрабуецца Бяспечны прагляд</translation>
 <translation id="5922963926582976524">Адключыцца ад сеткі імгненнага хот-спота</translation>
 <translation id="5924047253200400718">Атрымаць даведку <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Запытваць перад капіраваннем або перамяшчэннем файлаў Microsoft на Google Дыск</translation>

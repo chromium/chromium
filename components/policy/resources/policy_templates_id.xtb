@@ -8231,6 +8231,14 @@ akan gagal berfungsi dan hanya menggunakan resolusi lokasi berbasis <ph name="IP
 di layar <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Melaporkan info sistem</translation>
 <translation id="6339355882150329269">Jangan menganggap pengguna sebagai tidak ada aktivitas saat video diputar</translation>
+<translation id="6347110299837147365">Kebijakan ini memungkinkan administrator mengenkripsi cache http browser di disk.
+Saat ini hanya didukung di Windows.
+
+Jika kebijakan ini disetel ke Aktif, cache browser akan dienkripsi.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, cache browser tidak akan dienkripsi.
+
+Enkripsi cache browser dapat menyebabkan dampak performa.</translation>
 <translation id="6352714113109004581">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta izin kepada pengguna untuk mengakses perangkat HID.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan berlaku.

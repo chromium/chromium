@@ -814,6 +814,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2321291402658100099">Manage information</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 window}other{# windows}}</translation>
 <translation id="232390861414237658">Autofill this card for purchases made in Chrome when it's saved to use with Google Pay</translation>
+<translation id="2326283484705860548">Now you can autofill more info from Google Wallet</translation>
 <translation id="2328651992442742497">Allowed (default)</translation>
 <translation id="2328955282645810595">Construction and Power Tools</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2346319942568447007">Image that you copied</translation>
 <translation id="2347764072711098973">Use Affirm, Zip or Klarna to pay over time</translation>
 <translation id="2348509731468399833">Price tracking stopped.</translation>
+<translation id="2348836501965732644">Manage your information or turn these suggestions off in Settings</translation>
 <translation id="2349957959687031096">Open Incognito tab button, activate to open a new Incognito tab to browse privately</translation>
 <translation id="2350796302381711542">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">This server could not prove that it is <ph name="DOMAIN" /> because it is using a security certificate that is not trusted by Chromium or your system configuration for web traffic encryption. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
@@ -1237,6 +1239,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
 <translation id="3052868890529250114">You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Buy now, pay later error screen. Keyboard hidden.</translation>
 <translation id="3061707000357573562">Patch Service</translation>
 <translation id="3062655045399308513">Delete browsing data…</translation>
 <translation id="3063453392496098461">VPN background services installation failed.</translation>
@@ -1452,6 +1455,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="340924996148642843">Compare isn't available at the moment</translation>
 <translation id="3409896703495473338">Manage security settings</translation>
 <translation id="3411091017011773343">Upload in <ph name="HOURS" /> hr</translation>
+<translation id="341134412449102894">Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">It's safest to visit this site later if you're using a public network. There is less risk from a trusted network, like your home or work Wi-Fi.</translation>
 <translation id="3414275587143250384">Distributed and cloud computing</translation>
 <translation id="3414952576877147120">Size:</translation>
@@ -1991,6 +1995,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4242981939686657948">For a more powerful way to search your browsing history, turn on</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Study Abroad</translation>
+<translation id="4250343410682686342">Buy now, pay later error screen opened at full height.</translation>
 <translation id="4250431568374086873">Your connection to this site is not fully secure</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4250716950689692560">A4 x 4</translation>
@@ -2507,6 +2512,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5122786942953798871">Envelope (cotton)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5124797626438336458">Buy now, pay later error screen opened at half height.</translation>
 <translation id="5125575917473813637">Edit identity card</translation>
 <translation id="5125751979347152379">Invalid URL.</translation>
 <translation id="512592033764059484">Football</translation>
@@ -4175,6 +4181,7 @@ Additional details:
 <translation id="7860345425589240791">Enter your new expiry date and CVC on the <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Leave site?</translation>
 <translation id="7865448901209910068">Best speed</translation>
+<translation id="7865482168955081228">Buy now, pay later error screen is closed.</translation>
 <translation id="7870281855125116701">Discount found</translation>
 <translation id="7871445724586827387">Change your Google Account password</translation>
 <translation id="787226752901403048">Sign in to Chrome to share and join tab groups, and work together on ideas</translation>

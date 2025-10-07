@@ -814,6 +814,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2321291402658100099">Zarządzaj informacjami</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 okna}few{# okien}many{# okien}other{# okna}}</translation>
 <translation id="232390861414237658">Gdy zapiszesz kartę do użycia w Google Pay, jej dane będą uzupełniane automatycznie podczas zakupów w Chrome</translation>
+<translation id="2326283484705860548">Teraz możesz automatycznie wypełniać więcej informacji z Portfela Google</translation>
 <translation id="2328651992442742497">Dozwolone (domyślnie)</translation>
 <translation id="2328955282645810595">Narzędzia budowlane i elektronarzędzia</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2346319942568447007">Skopiowany obraz</translation>
 <translation id="2347764072711098973">Płać w ratach przez Affirm, Zipa lub Klarnę</translation>
 <translation id="2348509731468399833">Śledzenie cen zostało zatrzymane.</translation>
+<translation id="2348836501965732644">Zarządzaj swoimi informacjami lub wyłącz te sugestie w Ustawieniach</translation>
 <translation id="2349957959687031096">Przycisk Otwórz kartę incognito; aktywuj, aby przeglądać prywatnie na nowej karcie incognito</translation>
 <translation id="2350796302381711542">Zezwolić usłudze <ph name="HANDLER_HOSTNAME" /> na otwieranie wszystkich linków <ph name="PROTOCOL" /> zamiast usługi <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />, ponieważ używa certyfikatu bezpieczeństwa, który nie jest zaufany przez Chromium ani konfigurację systemu do szyfrowania ruchu internetowego. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia.</translation>
@@ -1237,6 +1239,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="305162504811187366">Historię Pulpitu zdalnego Chrome, w tym sygnatury czasowe, hostów oraz identyfikatory sesji klientów</translation>
 <translation id="3052868890529250114">Zazwyczaj łączysz się z witrynami w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> taniej o <ph name="PRICE_DROP" /></translation>
+<translation id="3056660797732519147">Ekran błędu opcji „Kup teraz, zapłać później”. Klawiatura jest ukryta.</translation>
 <translation id="3061707000357573562">Zastosowanie poprawki do usługi</translation>
 <translation id="3062655045399308513">Usuń dane przeglądania…</translation>
 <translation id="3063453392496098461">Nie udało się zainstalować usług VPN działających w tle.</translation>
@@ -1452,6 +1455,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="340924996148642843">Porównanie nie jest teraz dostępne</translation>
 <translation id="3409896703495473338">Zarządzaj ustawieniami zabezpieczeń</translation>
 <translation id="3411091017011773343">Prześlij za <ph name="HOURS" /> godz.</translation>
+<translation id="341134412449102894">Twoje informacje są zapisane w usłudze <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> na koncie <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Jeśli korzystasz z sieci publicznej, najlepiej będzie odwiedzić tę witrynę później. W zaufanej sieci, np. w domu lub pracy, ryzyko jest mniejsze.</translation>
 <translation id="3414275587143250384">Usługi rozproszone i w chmurze</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
@@ -1991,6 +1995,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4242981939686657948">Aby wygodniej wyszukiwać w historii przeglądania, włącz</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Studia międzynarodowe</translation>
+<translation id="4250343410682686342">Ekran błędu opcji „Kup teraz, zapłać później” otwarty na całą wysokość.</translation>
 <translation id="4250431568374086873">Twoje połączenie z tą witryną nie jest w pełni bezpieczne</translation>
 <translation id="4250680216510889253">Nie</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2512,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5122786942953798871">Koperta (bawełna)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
+<translation id="5124797626438336458">Ekran błędu opcji „Kup teraz, zapłać później” otwarty do połowy wysokości.</translation>
 <translation id="5125575917473813637">Edytuj dowód tożsamości</translation>
 <translation id="5125751979347152379">Nieprawidłowy adres URL.</translation>
 <translation id="512592033764059484">Piłka nożna</translation>
@@ -4175,6 +4181,7 @@ Dodatkowe informacje:
 <translation id="7860345425589240791">Wpisz nową datę ważności i kod CVC, znajdujące się z <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Opuścić stronę?</translation>
 <translation id="7865448901209910068">Optymalna szybkość</translation>
+<translation id="7865482168955081228">Ekran błędu opcji „Kup teraz, zapłać później” został zamknięty.</translation>
 <translation id="7870281855125116701">Znaleziono rabat</translation>
 <translation id="7871445724586827387">Zmień hasło do konta Google</translation>
 <translation id="787226752901403048">Zaloguj się w Chrome, aby udostępniać grupy kart i do nich dołączać oraz wspólnie pracować nad pomysłami</translation>

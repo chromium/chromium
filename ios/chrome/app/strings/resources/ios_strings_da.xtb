@@ -1046,6 +1046,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Drev</translation>
 <translation id="5067540696062462445">Downloads</translation>
+<translation id="5070314445039955096">Tilladelser for "<ph name="SITE_DOMAIN" />" nulstilles til deres deaktiverede tilstand, når du forlader dette website</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} af {count} betalingsmetode}one{{position} af {count} betalingsmetode}other{{position} af {count} betalingsmetoder}}</translation>
 <translation id="5075939510584558547">Gem uden kryptering</translation>
 <translation id="5076534614343816664">Prissporing</translation>

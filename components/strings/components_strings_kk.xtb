@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">Chrome Remote Desktop тарихы, соның ішінде уақыт белгілері, хостар мен клиент сеансының идентификаторлары</translation>
 <translation id="3052868890529250114">Әдетте сайттарға қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> бағасы <ph name="PRICE_DROP" /> арзандады.</translation>
+<translation id="3056660797732519147">Бөліп төлеу қатесінің экраны. Пернетақта жасырылды.</translation>
 <translation id="3061707000357573562">Қызметті түзету</translation>
 <translation id="3062655045399308513">Браузерді пайдалану деректерін жою…</translation>
 <translation id="3063453392496098461">VPN фондық қызметтері орнатылмады.</translation>
@@ -1990,6 +1991,7 @@
 <translation id="4242981939686657948">Браузерді қолдану тарихын тиімді жолмен іздеу үшін келесі функцияны қосыңыз:</translation>
 <translation id="4244926541863471678">Үлдір</translation>
 <translation id="4246517972543675653">Шетелде оқу</translation>
+<translation id="4250343410682686342">Бөліп төлеу қатесінің экраны толығымен ашылды.</translation>
 <translation id="4250431568374086873">Бұл сайтпен байланысыңыз толықтай қауіпсіз емес</translation>
 <translation id="4250680216510889253">Жоқ</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2506,6 +2508,7 @@
 <translation id="5122786942953798871">Хатқалта (мақта)</translation>
 <translation id="5123063207673082822">Демалыс күндері</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
+<translation id="5124797626438336458">Бөліп төлеу қатесінің экраны жартылай ашылды.</translation>
 <translation id="5125575917473813637">Жеке куәлікті өзгерту</translation>
 <translation id="5125751979347152379">Жарамсыз URL.</translation>
 <translation id="512592033764059484">Футбол</translation>
@@ -4173,6 +4176,7 @@
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> жағындағы жаңа жарамдылық мерзімі мен CVC кодын енгізіңіз</translation>
 <translation id="7862185352068345852">Сайттан шыққыңыз келе ме?</translation>
 <translation id="7865448901209910068">Ең жақсы жылдамдық</translation>
+<translation id="7865482168955081228">Бөліп төлеу қатесінің экраны жабылды.</translation>
 <translation id="7870281855125116701">Жеңілдік табылды</translation>
 <translation id="7871445724586827387">Google аккаунтыңыздың құпия сөзін ауыстыру</translation>
 <translation id="787226752901403048">Қойындылар топтарын бөлісу, оларға қосылу және идеялар төңірегінде бірлесіп жұмыс істеу үшін Chrome-ға кіріңіз.</translation>

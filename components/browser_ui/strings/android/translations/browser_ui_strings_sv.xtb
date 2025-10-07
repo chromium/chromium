@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Hjälp oss att förbättra Chrome genom att berätta varför du har tillåtit cookies från tredje part. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
+<translation id="113098737392899175">Navigera på sidor med en textmarkör när ett tangentbord är anslutet</translation>
 <translation id="1178015372320901893">Ark på nedre delen av skärmen för Mina genvägar</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
@@ -699,6 +700,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8803526663383843427">När funktionen är aktiverad</translation>
 <translation id="8805385115381080995">Du kan surfa snabbare eftersom det blir mindre sannolikt att en webbplats ber dig att verifiera att du är en riktig person</translation>
 <translation id="8816026460808729765">Blockera webbplatser från att använda enhetens sensorer</translation>
+<translation id="884765916894384048">Gå till bakgrund</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Testa att tillfälligt tillåta tredjepartscookies, vilket innebär mindre skydd när du surfar men större sannolikhet att webbplatsfunktionerna fungerar som förväntat.</translation>
 <translation id="8889294078294184559">När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome och verifiera med den föregående webbplatsen du besökte att du troligen är en riktig person.</translation>

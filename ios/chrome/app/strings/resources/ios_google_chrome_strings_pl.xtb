@@ -87,6 +87,9 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="2940565985148833945">Wskazówka dotycząca Chrome: wyszukuj za pomocą Obiektywu</translation>
 <translation id="2957447865124070833">Wybierz <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Dodawanie zakładek do Chrome</translation>
+<translation id="3027236223714901838">Aby zabezpieczyć klucze dostępu, musisz najpierw utworzyć kod PIN przywracania.
+
+        Klucze są zapisywane w Menedżerze haseł Google, dzięki czemu możesz ich używać w Chrome na dowolnym urządzeniu.</translation>
 <translation id="3030414234702425231">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chrome z tego urządzenia, ale pozostaną one na koncie Google.</translation>
 <translation id="3042447686908081308">Importuj do Chrome</translation>
 <translation id="3051521853355903257">Zarządzaj hasłami w Chrome</translation>

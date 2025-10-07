@@ -814,6 +814,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2321291402658100099">Gerenciar informações</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 janela}one{# janela}other{# janelas}}</translation>
 <translation id="232390861414237658">Os dados deste cartão serão preenchidos automaticamente para compras feitas no Chrome quando ele for salvo para uso com o Google Pay</translation>
+<translation id="2326283484705860548">Agora você pode preencher automaticamente mais informações da Carteira do Google</translation>
 <translation id="2328651992442742497">Com permissão (padrão)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2346319942568447007">Imagem que você copiou</translation>
 <translation id="2347764072711098973">Use Affirm, Zip ou Klarna para pagar em parcelas</translation>
 <translation id="2348509731468399833">Monitoramento de preços interrompido.</translation>
+<translation id="2348836501965732644">Gerencie suas informações ou desative essas sugestões nas Configurações</translation>
 <translation id="2349957959687031096">Botão "Abrir guia anônima". Ative para abrir uma nova guia anônima e navegar com privacidade</translation>
 <translation id="2350796302381711542">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links de <ph name="PROTOCOL" /> em vez de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Este servidor não conseguiu provar que é <ph name="DOMAIN" /> porque está usando um certificado de segurança que não é confiável para o Chromium ou sua configuração do sistema para criptografia de tráfego da Web. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão.</translation>
@@ -1237,6 +1239,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="305162504811187366">o histórico da Área de trabalho remota do Google Chrome, incluindo carimbos de data/hora, hosts e IDs de sessões de clientes.</translation>
 <translation id="3052868890529250114">A conexão com estes sites costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Tela de erro da opção Compre Agora, Pague Depois. Teclado oculto.</translation>
 <translation id="3061707000357573562">Aplicar patch ao serviço</translation>
 <translation id="3062655045399308513">Excluir dados de navegação…</translation>
 <translation id="3063453392496098461">Falha na instalação dos serviços em segundo plano da VPN.</translation>
@@ -1991,6 +1994,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4242981939686657948">Para pesquisar seu histórico de navegação com mais eficiência, ative o</translation>
 <translation id="4244926541863471678">Filme</translation>
 <translation id="4246517972543675653">Estudo no exterior</translation>
+<translation id="4250343410682686342">A tela de erro da opção Compre Agora, Pague Depois está aberta no tamanho máximo.</translation>
 <translation id="4250431568374086873">Sua conexão com esse site não é completamente segura</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2511,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5122786942953798871">Envelope (algodão)</translation>
 <translation id="5123063207673082822">Final de semana</translation>
 <translation id="5123433949759960244">Basquete</translation>
+<translation id="5124797626438336458">Tela de erro da opção Compre Agora, Pague Depois aberta na metade do tamanho.</translation>
 <translation id="5125575917473813637">Editar documento de identidade</translation>
 <translation id="5125751979347152379">URL inválido.</translation>
 <translation id="512592033764059484">Futebol</translation>
@@ -4175,6 +4180,7 @@ Mais detalhes:
 <translation id="7860345425589240791">Insira a nova data de validade e o CVC que ficam na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Sair do site?</translation>
 <translation id="7865448901209910068">Melhor velocidade</translation>
+<translation id="7865482168955081228">A tela de erro da opção Compre Agora, Pague Depois foi fechada.</translation>
 <translation id="7870281855125116701">Desconto encontrado</translation>
 <translation id="7871445724586827387">Mudar a senha da sua Conta do Google</translation>
 <translation id="787226752901403048">Faça login no Chrome para compartilhar e participar de grupos de guias e trabalhar em conjunto</translation>

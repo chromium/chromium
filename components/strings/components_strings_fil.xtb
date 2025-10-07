@@ -814,6 +814,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2321291402658100099">Pamahalaan ang impormasyon</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 window}one{# window}other{# na window}}</translation>
 <translation id="232390861414237658">I-autofill ang card na ito para sa mga pagbiling ginawa sa Chrome kapag na-save ito para magamit sa Google Pay</translation>
+<translation id="2326283484705860548">Puwede ka na ngayong mag-autofill ng mas maraming impormasyon mula sa Google Wallet</translation>
 <translation id="2328651992442742497">Pinapayagan (default)</translation>
 <translation id="2328955282645810595">Konstruksyon at Mga Power Tool</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, mag-e-expire sa <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2346319942568447007">Larawang kinopya mo</translation>
 <translation id="2347764072711098973">Gumamit ng Affirm, Zip, o Klarna para magbayad sa paglipas ng panahon</translation>
 <translation id="2348509731468399833">Ihininto ang pagsubaybay sa presyo.</translation>
+<translation id="2348836501965732644">Pamahalaan ang iyong impormasyon o i-off ang mga suhestyong ito sa Mga Setting</translation>
 <translation id="2349957959687031096">Button na Magbukas ng tab na Incognito, i-activate para makapagbukas ng bagong tab na Incognito para makapag-browse nang pribado</translation>
 <translation id="2350796302381711542">Papayagan ang <ph name="HANDLER_HOSTNAME" /> na buksan ang lahat ng <ph name="PROTOCOL" /> (na) link sa halip na ang <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito dahil gumagamit ito ng certificate na panseguridad na hindi pinagkakatiwalaan ng Chromium o ng iyong configuration ng system para sa pag-encrypt ng trapiko sa web. Posibleng sanhi ito ng maling pag-configure, o ng pag-intercept ng isang attacker sa koneksyon mo.</translation>

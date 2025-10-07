@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grupo de pestanas xa non está dispoñible}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grupos de pestanas xa no están dispoñibles}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> pestana agrupada</translation>
+<translation id="1844381456014878100">Despois de 7 días sen actividade</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="1909810060368225529">Aviso: Todo o mundo poderá ver os cambios neste grupo de pestanas compartido. Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fixar a pestana}other{Fixar as pestanas}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Engadir ao grupo chamado <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> pestana}other{Engadir ao grupo chamado <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> pestanas}}</translation>
 <translation id="6818926723028410516">Selecciona elementos</translation>
 <translation id="6856809498882026482">Ocultar modo de selección múltiple</translation>
+<translation id="6957436309971790274">Despois de 21 días sen actividade</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Despregar o grupo de pestanas compartido <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />, que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Despregar o grupo de pestanas compartido <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />, que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="709473454666962555">Seleccionar un grupo de pestanas</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestana}other{Compartir pestanas}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">A folla de información sobre esta tenda está aberta a pantalla completa</translation>
 <translation id="8053770993984522566">Lista dos grupos de pestanas aberta a media pantalla</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
+<translation id="8138067144082174140">Despois de 14 días sen actividade</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Desprega o grupo de pestanas <ph name="TITLE_OF_GROUP" /> de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Desprega o grupo de pestanas <ph name="TITLE_OF_GROUP" /> de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="8205266828577616993">Mover pestana cara arriba</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Actualizado hai <ph name="NUM_MINS_ONE" /> minuto}other{Actualizado hai <ph name="NUM_MINS_MANY" /> minutos}}</translation>

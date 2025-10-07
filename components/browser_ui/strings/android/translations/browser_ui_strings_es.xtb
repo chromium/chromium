@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puedes pedir ver la versión para ordenadores de los sitios</translation>
 <translation id="1085696779717592361">Usar Chrome por defecto</translation>
+<translation id="113098737392899175">Desplazarse por las páginas con un cursor de texto cuando se conecta un teclado</translation>
 <translation id="1178015372320901893">Hoja inferior de mis accesos directos</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
@@ -699,6 +700,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8805385115381080995">La navegación es más rápida porque es menos probable que un sitio te pida que verifiques que eres una persona real</translation>
 <translation id="8816026460808729765">No permitir que los sitios accedan a los sensores</translation>
+<translation id="884765916894384048">Reproducir en segundo plano</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="8889294078294184559">A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, con un sitio que hayas visitado anteriormente, que es probable que seas una persona real</translation>

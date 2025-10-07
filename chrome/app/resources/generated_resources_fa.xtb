@@ -2361,7 +2361,7 @@
 <translation id="2598136842498757793">دکمه‌های سفارشی‌سازی نوارابزار</translation>
 <translation id="2598710988533271874">‏Chrome جدید دردسترس است</translation>
 <translation id="2599048253926156421">نام کاربری در بریده‌دان کپی شد</translation>
-<translation id="2602501489742255173">برای شروع‌به‌کار تند بکشید</translation>
+<translation id="2602501489742255173">تند با بالا کشیدن برای شروع کردن به کار</translation>
 <translation id="2603115962224169880">پاک کردن رایانه</translation>
 <translation id="2603355571917519942">‏Voice Match آماده است</translation>
 <translation id="2604129989323098489">سایت‌ها معمولاً اطلاعاتی درباره نمایشگرهایتان درخواست می‌کنند تا بتوانند پنجره‌ها را به‌صورت هوشمندانه باز و جای‌گذاری کنند، مثلاً اسناد یا محتوای تمام‌صفحه را در کنار هم نشان دهند</translation>
@@ -2882,6 +2882,7 @@
 <translation id="2950666755714083615">ثبت‌نام شوم</translation>
 <translation id="2953210795988451570">‏به‌روزرسانی‌های امنیتی به‌اتمام رسیده است. به Chromebook جدید ارتقا دهید.</translation>
 <translation id="2953218713108551165">اعلان‌ها برای <ph name="SITE" /> مجاز نیست. در بازدید بعدی دوباره از شما سؤال خواهد شد.</translation>
+<translation id="2955048943983973430">‏سرویس‌های Google مرتبط</translation>
 <translation id="2956070239128776395">بخش در گروه قرار گرفت: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">‏برای استفاده از این افزونه، حالت توسعه‌دهنده را روشن کنید. «نت‌بازار Chrome» نمی‌تواند این افزونه را بررسی کند.</translation>
 <translation id="2958721676848865875">هشدار در مورد بسته‌بندی افزونه</translation>
@@ -4411,7 +4412,7 @@
 <translation id="3986813315215454677">‏بلوتوث ChromeOS</translation>
 <translation id="3987307536043958493">مسدود و ترک کردن</translation>
 <translation id="3987544746655539083">دسترسی این سایت به مکان شما همچنان مسدود شود</translation>
-<translation id="3987993985790029246">کپی پیوند</translation>
+<translation id="3987993985790029246">کپی کردن پیوند</translation>
 <translation id="3988124842897276887">‏این زبانه به دستگاه USB متصل است</translation>
 <translation id="3988996860813292272">انتخاب منطقه زمانی</translation>
 <translation id="3989635538409502728">خروج از سیستم</translation>
@@ -4638,6 +4639,7 @@
 <translation id="4151503145138736576">هیچ فضای ذخیره‌سازی آفلاینی برای پاک کردن نیست</translation>
 <translation id="4152011295694446843">نشانک‌ها را اینجا خواهید دید</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{‏۱ برگه}one{‏# برگه}other{‏# برگه}}</translation>
+<translation id="4153858337812834972">آخرین زبانه‌ها</translation>
 <translation id="4154658846204884961">ستاره دنباله‌دار</translation>
 <translation id="4154664944169082762">اثر انگشت</translation>
 <translation id="4156297721709710037">‫<ph name="WINDOW_TITLE" /> - نمای چپ</translation>
@@ -6171,7 +6173,7 @@
 <translation id="5244234799035360187">‏ازاین‌پس OneDrive در برنامه Files نشان داده خواهد شد</translation>
 <translation id="5244466461749935369">فعلاً نگه داشته شود</translation>
 <translation id="5244474230056479698">درحال همگام‌سازی در <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">شروع‌به‌کار با حساب مدرسه</translation>
+<translation id="5245610266855777041">شروع کردن به کار با حساب مدرسه</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> خراب شده است. برای راه‌اندازی مجدد برنامه بر روی این بالون کلیک کنید.</translation>
 <translation id="5247051749037287028">نام نمایشی (اختیاری)</translation>
 <translation id="5247243947166567755">انتخاب <ph name="BOOKMARK_TITLE" /></translation>
@@ -7113,6 +7115,7 @@
 <translation id="5919305207330938913">‏از تمام داده‌های جمع‌آوری‌شده مطابق با <ph name="BEGIN_LINK" />خط‌مشی رازداری<ph name="END_LINK" /> Google استفاده می‌شود.</translation>
 <translation id="5919486630433391408">سرپرست شما به‌روزرسانی‌های سفت‌افزار را غیرفعال کرده است.</translation>
 <translation id="5920543303088087579">سرپرستتان اتصال به این شبکه را غیرفعال کرده است</translation>
+<translation id="5922493635960054020">دسترسی به بهینه‌ساز جاوا اسکریپت در سایت‌هایی که اخیراً از آن‌ها بازدید شده است مسدود می‌شود. به «مرور ایمن» نیاز دارد</translation>
 <translation id="5922963926582976524">قطع اتصال شبکه «نقطه اتصال فوری»</translation>
 <translation id="5924047253200400718">دریافت راهنمایی<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Google Drive سؤال شود</translation>

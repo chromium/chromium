@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">إدارة المعلومات</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{نافذة واحدة}zero{‫# نافذة}two{نافذتان}few{‫# نوافذ}many{‫# نافذة}other{‫# نافذة}}</translation>
 <translation id="232390861414237658">‏في حال حفظ هذه البطاقة لاستخدامها مع Google Pay، سيتم ملء بياناتها تلقائيًا لإجراء عمليات الشراء من خلال Chrome</translation>
+<translation id="2326283484705860548">‏يمكنك الآن ملء المزيد من المعلومات تلقائيًا من "محفظة Google"</translation>
 <translation id="2328651992442742497">مسموح به (الإعداد التلقائي)</translation>
 <translation id="2328955282645810595">أعمال إنشاء وأدوات تعمل بالطاقة</translation>
 <translation id="2330137317877982892">تنتهي صلاحية <ph name="CREDIT_CARD" /> في <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">الصورة التي نسختها</translation>
 <translation id="2347764072711098973">‏يمكنك الدفع على أقساط من خلال Affirm أو Zip أو Klarna</translation>
 <translation id="2348509731468399833">توقّفت عملية تتبُّع السعر.</translation>
+<translation id="2348836501965732644">بإمكانك إدارة معلوماتك أو إيقاف هذه الاقتراحات في "الإعدادات"</translation>
 <translation id="2349957959687031096">زر فتح علامة تبويب في وضع التصفّح المتخفي: انقر على هذا الزر للتصفّح بخصوصية تامة.</translation>
 <translation id="2350796302381711542">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" /> بدلاً من <ph name="REPLACED_HANDLER_TITLE" />؟</translation>
 <translation id="2351718832234620840">‏لا يستطيع هذا الخادم إثبات أنّه <ph name="DOMAIN" /> لأنّه يستخدم شهادة أمان غير موثوقة من قِبل Chromium أو إعدادات النظام لتشفير بيانات الزيارات على الويب. وقد يعود ذلك إلى خطأ في الضبط أو مهاجم يحاول اعتراض اتصالك.</translation>

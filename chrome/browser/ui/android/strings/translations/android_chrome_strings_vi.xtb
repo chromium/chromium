@@ -415,7 +415,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
 <translation id="2912345083818861431">Dùng phương thức khóa màn hình để xem các thẻ ẩn danh đang mở</translation>
 <translation id="2918484639460781603">Chuyển đến phần cài đặt</translation>
-<translation id="2920776558188188922">Di chuyển thanh địa chỉ lên trên cùng hoặc xuống dưới cùng để có trải nghiệm duyệt web phù hợp với nhu cầu riêng</translation>
 <translation id="2923908459366352541">Tên không hợp lệ</translation>
 <translation id="2932150158123903946">Bộ nhớ Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Bàn phím của bạn sẽ không thay đổi</translation>
@@ -1834,6 +1833,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9133397713400217035">Khám phá khi không kết nối Internet</translation>
 <translation id="9143389653531441385">Đăng ký bằng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
+<translation id="9148564897242852377">Chuyển sang chọn thẻ khác</translation>
 <translation id="9157212632995922070">Chọn một tài khoản để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Chỉ chia sẻ nội dung</translation>
 <translation id="9161172953291434881">Bạn có tin tưởng để trang web này sử dụng dữ liệu của mình không?</translation>

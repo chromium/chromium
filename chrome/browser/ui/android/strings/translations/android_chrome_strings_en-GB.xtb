@@ -159,6 +159,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1726477445370128854">You can browse and search faster when Chrome preloads pages that it thinks you might visit</translation>
 <translation id="1728803206919861584">Save passkey outside Incognito?</translation>
 <translation id="1732514748744806741">If your passwords are compromised, we'll let you know</translation>
+<translation id="1737694586321018892">Get Chrome's strongest security</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site recently sent a lot of notifications}other{# sites recently sent a lot of notifications}}</translation>
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
@@ -974,6 +975,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Recent activity bottom sheet</translation>
 <translation id="5526281268548144413">Can't be closed across multiple windows</translation>
+<translation id="5532536403031755365">Add an extra layer of protection against online threats with enhanced protection</translation>
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
@@ -1831,6 +1833,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9133397713400217035">Explore offline</translation>
 <translation id="9143389653531441385">Sign up with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Sign in again</translation>
+<translation id="9148564897242852377">Toggle tab selection</translation>
 <translation id="9157212632995922070">Choose an account to continue on <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Share content only</translation>
 <translation id="9161172953291434881">Do you trust this site with your data?</translation>

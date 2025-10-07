@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">Управљај информацијама</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 прозор}one{# прозор}few{# прозора}other{# прозора}}</translation>
 <translation id="232390861414237658">Аутоматски попуњавајте ову картицу за куповине у Chrome-у када је сачувате да бисте је користили уз Google Pay</translation>
+<translation id="2326283484705860548">Сада можете да аутоматски попуњавате више информација из Google новчаника</translation>
 <translation id="2328651992442742497">Дозвољено (подразумевано)</translation>
 <translation id="2328955282645810595">Грађевински и електрични алати</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истиче <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">Копирана слика</translation>
 <translation id="2347764072711098973">Плаћајте на рате уз Affirm, Zip или Klarna</translation>
 <translation id="2348509731468399833">Праћење цена је заустављено.</translation>
+<translation id="2348836501965732644">Управљајте информацијама или искључите ове предлоге у Подешавањима</translation>
 <translation id="2349957959687031096">Дугме Отвори картицу без архивирања, активирајте га да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="2350796302381711542">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове за које сте до сада користили <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chromium или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
@@ -1453,6 +1455,7 @@
 <translation id="340924996148642843">Поређење тренутно није доступно</translation>
 <translation id="3409896703495473338">Управљајте безбедносним подешавањима</translation>
 <translation id="3411091017011773343">Отпреми за <ph name="HOURS" /> с</translation>
+<translation id="341134412449102894">Информације се чувају у <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-у за <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Најбезбедније је да посетите овај сајт касније ако користите јавну мрежу. Ризик је мањи са поуздане мреже, попут кућне или пословне WiFi мреже.</translation>
 <translation id="3414275587143250384">Дистрибуирано рачунарство и рачунарство у клауду</translation>
 <translation id="3414952576877147120">Величина:</translation>

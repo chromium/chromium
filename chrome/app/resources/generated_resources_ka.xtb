@@ -2872,6 +2872,7 @@
 <translation id="2950666755714083615">დამარეგისტრირე</translation>
 <translation id="2953210795988451570">უსაფრთხოების განახლებებს აღარ მიიღებთ. გამოცვალეთ თქვენი Chromebook.</translation>
 <translation id="2953218713108551165">შეტყობინებები არ არის დაშვებული <ph name="SITE" />-ისთვის. მომდევნო ვიზიტისას ხელახლა გაკითხავთ.</translation>
+<translation id="2955048943983973430">დაკავშირებული Google სერვისები</translation>
 <translation id="2956070239128776395">სექცია ჩადგმულია ჯგუფში: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">ჩართეთ შემმუშავებლის რეჟიმი, რომ გამოიყენოთ ეს გაფართოება, რომელიც ვერ მიმოიხილა Chrome Web Store-მა.</translation>
 <translation id="2958721676848865875">პაკეტის გაფართოების გაფრთხილება</translation>
@@ -4628,6 +4629,7 @@
 <translation id="4151503145138736576">გასასუფთავებელი ხაზგარეშე მეხსიერება არ არის</translation>
 <translation id="4152011295694446843">აქ იპოვით თქვენს სანიშნეებს</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
+<translation id="4153858337812834972">ბოლო ჩანართები</translation>
 <translation id="4154658846204884961">კომეტა</translation>
 <translation id="4154664944169082762">თითის ანაბეჭდები</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> — მარცხენა ხედი</translation>
@@ -7103,6 +7105,7 @@
 <translation id="5919305207330938913">ყველა შეგროვილი მონაცემი გამოიყენება Google-ის <ph name="BEGIN_LINK" />კონფიდენციალურობის დებულების<ph name="END_LINK" /> მიხედვით.</translation>
 <translation id="5919486630433391408">ჩაშენებული პროგრამული უზრუნველყოფის განახლებები გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="5920543303088087579">ამ ქსელთან დაკავშირება გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
+<translation id="5922493635960054020">დაბლოკეთ JavaScript-ის ოპტიმიზატორზე წვდომა ახალმონახულებულ საიტებზე. საჭიროებს Safe Browsing-ს</translation>
 <translation id="5922963926582976524">მყისიერი უსადენო ქსელის გათიშვა</translation>
 <translation id="5924047253200400718">დახმარების მიღება<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">მკითხეთ Microsoft ფაილების Google Drive-ში კოპირებამდე ან გადატანამდე</translation>

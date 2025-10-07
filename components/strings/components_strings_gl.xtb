@@ -1237,6 +1237,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="305162504811187366">O historial de Escritorio remoto de Chrome, incluso as marcas de tempo, os hosts e os códigos de identificación da sesión do cliente</translation>
 <translation id="3052868890529250114">Adoitas conectarte a este sitio web de maneira segura, pero desta vez Chrome non puido usar unha conexión segura. É posible que un atacante estea tentando espiar ou modificar a túa conexión de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Pantalla de erro de pago aprazado. Teclado oculto.</translation>
 <translation id="3061707000357573562">Servizo de parche</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación…</translation>
 <translation id="3063453392496098461">Produciuse un erro na instalación dos servizos en segundo plano de VPN.</translation>
@@ -1991,6 +1992,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4242981939686657948">Para desfrutar dunha maneira máis potente de facer buscas no historial de navegación, activa</translation>
 <translation id="4244926541863471678">Filme</translation>
 <translation id="4246517972543675653">Estudar no estranxeiro</translation>
+<translation id="4250343410682686342">A pantalla de erro de pago aprazado está aberta a altura completa.</translation>
 <translation id="4250431568374086873">A túa conexión a este sitio non é completamente segura</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5123433949759960244">Baloncesto</translation>
+<translation id="5124797626438336458">A pantalla de erro de pago aprazado está aberta a altura media.</translation>
 <translation id="5125575917473813637">Edita a tarxeta de identidade</translation>
 <translation id="5125751979347152379">URL non válido.</translation>
 <translation id="512592033764059484">Fútbol</translation>
@@ -4174,6 +4177,7 @@ Detalles adicionais:
 <translation id="7860345425589240791">Introduce a nova data de vencemento e o CVC do <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Queres saír do sitio?</translation>
 <translation id="7865448901209910068">A mellor velocidade</translation>
+<translation id="7865482168955081228">A pantalla de erro de pago aprazado está pechada.</translation>
 <translation id="7870281855125116701">Desconto atopado</translation>
 <translation id="7871445724586827387">Cambiar o contrasinal da Conta de Google</translation>
 <translation id="787226752901403048">Inicia sesión en Chrome para compartir grupos de pestanas e unirte a eles, así como para desenvolver ideas con outras persoas</translation>

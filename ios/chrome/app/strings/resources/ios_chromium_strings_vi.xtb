@@ -200,6 +200,9 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="5671188105328420281">Mẹo khi dùng Chromium</translation>
 <translation id="5688047395118852662">Thẻ này hiển thị cho bạn các nội dung đề xuất về cách khai thác tối đa Chromium.</translation>
 <translation id="5700709190537129682">Chromium không thể kiểm tra mật khẩu của bạn</translation>
+<translation id="5731004036450828399">Để đảm bảo an toàn cho khoá truy cập, trước tiên, bạn cần tạo mã PIN khôi phục.
+
+        Khoá truy cập được lưu trong Trình quản lý mật khẩu nên bạn có thể sử dụng khoá truy cập trong Chromium trên mọi thiết bị.</translation>
 <translation id="584550191241316896">Đã đăng nhập vào Chromium</translation>
 <translation id="5862307444128926510">Chào mừng bạn đến với Chromium</translation>
 <translation id="5889847953983052353">Khi bật:
@@ -267,6 +270,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Dữ liệu được chọn đã bị xóa khỏi Chromium và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại history.google.com.</translation>
 <translation id="7395825497086981028">Mật khẩu của bạn sẽ được lưu vào Trình quản lý mật khẩu cho <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Khoá truy cập này sẽ được lưu vào Trình quản lý mật khẩu cho <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Mở Chromium</translation>
 <translation id="7531461704633548377">Từ Chromium</translation>
 <translation id="7554983317097061001">Mẹo khi dùng Chromium: Di chuyển Chromium vào thanh dock</translation>
@@ -300,6 +304,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8254729934443216898">Khám phá các tính năng mới giúp bạn khai thác tối đa Chromium.</translation>
 <translation id="8293572045658095405">Bạn đang ở trong chế độ ẩn danh của Chromium</translation>
 <translation id="830951810931292870">Mở các URL đã nhập bằng chế độ Ẩn danh trong Chromium.</translation>
+<translation id="8385503371191508165">Bắt đầu lưu khoá truy cập bằng Trình quản lý mật khẩu</translation>
 <translation id="8390323835464055390">Đăng nhập bằng mật khẩu và khoá truy cập đã lưu từ mọi ứng dụng bằng cách sử dụng Chromium làm dịch vụ tự động điền</translation>
 <translation id="8409374867500149834">Chromium sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu trên thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}other{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu trên thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}}</translation>

@@ -1046,6 +1046,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5059136629401106827">Í lagi</translation>
 <translation id="5062321486222145940">Setja upp Google Drive</translation>
 <translation id="5067540696062462445">Niðurhal</translation>
+<translation id="5070314445039955096">Heimildir „<ph name="SITE_DOMAIN" />“ verða endurstilltar á „Slökkt“ þegar þú lokar vefsvæðinu</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} af {count} greiðslumáta}one{{position} af {count} greiðslumáta}other{{position} af {count} greiðslumátum}}</translation>
 <translation id="5075939510584558547">Vista án dulkóðunar</translation>
 <translation id="5076534614343816664">Verðrakning</translation>

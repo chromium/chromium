@@ -2886,6 +2886,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2950666755714083615">I-sign up ako</translation>
 <translation id="2953210795988451570">Natapos na ang mga update sa seguridad. Mag-upgrade sa bagong Chromebook.</translation>
 <translation id="2953218713108551165">Hindi pinapayagan ang mga notification para sa <ph name="SITE" />. Tatanungin ka ulit sa iyong susunod na pagbisita.</translation>
+<translation id="2955048943983973430">Mga kaugnay na serbisyo ng Google</translation>
 <translation id="2956070239128776395">Seksyong naka-nest sa grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">I-on ang developer mode para magamit ang extension na ito, na hindi masusuri ng Chrome Web Store.</translation>
 <translation id="2958721676848865875">Babala sa extension ng pack</translation>
@@ -4642,6 +4643,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4151503145138736576">Walang lilinising offline na storage</translation>
 <translation id="4152011295694446843">Makikita mo rito ang iyong mga bookmark</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
+<translation id="4153858337812834972">Mga pinakakamakailang tab</translation>
 <translation id="4154658846204884961">Comet</translation>
 <translation id="4154664944169082762">Mga fingerprint</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - View sa kaliwa</translation>
@@ -7117,6 +7119,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5919305207330938913">Gagamitin ang lahat ng kinolektang data alinsunod sa <ph name="BEGIN_LINK" />Patakaran sa Privacy<ph name="END_LINK" /> ng Google.</translation>
 <translation id="5919486630433391408">Na-disable ng iyong administrator ang mga update sa firmware.</translation>
 <translation id="5920543303088087579">Na-disable ng iyong administrator ang pagkonekta sa network na ito</translation>
+<translation id="5922493635960054020">I-block ang access sa optimizer sa JavaScript sa mga bagong binisitang site. Nagre-require ng Ligtas na Pag-browse</translation>
 <translation id="5922963926582976524">Idiskonekta ang network ng Instant hotspot</translation>
 <translation id="5924047253200400718">Humingi ng tulong<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Magtanong bago kumopya o maglipat ng mga Microsoft file sa Google Drive</translation>

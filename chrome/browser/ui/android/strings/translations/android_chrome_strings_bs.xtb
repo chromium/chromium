@@ -159,6 +159,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1726477445370128854">Možete brže pregledati i pretraživati kada Chrome predučita stranice za koje smatra da ih možete posjetiti</translation>
 <translation id="1728803206919861584">Sačuvati pristupni ključ izvan anonimnog načina rada?</translation>
 <translation id="1732514748744806741">Obavijestit ćemo vas ako vaše lozinke postanu ugrožene</translation>
+<translation id="1737694586321018892">Nabavite Chromeovu najjaču sigurnost</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 web lokacija je nedavno poslala mnogo obavještenja}one{# web lokacija je nedavno poslala mnogo obavještenja}few{# web lokacije su nedavno poslale mnogo obavještenja}other{# web lokacija je nedavno poslalo mnogo obavještenja}}</translation>
 <translation id="1749561566933687563">Sinhronizirajte svoje oznake</translation>
 <translation id="1750238553597293878">Nastavite koristiti lozinke na Google računu</translation>
@@ -974,6 +975,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="549660026907543296">Pridružite se kao <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Donja tabela nedavne aktivnosti</translation>
 <translation id="5526281268548144413">Nije moguće zatvoriti u više prozora</translation>
+<translation id="5532536403031755365">Dodatno poboljšajte zaštitu od online prijetnji uz poboljšanu zaštitu</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je objavljena online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="5555525474779371165">Odaberite zaštitu Sigurno pregledanje</translation>
@@ -1831,6 +1833,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="9133397713400217035">Istražite van mreže</translation>
 <translation id="9143389653531441385">Registrirajte se putem <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Prijavi se ponovo</translation>
+<translation id="9148564897242852377">Uključivanje/isključivanje odabira kartica</translation>
 <translation id="9157212632995922070">Odaberite račun da nastavite na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Dijeli samo sadržaj</translation>
 <translation id="9161172953291434881">Želite li odobriti pristup podacima ovoj web lokaciji?</translation>

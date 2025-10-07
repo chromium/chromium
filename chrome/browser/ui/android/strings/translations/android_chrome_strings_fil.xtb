@@ -415,7 +415,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912345083818861431">Gamitin ang lock ng screen para makita ang mga nakabukas na tab na Incognito</translation>
 <translation id="2918484639460781603">Pumunta sa mga setting</translation>
-<translation id="2920776558188188922">Ilipat ang posisyon ng iyong address bar sa itaas o ibaba para sa naka-customize na experience sa pag-browse</translation>
 <translation id="2923908459366352541">Di-wasto ang pangalan</translation>
 <translation id="2932150158123903946">Storage ng <ph name="APP_NAME" /> sa Google</translation>
 <translation id="2932222164150889403">Hindi magbabago ang iyong keyboard</translation>
@@ -1834,6 +1833,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9133397713400217035">I-explore Offline</translation>
 <translation id="9143389653531441385">Mag-sign up sa pamamagitan ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
+<translation id="9148564897242852377">I-toggle ang pagpili ng tab</translation>
 <translation id="9157212632995922070">Pumili ng account para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Ibahagi lang ang content</translation>
 <translation id="9161172953291434881">Pinagkakatiwalaan mo ba ang site na ito sa iyong data?</translation>

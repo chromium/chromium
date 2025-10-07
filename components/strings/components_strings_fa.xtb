@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">مدیریت اطلاعات</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{‫۱ پنجره}one{‫# پنجره}other{‫# پنجره}}</translation>
 <translation id="232390861414237658">‏تکمیل خودکار این کارت برای خریدهایی که در Chrome انجام می‌شود، وقتی برای استفاده با Google Pay ذخیره شده است</translation>
+<translation id="2326283484705860548">‏اکنون می‌توانید اطلاعات بیشتری را از «کیف پول Google» به‌طور خودکار تکمیل کنید</translation>
 <translation id="2328651992442742497">مجاز است (پیش‌فرض)</translation>
 <translation id="2328955282645810595">ابزارهای ساختمانی و برقی</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />، در <ph name="EXPIRATION_DATE_ABBR" /> منقضی می‌شود</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">تصویری که کپی کرده‌اید</translation>
 <translation id="2347764072711098973">‏می‌توانید بااستفاده از Affirm،‏ Zip، یا Klarna قسطی پرداخت کنید</translation>
 <translation id="2348509731468399833">پیگیری قیمت متوقف شد.</translation>
+<translation id="2348836501965732644">اطلاعات خود را مدیریت کنید یا این پیشنهادها را در «تنظیمات» خاموش کنید</translation>
 <translation id="2349957959687031096">دکمه «باز کردن زبانه ناشناس»؛ برای باز کردن «زبانه ناشناس» جدید و مرور کردن به‌صورت خصوصی، آن را فعال کنید</translation>
 <translation id="2350796302381711542">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را به‌جای <ph name="REPLACED_HANDLER_TITLE" /> باز کند؟</translation>
 <translation id="2351718832234620840">‏این سرور نتوانست اثبات کند <ph name="DOMAIN" /> است زیرا از گواهینامه امنیتی‌ای استفاده می‌کند که مورداعتماد Chromium یا پیکربندی سیستم برای رمزگذاری ترافیک وب نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد.</translation>

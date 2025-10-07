@@ -1046,6 +1046,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installi Google Drive</translation>
 <translation id="5067540696062462445">Allalaadimised</translation>
+<translation id="5070314445039955096">Saidi „<ph name="SITE_DOMAIN" />“ load lähtestatakse väljalülitatud olekusse, kui saidilt lahkute</translation>
 <translation id="507187271399539513">{count,plural, =1{Makseviis {position}, kokku {count} makseviis}other{Makseviis {position}, kokku {count} makseviisi}}</translation>
 <translation id="5075939510584558547">Ilma krüpteerimata salvestamine</translation>
 <translation id="5076534614343816664">Hinnajälgimine</translation>

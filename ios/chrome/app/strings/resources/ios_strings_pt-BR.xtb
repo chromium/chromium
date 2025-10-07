@@ -1046,6 +1046,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
 <translation id="5067540696062462445">Downloads</translation>
+<translation id="5070314445039955096">As permissões do "<ph name="SITE_DOMAIN" />" serão redefinidas como desativadas quando você sair deste site</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} de {count} forma de pagamento}one{{position} de {count} forma de pagamento}other{{position} de {count} formas de pagamento}}</translation>
 <translation id="5075939510584558547">Salvar sem criptografia</translation>
 <translation id="5076534614343816664">Monitoramento de preços</translation>

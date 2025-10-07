@@ -159,6 +159,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="1726477445370128854">Przeglądanie i wyszukiwanie działa szybciej, gdy Chrome wstępnie wczytuje strony, które przewiduje, że możesz odwiedzić</translation>
 <translation id="1728803206919861584">Zapisać klucz dostępu poza trybem incognito?</translation>
 <translation id="1732514748744806741">Jeśli Twoje hasła zostaną przejęte, damy Ci znać</translation>
+<translation id="1737694586321018892">Korzystaj z najlepszych zabezpieczeń Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 witryna wysłała ostatnio wiele powiadomień}few{# witryny wysłały ostatnio wiele powiadomień}many{# witryn wysłało ostatnio wiele powiadomień}other{# witryny wysłało ostatnio wiele powiadomień}}</translation>
 <translation id="1749561566933687563">Synchronizuj swoje zakładki</translation>
 <translation id="1750238553597293878">Nadal używaj haseł na swoim koncie Google</translation>
@@ -974,6 +975,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="549660026907543296">Dołącz jako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Plansza dolna Ostatnia aktywność</translation>
 <translation id="5526281268548144413">Nie można zamknąć w kilku oknach</translation>
+<translation id="5532536403031755365">Wprowadź dodatkową warstwę zabezpieczeń przed zagrożeniami online dzięki silniejszej ochronie</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
 <translation id="5554520618550346933">Gdy użyjesz hasła, które zostało opublikowane online, Chrome wyświetli ostrzeżenie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
 <translation id="5555525474779371165">Wybierz poziom ochrony Bezpiecznego przeglądania</translation>
@@ -1831,6 +1833,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="9133397713400217035">Przeglądaj offline</translation>
 <translation id="9143389653531441385">Zarejestruj się przez <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
+<translation id="9148564897242852377">Przełącz wybór karty</translation>
 <translation id="9157212632995922070">Wybierz konto, z którego chcesz korzystać w witrynie <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Udostępnij tylko treść</translation>
 <translation id="9161172953291434881">Czy ufasz tej witrynie i chcesz powierzyć jej swoje dane?</translation>

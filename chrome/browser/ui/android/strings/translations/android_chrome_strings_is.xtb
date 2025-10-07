@@ -159,6 +159,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1726477445370128854">Þú getur vafrað og leitað á hraðari hátt þegar Chrome forhleður síðum sem vafrinn telur að þú munir opna</translation>
 <translation id="1728803206919861584">Vista aðgangslykil utan huliðsstillingar?</translation>
 <translation id="1732514748744806741">Við látum þig vita ef aðgangsorðin þín eru í hættu</translation>
+<translation id="1737694586321018892">Nýttu þér öflugustu öryggislausn Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Eitt vefsvæði sendi margar tilkynningar nýlega}one{# vefsvæði sendi margar tilkynningar nýlega}other{# vefsvæði sendu margar tilkynningar nýlega}}</translation>
 <translation id="1749561566933687563">Samstilltu bókamerkin þín</translation>
 <translation id="1750238553597293878">Haltu áfram að nota aðgangsorðin á Google-reikningnum þínum</translation>
@@ -974,6 +975,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="549660026907543296">Taka þátt sem <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Blað neðst sem sýnir nýlega virkni</translation>
 <translation id="5526281268548144413">Ekki hægt að loka í mörgum gluggum</translation>
+<translation id="5532536403031755365">Notaðu aukna vörn til að verjast ógnum á netinu af enn meiri krafti</translation>
 <translation id="5548606607480005320">Öryggisathugun</translation>
 <translation id="5554520618550346933">Þegar þú notar aðgangsorð varar Chrome þig við ef það hefur verið birt á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
 <translation id="5555525474779371165">Veldu vernd öruggrar vefskoðunar</translation>

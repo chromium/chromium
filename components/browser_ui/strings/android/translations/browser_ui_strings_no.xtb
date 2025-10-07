@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Hjelp oss med å forbedre Chrome ved å fortelle oss hvorfor du tillot informasjonskapsler fra tredjeparter. <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan be om å få datamaskinversjonen av nettsteder</translation>
 <translation id="1085696779717592361">Bruk Chrome som standard</translation>
+<translation id="113098737392899175">Naviger på sider med en tekstmarkør når et tastatur er koblet til</translation>
 <translation id="1178015372320901893">Bunnfelt i mine snarveier</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -699,6 +700,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8803526663383843427">Når funksjonen er på</translation>
 <translation id="8805385115381080995">Surfing går raskere fordi det er mindre sannsynlig at nettsteder ber deg om å bekrefte at du er en ekte person</translation>
 <translation id="8816026460808729765">Blokkér nettsteder fra å få tilgang til sensorer</translation>
+<translation id="884765916894384048">Gå til bakgrunnen</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prøv å tillate informasjonskapsler fra tredjeparter midlertidig. Det innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>

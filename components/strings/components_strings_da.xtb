@@ -1237,6 +1237,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="305162504811187366">Historik for Chrome Fjernskrivebord, herunder tidsstempler, hosts og id'er for klientsessioner</translation>
 <translation id="3052868890529250114">Du opretter normalt forbindelse til websites på en sikker måde, men Chrome kunne ikke anvende en sikker forbindelse denne gang. Det kan skyldes en hacker, der prøver at opfange eller ændre din netværksforbindelse. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prisfald på <ph name="PRICE_DROP" /> på <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Skærm med fejlmeddelelse for Køb nu, betal senere. Tastaturet er skjult.</translation>
 <translation id="3061707000357573562">Tjeneste til programrettelse</translation>
 <translation id="3062655045399308513">Slet browserdata...</translation>
 <translation id="3063453392496098461">Installationen af VPN-baggrundstjenester mislykkedes.</translation>
@@ -1991,6 +1992,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4242981939686657948">Hvis du vil søge i din browserhistorik på en mere effektiv måde, skal du aktivere</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Internationale studier</translation>
+<translation id="4250343410682686342">Skærmen med fejlmeddelelse for Køb nu, betal senere er åbnet i fuld højde.</translation>
 <translation id="4250431568374086873">Din forbindelse til dette website er ikke helt sikker</translation>
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5122786942953798871">Kuvert (bomuld)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5124797626438336458">Skærmen med fejlmeddelelse for Køb nu, betal senere er åbnet i halv højde.</translation>
 <translation id="5125575917473813637">Rediger identitetskort</translation>
 <translation id="5125751979347152379">Ugyldig webadresse.</translation>
 <translation id="512592033764059484">Fodbold</translation>
@@ -4175,6 +4178,7 @@ Yderligere oplysninger:
 <translation id="7860345425589240791">Angiv din nye udløbsdato og CVC, som du finder på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vil du forlade websitet?</translation>
 <translation id="7865448901209910068">Bedste hastighed</translation>
+<translation id="7865482168955081228">Skærmen med fejlmeddelelse for Køb nu, betal senere er lukket.</translation>
 <translation id="7870281855125116701">Der blev fundet en rabat</translation>
 <translation id="7871445724586827387">Skift adgangskoden til din Google-konto</translation>
 <translation id="787226752901403048">Log ind i Chrome for at dele og deltage i fanegrupper og samarbejde om idéer</translation>

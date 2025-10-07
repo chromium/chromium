@@ -7994,6 +7994,14 @@ UYARI: Bu ayarı değiştirirken dikkatli olun. Bu ayar, coğrafi konumla ilgili
 Özellikle, bu politika <ph name="DISALLOW" /> değerine ayarlanırsa <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> politikasının <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> ile <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> seçenekleri kullanım dışı kalır ve yalnızca <ph name="LOG_IN" /> ekranındaki <ph name="IP" /> bazlı konum çözümü kullanılır.</translation>
 <translation id="6338982178236723271">Sistem bilgileri raporlama</translation>
 <translation id="6339355882150329269">Video oynatılırken kullanıcıyı işlem yapmıyor olarak değerlendirme</translation>
+<translation id="6347110299837147365">Bu politika, yöneticilerin tarayıcı HTTP önbelleğini diskte şifrelemesine olanak tanır.
+Şu anda yalnızca Windows'da desteklenmektedir.
+
+Bu politika etkinleştirildiğinde tarayıcı önbelleği şifrelenir.
+
+Bu politika devre dışı bırakıldığında veya ayarlanmadığında tarayıcı önbelleği şifrelenmez.
+
+Tarayıcı önbelleği şifreleme, performansı etkileyebilir.</translation>
 <translation id="6352714113109004581">Politikayı ayarlamak, kullanıcılardan HID cihazlarına erişim izni vermelerini isteyebilecek siteleri belirlemenize olanak sağlar. Bu şekilde, belirli URL kalıplarının yer aldığı bir liste hazırlayabilirsiniz.
 
       Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Etkin değilse kullanıcının ayarları geçerlidir.

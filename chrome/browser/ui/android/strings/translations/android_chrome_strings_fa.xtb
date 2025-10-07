@@ -415,7 +415,6 @@
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
 <translation id="2912345083818861431">استفاده از قفل صفحه برای دیدن برگه‌های ناشناس باز</translation>
 <translation id="2918484639460781603">رفتن به تنظیمات</translation>
-<translation id="2920776558188188922">برای داشتن تجربه مرور سفارشی‌سازی‌شده، موقعیت نوار نشانی را به بالا یا پایین تغییر دهید</translation>
 <translation id="2923908459366352541">نام نامعتبر است</translation>
 <translation id="2932150158123903946">‏فضای ذخیره‌سازی Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">صفحه‌کلیدتان تغییر نخواهد کرد</translation>
@@ -637,7 +636,7 @@
 <translation id="397650873162244514">‫<ph name="TAB_TITLE" />، زبانه سنجاق‌شده</translation>
 <translation id="3985022125189960801">اگر می‌خواهید سایتی در مجموعه سایت‌هایی که می‌توانند علایقتان را حدس بزنند قرار گیرد، آن سایت را دوباره اضافه کنید</translation>
 <translation id="3985215325736559418">می‌خواهید دوباره <ph name="FILE_NAME" /> را بارگیری کنید؟</translation>
-<translation id="3987993985790029246">کپی پیوند</translation>
+<translation id="3987993985790029246">کپی کردن پیوند</translation>
 <translation id="4000212216660919741">صفحه اصلیِ آفلاین</translation>
 <translation id="4000670338830950598">‏با موردی برجسته‌شده Google Chrome را سفارشی‌سازی و کنترل کنید</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{‏‫۱ گذرواژه لورفته در «حساب Google» شما}one{‏‫# گذرواژه لورفته در «حساب Google» شما}other{‏‫# گذرواژه لورفته در «حساب Google» شما}}</translation>
@@ -1834,6 +1833,7 @@
 <translation id="9133397713400217035">کاوش درحالت آفلاین</translation>
 <translation id="9143389653531441385">ثبت‌نام با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>
+<translation id="9148564897242852377">تغییر وضعیت انتخاب زبانه</translation>
 <translation id="9157212632995922070">برای ادامه کار در <ph name="SITE_ETLD_PLUS_ONE" />، حسابی انتخاب کنید</translation>
 <translation id="9158770349521403363">فقط هم‌رسانی محتوا</translation>
 <translation id="9161172953291434881">آیا درخصوص داده‌هایتان به این سایت اعتماد دارید؟</translation>

@@ -998,6 +998,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="166278006618318542">Subyekt ochiq kaliti algoritmi</translation>
 <translation id="1662801900924515589"><ph name="APP" /> oʻrnatildi</translation>
 <translation id="1663698992894057019">Oxirgi xavfsizlik sozlamalari va dasturlardan foydalanish uchun yangi Chromebook oling</translation>
+<translation id="1664497218584335032">Sayt bu havolani ilovada ochmoqchi.</translation>
 <translation id="166454475160289583">Klaviaturadagi tugmalarni almashtirishga ruxsat berilmagan</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> qurilmangizni qulfdan chiqarish uchun parol yoki PIN koddan foydalaning</translation>
 <translation id="1665859804801131136">Ekspressionizm</translation>
@@ -2874,6 +2875,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2950666755714083615">Yozilish</translation>
 <translation id="2953210795988451570">Xavfsizlik yangilanishlari tugadi. Yangi Chromebook oling.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> uchun bildirishnomalar chiqishi taqiqlangan. Keyingi tashrifda qaytadan soʻraladi.</translation>
+<translation id="2955048943983973430">Aloqador Google xizmatlari</translation>
 <translation id="2956070239128776395">Boʻlim guruhlandi: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Bu kengaytmadan foydalanish uchun dasturchi rejimini yoqing, uni Chrome Web Store tekshirolmaydi.</translation>
 <translation id="2958721676848865875">Kengaytmani arxivlash ogohlantiruvi</translation>
@@ -4628,6 +4630,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4151503145138736576">Tozalash uchun oflayn xotira topilmadi</translation>
 <translation id="4152011295694446843">Brauzer bukmarklari shu yerda chiqadi</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ta ichki oyna}other{# ta ichki oyna}}</translation>
+<translation id="4153858337812834972">Eng oxirgi varaqlar</translation>
 <translation id="4154658846204884961">Kometa</translation>
 <translation id="4154664944169082762">Barmoq izlari</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Chap oyna</translation>
@@ -6548,10 +6551,12 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5517304475148761050">Bu ilova Play Marketga kirishni talab etadi</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> havolalari har doim shu ilovada ochilsin</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> amalini olib tashlash</translation>
 <translation id="5521078259930077036">Bu boshqa bosh sahifami?</translation>
 <translation id="5522156646677899028">Bu kengaytmada havfsizlikka ta’sir qiladigan jiddiy zaiflik aniqlandi.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Kengaytma administrator tomonidan oʻrnatildi}other{# ta kengaytma administrator tomonidan oʻrnatildi}}</translation>
+<translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> havolalarini <ph name="APP_NAME" /> ilovasida oching</translation>
 <translation id="5523532775593636291">Siz kiritgan saytlar doim faol qoladi va ularning xotirasi boʻshatilmaydi</translation>
 <translation id="5523558474028191231">Nomi kamida <ph name="MAX_CHARACTER_COUNT" /> ta harf, raqam yoki maxsus belgilardan iborat boʻlsin</translation>
 <translation id="5526745900034778153">Sinxronizatsiyani qaytarish uchun hisobingizga kiring</translation>
@@ -7102,6 +7107,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5919305207330938913">Jamlangan barcha maʼlumotlar Google <ph name="BEGIN_LINK" />maxfiylik siyosatiga<ph name="END_LINK" /> muvofiq ishlatiladi.</translation>
 <translation id="5919486630433391408">Mikrodastur yangilanishi administrator tomonidan oʻchirib qoʻyilgan.</translation>
 <translation id="5920543303088087579">Bu tarmoqqa ulanish ruxsati administrator tomonidan o‘chirib qo‘yilgan</translation>
+<translation id="5922493635960054020">Yangi ochilgan saytlarda JavaScript optimallash vositasiga ruxsatni bloklash. Saytlarni xavfsiz kezish rejimi talab etiladi.</translation>
 <translation id="5922963926582976524">Tezkor modem aloqasini uzish</translation>
 <translation id="5924047253200400718">Yordam sahifasiga o‘tish<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft fayllarini Google Drive xizmatiga koʻchirish yoki nusxalashdan oldin soʻralsin</translation>
@@ -9579,6 +9585,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7663859337051362114">eSIM profilini kiritish</translation>
 <translation id="76641554187607347">Hech qaysi klaviatura ulanmagan</translation>
 <translation id="7664442418269614729">Bu kartadan iPhoneda foydalaning</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> havolasini ochish uchun ilova tanlang</translation>
 <translation id="7665082356120621510">Oʻlchamni saqlash</translation>
 <translation id="7665369617277396874">Hisob kiritish</translation>
 <translation id="7665445336029073980">Toʻliq yuklab olish tarixi</translation>
@@ -11200,6 +11207,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8750786237117206586">ChromeOS Flex audio sozlamalarini boshqarish</translation>
 <translation id="8751034568832412184">Maktab</translation>
 <translation id="8751329102746373229">Administratordan</translation>
+<translation id="875242763254084885"><ph name="ORIGIN" /> sayti bu havolani ilovada ochmoqchi.</translation>
 <translation id="8752451679755290210">Elementlarni avtomatik varaqlash</translation>
 <translation id="8753948258138515839">Fayllar ilovasi yordamida Google Drive, ChromeOS Flex qurilmalari yoki tashqi xotira qurilmasidagi hujjatlarni tezkor ochish mumkin.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> qo‘llab-quvvatlanadigan muhitda ishga tushirilganda, kompyuterda proksi-server uchun tizim sozlamalaridan foydalaniladi. Lekin noma’lum sabablarga ko‘ra, sizning tizimingizda ishga tushmadi, balki tizim sozlamalarini ishga tushirishda xatolik yuz bergandir.&lt;/p&gt;

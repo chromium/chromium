@@ -159,6 +159,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1726477445370128854">Du kan surfa och söka snabbare när Chrome läser in sidor som du kanske vill besöka i förväg</translation>
 <translation id="1728803206919861584">Vill du spara nyckeln utanför inkognitoläget?</translation>
 <translation id="1732514748744806741">Vi meddelar dig om dina lösenord är utsatta</translation>
+<translation id="1737694586321018892">Få det bästa skyddet i Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 webbplats har nyligen skickat många aviseringar}other{# webbplatser har nyligen skickat många aviseringar}}</translation>
 <translation id="1749561566933687563">Synkronisera bokmärken</translation>
 <translation id="1750238553597293878">Fortsätt använda lösenorden i Google-kontot</translation>
@@ -975,6 +976,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="549660026907543296">Gå med som <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Senaste aktiviteten i arket på nedre delen av skärmen</translation>
 <translation id="5526281268548144413">Kan inte stängas i flera fönster</translation>
+<translation id="5532536403031755365">Lägg till ett extra skyddslager mot onlinehot med Utökat skydd</translation>
 <translation id="5548606607480005320">Säkerhetskontroll</translation>
 <translation id="5554520618550346933">När du använder ett lösenord visas en varning i Chrome om det har publicerats online. När detta görs krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5555525474779371165">Välj ditt skydd med Säker webbsökning</translation>

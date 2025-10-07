@@ -159,6 +159,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1726477445370128854">Poți să navighezi și să cauți mai repede când Chrome preîncarcă pagini pe care crede că le-ai putea accesa</translation>
 <translation id="1728803206919861584">Salvezi cheia de acces în afara modului incognito?</translation>
 <translation id="1732514748744806741">Te vom anunța dacă îți sunt compromise parolele</translation>
+<translation id="1737694586321018892">Beneficiază de cel mai înalt nivel de securitate de la Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Un site a trimis recent multe notificări}few{# site-uri au trimis recent multe notificări}other{# de site-uri au trimis recent multe notificări}}</translation>
 <translation id="1749561566933687563">Sincronizează marcajele</translation>
 <translation id="1750238553597293878">Folosește în continuare parolele din Contul Google</translation>
@@ -974,6 +975,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="549660026907543296">Alătură-te ca <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Foaia din partea de jos cu activitatea recentă</translation>
 <translation id="5526281268548144413">Nu pot fi închise în mai multe ferestre</translation>
+<translation id="5532536403031755365">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online cu protecție îmbunătățită</translation>
 <translation id="5548606607480005320">Verificare de siguranță</translation>
 <translation id="5554520618550346933">Când folosești o parolă, Chrome te avertizează dacă a fost publicată online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>
 <translation id="5555525474779371165">Alege protecția prin Navigarea sigură</translation>

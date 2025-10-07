@@ -2887,6 +2887,7 @@
 <translation id="2950666755714083615">신청</translation>
 <translation id="2953210795988451570">보안 업데이트가 종료되었습니다. 새 Chromebook으로 업그레이드하세요.</translation>
 <translation id="2953218713108551165"><ph name="SITE" />의 알림이 허용되지 않습니다. 다음에 사이트를 방문할 때 설정을 다시 확인합니다.</translation>
+<translation id="2955048943983973430">관련 Google 서비스</translation>
 <translation id="2956070239128776395">그룹에 섹션이 중첩됨: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">이 확장 프로그램을 사용하려면 개발자 모드를 사용 설정해야 하며 Chrome 웹 스토어에서 검토되지 않습니다.</translation>
 <translation id="2958721676848865875">확장 프로그램 패키지 경고</translation>
@@ -4641,6 +4642,7 @@
 <translation id="4151503145138736576">정리할 오프라인 저장용량 없음</translation>
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{탭 1개}other{탭 #개}}</translation>
+<translation id="4153858337812834972">최근 탭</translation>
 <translation id="4154658846204884961">혜성</translation>
 <translation id="4154664944169082762">지문</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - 왼쪽 뷰</translation>
@@ -4945,6 +4947,7 @@
 <translation id="437809255587011096">텍스트 읽기 스타일 지정</translation>
 <translation id="4378154925671717803">전화</translation>
 <translation id="4378308539633073595">앞으로 스크롤</translation>
+<translation id="4378363201814870400">비밀번호, 결제 수단, 주소, 신분증과 같은 자동 완성 정보를 관리하여 인터넷 탐색 속도를 높이세요</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4378556263712303865">기기 요청</translation>
 <translation id="4378589147979399051">기본 키보드로 마우스 커서 제어하기</translation>
@@ -7116,6 +7119,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5919305207330938913">수집된 모든 데이터는 Google <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
 <translation id="5919486630433391408">관리자가 펌웨어 업데이트를 사용 중지했습니다.</translation>
 <translation id="5920543303088087579">관리자가 이 네트워크에 연결할 수 없도록 설정했습니다.</translation>
+<translation id="5922493635960054020">새로 방문한 사이트에서 JavaScript 최적화 도구 액세스 차단. 세이프 브라우징 필요</translation>
 <translation id="5922963926582976524">인스턴트 핫스팟 네트워크 연결 해제</translation>
 <translation id="5924047253200400718">도움말 보기<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft 파일을 Google Drive로 복사하거나 이동하기 전에 확인</translation>

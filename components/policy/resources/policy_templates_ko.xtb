@@ -6891,6 +6891,21 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 <translation id="5625771176514429288">Chrome 앱이 이러한 플랫폼에서 실행됩니다.</translation>
 <translation id="5627270992026554674">교사가 Google 클래스룸 수업 출석부를 사용하지 못하도록 차단</translation>
 <translation id="5630352020869108293">마지막 세션 복원</translation>
+<translation id="5630952076819481843">정책을 설정하면 Chrome에서 클라이언트 인증서를 자동으로 선택할 사이트를 지정하는 URL 패턴 목록을 작성할 수 있습니다. 값은 각각 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> 형식의 stringified JSON 사전 배열이며, 여기에서 <ph name="URL_PATTERN_PLACEHOLDER" />은 콘텐츠 설정 패턴입니다. <ph name="FILTER_PLACEHOLDER" />는 브라우저에서 자동으로 선택할 클라이언트 인증서를 제한합니다. 필터와 관계없이 서버의 인증서 요청과 일치하는 인증서만 선택됩니다. Android에서 Chrome은 자체적으로 프로비저닝한 클라이언트 인증서만 선택할 수 있으며 운영체제 수준에서 설치된 인증서에는 액세스할 수 없습니다.
+
+      <ph name="FILTER_PLACEHOLDER" /> 섹션 사용의 예:
+
+      * <ph name="FILTER_PLACEHOLDER" />를 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />으로 설정하면 CommonName이 <ph name="ISSUER_CN_PLACEHOLDER" />인 인증서에서 발급한 클라이언트 인증서만 선택됩니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />에 <ph name="ISSUER_STRING_VALUE" /> 및 <ph name="SUBJECT_STRING_VALUE" /> 섹션이 모두 포함된 경우 두 조건을 모두 만족하는 클라이언트 인증서만 선택됩니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />에 <ph name="FILTER_STRING_ORGANIZATION" /> 값이 있는 <ph name="SUBJECT_STRING_VALUE" /> 섹션이 포함된 경우 선택되려면 인증서에 지정된 값과 일치하는 조직이 하나 이상 있어야 합니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />에 <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> 값이 있는 <ph name="SUBJECT_STRING_VALUE" /> 섹션이 포함된 경우 선택되려면 인증서에 지정된 값과 일치하는 조직 단위가 하나 이상 있어야 합니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />를 <ph name="EMPTY_DICTIONARY" />로 설정하면 클라이언트 인증서 선택에 추가로 적용되는 제한은 없습니다. 웹 서버에서 제공한 필터가 계속 적용됩니다.
+
+      정책을 설정하지 않으면 어느 사이트에서도 자동으로 인증서가 선택되지 않습니다.</translation>
 <translation id="5633871703004128675">캐럿 강조표시 접근성 기능 사용</translation>
 <translation id="5634032995857968056">렌더러 앱 컨테이너 샌드박스 사용</translation>
 <translation id="5638334542697444045">사용자가 인스턴트 테더링을 사용하도록 허용 안함</translation>
@@ -7975,6 +7990,14 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 경고: 이 설정을 변경할 때 위치정보와 관련된 다른 정책(예: <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />)이 손상될 수 있으니 주의하세요. 특히 이 정책이 <ph name="DISALLOW" />(으)로 설정된 경우 그러면 <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> 정책의 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> 및 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> 옵션이 오작동하고 <ph name="LOG_IN" /> 화면에 <ph name="IP" /> 기반 위치 확인만 사용합니다.</translation>
 <translation id="6338982178236723271">시스템 정보 보고</translation>
 <translation id="6339355882150329269">동영상이 재생되는 동안 사용자를 유휴 상태로 간주하지 않음</translation>
+<translation id="6347110299837147365">관리자는 이 정책을 사용하여 디스크의 브라우저 HTTP 캐시를 암호화할 수 있습니다.
+현재는 Windows에서만 지원됩니다.
+
+이 정책을 사용 설정하면 브라우저 캐시가 암호화됩니다.
+
+정책을 사용 중지하거나 설정하지 않으면 브라우저 캐시가 암호화되지 않습니다.
+
+브라우저 캐시 암호화는 성능에 영향을 미칠 수 있습니다.</translation>
 <translation id="6352714113109004581">정책을 설정하면 어떤 사이트에서 사용자에게 HID 기기 액세스를 요청할 수 있는지 URL 패턴 목록을 만들어 지정할 수 있습니다.
 
       정책을 설정하지 않았을 때 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />이 설정되어 있으면 모든 사이트에 적용되며 설정되어 있지 않으면 사용자의 개인 설정이 적용됩니다.

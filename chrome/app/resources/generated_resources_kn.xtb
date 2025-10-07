@@ -1003,6 +1003,7 @@
 <translation id="166278006618318542">ವಿಷಯ ಸಾರ್ವಜನಿಕ ಕೀಲಿ ಆಲ್ಗಾರಿದಮ್</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1663698992894057019">ಇತ್ತೀಚಿನ ಭದ್ರತೆ ಮತ್ತು ಸಾಫ್ಟ್‌ವೇರ್‌ಗಾಗಿ ಹೊಸ Chromebook ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
+<translation id="1664497218584335032">ವೆಬ್‌ಸೈಟ್ ಈ ಲಿಂಕ್ ಅನ್ನು ಆ್ಯಪ್‌ನಲ್ಲಿ ತೆರೆಯಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="166454475160289583">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಇನ್‌ಪುಟ್ ಅನ್ನು ಓವರ್‌ರೈಡ್ ಮಾಡಲು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="1665328953287874063">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಪಾಸ್‌ವರ್ಡ್ ಅಥವಾ ಪಿನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1665859804801131136">ಎಕ್ಸ್‌ಪ್ರೆಷನಿಸಮ್</translation>
@@ -2878,6 +2879,7 @@
 <translation id="2950666755714083615">ನನ್ನನ್ನು ಸೈನ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="2953210795988451570">ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್‌ಗಳು ಕೊನೆಗೊಂಡಿವೆ. ಹೊಸ Chromebook ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> ಗಾಗಿ ಅಧಿಸೂಚನೆಗಳಿಗೆ ಅನುಮತಿಯಿಲ್ಲ. ನೀವು ಮುಂದಿನ ಬಾರಿ ಭೇಟಿ ನೀಡಿದಾಗ ಮತ್ತೊಮ್ಮೆ ಕೇಳಲಾಗುತ್ತದೆ.</translation>
+<translation id="2955048943983973430">ಸಂಬಂಧಿತ Google ಸೇವೆಗಳು</translation>
 <translation id="2956070239128776395">ವಿಭಾಗವನ್ನು ಗುಂಪಿನೊಳಗೆ ಸೇರಿಸಲಾಗಿದೆ: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಬಳಸಲು ಡೆವಲಪರ್ ಮೋಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ, ಇದನ್ನು Chrome ವೆಬ್‌ ಸ್ಟೋರ್ ನಿಂದ ಪರಿಶೀಲಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2958721676848865875">ಪ್ಯಾಕ್ ವಿಸ್ತರಣೆಯ ಎಚ್ಚರಿಕೆ</translation>
@@ -4633,6 +4635,7 @@
 <translation id="4151503145138736576">ತೆರವುಗೊಳಿಸಲು ಆಫ್‌ಲೈನ್ ಸಂಗ್ರಹಣೆ ಇಲ್ಲ</translation>
 <translation id="4152011295694446843">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="4153858337812834972">ತೀರಾ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="4154658846204884961">ಧೂಮಕೇತು</translation>
 <translation id="4154664944169082762">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳು</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - ಎಡ ವೀಕ್ಷಣೆ</translation>
@@ -6553,10 +6556,12 @@
 <translation id="5517304475148761050">ಈ ಆ್ಯಪ್‌ಗೆ Play Store ಗೆ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">ಈ ಆ್ಯಪ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ <ph name="PROTOCOL_SCHEME" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> ಆ್ಯಕ್ಷನ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5521078259930077036">ಇದು ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿದ್ದ ಹೋಮ್ ಆಗಿದೆಯಾ?</translation>
 <translation id="5522156646677899028">ಈ ವಿಸ್ತರಣೆಯು ಗಂಭೀರ ಭದ್ರತಾ ಅಪಾಯ ಸಾಧ್ಯತೆಯನ್ನು ಒಳಗೊಂಡಿದೆ.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಒಂದು ವಿಸ್ತರಣೆಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ}one{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು # ವಿಸ್ತರಣೆಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ}other{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು # ವಿಸ್ತರಣೆಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ}}</translation>
+<translation id="5523203511530504754"><ph name="APP_NAME" /> ನಲ್ಲಿ <ph name="PROTOCOL_SCHEME" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5523532775593636291">ನೀವು ಸೇರಿಸುವ ಸೈಟ್‌ಗಳು ಯಾವಾಗಲೂ ಸಕ್ರಿಯವಾಗಿರುತ್ತವೆ ಮತ್ತು ಅವುಗಳಿಂದ ಮೆಮೊರಿಯನ್ನು ಮುಕ್ತಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5523558474028191231">ಹೆಸರಿನಲ್ಲಿ ಅಕ್ಷರಗಳು, ಸಂಖ್ಯೆಗಳು ಮತ್ತು ವಿಶೇಷ ಅಕ್ಷರಗಳನ್ನು ಬಳಸಬಹುದು ಹಾಗೂ <ph name="MAX_CHARACTER_COUNT" /> ಅಕ್ಷರಗಳು ಅಥವಾ ಕಡಿಮೆ ಇರಬೇಕು</translation>
 <translation id="5526745900034778153">ಸಿಂಕ್‌ ಅನ್ನು ಮುಂದುವರಿಸಲು ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -7108,6 +7113,7 @@
 <translation id="5919305207330938913">ಸಂಗ್ರಹಿಸಿದ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು Google ನ <ph name="BEGIN_LINK" />ಗೌಪ್ಯತೆ ನೀತಿಗೆ<ph name="END_LINK" /> ಅನುಗುಣವಾಗಿ ಬಳಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="5919486630433391408">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="5920543303088087579">ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸುವುದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
+<translation id="5922493635960054020">ಹೊಸದಾಗಿ ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಲ್ಲಿ JavaScript ಆಪ್ಟಿಮೈಸರ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ. ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5922963926582976524">ಇನ್‌ಸ್ಟಂಟ್ ಹಾಟ್‌ಸ್ಪಾಟ್ ನೆಟ್‌ವರ್ಕ್‌ನ ಕನೆಕ್ಷನ್ ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="5924047253200400718">ಸಹಾಯ ಪಡೆಯಿರಿ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft ಫೈಲ್‌ಗಳನ್ನು Google Drive ಗೆ ಕಾಪಿ ಮಾಡುವ ಅಥವಾ ಸರಿಸುವ ಮೊದಲು ಕೇಳಿ</translation>
@@ -9588,6 +9594,7 @@
 <translation id="7663859337051362114">eSIM ಪ್ರೊಫೈಲ್ ಸೇರಿಸಿ</translation>
 <translation id="76641554187607347">ಯಾವುದೇ ಕೀಬೋರ್ಡ್ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="7664442418269614729">ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಈ ಕಾರ್ಡ್ ಅನ್ನು ಬಳಸಿ</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> ಲಿಂಕ್ ತೆರೆಯಲು ಒಂದು ಆ್ಯಪ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7665082356120621510">ಗಾತ್ರವನ್ನು ಕಾಯ್ದಿರಿಸಿ</translation>
 <translation id="7665369617277396874">ಖಾತೆಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="7665445336029073980">ಸಂಪೂರ್ಣ ಡೌನ್‌ಲೋಡ್ ಇತಿಹಾಸ</translation>
@@ -11207,6 +11214,7 @@
 <translation id="8750786237117206586">ChromeOS Flex ಆಡಿಯೊ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8751034568832412184">ಶಾಲೆ</translation>
 <translation id="8751329102746373229">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ</translation>
+<translation id="875242763254084885"><ph name="ORIGIN" /> ಸೈಟ್ ಈ ಲಿಂಕ್ ಅನ್ನು ಆ್ಯಪ್‌ನಲ್ಲಿ ತೆರೆಯಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="8752451679755290210">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಐಟಂಗಳ ನಡುವೆ ಸರಿಸಿ</translation>
 <translation id="8753948258138515839">ನೀವು Google Drive, ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆ ಅಥವಾ ನಿಮ್ಮ ChromeOS Flex ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿರುವ ಫೈಲ್‌ಗಳಿಗೆ Files ಆ್ಯಪ್ ತ್ವರಿತ ಆ್ಯಕ್ಸೆಸ್ ಒದಗಿಸುತ್ತದೆ.</translation>
 <translation id="8754200782896249056">&lt;p&gt;ಬೆಂಬಲಿತ ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಪರಿಸರದ ಅಡಿಯಲ್ಲಿ <ph name="PRODUCT_NAME" /> ಅನ್ನು ರನ್‌ ಮಾಡುವಾಗ, ಸಿಸ್ಟಂನ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ಆದಾಗ್ಯೂ ನಿಮ್ಮ ಸಿಸ್ಟಂಗೆ ಬೆಂಬಲ ಸಿಗುತ್ತಿಲ್ಲ ಇಲ್ಲವೇ ನಿಮ್ಮ ಸಿಸ್ಟಂ ಕಾನ್ಫಿಗರೇಶನ್‌ ಪ್ರಾರಂಭಿಸುವಲ್ಲಿ ಸಮಸ್ಯೆ ಇದೆ.&lt;/p&gt;

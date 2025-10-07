@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">L'historique du Bureau à distance Chrome, y compris les estampilles temporelles, les hôtes et les identifiants de session client</translation>
 <translation id="3052868890529250114">Vous vous connectez généralement aux sites en toute sécurité, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Un pirate peut essayer d'écouter ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Rabais de <ph name="PRICE_DROP" /> sur le <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Écran d'erreur Acheter maintenant, payer plus tard. Clavier masqué.</translation>
 <translation id="3061707000357573562">Service de correctif</translation>
 <translation id="3062655045399308513">Supprimer les données de navigation…</translation>
 <translation id="3063453392496098461">L'installation des services de RPV en arrière-plan a échoué.</translation>
@@ -1991,6 +1992,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4242981939686657948">Pour une recherche plus efficace dans votre historique de navigation, activez</translation>
 <translation id="4244926541863471678">Pellicule</translation>
 <translation id="4246517972543675653">Études à l'étranger</translation>
+<translation id="4250343410682686342">L'écran d'erreur Acheter maintenant, payer plus tard est ouvert à pleine hauteur.</translation>
 <translation id="4250431568374086873">Votre connexion à ce site n'est pas totalement sécurisée</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4250716950689692560">A4 x 4</translation>
@@ -2507,6 +2509,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5122786942953798871">Enveloppe (coton)</translation>
 <translation id="5123063207673082822">Fin de semaine</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5124797626438336458">L'écran d'erreur Acheter maintenant, payer plus tard est ouvert à mi-hauteur.</translation>
 <translation id="5125575917473813637">Modifier la carte d'identité</translation>
 <translation id="5125751979347152379">URL incorrecte.</translation>
 <translation id="512592033764059484">Soccer</translation>
@@ -4174,6 +4177,7 @@ Détails supplémentaires :
 <translation id="7860345425589240791">Entrer votre nouvelle date d'expiration et le code CVC figurant sur le <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Quitter le site?</translation>
 <translation id="7865448901209910068">Meilleure vitesse</translation>
+<translation id="7865482168955081228">L'écran d'erreur Acheter maintenant, payer plus tard est fermé.</translation>
 <translation id="7870281855125116701">Rabais trouvé</translation>
 <translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
 <translation id="787226752901403048">Connectez-vous à Chrome pour partager et rejoindre des groupes d'onglets et travailler ensemble sur des idées</translation>

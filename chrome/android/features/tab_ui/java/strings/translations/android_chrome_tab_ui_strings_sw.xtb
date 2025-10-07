@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{Kikundi <ph name="TAB_GROUPS_COUNT_ONE" /> cha vichupo hakipatikani tena}other{Vikundi <ph name="TAB_GROUPS_COUNT_MANY" /> vya vichupo havipatikani tena}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Pata maelezo zaidi<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Kichupo <ph name="TABS_COUNT_ONE" /> kimewekwa kwenye kikundi</translation>
+<translation id="1844381456014878100">Baada ya kutotumiwa kwa siku 7</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="1909810060368225529">Ilani: Kila mtu anaweza kuona mabadiliko kwenye Kikundi cha Vichupo cha pamoja. Kila mtu anaweza kubadilisha vikundi vyako vya vichupo vya pamoja</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Bandika kichupo}other{Bandika vichupo}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Weka kwenye kikundi kinachoitwa <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TAB_COUNT1" />}other{Weka kwenye kikundi kinachoitwa <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TAB_COUNT1" />}}</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>
 <translation id="6856809498882026482">Ficha hali ya kuchagua vingi</translation>
+<translation id="6957436309971790274">Baada ya kutotumiwa kwa siku 21</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" />.}other{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na vichupo <ph name="TABS_COUNT_MANY" />, cha rangi ya <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Chagua kikundi cha vichupo</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Shiriki kichupo}other{Shiriki vichupo}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Maelezo kuhusu duka hili yamefunguliwa kwenye skrini nzima</translation>
 <translation id="8053770993984522566">Orodha ya kikundi cha vichupo imefunguliwa katika skrini nusu</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Weka kichupo kwenye kikundi}other{Weka vichupo kwenye kikundi}}</translation>
+<translation id="8138067144082174140">Baada ya kutotumiwa kwa siku 14</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" />.}other{Panua kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Sogeza kichupo juu</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Kilisasishwa dakika <ph name="NUM_MINS_ONE" /> iliyopita}other{Kilisasishwa dakika <ph name="NUM_MINS_MANY" /> zilizopita}}</translation>

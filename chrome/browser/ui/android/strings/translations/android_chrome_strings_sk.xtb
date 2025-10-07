@@ -159,6 +159,7 @@
 <translation id="1726477445370128854">Môžete prehliadať aj vyhľadávať rýchlejšie, keď Chrome prednačíta tie stránky, ktoré podľa neho možno navštívite</translation>
 <translation id="1728803206919861584">Chcete prístupový kľúč uložiť mimo režimu inkognito?</translation>
 <translation id="1732514748744806741">Ak dôjde k odhaleniu vašich hesiel, upozorníme vás</translation>
+<translation id="1737694586321018892">Získajte najsilnejšie zabezpečenie Chromu</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 web nedávno odoslal veľa upozornení}few{# weby nedávno odoslali veľa upozornení}many{# sites recently sent a lot of notifications}other{# webov nedávno odoslalo veľa upozornení}}</translation>
 <translation id="1749561566933687563">Synchronizujte svoje záložky</translation>
 <translation id="1750238553597293878">Naďalej používajte heslá vo svojom účte Google</translation>
@@ -974,6 +975,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="549660026907543296">Pripojte sa ako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Dolný hárok nedávnej aktivity</translation>
 <translation id="5526281268548144413">Nie je možné zavrieť vo viacerých oknách</translation>
+<translation id="5532536403031755365">Pridajte pomocou rozšírenej ochrany ďalšiu úroveň ochrany pred hrozbami na internete</translation>
 <translation id="5548606607480005320">Kontrola bezpečnosti</translation>
 <translation id="5554520618550346933">Ak používate heslo, Chrome vás upozorní, keď bude zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
 <translation id="5555525474779371165">Výber ochrany v rámci Bezpečného prehliadania</translation>

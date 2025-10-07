@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grup de pestanyes ja no està disponible}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grups de pestanyes ja no estan disponibles}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Més informació<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">S'ha agrupat <ph name="TABS_COUNT_ONE" /> pestanya</translation>
+<translation id="1844381456014878100">Després de 7 dies d'inactivitat</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="1909810060368225529">Avís: els canvis que es facin en aquest grup de pestanyes compartit seran visibles per a tothom. Tothom pot fer canvis en els teus grups de pestanyes compartits.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fixa la pestanya}other{Fixa les pestanyes}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Afegeix al grup anomenat <ph name="TITLE_OF_GROUP" /> amb <ph name="TAB_COUNT1" /> pestanya}other{Afegeix al grup anomenat <ph name="TITLE_OF_GROUP" /> amb <ph name="TAB_COUNT1" /> pestanyes}}</translation>
 <translation id="6818926723028410516">Selecciona elements</translation>
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
+<translation id="6957436309971790274">Després de 21 dies d'inactivitat</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="709473454666962555">Selecciona un grup de pestanyes</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Comparteix la pestanya}other{Comparteix les pestanyes}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">S'ha obert a alçada completa la informació sobre aquesta botiga</translation>
 <translation id="8053770993984522566">Llista de grups de pestanyes oberta a mitja alçada</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
+<translation id="8138067144082174140">Després de 14 dies d'inactivitat</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="8205266828577616993">Mou la pestanya cap amunt</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{S'ha actualitzat fa <ph name="NUM_MINS_ONE" /> minut}other{S'ha actualitzat fa <ph name="NUM_MINS_MANY" /> minuts}}</translation>

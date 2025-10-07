@@ -159,6 +159,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1726477445370128854">Možete pregledavati i pretraživati brže kad Chrome predučitava stranice za koje misli da biste ih mogli posjetiti</translation>
 <translation id="1728803206919861584">Želite li spremiti pristupni ključ izvan anonimnog načina?</translation>
 <translation id="1732514748744806741">Obavijestit ćemo vas ako su zaporke ugrožene</translation>
+<translation id="1737694586321018892">Odaberite najsnažniju Chromeovu zaštitu</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Jedna web-lokacija nedavno je poslala mnogo obavijesti}one{# web-lokacija nedavno je poslala mnogo obavijesti}few{# web-lokacije nedavno su poslale mnogo obavijesti}other{# web-lokacija nedavno je poslalo mnogo obavijesti}}</translation>
 <translation id="1749561566933687563">Sinkronizirajte oznake</translation>
 <translation id="1750238553597293878">Nastavite upotrebljavati zaporke na svom Google računu</translation>
@@ -974,6 +975,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="549660026907543296">Pridružite se kao <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Donja tablica s nedavnom aktivnošću</translation>
 <translation id="5526281268548144413">Nije moguće zatvoriti u više prozora</translation>
+<translation id="5532536403031755365">Dodajte još jednu razinu zaštite od online prijetnji uz poboljšanu zaštitu</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
 <translation id="5554520618550346933">Kad upotrijebite zaporku, Chrome vas upozorava ako je objavljena online. Tom su prilikom vaše zaporke i korisnička imena šifrirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
 <translation id="5555525474779371165">Odaberite svoju zaštitu sigurnog pregledavanja</translation>
@@ -1831,6 +1833,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="9133397713400217035">Istraživanje izvan mreže</translation>
 <translation id="9143389653531441385">Registrirajte se za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Prijavite se ponovno</translation>
+<translation id="9148564897242852377">Uključi/isključi odabir kartice</translation>
 <translation id="9157212632995922070">Odaberite račun da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Podijeli samo sadržaj</translation>
 <translation id="9161172953291434881">Smatrate li ovu web-lokaciju dovoljno pouzdanom da biste joj povjerili svoje podatke?</translation>

@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> பக்கக் குழு இனி கிடைக்காது}other{<ph name="TAB_GROUPS_COUNT_MANY" /> பக்கக் குழுக்கள் இனி கிடைக்காது}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />மேலும் அறிக<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> பக்கம் குழுவாக்கப்பட்டது</translation>
+<translation id="1844381456014878100">7 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="1909810060368225529">குறிப்பு: இந்தப் பகிர்ந்த பக்கக் குழுவில் செய்யப்படும் மாற்றங்கள் எல்லோருக்கும் காட்டப்படும். நீங்கள் பகிரும் பக்கக் குழுக்களில் எல்லோரும் மாற்றங்களைச் செய்யலாம்.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{பக்கத்தைப் பின் செய்யும்}other{பக்கங்களைப் பின் செய்யும்}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> பக்கம் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவில் சேர்க்கும்}other{<ph name="TAB_COUNT1" /> பக்கங்கள் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவில் சேர்க்கும்}}</translation>
 <translation id="6818926723028410516">பட்டியலிலிருந்து தேர்ந்தெடுக்கவும்</translation>
 <translation id="6856809498882026482">பல தேர்வுப் பயன்முறையை மறைக்கும்</translation>
+<translation id="6957436309971790274">21 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="709473454666962555">பக்கக் குழுவைத் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{பக்கத்தைப் பகிர்}other{பக்கங்களைப் பகிர்}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">இந்த ஸ்டோர் குறித்த தகவல்கள் முழுத் திரையில் காட்டப்பட்டுள்ளன</translation>
 <translation id="8053770993984522566">பக்கக் குழுவின் பட்டியல், பாதி உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{பக்கத்தைக் குழுவில் சேர்}other{பக்கங்களைக் குழுவில் சேர்}}</translation>
+<translation id="8138067144082174140">14 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="8205266828577616993">தாவலை மேலே நகர்த்து</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> நிமிடத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_MINS_MANY" /> நிமிடங்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>

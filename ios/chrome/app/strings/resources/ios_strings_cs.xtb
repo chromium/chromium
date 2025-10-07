@@ -1046,6 +1046,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalace Disku Google</translation>
 <translation id="5067540696062462445">Stažené soubory</translation>
+<translation id="5070314445039955096">Až web <ph name="SITE_DOMAIN" /> opustíte, jeho oprávnění se resetují na Vypnuto.</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} z {count} platební metody}few{{position} ze {count} platebních metod}many{{position} z {count} platební metody}other{{position} z {count} platebních metod}}</translation>
 <translation id="5075939510584558547">Uložit bez šifrování</translation>
 <translation id="5076534614343816664">Sledování cen</translation>

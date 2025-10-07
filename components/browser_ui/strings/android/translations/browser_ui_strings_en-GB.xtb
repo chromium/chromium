@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
+<translation id="113098737392899175">Navigate pages with a text cursor when a keyboard is attached</translation>
 <translation id="1178015372320901893">My shortcuts bottom sheet</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -699,6 +700,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8803526663383843427">When on</translation>
 <translation id="8805385115381080995">Browsing is faster because a site is less likely to ask you to verify that you're a real person</translation>
 <translation id="8816026460808729765">Block sites from accessing sensors</translation>
+<translation id="884765916894384048">Go to background</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>

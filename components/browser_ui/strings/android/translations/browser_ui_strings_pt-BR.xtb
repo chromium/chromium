@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Ajude a melhorar o Chrome informando por que você permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Você pode pedir para ver a versão para computador dos sites</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
+<translation id="113098737392899175">Acessar páginas com um cursor de texto quando um teclado está conectado</translation>
 <translation id="1178015372320901893">Página inferior "Meus atalhos"</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -699,6 +700,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="8803526663383843427">Quando ativado</translation>
 <translation id="8805385115381080995">A navegação fica mais rápida porque é menos provável que os sites peçam para verificar se você é uma pessoa</translation>
 <translation id="8816026460808729765">Impedir que sites acessem os sensores</translation>
+<translation id="884765916894384048">Ir para o segundo plano</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Permita o uso de cookies de terceiros temporariamente, o que diminui a proteção da navegação, mas os recursos do site têm mais chances de funcionar conforme o esperado.</translation>
 <translation id="8889294078294184559">Conforme você navega, eles podem verificar com o navegador e o site visitado anteriormente que você é uma pessoa real</translation>

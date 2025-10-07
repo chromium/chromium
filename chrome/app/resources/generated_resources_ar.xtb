@@ -2877,6 +2877,7 @@
 <translation id="2950666755714083615">اشتراك</translation>
 <translation id="2953210795988451570">‏لم تعُد تحديثات الأمان متوفّرة لهذا الجهاز. عليك الترقية إلى جهاز Chromebook جديد.</translation>
 <translation id="2953218713108551165">غير مسموح للموقع الإلكتروني <ph name="SITE" /> بإرسال إشعارات. سيُطلب منك مجددًا منح الإذن في زيارتك القادمة إلى هذا الموقع الإلكتروني.</translation>
+<translation id="2955048943983973430">‏خدمات Google ذات الصلة</translation>
 <translation id="2956070239128776395">تم دمج القسم في المجموعة: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">‏يمكنك تفعيل "وضع مطور البرامج" لاستخدام هذه الإضافة التي لا يمكن مراجعتها من قِبل "سوق Chrome الإلكتروني".</translation>
 <translation id="2958721676848865875">تحذير حزمة الإضافة</translation>
@@ -4631,6 +4632,7 @@
 <translation id="4151503145138736576">لا تتوفّر مساحة تخزين بلا إنترنت للمسح</translation>
 <translation id="4152011295694446843">ستظهر الإشارات المرجعية هنا</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{علامة تبويب واحدة}zero{# من علامات التبويب}two{علامتا تبويب (#)}few{# علامات تبويب}many{# علامة تبويب}other{# من علامات التبويب}}</translation>
+<translation id="4153858337812834972">أحدث علامات التبويب</translation>
 <translation id="4154658846204884961">مذنّب</translation>
 <translation id="4154664944169082762">بصمات الأصابع</translation>
 <translation id="4156297721709710037">‫<ph name="WINDOW_TITLE" /> - الجانب الأيسر</translation>
@@ -7106,6 +7108,7 @@
 <translation id="5919305207330938913">‏كل ما يتم جمعه من بيانات سيتم استخدامه بما يتوافق مع <ph name="BEGIN_LINK" />سياسة خصوصية Google<ph name="END_LINK" />.</translation>
 <translation id="5919486630433391408">أوقَف المشرف تحديثات البرامج الثابتة.</translation>
 <translation id="5920543303088087579">تم إيقاف الربط بهذه الشبكة بواسطة المشرف</translation>
+<translation id="5922493635960054020">‏يؤدي ذلك إلى حظر الوصول إلى أداة تحسين JavaScript على المواقع الإلكترونية التي تتم زيارتها حديثًا. ويجب تفعيل ميزة "التصفّح الآمن" في هذه الحالة.</translation>
 <translation id="5922963926582976524">قطع الاتصال بنقطة الاتصال الفورية</translation>
 <translation id="5924047253200400718">الحصول على مساعدة<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Google Drive</translation>

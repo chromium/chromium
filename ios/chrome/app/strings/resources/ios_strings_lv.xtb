@@ -1046,6 +1046,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5059136629401106827">Labi</translation>
 <translation id="5062321486222145940">Instalēt Google disku</translation>
 <translation id="5067540696062462445">Lejupielādes</translation>
+<translation id="5070314445039955096">Kad iziesiet no vietnes <ph name="SITE_DOMAIN" />, šīs vietnes atļaujas tiks atkal izslēgtas.</translation>
 <translation id="507187271399539513">{count,plural, =1{Maksājuma veids numur {position}, kopā ir {count}}zero{Maksājuma veids numur {position} no {count}}one{Maksājuma veids numur {position}, kopā ir {count}}other{Maksājuma veids numur {position}, kopā ir {count}}}</translation>
 <translation id="5075939510584558547">Saglabāšana bez šifrēšanas</translation>
 <translation id="5076534614343816664">Cenas izsekošana</translation>

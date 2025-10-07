@@ -159,6 +159,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1726477445370128854">Unaweza kuvinjari na kutafuta kwa haraka zaidi Chrome inapopakia mapema kurasa ambazo inafikiri kuwa huenda ukazitembelea</translation>
 <translation id="1728803206919861584">Ungependa kuhifadhi ufunguo wa siri nje ya Hali fiche?</translation>
 <translation id="1732514748744806741">Tutakuarifu iwapo manenosiri yako yameathiriwa</translation>
+<translation id="1737694586321018892">Pata usalama thabiti zaidi kutoka Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Tovuti 1 ilituma arifa nyingi hivi majuzi}other{Tovuti # zilituma arifa nyingi hivi majuzi}}</translation>
 <translation id="1749561566933687563">Sawazisha alamisho zako</translation>
 <translation id="1750238553597293878">Endelea kutumia manenosiri katika Akaunti yako ya Google</translation>
@@ -974,6 +975,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="549660026907543296">Jiunge ukitumia akaunti ya <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Safu ya chini ya shughuli za hivi majuzi</translation>
 <translation id="5526281268548144413">Haviwezi kufungwa kwenye madirisha mengi</translation>
+<translation id="5532536403031755365">Ongeza safu ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni ukitumia ulinzi ulioboreshwa</translation>
 <translation id="5548606607480005320">Angalizo la usalama</translation>
 <translation id="5554520618550346933">Unapotumia nenosiri, Chrome hukutahadharisha iwapo limechapishwa mtandaoni. Wakati inafanya hivyo, manenosiri na majina yako ya mtumiaji huwa yamesimbwa kwa njia fiche, kwa hivyo hayawezi kusomwa na mtu mwingine, ikiwemo Google.</translation>
 <translation id="5555525474779371165">Chagua ulinzi wa Kuvinjari Salama Unaopendelea</translation>
@@ -1831,6 +1833,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="9133397713400217035">Pitia Ukiwa Nje ya Mtandao</translation>
 <translation id="9143389653531441385">Jisajli ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Ingia tena</translation>
+<translation id="9148564897242852377">Geuza uteuzi wa kichupo</translation>
 <translation id="9157212632995922070">Chagua akaunti ili uendelee kwenye <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Shiriki maudhui pekee</translation>
 <translation id="9161172953291434881">Je, unaiamini tovuti hii kuhusiana na data yako?</translation>

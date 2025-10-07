@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ट्याब समूह अब उपलब्ध छैन}other{<ph name="TAB_GROUPS_COUNT_MANY" /> वटा ट्याब समूह अब उपलब्ध छैनन्}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ट्याब समूहबद्ध गरिएको छ</translation>
+<translation id="1844381456014878100">७ दिनसम्म निष्क्रिय भएपछि</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब}other{<ph name="TABS_COUNT_MANY" /> ट्याबहरू}}</translation>
 <translation id="1909810060368225529">सूचना: यो साझा ट्याब समूहमा गरिएका परिवर्तनहरू सबैले देख्छन्। तपाईंका साझा ट्याब समूहहरूमा सबै जना परिवर्तनहरू गर्न सक्छन्</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ट्याब पिन गर्नुहोस्}other{ट्याबहरू पिन गर्नुहोस्}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> नामक समूहमा हाल्नुहोस्}other{<ph name="TAB_COUNT1" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> नामक समूहमा हाल्नुहोस्}}</translation>
 <translation id="6818926723028410516">वस्तुहरू छनाैट गर्नुहोस्</translation>
 <translation id="6856809498882026482">एकभन्दा बढी ट्याब चयन गर्ने मोड लुकाउनुहोस्</translation>
+<translation id="6957436309971790274">२१ दिनसम्म निष्क्रिय भएपछि</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="709473454666962555">ट्याब समूह चयन गर्नुहोस्</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ट्याब सेयर गर्नुहोस्}other{ट्याबहरू सेयर गर्नुहोस्}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">यो स्टोरसम्बन्धी जानकारी स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="8053770993984522566">ट्याब समूहको सूची, आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{समूहमा ट्याब हाल्नुहोस्}other{समूहमा ट्याबहरू हाल्नुहोस्}}</translation>
+<translation id="8138067144082174140">१४ दिनसम्म निष्क्रिय भएपछि</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="8205266828577616993">ट्याब माथि सार्नुहोस्</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनेटअघि अपडेट गरिएको}other{<ph name="NUM_MINS_MANY" /> मिनेटअघि अपडेट गरिएको}}</translation>

@@ -1046,6 +1046,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installera Google Drive</translation>
 <translation id="5067540696062462445">Nedladdningar</translation>
+<translation id="5070314445039955096">Behörigheterna för <ph name="SITE_DOMAIN" /> inaktiveras igen när du lämnar webbplatsen</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} av {count} betalningsmetod}other{{position} av {count} betalningsmetoder}}</translation>
 <translation id="5075939510584558547">Spara utan kryptering</translation>
 <translation id="5076534614343816664">Prisbevakning</translation>

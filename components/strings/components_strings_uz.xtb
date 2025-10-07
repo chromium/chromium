@@ -813,6 +813,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2321291402658100099">Axborot boshqaruvi</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ta oyna}other{# ta oyna}}</translation>
 <translation id="232390861414237658">Bu karta Google Play hisobiga saqlanganidan keyin uning maʼlumotlarini Chrome xaridlarida avtomatik kiritish mumkin</translation>
+<translation id="2326283484705860548">Endi koʻproq Google Wallet maʼlumotlarini avtomatik kiritish mumkin</translation>
 <translation id="2328651992442742497">Ruxsat etilgan (standart)</translation>
 <translation id="2328955282645810595">Qurilish va quvvatlash vositalari</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, muddati: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -823,6 +824,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2346319942568447007">Nusxalangan rasm</translation>
 <translation id="2347764072711098973">Affirm, Zip yoki Klarna orqali boʻlib toʻlash mumkin</translation>
 <translation id="2348509731468399833">Narx kuzatuvi toʻxtatildi.</translation>
+<translation id="2348836501965732644">Maʼlumotlaringizni boshqaring yoki bu takliflarni Sozlamalar orqali faolsizlantiring</translation>
 <translation id="2349957959687031096">Inkognito varaq ochish tugmasi, yangi Inkognito varaqni ochish va Internetdan maxfiy foydalanish uchun faollashtiring</translation>
 <translation id="2350796302381711542">“<ph name="PROTOCOL" />” kabi havolalarga ishlov berish uchun <ph name="REPLACED_HANDLER_TITLE" /> o‘rniga <ph name="HANDLER_HOSTNAME" /> xizmati foydalanilsinmi?</translation>
 <translation id="2351718832234620840">Bu server <ph name="DOMAIN" /> veb-trafikni shifrlash uchun Chromium yoki tizim konfiguratsiyasida ishonchli xavfsizlik sertifikatidan foydalanishini tasdiqlay olmadi. Bunda konfiguratsiya xato sozlangan yoki ulanishingizga buzgʻunchi kirishga urinayotgan boʻlishi mumkin.</translation>
@@ -1450,6 +1452,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="340924996148642843">Ayni paytda taqqoslash imkonsiz</translation>
 <translation id="3409896703495473338">Xavfsizlik sozlamalarini boshqarish</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> soatdan keyin yuklanadi</translation>
+<translation id="341134412449102894"><ph name="ACCOUNT" /> hisobingiz maʼlumotlari <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> xotirasida saqlanadi</translation>
 <translation id="3413466783792948876">Ochiq tarmoqqa ulangan boʻlsangiz, bu saytga keyinroq kirish xavfsiz boʻladi. Uydagi va ishxonadagi Wi-Fi kabi ishonchli tarmoqlardan kirish xavfsizroq hisoblanadi.</translation>
 <translation id="3414275587143250384">Tarqalgan va bulutli hisoblash</translation>
 <translation id="3414952576877147120">Hajmi:</translation>

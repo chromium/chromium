@@ -1046,6 +1046,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5059136629401106827">Tamam</translation>
 <translation id="5062321486222145940">Google Drive'ı yükle</translation>
 <translation id="5067540696062462445">İndirilenler</translation>
+<translation id="5070314445039955096">Bu siteden ayrıldığınızda "<ph name="SITE_DOMAIN" />" izinleri kapalı ayarına sıfırlanır.</translation>
 <translation id="507187271399539513">{count,plural, =1{{position}/{count} ödeme yöntemi}other{{position}/{count} ödeme yöntemi}}</translation>
 <translation id="5075939510584558547">Şifreleme olmadan kaydedin</translation>
 <translation id="5076534614343816664">Fiyat takibi</translation>

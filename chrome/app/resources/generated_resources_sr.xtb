@@ -999,6 +999,7 @@
 <translation id="166278006618318542">Алгоритам јавног кључа субјекта</translation>
 <translation id="1662801900924515589">Апликација <ph name="APP" /> је инсталирана</translation>
 <translation id="1663698992894057019">Надоградите на нови Chromebook ради најновијих безбедносних функција и софтвера</translation>
+<translation id="1664497218584335032">Веб-сајт жели да отвори овај линк у апликацији.</translation>
 <translation id="166454475160289583">Замена уноса са тастера није дозвољена</translation>
 <translation id="1665328953287874063">Користите лозинку или PIN да бисте откључали <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Експресионизам</translation>
@@ -2870,6 +2871,7 @@
 <translation id="2950666755714083615">Региструј ме</translation>
 <translation id="2953210795988451570">Безбедносна ажурирања су завршена. Набавите нов Chromebook.</translation>
 <translation id="2953218713108551165">Обавештења нису дозвољена за <ph name="SITE" />. Приказаће вам се упит при следећој посети.</translation>
+<translation id="2955048943983973430">Повезане Google услуге</translation>
 <translation id="2956070239128776395">Одељак угнежден у групу: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Укључите режим програмера да бисте користили овај додатак који Chrome веб-продавница не може да прегледа.</translation>
 <translation id="2958721676848865875">Упозорење о паковању додатка</translation>
@@ -4626,6 +4628,7 @@
 <translation id="4151503145138736576">Нема офлајн меморијског простора за ослобађање</translation>
 <translation id="4152011295694446843">Овде ћете пронаћи обележиваче</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 картица}one{# картица}few{# картице}other{# картица}}</translation>
+<translation id="4153858337812834972">Најновије картице</translation>
 <translation id="4154658846204884961">Комета</translation>
 <translation id="4154664944169082762">Отисци</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – Леви приказ</translation>
@@ -6545,10 +6548,12 @@
 <translation id="5517304475148761050">Ова апликација захтева приступ Play продавници</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Увек отварај <ph name="PROTOCOL_SCHEME" /> линкове у овој апликацији</translation>
 <translation id="5520605865175417976">Уклоните радњу <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Је ли ово почетна страница коју сте очекивали?</translation>
 <translation id="5522156646677899028">Овај додатак садржи озбиљан безбедносни пропуст.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Администратор је инсталирао додатак}one{Администратор је инсталирао # додатак}few{Администратор је инсталирао # додатка}other{Администратор је инсталирао # додатака}}</translation>
+<translation id="5523203511530504754">Отворите <ph name="PROTOCOL_SCHEME" /> линкове у: <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Сајтови које додате ће увек остати активни, а меморија се неће ослободити</translation>
 <translation id="5523558474028191231">Слова, бројеви и специјални знакови могу да се користе у називу, а максимални број знакова је <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526745900034778153">Пријавите се поново да бисте наставили синхронизацију</translation>
@@ -7100,6 +7105,7 @@
 <translation id="5919305207330938913">Сви прикупљени подаци ће се користити у складу са Google <ph name="BEGIN_LINK" />политиком приватности<ph name="END_LINK" />.</translation>
 <translation id="5919486630433391408">Администратор је онемогућио ажурирања фирмвера.</translation>
 <translation id="5920543303088087579">Администратор је онемогућио повезивање са овом мрежом</translation>
+<translation id="5922493635960054020">Блокирај приступ оптимизатору JavaScript-а на сајтовима које први пут посећујем. Захтева Безбедно прегледање</translation>
 <translation id="5922963926582976524">Прекини везу са мрежом инстант хотспота</translation>
 <translation id="5924047253200400718">Потражите помоћ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Питај пре копирања или премештања Microsoft фајлова на Google диск</translation>
@@ -9582,6 +9588,7 @@
 <translation id="7663859337051362114">Додајте eSIM профил</translation>
 <translation id="76641554187607347">Није повезана ниједна тастатура</translation>
 <translation id="7664442418269614729">Користите ову картицу на iPhone-у</translation>
+<translation id="7664822217939981459">Одаберите апликацију за отварање <ph name="PROTOCOL_SCHEME" /> линка</translation>
 <translation id="7665082356120621510">Резервиши величину</translation>
 <translation id="7665369617277396874">Додајте налог</translation>
 <translation id="7665445336029073980">Комплетна историја преузимања</translation>
@@ -11204,6 +11211,7 @@
 <translation id="8750786237117206586">Управљање подешавањима звука за ChromeOS Flex</translation>
 <translation id="8751034568832412184">Школа</translation>
 <translation id="8751329102746373229">Од администратора</translation>
+<translation id="875242763254084885">Сајт <ph name="ORIGIN" /> жели да отвори овај линк у апликацији.</translation>
 <translation id="8752451679755290210">Аутоматски се крећите између ставки</translation>
 <translation id="8753948258138515839">Апликација Фајлови пружа брз приступ фајловима које сте сачували на Google диску, у спољној меморији или на Chrome OS Flex уређају.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Када користите <ph name="PRODUCT_NAME" /> у подржаном рачунарском окружењу, користиће се подешавања проксија система. Међутим, или систем није подржан или је дошло до проблема при покретању конфигурације система.&lt;/p&gt;

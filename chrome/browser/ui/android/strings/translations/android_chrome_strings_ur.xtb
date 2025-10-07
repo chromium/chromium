@@ -159,6 +159,7 @@
 <translation id="1726477445370128854">‏آپ تیزی سے براؤز اور تلاش کر سکتے ہیں جب Chrome ایسے صفحات کو پیشگی لوڈ کرتا ہے جن کے بارے میں اسے لگتا ہے کہ آپ ملاحظہ کر سکتے ہیں</translation>
 <translation id="1728803206919861584">پاسکی کو پوشیدگی سے باہر محفوظ کریں؟</translation>
 <translation id="1732514748744806741">اگر آپ کے پاس ورڈز متاثرہ ہیں تو ہم آپ کو بتائیں گے</translation>
+<translation id="1737694586321018892">‏‫Chrome کی مضبوط ترین سیکیورٹی حاصل کریں</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 سائٹ نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{# سائٹس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="1749561566933687563">اپنے بُک مارکس کی مطابقت پذیری کریں</translation>
 <translation id="1750238553597293878">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کرتے رہیں</translation>
@@ -974,6 +975,7 @@
 <translation id="549660026907543296">بطور <ph name="MEMBER_FULL_NAME" /> شامل ہوں</translation>
 <translation id="5517326820028369152">حالیہ سرگرمی کی نیچے کی شیٹ</translation>
 <translation id="5526281268548144413">متعدد ونڈوز میں بند نہیں کیا جا سکتا</translation>
+<translation id="5532536403031755365">بہتر کردہ حفاظت کے ساتھ آن لائن خطرات کے خلاف تحفظ کی ایک اضافی پرت شامل کریں</translation>
 <translation id="5548606607480005320">سیفٹی چیک</translation>
 <translation id="5554520618550346933">‏آپ کے پاس ورڈ استعمال کرنے پر، Chrome آپ کو پاس ورڈ آن لائن شائع ہونے پر متنبہ کرتا ہے۔ ایسا کرتے وقت، آپ کے پاس ورڈز اور صارف نام مرموز ہوتے ہیں، تاکہ Google سمیت کوئی بھی انہیں پڑھ نہ سکے۔</translation>
 <translation id="5555525474779371165">اپنا محفوظ براؤزنگ کا تحفظ منتخب کریں</translation>
@@ -1831,6 +1833,7 @@
 <translation id="9133397713400217035">آف لائن دریافت کریں</translation>
 <translation id="9143389653531441385"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ سائن اپ کریں</translation>
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
+<translation id="9148564897242852377">ٹیب کے انتخاب کو ٹوگل کریں</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے ایک اکاؤنٹ منتخب کریں</translation>
 <translation id="9158770349521403363">صرف مواد کا استعمال کریں</translation>
 <translation id="9161172953291434881">کیا آپ کو اپنے ڈیٹا کے ساتھ اس سائٹ پر بھروسہ ہے؟</translation>

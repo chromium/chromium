@@ -1046,6 +1046,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
+<translation id="5070314445039955096">Los permisos de "<ph name="SITE_DOMAIN" />" se desactivarán cuando abandones este sitio</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} de {count} forma de pago}other{{position} de {count} formas de pago}}</translation>
 <translation id="5075939510584558547">Guardar sin encriptación</translation>
 <translation id="5076534614343816664">Seguimiento de precios</translation>

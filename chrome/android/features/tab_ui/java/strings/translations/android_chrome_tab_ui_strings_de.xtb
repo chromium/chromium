@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> Tabgruppe ist nicht mehr verfügbar}other{<ph name="TAB_GROUPS_COUNT_MANY" /> Tabgruppen sind nicht mehr verfügbar}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzugefügt</translation>
+<translation id="1844381456014878100">Nach 7 Tagen Inaktivität</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
 <translation id="1909810060368225529">Hinweis: Änderungen an dieser geteilten Tabgruppe sind für alle sichtbar. Jeder kann Änderungen an deinen geteilten Tabgruppen vornehmen.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Tab anpinnen}other{Tabs anpinnen}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Zur Gruppe mit dem Namen „<ph name="TITLE_OF_GROUP" />“ und <ph name="TAB_COUNT1" /> Tab hinzufügen}other{Zur Gruppe mit dem Namen „<ph name="TITLE_OF_GROUP" />“ und <ph name="TAB_COUNT1" /> Tabs hinzufügen}}</translation>
 <translation id="6818926723028410516">Elemente auswählen</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
+<translation id="6957436309971790274">Nach 21 Tagen Inaktivität</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Tabgruppe auswählen</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tab teilen}other{Tabs teilen}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Informationen zu diesem Händler sind vollständig geöffnet</translation>
 <translation id="8053770993984522566">Halb geöffnete Liste der Tabgruppen</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
+<translation id="8138067144082174140">Nach 14 Tagen Inaktivität</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Vor <ph name="NUM_MINS_ONE" /> Minute aktualisiert}other{Vor <ph name="NUM_MINS_MANY" /> Minuten aktualisiert}}</translation>

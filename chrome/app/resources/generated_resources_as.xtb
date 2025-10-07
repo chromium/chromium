@@ -2883,6 +2883,7 @@
 <translation id="2950666755714083615">মোক ছাইন আপ কৰাওক</translation>
 <translation id="2953210795988451570">সুৰক্ষা সম্পৰ্কীয় আপডে’ট সমাপ্ত হৈছে। এটা নতুন Chromebookলৈ আপগ্ৰে’ড কৰক।</translation>
 <translation id="2953218713108551165"><ph name="SITE" />ৰ জাননীৰ অনুমতি নাই। আপুনি পৰৱৰ্তী সময়ত চালে আপোনাক আকৌ সোধা হ’ব।</translation>
+<translation id="2955048943983973430">প্ৰাসংগিক Google সেৱাসমূহ</translation>
 <translation id="2956070239128776395">শাখা গোটত অন্তর্ভুক্ত কৰা হৈছে: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">এই এক্সটেনশ্বনটো ব্যৱহাৰ কৰিবলৈ বিকাশকর্তাৰ ম’ডটো অন কৰক, যিটো Chrome Web Storeএ পর্যালোচনা কৰিব নোৱাৰে।</translation>
 <translation id="2958721676848865875">পেক এক্সটেনশ্বনৰ সতৰ্কবাণী</translation>
@@ -4638,6 +4639,7 @@
 <translation id="4151503145138736576">মচিবলৈ কোনো অফলাইন ষ্ট’ৰেজ নাই</translation>
 <translation id="4152011295694446843">ইয়াত আপুনি নিজৰ বুকমাৰ্কসমূহ বিচাৰি পাব</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{১টা টেব}one{#টা টেব}other{#টা টেব}}</translation>
+<translation id="4153858337812834972">একেবাৰে শেহতীয়া টেব</translation>
 <translation id="4154658846204884961">ধূমকেতু</translation>
 <translation id="4154664944169082762">ফিংগাৰপ্ৰিণ্ট</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - বাওঁফালৰ ভিউ</translation>
@@ -7113,6 +7115,7 @@
 <translation id="5919305207330938913">সংগ্ৰহ কৰা আটাইবোৰ ডেটা Googleৰ <ph name="BEGIN_LINK" />গোপনীয়তা নীতি<ph name="END_LINK" /> অনুসৰি ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="5919486630433391408">আপোনাৰ প্ৰশাসকে ফাৰ্মৱেৰৰ আপডে’ট অক্ষম কৰি থৈছে।</translation>
 <translation id="5920543303088087579">আপোনাৰ প্ৰশাসকে এই নেটৱৰ্কটোৰ সৈতে যোগাযোগ কৰাটো অক্ষম কৰি থৈছে</translation>
+<translation id="5922493635960054020">নতুনকৈ চোৱা ছাইটসমূহত JavaScript অপ্টিমাইজাৰৰ এক্সেছ অৱৰোধ কৰক। সুৰক্ষিত ব্ৰাউজিং লাগে</translation>
 <translation id="5922963926582976524">তাৎক্ষণিক হ’টস্প’ট নেটৱৰ্কৰ সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="5924047253200400718">সহায় পাওক<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Google Driveলৈ Microsoft ফাইল প্ৰতিলিপি কৰা অথবা নিয়াৰ পূর্বে সোধক</translation>

@@ -159,6 +159,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1726477445370128854">Voit selata ja hakea nopeammin, kun Chrome esilataa sivuja, joita saatat sen mukaan avata</translation>
 <translation id="1728803206919861584">Tallennetaanko avainkoodi incognito-tilan ulkopuolella?</translation>
 <translation id="1732514748744806741">Kerromme, jos salasanojasi vaarantuu</translation>
+<translation id="1737694586321018892">Tilaa Chromen tehokkain suojaus</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sivusto lähetti viime aikoina paljon ilmoituksia}other{# sivustoa on lähettänyt viime aikoina paljon ilmoituksia}}</translation>
 <translation id="1749561566933687563">Synkronoi kirjanmerkit</translation>
 <translation id="1750238553597293878">Jatka Google-tilisi salasanojen käyttöä</translation>
@@ -974,6 +975,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="549660026907543296">Liity nimellä <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Viimeaikaiset tapahtumat ‑alapaneeli</translation>
 <translation id="5526281268548144413">Ei voi sulkea useista ikkunoista</translation>
+<translation id="5532536403031755365">Lisäsuojaus verkkouhkia vastaan</translation>
 <translation id="5548606607480005320">Turvatarkistus</translation>
 <translation id="5554520618550346933">Kun käytät salasanaa, Chrome varoittaa, jos se on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="5555525474779371165">Valitse haluamasi Selaussuoja</translation>
@@ -1831,6 +1833,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9133397713400217035">Tutki offline-tilassa</translation>
 <translation id="9143389653531441385">Rekisteröidy: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
+<translation id="9148564897242852377">Vaihda välilehtivalintaa</translation>
 <translation id="9157212632995922070">Valitse tili jatkaaksesi (<ph name="SITE_ETLD_PLUS_ONE" />)</translation>
 <translation id="9158770349521403363">Jaa vain sisältö</translation>
 <translation id="9161172953291434881">Luotatko datasi tämän sivuston käsiteltäväksi?</translation>

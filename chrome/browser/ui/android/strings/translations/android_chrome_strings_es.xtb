@@ -159,6 +159,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1726477445370128854">Puedes navegar y buscar más rápido cuando Chrome precarga las páginas que considera que podrías visitar.</translation>
 <translation id="1728803206919861584">¿Guardar llave de acceso fuera de Incógnito?</translation>
 <translation id="1732514748744806741">Si se vulneran tus contraseñas, te avisaremos</translation>
+<translation id="1737694586321018892">La máxima seguridad de Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sitio ha enviado muchas notificaciones recientemente}other{# sitios han enviado muchas notificaciones recientemente}}</translation>
 <translation id="1749561566933687563">Sincronizar marcadores</translation>
 <translation id="1750238553597293878">Sigue usando las contraseñas en tu cuenta de Google</translation>
@@ -974,6 +975,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="549660026907543296">Unirse como <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Hoja inferior de actividad reciente</translation>
 <translation id="5526281268548144413">No se puede cerrar en varias ventanas</translation>
+<translation id="5532536403031755365">Añade una capa adicional de seguridad frente a las amenazas online con la protección mejorada</translation>
 <translation id="5548606607480005320">Comprobación de seguridad</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te avisa si se ha publicado online. Al hacerlo, tus contraseñas y nombres de usuario se cifran para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="5555525474779371165">Elige tu nivel de protección de Navegación segura</translation>

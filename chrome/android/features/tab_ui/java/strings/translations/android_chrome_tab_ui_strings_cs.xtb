@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> skupina karet už není dostupná}few{<ph name="TAB_GROUPS_COUNT_MANY" /> skupiny karet už nejsou dostupné}many{<ph name="TAB_GROUPS_COUNT_MANY" /> skupiny karet už není dostupných}other{<ph name="TAB_GROUPS_COUNT_MANY" /> skupin karet už není dostupných}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Další informace<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Byla seskupena <ph name="TABS_COUNT_ONE" /> karta</translation>
+<translation id="1844381456014878100">Po 7 dnech bez aktivity</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
 <translation id="1909810060368225529">Oznámení: Změny téhle sdílené skupiny karet jsou viditelné pro všechny. Ve sdílených skupinách karet můžou všichni provádět změny.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Připnout kartu}few{Připnout karty}many{Připnout karty}other{Připnout karty}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> kartou}few{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> se <ph name="TAB_COUNT1" /> kartami}many{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> karty}other{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> kartami}}</translation>
 <translation id="6818926723028410516">Výběr položek</translation>
 <translation id="6856809498882026482">Skrýt režim výběru několika položek</translation>
+<translation id="6957436309971790274">Po 21 dnech bez aktivity</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Vyberte skupinu karet</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sdílet kartu}few{Sdílet karty}many{Sdílet karty}other{Sdílet karty}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">Informace o této prodejně jsou otevřeny na celou výšku</translation>
 <translation id="8053770993984522566">Seznam skupin karet otevřený na poloviční výšku</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Přidat kartu do skupiny}few{Přidat karty do skupiny}many{Přidat karty do skupiny}other{Přidat karty do skupiny}}</translation>
+<translation id="8138067144082174140">Po 14 dnech bez aktivity</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Posunout kartu nahoru</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Aktualizováno před <ph name="NUM_MINS_ONE" /> minutou}few{Aktualizováno před <ph name="NUM_MINS_MANY" /> minutami}many{Aktualizováno před <ph name="NUM_MINS_MANY" /> minuty}other{Aktualizováno před <ph name="NUM_MINS_MANY" /> minutami}}</translation>

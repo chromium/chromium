@@ -8001,6 +8001,14 @@ non funzioneranno correttamente e nella schermata di <ph name="LOG_IN" />
 verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" />.</translation>
 <translation id="6338982178236723271">Segnala informazioni sul sistema</translation>
 <translation id="6339355882150329269">Non considerare l'utente come inattivo quando il video viene riprodotto</translation>
+<translation id="6347110299837147365">Questa policy consente agli amministratori di criptare la cache HTTP del browser su disco.
+Al momento è supportata solo su Windows.
+
+Se la policy viene attivata, la cache del browser verrà criptata.
+
+Se la policy viene disattivata o se non viene configurata, la cache del browser non verrà criptata.
+
+La crittografia della cache del browser potrebbe influire sulle prestazioni.</translation>
 <translation id="6352714113109004581">Se la policy viene configurata, puoi elencare i pattern URL che specificano i siti che possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo HID.
 
       Se la policy non viene configurata, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata. In caso contrario, vengono applicate le impostazioni personali degli utenti.

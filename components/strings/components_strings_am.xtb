@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">የጊዜ ማህተሞች፣ አስተናጋጆች እና የደንበኛ ክፍለ-ጊዜ መታወቂያዎችን ጨምሮ Chrome የርቀት ዴስክቶፕ ታሪክ</translation>
 <translation id="3052868890529250114">እርስዎ አብዛኛውን ጊዜ ከጣቢያዎች ጋር ደህንነቱ በተጠበቀ ሁኔታ ነው የሚገናኙት፣ ነገር ግን Chrome በአሁኑ ጊዜ ደህንነቱ የተጠበቀ ግንኙነት መጠቀም አልቻለም። አንድ አጥቂ የአውታረ መረብ ግንኙነትዎን በድብቅ ለመከታተል ወይም ለማስተካከል እየሞከረ ሊሆን ይችላል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ላይ የ<ph name="PRICE_DROP" /> ዋጋ ቅናሽ</translation>
+<translation id="3056660797732519147">የአሁን ይግዙ፣ በኋላ ይክፈሉ ስሕተት ማያ ገጽ። ቁልፍ ሰሌዳ ተደብቋል።</translation>
 <translation id="3061707000357573562">የመጠገኛ አገልግሎት</translation>
 <translation id="3062655045399308513">የአሰሳ ውሂብን ይሰርዙ...</translation>
 <translation id="3063453392496098461">የVPN ዳራ አገልግሎቶች ጭነት አልተሳካም።</translation>
@@ -1990,6 +1991,7 @@
 <translation id="4242981939686657948">የእርስዎን የአሰሳ ታሪክ ለመፈለግ ተጨማሪ ኃይል ያለው መንገድ ለማግኘት ያብሩ</translation>
 <translation id="4244926541863471678">ፊልም</translation>
 <translation id="4246517972543675653">ውጭ መማር</translation>
+<translation id="4250343410682686342">የአሁን ይግዙ፣ በኋላ ይክፈሉ ስሕተት ማያ ገጽ በሙሉ ቁመት ተከፍቷል።</translation>
 <translation id="4250431568374086873">ወደዚህ ጣቢያ ያልዎት ግንኙነት ሙሉ በሙሉ ደህንነቱ አስተማማኝ አይደለም።</translation>
 <translation id="4250680216510889253">አይ</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2506,6 +2508,7 @@
 <translation id="5122786942953798871">ፖስታ (ጥጥ)</translation>
 <translation id="5123063207673082822">የሳምንት እረፍት ቀን</translation>
 <translation id="5123433949759960244">ቅርጫት ኳስ</translation>
+<translation id="5124797626438336458">የአሁን ይግዙ፣ በኋላ ይክፈሉ ስሕተት ማያ ገጽ በግማሽ ቁመት ተከፍቷል።</translation>
 <translation id="5125575917473813637">የማንነት ካርድን ያርትዑ</translation>
 <translation id="5125751979347152379">ልክ ያልሆነ URL።</translation>
 <translation id="512592033764059484">እግር ኳስ</translation>
@@ -4174,6 +4177,7 @@
 <translation id="7860345425589240791">የእርስዎን አዲስ የሚያበቃበት ቀን እና የካርድ ማረጋገጫ ኮድ በ<ph name="SIDE_OF_CARD" /> ላይ ያስገቡ</translation>
 <translation id="7862185352068345852">ከጣቢያ ይወጡ?</translation>
 <translation id="7865448901209910068">ምርጥ ፍጥነት</translation>
+<translation id="7865482168955081228">የአሁን ይግዙ፣ በኋላ ይክፈሉ ስሕተት ማያ ገጽ ተዘግቷል።</translation>
 <translation id="7870281855125116701">የዋጋ ቅናሽ ተገኝቷል</translation>
 <translation id="7871445724586827387">የGoogle መለያ የይለፍ ቃልዎን ይለውጡ</translation>
 <translation id="787226752901403048">የትር ቡድኖችን ለማጋራት እና ለመቀላቀል እና በሐሳቦች ላይ አንድ ላይ ለመሥራት ወደ Chrome ይግቡ</translation>

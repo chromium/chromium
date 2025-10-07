@@ -159,6 +159,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1726477445370128854">Puoi eseguire ricerche e navigare più rapidamente quando Chrome precarica le pagine che ritiene tu possa visitare</translation>
 <translation id="1728803206919861584">Vuoi salvare la passkey al di fuori della modalità di navigazione in incognito?</translation>
 <translation id="1732514748744806741">Ti comunicheremo se le tue password sono compromesse</translation>
+<translation id="1737694586321018892">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sito ha inviato molte notifiche di recente}other{# siti hanno inviato molte notifiche di recente}}</translation>
 <translation id="1749561566933687563">Sincronizza i tuoi preferiti</translation>
 <translation id="1750238553597293878">Continua a usare le password nel tuo Account Google</translation>
@@ -974,6 +975,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="549660026907543296">Partecipa come <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Riquadro inferiore Attività recente</translation>
 <translation id="5526281268548144413">Impossibile eseguire la chiusura in più finestre</translation>
+<translation id="5532536403031755365">Aggiungi un ulteriore livello di protezione contro le minacce online con la Protezione avanzata</translation>
 <translation id="5548606607480005320">Controllo di sicurezza</translation>
 <translation id="5554520618550346933">Quando utilizzi una password, Chrome ti avvisa se è stata pubblicata online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="5555525474779371165">Scegli il livello di protezione di Navigazione sicura che preferisci</translation>

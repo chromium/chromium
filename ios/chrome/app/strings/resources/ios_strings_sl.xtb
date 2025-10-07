@@ -1046,6 +1046,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5059136629401106827">V redu</translation>
 <translation id="5062321486222145940">Namesti Google Drive</translation>
 <translation id="5067540696062462445">Prenosi</translation>
+<translation id="5070314445039955096">Dovoljenja za spletno mesto »<ph name="SITE_DOMAIN" />« bodo ponastavljena na izklopljena, ko zapustite to spletno mesto</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} od {count} plačilnega sredstva}one{{position} od {count} plačilnega sredstva}two{{position} od {count} plačilnih sredstev}few{{position} od {count} plačilnih sredstev}other{{position} od {count} plačilnih sredstev}}</translation>
 <translation id="5075939510584558547">Shrani brez šifriranja</translation>
 <translation id="5076534614343816664">Spremljanje cen</translation>

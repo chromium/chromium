@@ -159,6 +159,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1726477445370128854">Varat pārlūkot un meklēt ātrāk, ja Chrome iepriekš ielādē lapas, ko jūs varētu apmeklēt saskaņā ar Chrome rīcībā esošajiem datiem</translation>
 <translation id="1728803206919861584">Vai saglabāt piekļuves atslēgu ārpus inkognito režīma?</translation>
 <translation id="1732514748744806741">Mēs jums paziņosim, ja jūsu paroles tiks uzlauztas.</translation>
+<translation id="1737694586321018892">Iegūstiet visaugstāko Chrome drošības līmeni</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Nesen tika nosūtīts daudz paziņojumu no vienas vietnes}zero{Nesen tika nosūtīts daudz paziņojumu no # vietnēm}one{Nesen tika nosūtīts daudz paziņojumu no # vietnes}other{Nesen tika nosūtīts daudz paziņojumu no # vietnēm}}</translation>
 <translation id="1749561566933687563">Sinhronizējiet grāmatzīmes</translation>
 <translation id="1750238553597293878">Turpiniet izmantot Google kontā saglabātās paroles</translation>
@@ -974,6 +975,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="549660026907543296">Pievienoties ar profilu <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Ekrāna apakšdaļas lapa “Pēdējās darbības”</translation>
 <translation id="5526281268548144413">Cilnes nevar aizvērt vairākos logos.</translation>
+<translation id="5532536403031755365">Uzlabojiet drošību, pievienojot papildu aizsardzības līmeni pret draudiem tiešsaistē.</translation>
 <translation id="5548606607480005320">Drošības pārbaude</translation>
 <translation id="5554520618550346933">Pārlūkā Chrome tiek parādīts brīdinājums, ja izmantojat paroli, kas ir publicēta tiešsaistē. To darot, jūsu paroles un lietotājvārdi tiek šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="5555525474779371165">Drošas pārlūkošanas aizsardzības opciju izvēle</translation>

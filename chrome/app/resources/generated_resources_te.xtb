@@ -1001,6 +1001,7 @@
 <translation id="166278006618318542">విషయం పబ్లిక్ కీ అల్గారిథం</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="1663698992894057019">తాజా సెక్యూరిటీ, సాఫ్ట్‌వేర్ కోసం కొత్త Chromebookకు అప్‌గ్రేడ్ చేయండి</translation>
+<translation id="1664497218584335032">వెబ్‌సైట్ ఈ లింక్‌ను యాప్‌లో తెరవాలనుకుంటోంది.</translation>
 <translation id="166454475160289583">మీ కీబోర్డ్ ఇన్‌పుట్‌ను ఓవర్‌రైడ్ చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="1665328953287874063">పాస్‌వర్డ్ లేదా పిన్‌తో మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="1665859804801131136">ఎక్స్‌ప్రెషనిజం</translation>
@@ -2883,6 +2884,7 @@
 <translation id="2950666755714083615">నన్ను సైన్ అప్ చేయనివ్వు</translation>
 <translation id="2953210795988451570">సెక్యూరిటీ అప్‌డేట్‌లు ముగిశాయి. కొత్త Chromebookకు అప్‌గ్రేడ్ చేయండి.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> కోసం నోటిఫికేషన్‌లకు అనుమతి లేదు. మీరు తదుపరి సారి సందర్శించినప్పుడు సిస్టమ్ మిమ్మల్ని మళ్లీ అడుగుతుంది.</translation>
+<translation id="2955048943983973430">సంబంధిత Google సర్వీస్‌లు</translation>
 <translation id="2956070239128776395">విభాగం గ్రూప్‌లో ఉంది: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">ఈ ఎక్స్‌టెన్షన్‌ను ఉపయోగించడానికి డెవలపర్ మోడ్‌ను ఆన్ చేయండి, ఇది Chrome వెబ్ స్టోర్ ద్వారా రివ్యూ చేయబడదు.</translation>
 <translation id="2958721676848865875">ప్యాక్ ఎక్స్‌టెన్షన్‌ హెచ్చరిక</translation>
@@ -4639,6 +4641,7 @@
 <translation id="4151503145138736576">క్లీనప్ చేయడానికి ఆఫ్‌లైన్ స్టోరేజ్ లేదు</translation>
 <translation id="4152011295694446843">మీరు మీ బుక్‌మార్క్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
+<translation id="4153858337812834972">అత్యంత ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="4154658846204884961">కామెట్</translation>
 <translation id="4154664944169082762">వేలిముద్రలు</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - ఎడమ వీక్షణ</translation>
@@ -6559,10 +6562,12 @@
 <translation id="5517304475148761050">Play Storeను యాక్సెస్ చేయగలిగేలా ఈ యాప్‌ను అనుమతించాలి</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">ఈ యాప్‌లో ఎల్లప్పుడూ <ph name="PROTOCOL_SCHEME" /> లింక్‌లను తెరవండి</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> చర్యను తీసివేయండి</translation>
 <translation id="5521078259930077036">మీరు ఆశిస్తున్న హోమ్ పేజీ ఇదేనా?</translation>
 <translation id="5522156646677899028">ఈ ఎక్స్‌టెన్షన్‌ తీవ్రమైన భద్రతా భేద్యతలను కలిగి ఉంది.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{మీ నిర్వాహకుడి ద్వారా ఒక ఎక్స్‌టెన్షన్ ఇన్‌స్టాల్ చేయబడింది}other{మీ నిర్వాహకుడి ద్వారా # ఎక్స్‌టెన్షన్‌లు ఇన్‌స్టాల్ చేయబడ్డాయి}}</translation>
+<translation id="5523203511530504754"><ph name="APP_NAME" />లో <ph name="PROTOCOL_SCHEME" /> లింక్‌లను తెరవండి</translation>
 <translation id="5523532775593636291">మీరు జోడించే సైట్‌లు ఎల్లప్పుడూ యాక్టివ్‌గా ఉంటాయి, వాటి నుండి మెమరీ ఖాళీ అవ్వదు</translation>
 <translation id="5523558474028191231">పేరులో అక్షరాలు, నంబర్‌లు, ప్రత్యేక అక్షరాలను ఉపయోగించవచ్చు, అలాగే తప్పనిసరిగా <ph name="MAX_CHARACTER_COUNT" /> అక్షరాలు లేదా అంతకంటే తక్కువ ఉండాలి</translation>
 <translation id="5526745900034778153">సింక్‌ను కొనసాగించడానికి మళ్లీ సైన్ ఇన్ చేయండి</translation>
@@ -7113,6 +7118,7 @@
 <translation id="5919305207330938913">సేకరించబడిన మొత్తం డేటా <ph name="BEGIN_LINK" />Google గోప్యతా పాలసీ<ph name="END_LINK" />కి అనుగుణంగా ఉపయోగించబడుతుంది.</translation>
 <translation id="5919486630433391408">ఫర్మ్‌వేర్ అప్‌డేట్‌లను మీ అడ్మినిస్ట్రేటర్ డిజేబుల్ చేశారు.</translation>
 <translation id="5920543303088087579">ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడాన్ని మీ నిర్వాహకులు నిలిపివేశారు</translation>
+<translation id="5922493635960054020">కొత్తగా సందర్శించిన సైట్‌లలో JavaScript ఆప్టిమైజర్‌కు యాక్సెస్‌ను బ్లాక్ చేయండి. సురక్షిత బ్రౌజింగ్ అవసరం</translation>
 <translation id="5922963926582976524">ఇన్‌స్టంట్ హాట్‌స్పాట్ నెట్‌వర్క్ డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="5924047253200400718">సహాయం పొందండి<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft ఫైల్స్‌ను కాపీ చేయడానికి లేదా Google Driveకి తరలించడానికి ముందు అడగండి</translation>
@@ -9591,6 +9597,7 @@
 <translation id="7663859337051362114">eSIM ప్రొఫైల్‌ను జోడించండి</translation>
 <translation id="76641554187607347">కీబోర్డ్ ఏదీ కనెక్ట్ అయి లేదు</translation>
 <translation id="7664442418269614729">ఈ కార్డ్‌ను మీ iPhoneలో ఉపయోగించండి</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> లింక్‌ను తెరవడానికి ఒక యాప్‌ను ఎంచుకోండి</translation>
 <translation id="7665082356120621510">పరిమాణాన్ని రిజర్వ్ చేయండి</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="7665445336029073980">పూర్తి డౌన్‌లోడ్ హిస్టరీ</translation>
@@ -11210,6 +11217,7 @@
 <translation id="8750786237117206586">ChromeOS Flex ఆడియో సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="8751034568832412184">స్కూల్</translation>
 <translation id="8751329102746373229">మీ అడ్మినిస్ట్రేటర్ నుండి</translation>
+<translation id="875242763254084885"><ph name="ORIGIN" /> సైట్ ఈ లింక్‌ను ఒక యాప్‌లో తెరవాలనుకుంటోంది.</translation>
 <translation id="8752451679755290210">ఆటోమేటిక్‌గా ఐటెమ్‌లను మార్చండి</translation>
 <translation id="8753948258138515839">మీరు Google Drive, బాహ్య స్టోరేజ్ లేదా మీ ChromeOS Flex పరికరంలో సేవ్ చేసిన ఫైల్స్‌కు Files యాప్, క్విక్ యాక్సెస్‌ను అందిస్తుంది.</translation>
 <translation id="8754200782896249056">&lt;p&gt;When running <ph name="PRODUCT_NAME" />ను మద్దతు ఉన్న డెస్క్‌టాప్ పరిసరంలో అమలు చేస్తున్నప్పుడు, సిస్టమ్ ప్రాక్సీ సెట్టింగ్‌లు ఉపయోగించబడతాయి.  అయితే, మీ సిస్టమ్ మద్దతు ఇవ్వడం లేదు లేదా మీ సిస్టమ్ కాన్ఫిగరేషన్‌ను ప్రారంభించడంలో సమస్య ఉంది.&lt;/p&gt;

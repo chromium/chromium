@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">እሺ</translation>
 <translation id="5062321486222145940">Google Driveን ጫን</translation>
 <translation id="5067540696062462445">ውርዶች</translation>
+<translation id="5070314445039955096">እርስዎ ከዚህ ጣቢያ ሲወጡ የ«<ph name="SITE_DOMAIN" />» ፈቃዶች እንደገና እንዲጠፉ ይደረጋሉ</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} ከ{count} የመክፈያ ዘዴ}one{{position} ከ{count} የመክፈያ ዘዴ}other{{position} ከ{count} የመክፈያ ዘዴዎች}}</translation>
 <translation id="5075939510584558547">ያለምስጠራ ያስቀምጡ</translation>
 <translation id="5076534614343816664">የዋጋ ክትትል</translation>

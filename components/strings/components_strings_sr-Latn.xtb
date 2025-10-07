@@ -814,6 +814,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2321291402658100099">Upravljaj informacijama</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 prozor}one{# prozor}few{# prozora}other{# prozora}}</translation>
 <translation id="232390861414237658">Automatski popunjavajte ovu karticu za kupovine u Chrome-u kada je sačuvate da biste je koristili uz Google Pay</translation>
+<translation id="2326283484705860548">Sada možete da automatski popunjavate više informacija iz Google novčanika</translation>
 <translation id="2328651992442742497">Dozvoljeno (podrazumevano)</translation>
 <translation id="2328955282645810595">Građevinski i električni alati</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ističe <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2346319942568447007">Kopirana slika</translation>
 <translation id="2347764072711098973">Plaćajte na rate uz Affirm, Zip ili Klarna</translation>
 <translation id="2348509731468399833">Praćenje cena je zaustavljeno.</translation>
+<translation id="2348836501965732644">Upravljajte informacijama ili isključite ove predloge u Podešavanjima</translation>
 <translation id="2349957959687031096">Dugme Otvori karticu bez arhiviranja, aktivirajte ga da biste otvorili novu karticu bez arhiviranja i pregledali privatno</translation>
 <translation id="2350796302381711542">Želite li da dozvolite da <ph name="HANDLER_HOSTNAME" /> otvara sve <ph name="PROTOCOL" /> linkove za koje ste do sada koristili <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Ovaj server ne može da dokaže da je <ph name="DOMAIN" /> jer koristi bezbednosni sertifikat koji Chromium ili konfiguracija sistema za šifrovanje veb-saobraćaja ne smatraju pouzdanim. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
@@ -1453,6 +1455,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="340924996148642843">Poređenje trenutno nije dostupno</translation>
 <translation id="3409896703495473338">Upravljajte bezbednosnim podešavanjima</translation>
 <translation id="3411091017011773343">Otpremi za <ph name="HOURS" /> s</translation>
+<translation id="341134412449102894">Informacije se čuvaju u <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-u za <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Najbezbednije je da posetite ovaj sajt kasnije ako koristite javnu mrežu. Rizik je manji sa pouzdane mreže, poput kućne ili poslovne WiFi mreže.</translation>
 <translation id="3414275587143250384">Distribuirano računarstvo i računarstvo u klaudu</translation>
 <translation id="3414952576877147120">Veličina:</translation>

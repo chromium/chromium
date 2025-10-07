@@ -1046,6 +1046,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disk</translation>
 <translation id="5067540696062462445">Nedlastinger</translation>
+<translation id="5070314445039955096">Tillatelsene for «<ph name="SITE_DOMAIN" />» blir tilbakestilt til å være avslått når du forlater dette nettstedet</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} av {count} betalingsmåte}other{{position} av {count} betalingsmåter}}</translation>
 <translation id="5075939510584558547">Lagre uten kryptering</translation>
 <translation id="5076534614343816664">Prissporing</translation>

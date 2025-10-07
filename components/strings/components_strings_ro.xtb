@@ -1237,6 +1237,7 @@
 <translation id="305162504811187366">Istoricul Desktopului la distanță Chrome, inclusiv marcajele temporale, gazdele și ID-urile sesiunii de client</translation>
 <translation id="3052868890529250114">De obicei, te conectezi în siguranță la site-uri, dar Chrome nu a putut folosi o conexiune securizată de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Ecranul de eroare Cumpără acum, plătește mai târziu. Tastatura este ascunsă.</translation>
 <translation id="3061707000357573562">Serviciu de corecție</translation>
 <translation id="3062655045399308513">Șterge datele de navigare...</translation>
 <translation id="3063453392496098461">Serviciile VPN în fundal nu s-au instalat.</translation>
@@ -1991,6 +1992,7 @@
 <translation id="4242981939686657948">Pentru o modalitate mai eficientă de a căuta în istoricul de navigare, activează</translation>
 <translation id="4244926541863471678">Peliculă</translation>
 <translation id="4246517972543675653">Studii în străinătate</translation>
+<translation id="4250343410682686342">Ecranul de eroare Cumpără acum, plătește mai târziu s-a deschis la înălțimea completă.</translation>
 <translation id="4250431568374086873">Conexiunea la acest site nu este complet sigură</translation>
 <translation id="4250680216510889253">Nu</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2507,6 +2509,7 @@
 <translation id="5122786942953798871">Plic (bumbac)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Baschet</translation>
+<translation id="5124797626438336458">Ecranul de eroare Cumpără acum, plătește mai târziu deschis la jumătate din înălțime.</translation>
 <translation id="5125575917473813637">Editează actul de identitate</translation>
 <translation id="5125751979347152379">Adresă URL nevalidă.</translation>
 <translation id="512592033764059484">Fotbal</translation>
@@ -4175,6 +4178,7 @@ Detalii suplimentare:
 <translation id="7860345425589240791">Introdu noua dată de expirare și codul CVC pe <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Ieși de pe site?</translation>
 <translation id="7865448901209910068">Viteza optimă</translation>
+<translation id="7865482168955081228">Ecranul de eroare Cumpără acum, plătește mai târziu este închis.</translation>
 <translation id="7870281855125116701">A fost găsită o reducere</translation>
 <translation id="7871445724586827387">Schimbă parola Contului Google</translation>
 <translation id="787226752901403048">Conectează-te la Chrome pentru a permite accesul la grupuri de file și a te alătura acestora, precum și pentru a colabora la idei</translation>

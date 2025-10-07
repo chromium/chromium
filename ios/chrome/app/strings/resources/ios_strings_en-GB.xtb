@@ -1046,6 +1046,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Install Google Drive</translation>
 <translation id="5067540696062462445">Downloads</translation>
+<translation id="5070314445039955096">'<ph name="SITE_DOMAIN" />' permissions will reset to off when you leave this site</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} of {count} payment method}other{{position} of {count} payment methods}}</translation>
 <translation id="5075939510584558547">Save without encryption</translation>
 <translation id="5076534614343816664">Price tracking</translation>

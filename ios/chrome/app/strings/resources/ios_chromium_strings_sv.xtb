@@ -200,6 +200,9 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="5671188105328420281">Chromium-tips</translation>
 <translation id="5688047395118852662">Det här kortet visar förslag på hur du får ut mesta möjliga av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan inte kontrollera dina lösenord</translation>
+<translation id="5731004036450828399">För att skydda dina nycklar måste du först skapa en pinkod för återställning.
+
+        Nycklarna sparas i Lösenordshantering så att du kan använda dem i Chromium på vilken enhet som helst.</translation>
 <translation id="584550191241316896">Inloggad i Chromium</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5889847953983052353">När detta är aktiverat:
@@ -267,6 +270,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="7395825497086981028">Lösenordet sparas med Lösenordshantering för <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Den här nyckeln sparas i Lösenordshantering för <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Öppna Chromium</translation>
 <translation id="7531461704633548377">Från Chromium</translation>
 <translation id="7554983317097061001">Tips för Chromium: Flytta Chromium till dockan</translation>
@@ -300,6 +304,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8254729934443216898">Utforska nya funktioner som hjälper dig att få ut så mycket som möjligt av Chromium.</translation>
 <translation id="8293572045658095405">Du använder Chromiums inkognitoläge</translation>
 <translation id="830951810931292870">Öppnar de angivna webbadresserna i Chromium i inkognitoläge.</translation>
+<translation id="8385503371191508165">Börja spara nycklar med Lösenordshantering</translation>
 <translation id="8390323835464055390">Logga in med dina sparade lösenord och nycklar från vilken app som helst med Chromium för autofyll</translation>
 <translation id="8409374867500149834">Du har den starkaste säkerheten i Chromium mot skadliga webbplatser</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}}</translation>

@@ -2875,6 +2875,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2950666755714083615">Želim se registrirati</translation>
 <translation id="2953210795988451570">Sigurnosna ažuriranja su završila. Nadogradite na novi Chromebook.</translation>
 <translation id="2953218713108551165">Obavijesti nisu dopuštene za <ph name="SITE" />. Pri sljedećem posjetu upit će se prikazati ponovo.</translation>
+<translation id="2955048943983973430">Povezane Googleove usluge</translation>
 <translation id="2956070239128776395">Odjeljak je ugniježđen u grupi: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Uključite način rada razvojnog programera da biste upotrebljavali ovo proširenje koje Chrome web-trgovina ne može pregledati.</translation>
 <translation id="2958721676848865875">Upozorenje proširenja paketa</translation>
@@ -4630,6 +4631,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4151503145138736576">Nema offline pohrane za oslobađanje</translation>
 <translation id="4152011295694446843">Ovdje ćete pronaći svoje oznake</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
+<translation id="4153858337812834972">Najnovije kartice</translation>
 <translation id="4154658846204884961">Komet</translation>
 <translation id="4154664944169082762">Otisci prstiju</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – lijevi prikaz</translation>
@@ -4934,6 +4936,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="437809255587011096">Najavi stiliziranje teksta</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4378308539633073595">Pomicanje unaprijed</translation>
+<translation id="4378363201814870400">Upravljajte podacima za automatsko popunjavanje, kao što su zaporke, načini plaćanja, adrese i osobne iskaznice, radi bržeg pregledavanja</translation>
 <translation id="4378551569595875038">Povezivanje...</translation>
 <translation id="4378556263712303865">Zahtjev za uređaj</translation>
 <translation id="4378589147979399051">Upravljajte pokazivačem miša pomoću primarne tipkovnice</translation>
@@ -7100,6 +7103,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5919305207330938913">Svi prikupljeni podaci upotrebljavat će se u skladu s Googleovim <ph name="BEGIN_LINK" />pravilima o privatnosti<ph name="END_LINK" />.</translation>
 <translation id="5919486630433391408">Administrator je onemogućio ažuriranja firmwarea.</translation>
 <translation id="5920543303088087579">Povezivanje s tom mrežom onemogućio je administrator</translation>
+<translation id="5922493635960054020">Blokirajte pristup alatu za optimizaciju JavaScripta na novoposjećenim web-lokacijama. Zahtijeva sigurno pregledavanje</translation>
 <translation id="5922963926582976524">Prekidanje veze s mrežom s instant žarišnom točkom</translation>
 <translation id="5924047253200400718">Potražite pomoć<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pitaj prije kopiranja ili premještanja Microsoftovih datoteka na Google disk</translation>

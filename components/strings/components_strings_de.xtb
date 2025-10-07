@@ -1237,6 +1237,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="305162504811187366">Chrome Remote Desktop-Verlauf, einschließlich Zeitstempeln, Hosts und Client-Sitzungs-IDs</translation>
 <translation id="3052868890529250114">Normalerweise verbindest du dich auf sichere Weise mit Websites, aber Chrome konnte dieses Mal keine verschlüsselte Verbindung herstellen. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
+<translation id="3056660797732519147">Fehlerbildschirm für „Jetzt kaufen, später bezahlen“. Tastatur ausgeblendet.</translation>
 <translation id="3061707000357573562">Patchdienst</translation>
 <translation id="3062655045399308513">Browserdaten löschen...</translation>
 <translation id="3063453392496098461">Die Installation der VPN-Hintergrunddienste ist fehlgeschlagen.</translation>
@@ -1989,6 +1990,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4242981939686657948">Du kannst deinen Browserverlauf jetzt effektiver durchsuchen – aktiviere dazu</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Auslandsstudium</translation>
+<translation id="4250343410682686342">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist vollständig geöffnet.</translation>
 <translation id="4250431568374086873">Die Verbindung zu dieser Website ist nicht uneingeschränkt sicher</translation>
 <translation id="4250680216510889253">Nein</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2505,6 +2507,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5122786942953798871">Umschlag (Baumwolle)</translation>
 <translation id="5123063207673082822">Wochenende</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5124797626438336458">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist halb geöffnet.</translation>
 <translation id="5125575917473813637">Amtlichen Ausweis bearbeiten</translation>
 <translation id="5125751979347152379">Ungültige URL</translation>
 <translation id="512592033764059484">Fußball</translation>
@@ -4173,6 +4176,7 @@ Weitere Details:
 <translation id="7860345425589240791">Gib das neue Ablaufdatum und den CVC auf der <ph name="SIDE_OF_CARD" /> ein</translation>
 <translation id="7862185352068345852">Website verlassen?</translation>
 <translation id="7865448901209910068">Beste Geschwindigkeit</translation>
+<translation id="7865482168955081228">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist geschlossen.</translation>
 <translation id="7870281855125116701">Rabatt gefunden</translation>
 <translation id="7871445724586827387">Passwort des Google-Kontos ändern</translation>
 <translation id="787226752901403048">Melde dich in Chrome an, um Tabgruppen zu teilen, ihnen beizutreten und gemeinsam an Ideen zu arbeiten</translation>

@@ -1046,6 +1046,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5059136629401106827">Ados</translation>
 <translation id="5062321486222145940">Instalatu Google Drive</translation>
 <translation id="5067540696062462445">Deskargak</translation>
+<translation id="5070314445039955096"><ph name="SITE_DOMAIN" /> webgunearen baimenak desaktibatu egingo dira webgunetik irteten zarenean</translation>
 <translation id="507187271399539513">{count,plural, =1{Ordainketa-metodo {count}etik {position}garrena}other{{count} ordainketa-metodotatik {position}garrena}}</translation>
 <translation id="5075939510584558547">Gorde enkriptatu gabe</translation>
 <translation id="5076534614343816664">Prezioen jarraipena</translation>

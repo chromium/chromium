@@ -1237,6 +1237,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="305162504811187366">Historik för Chrome Remote Desktop, bland annat tidsstämplar, värdar och id:n för klientsessioner</translation>
 <translation id="3052868890529250114">Du ansluter vanligtvis till webbplatser på ett säkert sätt, men den här gången kunde inte Chrome använda en säker anslutning. Det kan hända att en angripare försöker avlyssna eller ändra din nätverksanslutning. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Priset på <ph name="PRODUCT_NAME" /> sänkt med <ph name="PRICE_DROP" /></translation>
+<translation id="3056660797732519147">Felskärm för Köp nu, betala senare. Tangentbordet är dolt.</translation>
 <translation id="3061707000357573562">Tjänst för programkorrigering</translation>
 <translation id="3062655045399308513">Radera webbinformation …</translation>
 <translation id="3063453392496098461">Det gick inte att installera VPN-bakgrundstjänster.</translation>
@@ -1452,6 +1453,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="340924996148642843">Jämför är inte tillgänglig just nu.</translation>
 <translation id="3409896703495473338">Hantera säkerhetsinställningar</translation>
 <translation id="3411091017011773343">Ladda upp om <ph name="HOURS" /> tim</translation>
+<translation id="341134412449102894">Din information sparas i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> för <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Det är säkrast att besöka webbplatsen senare om du använder ett offentligt nätverk. Det finns mindre risk med ett betrott nätverk, som wifi-nätverket hemma eller på jobbet.</translation>
 <translation id="3414275587143250384">Distribuerade system och molnteknik</translation>
 <translation id="3414952576877147120">Storlek:</translation>
@@ -1991,6 +1993,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4242981939686657948">Om du vill söka i webbhistoriken på ett effektivare sätt aktiverar du</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Utlandsstudier</translation>
+<translation id="4250343410682686342">Felskärmen för Köp nu, betala senare har öppnats över hela skärmen.</translation>
 <translation id="4250431568374086873">Anslutningen till den här webbplatsen är inte helt säker</translation>
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4250716950689692560">A4 x 4</translation>
@@ -2507,6 +2510,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5122786942953798871">Kuvert (bomull)</translation>
 <translation id="5123063207673082822">helgen</translation>
 <translation id="5123433949759960244">Basketboll</translation>
+<translation id="5124797626438336458">Felskärmen för Köp nu, betala senare har öppnats över halva skärmen.</translation>
 <translation id="5125575917473813637">Redigera id-kort</translation>
 <translation id="5125751979347152379">Ogiltig webbadress.</translation>
 <translation id="512592033764059484">Fotboll</translation>
@@ -4175,6 +4179,7 @@ Mer information.
 <translation id="7860345425589240791">Ange ett nytt sista giltighetsdatum och CVC-koden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vill du lämna webbplatsen?</translation>
 <translation id="7865448901209910068">Bästa hastighet</translation>
+<translation id="7865482168955081228">Felskärmen för Köp nu, betala senare har stängts.</translation>
 <translation id="7870281855125116701">En rabatt hittades</translation>
 <translation id="7871445724586827387">Byt lösenord till Google-kontot</translation>
 <translation id="787226752901403048">Logga in i Chrome för att dela och gå med i flikgrupper och samarbeta</translation>

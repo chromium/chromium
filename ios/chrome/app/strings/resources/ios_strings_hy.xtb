@@ -1046,6 +1046,7 @@
 <translation id="5059136629401106827">Եղավ</translation>
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
 <translation id="5067540696062462445">Ներբեռնումներ</translation>
+<translation id="5070314445039955096">Երբ դուրս գաք «<ph name="SITE_DOMAIN" />» կայքից, դրա բոլոր թույլտվությունները կանջատվեն</translation>
 <translation id="507187271399539513">{count,plural, =1{Վճարման {position} եղանակ՝ {count}-ից}one{Վճարման {position} եղանակ՝ {count}-ից}other{Վճարման {position} եղանակ՝ {count}-ից}}</translation>
 <translation id="5075939510584558547">Պահում առանց գաղտնագրման</translation>
 <translation id="5076534614343816664">Գների հետագծում</translation>

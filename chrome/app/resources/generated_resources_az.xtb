@@ -2875,6 +2875,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2950666755714083615">Məni qeydiyyatdan keçirin</translation>
 <translation id="2953210795988451570">Təhlükəsizlik güncəllənmələri başa çatıb. Yeni Chromebook-a təkmilləşdirin.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> üçün bildirişlərə icazə verilmir. Növbəti ziyarətinizdə sizdən yenidən soruşulacaq.</translation>
+<translation id="2955048943983973430">Əlaqəli Google xidmətləri</translation>
 <translation id="2956070239128776395">Bölmə qrupun daxilindədir: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Chrome Veb Market tərəfindən nəzərdən keçirilə bilməyən bu artırmadan istifadə etmək üçün developer rejimini yandırın.</translation>
 <translation id="2958721676848865875">Paket Artırması Xəbərdarlığı</translation>
@@ -4629,6 +4630,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4151503145138736576">Təmizlənəcək oflayn yaddaş yoxdur</translation>
 <translation id="4152011295694446843">Əlfəcinləri burada tapa bilərsiniz</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 panel}other{# panel}}</translation>
+<translation id="4153858337812834972">Ən son tablar</translation>
 <translation id="4154658846204884961">Kometa</translation>
 <translation id="4154664944169082762">Barmaq izi</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Sol görünüş</translation>
@@ -7104,6 +7106,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5919305207330938913">Toplanan bütün data Google-un <ph name="BEGIN_LINK" />Məxfilik Siyasətinə<ph name="END_LINK" /> əsasən istifadə ediləcək.</translation>
 <translation id="5919486630433391408">İç proqram güncəllənməsi administratorunuz tərəfindən deaktiv edildi.</translation>
 <translation id="5920543303088087579">Bu şəbəkəyə qoşulma administrator tərəfindən deaktiv edildi</translation>
+<translation id="5922493635960054020">Yeni daxil olunan saytlarda JavaScript optimallaşdırıcısına girişi bloklayın. Təhlükəsiz axtarış tələb olunur</translation>
 <translation id="5922963926582976524">Ani hotspot şəbəkəsinin bağlantısını ayırın</translation>
 <translation id="5924047253200400718">Yardım alın<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft fayllarını Google Diskə kopyalamazdan və ya köçürməzdən əvvəl soruşulsun</translation>

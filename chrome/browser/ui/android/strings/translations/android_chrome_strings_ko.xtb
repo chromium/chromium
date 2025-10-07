@@ -159,6 +159,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1726477445370128854">사용자가 방문할 것으로 생각되는 페이지를 Chrome에서 미리 로드하면 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="1728803206919861584">시크릿 모드 외부에서 패스키를 저장하시겠습니까?</translation>
 <translation id="1732514748744806741">비밀번호가 유출된 경우 알려 드립니다.</translation>
+<translation id="1737694586321018892">Chrome의 가장 강력한 보안 기능 이용하기</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 사이트 1개}other{최근에 많은 알림을 보낸 사이트 #개}}</translation>
 <translation id="1749561566933687563">북마크 동기화</translation>
 <translation id="1750238553597293878">Google 계정의 비밀번호를 계속 사용하세요.</translation>
@@ -974,6 +975,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />(으)로 참여</translation>
 <translation id="5517326820028369152">최근 활동 하단 시트</translation>
 <translation id="5526281268548144413">여러 창을 닫을 수 없음</translation>
+<translation id="5532536403031755365">향상된 보호 모드를 사용해 온라인 위협에 대한 보안을 한층 더 강화하세요</translation>
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5554520618550346933">비밀번호를 사용하면 온라인에 비밀번호가 게시된 경우 Chrome에서 경고를 표시합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5555525474779371165">세이프 브라우징 보호 기능을 선택하세요</translation>
@@ -1831,6 +1833,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9133397713400217035">오프라인 탐색</translation>
 <translation id="9143389653531441385"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정으로 가입</translation>
 <translation id="9148126808321036104">다시 로그인</translation>
+<translation id="9148564897242852377">탭 선택 전환</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" />에서 사용할 계정을 선택하세요</translation>
 <translation id="9158770349521403363">콘텐츠만 공유</translation>
 <translation id="9161172953291434881">이 사이트에 내 데이터를 맡길 수 있나요?</translation>

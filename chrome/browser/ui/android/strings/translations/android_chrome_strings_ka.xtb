@@ -415,7 +415,6 @@
 <translation id="2909615210195135082">Google შეტყობინებების პლატფორმა</translation>
 <translation id="2912345083818861431">გახსნილი ინკოგნიტო ჩანართების სანახავად გამოიყენეთ ეკრანის დაბლოკვა</translation>
 <translation id="2918484639460781603">პარამეტრებზე გადასვლა</translation>
-<translation id="2920776558188188922">გადართეთ მისამართთა ზოლის პოზიცია ზემოთ ან ქვემოთ დათვალიერების მორგებული გამოცდილების მისაღებად</translation>
 <translation id="2923908459366352541">სახელი არასწორია</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ის მეხსიერება</translation>
 <translation id="2932222164150889403">თქვენი კლავიატურა არ შეიცვლება</translation>
@@ -1834,6 +1833,7 @@
 <translation id="9133397713400217035">ხაზგარეშე რეჟიმში გაცნობა</translation>
 <translation id="9143389653531441385"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით რეგისტრაცია</translation>
 <translation id="9148126808321036104">ხელახლა შედით</translation>
+<translation id="9148564897242852377">ჩანართის არჩევის გადართვა</translation>
 <translation id="9157212632995922070">აირჩიეთ ანგარიში, რომ გახსნათ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">მხოლოდ კონტენტის გაზიარება</translation>
 <translation id="9161172953291434881">ანდობთ ამ საიტს თქვენს მონაცემებს?</translation>

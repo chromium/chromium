@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">معلومات کا نظم کریں</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ونڈو}other{# ونڈوز}}</translation>
 <translation id="232390861414237658">‏اس کارڈ کو Google Pay کے ساتھ استعمال کرنے کے لیے محفوظ کئے جانے پر اسے Chrome میں کی جانے والی خریداریوں کے لیے آٹو فل کریں</translation>
+<translation id="2326283484705860548">‏اب آپ Google والٹ سے خودکار طور پر مزید معلومات بھر سکتے ہیں</translation>
 <translation id="2328651992442742497">اجازت ہے (ڈیفالٹ)</translation>
 <translation id="2328955282645810595">تعمیر اور پاور ٹولز</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> کی میعاد <ph name="EXPIRATION_DATE_ABBR" /> کو ختم ہو جائے گی</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">آپ کی کاپی کردہ تصویر</translation>
 <translation id="2347764072711098973">‏وقت کے ساتھ ادائیگی کے لیے تصدیق کریں، زپ کریں یا Klarna کا استعمال کریں</translation>
 <translation id="2348509731468399833">قیمت کی ٹریکنگ بند ہو گئی۔</translation>
+<translation id="2348836501965732644">اپنی معلومات کا نظم کریں یا ترتیبات میں ان تجاویز کو آف کریں</translation>
 <translation id="2349957959687031096">پوشیدگی ٹیب کھولیں بٹن، نجی طور پر براؤز کرنے کے لیے ایک نیا پوشیدگی ٹیب کھولنے کے لیے فعال کریں</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> کو <ph name="REPLACED_HANDLER_TITLE" /> کی بجائے سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="2351718832234620840">‏یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے کیونکہ یہ ایک سیکیورٹی سرٹیفکیٹ استعمال کر رہا ہے جس پر Chromium یا آپ کے سسٹم کے کنفیگریشن کو ویب ٹریفک کی مرموز کاری کے لیے بھروسہ نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
@@ -1237,6 +1239,7 @@
 <translation id="305162504811187366">‏بشمول ٹائم سٹیمپس، میزبانوں اور کلائنٹ سیشن IDs کے Chrome ریموٹ ڈیسک ٹاپ کی سرگزشت</translation>
 <translation id="3052868890529250114">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن اس مرتبہ Chrome محفوظ کنکشن کا استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> سے قیمت میں <ph name="PRICE_DROP" /> گراوٹ</translation>
+<translation id="3056660797732519147">ابھی خریدیں، ادائیگی بعد میں کریں کی خرابی کی اسکرین۔ کی بورڈ پوشیدہ ہے۔</translation>
 <translation id="3061707000357573562">پیچ سروس</translation>
 <translation id="3062655045399308513">براؤزنگ ڈیٹا حذف کریں...</translation>
 <translation id="3063453392496098461">‏‫VPN کی پس منظر سروسز کی انسٹالیشن ناکام ہو گئی۔</translation>
@@ -1993,6 +1996,7 @@
 <translation id="4242981939686657948">اپنی براؤزنگ کی سرگزشت کو زیادہ آسانی اور جدید طریقے سے تلاش کرنے کے لیے، آن کریں:</translation>
 <translation id="4244926541863471678">فلم</translation>
 <translation id="4246517972543675653">بیرون ملک تعلیم</translation>
+<translation id="4250343410682686342">ابھی خریدیں، ادائیگی بعد میں کریں کی خرابی کی اسکرین پوری کھلی ہے۔</translation>
 <translation id="4250431568374086873">اس سائٹ سے آپ کا کنکشن پوری طرح سے محفوظ نہیں ہے</translation>
 <translation id="4250680216510889253">نہیں</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2509,6 +2513,7 @@
 <translation id="5122786942953798871">لفافہ (کاٹن)</translation>
 <translation id="5123063207673082822">ویک اینڈ</translation>
 <translation id="5123433949759960244">باسکٹ بال</translation>
+<translation id="5124797626438336458">ابھی خریدیں، ادائیگی بعد میں کریں کی خرابی کی اسکرین آدھی کھلی ہے۔</translation>
 <translation id="5125575917473813637">شناختی کارڈ میں ترمیم کریں</translation>
 <translation id="5125751979347152379">‏غلط URL۔</translation>
 <translation id="512592033764059484">فٹبال</translation>
@@ -4177,6 +4182,7 @@
 <translation id="7860345425589240791">‏اپنی نئی تاریخ اختتام اور CVC <ph name="SIDE_OF_CARD" /> پر درج کریں</translation>
 <translation id="7862185352068345852">سائٹ چھوڑیں؟</translation>
 <translation id="7865448901209910068">عمدہ رفتار</translation>
+<translation id="7865482168955081228">ابھی خریدیں، ادائیگی بعد میں کریں کی خرابی کی اسکرین بند ہے۔</translation>
 <translation id="7870281855125116701">رعایت مل گئی</translation>
 <translation id="7871445724586827387">‏اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کریں</translation>
 <translation id="787226752901403048">‏ٹیب گروپس کا اشتراک کرنے اور ان میں شامل ہونے کے لیے Chrome میں سائن ان کریں اور آئیڈیاز پر مل کر کام کریں</translation>

@@ -1237,6 +1237,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="305162504811187366">El historial del Escritorio remoto de Chrome, incluidas las marcas de tiempo, los hosts y las ID de sesión de los clientes</translation>
 <translation id="3052868890529250114">Por lo general, te conectas a sitios de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> de descuento en <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Pantalla de error de Compra ahora y paga después. Teclado oculto.</translation>
 <translation id="3061707000357573562">Aplicar parche al servicio</translation>
 <translation id="3062655045399308513">Borrar datos de navegación…</translation>
 <translation id="3063453392496098461">No se pudieron instalar los servicios en segundo plano de la VPN.</translation>
@@ -1992,6 +1993,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4242981939686657948">Para buscar en tu historial de navegación de una forma más eficaz, activa</translation>
 <translation id="4244926541863471678">Lámina</translation>
 <translation id="4246517972543675653">Estudios en el extranjero</translation>
+<translation id="4250343410682686342">La pantalla de error de Compra ahora y paga después está totalmente abierta.</translation>
 <translation id="4250431568374086873">Tu conexión con este sitio no es completamente segura</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2508,6 +2510,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5123433949759960244">Básquet</translation>
+<translation id="5124797626438336458">La pantalla de error de Compra ahora y paga después está abierta a media altura.</translation>
 <translation id="5125575917473813637">Editar el documento de identificación</translation>
 <translation id="5125751979347152379">URL no válido.</translation>
 <translation id="512592033764059484">Fútbol</translation>
@@ -4176,6 +4179,7 @@ Detalles adicionales:
 <translation id="7860345425589240791">Ingresa tu nueva fecha de vencimiento y el CVC que aparece en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">¿Deseas abandonar el sitio?</translation>
 <translation id="7865448901209910068">Mejor velocidad</translation>
+<translation id="7865482168955081228">Se cerró la pantalla de error de Compra ahora y paga después.</translation>
 <translation id="7870281855125116701">Se encontró un descuento</translation>
 <translation id="7871445724586827387">Cambiar la contraseña de tu Cuenta de Google</translation>
 <translation id="787226752901403048">Accede a Chrome para compartir y unirte a grupos de pestañas, y trabajar en ideas de forma colaborativa</translation>

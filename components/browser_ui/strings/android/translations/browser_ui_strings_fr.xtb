@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les cookies tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Vous pouvez demander à voir la version pour ordinateur des sites</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
+<translation id="113098737392899175">Parcourir les pages à l'aide d'un curseur de texte lorsqu'un clavier est connecté</translation>
 <translation id="1178015372320901893">Bottom sheet Mes raccourcis</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -699,6 +700,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
 <translation id="8805385115381080995">La navigation est plus rapide, car les sites sont moins susceptibles de vous demander de confirmer que vous êtes une personne bien réelle</translation>
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>
+<translation id="884765916894384048">Lire en arrière-plan</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="8889294078294184559">Lorsque vous continuez à naviguer, les sites peuvent vérifier avec Chrome et avec un site que vous avez déjà visité si vous êtes une personne réelle</translation>

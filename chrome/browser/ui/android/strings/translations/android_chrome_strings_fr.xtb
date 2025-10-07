@@ -159,6 +159,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1726477445370128854">Le préchargement de pages que vous êtes susceptible de consulter selon Chrome permet de les parcourir et d'effectuer des recherches plus rapidement</translation>
 <translation id="1728803206919861584">Enregistrer la clé d'accès en dehors de la navigation privée ?</translation>
 <translation id="1732514748744806741">Si vos mots de passe sont compromis, nous vous préviendrons</translation>
+<translation id="1737694586321018892">Profitez du niveau de sécurité le plus élevé pour Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site a récemment envoyé de nombreuses notifications}one{# site a récemment envoyé de nombreuses notifications}other{# sites ont récemment envoyé de nombreuses notifications}}</translation>
 <translation id="1749561566933687563">Synchroniser vos favoris</translation>
 <translation id="1750238553597293878">Continuez d'utiliser les mots de passe de votre compte Google</translation>
@@ -974,6 +975,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="549660026907543296">Rejoindre en tant que <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Bottom sheet d'activité récente</translation>
 <translation id="5526281268548144413">Impossible de fermer les onglets ouverts dans plusieurs fenêtres</translation>
+<translation id="5532536403031755365">Ajoutez un niveau de protection supplémentaire contre les menaces en ligne grâce à la protection renforcée</translation>
 <translation id="5548606607480005320">Contrôle de sécurité</translation>
 <translation id="5554520618550346933">Lorsque vous utilisez un mot de passe, Chrome vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5555525474779371165">Choisissez votre mode de navigation sécurisée</translation>

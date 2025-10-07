@@ -997,6 +997,7 @@
 <translation id="166278006618318542">സബ്‌ജക്റ്റ് പൊതു കീ ആൽഗരിതം</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ഇൻസ്‌റ്റാൾ ചെയ്‌തു</translation>
 <translation id="1663698992894057019">ഏറ്റവും പുതിയ സുരക്ഷയ്ക്കും സോഫ്‌റ്റ്‌വെയറിനും പുതൊയൊരു Chromebook-ലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യുക</translation>
+<translation id="1664497218584335032">വെബ്‌സൈറ്റിന്, ഈ ലിങ്ക് ഒരു ആപ്പിൽ തുറക്കണമെന്നുണ്ട്.</translation>
 <translation id="166454475160289583">നിങ്ങളുടെ കീബോർഡ് ഇൻപുട്ട് അസാധുവാക്കാൻ അനുവദിക്കാത്തവ</translation>
 <translation id="1665328953287874063">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യാൻ ഒരു പാസ്‌വേഡ് അല്ലെങ്കിൽ പിൻ ഉപയോഗിക്കുക</translation>
 <translation id="1665859804801131136">എക്‌സ്പ്രഷനിസം</translation>
@@ -6547,10 +6548,12 @@
 <translation id="5517304475148761050">ഈ ആപ്പിന് Play Store-ലേക്ക് ആക്സസ് ആവശ്യമാണ്</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> ലിങ്കുകൾ എല്ലായ്‌പ്പോഴും ഈ ആപ്പിൽ തുറക്കുക</translation>
 <translation id="5520605865175417976">പ്രവർത്തനം <ph name="ACTION_TO_REMOVE" /> നീക്കം ചെയ്യുക</translation>
 <translation id="5521078259930077036">നിങ്ങൾ പ്രതീക്ഷിച്ച ഹോം പേജ് ഇതാണോ?</translation>
 <translation id="5522156646677899028">ഈ വിപുലീകരണത്തിൽ ഗുരുതരമായ സുരക്ഷാ പ്രശ്നമടങ്ങിയിരിക്കുന്നു.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{നിങ്ങളുടെ അഡ്മിൻ ഒരു വിപുലീകരണം ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നു}other{നിങ്ങളുടെ അഡ്മിൻ # വിപുലീകരണങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നു}}</translation>
+<translation id="5523203511530504754"><ph name="APP_NAME" /> എന്നതിൽ <ph name="PROTOCOL_SCHEME" /> ലിങ്കുകൾ തുറക്കുക</translation>
 <translation id="5523532775593636291">നിങ്ങൾ ചേർക്കുന്ന സൈറ്റുകൾ എപ്പോഴും സജീവമായി തുടരും, അവയിൽ നിന്ന് മെമ്മറിയിൽ ഇടമുണ്ടാക്കില്ല</translation>
 <translation id="5523558474028191231">പേരിൽ അക്ഷരങ്ങളും അക്കങ്ങളും പ്രത്യേക അക്ഷരങ്ങളും ഉപയോഗിക്കാം, <ph name="MAX_CHARACTER_COUNT" /> പ്രതീകങ്ങളോ അതിൽ കുറവോ ആയിരിക്കണം</translation>
 <translation id="5526745900034778153">സമന്വയം പുനരാരംഭിക്കാനായി വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -7404,7 +7407,6 @@
 <translation id="6135826623269483856">നിങ്ങളുടെ എല്ലാ ഡിസ്‌പ്ലേകളിലും വിൻഡോകൾ മാനേജ് ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6136287496450963112">നിങ്ങളുടെ സുരക്ഷാ കീ ഒരു പിൻ ഉപയോഗിച്ച് പരിരക്ഷിച്ചിട്ടില്ല. ഫിംഗർപ്രിന്റുകൾ മാനേജ് ചെയ്യാൻ ആദ്യം ഒരു പിൻ സൃഷ്‌ടിക്കുക.</translation>
-<translation id="6136637346277431354">ടാബുകളും മറ്റും ചേർക്കുക</translation>
 <translation id="6138680304137685902">SHA-384 ഉള്ള X9.62 ECDSA സിഗ്നേച്ചർ</translation>
 <translation id="6140948187512243695">വിശദാംശങ്ങൾ‌ കാണിക്കുക</translation>
 <translation id="6141988275892716286">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക</translation>
@@ -9580,6 +9582,7 @@
 <translation id="7663859337051362114">ഇ-സിം പ്രൊഫൈൽ ചേർക്കുക</translation>
 <translation id="76641554187607347">കീബോർഡൊന്നും കണക്റ്റ് ചെയ്തിട്ടില്ല</translation>
 <translation id="7664442418269614729">നിങ്ങളുടെ iPhone-ൽ ഈ കാർഡ് ഉപയോഗിക്കുക</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> ലിങ്ക് തുറക്കാൻ ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7665082356120621510">ഇടം നീക്കി വയ്ക്കുക</translation>
 <translation id="7665369617277396874">അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="7665445336029073980">ഡൗൺലോഡുകളുടെ പൂർണ്ണ ചരിത്രം</translation>
@@ -11202,6 +11205,7 @@
 <translation id="8750786237117206586">ChromeOS Flex ഓഡിയോ ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="8751034568832412184">സ്‌കൂൾ</translation>
 <translation id="8751329102746373229">നിങ്ങളുടെ അഡ്‌മിനിൽ നിന്നുള്ളവ</translation>
+<translation id="875242763254084885">സൈറ്റിന് <ph name="ORIGIN" />, ഈ ലിങ്ക് ഒരു ആപ്പിൽ തുറക്കണമെന്നുണ്ട്.</translation>
 <translation id="8752451679755290210">ഇനങ്ങളിലൂടെ സ്വയമേവ നീങ്ങുക</translation>
 <translation id="8753948258138515839">Files ആപ്പ്, നിങ്ങൾ Google Drive-ലോ ബാഹ്യ സ്റ്റോറേജിലോ നിങ്ങളുടെ ChromeOS Flex ഉപകരണത്തിലോ സംരക്ഷിച്ചിരിക്കുന്ന ഫയലുകളിലേക്ക് അതിവേഗ ആക്‌സസ് നൽകുന്നു.</translation>
 <translation id="8754200782896249056">&lt;p&gt; ഒരു പിന്തുണ ഡെസ്ക്ടോപ്പ് പരിതസ്ഥിതിയ്‌ക്ക് കീഴിൽ <ph name="PRODUCT_NAME" /> പ്രവർത്തിക്കുമ്പോൾ, സിസ്‌റ്റം പ്രോക്‌സി ക്രമീകരണം ഉപയോഗിക്കും. നിങ്ങളുടെ സിസ്‌റ്റം പിന്തുണച്ചില്ല അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്‌റ്റം കോൺഫിഗറേഷൻ സമാരംഭിക്കുന്നതിൽ ഒരു പ്രശ്നമുണ്ടായി.&lt;/p&gt;

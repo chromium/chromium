@@ -1046,6 +1046,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
 <translation id="5067540696062462445">Download</translation>
+<translation id="5070314445039955096">Le autorizzazioni di "<ph name="SITE_DOMAIN" />" verranno reimpostate su Disattivate quando esci dal sito</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} di {count} metodo di pagamento}other{{position} di {count} metodi di pagamento}}</translation>
 <translation id="5075939510584558547">Salva senza crittografia</translation>
 <translation id="5076534614343816664">Monitoraggio del prezzo</translation>

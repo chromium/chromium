@@ -159,6 +159,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1726477445370128854">Když bude Chrome předběžně načítat stránky, které byste podle něj mohli navštívit, budete moci procházet web a vyhledávat rychleji.</translation>
 <translation id="1728803206919861584">Uložit přístupový klíč mimo anonymní režim?</translation>
 <translation id="1732514748744806741">V případě prolomení vašich hesel vám dáme vědět</translation>
+<translation id="1737694586321018892">Získejte nejsilnější zabezpečení Chromu</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 web nedávno odeslal mnoho oznámení}few{# weby nedávno odeslaly mnoho oznámení}many{# webu nedávno odeslalo mnoho oznámení}other{# webů nedávno odeslalo mnoho oznámení}}</translation>
 <translation id="1749561566933687563">Synchronizace záložek</translation>
 <translation id="1750238553597293878">Pokračujte v používání hesel ve svém účtu Google</translation>
@@ -974,6 +975,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="549660026907543296">Přidat se jako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Spodní panel s nedávnou aktivitou</translation>
 <translation id="5526281268548144413">Nelze zavřít ve více oknech</translation>
+<translation id="5532536403031755365">Aktivujte si další vrstvu zabezpečení proti online hrozbám prostřednictvím vylepšené ochrany</translation>
 <translation id="5548606607480005320">Bezpečnostní kontrola</translation>
 <translation id="5554520618550346933">Když použijete heslo, Chrome vás upozorní, pokud bylo zveřejněno online. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
 <translation id="5555525474779371165">Zvolte si stupeň Bezpečného prohlížení</translation>

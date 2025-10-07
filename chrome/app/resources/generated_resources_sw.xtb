@@ -2882,6 +2882,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2950666755714083615">Nisajili</translation>
 <translation id="2953210795988451570">Muda wa masasisho ya usalama umeisha. Pata toleo jipya la Chromebook.</translation>
 <translation id="2953218713108551165">Umezuia arifa katika tovuti ya <ph name="SITE" />. Utaulizwa tena utakapotembelea tovuti hii wakati mwingine.</translation>
+<translation id="2955048943983973430">Huduma za Google zinazohusiana</translation>
 <translation id="2956070239128776395">Sehemu imewekwa katika kikundi: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Washa hali ya wasanidi programu ili utumie kiendelezi hiki, ambacho hakiwezi kukaguliwa na Duka la Chrome kwenye Wavuti.</translation>
 <translation id="2958721676848865875">Onyo la kiendelezi cha kifurushi</translation>
@@ -4636,6 +4637,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4151503145138736576">Hakuna data ya kufuta kwenye hifadhi iliyo nje ya mtandao</translation>
 <translation id="4152011295694446843">Utapata alamisho zako hapa</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Kichupo 1}other{Vichupo #}}</translation>
+<translation id="4153858337812834972">Vichupo vya majuzi</translation>
 <translation id="4154658846204884961">Kimondo</translation>
 <translation id="4154664944169082762">Alazama za Vidole</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Mwonekano wa kushoto</translation>
@@ -4940,6 +4942,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="437809255587011096">Tangaza muundo wa maandishi</translation>
 <translation id="4378154925671717803">Simu</translation>
 <translation id="4378308539633073595">Sogeza mbele</translation>
+<translation id="4378363201814870400">Dhibiti taarifa unazojaza kiotomatiki ili uvinjari haraka — taarifa kama vile manenosiri, njia za kulipa, anwani na vitambulisho</translation>
 <translation id="4378551569595875038">Inaunganisha...</translation>
 <translation id="4378556263712303865">Ombi la kifaa</translation>
 <translation id="4378589147979399051">Dhibiti kiteuzi cha kipanya chako ukitumia kibodi yako msingi</translation>
@@ -7110,6 +7113,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5919305207330938913">Data yote iliyokusanywa itatumika kulingana na <ph name="BEGIN_LINK" />Sera ya Faragha<ph name="END_LINK" /> ya Google.</translation>
 <translation id="5919486630433391408">Msimamizi wako amezima masasisho ya programu dhibiti.</translation>
 <translation id="5920543303088087579">Kuunganishwa kwenye mtandao huu kumezimwa na msimamizi wako</translation>
+<translation id="5922493635960054020">Zuia idhini ya kufikia kiboreshaji cha JavaScript kwenye tovuti ulizotembelea hivi majuzi. Inahitaji Uvinjari kwa Usalama</translation>
 <translation id="5922963926582976524">Ondoa Mtandaopepe wa papo hapo</translation>
 <translation id="5924047253200400718">Pata usaidizi<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Uliza ili kuthibitisha kabla ya kunakili au kuhamishia faili za Microsoft kwenye Hifadhi ya Google</translation>

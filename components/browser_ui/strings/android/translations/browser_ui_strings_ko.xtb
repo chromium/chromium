@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">서드 파티 쿠키를 허용한 이유를 알려주시면 Chrome을 개선하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
+<translation id="113098737392899175">키보드가 연결되어 있을 때 텍스트 커서로 페이지 탐색</translation>
 <translation id="1178015372320901893">내 바로가기 하단 시트</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -699,6 +700,7 @@
 <translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8805385115381080995">사이트에서 내가 실제 사람임을 확인할 가능성이 줄어들기 때문에 브라우징이 더 빨라집니다.</translation>
 <translation id="8816026460808729765">사이트에서 센서에 액세스하지 못하도록 차단</translation>
+<translation id="884765916894384048">백그라운드로 이동</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8889294078294184559">브라우징을 계속하면 사이트에서 Chrome을 통해 이를 확인하고 이전에 방문한 적이 있는 이전 사이트로 내가 실제 사람인지 확인할 수 있습니다.</translation>

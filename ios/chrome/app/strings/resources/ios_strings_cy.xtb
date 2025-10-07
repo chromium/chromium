@@ -1046,6 +1046,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5059136629401106827">Iawn</translation>
 <translation id="5062321486222145940">Gosod Google Drive</translation>
 <translation id="5067540696062462445">Lawrlwythiadau</translation>
+<translation id="5070314445039955096">Bydd caniatadau "<ph name="SITE_DOMAIN" />" yn ailosod i wedi'u diffodd pan fyddwch yn gadael y wefan hon</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} o {count} dull talu}zero{{position} o {count} dulliau talu}two{{position} o {count} ddull talu}few{{position} o {count} dull talu}many{{position} o {count} dull talu}other{{position} o {count} dull talu}}</translation>
 <translation id="5075939510584558547">Cadw heb amgryptio</translation>
 <translation id="5076534614343816664">Olrhain prisiau</translation>
@@ -1678,6 +1679,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7437712592381799950">Gallwch sweipio i fyny i weld rhagor o gynnwys wedi'i deilwra i chi.</translation>
 <translation id="7438473148803748807">Bydd pawb yn colli mynediad at y grŵp tabiau “<ph name="GROUP_NAME" />" ar unwaith, a bydd yr holl ddolenni gwahoddiad yn cael eu diffodd</translation>
 <translation id="7438481509621345350">Nawr byddwch yn gweld straeon o <ph name="CHANNEL_NAME" /> pan fyddwch yn agor tab newydd.</translation>
+<translation id="7445682342344043969">Ffenestri naid wedi'u rhwystro</translation>
 <translation id="7451023311965289370">{count,plural, =1{Wedi cadw nod tudalen i ‘{title}‘}zero{Wedi cadw nodau tudalen i ‘{title}‘}two{Wedi cadw nodau tudalen i ‘{title}‘}few{Wedi cadw nodau tudalen i ‘{title}‘}many{Wedi cadw nodau tudalen i ‘{title}‘}other{Wedi cadw nodau tudalen i ‘{title}‘}}</translation>
 <translation id="7451404862887877229">Tapiwch "Preifatrwydd a Diogelwch" ac yna "Pori'n Ddiogel"</translation>
 <translation id="7452393099119876789">Dim ond unwaith fydd angen i chi wneud hyn.</translation>

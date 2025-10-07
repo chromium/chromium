@@ -814,6 +814,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2321291402658100099">Informatie beheren</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 venster}other{# vensters}}</translation>
 <translation id="232390861414237658">Deze kaart automatisch invullen voor aankopen die je doet in Chrome als de kaart is opgeslagen voor gebruik met Google Pay</translation>
+<translation id="2326283484705860548">Je kunt nu meer informatie automatisch invullen vanuit Google Wallet</translation>
 <translation id="2328651992442742497">Toegestaan (standaard)</translation>
 <translation id="2328955282645810595">Bouw- en elektrisch gereedschap</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verloopt op <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2346319942568447007">Afbeelding die je hebt gekopieerd</translation>
 <translation id="2347764072711098973">Gebruik Affirm, Zip of Klarna om gespreid te betalen</translation>
 <translation id="2348509731468399833">Prijs volgen gestopt.</translation>
+<translation id="2348836501965732644">Je kunt je informatie beheren of deze suggesties uitzetten in Instellingen</translation>
 <translation id="2349957959687031096">Knop Incognitotabblad openen. Activeer deze om een nieuw incognitotabblad te openen om privé te browsen.</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen in plaats van <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is, omdat de server een beveiligingscertificaat gebruikt dat niet wordt vertrouwd door Chromium of je systeemconfiguratie voor versleuteling van webverkeer. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
@@ -1237,6 +1239,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="305162504811187366">Chrome Remote Desktop-geschiedenis, waaronder tijdstempels, hosts en clientsessie-ID's</translation>
 <translation id="3052868890529250114">Meestal maak je veilig verbinding met sites, maar Chrome kan op dit moment geen beveiligde verbinding gebruiken. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prijsdaling van <ph name="PRICE_DROP" /> voor <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Foutscherm voor Koop nu, betaal later. Toetsenbord verborgen.</translation>
 <translation id="3061707000357573562">Patchservice</translation>
 <translation id="3062655045399308513">Browsegegevens verwijderen…</translation>
 <translation id="3063453392496098461">De installatie van VPN-achtergrondservices is mislukt.</translation>
@@ -1985,6 +1988,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4242981939686657948">Voor een krachtigere manier om in je browsegeschiedenis te zoeken activeer je</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Studeren in het buitenland</translation>
+<translation id="4250343410682686342">Voortgangsscherm voor Koop nu, betaal later is op volledige hoogte geopend.</translation>
 <translation id="4250431568374086873">Je verbinding met deze site is niet volledig beveiligd</translation>
 <translation id="4250680216510889253">Nee</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2501,6 +2505,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5122786942953798871">Envelop (katoen)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basketbal</translation>
+<translation id="5124797626438336458">Voortgangsscherm voor Koop nu, betaal later is op halve hoogte geopend.</translation>
 <translation id="5125575917473813637">Identiteitskaart bewerken</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
 <translation id="512592033764059484">Voetbal</translation>
@@ -4168,6 +4173,7 @@ Aanvullende informatie:
 <translation id="7860345425589240791">Geef je nieuwe vervaldatum en CVC op de <ph name="SIDE_OF_CARD" /> op</translation>
 <translation id="7862185352068345852">Site verlaten?</translation>
 <translation id="7865448901209910068">Beste snelheid</translation>
+<translation id="7865482168955081228">Voortgangsscherm voor Koop nu, betaal later is gesloten.</translation>
 <translation id="7870281855125116701">Korting gevonden</translation>
 <translation id="7871445724586827387">Het wachtwoord van je Google-account wijzigen</translation>
 <translation id="787226752901403048">Log in bij Chrome om tabbladgroepen te delen en eraan deel te nemen en samen aan ideeën te werken</translation>

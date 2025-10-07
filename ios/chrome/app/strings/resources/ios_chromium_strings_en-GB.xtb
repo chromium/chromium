@@ -200,6 +200,9 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5671188105328420281">Chromium tips</translation>
 <translation id="5688047395118852662">This card shows you suggestions on how to get the most out of Chromium.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
+<translation id="5731004036450828399">To keep your passkeys safe, you'll first need to create a recovery PIN.
+
+        Passkeys are saved in Password Manager, which lets you use them in Chromium on any device.</translation>
 <translation id="584550191241316896">Signed in to Chromium</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5889847953983052353">When on:
@@ -267,6 +270,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at history.google.com.</translation>
 <translation id="7395825497086981028">Your password will be saved to Password Manager for <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">This passkey will be saved to Password Manager for <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Open Chromium</translation>
 <translation id="7531461704633548377">From Chromium</translation>
 <translation id="7554983317097061001">Chromium tip: Move Chromium to the dock</translation>
@@ -300,6 +304,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8254729934443216898">Explore new features that help you get the most out of Chromium.</translation>
 <translation id="8293572045658095405">You're in Chromium Incognito</translation>
 <translation id="830951810931292870">Opens the inputted URLs in Chromium in Incognito.</translation>
+<translation id="8385503371191508165">Start saving passkeys with Password Manager</translation>
 <translation id="8390323835464055390">Sign in with your saved passwords and passkeys from any app using Chromium for Autofill</translation>
 <translation id="8409374867500149834">You have Chromium's strongest security against harmful websites</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>

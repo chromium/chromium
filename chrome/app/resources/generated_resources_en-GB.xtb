@@ -1001,6 +1001,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="1662801900924515589"><ph name="APP" /> installed</translation>
 <translation id="1663698992894057019">Upgrade to a new Chromebook for the latest security features and software</translation>
+<translation id="1664497218584335032">The website wants to open this link in an app.</translation>
 <translation id="166454475160289583">Not allowed to override your keyboard input</translation>
 <translation id="1665328953287874063">Use a password or PIN to unlock your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionism</translation>
@@ -2885,6 +2886,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2950666755714083615">Sign me up</translation>
 <translation id="2953210795988451570">Security updates have ended. Upgrade to a new Chromebook.</translation>
 <translation id="2953218713108551165">Notifications not allowed for <ph name="SITE" />. You’ll be asked again on your next visit.</translation>
+<translation id="2955048943983973430">Related Google services</translation>
 <translation id="2956070239128776395">Section nested in group: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.</translation>
 <translation id="2958721676848865875">Pack extension warning</translation>
@@ -4641,6 +4643,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4151503145138736576">No offline storage to clean up</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
+<translation id="4153858337812834972">Most recent tabs</translation>
 <translation id="4154658846204884961">Comet</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – left view</translation>
@@ -4945,6 +4948,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="437809255587011096">Announce text styling</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4378308539633073595">Scroll forwards</translation>
+<translation id="4378363201814870400">Manage your autofill info for faster browsing — info like passwords, payment methods, addresses and ID cards</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4378556263712303865">Device requisition</translation>
 <translation id="4378589147979399051">Control your mouse cursor with your primary keyboard</translation>
@@ -6561,10 +6565,12 @@ You can assign multiple switches to this action.</translation>
 <translation id="5517304475148761050">This app requires access to the Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Always open <ph name="PROTOCOL_SCHEME" /> links in this app</translation>
 <translation id="5520605865175417976">Remove action <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Is this the home page that you were expecting?</translation>
 <translation id="5522156646677899028">This extension contains a serious security vulnerability.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{An extension has been installed by your administrator}other{# extensions have been installed by your administrator}}</translation>
+<translation id="5523203511530504754">Open <ph name="PROTOCOL_SCHEME" /> links in <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Websites you add will always stay active and memory won't be freed up from them.</translation>
 <translation id="5523558474028191231">Name can use letters, numbers and special characters, and must be <ph name="MAX_CHARACTER_COUNT" /> characters or fewer</translation>
 <translation id="5526745900034778153">Sign in again to resume sync</translation>
@@ -7115,6 +7121,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5919305207330938913">All data collected will be used according to Google's <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
 <translation id="5919486630433391408">Firmware updates are disabled by your administrator.</translation>
 <translation id="5920543303088087579">Connecting to this network is disabled by your administrator</translation>
+<translation id="5922493635960054020">Block access to the JavaScript optimiser on newly visited sites. Requires Safe Browsing</translation>
 <translation id="5922963926582976524">Disconnect instant hotspot network</translation>
 <translation id="5924047253200400718">Get help<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Ask before copying or moving Microsoft files to Google Drive</translation>
@@ -9593,6 +9600,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7663859337051362114">Add eSIM profile</translation>
 <translation id="76641554187607347">No keyboard connected</translation>
 <translation id="7664442418269614729">Use this card on your iPhone</translation>
+<translation id="7664822217939981459">Choose an app to open the <ph name="PROTOCOL_SCHEME" /> link</translation>
 <translation id="7665082356120621510">Reserve size</translation>
 <translation id="7665369617277396874">Add account</translation>
 <translation id="7665445336029073980">Full download history</translation>
@@ -11215,6 +11223,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8750786237117206586">Manage ChromeOS Flex audio settings</translation>
 <translation id="8751034568832412184">School</translation>
 <translation id="8751329102746373229">From your administrator</translation>
+<translation id="875242763254084885">The site <ph name="ORIGIN" /> wants to open this link in an app.</translation>
 <translation id="8752451679755290210">Move between items automatically</translation>
 <translation id="8753948258138515839">The Files app provides quick access to files that you've saved on Google Drive, external storage or your Chrome OS Flex device.</translation>
 <translation id="8754200782896249056">&lt;p&gt;When running <ph name="PRODUCT_NAME" /> under a supported desktop environment, the system proxy settings will be used. However, either your system is not supported or there was a problem launching your system configuration.&lt;/p&gt;

@@ -159,6 +159,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1726477445370128854">Vous pouvez naviguer et effectuer des recherches plus rapidement lorsque Chrome précharge les pages que vous êtes susceptible de visiter</translation>
 <translation id="1728803206919861584">Enregistrer la clé d'accès à l'extérieur de la Navigation privée?</translation>
 <translation id="1732514748744806741">Si vos mots de passe sont compromis, nous vous en aviserons.</translation>
+<translation id="1737694586321018892">Sécurité plus robuste sur Chrome</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site a envoyé de nombreuses notifications récemment}one{# site a envoyé de nombreuses notifications récemment}other{# sites ont envoyé de nombreuses notifications récemment}}</translation>
 <translation id="1749561566933687563">Synchronisez vos favoris</translation>
 <translation id="1750238553597293878">Continuer à utiliser les mots de passe de votre compte Google</translation>
@@ -974,6 +975,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="549660026907543296">Se joindre en tant que <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Zone de contenu dans le bas de l'écran concernant l'activité récente</translation>
 <translation id="5526281268548144413">Ne peuvent pas être fermés sur plusieurs fenêtres</translation>
+<translation id="5532536403031755365">Ajoutez une couche de sécurité contre les menaces en ligne grâce à la protection renforcée</translation>
 <translation id="5548606607480005320">Vérification de sécurité</translation>
 <translation id="5554520618550346933">Lorsque vous utilisez un mot de passe, Chrome vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés pour que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>

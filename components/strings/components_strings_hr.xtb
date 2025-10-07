@@ -814,6 +814,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2321291402658100099">Upravljaj podacima</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 prozor}one{# prozor}few{# prozora}other{# prozora}}</translation>
 <translation id="232390861414237658">Podaci te kartice automatski se popunjavaju za kupnje u Chromeu kad je kartica spremljena za upotrebu s Google Payom</translation>
+<translation id="2326283484705860548">Sada možete automatski popuniti više informacija iz Google Walleta</translation>
 <translation id="2328651992442742497">Dopušteno (zadano)</translation>
 <translation id="2328955282645810595">Alati za gradnju i električni alati</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, istječe <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2346319942568447007">Slika koju ste kopirali</translation>
 <translation id="2347764072711098973">Upotrijebite Affirm, Zip ili Klarnu za obročno plaćanje</translation>
 <translation id="2348509731468399833">Praćenje cijene je zaustavljeno.</translation>
+<translation id="2348836501965732644">Upravljajte svojim podacima ili isključite te prijedloge u postavkama</translation>
 <translation id="2349957959687031096">Gumb Otvori anonimnu karticu, aktivirajte ga za otvaranje nove anonimne kartice za anonimno pregledavanje</translation>
 <translation id="2350796302381711542">Želite li dopustiti da <ph name="HANDLER_HOSTNAME" /> otvori sve veze protokola <ph name="PROTOCOL" /> umjesto da to učini <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Poslužitelj nije mogao dokazati da je riječ o domeni <ph name="DOMAIN" /> jer upotrebljava sigurnosni certifikat koji Chromium ili konfiguracija vašeg sustava za šifriranje web-prometa ne smatraju pouzdanim. Razlog može biti pogrešna konfiguracija ili napad na vašu vezu.</translation>
@@ -1237,6 +1239,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="305162504811187366">Povijest Udaljene radne površine Chrome, uključujući vremenske oznake, hostove i ID-jeve klijentskih sesija</translation>
 <translation id="3052868890529250114">Obično se sigurno povezujete s web-lokacijama, no Chrome ovaj put nije mogao upotrijebiti sigurnu vezu. Napadač možda pokušava prisluškivati ili izmijeniti vašu mrežnu vezu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Pad cijene od <ph name="PRICE_DROP" /> za proizvod <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Zaslon s pogreškom pri kupnji s odgodom plaćanja. Tipkovnica je skrivena.</translation>
 <translation id="3061707000357573562">Usluga zakrpe</translation>
 <translation id="3062655045399308513">Izbriši podatke o pregledavanju...</translation>
 <translation id="3063453392496098461">Instaliranje VPN usluga u pozadini nije uspjelo.</translation>
@@ -1990,6 +1993,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4242981939686657948">Za napredniji način pretraživanja povijesti pregledavanja uključite</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="4246517972543675653">Obrazovanje u inozemstvu</translation>
+<translation id="4250343410682686342">Zaslon s pogreškom pri kupnji s odgodom plaćanja otvoren je u punoj visini.</translation>
 <translation id="4250431568374086873">Veza s ovom web-lokacijom nije potpuno sigurna</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2506,6 +2510,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5122786942953798871">Omotnica (pamuk)</translation>
 <translation id="5123063207673082822">Vikend</translation>
 <translation id="5123433949759960244">Košarka</translation>
+<translation id="5124797626438336458">Zaslon s pogreškom pri kupnji s odgodom plaćanja otvoren je na pola visine.</translation>
 <translation id="5125575917473813637">Uredite osobnu iskaznicu</translation>
 <translation id="5125751979347152379">Nevažeći URL.</translation>
 <translation id="512592033764059484">Nogomet</translation>
@@ -4174,6 +4179,7 @@ Dodatne pojedinosti:
 <translation id="7860345425589240791">Unesite novi datum isteka i CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="7862185352068345852">Želite li napustiti web-lokaciju?</translation>
 <translation id="7865448901209910068">Najbolja brzina</translation>
+<translation id="7865482168955081228">Zaslon s pogreškom pri kupnji s odgodom plaćanja je zatvoren.</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promijenite zaporku Google računa</translation>
 <translation id="787226752901403048">Prijavite se u Chrome da biste dijelili grupe kartica i pridruživali im se te surađivali na idejama</translation>

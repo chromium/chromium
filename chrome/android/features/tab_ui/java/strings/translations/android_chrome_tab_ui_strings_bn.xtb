@@ -26,6 +26,7 @@
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" />টি ট্যাব গ্রুপ আর উপলভ্য নেই}one{<ph name="TAB_GROUPS_COUNT_MANY" />টি ট্যাব গ্রুপ আর উপলভ্য নেই}other{<ph name="TAB_GROUPS_COUNT_MANY" />টি ট্যাব গ্রুপ আর উপলভ্য নেই}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />টি ট্যাব, গ্রুপ করা হয়েছে</translation>
+<translation id="1844381456014878100">৭ দিন বন্ধ থাকার পরে</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="1909810060368225529">বিজ্ঞপ্তি: এই শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সবাই দেখতে পাবেন। আপনার শেয়ার করা ট্যাব গ্রুপে প্রত্যেকে পরিবর্তন করতে পারবেন</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ট্যাব পিন করুন}one{ট্যাব পিন করুন}other{ট্যাব পিন করুন}}</translation>
@@ -154,6 +155,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> নামের গ্রুপে যোগ করুন}one{<ph name="TAB_COUNT1" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> নামের গ্রুপে যোগ করুন}other{<ph name="TAB_COUNT1" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> নামের গ্রুপে যোগ করুন}}</translation>
 <translation id="6818926723028410516">আইটেম বেছে নিন</translation>
 <translation id="6856809498882026482">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড লুকান</translation>
+<translation id="6957436309971790274">২১ দিন বন্ধ থাকার পরে</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="709473454666962555">ট্যাব গ্রুপ বেছে নিন</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ট্যাব শেয়ার করুন}one{ট্যাব শেয়ার করুন}other{ট্যাব শেয়ার করুন}}</translation>
@@ -192,6 +194,7 @@
 <translation id="8029301326595421733">সম্পূর্ণ খোলা স্টোরের বিষয়ে তথ্য</translation>
 <translation id="8053770993984522566">ট্যাব গ্রুপের তালিকা, অর্ধ উচ্চতায় খোলা আছে</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{গ্রুপে ট্যাব যোগ করুন}one{গ্রুপে ট্যাব যোগ করুন}other{গ্রুপে ট্যাব যোগ করুন}}</translation>
+<translation id="8138067144082174140">১৪ দিন বন্ধ থাকার পরে</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="8205266828577616993">ট্যাব উপরে সরান</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট আগে আপডেট করা হয়েছে}one{<ph name="NUM_MINS_MANY" /> মিনিট আগে আপডেট করা হয়েছে}other{<ph name="NUM_MINS_MANY" /> মিনিট আগে আপডেট করা হয়েছে}}</translation>
