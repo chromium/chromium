@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {IconContainerElement, TabGroupsModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {colorIdToString, NTPPluralStringProxyImpl, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX, colorIdToString, NTPPluralStringProxyImpl, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {Color} from 'chrome://new-tab-page/tab_group_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
@@ -107,6 +107,12 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertEquals(tabGroups.length, groups.length);
 
     for (let i = 0; i < groups.length; ++i) {
+      assertTrue(
+          groups[i]!.querySelector('.color-dot')!.getAttribute('style')!
+              .includes(`background-color: var(${
+                  colorIdToString(
+                      COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX,
+                      tabGroups[i]!.color)})`));
       assertEquals(
           `Tab Group ${i + 1}`,
           groups[i]!.querySelector('.tab-group-title')!.textContent);
@@ -117,7 +123,10 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
           tabGroups[i]!.faviconUrls.map(u => u.url), iconContainer.faviconUrls);
       assertEquals(tabGroups[i]!.totalTabCount, iconContainer.totalTabCount);
       assertTrue(iconContainer.getAttribute('style')!.includes(
-          `background-color: var(${colorIdToString(tabGroups[i]!.color)})`));
+          `background-color: var(${
+              colorIdToString(
+                  COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX,
+                  tabGroups[i]!.color)})`));
       const sharedTabGroupIcon =
           groups[i]!.querySelector<CrIconElement>('#sharedTabGroupIcon');
       assertEquals(tabGroups[i]!.isSharedTabGroup, !!sharedTabGroupIcon);
