@@ -203,6 +203,10 @@ inline constexpr char kShimlessRMAAppId[] = "ijolhdommgkkhpenofmpkkhlepahelcm";
 inline constexpr char kShowtimeAppId[] = "eoccpgmpiempcflglfokeengliildkag";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
+//     "https://docs.google.com/videos/?usp=installed_webapp"))
+inline constexpr char kVidsAppId[] = "cfkjhppcnjbkjoclfcjjkphpicbpoaeg";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://www.youtube.com/?feature=ytca"))
 inline constexpr char kYoutubeAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
 inline constexpr char kYoutubeManifestId[] =

@@ -1044,6 +1044,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kCalculator:
         disabled_web_apps_.insert(ash::kCalculatorAppId);
         break;
+      case policy::SystemFeature::kVids:
+        disabled_web_apps_.insert(ash::kVidsAppId);
+        break;
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:
       case policy::SystemFeature::kWebStore:

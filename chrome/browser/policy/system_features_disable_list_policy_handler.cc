@@ -44,6 +44,7 @@ const char kYoutubeFeature[] = "youtube";
 const char kGoogleMapsFeature[] = "google_maps";
 const char kCalculatorFeature[] = "calculator";
 const char kTextEditorFeature[] = "text_editor";
+const char kVidsFeature[] = "vids";
 
 const char kSystemFeaturesDisableListHistogram[] =
     "Enterprise.SystemFeaturesDisableList";
@@ -178,6 +179,9 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
   }
   if (system_feature == kTextEditorFeature) {
     return SystemFeature::kTextEditor;
+  }
+  if (system_feature == kVidsFeature) {
+    return SystemFeature::kVids;
   }
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return SystemFeature::kUnknownSystemFeature;
