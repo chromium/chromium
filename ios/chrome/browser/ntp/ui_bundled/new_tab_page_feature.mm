@@ -29,10 +29,6 @@ const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
 
 #pragma mark - Feature declarations
 
-BASE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint,
-             "EnableDiscoFeedEndpoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);

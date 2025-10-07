@@ -547,11 +547,6 @@ const char kEnableCrossDevicePrefTrackerDescription[] =
     "Enables the tracking and sharing of select non-syncing preference values "
     "across a user's signed-in devices.";
 
-const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
-    "Enable discover feed discofeed";
-const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
-    "Enable using the discofeed endpoint for the discover feed.";
-
 const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";

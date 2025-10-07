@@ -3805,21 +3805,6 @@
             ]
         }
     ],
-    "BlingDiscoFeed": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDiscoFeedEndpoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "BlinkLifecycleScriptForbidden": [
         {
             "platforms": [

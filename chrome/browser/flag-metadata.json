@@ -3362,15 +3362,6 @@
     "expiry_milestone": 180
   },
   {
-    "name": "enable-disco-feed-endpoint",
-    "owners": [
-      "tinazwang@chromium.org",
-      "sczs@chromium.org",
-      "bling-pandamonium@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-display-performance-mode",
     "owners": [
       "markyacoub@chromium.org",

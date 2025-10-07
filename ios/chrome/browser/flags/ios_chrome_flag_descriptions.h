@@ -320,9 +320,6 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnableASWebAuthenticationSessionName[];
 extern const char kEnableASWebAuthenticationSessionDescription[];
 
-extern const char kEnableDiscoverFeedDiscoFeedEndpointName[];
-extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
-
 extern const char kEnableFeedAblationName[];
 extern const char kEnableFeedAblationDescription[];
 

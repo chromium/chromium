@@ -39,9 +39,6 @@ enum class NTPMIAEntrypointVariation {
 
 #pragma mark - Feature declarations
 
-// Feature flag to enable discofeed endpoint for the Discover feed.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint);
-
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
 // TODO(crbug.com/40799579): Remove this when it is fixed.
