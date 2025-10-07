@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -25,12 +27,17 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/lottie/animation.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
 
@@ -54,6 +61,11 @@ constexpr auto kAlertIndicatorMinimumHoldDuration = base::Seconds(5);
 // smoothness and media recording/playback performance on low-end hardware.
 constexpr base::TimeDelta kIndicatorFrameInterval =
     base::Milliseconds(50);  // 20 FPS
+
+constexpr float kActorAccessingSpinnerScaleFactor = 0.7f;
+constexpr float kActorAccessingSpinnerTotalFrames = 2007.0;
+constexpr float kActorAccessingSpinnerStartFrame = 0.0;
+constexpr float kActorAccessingSpinnerEndFrame = 180.0;
 
 std::unique_ptr<gfx::MultiAnimation> CreateTabRecordingIndicatorAnimation() {
   // Number of times the throbber fades in and out. After these cycles a final
@@ -147,6 +159,59 @@ AlertIndicatorButton::AlertIndicatorButton(Tab* parent_tab)
 
 AlertIndicatorButton::~AlertIndicatorButton() = default;
 
+void AlertIndicatorButton::MaybeLoadActorAccessingSpinner() {
+  if (actor_indicator_spinner_) {
+    return;
+  }
+  // Load animation.
+  actor_indicator_spinner_ =
+      AddChildView(std::make_unique<views::AnimatedImageView>());
+  std::optional<std::vector<uint8_t>> lottie_bytes =
+      ui::ResourceBundle::GetSharedInstance().GetLottieData(
+          IDR_ACTOR_TAB_INDICATOR_SPINNER);
+  CHECK(lottie_bytes);
+  scoped_refptr<cc::SkottieWrapper> skottie =
+      cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
+  auto animation = std::make_unique<lottie::Animation>(skottie);
+
+  // Load necessary frames.
+  const base::TimeDelta total_duration = animation->GetAnimationDuration();
+  base::TimeDelta time_per_frame =
+      total_duration / kActorAccessingSpinnerTotalFrames;
+  base::TimeDelta start_offset =
+      time_per_frame * kActorAccessingSpinnerStartFrame;
+  base::TimeDelta end_offset = time_per_frame * kActorAccessingSpinnerEndFrame;
+  lottie::Animation::CycleBoundaries custom_cycle;
+  custom_cycle.start_offset = start_offset;
+  custom_cycle.end_offset = end_offset;
+  std::vector<lottie::Animation::CycleBoundaries> scheduled_cycles;
+  scheduled_cycles.push_back(custom_cycle);
+  actor_indicator_config_.emplace(scheduled_cycles, custom_cycle.start_offset,
+                                  0, lottie::Animation::Style::kLoop);
+
+  // Set all spinner properties.
+  actor_indicator_spinner_->SetPaintToLayer(ui::LAYER_TEXTURED);
+  actor_indicator_spinner_->layer()->SetFillsBoundsOpaquely(false);
+  actor_indicator_spinner_->SetAnimatedImage(std::move(animation));
+  actor_indicator_spinner_->SetVisible(false);
+}
+
+void AlertIndicatorButton::SetActorAccessingSpinnerBounds() {
+  if (!actor_indicator_spinner_) {
+    return;
+  }
+
+  gfx::Size spinner_scaled_size = gfx::ScaleToCeiledSize(
+      actor_indicator_spinner_->animated_image()->GetOriginalSize(),
+      kActorAccessingSpinnerScaleFactor);
+  const int x = (width() - spinner_scaled_size.width()) / 2;
+  const int y = (height() - spinner_scaled_size.height()) / 2;
+
+  actor_indicator_spinner_->SetImageSize(spinner_scaled_size);
+  actor_indicator_spinner_->SetBounds(x, y, spinner_scaled_size.width(),
+                                      spinner_scaled_size.height());
+}
+
 void AlertIndicatorButton::TransitionToAlertState(
     std::optional<tabs::TabAlert> next_state) {
   if (next_state == alert_state_) {
@@ -239,6 +304,7 @@ bool AlertIndicatorButton::OnMousePressed(const ui::MouseEvent& event) {
 
 void AlertIndicatorButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateEnabledForMuteToggle();
+  SetActorAccessingSpinnerBounds();
 }
 
 bool AlertIndicatorButton::DoesIntersectRect(const views::View* target,
@@ -307,6 +373,20 @@ void AlertIndicatorButton::PaintButtonContents(gfx::Canvas* canvas) {
 
 gfx::ImageSkia AlertIndicatorButton::GetImageToPaint() {
   return views::ImageButton::GetImageToPaint();
+}
+
+void AlertIndicatorButton::UpdateAlertIndicatorAnimation() {
+  // Can add different cases for other alert states that require an animation.
+  if (alert_state_.has_value() &&
+      alert_state_.value() == tabs::TabAlert::ACTOR_ACCESSING) {
+    MaybeLoadActorAccessingSpinner();
+
+    actor_indicator_spinner_->SetVisible(true);
+    actor_indicator_spinner_->Play(*actor_indicator_config_);
+  } else if (actor_indicator_spinner_) {
+    actor_indicator_spinner_->Stop();
+    actor_indicator_spinner_->SetVisible(false);
+  }
 }
 
 std::unique_ptr<gfx::Animation>

@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/lottie/animation.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -21,6 +22,10 @@ namespace gfx {
 class Animation;
 class AnimationDelegate;
 }  // namespace gfx
+
+namespace views {
+class AnimatedImageView;
+}  // namespace views
 
 namespace tabs {
 enum class TabAlert;
@@ -64,6 +69,14 @@ class AlertIndicatorButton : public views::ImageButton,
   // ResetImages() needs to be called.
   void OnParentTabButtonColorChanged();
 
+  // Sets visibility of animation around alert indicator icon.
+  void UpdateAlertIndicatorAnimation();
+
+  // For testing purposes.
+  views::AnimatedImageView* GetActorIndicatorSpinnerForTesting() {
+    return actor_indicator_spinner_;
+  }
+
  protected:
   // views::View:
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -103,6 +116,14 @@ class AlertIndicatorButton : public views::ImageButton,
   // parent tab's button color.  Should be called when either of these changes.
   void UpdateIconForAlertState(tabs::TabAlert state);
 
+  // Loads the resources needed for the actor_indicator_spinner, if not already
+  // loaded.
+  void MaybeLoadActorAccessingSpinner();
+
+  // Sets the bounds for the actor_indicator_spinner depending on button
+  // location and size.
+  void SetActorAccessingSpinnerBounds();
+
   const raw_ptr<Tab> parent_tab_;
 
   std::optional<tabs::TabAlert> alert_state_;
@@ -120,6 +141,12 @@ class AlertIndicatorButton : public views::ImageButton,
   // `fade_animation_` being properly initialized, in tests, it does not show
   // the correct duration.
   base::TimeDelta fadeout_animation_duration_for_testing_;
+
+  // The view that contains the spinner displayed around ACTOR_ACCESSING alert
+  // icons.
+  raw_ptr<views::AnimatedImageView> actor_indicator_spinner_;
+  // The playback config for the actor_indicator_spinner.
+  std::optional<lottie::Animation::PlaybackConfig> actor_indicator_config_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_

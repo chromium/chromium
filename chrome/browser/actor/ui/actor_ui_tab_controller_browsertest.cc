@@ -11,15 +11,22 @@
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/controls/animated_image_view.h"
 
 namespace actor::ui {
 namespace {
@@ -49,7 +56,24 @@ class FutureTabStripModelObserver : public TabStripModelObserver {
   base::test::TestFuture<void> future_;
 };
 
-class ActorUiTabControllerTest : public InProcessBrowserTest {
+class BaseActorUiTabControllerTest : public InProcessBrowserTest {
+ protected:
+  views::AnimatedImageView* GetSpinner() {
+    TabStripViewInterface* tab_strip_view =
+        browser()->window()->AsBrowserView()->tab_strip_view();
+    Tab* tab_specific = tab_strip_view->GetTabAnchorViewAt(
+        browser()->tab_strip_model()->active_index());
+    views::AnimatedImageView* spinner =
+        views::AsViewClass<AlertIndicatorButton>(
+            tab_specific->GetViewByElementId(kTabAlertIndicatorButtonElementId))
+            ->GetActorIndicatorSpinnerForTesting();
+    return spinner;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class ActorUiTabControllerTest : public BaseActorUiTabControllerTest {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -57,9 +81,6 @@ class ActorUiTabControllerTest : public InProcessBrowserTest {
         {{features::kGlicActorUiTabIndicator.name, "true"}});
     InProcessBrowserTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -79,6 +100,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
       tabs::TabAlertController::From(tab);
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+  EXPECT_EQ(GetSpinner(), nullptr);
 
   // Start acting on the tab.
   TestFuture<ActionResultPtr> result;
@@ -91,6 +113,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // The indicator should now be visible.
   EXPECT_TRUE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+  EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kPlaying);
 
   // Stop acting on the tab.
   state_manager->OnUiEvent(StoppedActingOnTab(tab->GetHandle()));
@@ -98,6 +121,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // The indicator should be hidden again.
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+  EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kStopped);
 }
 #else   // !BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
@@ -116,6 +140,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
       tabs::TabAlertController::From(tab);
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+  EXPECT_EQ(GetSpinner(), nullptr);
 
   // Start acting on the tab.
   TestFuture<ActionResultPtr> result;
@@ -127,6 +152,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // The indicator should still not be visible.
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+  EXPECT_EQ(GetSpinner(), nullptr);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -162,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-class ActorUiTabControllerDisabledTest : public InProcessBrowserTest {
+class ActorUiTabControllerDisabledTest : public BaseActorUiTabControllerTest {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -170,9 +196,6 @@ class ActorUiTabControllerDisabledTest : public InProcessBrowserTest {
         {{features::kGlicActorUiTabIndicator.name, "false"}});
     InProcessBrowserTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
@@ -191,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
       tabs::TabAlertController::From(tab);
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
-
+  EXPECT_EQ(GetSpinner(), nullptr);
   // Start acting on the tab.
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(
@@ -202,6 +225,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
   // The indicator should still not be visible.
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+  EXPECT_EQ(GetSpinner(), nullptr);
 }
 
 }  // namespace
