@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import android.os.Handler;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.cc.input.BrowserControlsState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -47,6 +50,10 @@ public class BottomOverscrollHandler {
     }
 
     private final BrowserControlsVisibilityManager mBrowserControls;
+    private final Handler mHandler = new Handler();
+    private final Runnable mShowControlsRunnable = this::showControlsTransient;
+
+    private boolean mOverscrollStarted;
 
     /**
      * Create the instance.
@@ -65,8 +72,22 @@ public class BottomOverscrollHandler {
     public boolean start() {
         recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
 
-        // TODO: Implement
-        return false;
+        mOverscrollStarted = false;
+        if (mBrowserControls.isVisibilityForced()) {
+            return false;
+        }
+
+        if (mBrowserControls.getBrowserVisibilityDelegate().get() != BrowserControlsState.BOTH) {
+            return false;
+        }
+
+        if (mBrowserControls.getTopControlOffset() == 0
+                && mBrowserControls.getBottomControlOffset() == 0) {
+            return false;
+        }
+
+        mOverscrollStarted = true;
+        return true;
     }
 
     /**
@@ -85,11 +106,21 @@ public class BottomOverscrollHandler {
      */
     public void release(boolean allowTrigger) {
         // TODO: Implement
+        if (mOverscrollStarted && allowTrigger) {
+            mOverscrollStarted = false;
+            mHandler.post(mShowControlsRunnable);
+        }
     }
 
     /** Resets a gesture as the result of the successful overscroll or cancellation. */
     public void reset() {
         // TODO: Implement
+        mOverscrollStarted = false;
+        mHandler.removeCallbacks(mShowControlsRunnable);
+    }
+
+    private void showControlsTransient() {
+        mBrowserControls.getBrowserVisibilityDelegate().showControlsTransient();
     }
 
     /**
