@@ -267,11 +267,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         'set-deep-search-mode', {inDeepSearchMode: this.inDeepSearchMode_});
   }
 
-  protected onCreateImageClick_(e: CustomEvent<{inCreateImageMode: boolean}>) {
+  protected onCreateImageClick_() {
     this.showContextMenuDescription_ = !this.showContextMenuDescription_;
     this.inCreateImageMode_ = !this.inCreateImageMode_;
     this.fire('set-create-image-mode',
-      {inCreateImageMode: e.detail.inCreateImageMode});
+      {inCreateImageMode: this.inCreateImageMode_});
   }
 
   private recordFileValidationMetric_(
