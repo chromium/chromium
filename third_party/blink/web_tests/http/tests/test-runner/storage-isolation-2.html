@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.dumpAsText();
+        testRunner.setDumpConsoleMessages(true);
+      }
+    </script>
+    <script src="resources/storage-isolation-test-util.js"></script>
+    <script>
+      window.onload = async function () {
+        await window.runStorageIsolationTest("storage-isolation-2.html");
+        if (window.testRunner) {
+          testRunner.notifyDone();
+        }
+      };
+    </script>
+  </head>
+  <body></body>
+</html>

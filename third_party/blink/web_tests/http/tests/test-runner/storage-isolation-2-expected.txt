@@ -1,0 +1,9 @@
+CONSOLE MESSAGE: --- [storage-isolation-2.html] Starting Test ---
+CONSOLE MESSAGE: Verifying initial state...
+CONSOLE MESSAGE:   OK: LocalStorage is empty.
+CONSOLE MESSAGE:   OK: IndexedDB is empty.
+CONSOLE MESSAGE:   OK: CacheStorage is empty.
+CONSOLE MESSAGE:   OK: Origin Private File System is empty.
+CONSOLE MESSAGE: Creating data...
+CONSOLE MESSAGE: --- [storage-isolation-2.html] Test Finished ---
+

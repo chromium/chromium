@@ -1323,7 +1323,7 @@ void WebTestControlHost::OnTestFinished() {
       ShellContentBrowserClient::Get()->browser_context();
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      2, base::BindOnce(&WebTestControlHost::PrepareRendererForNextWebTest,
+      3, base::BindOnce(&WebTestControlHost::PrepareRendererForNextWebTest,
                         weak_factory_.GetWeakPtr()));
 
   StoragePartition* storage_partition =
@@ -1331,6 +1331,41 @@ void WebTestControlHost::OnTestFinished() {
   storage_partition->GetServiceWorkerContext()->ClearAllServiceWorkersForTest(
       barrier_closure);
   storage_partition->ClearBluetoothAllowedDevicesMapForTesting();
+
+  // Clear all site-related storage APIs to ensure tests are hermetic.
+  // Use an "opt-out" (or "blacklist") approach for future-proofing. This
+  // ensures that new storage APIs added to `REMOVE_DATA_MASK_ALL` in the
+  // future are automatically cleared without needing to modify this code.
+  const uint32_t exclusion_mask =
+      // Cookies are excluded to preserve the state of the test runner itself
+      // and any test-specific setup.
+      content::StoragePartition::REMOVE_DATA_MASK_COOKIES |
+      // Media licenses can be costly to re-acquire and are not considered
+      // typical, per-test site data.
+      content::StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES |
+      // Internal flags manage browser-internal state, not website data, and
+      // should not be cleared.
+      content::StoragePartition::
+          REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL |
+      content::StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL |
+      content::StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL |
+      // These flags are designed for explicit user actions in settings.
+      content::StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR |
+      // This is a transient network state, not persistent storage.
+      content::StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY |
+      // Device-bound sessions are security/session-related and should persist.
+      content::StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
+
+  const uint32_t removal_mask =
+      content::StoragePartition::REMOVE_DATA_MASK_ALL & ~exclusion_mask;
+
+  storage_partition->ClearData(
+      removal_mask, content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      /*filter_builder=*/nullptr,
+      content::StoragePartition::StorageKeyPolicyMatcherFunction(),
+      /*cookie_deletion_filter=*/nullptr,
+      /*perform_storage_cleanup=*/false, base::Time::Min(), base::Time::Max(),
+      barrier_closure);
 
   // TODO(nhiroki): Add a comment about the reason why we terminate all shared
   // workers here.
