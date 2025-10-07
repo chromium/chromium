@@ -7,9 +7,23 @@
 import argparse
 from collections import defaultdict
 import io
+import os
 import re
 import sys
-import json
+_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+_JSON5_PATH = os.path.join(
+    _FILE_PATH,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    'third_party',
+    'pyjson5',
+    'src',
+)
+sys.path.append(_JSON5_PATH)
+import json5
 
 # Generates a set of C++ constexpr constants to facilitate lookup of a set of
 # MatchingPatterns by a given tuple (pattern name, language code).
@@ -62,11 +76,11 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
 
   # Maps a string literal to a C++ string literal.
   def json_to_cpp_string_literal(json_string_literal):
-    return json.dumps(json_string_literal or '')
+    return json5.dumps(json_string_literal or '')
 
   # Maps a string literal to a C++ UTF-16 string literal.
   def json_to_cpp_u16string_literal(json_string_literal):
-    return 'u'+ json.dumps(json_string_literal or '')
+    return 'u'+ json5.dumps(json_string_literal or '')
 
   # Maps a list of strings to a DenseSet containing these values.
   # The strings represents constants in the format FOO_BAR.
@@ -394,7 +408,7 @@ def parse_json(input_files, output_file):
   id_to_name_to_lang_to_patterns = {}
   for index, input_file in enumerate(input_files):
     with io.open(input_file, 'r', encoding='utf-8') as input_handle:
-      id_to_name_to_lang_to_patterns[index] = json.load(input_handle)
+      id_to_name_to_lang_to_patterns[index] = json5.load(input_handle)
 
   with io.open(output_file, 'w', encoding='utf-8') as output_handle:
     build_cpp_file(id_to_name_to_lang_to_patterns, output_handle)

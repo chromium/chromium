@@ -10,8 +10,23 @@ See parse_entity_schema().
 import collections
 import itertools
 import io
-import json
+import os
 import sys
+_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+_JSON5_PATH = os.path.join(
+    _FILE_PATH,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    'third_party',
+    'pyjson5',
+    'src',
+)
+sys.path.append(_JSON5_PATH)
+import json5
 
 _REQUIRED_KEYS = {
     'name',
@@ -214,7 +229,7 @@ def parse_entity_schema(path_to_schema_json):
   """
   schema = None
   with io.open(path_to_schema_json, 'r', encoding='utf-8') as input_handle:
-    schema = json.load(input_handle)
+    schema = json5.load(input_handle)
   _resolve_shorthands(schema)
   _validate_schema(schema)
   return schema

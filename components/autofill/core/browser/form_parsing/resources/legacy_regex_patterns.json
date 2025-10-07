@@ -1,3 +1,9 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Below we use `"__comment__": "Foo."` instead of `// Foo.` to preserve the
+// comments during sorting.
 {
   "__comment__": [
     "This file is identified by PatternFile::kLegacy in the code.",
