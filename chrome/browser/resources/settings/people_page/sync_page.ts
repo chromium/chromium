@@ -195,14 +195,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.explicitPassphraseTime)',
       },
 
-      // TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
-      enableLinkedServicesSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableLinkedServicesSetting');
-        },
-      },
-
       isEeaChoiceCountry_: {
         type: Boolean,
         value() {
@@ -236,7 +228,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   declare private signedIn_: boolean;
   declare private syncDisabledByAdmin_: boolean;
   declare private syncSectionDisabled_: boolean;
-  declare private enableLinkedServicesSetting_: boolean;
   declare private isEeaChoiceCountry_: boolean;
   declare private personalizationCollapseExpanded_: boolean;
 

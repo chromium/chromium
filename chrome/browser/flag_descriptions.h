@@ -1540,9 +1540,6 @@ extern const char kLensUpdatedFeedbackEntrypointDescription[];
 extern const char kLensVideoCitationsName[];
 extern const char kLensVideoCitationsDescription[];
 
-extern const char kLinkedServicesSettingName[];
-extern const char kLinkedServicesSettingDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kLockTopControlsOnLargeTabletsName[];
 extern const char kLockTopControlsOnLargeTabletsDescription[];

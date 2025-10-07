@@ -158,9 +158,6 @@ suite('SyncSettings', function() {
     assertEquals(otherItems.querySelectorAll('cr-expand-button').length, 1);
 
     assertTrue(isChildVisible(syncPage, '#sync-advanced-row'));
-    // TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
-    assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV1'));
-
     assertTrue(isChildVisible(syncPage, '#activityControlsLinkRowV2'));
     assertFalse(isChildVisible(syncPage, '#personalizationExpandButton'));
     assertTrue(isChildVisible(syncPage, '#syncDashboardLink'));
@@ -817,9 +814,6 @@ suite('EEAChoiceCountry', function() {
   });
 
   test('personalizationControlsVisibility', function() {
-    // TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
-    assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV1'));
-
     assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV2'));
     assertTrue(isChildVisible(syncPage, '#personalizationExpandButton'));
   });
@@ -867,41 +861,3 @@ suite('EEAChoiceCountry', function() {
   });
 });
 
-// TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
-suite('LinkedServicesDisabled', function() {
-  let syncPage: SettingsSyncPageElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      signinAllowed: true,
-      enableLinkedServicesSetting: false,
-    });
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    syncPage = document.createElement('settings-sync-page');
-    document.body.appendChild(syncPage);
-
-    // Start with Sync All with no encryption selected. Also, ensure
-    // that this is not a supervised user, so that Sync Passphrase is
-    // enabled.
-    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
-    syncPage.set('syncStatus', {
-      signedInState: SignedInState.SYNCING,
-      supervisedUser: false,
-      statusAction: StatusAction.NO_ACTION,
-    });
-    flush();
-  });
-
-  teardown(function() {
-    syncPage.remove();
-  });
-
-  test('personalizationControlsVisibility', function() {
-    assertTrue(isChildVisible(syncPage, '#activityControlsLinkRowV1'));
-    assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV2'));
-    assertFalse(isChildVisible(syncPage, '#personalizationExpandButton'));
-  });
-});

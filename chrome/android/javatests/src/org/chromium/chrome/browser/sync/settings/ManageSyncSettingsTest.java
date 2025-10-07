@@ -66,7 +66,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
@@ -247,7 +246,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
-    @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING})
     public void testAccountSettingsView() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -304,9 +302,10 @@ public class ManageSyncSettingsTest {
 
         scrollToAndVerifyPresence(R.string.account_section_footer);
 
-        scrollToAndVerifyPresence(R.string.sign_in_google_activity_controls_title);
+        scrollToAndVerifyPresence(R.string.sign_in_personalize_google_services_title);
+
         onView(withText(R.string.account_advanced_header)).check(matches(isDisplayed()));
-        onView(withText(R.string.sign_in_google_activity_controls_summary))
+        onView(withText(R.string.sign_in_personalize_google_services_summary))
                 .check(matches(isDisplayed()));
 
         scrollToAndVerifyPresence(R.string.sync_encryption);
@@ -1127,7 +1126,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"PersonalizedGoogleServices", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testLinkedServicesSetting() throws Exception {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -1142,7 +1140,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"PersonalizedGoogleServices", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testLinkedServicesSettingEea() throws Exception {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1158,24 +1155,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"PersonalizedGoogleServices"})
-    @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
-    public void testClickGoogleActivityControls() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        final ManageSyncSettings fragment = startManageSyncPreferences();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                });
-        // Click the Google ActivityControls pref
-        onView(withText(R.string.sign_in_google_activity_controls_title)).perform(click());
-        verify(mGoogleActivityController).openWebAndAppActivitySettings(any(), any());
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"PersonalizedGoogleServices"})
-    @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testClickPersonalizeGoogleServicesNonEEA() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -1192,7 +1171,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"PersonalizedGoogleServices"})
-    @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testClickPersonalizeGoogleServicesEEA() {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();

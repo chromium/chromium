@@ -277,16 +277,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         }
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)) {
-            if (isEeaChoiceCountry()) {
-                mGoogleActivityControls.setTitle(
-                        R.string.sign_in_personalize_google_services_title_eea);
-            } else {
-                mGoogleActivityControls.setTitle(
-                        R.string.sign_in_personalize_google_services_title);
-            }
-            mGoogleActivityControls.setSummary(
-                    R.string.sign_in_personalize_google_services_summary);
+        if (isEeaChoiceCountry()) {
+            mGoogleActivityControls.setTitle(
+                    R.string.sign_in_personalize_google_services_title_eea);
         }
 
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
@@ -908,8 +901,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)
-                && isEeaChoiceCountry()) {
+        if (isEeaChoiceCountry()) {
             SettingsNavigationFactory.createSettingsNavigation()
                     .startSettings(getContext(), PersonalizeGoogleServicesSettings.class);
             RecordUserAction.record("Signin_AccountSettings_PersonalizeGoogleServicesClicked");

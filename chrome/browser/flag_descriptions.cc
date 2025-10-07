@@ -2634,10 +2634,6 @@ const char kLensUpdatedFeedbackEntrypointName[] =
 const char kLensUpdatedFeedbackEntrypointDescription[] =
     "Enables an updated feedback entry point in the Lens side panel.";
 
-const char kLinkedServicesSettingName[] = "Linked Services Setting";
-const char kLinkedServicesSettingDescription[] =
-    "Add Linked Services Setting to the Sync Settings page.";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kLockTopControlsOnLargeTabletsName[] =
     "Lock top controls on tablets";
