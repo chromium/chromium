@@ -5704,7 +5704,6 @@ if (is_android) {
       "android/junit/src/org/chromium/base/supplier/UnwrapObservableSupplierTest.java",
       "android/junit/src/org/chromium/base/task/AsyncTaskThreadTest.java",
       "android/junit/src/org/chromium/base/task/ChromiumExecutorServiceFactoryTest.java",
-      "android/junit/src/org/chromium/base/task/LocationTest.java",
       "android/junit/src/org/chromium/base/task/SequencedTaskRunnerTaskMigrationTest.java",
       "android/junit/src/org/chromium/base/util/GarbageCollectionTestUtilsUnitTest.java",
       "test/android/junit/src/org/chromium/base/test/SetUpStatementTest.java",
@@ -5731,6 +5730,7 @@ if (is_android) {
       ":base_java_test_support_uncommon",
       ":base_junit_test_support",
       ":base_shared_preferences_java",
+      ":location_junit_tests",
       ":task_executor_java",
       "//base/test:public_transit_robolectric_tests_java",
       "//base/test:test_support_java",
@@ -5741,6 +5741,20 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  # LocationTest.java needs to always be processed by the Java location rewriter
+  # so separate it out to its own robolectric library
+  robolectric_library("location_junit_tests") {
+    force_java_location_rewrite = true
+    sources = [ "android/junit/src/org/chromium/base/task/LocationTest.java" ]
+    deps = [
+      ":base_java",
+      ":base_java_test_support",
+      ":base_junit_test_support",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/junit",
     ]
   }
 

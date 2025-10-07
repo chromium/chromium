@@ -5,6 +5,7 @@
 package org.chromium.base.task;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 
@@ -22,5 +23,15 @@ public interface TaskRunner extends Executor {
      * @param task The task to be run.
      * @param delay The delay in milliseconds before the task can be run.
      */
-    void postDelayedTask(Runnable task, long delay);
+    default void postDelayedTask(Runnable task, long delay) {
+        postDelayedTask(task, delay, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #postDelayedTask(Runnable, long)} instead.
+     *
+     * <p>Overload of {@link #postDelayedTask(Runnable, long)} for the Java location rewriter.
+     */
+    void postDelayedTask(Runnable task, long delay, @Nullable Location location);
 }

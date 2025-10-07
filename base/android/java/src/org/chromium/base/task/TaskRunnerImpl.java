@@ -167,19 +167,19 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     @Override
-    public final void postDelayedTask(Runnable task, long delay) {
+    public final void postDelayedTask(Runnable task, long delay, @Nullable Location location) {
         if (PostTask.ENABLE_TASK_ORIGINS) {
             task = PostTask.populateTaskOrigin(new TaskOriginException(), task);
         }
         // Lock-free path when native is initialized.
         if (mNativeTaskRunnerAndroid != 0) {
-            queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, null);
+            queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, location);
             return;
         }
         synchronized (mPreNativeTaskLock) {
             oneTimeInitialization();
             if (mNativeTaskRunnerAndroid != 0) {
-                queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, null);
+                queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, location);
                 return;
             }
             // We don't expect a whole lot of these, if that changes consider pooling them.
@@ -357,11 +357,11 @@ public class TaskRunnerImpl implements TaskRunner {
         void postDelayedTask(long nativeTaskRunnerAndroid, long delay, int taskIndex);
 
         void postDelayedTaskWithLocation(
-            long nativeTaskRunnerAndroid,
-            long delay,
-            int taskIndex,
-            String fileName,
-            String functionName,
-            int lineNumber);
+                long nativeTaskRunnerAndroid,
+                long delay,
+                int taskIndex,
+                String fileName,
+                String functionName,
+                int lineNumber);
     }
 }

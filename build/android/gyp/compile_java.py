@@ -453,6 +453,12 @@ def _RunCompiler(changes,
         raise Exception('need java files for --print-javac-command-line.')
       metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
+    # TODO(anandrv): This step could also be skipped if tasks_java jar file
+    # isn't in the classpath
+    if java_files and options.location_rewriter_path:
+      build_utils.CheckOutput([options.location_rewriter_path, classes_dir])
+      logging.info('Finished location bytecode rewrite')
+
     if use_errorprone:
       # There is no jar file when running errorprone and jar_path is actually
       # just the stamp file for that target.
@@ -552,6 +558,13 @@ def _ParseOptions(argv):
       '--kotlin-jar-path',
       help='Kotlin jar to be merged into the output jar. This contains the '
       ".class files from this target's .kt files.")
+  parser.add_argument('--location-rewriter-path',
+                      help='Path to the location rewriter wrapper script.')
+  parser.add_argument(
+      '--additional-siso-input',
+      action='append',
+      help='Additional paths to append to SISO input list. These paths are not '
+      'forwarded to javac.')
   parser.add_argument('sources', nargs='*')
 
   options = parser.parse_args(argv)

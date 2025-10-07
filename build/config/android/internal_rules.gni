@@ -110,6 +110,24 @@ _manifest_merger_jar_path =
 # the error message about why non-existent dependencies are there.
 build_config_target_suffix = "__build_config_crbug_908819"
 
+# Paths for Java location rewriter
+_asm_deps = [
+  "//third_party/android_deps:org_ow2_asm_asm_commons_java",
+  "//third_party/android_deps:org_ow2_asm_asm_java",
+]
+
+rebased_asm_params_path = []
+foreach(_asm_dep, _asm_deps) {
+  _asm_dep_gen_dir = get_label_info(_asm_dep, "target_gen_dir")
+  _asm_dep_name = get_label_info(_asm_dep, "name")
+  rebased_asm_params_path +=
+      [ rebase_path("$_asm_dep_gen_dir/$_asm_dep_name.params.json",
+                    root_build_dir) ]
+}
+
+rebased_location_rewriter_path =
+    rebase_path("$root_build_dir/bin/helper/location_rewriter", root_build_dir)
+
 # Write the target's .build_config.json file. This is a json file that contains a
 # dictionary of information about how to build this target (things that
 # require knowledge about this target's dependencies and cannot be calculated
@@ -3017,6 +3035,7 @@ if (enable_java_templates) {
     }
 
     action_with_pydeps(target_name) {
+      _should_rewrite_location = false
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
         inputs = [
@@ -3029,6 +3048,16 @@ if (enable_java_templates) {
       } else {
         script = "//build/android/gyp/compile_java.py"
         inputs = javac_paths_for_inputs
+
+        _should_rewrite_location =
+            enable_java_location_rewrite && invoker.chromium_code
+        if (defined(invoker.skip_java_location_rewrite) &&
+            invoker.skip_java_location_rewrite) {
+          _should_rewrite_location = false
+        } else if (defined(invoker.force_java_location_rewrite) &&
+                   invoker.force_java_location_rewrite) {
+          _should_rewrite_location = true
+        }
       }
 
       if (target_name == "chrome_java__header") {
@@ -3070,6 +3099,16 @@ if (enable_java_templates) {
         }
         inputs += _java_srcjars
       }
+
+      if (_should_rewrite_location) {
+        foreach(_path, rebased_asm_params_path) {
+          args +=
+              [ "--additional-siso-input=@FileArg($_path:processed_jar_path)" ]
+        }
+        args += [ "--location-rewriter-path=$rebased_location_rewriter_path" ]
+        deps += [ "//build/android/location_rewriter" ]
+      }
+
       inputs += invoker.source_files + [ _build_config ] + java_paths_for_inputs
 
       if (invoker.source_files != []) {
@@ -4088,6 +4127,8 @@ if (enable_java_templates) {
                                _compile_java_forward_variables + [
                                      "jar_excluded_patterns",
                                      "jar_included_patterns",
+                                     "skip_java_location_rewrite",
+                                     "force_java_location_rewrite",
                                    ])
         main_target_name = _main_target_name
         output_jar_path = _javac_jar_path
