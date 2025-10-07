@@ -13,8 +13,7 @@ optimization_guide::proto::ComposeLength ComposeLength(
 optimization_guide::proto::ComposeTone ComposeTone(
     compose::mojom::StyleModifier modifier);
 compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
-    const optimization_guide::OptimizationGuideModelStreamingExecutionResult&
-        result);
+    const optimization_guide::OptimizationGuideModelExecutionResult& result);
 optimization_guide::proto::UserFeedback OptimizationFeedbackFromComposeFeedback(
     compose::mojom::UserFeedback feedback);
 optimization_guide::proto::ComposeUpfrontInputMode ComposeUpfrontInputMode(

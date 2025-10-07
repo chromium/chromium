@@ -36,8 +36,7 @@ optimization_guide::proto::ComposeTone ComposeTone(
 }
 
 compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
-    const optimization_guide::OptimizationGuideModelStreamingExecutionResult&
-        result) {
+    const optimization_guide::OptimizationGuideModelExecutionResult& result) {
   if (result.response.has_value()) {
     return compose::mojom::ComposeStatus::kOk;
   }

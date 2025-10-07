@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -247,15 +248,14 @@ class ComposeSession
       int request_id,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
           logging_data);
-  void ModelExecutionProgress(optimization_guide::StreamingResponse result);
   void ModelExecutionComplete(
       base::TimeDelta request_delta,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void AddNewResponseToHistory(std::unique_ptr<ComposeState> new_state);
   void EraseForwardStatesInHistory();
@@ -387,9 +387,8 @@ class ComposeSession
   // A callback to Autofill that triggers filling the field.
   ComposeCallback callback_;
 
-  // A session which allows for building context and streaming output.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session_;
+  optimization_guide::MultimodalMessage request_context_;
+
   // This is incremented every request to avoid handling responses from previous
   // requests.
   int request_id_ = 0;

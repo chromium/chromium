@@ -45,6 +45,7 @@
 #include "components/compose/core/browser/config.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -92,10 +93,8 @@ const char kOnDeviceComposeFeedbackSurveyURL[] =
     "https://goto.google.com/ccfsfdod";
 
 compose::EvalLocation GetEvalLocation(
-    const optimization_guide::OptimizationGuideModelStreamingExecutionResult&
-        result) {
-  return result.provided_by_on_device ? compose::EvalLocation::kOnDevice
-                                      : compose::EvalLocation::kServer;
+    const optimization_guide::OptimizationGuideModelExecutionResult& result) {
+  return compose::EvalLocation::kServer;
 }
 
 compose::ComposeRequestReason GetRequestReasonForInputMode(
@@ -266,17 +265,6 @@ ComposeSession::ComposeSession(
   session_duration_ = std::make_unique<base::ElapsedTimer>();
   callback_ = std::move(callback);
   active_mojo_state_ = compose::mojom::ComposeState::New();
-  if (executor_) {
-    optimization_guide::SessionConfigParams config_params = {
-        .execution_mode = base::FeatureList::IsEnabled(
-                              compose::features::kComposeAllowOnDeviceExecution)
-                              ? optimization_guide::SessionConfigParams::
-                                    ExecutionMode::kDefault
-                              : optimization_guide::SessionConfigParams::
-                                    ExecutionMode::kServerOnly};
-    session_ = executor_->StartSession(
-        optimization_guide::ModelBasedCapabilityKey::kCompose, config_params);
-  }
 }
 
 base::optional_ref<ComposeState> ComposeSession::LastResponseState() {
@@ -508,7 +496,7 @@ void ComposeSession::MakeRequest(
   ++session_events_.compose_requests_count;
 
   // TODO(b/300974056): Move this to the overall feature-enabled check.
-  if (!session_ ||
+  if (!executor_ ||
       !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     ProcessError(compose::EvalLocation::kServer,
@@ -553,13 +541,16 @@ void ComposeSession::RequestWithSession(
   // execution in case request fails.
   compose::LogComposeRequestReason(request_reason);
 
-  optimization_guide::ModelExecutionSessionCallbackWithLogging callback =
-      base::BindRepeating(&ComposeSession::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(request_timer), request_id_, request_reason,
-                          is_input_edited);
-  optimization_guide::ExecuteModelSessionWithLogging(session_.get(), request,
-                                                     callback);
+  optimization_guide::ModelExecutionCallbackWithLogging callback =
+      base::BindOnce(&ComposeSession::ModelExecutionCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_timer),
+                     request_id_, request_reason, is_input_edited);
+  auto merged_request = request_context_.Merge(request);
+  optimization_guide::ExecuteModelWithLogging(
+      executor_, optimization_guide::ModelBasedCapabilityKey::kCompose,
+      static_cast<const optimization_guide::proto::ComposeRequest&>(
+          merged_request.BuildProtoMessage()),
+      std::nullopt, std::move(callback));
 }
 
 void ComposeSession::ComposeRequestTimeout(int id) {
@@ -583,7 +574,7 @@ void ComposeSession::ModelExecutionCallback(
     int request_id,
     compose::ComposeRequestReason request_reason,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
         logging_data) {
   base::TimeDelta request_delta = request_timer.Elapsed();
@@ -604,11 +595,7 @@ void ComposeSession::ModelExecutionCallback(
   if (auto iter = request_timeouts_.find(request_id);
       iter != request_timeouts_.end()) {
     iter->second->Stop();
-    // If a partial response was received, then this callback may be reused.
-    // Only remove the associated timer if the response is complete.
-    if (result.response.has_value() && result.response->is_complete) {
-      request_timeouts_.erase(request_id);
-    }
+    request_timeouts_.erase(request_id);
   } else {
     SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
@@ -628,42 +615,15 @@ void ComposeSession::ModelExecutionCallback(
     return;
   }
 
-  if (result.response.has_value() && !result.response->is_complete) {
-    ModelExecutionProgress(std::move(result.response).value());
-    return;
-  }
-
   ModelExecutionComplete(request_delta, request_reason, was_input_edited,
                          std::move(result), std::move(log_entry));
-}
-
-void ComposeSession::ModelExecutionProgress(
-    optimization_guide::StreamingResponse result) {
-  CHECK(base::FeatureList::IsEnabled(
-      optimization_guide::features::kOptimizationGuideOnDeviceModel));
-  if (!base::FeatureList::IsEnabled(
-          compose::features::kComposeTextOutputAnimation)) {
-    return;
-  }
-  if (!dialog_remote_.is_bound()) {
-    return;
-  }
-  auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result.response);
-  if (!response) {
-    DLOG(ERROR) << "Failed to parse partial compose response";
-    return;
-  }
-  auto partial_ui_response = compose::mojom::PartialComposeResponse::New();
-  partial_ui_response->result = response->output();
-  dialog_remote_->PartialResponseReceived(std::move(partial_ui_response));
 }
 
 void ComposeSession::ModelExecutionComplete(
     base::TimeDelta request_delta,
     compose::ComposeRequestReason request_reason,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // Handle 'complete' results.
   active_mojo_state_->has_pending_request = false;
@@ -701,10 +661,9 @@ void ComposeSession::ModelExecutionComplete(
                                 was_input_edited);
     return;
   }
-  CHECK(result.response->is_complete);
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result.response->response);
+      optimization_guide::proto::ComposeResponse>(result.response.value());
 
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
@@ -756,7 +715,7 @@ void ComposeSession::ModelExecutionComplete(
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
-  ui_response->on_device_evaluation_used = result.provided_by_on_device;
+  ui_response->on_device_evaluation_used = false;
   ui_response->provided_by_user = false;
   // TODO(b/333944734): Remove undo_available and redo_available from
   // ComposeState.
@@ -1184,7 +1143,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
     compose::LogComposeDialogInnerTextOffsetFound(node_offset.has_value());
   }
 
-  if (!session_) {
+  if (!executor_) {
     return;
   }
 
@@ -1240,7 +1199,7 @@ void ComposeSession::TryContinueComposeWithContext() {
     *request.mutable_page_metadata() = std::move(*page_metadata_);
     page_metadata_.reset();
 
-    session_->AddContext(request);
+    request_context_ = optimization_guide::MultimodalMessage(request);
   }
 
   std::move(continue_compose_).Run();
