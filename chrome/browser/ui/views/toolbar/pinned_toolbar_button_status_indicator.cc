@@ -13,6 +13,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/cascading_property.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -71,13 +72,12 @@ void PinnedToolbarButtonStatusIndicator::OnPaint(gfx::Canvas* canvas) {
 
   // Non-mac desktop devices show active icon colors even when the browser
   // window is inactive.
+  const bool paint_as_active =
+      !views::PlatformStyle::kInactiveWidgetControlsAppearDisabled ||
+      GetWidget()->ShouldPaintAsActive();
+
   std::optional<ui::ColorId> color_id =
-#if BUILDFLAG(IS_MAC)
-      GetWidget()->ShouldPaintAsActive() ? active_color_id_
-                                         : inactive_color_id_;
-#else
-      active_color_id_;
-#endif
+      paint_as_active ? active_color_id_ : inactive_color_id_;
 
   flags.setColor(color_id.has_value()
                      ? GetColorProvider()->GetColor(color_id.value())
