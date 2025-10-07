@@ -35,6 +35,9 @@ public class ListMenuFlyoutController<T> {
     private @Nullable View mPendingFlyoutParentView;
     private List<ListItem> mLastHighlightedPath = new ArrayList<ListItem>();
 
+    private @Nullable Handler mHoverExitDelayHandler;
+    private @Nullable Runnable mPendingHoverExitRunnable;
+
     /**
      * A data class holding a flyout popup window and the (optional) parent ListItem that triggered
      * it. The root popup will have a null parentItem.
@@ -119,16 +122,42 @@ public class ListMenuFlyoutController<T> {
             int levelOfHoveredItem,
             @Nullable Boolean drillDownOverrideValue,
             List<ListItem> highlightPath) {
+        if (mPendingHoverExitRunnable != null) {
+            assert mHoverExitDelayHandler != null;
+            mHoverExitDelayHandler.removeCallbacks(mPendingHoverExitRunnable);
+            mPendingHoverExitRunnable = null;
+            mHoverExitDelayHandler = null;
+        }
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_HOVER_ENTER:
                 onItemHovered(
                         item, view, levelOfHoveredItem, drillDownOverrideValue, highlightPath);
                 return true;
             case MotionEvent.ACTION_HOVER_EXIT:
-                if (item.model.get(IS_HIGHLIGHTED)) {
-                    updateHighlightPath(highlightPath.subList(0, highlightPath.size() - 1));
-                }
-                cancelFlyoutDelay(view);
+                // Update highlights after a short delay. This is to prevent UI flicker when the
+                // user moves the pointer from the parent item view to a flyout item view. We
+                // receive an {@code ACTION_HOVER_EXIT} event to the parent view right before we
+                // receive an {@code ACTION_HOVER_ENTER} event on the flyout view. If we faithfully
+                // follow these, the parent item momentarily loses the hover style, so we ignore the
+                // first exit event in case it's immediately followed by an enter event.
+                mPendingHoverExitRunnable =
+                        () -> {
+                            if (item.model.get(IS_HIGHLIGHTED)) {
+                                updateHighlightPath(
+                                        highlightPath.subList(0, highlightPath.size() - 1));
+                            }
+                            cancelFlyoutDelay(view);
+                            mPendingHoverExitRunnable = null;
+                        };
+                mHoverExitDelayHandler = view.getHandler();
+                assert mHoverExitDelayHandler != null;
+                mHoverExitDelayHandler.postDelayed(
+                        mPendingHoverExitRunnable,
+                        view.getContext()
+                                .getResources()
+                                .getInteger(R.integer.flyout_menu_hover_exit_delay_in_ms));
+
                 // We only want to remove the flyout popups when the user hovers
                 // over another item. We don't close the flyout popup even when the
                 // item itself loses hover.
