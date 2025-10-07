@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -2164,6 +2166,12 @@ void ShowTabSearch(BrowserWindowInterface* bwi) {
 
 void CloseTabSearch(Browser* browser) {
   browser->window()->CloseTabSearchBubble();
+}
+
+void ShowContextualTasksSidePanel(BrowserWindowInterface* browser) {
+  CHECK_DEREF(
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser))
+      .Show();
 }
 
 void ToggleVerticalTabs(Browser* browser) {

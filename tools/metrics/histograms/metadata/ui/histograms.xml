@@ -61,6 +61,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".CommentsSidePanel"/>
   <variant name=".CompanionSidePanelUntrusted"/>
   <variant name=".Compose"/>
+  <variant name=".ContextualTasks"/>
   <variant name=".CustomizeChrome"/>
   <variant name=".DataSharingBubble"/>
   <variant name=".Emoji"/>

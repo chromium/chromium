@@ -11,6 +11,7 @@ let instance: BrowserProxy|null = null;
 export interface BrowserProxy {
   getCallbackRouter(): PageCallbackRouter;
   getThreadUrl(): Promise<{url: Url}>;
+  showUi(): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -33,6 +34,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getThreadUrl() {
     return this.handler.getThreadUrl();
+  }
+
+  showUi() {
+    this.handler.showUi();
   }
 
   static getInstance(): BrowserProxy {

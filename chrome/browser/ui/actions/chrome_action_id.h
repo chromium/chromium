@@ -544,6 +544,7 @@
   E(kActionSidePanelShowCustomizeChromeToolbar) \
   E(kActionSidePanelShowFeed) \
   E(kActionSidePanelShowGlic) \
+  E(kActionSidePanelShowContextualTasks) \
   E(kActionSidePanelShowHistoryCluster) \
   E(kActionSidePanelShowHistory) \
   E(kActionSidePanelShowLens) \

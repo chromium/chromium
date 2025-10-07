@@ -11,11 +11,19 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace content {
+class WebUI;
+}
+
+class ContextualTasksUI;
+
 class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
  public:
   ContextualTasksPageHandler(
       mojo::PendingRemote<contextual_tasks::mojom::Page> page,
-      mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler);
+      mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler,
+      content::WebUI* web_ui,
+      ContextualTasksUI* web_ui_controller);
   ContextualTasksPageHandler(const ContextualTasksPageHandler&) = delete;
   ContextualTasksPageHandler& operator=(const ContextualTasksPageHandler&) =
       delete;
@@ -25,9 +33,13 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   // is a series of queries and responses with a fixed context.
   void GetThreadUrl(GetThreadUrlCallback callback) override;
 
+  void ShowUi() override;
+
  private:
   mojo::Remote<contextual_tasks::mojom::Page> page_;
   mojo::Receiver<contextual_tasks::mojom::PageHandler> page_handler_;
+  const raw_ptr<content::WebUI> web_ui_;
+  const raw_ptr<ContextualTasksUI> web_ui_controller_;
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_

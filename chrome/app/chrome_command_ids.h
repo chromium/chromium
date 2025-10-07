@@ -590,6 +590,9 @@
 // Glic button context menu and tabstrip context menu
 #define IDC_GLIC_TOGGLE_PIN 53320
 
+// Show contextual tasks side panel.
+#define IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL                  54000
+
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
 

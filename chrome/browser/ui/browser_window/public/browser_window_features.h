@@ -132,6 +132,10 @@ namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
 
+namespace contextual_tasks {
+class ContextualTasksSidePanelCoordinator;
+}  // namespace contextual_tasks
+
 namespace tabs {
 class GlicNudgeController;
 }  // namespace tabs
@@ -618,6 +622,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<glic::GlicLegacySidePanelCoordinator>
       glic_side_panel_coordinator_;
 #endif
+
+  std::unique_ptr<contextual_tasks::ContextualTasksSidePanelCoordinator>
+      contextual_tasks_side_panel_coordinator_;
 
   std::unique_ptr<tab_groups::MostRecentSharedTabUpdateStore>
       most_recent_shared_tab_update_store_;

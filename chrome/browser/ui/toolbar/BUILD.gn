@@ -163,6 +163,7 @@ source_set("impl") {
       "//components/bookmarks/common",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:feature_utils",
+      "//components/contextual_tasks/public:feature_list",
       "//components/dom_distiller/content/browser",
       "//components/dom_distiller/core",
       "//components/favicon_base",

@@ -15,7 +15,7 @@
 #include "ui/webui/webui_util.h"
 
 ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+    : TopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kContextualTasksUiHost);
   webui::SetupWebUIDataSource(source, kContextualTasksResources,
@@ -33,7 +33,13 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page), std::move(page_handler));
+      std::move(page), std::move(page_handler), web_ui(), this);
+}
+
+void ContextualTasksUI::MaybeShowUi() {
+  if (embedder()) {
+    embedder()->ShowUI();
+  }
 }
 
 void ContextualTasksUI::BindInterface(

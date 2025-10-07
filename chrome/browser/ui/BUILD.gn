@@ -2831,6 +2831,7 @@ static_library("ui") {
       "views/profiles/signin_view_controller_delegate_views.h",
     ]
     deps += [
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/search/background",
       "//chrome/browser/themes",
@@ -4696,6 +4697,7 @@ static_library("ui") {
       "//components/commerce/core/product_specifications",
       "//components/constrained_window",
       "//components/content_settings/browser/ui",
+      "//components/contextual_tasks/public",
       "//components/fullscreen_control",
       "//components/global_media_controls",
       "//components/global_media_controls/public/mojom:device_service",

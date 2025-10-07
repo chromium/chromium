@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Contextual Tasks -->
+  <message name ="IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE" desc="The title of contextual tasks.">
+    Contextual tasks
+  </message>
+</grit-part>

@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -117,6 +118,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
@@ -651,6 +653,15 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             browser_view->browser(), side_panel_coordinator_.get());
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    contextual_tasks_side_panel_coordinator_ =
+        GetUserDataFactory()
+            .CreateInstance<
+                contextual_tasks::ContextualTasksSidePanelCoordinator>(
+                *browser_, browser_, side_panel_coordinator_.get());
+  }
+
   side_panel_coordinator_->Init(browser_view->browser());
 
   extension_side_panel_manager_ =
@@ -764,6 +775,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   glic_button_controller_.reset();
   glic_actor_task_icon_controller_.reset();
 #endif
+
+  contextual_tasks_side_panel_coordinator_.reset();
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (download_toolbar_ui_controller_) {

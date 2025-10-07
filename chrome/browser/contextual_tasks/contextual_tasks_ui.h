@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_H_
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -18,7 +19,7 @@ class BrowserContext;
 
 inline constexpr char kContextualTasksUiHost[] = "contextual-tasks";
 
-class ContextualTasksUI : public ui::MojoWebUIController,
+class ContextualTasksUI : public TopChromeWebUIController,
                           public contextual_tasks::mojom::PageHandlerFactory {
  public:
   explicit ContextualTasksUI(content::WebUI* web_ui);
@@ -32,13 +33,13 @@ class ContextualTasksUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler)
       override;
 
+  void MaybeShowUi();
+
   void BindInterface(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
           pending_receiver);
 
-  static constexpr std::string_view GetWebUIName() {
-    return "Contextual Tasks";
-  }
+  static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
 
  private:
   mojo::Receiver<contextual_tasks::mojom::PageHandlerFactory> factory_receiver_{
@@ -49,10 +50,12 @@ class ContextualTasksUI : public ui::MojoWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-class ContextualTasksUIConfig : public content::WebUIConfig {
+class ContextualTasksUIConfig
+    : public DefaultTopChromeWebUIConfig<ContextualTasksUI> {
  public:
   ContextualTasksUIConfig()
-      : WebUIConfig(content::kChromeUIScheme, kContextualTasksUiHost) {}
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                    kContextualTasksUiHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 

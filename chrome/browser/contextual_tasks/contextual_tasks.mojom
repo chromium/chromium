@@ -13,6 +13,9 @@ interface PageHandler {
   // Provides a URL for an AI thread (e.g. with Gemini or search AI mode) to
   // the WebUI to load in the hosted webview element.
   GetThreadUrl() => (url.mojom.Url url);
+
+  // Notify the browser when the UI is ready to show.
+  ShowUi();
 };
 
 // The interface that defines the browser process to webui (typescript/renderer)
