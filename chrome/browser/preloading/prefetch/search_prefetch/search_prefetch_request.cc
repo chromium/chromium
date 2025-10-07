@@ -260,7 +260,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
   AddClientHintsHeadersToPrefetchNavigation(
       prefetch_origin, &(resource_request->headers), profile,
       profile->GetClientHintsControllerDelegate(),
-      /*is_ua_override_on=*/false);
+      /*is_ua_override_on=*/false, /*ftn_for_devtools_override=*/nullptr);
 
   // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
   // requests, as described in
