@@ -361,6 +361,8 @@ typedef int(__cdecl* _strnicmpFunction)(IN const char* _Str1,
                                         IN const char* _Str2,
                                         IN size_t _MaxCount);
 
+typedef size_t(__cdecl* strlenFunction)(IN const char* _Str);
+
 typedef void*(__cdecl* memcpyFunction)(IN void* dest,
                                        IN const void* src,
                                        IN size_t count);

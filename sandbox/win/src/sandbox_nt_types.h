@@ -42,6 +42,7 @@ struct NtExports {
   RtlFreeHeapFunction                    RtlFreeHeap;
   RtlNtStatusToDosErrorFunction          RtlNtStatusToDosError;
   UNSAFE_BUFFER_USAGE _strnicmpFunction  _strnicmp;
+  UNSAFE_BUFFER_USAGE strlenFunction     strlen;
   UNSAFE_BUFFER_USAGE memcpyFunction     memcpy;
 };
 // clang-format on
