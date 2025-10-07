@@ -553,11 +553,31 @@ const char kExpectedStructTreeJSON[] = R"({
       "~children": [ {
          "type": "TR",
          "~children": [ {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TH",
             "~children": [ {
                "type": "NonStruct"
             } ]
          }, {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TH",
             "~children": [ {
                "type": "NonStruct"
@@ -566,11 +586,31 @@ const char kExpectedStructTreeJSON[] = R"({
       }, {
          "type": "TR",
          "~children": [ {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TD",
             "~children": [ {
                "type": "NonStruct"
             } ]
          }, {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TD",
             "~children": [ {
                "type": "NonStruct"
@@ -741,11 +781,31 @@ const char kExpectedTableStructTreeJSON[] = R"({
       "~children": [ {
          "type": "TR",
          "~children": [ {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TH",
             "~children": [ {
                "type": "NonStruct"
             } ]
          }, {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TH",
             "~children": [ {
                "type": "NonStruct"
@@ -754,11 +814,31 @@ const char kExpectedTableStructTreeJSON[] = R"({
       }, {
          "type": "TR",
          "~children": [ {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TD",
             "~children": [ {
                "type": "NonStruct"
             } ]
          }, {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
             "type": "TD",
             "~children": [ {
                "type": "NonStruct"

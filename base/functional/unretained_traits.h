@@ -13,27 +13,29 @@
 
 // Various opaque system types that should still be usable with the base
 // callback system. Please keep sorted.
-#define BASE_INTERNAL_LIST_OF_SAFE_FOR_UNRETAINED           \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(ANativeWindow)          \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(DBusMessage)            \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(HWND__)                 \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkBuffer_T)             \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkDeviceMemory_T)       \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkImage_T)              \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkSemaphore_T)          \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VmaAllocation_T)        \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(WGPUAdapterImpl)        \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_action_t__)        \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_annotation_t__)    \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_attachment_t__)    \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_bookmark_t__)      \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_document_t__)      \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_form_handle_t__)   \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_page_t__)          \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_structelement_t__) \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(hb_set_t)               \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(wl_gpu)                 \
-  BASE_INTERNAL_SAFE_FOR_UNRETAINED(wl_shm)                 \
+#define BASE_INTERNAL_LIST_OF_SAFE_FOR_UNRETAINED                      \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(ANativeWindow)                     \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(DBusMessage)                       \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(HWND__)                            \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkBuffer_T)                        \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkDeviceMemory_T)                  \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkImage_T)                         \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VkSemaphore_T)                     \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(VmaAllocation_T)                   \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(WGPUAdapterImpl)                   \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_action_t__)                   \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_annotation_t__)               \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_attachment_t__)               \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_bookmark_t__)                 \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_document_t__)                 \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_form_handle_t__)              \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_page_t__)                     \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_structelement_t__)            \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_structelement_attr_t__)       \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(fpdf_structelement_attr_value_t__) \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(hb_set_t)                          \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(wl_gpu)                            \
+  BASE_INTERNAL_SAFE_FOR_UNRETAINED(wl_shm)                            \
   BASE_INTERNAL_SAFE_FOR_UNRETAINED(wl_surface)
 
 #define BASE_INTERNAL_SAFE_FOR_UNRETAINED(x) struct x;
