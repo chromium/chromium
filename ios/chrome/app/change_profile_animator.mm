@@ -118,8 +118,10 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
       animations:^{
         [self blurAnimations];
       }
-      completion:^(BOOL) {
-        [self blurComplete];
+      completion:^(BOOL complete) {
+        if (complete) {
+          [self blurComplete];
+        }
       }];
 }
 
@@ -143,8 +145,10 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
       animations:^{
         [self unblurAnimations];
       }
-      completion:^(BOOL) {
-        [self unblurComplete];
+      completion:^(BOOL complete) {
+        if (complete) {
+          [self unblurComplete];
+        }
       }];
 }
 
