@@ -65,7 +65,7 @@ mojom("mojom") {
     "//cc/mojom:mojom_browser_controls",
     "//cc/mojom:mojom_layer_trees",
     "//gpu/ipc/common:interfaces",
-    "//media/mojo/mojom",
+    "//media/mojo/mojom:video_encode",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom/compositing/internal:singleplanar_format",
     "//skia/public/mojom",

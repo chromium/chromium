@@ -382,6 +382,7 @@ mojom("mojom_platform") {
       "//media/capture/mojom:video_capture",
       "//media/capture/mojom:video_capture_types",
       "//media/mojo/mojom",
+      "//media/mojo/mojom:media_types",
     ]
   }
 

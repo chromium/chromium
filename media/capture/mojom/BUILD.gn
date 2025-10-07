@@ -15,7 +15,7 @@ mojom("video_capture") {
     "//ui/gfx/geometry/mojom",
   ]
 
-  deps = [ "//media/mojo/mojom" ]
+  deps = [ "//media/mojo/mojom:media_types" ]
 
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
@@ -29,9 +29,8 @@ mojom("video_capture_buffer") {
   public_deps = [
     ":video_capture_types",
     "//gpu/ipc/common:interfaces",
-    "//media//mojo/mojom",
+    "//media/mojo/mojom:media_types",
     "//mojo/public/mojom/base",
-    "//services/viz/public/mojom:shared_image_format",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
