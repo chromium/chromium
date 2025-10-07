@@ -48,6 +48,9 @@ password_manager::PasswordFormManager* GetSigninFormManager(
     password_manager::PasswordFormCache* form_cache) {
   password_manager::PasswordFormManager* signin_form_manager = nullptr;
   for (const auto& manager : form_cache->GetFormManagers()) {
+    if (!manager->GetDriver()) {
+      continue;
+    }
     if (!manager->GetDriver()->GetLastCommittedOrigin().IsSameOriginWith(
             origin)) {
       continue;
