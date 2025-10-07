@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 
 namespace base {
+class DictValue;
 class Time;
 }
 
@@ -127,16 +128,19 @@ class SigninPrefs {
   std::optional<base::Time> GetPolicyDisclaimerLastRegistrationFailureTime(
       const GaiaId& gaia_id) const;
 
-  // History Sync experiment promo on the avatar button.
-  void IncrementHistorySyncPromoIdentityPillShownCount(const GaiaId& gaia_id);
-  int GetHistorySyncPromoIdentityPillShownCount(const GaiaId& gaia_id) const;
-  void IncrementHistorySyncPromoIdentityPillUsedCount(const GaiaId& gaia_id);
-  int GetHistorySyncPromoIdentityPillUsedCount(const GaiaId& gaia_id) const;
   // Sync promo on the avatar button.
   void IncrementSyncPromoIdentityPillShownCount(const GaiaId& gaia_id);
   int GetSyncPromoIdentityPillShownCount(const GaiaId& gaia_id) const;
   void IncrementSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id);
   int GetSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id) const;
+
+  // Returns a dictionary of the avatar button promo count for `gaia_id`, if the
+  // dictionary didn't exist it will create it.
+  // The returned dictionary will not notify observers for underlying pref
+  // changes. If this will be required later on, consider returning a
+  // `ScopedDictPrefUpdate` instead.
+  base::DictValue& GetOrCreateAvatarButtonPromoCountDictionary(
+      const GaiaId& gaia_id);
 
   // Updates the dismiss count of the promo and last time it was dismissed.
   void IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
@@ -163,6 +167,10 @@ class SigninPrefs {
       const base::flat_set<GaiaId>& gaia_ids_to_keep);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  void MigrateObsoleteSigninPrefs();
+
+  void SetDeprecatedPrefForTesting(const GaiaId& gaia_id);
+  std::optional<int> GetDeprecatedPrefForTesting(const GaiaId& gaia_id);
 
  private:
   // Increments any specified `pref` of type int for the given `gaia_id`.

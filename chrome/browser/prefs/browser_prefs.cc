@@ -3080,6 +3080,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 09/2025.
   profile_prefs->ClearPref(kLensOverlayEduActionChipShownCount);
 
+  SigninPrefs(*profile_prefs).MigrateObsoleteSigninPrefs();
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

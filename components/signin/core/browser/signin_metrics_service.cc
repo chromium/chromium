@@ -313,18 +313,13 @@ void SigninMetricsService::OnPrimaryAccountChanged(
       CHECK(access_point.has_value());
       if (access_point == signin_metrics::AccessPoint::
                               kHistorySyncOptinExpansionPillOnStartup) {
+        CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
         SigninPrefs signin_prefs(pref_service_.get());
         const CoreAccountInfo& account =
             event_details.GetCurrentState().primary_account;
         base::UmaHistogramExactLinear(
             "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
-            // `!switches::IsAvatarSyncPromoFeatureEnabled()` assumes that
-            // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled. For
-            // simplicity of component dependency we avoid doing the check here.
-            !switches::IsAvatarSyncPromoFeatureEnabled()
-                ? signin_prefs.GetHistorySyncPromoIdentityPillShownCount(
-                      account.gaia)
-                : signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia),
+            signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia),
             // Arbitrary number that is higher than the possible show count that
             // the promo can reach
             // (`user_education::features::GetNewBadgeShowCount()`: 10).
