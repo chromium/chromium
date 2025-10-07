@@ -146,6 +146,81 @@ public any sort of class MyClass {{
     self.assertEqual('my.java.package', package)
     self.assertEqual('MyClass', class_name)
 
+  def testParseStringsWithConditionallyDefinedValues(self):
+    test_data = """
+#if BUILDFLAG(IS_CHROMEOS)
+  const char kMyTestString1[] = "test-string-1";
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  const char kMyTestString1[] = "test-string-1";
+#endif
+#if BUILDFLAG(IS_WIN)
+  const char kMyTestString1[] = "test-string-1";
+#endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  const char kMyTestString2[] = "test-string-2";
+#if BUILDFLAG(IS_POSIX)
+  const char kMyTestString3[] = "test-string-3";
+#endif
+#endif
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  const char kMyTestString4[] = "test-string-4";
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+  const char kMyTestString5[] = "test-string-5";
+#endif
+
+#if !BUILDFLAG(IS_WIN)
+  const char kMyTestString6[] = "test-string-6";
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  const char kMyTestString7[] = "test-string-7";
+#else
+  const char kMyTestString8[] = "test-string-8";
+#endif
+#if !BUILDFLAG(IS_POSIX)
+  const char kMyTestString9[] = "test-string-9";
+#endif
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  const char kMyTestString10[] = "test-string-10";
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
+  const char kMyTestString11[] = "test-string-11";
+#else
+  const char kMyTestString12[] = "test-string-12";
+#endif
+#endif
+
+#if !BUILDFLAG(IS_WIN)
+  const char kMyTestString13[] = "test-string-13";
+#else
+  const char kMyTestString14[] = "test-string-14";
+#endif
+
+};
+    """.split('\n')
+    string_file_parser = java_cpp_utils.CppConstantParser(
+        java_cpp_strings.StringParserDelegate(), test_data)
+    strings = string_file_parser.Parse()
+    self.assertEqual(8, len(strings))
+    self.assertEqual('MY_TEST_STRING1', strings[0].name)
+    self.assertEqual('"test-string-1"', strings[0].value)
+    self.assertEqual('MY_TEST_STRING4', strings[1].name)
+    self.assertEqual('"test-string-4"', strings[1].value)
+    self.assertEqual('MY_TEST_STRING5', strings[2].name)
+    self.assertEqual('"test-string-5"', strings[2].value)
+    self.assertEqual('MY_TEST_STRING6', strings[3].name)
+    self.assertEqual('"test-string-6"', strings[3].value)
+    self.assertEqual('MY_TEST_STRING8', strings[4].name)
+    self.assertEqual('"test-string-8"', strings[4].value)
+    self.assertEqual('MY_TEST_STRING10', strings[5].name)
+    self.assertEqual('"test-string-10"', strings[5].value)
+    self.assertEqual('MY_TEST_STRING11', strings[6].name)
+    self.assertEqual('"test-string-11"', strings[6].value)
 
 if __name__ == '__main__':
   unittest.main()

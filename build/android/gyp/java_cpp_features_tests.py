@@ -173,11 +173,8 @@ BASE_FEATURE(kCommentsInFeatureDefinition,
     self.assertEqual('COMMENTS_IN_FEATURE_DEFINITION', features[5].name)
     self.assertEqual('"CommentsInFeatureDefinition"', features[5].value)
 
-  def testNotYetSupported(self):
-    # Negative test for cases we don't yet support, to ensure we don't misparse
-    # these until we intentionally add proper support.
+  def testNameDependsOnOs(self):
     test_data = """
-// Not currently supported: name depends on C++ directive
 BASE_FEATURE(kNameDependsOnOs,
 #if BUILDFLAG(IS_ANDROID)
     "MaybeName1",
@@ -185,24 +182,13 @@ BASE_FEATURE(kNameDependsOnOs,
     "MaybeName2",
 #endif
     base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Not currently supported: feature named with a constant instead of literal
-BASE_FEATURE(kNamedAfterConstant, kNamedStringConstant,
-             base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Not currently supported: 2-arg macro name depends on C++ directive
-BASE_FEATURE(
-#if BUILDFLAG(IS_ANDROID)
-    kMyAndroidFeature,
-#else
-    kMyDesktopFeature,
-#endif
-    base::FEATURE_DISABLED_BY_DEFAULT);
 """.split('\n')
     feature_file_parser = java_cpp_utils.CppConstantParser(
         java_cpp_features.FeatureParserDelegate(), test_data)
     features = feature_file_parser.Parse()
-    self.assertEqual(0, len(features))
+    self.assertEqual(1, len(features))
+    self.assertEqual('NAME_DEPENDS_ON_OS', features[0].name)
+    self.assertEqual('"MaybeName1"', features[0].value)
 
   def testTreatWebViewLikeOneWord(self):
     test_data = """
