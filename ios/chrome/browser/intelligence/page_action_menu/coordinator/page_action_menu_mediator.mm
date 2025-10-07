@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
@@ -142,10 +143,11 @@ const CGFloat kFeatureRowIconSize = 20;
           _webState->GetStateForPermission(web::PermissionMicrophone);
       return state == web::PermissionStateAllowed;
     }
-    case PageActionMenuPopupBlocker:
-      // TODO(crbug.com/447143165): Implement popup blocker permission
-      // availability check.
-      return NO;
+    case PageActionMenuPopupBlocker: {
+      BlockedPopupTabHelper* helper =
+          BlockedPopupTabHelper::GetOrCreateForWebState(_webState);
+      return helper && helper->GetBlockedPopupCount() > 0;
+    }
   }
 }
 
@@ -170,8 +172,12 @@ const CGFloat kFeatureRowIconSize = 20;
 }
 
 - (NSInteger)blockedPopupCount {
-  // TODO(crbug.com/447143165): Return actual blocked popup count.
-  return 2;
+  if (!_webState) {
+    return 0;
+  }
+  BlockedPopupTabHelper* helper =
+      BlockedPopupTabHelper::GetOrCreateForWebState(_webState);
+  return helper ? helper->GetBlockedPopupCount() : 0;
 }
 
 - (NSString*)currentSiteDomain {

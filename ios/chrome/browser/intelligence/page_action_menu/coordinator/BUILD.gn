@@ -39,6 +39,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/translate/model",
+    "//ios/chrome/browser/web/model",
     "//ios/web/public",
     "//ios/web/public/permissions",
   ]

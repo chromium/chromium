@@ -4,4 +4,5 @@ include_rules = [
   "+ios/chrome/browser/reader_mode",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/translate/model",
+  "+ios/chrome/browser/web/model",
 ]
