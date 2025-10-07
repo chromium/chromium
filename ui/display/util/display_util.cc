@@ -343,12 +343,12 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     gfx::ColorSpace hdr_color_space = gfx::ColorSpace::CreateCustom(
         primary_matrix, gfx::ColorSpace::TransferID::SRGB_HDR);
 
-    display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+    display_color_spaces.SetOutputColorSpaceAndFormat(
         gfx::ContentColorUsage::kHDR, false /* needs_alpha */, hdr_color_space,
-        gfx::BufferFormat::RGBA_1010102);
-    display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+        viz::SinglePlaneFormat::kRGBA_1010102);
+    display_color_spaces.SetOutputColorSpaceAndFormat(
         gfx::ContentColorUsage::kHDR, true /* needs_alpha */, hdr_color_space,
-        gfx::BufferFormat::RGBA_1010102);
+        viz::SinglePlaneFormat::kRGBA_1010102);
     display_color_spaces.SetHDRMaxLuminanceRelative(1.1f);
   }
 
