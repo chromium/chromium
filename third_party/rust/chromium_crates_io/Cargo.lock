@@ -137,6 +137,7 @@ dependencies = [
  "symphonia",
  "syn",
  "temporal_capi",
+ "xml",
  "zip",
 ]
 
@@ -1246,6 +1247,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "either",
 ]
+
+[[package]]
+name = "xml"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "yoke"

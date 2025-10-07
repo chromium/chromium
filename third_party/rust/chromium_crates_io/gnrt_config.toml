@@ -586,6 +586,12 @@ extra_kv = { allow_unsafe = false }
 [crate.writeable.extra_kv]
 allow_unsafe = true
 
+[crate.xml]
+license_files = [ "LICENSE" ]
+
+[crate.xml.extra_kv]
+allow_unsafe = false
+
 [crate.yoke.extra_kv]
 allow_unsafe = true
 

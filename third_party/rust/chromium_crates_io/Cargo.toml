@@ -37,6 +37,7 @@ serde = "1.0.219"
 skrifa = "0.37.0"
 small_ctor = "0.1"
 static_assertions = "1"
+xml = "1.0.0"
 
 [dependencies.bytemuck]
 version = "1"
