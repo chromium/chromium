@@ -385,8 +385,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
 
     This metric logs the status of the request, sliced by request source.
   </summary>
@@ -400,13 +400,13 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
 
-    This metric logs whether the response contained a &quot;is_eligible&quot;
-    field set to true. If the field is missing or false, this metric will log
-    false. If the response fails (e.g. server is down or response is poorly
-    formatted), this metric will not be logged.
+    This metric is logged only when the server response changes compared to the
+    previous value (e.g., the value of the &quot;is_eligible&quot; field differs
+    from the last logged response). If the response fails (e.g. server is down
+    or response is poorly formatted), this metric will not be logged.
   </summary>
 </histogram>
 
@@ -418,14 +418,32 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
 
     This metric is logged only when the server response changes compared to the
     previous value (e.g., the value of the &quot;is_pdf_upload_eligible&quot;
-    field differs from the last logged response). If the field is missing or
-    false, this metric will log false. If the response fails (e.g. server is
-    down or response is poorly formatted), this metric will not be logged.
+    field differs from the last logged response). If the response fails (e.g.
+    server is down or response is poorly formatted), this metric will not be
+    logged.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponseChange.session_index"
+    units="index" expires_after="2026-08-05">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
+
+    This metric is logged only when the server response changes compared to the
+    previous value (e.g., the value of the &quot;session_index&quot; field
+    differs from the last logged response). If the response fails (e.g. server
+    is down or response is poorly formatted), this metric will not be logged.
   </summary>
 </histogram>
 
@@ -436,8 +454,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
 
     This metric logs the HTTP response code, sliced by request source.
   </summary>
@@ -451,8 +469,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
 
     This metric logs the source of the eligibility response when the service is
     queried by its clients for the server eligibility status. It helps determine
@@ -469,8 +487,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
 
     This metric logs whether the response contained a &quot;is_eligible&quot;
     field set to true, sliced by request source. If the field is missing or
@@ -488,11 +506,31 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
 
     This metric logs whether the response contained a
     &quot;is_pdf_upload_eligible&quot; field set to true, sliced by request
+    source. If the field is missing or false, this metric will log false. If the
+    response fails (e.g. server is down or response is poorly formatted), this
+    metric will not be logged.
+  </summary>
+  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
+</histogram>
+
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponse{RequestSource}.session_index"
+    units="index" expires_after="2026-08-05">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
+
+    This metric logs the selected session index (index of the account in the
+    cookie jar selected by the server for authentication), sliced by request
     source. If the field is missing or false, this metric will log false. If the
     response fails (e.g. server is down or response is poorly formatted), this
     metric will not be logged.

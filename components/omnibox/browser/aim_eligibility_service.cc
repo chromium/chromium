@@ -501,6 +501,10 @@ void AimEligibilityService::LogEligibilityResponse(
   base::UmaHistogramBoolean(
       base::StrCat({sliced_prefix, ".is_pdf_upload_eligible"}),
       most_recent_response_.is_pdf_upload_eligible());
+  base::UmaHistogramSparse(base::StrCat({prefix, ".session_index"}),
+                           most_recent_response_.session_index());
+  base::UmaHistogramSparse(base::StrCat({sliced_prefix, ".session_index"}),
+                           most_recent_response_.session_index());
 }
 
 void AimEligibilityService::LogEligibilityResponseChange() const {
@@ -518,4 +522,7 @@ void AimEligibilityService::LogEligibilityResponseChange() const {
   base::UmaHistogramBoolean(base::StrCat({prefix, ".is_pdf_upload_eligible"}),
                             most_recent_response_.is_pdf_upload_eligible() !=
                                 prefs_response.is_pdf_upload_eligible());
+  base::UmaHistogramBoolean(
+      base::StrCat({prefix, ".session_index"}),
+      most_recent_response_.session_index() != prefs_response.session_index());
 }
