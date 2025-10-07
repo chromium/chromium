@@ -95,24 +95,14 @@ void DisplayColorSpaces::SetOutputBufferFormats(
   }
 }
 
-void DisplayColorSpaces::SetOutputColorSpaceAndBufferFormat(
-    ContentColorUsage color_usage,
-    bool needs_alpha,
-    const gfx::ColorSpace& color_space,
-    gfx::BufferFormat buffer_format) {
-  size_t i = GetIndex(color_usage, needs_alpha);
-  color_spaces_[i] = color_space;
-  buffer_formats_[i] = buffer_format;
-}
-
 void DisplayColorSpaces::SetOutputColorSpaceAndFormat(
     ContentColorUsage color_usage,
     bool needs_alpha,
     const gfx::ColorSpace& color_space,
     viz::SharedImageFormat format) {
-  SetOutputColorSpaceAndBufferFormat(
-      color_usage, needs_alpha, color_space,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format));
+  size_t i = GetIndex(color_usage, needs_alpha);
+  color_spaces_[i] = color_space;
+  buffer_formats_[i] = viz::SinglePlaneSharedImageFormatToBufferFormat(format);
 }
 
 ColorSpace DisplayColorSpaces::GetOutputColorSpace(

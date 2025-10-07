@@ -63,13 +63,6 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   DisplayColorSpaces(const ColorSpace& color_space,
                      viz::SharedImageFormat format);
 
-  // Set the color space and buffer format for the final output surface when the
-  // specified content is being displayed.
-  void SetOutputColorSpaceAndBufferFormat(ContentColorUsage color_usage,
-                                          bool needs_alpha,
-                                          const gfx::ColorSpace& color_space,
-                                          gfx::BufferFormat buffer_format);
-
   // Set the color space and SharedImageFormat for the final output surface when
   // the specified content is being displayed.
   void SetOutputColorSpaceAndFormat(ContentColorUsage color_usage,
