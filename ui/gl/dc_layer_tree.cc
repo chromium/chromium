@@ -1394,7 +1394,11 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     }
   }
 
-  if (primary_plane_surface_ && !did_update_primary_plane_damage) {
+  if (primary_plane_surface_ && primary_plane_surface_serial_ &&
+      !did_update_primary_plane_damage) {
+    // We need to commit the visual tree after `SetTexture`. We expect the
+    // primary plane overlay to be removed from the visual tree this frame,
+    // which will cause commit to happen.
     DVLOG(1) << "Reset primary_plane_surface_ damage.";
     primary_plane_surface_->SetTexture(nullptr);
     primary_plane_surface_serial_ = 0;
