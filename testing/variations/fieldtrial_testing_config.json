@@ -9582,6 +9582,44 @@
             ]
         }
     ],
+    "EmitPerScrollJankV1MetricAtEndOfScroll": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EmitPerScrollJankV1MetricAtEndOfScroll"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EmitPerScrollJankV4MetricAtEndOfScroll": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EmitPerScrollJankV4MetricAtEndOfScroll"
+                    ]
+                }
+            ]
+        }
+    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [
