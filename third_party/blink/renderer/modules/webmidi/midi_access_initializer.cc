@@ -36,7 +36,6 @@ MIDIAccessInitializer::MIDIAccessInitializer(ScriptState* script_state,
       permission_service_(ExecutionContext::From(script_state)) {}
 
 ScriptPromise<MIDIAccess> MIDIAccessInitializer::Start(LocalDOMWindow* window) {
-  self_keep_alive_ = this;
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       window->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -142,12 +141,15 @@ void MIDIAccessInitializer::OnPermissionRequestResult(
     mojom::blink::PermissionStatus status) {
   permission_service_.reset();
   if (status == mojom::blink::PermissionStatus::GRANTED) {
+    // After `OnPermissionRequestResult` returns there is nothing retaining the
+    // object.  Use `self_keep_alive_` to prevent it from being garbage
+    // collected before the promise is resolved.  See crbug.com/447189642
+    self_keep_alive_ = this;
     StartSession();
   } else {
     resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Permission to use Web MIDI API was not granted.");
-    self_keep_alive_.Clear();
   }
 }
 
