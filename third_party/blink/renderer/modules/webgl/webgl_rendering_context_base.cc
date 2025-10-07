@@ -1861,33 +1861,12 @@ bool WebGLRenderingContextBase::
     return false;
   }
 
-  auto format = GetSharedImageFormat();
-
-  bool using_webgl_image_chromium =
-      SharedGpuContext::MaySupportImageChromium() &&
-      (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
-       base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium));
-  bool using_swap_chain =
-      GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
-  if (!using_swap_chain && !using_webgl_image_chromium) {
+  auto* drawing_buffer = GetDrawingBuffer();
+  if (!drawing_buffer) {
     return false;
   }
 
-  const auto& shared_image_capabilities =
-      context_provider_wrapper->ContextProvider()
-          .SharedImageInterface()
-          ->GetCapabilities();
-
-  bool shared_image_format_supported =
-      gpu::IsFormatSupportedForSIWithNativeBuffer(format, capabilities);
-
-  // Either swap_chain or shared image should be supported for this be used.
-  if (!shared_image_capabilities.shared_image_swap_chain &&
-      !shared_image_format_supported) {
-    return false;
-  }
-
-  return true;
+  return drawing_buffer->SupportsConcurrentReadWrite();
 }
 
 void WebGLRenderingContextBase::PageVisibilityChanged() {

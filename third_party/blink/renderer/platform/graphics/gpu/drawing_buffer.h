@@ -312,6 +312,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool UsingSwapChain() const { return using_swap_chain_; }
 
+  // Returns true if the drawing buffer supports being concurrently written to
+  // and read from.
+  bool SupportsConcurrentReadWrite();
+
   // Keep track of low latency buffer status.
   bool low_latency_enabled() const { return low_latency_enabled_; }
   void set_low_latency_enabled(bool low_latency_enabled) {

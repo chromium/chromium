@@ -1727,6 +1727,15 @@ void DrawingBuffer::RestoreAllState() {
   client_->DrawingBufferClientRestorePixelPackBufferBinding();
 }
 
+bool DrawingBuffer::SupportsConcurrentReadWrite() {
+  if (!back_color_buffer_) {
+    return false;
+  }
+
+  return back_color_buffer_->shared_image->usage().Has(
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+}
+
 bool DrawingBuffer::Multisample() const {
   return anti_aliasing_mode_ != kAntialiasingModeNone;
 }
