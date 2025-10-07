@@ -63,10 +63,11 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
     }
 
     tabs::TabInterface* tab_to_bind =
-        tabs::TabInterface::GetFromContents(new_contents);
-    Profile* new_tab_profile =
-        tab_to_bind->GetBrowserWindowInterface()->GetProfile();
-    if (new_tab_profile != instance_->profile()) {
+        tabs::TabInterface::MaybeGetFromContents(new_contents);
+
+    if (!tab_to_bind ||
+        (tab_to_bind->GetBrowserWindowInterface()->GetProfile() !=
+         instance_->profile())) {
       return;
     }
 
