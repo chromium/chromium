@@ -669,6 +669,14 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     private boolean checkIfTabReparentingParamsExistForIntent(Intent intent) {
+        // This condition should be true iff the Activity has been recreated. If the Activity has
+        // been recreated, we should ignore the Tab ID provided in the Intent -- the Tab will be
+        // restored using a different mechanism triggered by {@link
+        // ChromeActivity#performOnConfigurationChanged}. See crbug.com/448865648.
+        if (mSavedInstanceStateSupplier.get() != null) {
+            return false;
+        }
+
         int tabId = IntentHandler.getTabId(intent);
         AsyncTabParamsManager paramsManager = AsyncTabParamsManagerSingleton.getInstance();
 

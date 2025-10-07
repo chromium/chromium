@@ -241,7 +241,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         // Window bounds adjustments are called here because we probe WebContents' width and height
         // from the native object.
+        // The condition including {@link #getSavedInstanceState} should be false iff the Activity
+        // has been recreated. If the Activity has been recreated, we should ignore the window
+        // features requested in the Intent as they should apply only for the initial launch of the
+        // Activity.
         if (getIntentDataProvider().getUiType() == CustomTabsUiType.POPUP
+                && getSavedInstanceState() == null
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN)) {
             PopupCreator.adjustWindowBoundsToRequested(
