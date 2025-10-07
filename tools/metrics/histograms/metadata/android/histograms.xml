@@ -5366,7 +5366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
-    expires_after="2025-10-19">
+    expires_after="2026-04-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5377,7 +5377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadResponseCode2"
-    enum="SurveyDownloadResponseCodes2" expires_after="2026-02-22">
+    enum="SurveyDownloadResponseCodes2" expires_after="2026-04-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5389,7 +5389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.ShowSurveyStatus"
-    enum="SurveyPresentationStatusCode" expires_after="2026-02-22">
+    enum="SurveyPresentationStatusCode" expires_after="2026-04-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -5403,9 +5403,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyCompleted" enum="BooleanCompleted"
-    expires_after="2025-10-19">
+    expires_after="2026-04-19">
   <owner>wenyufu@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Whether a user completed the survey after it was presented. This histogram
@@ -5415,7 +5414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyFilteringResults"
-    enum="SurveyFilteringResult" expires_after="2026-03-01">
+    enum="SurveyFilteringResult" expires_after="2026-04-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
