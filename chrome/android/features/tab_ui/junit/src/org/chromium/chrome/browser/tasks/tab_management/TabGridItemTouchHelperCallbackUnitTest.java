@@ -1076,6 +1076,48 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void onHoverAndDropPinnedTabOverArchivalCard() {
+        setupItemTouchHelperCallback(false);
+        addArchivedMessageCard();
+        mModel.get(POSITION1).model.set(IS_PINNED, true);
+
+        AtomicInteger recordedTabId = new AtomicInteger(TabModel.INVALID_TAB_INDEX);
+
+        mItemTouchHelperCallback.setOnDropOnArchivalMessageCardEventListener(recordedTabId::set);
+        mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Pretend a drag over the archived message card has started.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                4,
+                8,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+
+        // Return to original position.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                0,
+                0,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
     public void onHoverOverArchivalCard_sharedTabGroup() {
         when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);
         when(mTab1.getTabGroupId()).thenReturn(Token.createRandom());

@@ -253,17 +253,18 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
         }
 
+        @TabId
         int currentTabId =
                 assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder).model)
                         .get(TabProperties.TAB_ID);
 
-        if (isArchivedMessageCard(toViewHolder)) {
+        PropertyModel model =
+                assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder).model);
+        if (!isPinnedRegularTab(fromViewHolder) && isArchivedMessageCard(toViewHolder)) {
             return true;
         }
 
-        int destinationTabId =
-                assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder).model)
-                        .get(TabProperties.TAB_ID);
+        @TabId int destinationTabId = model.get(TabProperties.TAB_ID);
         int distance = toViewHolder.getAdapterPosition() - fromViewHolder.getAdapterPosition();
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         TabModel tabModel = filter.getTabModel();
@@ -648,7 +649,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         if (!isArchivedMessageCard && hoveredOnArchivedMessageCard) {
             mModel.updateHoveredCardForHover(mPreviousArchivedMessageCardIndex, false);
             mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
-        } else if (isArchivedMessageCard && !hoveredOnArchivedMessageCard) {
+        } else if (isArchivedMessageCard
+                && !hoveredOnArchivedMessageCard
+                && !isPinnedRegularTab(selectedViewHolder)) {
             mModel.updateHoveredCardForHover(mHoveredTabIndex, true);
             mPreviousArchivedMessageCardIndex = mHoveredTabIndex;
         }
@@ -690,23 +693,26 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
 
         PropertyModel selectedModel = selectedViewHolder.model;
         assumeNonNull(selectedModel);
-        if (selectedModel.containsKey(TabProperties.TAB_ID)
-                && canDropOnArchivalMessage(selectedViewHolder)
-                && mOnDropOnArchivalMessageCardEventListener != null) {
-            RecyclerView.ViewHolder archivalMessageViewHolder =
-                    recyclerView.findViewHolderForAdapterPosition(
-                            mPreviousArchivedMessageCardIndex);
-            if (isArchivedMessageCard(archivalMessageViewHolder)) {
-                mModel.updateHoveredCardForHover(mPreviousArchivedMessageCardIndex, false);
-            }
-            mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
 
-            @TabId int tabId = selectedModel.get(TabProperties.TAB_ID);
-            mOnDropOnArchivalMessageCardEventListener.onDropTab(tabId);
-
-            View selectedItemView = selectedViewHolder.itemView;
-            maybeRemoveRecyclerViewChild(recyclerView, selectedItemView);
+        if (!selectedModel.containsKey(TabProperties.TAB_ID)
+                || isPinnedRegularTab(selectedViewHolder)
+                || !canDropOnArchivalMessage(selectedViewHolder)
+                || mOnDropOnArchivalMessageCardEventListener == null) {
+            return;
         }
+
+        RecyclerView.ViewHolder archivalMessageViewHolder =
+                recyclerView.findViewHolderForAdapterPosition(mPreviousArchivedMessageCardIndex);
+        if (isArchivedMessageCard(archivalMessageViewHolder)) {
+            mModel.updateHoveredCardForHover(mPreviousArchivedMessageCardIndex, false);
+        }
+        mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
+
+        @TabId int tabId = selectedModel.get(TabProperties.TAB_ID);
+        mOnDropOnArchivalMessageCardEventListener.onDropTab(tabId);
+
+        View selectedItemView = selectedViewHolder.itemView;
+        maybeRemoveRecyclerViewChild(recyclerView, selectedItemView);
     }
 
     private void maybeRemoveRecyclerViewChild(RecyclerView recyclerView, View view) {
