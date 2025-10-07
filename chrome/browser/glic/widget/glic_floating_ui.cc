@@ -4,11 +4,14 @@
 
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
+#include "chrome/browser/glic/widget/glic_window_animator.h"
 
 namespace {
 
@@ -36,6 +39,10 @@ const mojom::PanelState& GlicFloatingUi::GetPanelState() const {
   return panel_state_;
 }
 
+GlicWindowAnimator* GlicFloatingUi::window_animator() {
+  return glic_window_animator_.get();
+}
+
 GlicWidget* GlicFloatingUi::GetGlicWidget() const {
   return glic_widget_.get();
 }
@@ -58,13 +65,25 @@ void GlicFloatingUi::CreateAndSetupWidget() {
   GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
   GetGlicWidget()->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
+
+  glic_window_animator_ = std::make_unique<GlicWindowAnimator>(
+      glic_widget_->GetWeakPtr(), base::DoNothing());
 }
 
 void GlicFloatingUi::Resize(const gfx::Size& size,
                             base::TimeDelta duration,
                             base::OnceClosure callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(callback));
+  glic_size_ = size;
+
+  // TODO: Don't animate while the user is manually resizing the widget.
+  if (glic_window_animator_ && IsShowing()) {
+    glic_window_animator_->AnimateSize(
+        GlicWidget::GetLastRequestedSizeClamped(GetGlicWidget(), glic_size_),
+        duration, std::move(callback));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+  }
 }
 
 void GlicFloatingUi::SetDraggableAreas(
@@ -120,6 +139,7 @@ void GlicFloatingUi::Show() {
 }
 
 void GlicFloatingUi::Close() {
+  glic_window_animator_.reset();
   glic_widget_.reset();
   delegate_->WillCloseFor(/*tab=*/nullptr);
 }

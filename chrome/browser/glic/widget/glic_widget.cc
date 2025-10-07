@@ -38,6 +38,7 @@ namespace glic {
 namespace {
 
 constexpr float kGlicWidgetCornerRadius = 12;
+constexpr int kMaxWidgetSize = 16'384;
 
 // For resizeable windows, there may be an invisible border which affects the
 // widget size. Given a target rect, this method provides the outsets which
@@ -125,6 +126,26 @@ GlicWidget::~GlicWidget() = default;
 gfx::Size GlicWidget::GetInitialSize() {
   return {features::kGlicInitialWidth.Get(),
           features::kGlicInitialHeight.Get()};
+}
+
+// static
+gfx::Size GlicWidget::GetLastRequestedSizeClamped(
+    const GlicWidget* glic_widget,
+    std::optional<gfx::Size> glic_size) {
+  gfx::Size min = GlicWidget::GetInitialSize();
+  if (glic_widget) {
+    gfx::Size widget_min = glic_widget->GetMinimumSize();
+    if (!widget_min.IsEmpty()) {
+      min = widget_min;
+    }
+  }
+
+  constexpr gfx::Size max(kMaxWidgetSize, kMaxWidgetSize);
+  gfx::Size result = glic_size.value_or(min);
+
+  result.SetToMax(min);
+  result.SetToMin(max);
+  return result;
 }
 
 std::unique_ptr<GlicWidget> GlicWidget::Create(

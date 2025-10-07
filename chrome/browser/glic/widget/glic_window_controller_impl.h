@@ -268,11 +268,6 @@ class GlicWindowControllerImpl
   bool IsBrowserOccludedAtPoint(BrowserWindowInterface* browser,
                                 gfx::Point point);
 
-  // Return the last size Resize() was called with, or the default initial size
-  // if Resize() hasn't been called. The return value is clamped to fit between
-  // the minimum and maximum sizes.
-  gfx::Size GetLastRequestedSizeClamped() const;
-
   // Possibly adjusts the size of the window appropriate for the current
   // display workspace, but only if it's different than the current target size.
   void MaybeAdjustSizeForDisplay(bool animate);

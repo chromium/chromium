@@ -90,7 +90,6 @@ namespace {
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kInitialPositionBuffer = 4;
-constexpr static int kMaxWidgetSize = 16'384;
 constexpr static int kDraggableAreaHeight = 44;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
@@ -808,7 +807,8 @@ void GlicWindowControllerImpl::SetGlicWindowToFloatingMode(bool floating) {
 }
 
 gfx::Rect GlicWindowControllerImpl::GetInitialBounds(Browser* browser) {
-  gfx::Size target_size = GetLastRequestedSizeClamped();
+  gfx::Size target_size =
+      GlicWidget::GetLastRequestedSizeClamped(GetGlicWidget(), glic_size_);
 
   // Reset previous position if it results in an invalid location.
   if (previous_position_.has_value() &&
@@ -1066,8 +1066,9 @@ void GlicWindowControllerImpl::Resize(const gfx::Size& size,
   // animation and resize to the final size. Investigate a smoother way to
   // animate this transition.
   if (in_resizable_state && !user_resizing_) {
-    glic_window_animator_->AnimateSize(GetLastRequestedSizeClamped(), duration,
-                                       std::move(callback));
+    glic_window_animator_->AnimateSize(
+        GlicWidget::GetLastRequestedSizeClamped(GetGlicWidget(), glic_size_),
+        duration, std::move(callback));
   } else {
     // If the glic window is closed, or the widget isn't ready (e.g. because
     // it's currently still animating closed) immediately post the callback.
@@ -1552,28 +1553,12 @@ bool GlicWindowControllerImpl::IsBrowserOccludedAtPoint(
   return false;
 }
 
-gfx::Size GlicWindowControllerImpl::GetLastRequestedSizeClamped() const {
-  gfx::Size min = GlicWidget::GetInitialSize();
-  if (IsDetached()) {
-    gfx::Size widget_min = GetGlicWidget()->GetMinimumSize();
-    if (!widget_min.IsEmpty()) {
-      min = widget_min;
-    }
-  }
-
-  gfx::Size max(kMaxWidgetSize, kMaxWidgetSize);
-  gfx::Size result = glic_size_.value_or(min);
-
-  result.SetToMax(min);
-  result.SetToMin(max);
-  return result;
-}
-
 void GlicWindowControllerImpl::MaybeAdjustSizeForDisplay(bool animate) {
   if (!IsDetached()) {
     return;
   }
-  const auto target_size = GetLastRequestedSizeClamped();
+  const auto target_size =
+      GlicWidget::GetLastRequestedSizeClamped(GetGlicWidget(), glic_size_);
   if (target_size != glic_window_animator_->GetCurrentTargetBounds().size()) {
     glic_window_animator_->AnimateSize(
         target_size, animate ? kAnimationDuration : base::Milliseconds(0),

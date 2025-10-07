@@ -14,6 +14,7 @@
 
 namespace glic {
 
+class GlicWindowAnimator;
 class GlicWidget;
 class GlicView;
 
@@ -47,6 +48,8 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void ClosePanel() override;
 
+  GlicWindowAnimator* window_animator();
+
  private:
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
@@ -57,7 +60,9 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   // class WindowEventObserver;
   // std::unique_ptr<WindowEventObserver> window_event_observer_;
 
+  std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
   std::unique_ptr<GlicWidget> glic_widget_;
+  std::optional<gfx::Size> glic_size_;
   mojom::PanelState panel_state_;
 
   raw_ptr<Profile> profile_;
