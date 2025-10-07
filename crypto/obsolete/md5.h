@@ -33,7 +33,7 @@ crypto::obsolete::Md5 MakeMd5HasherForPasswordRequirementsSpec();
 }
 
 namespace blink {
-uint32_t MD5Hash32ForBackgroundTracingHelper(std::string_view string);
+uint32_t MD5Hash32ForBackgroundTracingHelper(std::string_view str);
 }
 
 namespace bookmarks {
@@ -74,6 +74,10 @@ crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
 
 namespace remoting {
 std::string GetHostHash();
+}
+
+namespace shell_util {
+std::string Md5AsBase32ForUserSpecificRegistrySuffix(std::string_view str);
 }
 
 namespace trusted_vault {
@@ -131,7 +135,9 @@ class CRYPTO_EXPORT Md5 {
       base::span<const uint8_t> pixels);
   friend std::string remoting::GetHostHash();
   friend uint32_t blink::MD5Hash32ForBackgroundTracingHelper(
-      std::string_view string);
+      std::string_view str);
+  friend std::string shell_util::Md5AsBase32ForUserSpecificRegistrySuffix(
+      std::string_view str);
 
   // TODO(b/298652869): get rid of these.
   friend Md5 ash::printing::MakeMd5HasherForPrinterConfigurer();
