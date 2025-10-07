@@ -821,7 +821,8 @@ class AppNotificationsArcNotificationTest
 
     ash::ArcNotificationsHostInitializer::Observer* observer =
         apps::ArcAppsFactory::GetInstance()->GetForProfile(profile());
-    observer->OnSetArcNotificationsInstance(arc_notification_manager_.get());
+    observer->OnArcNotificationManagerInitialized(
+        arc_notification_manager_.get());
   }
 
   void TearDownOnMainThread() override {

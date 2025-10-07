@@ -17,8 +17,8 @@ class ASH_PUBLIC_EXPORT ArcNotificationsHostInitializer {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Invoked when ARC notifications instance is ready.
-    virtual void OnSetArcNotificationsInstance(
+    // Invoked when ArcNotificationManager is initialized.
+    virtual void OnArcNotificationManagerInitialized(
         ArcNotificationManagerBase* arc_notification_manager) = 0;
   };
 

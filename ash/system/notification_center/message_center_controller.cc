@@ -151,7 +151,8 @@ void MessageCenterController::SetArcNotificationManagerInstance(
       message_center::MessageCenter::Get());
 
   for (auto& observer : observers_) {
-    observer.OnSetArcNotificationsInstance(arc_notification_manager_.get());
+    observer.OnArcNotificationManagerInitialized(
+        arc_notification_manager_.get());
   }
 }
 

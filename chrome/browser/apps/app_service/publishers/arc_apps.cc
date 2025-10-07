@@ -1334,7 +1334,7 @@ void ArcApps::OnArcSupportedLinksChanged(
   }
 }
 
-void ArcApps::OnSetArcNotificationsInstance(
+void ArcApps::OnArcNotificationManagerInitialized(
     ash::ArcNotificationManagerBase* arc_notification_manager) {
   DCHECK(arc_notification_manager);
   notification_observation_.Observe(arc_notification_manager);
