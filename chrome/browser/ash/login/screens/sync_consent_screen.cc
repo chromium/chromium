@@ -261,6 +261,10 @@ void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
   UpdateScreen(*context());
 }
 
+void SyncConsentScreen::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+}
+
 void SyncConsentScreen::MaybeEnableSyncForSkip() {
   // "sync everything" toggle is disabled during SyncService creation. We need
   // to turn it on if sync service needs to be enabled.

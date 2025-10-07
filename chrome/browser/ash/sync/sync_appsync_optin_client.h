@@ -54,6 +54,7 @@ class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
 
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -91,4 +92,4 @@ class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
 };
 }  // namespace ash
 
-#endif  //  CHROME_BROWSER_ASH_SYNC_SYNC_APPSYNC_OPTIN_CLIENT_H_
+#endif  // CHROME_BROWSER_ASH_SYNC_SYNC_APPSYNC_OPTIN_CLIENT_H_

@@ -105,6 +105,7 @@ class SyncConsentScreen : public BaseScreen,
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Reacts to user action on sync.
   void OnContinue(const bool opted_in,
