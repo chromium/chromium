@@ -290,7 +290,7 @@
 <translation id="4677944499843243528">Sembla que un altre procés de Chromium (<ph name="PROCESS_ID" />) està fent servir el perfil en un altre ordinador (<ph name="HOST_NAME" />). Chromium ha bloquejat el perfil perquè no es malmeti. Si esteu segur que no hi ha cap altre procés que utilitzi el perfil, podeu desbloquejar-lo i tornar a iniciar Chromium.</translation>
 <translation id="4680828127924988555">Cancel·la la instal·lació</translation>
 <translation id="469259825538636168">Algunes dades de Chromium encara no s'han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
-<translation id="4708193446201257833">Amb la sessió iniciada, pots utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chromium. Fes servir <ph name="SHORTCUT" /> per canviar la configuració dels serveis de Google.</translation>
+<translation id="4708193446201257833">Mentre tinguis la sessió iniciada, pots utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chromium. Fes servir <ph name="SHORTCUT" /> per canviar la configuració dels serveis de Google.</translation>
 <translation id="4708774505295300557">Algú ha iniciat anteriorment la sessió a Chromium en aquest ordinador com a <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuari de Chromium per mantenir la informació separada.</translation>
 <translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
 <translation id="4746050847053251315">Vols sortir de Chromium igualment?</translation>
@@ -427,7 +427,7 @@
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
 <translation id="6510925080656968729">Desinstal·la Chromium</translation>
 <translation id="651535675648445253">Dreceres obertes a Chromium</translation>
-<translation id="6524389414524528185">Amb la sessió iniciada, pots utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chromium. Pots canviar-ho en qualsevol moment a la configuració.</translation>
+<translation id="6524389414524528185">Mentre tinguis la sessió iniciada, pots utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chromium. Pots canviar-ho en qualsevol moment a la configuració.</translation>
 <translation id="6539122709674868420">La teva organització tanca Chromium quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />. Les dades de navegació s'han suprimit. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.</translation>
 <translation id="6542839706527980775">Cada perfil conserva la seva pròpia informació de Chromium, com ara les adreces d'interès, l'historial, les contrasenyes i més</translation>
 <translation id="6563921047760808519">Més informació sobre <ph name="BEGIN_LINK" />com Chromium manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
