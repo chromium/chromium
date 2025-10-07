@@ -8,6 +8,5 @@ android.webkit.WebView focusable
 ++android.widget.GridView role_description='table' collection
 ++++android.view.View focusable interesting name='Grid row'
 ++android.widget.EditText clickable editable_text focusable interesting input_type=1
-++android.widget.GridView role_description='tree grid' clickable collection interesting
-++++android.view.View
-++++++android.view.View focusable interesting name='Treegrid row'
+++android.widget.GridView role_description='tree grid' clickable collection interesting item_count=1 row_count=1
+++++android.view.View focusable interesting name='Treegrid row'

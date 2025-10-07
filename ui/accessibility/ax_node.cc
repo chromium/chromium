@@ -2120,6 +2120,11 @@ std::string AXNode::GetValueForColorWell() const {
 }
 
 bool AXNode::IsIgnored() const {
+  // Row groups are ignored to enable proper column header navigation.
+  if(GetRole() == ax::mojom::Role::kRowGroup) {
+    return true;
+  }
+
   // If the focus has moved, then it could make a previously ignored node
   // unignored or vice versa. We never ignore focused nodes otherwise users of
   // assistive software might be unable to interact with the webpage.

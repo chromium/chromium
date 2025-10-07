@@ -1,1 +1,0 @@
-EVENT_OBJECT_FOCUS on <tfoot#tfoot> role=ROLE_SYSTEM_GROUPING name="tfoot" FOCUSED,FOCUSABLE
