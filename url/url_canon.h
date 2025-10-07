@@ -276,35 +276,31 @@ enum SchemeType {
 
 // Searches for whitespace that should be removed from the middle of URLs, and
 // removes it. Removed whitespace are tabs and newlines, but NOT spaces. Spaces
-// are preserved, which is what most browsers do. A pointer to the output will
-// be returned, and the length of that output will be in |output_len|.
+// are preserved, which is what most browsers do. A string_view pointing to the
+// output will be returned.
 //
 // This should be called before parsing if whitespace removal is desired (which
 // it normally is when you are canonicalizing).
 //
 // If no whitespace is removed, this function will not use the buffer and will
-// return a pointer to the input, to avoid the extra copy. If modification is
-// required, the given |buffer| will be used and the returned pointer will
+// return the input string_view, to avoid the extra copy. If modification is
+// required, the given |buffer| will be used and the returned string_view will
 // point to the beginning of the buffer.
 //
 // Therefore, callers should not use the buffer, since it may actually be empty,
-// use the computed pointer and |*output_len| instead.
+// use the returned string_view instead.
 //
 // If |input| contained both removable whitespace and a raw `<` character,
 // |potentially_dangling_markup| will be set to `true`. Otherwise, it will be
 // left untouched.
 COMPONENT_EXPORT(URL)
-const char* RemoveURLWhitespace(const char* input,
-                                int input_len,
-                                CanonOutputT<char>* buffer,
-                                int* output_len,
-                                bool* potentially_dangling_markup);
+std::string_view RemoveUrlWhitespace(std::string_view input,
+                                     CanonOutputT<char>* buffer,
+                                     bool* potentially_dangling_markup);
 COMPONENT_EXPORT(URL)
-const char16_t* RemoveURLWhitespace(const char16_t* input,
-                                    int input_len,
-                                    CanonOutputT<char16_t>* buffer,
-                                    int* output_len,
-                                    bool* potentially_dangling_markup);
+std::u16string_view RemoveUrlWhitespace(std::u16string_view input,
+                                        CanonOutputT<char16_t>* buffer,
+                                        bool* potentially_dangling_markup);
 
 // IDN ------------------------------------------------------------------------
 

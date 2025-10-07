@@ -234,12 +234,11 @@ bool DoFindAndCompareScheme(const CHAR* str,
   // Before extracting scheme, canonicalize the URL to remove any whitespace.
   // This matches the canonicalization done in DoCanonicalize function.
   STACK_UNINITIALIZED RawCanonOutputT<CHAR> whitespace_buffer;
-  int spec_len;
-  const CHAR* spec =
-      RemoveURLWhitespace(str, str_len, &whitespace_buffer, &spec_len, nullptr);
+  std::basic_string_view<CHAR> spec = RemoveUrlWhitespace(
+      {str, base::checked_cast<size_t>(str_len)}, &whitespace_buffer, nullptr);
 
   Component our_scheme;
-  if (!ExtractScheme(spec, spec_len, &our_scheme)) {
+  if (!ExtractScheme(spec, &our_scheme)) {
     // No scheme.
     if (found_scheme)
       *found_scheme = Component();
@@ -247,7 +246,7 @@ bool DoFindAndCompareScheme(const CHAR* str,
   }
   if (found_scheme)
     *found_scheme = our_scheme;
-  return DoCompareSchemeComponent(spec, our_scheme, compare);
+  return DoCompareSchemeComponent(spec.data(), our_scheme, compare);
 }
 
 template <typename CHAR>
@@ -266,11 +265,8 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   // Possibly this will result in copying to the new buffer.
   STACK_UNINITIALIZED RawCanonOutputT<CHAR> whitespace_buffer;
   if (whitespace_policy == REMOVE_WHITESPACE) {
-    int new_spec_len = 0;
-    const CHAR* new_spec = RemoveURLWhitespace(
-        spec.data(), spec.length(), &whitespace_buffer, &new_spec_len,
-        &output_parsed->potentially_dangling_markup);
-    spec = std::basic_string_view(new_spec, new_spec_len);
+    spec = RemoveUrlWhitespace(spec, &whitespace_buffer,
+                               &output_parsed->potentially_dangling_markup);
   }
 
 #ifdef WIN32
@@ -345,13 +341,9 @@ bool DoResolveRelative(std::string_view base_spec,
   // Remove any whitespace from the middle of the relative URL, possibly
   // copying to the new buffer.
   STACK_UNINITIALIZED RawCanonOutputT<CHAR> whitespace_buffer;
-  int relative_length;
-  // TODO(crbug.com/350788890): RemoveURLWhitespace() should accept
-  // string_views.
-  const CHAR* relative = RemoveURLWhitespace(
-      in_relative.data(), base::checked_cast<int>(in_relative.length()),
-      &whitespace_buffer, &relative_length,
-      &output_parsed->potentially_dangling_markup);
+  std::basic_string_view<CHAR> relative =
+      RemoveUrlWhitespace(in_relative, &whitespace_buffer,
+                          &output_parsed->potentially_dangling_markup);
 
   bool base_is_authority_based = false;
   bool base_is_hierarchical = false;
@@ -369,7 +361,8 @@ bool DoResolveRelative(std::string_view base_spec,
   bool is_relative;
   Component relative_component;
   // TODO(crbug.com/350788890): IsRelativeURL() should accept string_views.
-  if (!IsRelativeURL(base_spec.data(), base_parsed, relative, relative_length,
+  if (!IsRelativeURL(base_spec.data(), base_parsed, relative.data(),
+                     relative.length(),
                      (base_is_hierarchical || is_hierarchical_base),
                      &is_relative, &relative_component)) {
     // Error resolving.
@@ -386,10 +379,10 @@ bool DoResolveRelative(std::string_view base_spec,
     Parsed base_parsed_authority = ParseStandardURL(base_spec);
     if (base_parsed_authority.host.is_nonempty()) {
       STACK_UNINITIALIZED RawCanonOutputT<char> temporary_output;
-      bool did_resolve_succeed =
-          ResolveRelativeURL(base_spec.data(), base_parsed_authority, false,
-                             relative, relative_component, charset_converter,
-                             &temporary_output, output_parsed);
+      bool did_resolve_succeed = ResolveRelativeURL(
+          base_spec.data(), base_parsed_authority, false, relative.data(),
+          relative_component, charset_converter, &temporary_output,
+          output_parsed);
       // The output_parsed is incorrect at this point (because it was built
       // based on base_parsed_authority instead of base_parsed) and needs to be
       // re-created.
@@ -408,14 +401,13 @@ bool DoResolveRelative(std::string_view base_spec,
     // TODO(crbug.com/350788890): ResolveRelativeURL() should accept
     // string_views.
     return ResolveRelativeURL(base_spec.data(), base_parsed, file_base_scheme,
-                              relative, relative_component, charset_converter,
-                              output, output_parsed);
+                              relative.data(), relative_component,
+                              charset_converter, output, output_parsed);
   }
 
   // Not relative, canonicalize the input.
-  return DoCanonicalize(std::basic_string_view<CHAR>(relative, relative_length),
-                        true, DO_NOT_REMOVE_WHITESPACE, charset_converter,
-                        output, output_parsed);
+  return DoCanonicalize(relative, true, DO_NOT_REMOVE_WHITESPACE,
+                        charset_converter, output, output_parsed);
 }
 
 template <typename CHAR>

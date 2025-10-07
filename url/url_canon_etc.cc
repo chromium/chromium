@@ -27,26 +27,27 @@ inline bool IsRemovableURLWhitespace(int ch) {
 // It sucks that we have to do this, since this takes about 13% of the total URL
 // canonicalization time.
 template <typename CHAR>
-const CHAR* DoRemoveURLWhitespace(const CHAR* input,
-                                  int input_len,
-                                  CanonOutputT<CHAR>* buffer,
-                                  int* output_len,
-                                  bool* potentially_dangling_markup) {
+std::basic_string_view<CHAR> DoRemoveUrlWhitespace(
+    std::basic_string_view<CHAR> input,
+    CanonOutputT<CHAR>* buffer,
+    bool* potentially_dangling_markup) {
   // Fast verification that there's nothing that needs removal. This is the 99%
   // case, so we want it to be fast and don't care about impacting the speed
   // when we do find whitespace.
   bool found_whitespace = false;
-  if (sizeof(*input) == 1 && input_len >= kMinimumLengthForSIMD) {
+  if (sizeof(CHAR) == 1 && input.length() >= kMinimumLengthForSIMD) {
     // For large strings, memchr is much faster than any scalar code we can
     // write, even if we need to run it three times. (If this turns out to still
     // be a bottleneck, we could write our own vector code, but given that
     // memchr is so fast, it's unlikely to be relevant.)
-    found_whitespace = UNSAFE_TODO(memchr(input, '\n', input_len)) != nullptr ||
-                       UNSAFE_TODO(memchr(input, '\r', input_len)) != nullptr ||
-                       UNSAFE_TODO(memchr(input, '\t', input_len)) != nullptr;
+    const CHAR* data = input.data();
+    size_t input_len = input.length();
+    found_whitespace = UNSAFE_TODO(memchr(data, '\n', input_len)) != nullptr ||
+                       UNSAFE_TODO(memchr(data, '\r', input_len)) != nullptr ||
+                       UNSAFE_TODO(memchr(data, '\t', input_len)) != nullptr;
   } else {
-    for (int i = 0; i < input_len; i++) {
-      if (!IsRemovableURLWhitespace(UNSAFE_TODO(input[i]))) {
+    for (const CHAR ch : input) {
+      if (!IsRemovableURLWhitespace(ch)) {
         continue;
       }
       found_whitespace = true;
@@ -57,7 +58,6 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
   if (!found_whitespace) {
     // Didn't find any whitespace, we don't need to do anything. We can just
     // return the input as the output.
-    *output_len = input_len;
     return input;
   }
 
@@ -66,24 +66,21 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
   // TODO(mkwst): Ideally, this would use something like `base::StartsWith`, but
   // that turns out to be difficult to do correctly given this function's
   // character type templating.
-  if (input_len > 5 && input[0] == 'd' && UNSAFE_TODO(input[1]) == 'a' &&
-      UNSAFE_TODO(input[2]) == 't' && UNSAFE_TODO(input[3]) == 'a' &&
-      UNSAFE_TODO(input[4]) == ':') {
-    *output_len = input_len;
+  if (input.length() > 5 && input[0] == 'd' && input[1] == 'a' &&
+      input[2] == 't' && input[3] == 'a' && input[4] == ':') {
     return input;
   }
 
   // Remove the whitespace into the new buffer and return it.
-  for (int i = 0; i < input_len; i++) {
-    if (!IsRemovableURLWhitespace(UNSAFE_TODO(input[i]))) {
-      if (potentially_dangling_markup && UNSAFE_TODO(input[i]) == 0x3C) {
+  for (const CHAR ch : input) {
+    if (!IsRemovableURLWhitespace(ch)) {
+      if (potentially_dangling_markup && ch == 0x3C) {
         *potentially_dangling_markup = true;
       }
-      buffer->push_back(UNSAFE_TODO(input[i]));
+      buffer->push_back(ch);
     }
   }
-  *output_len = buffer->length();
-  return buffer->data();
+  return buffer->view();
 }
 
 // Contains the canonical version of each possible input letter in the scheme
@@ -332,22 +329,16 @@ void DoCanonicalizeRef(std::optional<std::basic_string_view<CHAR>> input,
 
 }  // namespace
 
-const char* RemoveURLWhitespace(const char* input,
-                                int input_len,
-                                CanonOutputT<char>* buffer,
-                                int* output_len,
-                                bool* potentially_dangling_markup) {
-  return DoRemoveURLWhitespace(input, input_len, buffer, output_len,
-                               potentially_dangling_markup);
+std::string_view RemoveUrlWhitespace(std::string_view input,
+                                     CanonOutputT<char>* buffer,
+                                     bool* potentially_dangling_markup) {
+  return DoRemoveUrlWhitespace(input, buffer, potentially_dangling_markup);
 }
 
-const char16_t* RemoveURLWhitespace(const char16_t* input,
-                                    int input_len,
-                                    CanonOutputT<char16_t>* buffer,
-                                    int* output_len,
-                                    bool* potentially_dangling_markup) {
-  return DoRemoveURLWhitespace(input, input_len, buffer, output_len,
-                               potentially_dangling_markup);
+std::u16string_view RemoveUrlWhitespace(std::u16string_view input,
+                                        CanonOutputT<char16_t>* buffer,
+                                        bool* potentially_dangling_markup) {
+  return DoRemoveUrlWhitespace(input, buffer, potentially_dangling_markup);
 }
 
 char CanonicalSchemeChar(char16_t ch) {
