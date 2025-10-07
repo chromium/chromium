@@ -86,7 +86,9 @@ public class LocationBarLayout extends ConstraintLayout {
         mUrlActionContainer = findViewById(R.id.url_action_container);
         mMarginSpacer = findViewById(R.id.margin_spacer);
         mMinimumActionContainerWidthPx =
-                context.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
+                context.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size)
+                        - context.getResources()
+                                .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
         mStatusIconAndUrlBarOffset =
                 OmniboxResourceProvider.getToolbarSidePaddingForNtp(context)
                         - OmniboxResourceProvider.getToolbarSidePadding(context);
@@ -474,7 +476,7 @@ public class LocationBarLayout extends ConstraintLayout {
     public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
         // ConstraintLayout doesn't trivially support negative margins. We emulate one here by
         // positioning a spacer view past the end of the layout and constraining the url action
-        // container to start at the end of this view.
+        // container to end at the end of this view.
         mUrlActionContainerEndMargin =
                 useDefaultUrlActionContainerEndMargin
                         ? getResources()
