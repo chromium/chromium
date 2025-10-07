@@ -22,7 +22,6 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     super([
       'getMetricsReporting',
       'setMetricsReportingEnabled',
-      'setBlockAutoplayEnabled',
       'getSecureDnsResolverList',
       'getSecureDnsSetting',
       'isValidConfig',
@@ -57,10 +56,6 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
 
   setMetricsReportingEnabled(enabled: boolean) {
     this.methodCalled('setMetricsReportingEnabled', enabled);
-  }
-
-  setBlockAutoplayEnabled(enabled: boolean) {
-    this.methodCalled('setBlockAutoplayEnabled', enabled);
   }
 
   /**

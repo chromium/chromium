@@ -68,7 +68,6 @@ export interface PrivacyPageBrowserProxy {
 
   // </if>
 
-  setBlockAutoplayEnabled(enabled: boolean): void;
   getSecureDnsResolverList(): Promise<ResolverOption[]>;
   getSecureDnsSetting(): Promise<SecureDnsSetting>;
 
@@ -95,10 +94,6 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
   }
 
   // </if>
-
-  setBlockAutoplayEnabled(enabled: boolean) {
-    chrome.send('setBlockAutoplayEnabled', [enabled]);
-  }
 
   getSecureDnsResolverList() {
     return sendWithPromise('getSecureDnsResolverList');

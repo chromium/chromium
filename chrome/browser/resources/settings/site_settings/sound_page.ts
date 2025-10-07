@@ -9,16 +9,16 @@ import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
-import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import {ContentSettingsTypes} from '../site_settings/constants.js';
 
+import {ContentSettingsTypes} from './constants.js';
+import type {SiteSettingsPrefsBrowserProxy} from './site_settings_prefs_browser_proxy.js';
+import {SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './sound_page.html.js';
 
 interface BlockAutoplayStatus {
@@ -68,8 +68,8 @@ export class SoundPageElement extends SoundPageElementBase {
   declare private blockAutoplayStatus_: BlockAutoplayStatus;
   declare private enableBlockAutoplayContentSetting_: boolean;
 
-  private browserProxy_: PrivacyPageBrowserProxy =
-      PrivacyPageBrowserProxyImpl.getInstance();
+  private browserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();

@@ -460,6 +460,11 @@ export interface SiteSettingsPrefsBrowserProxy {
   fetchBlockAutoplayStatus(): void;
 
   /**
+   * Updates the block autoplay enabled pref when the UI is toggled.
+   */
+  setBlockAutoplayEnabled(enabled: boolean): void;
+
+  /**
    * Clears all the web storage data and cookies for a given site group.
    * @param groupingKey The group to clear data from.
    */
@@ -659,6 +664,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   fetchBlockAutoplayStatus() {
     chrome.send('fetchBlockAutoplayStatus');
+  }
+
+  setBlockAutoplayEnabled(enabled: boolean) {
+    chrome.send('setBlockAutoplayEnabled', [enabled]);
   }
 
   clearSiteGroupDataAndCookies(groupingKey: string) {

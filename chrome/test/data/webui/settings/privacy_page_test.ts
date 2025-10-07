@@ -6,9 +6,9 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrToastElement} from 'chrome://settings/lazy_load.js';
-import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,7 +16,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_HANDLERS,
@@ -67,8 +67,6 @@ suite('PrivacyPage', function() {
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(
         testClearBrowsingDataBrowserProxy);
-    const testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
@@ -603,7 +601,7 @@ suite('PrivacyGuideRow', function() {
 });
 
 suite('PrivacyPageSound', function() {
-  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testSiteSettingsPrefsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let page: SettingsPrivacyPageElement;
 
   function getToggleElement() {
@@ -617,8 +615,9 @@ suite('PrivacyPageSound', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    testSiteSettingsPrefsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(
+        testSiteSettingsPrefsBrowserProxy);
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SOUND);
     page = document.createElement('settings-privacy-page');
@@ -697,8 +696,8 @@ suite('PrivacyPageSound', function() {
 
     // Click on the toggle and wait for the proxy to be called.
     getToggleElement().click();
-    const enabled =
-        await testBrowserProxy.whenCalled('setBlockAutoplayEnabled');
+    const enabled = await testSiteSettingsPrefsBrowserProxy.whenCalled(
+        'setBlockAutoplayEnabled');
     assertFalse(enabled);
   });
 });

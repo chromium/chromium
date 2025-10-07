@@ -78,6 +78,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'getFileSystemGrants',
       'revokeFileSystemGrant',
       'revokeFileSystemGrants',
+      'setBlockAutoplayEnabled',
     ]);
 
 
@@ -255,13 +256,11 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.ignoredProtocols_ = list.slice();
   }
 
-  /** @override */
   setDefaultValueForContentType(contentType: string, defaultValue: string) {
     this.methodCalled(
         'setDefaultValueForContentType', [contentType, defaultValue]);
   }
 
-  /** @override */
   setOriginPermissions(
       origin: string, category: ContentSettingsTypes|null,
       blanketSetting: ContentSetting) {
@@ -285,7 +284,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
         'setOriginPermissions', [origin, category, blanketSetting]);
   }
 
-  /** @override */
   getAllSites() {
     this.methodCalled('getAllSites');
     const contentTypes = this.getCategoryListForTest('https://example.com');
@@ -332,19 +330,16 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     return Promise.resolve(result);
   }
 
-  /** @override */
   getCategoryList(origin: string) {
     this.methodCalled('getCategoryList', origin);
     return Promise.resolve(this.getCategoryListForTest(origin));
   }
 
-  /** @override */
   getFormattedBytes(numBytes: number) {
     this.methodCalled('getFormattedBytes', numBytes);
     return Promise.resolve(`${numBytes} B`);
   }
 
-  /** @override */
   getDefaultValueForContentType(contentType: ContentSettingsTypes) {
     this.methodCalled('getDefaultValueForContentType', contentType);
     const pref = this.prefs_.defaults[contentType];
@@ -352,7 +347,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     return Promise.resolve(pref);
   }
 
-  /** @override */
   getExceptionList(contentType: ContentSettingsTypes) {
     // Defer |methodCalled| call so that |then| callback for the promise
     // returned from this method runs before the one for the promise returned
@@ -378,7 +372,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     return Promise.resolve(pref);
   }
 
-  /** @override */
   getChooserExceptionList(chooserType: ChooserType) {
     // The UI uses the |chooserType| to retrieve the prefs for a chooser
     // permission, however the test stores the permissions with the setting
@@ -419,7 +412,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     return Promise.resolve(pref);
   }
 
-  /** @override */
   isOriginValid(origin: string) {
     this.methodCalled('isOriginValid', origin);
     return Promise.resolve(this.isOriginValid_);
@@ -432,7 +424,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.isOriginValid_ = isValid;
   }
 
-  /** @override */
   isPatternValidForType(pattern: string, category: ContentSettingsTypes) {
     this.methodCalled('isPatternValidForType', [pattern, category]);
     return Promise.resolve({
@@ -448,7 +439,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.isPatternValidForType_ = isValid;
   }
 
-  /** @override */
   resetCategoryPermissionForPattern(
       primaryPattern: string, secondaryPattern: string, contentType: string,
       incognito: boolean) {
@@ -457,14 +447,12 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
         [primaryPattern, secondaryPattern, contentType, incognito]);
   }
 
-  /** @override */
   resetChooserExceptionForSite(
       chooserType: ChooserType, origin: string, exception: Object) {
     this.methodCalled(
         'resetChooserExceptionForSite', [chooserType, origin, exception]);
   }
 
-  /** @override */
   getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
     this.methodCalled('getOriginPermissions', [origin, contentTypes]);
 
@@ -515,7 +503,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     return Promise.resolve(exceptionList);
   }
 
-  /** @override */
   setCategoryPermissionForPattern(
       primaryPattern: string, secondaryPattern: string, contentType: string,
       value: string, incognito: boolean) {
@@ -524,18 +511,15 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
         [primaryPattern, secondaryPattern, contentType, value, incognito]);
   }
 
-  /** @override */
   fetchZoomLevels() {
     webUIListenerCallback('onZoomLevelsChanged', this.zoomList_);
     this.methodCalled('fetchZoomLevels');
   }
 
-  /** @override */
   removeZoomLevel(host: string) {
     this.methodCalled('removeZoomLevel', [host]);
   }
 
-  /** @override */
   observeProtocolHandlers() {
     webUIListenerCallback('setHandlersEnabled', true);
     webUIListenerCallback('setProtocolHandlers', this.protocolHandlers_);
@@ -543,7 +527,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.methodCalled('observeProtocolHandlers');
   }
 
-  /** @override */
   observeAppProtocolHandlers() {
     webUIListenerCallback(
         'setAppAllowedProtocolHandlers', this.appAllowedProtocolHandlers_);
@@ -553,59 +536,52 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.methodCalled('observeAppProtocolHandlers');
   }
 
-  /** @override */
   observeProtocolHandlersEnabledState() {
     webUIListenerCallback('setHandlersEnabled', true);
     this.methodCalled('observeProtocolHandlersEnabledState');
   }
 
-  /** @override */
   setProtocolDefault() {
     this.methodCalled('setProtocolDefault', arguments);
   }
 
-  /** @override */
   removeProtocolHandler() {
     this.methodCalled('removeProtocolHandler', arguments);
   }
 
-  /** @override */
   removeAppAllowedHandler() {
     this.methodCalled('removeAppAllowedHandler', arguments);
   }
 
-  /** @override */
   removeAppDisallowedHandler() {
     this.methodCalled('removeAppDisallowedHandler', arguments);
   }
 
-  /** @override */
   updateIncognitoStatus() {
     this.methodCalled('updateIncognitoStatus', arguments);
   }
 
-  /** @override */
   fetchBlockAutoplayStatus() {
     this.methodCalled('fetchBlockAutoplayStatus');
   }
 
-  /** @override */
+  setBlockAutoplayEnabled(enabled: boolean) {
+    this.methodCalled('setBlockAutoplayEnabled', enabled);
+  }
+
   clearSiteGroupDataAndCookies() {
     this.methodCalled('clearSiteGroupDataAndCookies');
   }
 
-  /** @override */
   clearUnpartitionedOriginDataAndCookies(origin: string) {
     this.methodCalled('clearUnpartitionedOriginDataAndCookies', origin);
   }
 
-  /** @override */
   clearPartitionedOriginDataAndCookies(origin: string, groupingKey: string) {
     this.methodCalled(
         'clearPartitionedOriginDataAndCookies', [origin, groupingKey]);
   }
 
-  /** @override */
   recordAction() {
     this.methodCalled('recordAction');
   }
@@ -614,19 +590,15 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.recentSitePermissions_ = permissions;
   }
 
-  /** @override */
   getRecentSitePermissions() {
     this.methodCalled('getRecentSitePermissions');
     return Promise.resolve(this.recentSitePermissions_);
   }
 
-  /** @override */
   initializeCaptureDevices() {}
 
-  /** @override */
   setPreferredCaptureDevice() {}
 
-  /** @override */
   setProtocolHandlerDefault(value: boolean) {
     this.methodCalled('setProtocolHandlerDefault', value);
   }
@@ -675,7 +647,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.storageAccessExceptionList_ = storageAccessExceptionList;
   }
 
-  /** @override */
   getStorageAccessExceptionList(categorySubtype: ContentSetting):
       Promise<StorageAccessSiteException[]> {
     this.methodCalled('getStorageAccessExceptionList', categorySubtype);
