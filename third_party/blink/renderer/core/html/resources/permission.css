@@ -50,6 +50,7 @@ permission::-internal-permission-text, geolocation::-internal-permission-text {
   white-space:nowrap;
   word-wrap: normal;
   word-spacing: inherit;
+  -webkit-text-security: none !important;
 }
 
 permission::-internal-permission-container, geolocation::-internal-permission-container {

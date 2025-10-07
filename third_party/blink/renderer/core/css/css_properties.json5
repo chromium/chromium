@@ -4923,7 +4923,6 @@
       default_value: "visible",
       typedom_types: ["Keyword"],
       computable: false,
-      valid_for_permission_element: true,
       invalidate: ["layout"],
     },
     {
