@@ -144,6 +144,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bwg_browser_agent_unittest.mm",
+    "bwg_link_opening_handler_unittest.mm",
     "bwg_service_unittest.mm",
     "bwg_session_handler_unittest.mm",
     "bwg_snapshot_utils_unittest.mm",
@@ -183,6 +184,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public/test",
