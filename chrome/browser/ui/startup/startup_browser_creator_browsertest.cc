@@ -2502,13 +2502,20 @@ class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
+  Profile* GetDefaultProfile() {
+    ProfileManager* const profile_manager =
+        g_browser_process->profile_manager();
+    return profile_manager->GetProfile(
+        profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Default")));
+  }
+
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
                        PRE_PRE_LastUsedProfilesWithRealWebApp) {
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   // Simulate a browser restart by creating the profiles in the PRE_PRE part.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
@@ -2534,17 +2541,17 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   SessionStartupPref::SetStartupPref(&profile1, pref1);
   profile1.GetPrefs()->CommitPendingWrite();
 
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref1);
-  browser()->profile()->GetPrefs()->CommitPendingWrite();
+  SessionStartupPref::SetStartupPref(GetDefaultProfile(), pref1);
+  GetDefaultProfile()->GetPrefs()->CommitPendingWrite();
 
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile1));
   ASSERT_EQ(2u, BrowserList::GetInstance()->size());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
                        PRE_LastUsedProfilesWithRealWebApp) {
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath dest_path = profile_manager->user_data_dir();
@@ -2570,7 +2577,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
     }
   }
 
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile1));
 
   // On ozone-linux, for some reason, these profile 1 windows come back in
@@ -2604,8 +2611,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   Profile& profile1 = profiles::testing::CreateProfileSync(
       profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-  Profile& default_profile = profiles::testing::CreateProfileSync(
-      profile_manager, dest_path.Append(FILE_PATH_LITERAL("Default")));
 
   // At this point, nothing is open except the basic browser.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -2621,7 +2626,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   // We should get two windows from profile1.
   ASSERT_EQ(3u, BrowserList::GetInstance()->size());
-  ASSERT_EQ(1u, chrome::GetBrowserCount(&default_profile));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile1));
 
   while (SessionRestore::IsRestoring(&profile1)) {
@@ -2640,7 +2645,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   // 2x profile1, 1x default profile here.
   ASSERT_EQ(3u, BrowserList::GetInstance()->size());
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile1));
-  ASSERT_EQ(1u, chrome::GetBrowserCount(&default_profile));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   new_browser = FindOneOtherBrowserForProfile(&profile1, nullptr);
   if (new_browser->type() != Browser::Type::TYPE_NORMAL) {
     new_browser = FindOneOtherBrowserForProfile(&profile1, new_browser);
