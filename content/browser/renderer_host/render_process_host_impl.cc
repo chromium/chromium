@@ -4014,17 +4014,10 @@ void RenderProcessHostImpl::OnChannelError() {
   ProcessDied(info);
 }
 
-void RenderProcessHostImpl::OnBadMessageReceived(const IPC::Message& message) {
+void RenderProcessHostImpl::OnBadMessageReceived() {
   // Message de-serialization failed. We consider this a capital crime. Kill
   // the renderer if we have one.
-  auto type = message.type();
-  LOG(ERROR) << "bad message " << type << " terminating renderer.";
-
-  // The ReceivedBadMessage call below will trigger a DumpWithoutCrashing.
-  // Alias enough information here so that we can determine what the bad
-  // message was.
-  base::debug::Alias(&type);
-
+  LOG(ERROR) << "bad message, terminating renderer.";
   bad_message::ReceivedBadMessage(this,
                                   bad_message::RPH_DESERIALIZATION_FAILED);
 }

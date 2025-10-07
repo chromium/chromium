@@ -1724,20 +1724,6 @@ WebContentsImpl* WebContentsImpl::FromOuterFrameTreeNode(
       ->node_.GetInnerWebContentsInFrame(frame_tree_node);
 }
 
-bool WebContentsImpl::OnMessageReceived(RenderFrameHostImpl* render_frame_host,
-                                        const IPC::Message& message) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnMessageReceived",
-                        "render_frame_host", render_frame_host);
-
-  for (auto& observer : observers_.observer_list()) {
-    if (observer.OnMessageReceived(message, render_frame_host)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 std::string WebContentsImpl::GetTitleForMediaControls() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::GetTitleForMediaControls");
 

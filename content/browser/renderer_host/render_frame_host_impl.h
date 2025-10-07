@@ -723,7 +723,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   blink::web_pref::WebPreferences GetOrCreateWebPreferences();
 
   // IPC::Listener
-  bool OnMessageReceived(const IPC::Message& msg) override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;

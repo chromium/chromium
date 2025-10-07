@@ -85,7 +85,6 @@ class Worker : public Listener, public Sender {
     // Shutdown() must be called before destruction.
     CHECK(is_shutdown_);
   }
-  bool Send(Message* msg) override { return channel_->Send(msg); }
   void WaitForChannelCreation() { channel_created_->Wait(); }
   void CloseChannel() {
     DCHECK(ListenerThread()->task_runner()->BelongsToCurrentThread());
@@ -114,22 +113,6 @@ class Worker : public Listener, public Sender {
     DCHECK(!overrided_thread_);
     overrided_thread_ = overrided_thread;
   }
-  bool SendAnswerToLife(bool succeed) {
-    int answer = 0;
-    SyncMessage* msg = new SyncChannelTestMsg_AnswerToLife(&answer);
-    bool result = Send(msg);
-    DCHECK_EQ(result, succeed);
-    DCHECK_EQ(answer, (succeed ? 42 : 0));
-    return result;
-  }
-  bool SendDouble(bool succeed) {
-    int answer = 0;
-    SyncMessage* msg = new SyncChannelTestMsg_Double(5, &answer);
-    bool result = Send(msg);
-    DCHECK_EQ(result, succeed);
-    DCHECK_EQ(answer, (succeed ? 10 : 0));
-    return result;
-  }
   mojo::MessagePipeHandle TakeChannelHandle() {
     DCHECK(channel_handle_.is_valid());
     return channel_handle_.release();
@@ -146,27 +129,6 @@ class Worker : public Listener, public Sender {
   SyncChannel* channel() { return channel_.get(); }
   // Functions for derived classes to implement if they wish.
   virtual void Run() { }
-  virtual void OnAnswer(int* answer) { NOTREACHED(); }
-  virtual void OnAnswerDelay(Message* reply_msg) {
-    // The message handler map below can only take one entry for
-    // SyncChannelTestMsg_AnswerToLife, so since some classes want
-    // the normal version while other want the delayed reply, we
-    // call the normal version if the derived class didn't override
-    // this function.
-    int answer;
-    OnAnswer(&answer);
-    SyncChannelTestMsg_AnswerToLife::WriteReplyParams(reply_msg, answer);
-    Send(reply_msg);
-  }
-  virtual void OnDouble(int in, int* out) { NOTREACHED(); }
-  virtual void OnDoubleDelay(int in, Message* reply_msg) {
-    int result;
-    OnDouble(in, &result);
-    SyncChannelTestMsg_Double::WriteReplyParams(reply_msg, result);
-    Send(reply_msg);
-  }
-
-  virtual void OnNestedTestMsg(Message* reply_msg) { NOTREACHED(); }
 
   virtual SyncChannel* CreateChannel() {
     std::unique_ptr<SyncChannel> channel = SyncChannel::Create(
@@ -224,17 +186,6 @@ class Worker : public Listener, public Sender {
     listener_event->Signal();
   }
 
-  bool OnMessageReceived(const Message& message) override {
-    IPC_BEGIN_MESSAGE_MAP(Worker, message)
-     IPC_MESSAGE_HANDLER_DELAY_REPLY(SyncChannelTestMsg_Double, OnDoubleDelay)
-     IPC_MESSAGE_HANDLER_DELAY_REPLY(SyncChannelTestMsg_AnswerToLife,
-                                     OnAnswerDelay)
-     IPC_MESSAGE_HANDLER_DELAY_REPLY(SyncChannelNestedTestMsg_String,
-                                     OnNestedTestMsg)
-    IPC_END_MESSAGE_MAP()
-    return true;
-  }
-
   void StartThread(base::Thread* thread, base::MessagePumpType type) {
     base::Thread::Options options;
     options.message_pump_type = type;
@@ -277,14 +228,6 @@ class ServerSendAfterClose : public Worker {
                std::move(channel_handle)),
         send_result_(true) {}
 
-  bool SendDummy() {
-    ListenerThread()->task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&ServerSendAfterClose::Send),
-                       base::Unretained(this), new SyncChannelTestMsg_NoArgs));
-    return true;
-  }
-
   bool send_result() const {
     return send_result_;
   }
@@ -293,12 +236,6 @@ class ServerSendAfterClose : public Worker {
   void Run() override {
     CloseChannel();
     Done();
-  }
-
-  bool Send(Message* msg) override {
-    send_result_ = Worker::Send(msg);
-    Done();
-    return send_result_;
   }
 
   bool send_result_;
@@ -312,12 +249,6 @@ TEST_F(IPCSyncChannelTest, SendAfterClose) {
 
   server.done_event()->Wait();
   server.done_event()->Reset();
-
-  server.SendDummy();
-  server.done_event()->Wait();
-
-  EXPECT_FALSE(server.send_result());
-
   server.Shutdown();
 }
 

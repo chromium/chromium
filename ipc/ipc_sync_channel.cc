@@ -123,39 +123,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
     context->DispatchMessages();
   }
 
-  // Dispatches any queued incoming sync messages. If |dispatching_context| is
-  // not null, messages which target a restricted dispatch channel will only be
-  // dispatched if |dispatching_context| belongs to the same restricted dispatch
-  // group as that channel. If |dispatching_context| is null, all queued
-  // messages are dispatched.
-  void DispatchMessages(SyncContext* dispatching_context) {
-    bool first_time = true;
-    uint32_t expected_version = 0;
-    SyncMessageQueue::iterator it;
-    while (true) {
-      std::unique_ptr<Message> message;
-      scoped_refptr<SyncChannel::SyncContext> context;
-      {
-        base::AutoLock auto_lock(message_lock_);
-        if (first_time || message_queue_version_ != expected_version) {
-          it = message_queue_.begin();
-          first_time = false;
-        }
-        if (it != message_queue_.end()) {
-          message = std::move(it->message);
-          context = std::move(it->context);
-          it = message_queue_.erase(it);
-          message_queue_version_++;
-          expected_version = message_queue_version_;
-        }
-      }
-      if (!message) {
-        break;
-      }
-      context->OnDispatchMessage(*message);
-    }
-  }
-
   // SyncChannel calls this in its destructor.
   void RemoveContext(SyncContext* context) {
     base::AutoLock auto_lock(message_lock_);
@@ -219,13 +186,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
       *dispatch_flag_ = true;
       return;
     }
-
-    // We were woken up during a sync wait, but no specific SyncChannel is
-    // currently waiting. i.e., some other Mojo interface on this thread is
-    // waiting for a response. Since we don't support anything analogous to
-    // restricted dispatch on Mojo interfaces, in this case it's safe to
-    // dispatch sync messages for any context.
-    DispatchMessages(nullptr);
   }
 
   // Holds information about a queued synchronous message or reply.
@@ -336,9 +296,7 @@ base::WaitableEvent* SyncChannel::SyncContext::GetDispatchEvent() {
   return received_sync_msgs_->dispatch_event();
 }
 
-void SyncChannel::SyncContext::DispatchMessages() {
-  received_sync_msgs_->DispatchMessages(this);
-}
+void SyncChannel::SyncContext::DispatchMessages() {}
 
 bool SyncChannel::SyncContext::TryToUnblockListener(const Message* msg) {
   base::AutoLock auto_lock(deserializers_lock_);
@@ -370,27 +328,6 @@ void SyncChannel::SyncContext::Clear() {
   CancelPendingSends();
   received_sync_msgs_->RemoveContext(this);
   Context::Clear();
-}
-
-bool SyncChannel::SyncContext::OnMessageReceived(const Message& msg) {
-  // Give the filters a chance at processing this message.
-  if (TryFilters(msg))
-    return true;
-
-  if (TryToUnblockListener(&msg))
-    return true;
-
-  if (msg.is_reply()) {
-    received_sync_msgs_->QueueReply(msg, this);
-    return true;
-  }
-
-  if (msg.should_unblock()) {
-    received_sync_msgs_->QueueMessage(msg, this);
-    return true;
-  }
-
-  return Context::OnMessageReceivedNoFilter(msg);
 }
 
 void SyncChannel::SyncContext::OnChannelError() {
@@ -485,36 +422,6 @@ SyncChannel::SyncChannel(
 }
 
 SyncChannel::~SyncChannel() = default;
-
-bool SyncChannel::Send(Message* message) {
-  TRACE_IPC_MESSAGE_SEND("ipc", "SyncChannel::Send", message);
-  if (!message->is_sync()) {
-    ChannelProxy::SendInternal(message);
-    return true;
-  }
-
-  SyncMessage* sync_msg = static_cast<SyncMessage*>(message);
-
-  // *this* might get deleted in WaitForReply.
-  scoped_refptr<SyncContext> context(sync_context());
-  if (!context->Push(sync_msg)) {
-    DVLOG(1) << "Channel is shutting down. Dropping sync message.";
-    delete message;
-    return false;
-  }
-
-  ChannelProxy::SendInternal(message);
-
-  // Wait for reply, or for any other incoming synchronous messages.
-  // |this| might get deleted, so only call static functions at this point.
-  scoped_refptr<mojo::SyncHandleRegistry> registry = sync_handle_registry_;
-  WaitForReply(registry.get(), context.get());
-
-  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "SyncChannel::Send",
-                         context->GetSendDoneEvent(), TRACE_EVENT_FLAG_FLOW_IN);
-
-  return context->Pop();
-}
 
 void SyncChannel::WaitForReply(mojo::SyncHandleRegistry* registry,
                                SyncContext* context) {

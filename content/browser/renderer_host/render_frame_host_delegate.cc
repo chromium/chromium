@@ -34,12 +34,6 @@ PartitionedPopinOpenerProperties::AsMojom() const {
                                                    site_for_cookies);
 }
 
-bool RenderFrameHostDelegate::OnMessageReceived(
-    RenderFrameHostImpl* render_frame_host,
-    const IPC::Message& message) {
-  return false;
-}
-
 bool RenderFrameHostDelegate::DidAddMessageToConsole(
     RenderFrameHostImpl* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,

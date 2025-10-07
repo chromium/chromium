@@ -32,7 +32,6 @@
 
 namespace IPC {
 class ChannelProxy;
-class Message;
 }  // namespace IPC
 
 namespace content {
@@ -129,8 +128,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   friend std::ostream& operator<<(std::ostream& os, LifecycleState state);
 
   // IPC::Listener
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;

@@ -161,10 +161,10 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
 
-void AgentSchedulingGroup::OnBadMessageReceived(const IPC::Message& message) {
+void AgentSchedulingGroup::OnBadMessageReceived() {
   // Not strictly required, since we don't currently do anything with bad
   // messages in the renderer, but if we ever do then this will "just work".
-  return ToImpl(*render_thread_).OnBadMessageReceived(message);
+  return ToImpl(*render_thread_).OnBadMessageReceived();
 }
 
 void AgentSchedulingGroup::OnAssociatedInterfaceRequest(

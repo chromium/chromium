@@ -105,10 +105,6 @@ void MessagePipeReader::Close() {
     receiver_.reset();
 }
 
-bool MessagePipeReader::Send(std::unique_ptr<Message> message) {
-  return false;
-}
-
 void MessagePipeReader::GetRemoteInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
   if (!sender_.is_bound())

@@ -189,26 +189,6 @@ void ChannelMojo::OnAssociatedInterfaceRequest(
   }
 }
 
-bool ChannelMojo::Send(Message* message) {
-  DVLOG(2) << "sending message @" << message << " on channel @" << this
-           << " with type " << message->type();
-
-  std::unique_ptr<Message> scoped_message = base::WrapUnique(message);
-  if (!message_reader_)
-    return false;
-
-  // Comment copied from ipc_channel_posix.cc:
-  // We can't close the pipe here, because calling OnChannelError may destroy
-  // this object, and that would be bad if we are called from Send(). Instead,
-  // we return false and hope the caller will close the pipe. If they do not,
-  // the pipe will still be closed next time OnFileCanReadWithoutBlocking is
-  // called.
-  //
-  // With Mojo, there's no OnFileCanReadWithoutBlocking, but we expect the
-  // pipe's connection error handler will be invoked in its place.
-  return message_reader_->Send(std::move(scoped_message));
-}
-
 Channel::AssociatedInterfaceSupport*
 ChannelMojo::GetAssociatedInterfaceSupport() { return this; }
 
@@ -225,17 +205,8 @@ void ChannelMojo::OnPeerPidReceived(int32_t peer_pid) {
   listener_->OnChannelConnected(peer_pid);
 }
 
-void ChannelMojo::OnMessageReceived(const Message& message) {
-  const Message* message_ptr = &message;
-  TRACE_IPC_MESSAGE_SEND("ipc,toplevel", "ChannelMojo::OnMessageReceived",
-                         message_ptr);
-  listener_->OnMessageReceived(message);
-  if (message.dispatch_error())
-    listener_->OnBadMessageReceived(message);
-}
-
 void ChannelMojo::OnBrokenDataReceived() {
-  listener_->OnBadMessageReceived(Message());
+  listener_->OnBadMessageReceived();
 }
 
 void ChannelMojo::AddGenericAssociatedInterface(

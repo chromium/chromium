@@ -206,25 +206,10 @@ void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
   SetState(LifecycleState::kRenderProcessHostDestroyed);
 }
 
-bool AgentSchedulingGroupHost::OnMessageReceived(const IPC::Message& message) {
-  if (message.routing_id() == MSG_ROUTING_CONTROL) {
-    bad_message::ReceivedBadMessage(&*process_,
-                                    bad_message::ASGH_RECEIVED_CONTROL_MESSAGE);
-    return false;
-  }
-
-  auto* listener = GetListener(message.routing_id());
-  if (!listener)
-    return false;
-
-  return listener->OnMessageReceived(message);
-}
-
-void AgentSchedulingGroupHost::OnBadMessageReceived(
-    const IPC::Message& message) {
+void AgentSchedulingGroupHost::OnBadMessageReceived() {
   // If a bad message is received, it should be treated the same as a bad
   // message on the renderer-wide channel (i.e., kill the renderer).
-  return process_->OnBadMessageReceived(message);
+  return process_->OnBadMessageReceived();
 }
 
 void AgentSchedulingGroupHost::OnAssociatedInterfaceRequest(

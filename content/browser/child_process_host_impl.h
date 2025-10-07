@@ -100,7 +100,7 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   // IPC::Listener methods:
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
-  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived() override;
 
   // Initializes the IPC channel and returns true on success. |channel_| must be
   // non-null.

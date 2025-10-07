@@ -190,13 +190,6 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // NOTE: Not all implementations support this.
   virtual AssociatedInterfaceSupport* GetAssociatedInterfaceSupport() = 0;
 
-  // Overridden from ipc::Sender.
-  // Send a message over the Channel to the listener on the other end.
-  //
-  // |message| must be allocated using operator new.  This object will be
-  // deleted once the contents of the Message have been sent.
-  bool Send(Message* message) override = 0;
-
   // Sets the UrgentMessageObserver for this channel. `observer` must outlive
   // the channel.
   //

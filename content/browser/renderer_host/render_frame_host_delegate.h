@@ -68,10 +68,6 @@
 
 class GURL;
 
-namespace IPC {
-class Message;
-}
-
 namespace gfx {
 class Rect;
 class Size;
@@ -163,10 +159,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   using ClipboardPasteData = content::ClipboardPasteData;
   using ClipboardEndpoint = content::ClipboardEndpoint;
   using ClipboardMetadata = ui::ClipboardMetadata;
-
-  // This is used to give the delegate a chance to filter IPC messages.
-  virtual bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
-                                 const IPC::Message& message);
 
   // Notification from the renderer host that a suspicious navigation of the
   // main frame has been blocked. Allows the delegate to provide some UI to let

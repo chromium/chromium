@@ -383,12 +383,6 @@ void UnprivilegedProcessDelegate::KillProcess() {
   }
 }
 
-bool UnprivilegedProcessDelegate::OnMessageReceived(
-    const IPC::Message& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Received unexpected IPC type: " << message.type();
-}
-
 void UnprivilegedProcessDelegate::OnChannelConnected(int32_t peer_pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

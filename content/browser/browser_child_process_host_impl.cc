@@ -400,14 +400,8 @@ void BrowserChildProcessHostImpl::OnProcessConnected() {
   }
 }
 
-void BrowserChildProcessHostImpl::OnBadMessageReceived(
-    const IPC::Message& message) {
-  std::string log_message = "Bad message received of type: ";
-  if (message.IsValid()) {
-    log_message += base::NumberToString(message.type());
-  } else {
-    log_message += "unknown";
-  }
+void BrowserChildProcessHostImpl::OnBadMessageReceived() {
+  std::string log_message = "Bad message received of type: unknown";
   TerminateOnBadMessageReceived(log_message);
 }
 

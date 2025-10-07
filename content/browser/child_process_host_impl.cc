@@ -286,8 +286,8 @@ void ChildProcessHostImpl::OnChannelError() {
   OnDisconnectedFromChildProcess();
 }
 
-void ChildProcessHostImpl::OnBadMessageReceived(const IPC::Message& message) {
-  delegate_->OnBadMessageReceived(message);
+void ChildProcessHostImpl::OnBadMessageReceived() {
+  delegate_->OnBadMessageReceived();
 }
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)

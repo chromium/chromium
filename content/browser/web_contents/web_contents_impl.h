@@ -678,8 +678,6 @@ class CONTENT_EXPORT WebContentsImpl
   void SetOverscrollNavigationEnabled(bool enabled) override;
 
   // RenderFrameHostDelegate ---------------------------------------------------
-  bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
-                         const IPC::Message& message) override;
   void OnDidBlockNavigation(
       const GURL& blocked_url,
       const GURL& initiator_url,

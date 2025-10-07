@@ -3767,21 +3767,6 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
                                             : PageVisibilityState::kVisible;
 }
 
-bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
-  // Only process messages if the RenderFrame is alive.
-  if (!is_render_frame_created())
-    return false;
-
-  // Crash reports triggered by IPC messages for this frame should be associated
-  // with its URL.
-  ScopedActiveURL scoped_active_url(this);
-
-  if (delegate_->OnMessageReceived(this, msg))
-    return true;
-
-  return false;
-}
-
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {

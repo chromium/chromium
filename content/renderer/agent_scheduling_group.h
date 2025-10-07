@@ -30,7 +30,6 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
 namespace IPC {
-class Message;
 class SyncChannel;
 }  // namespace IPC
 
@@ -92,7 +91,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
  private:
   // IPC::Listener:
-  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;

@@ -51,7 +51,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   class Delegate {
    public:
     virtual void OnPeerPidReceived(int32_t peer_pid) = 0;
-    virtual void OnMessageReceived(const Message& message) = 0;
     virtual void OnBrokenDataReceived() = 0;
     virtual void OnPipeError() = 0;
     virtual void OnAssociatedInterfaceRequest(
@@ -86,10 +85,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
 
   // Return true if the MessagePipe is alive.
   bool IsValid() { return sender_.is_bound(); }
-
-  // Sends an IPC::Message to the other end of the pipe. Safe to call from any
-  // thread.
-  bool Send(std::unique_ptr<Message> message);
 
   // Requests an associated interface from the other end of the pipe.
   void GetRemoteInterface(mojo::GenericPendingAssociatedReceiver receiver);

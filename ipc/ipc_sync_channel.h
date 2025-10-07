@@ -103,9 +103,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
 
   ~SyncChannel() override;
 
-  bool Send(Message* message) override;
-
-
  protected:
   friend class ReceivedSyncMsgQueue;
 
@@ -160,7 +157,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
     void Clear() override;
 
     // Called on the IPC thread.
-    bool OnMessageReceived(const Message& msg) override;
     void OnChannelError() override;
     void OnChannelOpened() override;
     void OnChannelClosed() override;

@@ -50,13 +50,11 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
   void Unpause(bool flush) override;
   void Flush() override;
   void Close() override;
-  bool Send(Message* message) override;
   Channel::AssociatedInterfaceSupport* GetAssociatedInterfaceSupport() override;
   void SetUrgentMessageObserver(UrgentMessageObserver* observer) override;
 
   // MessagePipeReader::Delegate
   void OnPeerPidReceived(int32_t peer_pid) override;
-  void OnMessageReceived(const Message& message) override;
   void OnBrokenDataReceived() override;
   void OnPipeError() override;
   void OnAssociatedInterfaceRequest(

@@ -6,10 +6,6 @@
 
 namespace IPC {
 
-bool Listener::OnMessageReceived(const Message& message) {
-  return false;
-}
-
 std::string Listener::ToDebugString() {
   return "IPC::Listener";
 }
