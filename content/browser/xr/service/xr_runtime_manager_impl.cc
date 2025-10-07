@@ -187,7 +187,7 @@ XRRuntimeManagerImpl::GetOrCreateRuntimeManagerInternal(
   bool orientation_provider_enabled =
       is_orientation_provider_forced ||
       (base::FeatureList::IsEnabled(
-           device::features::kWebXrOrientationSensorDevice) &&
+           device::features::kWebXROrientationSensorDevice) &&
        !device::features::IsXrDevice());
 
   if (orientation_provider_enabled) {

@@ -87,7 +87,7 @@ ArCoreDevice::ArCoreDevice(
 
   // Only support WebGPU sessions if the appropriate feature flag is enabled
   // and shared buffers will be used.
-  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
+  if (base::FeatureList::IsEnabled(features::kWebXRWebGPUBinding)) {
     device_features.emplace_back(mojom::XRSessionFeature::WEBGPU);
   }
 

@@ -14,24 +14,19 @@
 
 namespace device::features {
 // Enables rendering to WebXR sessions with the WebGPU API.
-BASE_FEATURE(kWebXrWebGpuBinding,
-             "WebXRWebGPUBinding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebXRWebGPUBinding, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables access to experimental WebXR features.
-BASE_FEATURE(kWebXrIncubations,
-             "WebXRIncubations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebXRIncubations, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature flag for the WebXRInternals debugging page.
 BASE_FEATURE(kWebXrInternals, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables access to WebXR composition layers.
-BASE_FEATURE(kWebXrLayers, "WebXRLayers", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebXRLayers, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the orientation sensor based device is enabled.
-BASE_FEATURE(kWebXrOrientationSensorDevice,
-             "WebXROrientationSensorDevice",
+BASE_FEATURE(kWebXROrientationSensorDevice,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

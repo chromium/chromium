@@ -80,13 +80,13 @@ OpenXrDevice::OpenXrDevice(
   device_data.supported_features = GetSupportedFeatures();
 
   // Only support layers if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrLayers)) {
+  if (base::FeatureList::IsEnabled(features::kWebXRLayers)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LAYERS);
   }
 
   // Only support WebGPU sessions if feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
+  if (base::FeatureList::IsEnabled(features::kWebXRWebGPUBinding)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::WEBGPU);
   }
