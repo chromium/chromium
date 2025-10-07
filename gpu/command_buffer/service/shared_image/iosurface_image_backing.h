@@ -275,8 +275,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
                                   uint64_t signal_value,
                                   bool readonly)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  template <typename Fn>
-  void ProcessSharedEventsForBeginAccess(bool readonly, const Fn& fn)
+  void ProcessSharedEventsForBeginAccess(
+      bool readonly,
+      base::FunctionRef<void(id<MTLSharedEvent> shared_event,
+                             uint64_t signaled_value)> process_fn)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Guarded by ScopedIOSurfaceLock instead of |lock_| for memory access.
