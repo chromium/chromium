@@ -18,15 +18,14 @@ namespace enterprise_connectors {
 
 AnalysisServiceSettings::AnalysisServiceSettings(
     const base::Value& settings_value,
-    const ServiceProviderConfig& service_provider_config) {
-  if (!settings_value.is_dict()) {
+    const ServiceProviderConfig& service_provider_config)
+    : AnalysisServiceSettingsBase(settings_value, service_provider_config) {
+  if (!analysis_config_) {
+    // Parsing in the base class failed
     return;
   }
 
   const auto& settings_dict = settings_value.GetDict();
-  if (!TryParseServiceProviderData(settings_dict, service_provider_config)) {
-    return;
-  }
 
   // Add the patterns to the settings, which configures settings.matcher and
   // settings.*_pattern_settings. No enable patterns implies the settings are
@@ -41,10 +40,6 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   ParsePatternSettings(enabled_pattern_settings_list, true, id);
   ParsePatternSettings(settings_dict.FindList(kKeyDisable), false, id);
 
-  ParseBlockSettings(settings_dict);
-  ParseMinimumDataSize(settings_dict);
-  ParseCustomMessages(settings_dict);
-  ParseJustificationTags(settings_dict);
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   ParseVerificationSignatures(settings_dict);
 #endif

@@ -11,6 +11,25 @@
 
 namespace enterprise_connectors {
 
+AnalysisServiceSettingsBase::AnalysisServiceSettingsBase(
+    const base::Value& settings_value,
+    const ServiceProviderConfig& service_provider_config) {
+  if (!settings_value.is_dict()) {
+    return;
+  }
+
+  const auto& settings_dict = settings_value.GetDict();
+
+  if (!TryParseServiceProviderData(settings_dict, service_provider_config)) {
+    return;
+  }
+
+  ParseBlockSettings(settings_dict);
+  ParseMinimumDataSize(settings_dict);
+  ParseCustomMessages(settings_dict);
+  ParseJustificationTags(settings_dict);
+}
+
 bool AnalysisServiceSettingsBase::TryParseServiceProviderData(
     const base::Value::Dict& settings_dict,
     const ServiceProviderConfig& service_provider_config) {
@@ -194,7 +213,6 @@ void AnalysisServiceSettingsBase::AddUrlPatternSettings(
   }
 }
 
-AnalysisServiceSettingsBase::AnalysisServiceSettingsBase() = default;
 AnalysisServiceSettingsBase::AnalysisServiceSettingsBase(
     AnalysisServiceSettingsBase&&) = default;
 AnalysisServiceSettingsBase& AnalysisServiceSettingsBase::operator=(

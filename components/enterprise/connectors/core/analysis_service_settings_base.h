@@ -48,7 +48,9 @@ class AnalysisServiceSettingsBase {
   using PatternSettings =
       std::map<base::MatcherStringPattern::ID, URLPatternSettings>;
 
-  AnalysisServiceSettingsBase();
+  explicit AnalysisServiceSettingsBase(
+      const base::Value& settings_value,
+      const ServiceProviderConfig& service_provider_config);
 
   // Helper methods for parsing the raw policy settings input
   // Service provider data must be provided and valid
