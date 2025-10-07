@@ -48,6 +48,7 @@
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 using segmentation_platform::AnnotatedNumericResult;
 using segmentation_platform::InputContext;
@@ -148,7 +149,7 @@ ComputeURLVisitAggregates(
 
       URLVisitAggregate& aggregate = url_visit_map.at(url_data.first);
       std::visit(
-          URLVisitVariantHelper{
+          absl::Overload{
               [&aggregate](URLVisitAggregate::TabData& tab_data) {
                 aggregate.fetcher_data_map.emplace(
                     tab_data.last_active_tab.session_name.has_value()

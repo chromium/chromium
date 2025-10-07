@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace {
 
@@ -15,7 +16,7 @@ using visited_url_ranking::URLVisitAggregate;
 const GURL& GetVisitVariantUrl(
     const URLVisitAggregate::URLVisitVariant& visit_variant) {
   return std::visit(
-      visited_url_ranking::URLVisitVariantHelper{
+      absl::Overload{
           [&](const URLVisitAggregate::TabData& tab_data) -> const GURL& {
             return tab_data.last_active_tab.visit.url;
           },

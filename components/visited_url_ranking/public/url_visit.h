@@ -240,18 +240,6 @@ struct URLVisitAggregate {
   std::vector<Decoration> decorations;
 };
 
-// Helper to visit each variant of URLVisitVariant.
-// Usage:
-//   std::visit(URLVisitVariantHelper{
-//         [](Variant1& variant1) {},
-//         [](Variant2& variant1) {},
-//         [](Variant3& variant1) {},
-//      variant_data);
-template <class... Ts>
-struct URLVisitVariantHelper : Ts... {
-  using Ts::operator()...;
-};
-
 }  // namespace visited_url_ranking
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_H_

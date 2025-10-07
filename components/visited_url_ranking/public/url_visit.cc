@@ -10,6 +10,8 @@
 #include <utility>
 #include <variant>
 
+#include "third_party/abseil-cpp/absl/functional/overload.h"
+
 namespace visited_url_ranking {
 
 URLVisit::URLVisit(const GURL& url_arg,
@@ -44,7 +46,7 @@ std::set<std::u16string_view> URLVisitAggregate::GetAssociatedTitles() const {
   std::set<std::u16string_view> titles = {};
   for (const auto& fetcher_entry : fetcher_data_map) {
     std::visit(
-        URLVisitVariantHelper{
+        absl::Overload{
             [&titles](const URLVisitAggregate::TabData& tab_data) {
               titles.insert(tab_data.last_active_tab.visit.title);
             },
@@ -59,7 +61,7 @@ std::set<std::u16string_view> URLVisitAggregate::GetAssociatedTitles() const {
 std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
   std::set<const GURL*> urls = {};
   for (const auto& fetcher_entry : fetcher_data_map) {
-    std::visit(URLVisitVariantHelper{
+    std::visit(absl::Overload{
                    [&urls](const URLVisitAggregate::TabData& tab_data) {
                      urls.insert(&tab_data.last_active_tab.visit.url);
                    },
@@ -122,7 +124,7 @@ URLVisitAggregate::URLTypeSet URLVisitAggregate::GetURLTypes() const {
   URLVisitAggregate::URLTypeSet types;
   for (const auto& fetcher_entry : fetcher_data_map) {
     std::visit(
-        URLVisitVariantHelper{
+        absl::Overload{
             [&types](const URLVisitAggregate::TabData& tab_data) {
               if (tab_data.last_active_tab.session_name) {
                 types.Put(URLVisitAggregate::URLType::kActiveRemoteTab);

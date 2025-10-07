@@ -44,7 +44,6 @@ using visited_url_ranking::ResultStatus;
 using visited_url_ranking::URLVisitAggregate;
 using visited_url_ranking::URLVisitAggregatesTransformType;
 using visited_url_ranking::URLVisitsMetadata;
-using visited_url_ranking::URLVisitVariantHelper;
 using visited_url_ranking::VisitedURLRankingService;
 using visited_url_ranking::VisitedURLRankingServiceFactory;
 
