@@ -2226,11 +2226,6 @@ const char kGoogleOneOfferFilesBannerName[] = "Google One offer Files banner";
 const char kGoogleOneOfferFilesBannerDescription[] =
     "Shows a Files banner about Google One offer.";
 
-const char kMenuElementsName[] = "Menu Elements";
-const char kMenuElementsDescription[] =
-    "A suite of new HTML elements that support customizable, accessible menus. "
-    "See https://open-ui.org/components/menu.explainer/.";
-
 const char kCastMessageLoggingName[] = "Enables logging of all Cast messages.";
 const char kCastMessageLoggingDescription[] =
     "Enables logging of all messages exchanged between websites, Chrome, "

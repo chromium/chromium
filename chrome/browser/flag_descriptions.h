@@ -1305,9 +1305,6 @@ extern const char kGlobalMediaControlsUpdatedUIDescription[];
 extern const char kGoogleOneOfferFilesBannerName[];
 extern const char kGoogleOneOfferFilesBannerDescription[];
 
-extern const char kMenuElementsName[];
-extern const char kMenuElementsDescription[];
-
 extern const char kCastMessageLoggingName[];
 extern const char kCastMessageLoggingDescription[];
 

@@ -3196,7 +3196,7 @@
     },
     {
       name: "MenuElements",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "MessagePortCloseEvent",

@@ -6826,11 +6826,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "menu-elements",
-    "owners": [ "dom@chromium.org", "dizhangg@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "merchant-trust",
     "owners": [ "tommasin@chromium.org", "privacy-on-the-web@google.com" ],
     "expiry_milestone": 145
