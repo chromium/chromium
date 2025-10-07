@@ -76,6 +76,10 @@ inline constexpr char kIsCrosDebugKey[] = "is_cros_debug";
 inline constexpr char kIsCrosDebugValueFalse[] = "0";
 inline constexpr char kIsCrosDebugValueTrue[] = "1";
 
+// A kernel key version is a number stored in the TPM, which is used to prevent
+// the device from rolling back to an older OS version with a lower key version.
+inline constexpr char kKernelKeyVersion[] = "tmp_kernver";
+
 // Manufacture date key.
 inline constexpr char kManufactureDateKey[] = "mfg_date";
 
