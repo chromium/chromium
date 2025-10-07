@@ -206,7 +206,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   friend class ChannelPosix;
   friend class ChannelWin;
   friend class MessageReplyDeserializer;
-  friend class SyncMessage;
 
   friend struct mojo::internal::UnmappedNativeStructSerializerImpl;
 

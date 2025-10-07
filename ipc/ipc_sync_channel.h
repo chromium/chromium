@@ -17,13 +17,11 @@
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "ipc/ipc_sync_message.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
 namespace base {
-class RunLoop;
 class WaitableEvent;
 }  // namespace base
 
@@ -33,10 +31,7 @@ class SyncHandleRegistry;
 
 namespace IPC {
 
-class SyncMessage;
-
-// This is similar to ChannelProxy, with the added feature of supporting sending
-// synchronous messages.
+// This is similar to ChannelProxy.
 //
 // Overview of how the sync channel works
 // --------------------------------------
@@ -117,37 +112,15 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
         const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner,
         base::WaitableEvent* shutdown_event);
 
-    // Adds information about an outgoing sync message to the context so that
-    // we know how to deserialize the reply.
-    bool Push(SyncMessage* sync_msg);
-
-    // Cleanly remove the top deserializer (and throw it away).  Returns the
-    // result of the Send call for that message.
-    bool Pop();
-
-    // Returns a Mojo Event that signals when a sync send is complete or timed
-    // out or the process shut down.
-    base::WaitableEvent* GetSendDoneEvent();
-
     // Returns a Mojo Event that signals when an incoming message that's not the
     // pending reply needs to get dispatched (by calling DispatchMessages.)
     base::WaitableEvent* GetDispatchEvent();
-
-    void DispatchMessages();
-
-    // Checks if the given message is blocking the listener thread because of a
-    // synchronous send.  If it is, the thread is unblocked and true is
-    // returned. Otherwise the function returns false.
-    bool TryToUnblockListener(const Message* msg);
 
     base::WaitableEvent* shutdown_event() { return shutdown_event_; }
 
     ReceivedSyncMsgQueue* received_sync_msgs() {
       return received_sync_msgs_.get();
     }
-
-    void OnSendDoneEventSignaled(base::RunLoop* nested_loop,
-                                 base::WaitableEvent* event);
 
    private:
     ~SyncContext() override;
@@ -161,18 +134,9 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
     void OnChannelOpened() override;
     void OnChannelClosed() override;
 
-    // Cancels all pending Send calls.
-    void CancelPendingSends();
-
     void OnShutdownEventSignaled(base::WaitableEvent* event);
 
-    using PendingSyncMessageQueue = base::circular_deque<PendingSyncMsg>;
-    PendingSyncMessageQueue deserializers_;
-    bool reject_new_deserializers_ = false;
-    base::Lock deserializers_lock_;
-
     scoped_refptr<ReceivedSyncMsgQueue> received_sync_msgs_;
-
     raw_ptr<base::WaitableEvent, AcrossTasksDanglingUntriaged> shutdown_event_;
     base::WaitableEventWatcher shutdown_watcher_;
     base::WaitableEventWatcher::EventCallback shutdown_watcher_callback_;
@@ -190,10 +154,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
   SyncContext* sync_context() {
     return reinterpret_cast<SyncContext*>(context());
   }
-
-  // Waits for a reply, timeout or process shutdown.
-  static void WaitForReply(mojo::SyncHandleRegistry* registry,
-                           SyncContext* context);
 
   // Starts the dispatch watcher.
   void StartWatching();

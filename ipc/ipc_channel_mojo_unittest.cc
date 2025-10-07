@@ -59,7 +59,6 @@
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_sync_channel.h"
-#include "ipc/ipc_sync_message.h"
 #include "ipc/ipc_test.test-mojom.h"
 #include "ipc/urgent_message_observer.h"
 #include "mojo/core/test/mojo_test_base.h"

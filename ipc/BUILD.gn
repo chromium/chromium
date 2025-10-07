@@ -85,8 +85,6 @@ component("message_support") {
     "ipc_mojo_message_helper.h",
     "ipc_platform_file.cc",
     "ipc_platform_file.h",
-    "ipc_sync_message.cc",
-    "ipc_sync_message.h",
   ]
 
   if (is_win) {

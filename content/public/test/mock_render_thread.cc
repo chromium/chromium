@@ -17,7 +17,6 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/test/test_render_frame.h"
 #include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
