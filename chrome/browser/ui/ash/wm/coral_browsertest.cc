@@ -141,9 +141,10 @@ class CoralBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kForceBirchFakeCoralGroup);
   }
 
-  void CloseBrowserAndNativeWindowSynchronously(Browser* browser) {
+  void CloseBrowserAndNativeWindowSynchronously(
+      BrowserWindowInterface* browser) {
     WindowDestroyedObserver window_destroyed_observer(
-        browser->window()->GetNativeWindow());
+        browser->GetWindow()->GetNativeWindow());
     CloseBrowserSynchronously(browser);
     window_destroyed_observer.Wait();
   }
@@ -455,18 +456,30 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
 
   // Create two browsers. A url appears in both browsers.
-  test::CreateAndShowBrowser(primary_profile, {GURL("https://youtube.com")});
-  test::CreateAndShowBrowser(primary_profile, {GURL("https://youtube.com"),
-                                               GURL("https://google.com")});
+  BrowserWindowInterface* const normal_browser1 = test::CreateAndShowBrowser(
+      primary_profile, {GURL("https://youtube.com")});
+  BrowserWindowInterface* const normal_browser2 = test::CreateAndShowBrowser(
+      primary_profile,
+      {GURL("https://youtube.com"), GURL("https://google.com")});
 
   test::InstallSystemAppsForTesting(primary_profile);
 
-  // Open two File windows and two PWA windows.
+  // Open two File windows.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   test::CreateSystemWebApp(primary_profile, SystemWebAppType::FILE_MANAGER);
+  BrowserWindowInterface* const file_browser1 =
+      browser_created_observer->Wait();
+  browser_created_observer.emplace();
   test::CreateSystemWebApp(primary_profile, SystemWebAppType::FILE_MANAGER);
-  test::InstallAndLaunchPWA(primary_profile, GURL("https://www.youtube.com/"),
-                            /*launch_in_browser=*/false,
-                            /*app_title=*/u"YouTube");
+  BrowserWindowInterface* const file_browser2 =
+      browser_created_observer->Wait();
+
+  // Open two PWA windows.
+  BrowserWindowInterface* const pwa_browser1 = test::InstallAndLaunchPWA(
+      primary_profile, GURL("https://www.youtube.com/"),
+      /*launch_in_browser=*/false,
+      /*app_title=*/u"YouTube");
   test::InstallAndLaunchPWA(primary_profile, GURL("https://www.gmail.com/"),
                             /*launch_in_browser=*/false,
                             /*app_title=*/u"Gmail");
@@ -502,34 +515,23 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
 
   // Closing the first browser with the duplicated tab (https://youtube.com)
   // will not change the group.
-  SelectFirstBrowser();
-  CloseBrowserAndNativeWindowSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(normal_browser1);
   EXPECT_EQ(group->entities.size(), 4u);
 
   // Closing the next browser will decrease the items in the group.
-  SelectFirstBrowser();
-  CloseBrowserAndNativeWindowSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(normal_browser2);
   EXPECT_EQ(group->entities.size(), 2u);
 
   // Closing a duplicated window (file manager) will not change the group.
-  SelectFirstBrowser();
-  EXPECT_TRUE(
-      browser()->window()->GetNativeWindow()->GetTitle().starts_with(u"Files"));
-  CloseBrowserAndNativeWindowSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(file_browser1);
   EXPECT_EQ(group->entities.size(), 2u);
 
   // Closing a non-duplicated window will decrease the items in the group.
-  SelectFirstBrowser();
-  EXPECT_TRUE(
-      browser()->window()->GetNativeWindow()->GetTitle().starts_with(u"Files"));
-  CloseBrowserAndNativeWindowSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(file_browser2);
   EXPECT_EQ(group->entities.size(), 1u);
 
   // Closing the last app window in group will remove the chip.
-  SelectFirstBrowser();
-  EXPECT_TRUE(browser()->window()->GetNativeWindow()->GetTitle().starts_with(
-      u"YouTube"));
-  CloseBrowserAndNativeWindowSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(pwa_browser1);
 
   EXPECT_FALSE(GetBirchChipButton());
 }
@@ -540,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
 
   // Create a browser containing 8 tabs.
-  test::CreateAndShowBrowser(
+  BrowserWindowInterface* const browser = test::CreateAndShowBrowser(
       primary_profile,
       {GURL("https://mail.google.com"), GURL("https://youtube.com"),
        GURL("https://google.com"), GURL("https://earth.google.com"),
@@ -583,9 +585,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
   ASSERT_EQ(GetBirchChipsNum(), 2u);
 
   // Closing the first browser with all items in groups.
-  SelectFirstBrowser();
-  EXPECT_EQ(8, browser()->tab_strip_model()->GetTabCount());
-  CloseBrowserAndNativeWindowSynchronously(browser());
+  EXPECT_EQ(8, browser->GetTabStripModel()->GetTabCount());
+  CloseBrowserAndNativeWindowSynchronously(browser);
 
   // Two chips are removed.
   EXPECT_EQ(0u, GetBirchChipsNum());
