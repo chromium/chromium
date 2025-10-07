@@ -236,32 +236,17 @@ export class NetworkStorage {
   async getCollectedData(
     params: Network.GetDataParameters,
   ): Promise<Network.GetDataResult> {
-    switch (params.dataType) {
-      case Network.DataType.Response:
-        return await this.#getCollectedResponseData(params);
-      case Network.DataType.Request:
-      default:
-        throw new UnsupportedOperationException(
-          `Unsupported data type ${params.dataType}`,
-        );
-    }
-  }
-  async #getCollectedResponseData(
-    params: Network.GetDataParameters,
-  ): Promise<Network.GetDataResult> {
     if (
-      !this.#collectorsStorage.isResponseCollected(
+      !this.#collectorsStorage.isCollected(
         params.request,
+        params.dataType,
         params.collector,
       )
     ) {
-      if (params.collector !== undefined) {
-        throw new NoSuchNetworkDataException(
-          `Collector ${params.collector} didn't collect data for request ${params.request}`,
-        );
-      }
       throw new NoSuchNetworkDataException(
-        `No collected data for request ${params.request}`,
+        params.collector === undefined
+          ? `No collected ${params.dataType} data`
+          : `Collector ${params.collector} didn't collect ${params.dataType} data`,
       );
     }
 
@@ -271,24 +256,46 @@ export class NetworkStorage {
       );
     }
 
-    const request = this.getRequestById(params.request)!;
+    const request = this.getRequestById(params.request);
     if (request === undefined) {
-      throw new NoSuchNetworkDataException(
-        `No data for request ${params.request}`,
-      );
+      throw new NoSuchNetworkDataException(`No data for ${params.request}`);
     }
 
+    let result: Network.GetDataResult | undefined = undefined;
+    switch (params.dataType) {
+      case Network.DataType.Response:
+        result = await this.#getCollectedResponseData(request);
+        break;
+      case Network.DataType.Request:
+        result = await this.#getCollectedRequestData(request);
+        break;
+      default:
+        throw new UnsupportedOperationException(
+          `Unsupported data type ${params.dataType}`,
+        );
+    }
+
+    if (params.disown && params.collector !== undefined) {
+      this.#collectorsStorage.disownData(
+        request.id,
+        params.dataType,
+        params.collector,
+      );
+      // `disposeRequest` disposes request only if no other collectors for it are left.
+      this.disposeRequest(request.id);
+    }
+
+    return result;
+  }
+
+  async #getCollectedResponseData(
+    request: NetworkRequest,
+  ): Promise<Network.GetDataResult> {
     // TODO: handle CDP error in case of the renderer is gone.
     const responseBody = await request.cdpClient.sendCommand(
       'Network.getResponseBody',
       {requestId: request.id},
     );
-
-    if (params.disown && params.collector !== undefined) {
-      this.#collectorsStorage.disownResponse(params.request, params.collector);
-      // `disposeRequest` disposes request only if no other collectors for it are left.
-      this.disposeRequest(request.id);
-    }
 
     return {
       bytes: {
@@ -298,9 +305,27 @@ export class NetworkStorage {
     };
   }
 
-  collectIfNeeded(request: NetworkRequest) {
+  async #getCollectedRequestData(
+    request: NetworkRequest,
+  ): Promise<Network.GetDataResult> {
+    // TODO: handle CDP error in case of the renderer is gone.
+    const requestPostData = await request.cdpClient.sendCommand(
+      'Network.getRequestPostData',
+      {requestId: request.id},
+    );
+
+    return {
+      bytes: {
+        type: 'string',
+        value: requestPostData.postData,
+      },
+    };
+  }
+
+  collectIfNeeded(request: NetworkRequest, dataType: Network.DataType) {
     this.#collectorsStorage.collectIfNeeded(
       request,
+      dataType,
       request.cdpTarget.topLevelId,
       this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
         .userContext,
@@ -432,11 +457,11 @@ export class NetworkStorage {
     this.#requests.set(request.id, request);
   }
 
+  /**
+   * Disposes the given request, if no collectors targeting it are left.
+   */
   disposeRequest(id: Network.Request) {
-    if (
-      this.#collectorsStorage.isResponseCollected(id) ||
-      this.#collectorsStorage.isRequestCollected(id)
-    ) {
+    if (this.#collectorsStorage.isCollected(id)) {
       // Keep request, as it's data can be accessed later.
       return;
     }
@@ -478,32 +503,24 @@ export class NetworkStorage {
   }
 
   disownData(params: Network.DisownDataParameters) {
-    switch (params.dataType) {
-      case Network.DataType.Response:
-        if (
-          !this.#collectorsStorage.isResponseCollected(
-            params.request,
-            params.collector,
-          )
-        ) {
-          throw new NoSuchNetworkDataException(
-            `Collector ${params.collector} didn't collect data for request ${params.request}`,
-          );
-        }
-
-        this.#collectorsStorage.disownResponse(
-          params.request,
-          params.collector,
-        );
-        // `disposeRequest` disposes request only if no other collectors for it are left.
-        this.disposeRequest(params.request);
-        break;
-      case Network.DataType.Request:
-      default:
-        throw new UnsupportedOperationException(
-          `Unsupported data type ${params.dataType}`,
-        );
+    if (
+      !this.#collectorsStorage.isCollected(
+        params.request,
+        params.dataType,
+        params.collector,
+      )
+    ) {
+      throw new NoSuchNetworkDataException(
+        `Collector ${params.collector} didn't collect ${params.dataType} data`,
+      );
     }
+
+    this.#collectorsStorage.disownData(
+      params.request,
+      params.dataType,
+      params.collector,
+    );
+    // `disposeRequest` disposes request only if no other collectors for it are left.
     this.disposeRequest(params.request);
   }
 }

@@ -38,7 +38,8 @@ const MAX_TOTAL_COLLECTED_SIZE = 200_000_000;
 
 export class CollectorsStorage {
   readonly #collectors = new Map<string, NetworkCollector>();
-  readonly #requestCollectors = new Map<Network.Request, Set<string>>();
+  readonly #responseCollectors = new Map<Network.Request, Set<string>>();
+  readonly #requestBodyCollectors = new Map<Network.Request, Set<string>>();
   readonly #logger?: LoggerFn;
 
   constructor(logger?: LoggerFn) {
@@ -46,15 +47,6 @@ export class CollectorsStorage {
   }
 
   addDataCollector(params: Network.AddDataCollectorParameters) {
-    const unsupportedDataTypes = params.dataTypes.filter(
-      (dataType) => dataType !== Network.DataType.Response,
-    );
-    if (unsupportedDataTypes.length > 0) {
-      throw new UnsupportedOperationException(
-        `Unsupported data type: ${unsupportedDataTypes.join(', ')}`,
-      );
-    }
-
     if (
       params.maxEncodedDataSize < 1 ||
       params.maxEncodedDataSize > MAX_TOTAL_COLLECTED_SIZE
@@ -70,60 +62,90 @@ export class CollectorsStorage {
     return collectorId;
   }
 
-  isResponseCollected(requestId: Network.Request, collectorId?: string) {
+  isCollected(
+    requestId: Network.Request,
+    dataType?: Network.DataType,
+    collectorId?: string,
+  ): boolean {
     if (collectorId !== undefined && !this.#collectors.has(collectorId)) {
       throw new NoSuchNetworkCollectorException(
         `Unknown collector ${collectorId}`,
       );
     }
 
-    const requestCollectors = this.#requestCollectors.get(requestId);
-    if (requestCollectors === undefined || requestCollectors.size === 0) {
+    if (dataType === undefined) {
+      return (
+        this.isCollected(requestId, Network.DataType.Response, collectorId) ||
+        this.isCollected(requestId, Network.DataType.Request, collectorId)
+      );
+    }
+
+    const requestToCollectorsMap =
+      this.#getRequestToCollectorMap(dataType).get(requestId);
+
+    if (
+      requestToCollectorsMap === undefined ||
+      requestToCollectorsMap.size === 0
+    ) {
       return false;
     }
 
     if (collectorId === undefined) {
-      // There is at least 1 collector for the request.
+      // There is at least 1 collector for the data.
       return true;
     }
 
-    if (!this.#requestCollectors.get(requestId)?.has(collectorId)) {
+    if (!requestToCollectorsMap.has(collectorId)) {
       return false;
     }
 
     return true;
   }
 
-  isRequestCollected(_requestId: Network.Request, _collectorId?: string) {
-    // Request data collectors are not implemented.
-    return false;
+  #getRequestToCollectorMap(dataType: Network.DataType) {
+    switch (dataType) {
+      case Network.DataType.Response:
+        return this.#responseCollectors;
+      case Network.DataType.Request:
+        return this.#requestBodyCollectors;
+      default:
+        throw new UnsupportedOperationException(
+          `Unsupported data type ${dataType}`,
+        );
+    }
   }
 
-  disownResponse(requestId: Network.Request, collectorId?: string) {
+  disownData(
+    requestId: Network.Request,
+    dataType: Network.DataType,
+    collectorId?: string,
+  ) {
+    const requestToCollectorsMap = this.#getRequestToCollectorMap(dataType);
     if (collectorId !== undefined) {
-      this.#requestCollectors.get(requestId)?.delete(collectorId);
+      requestToCollectorsMap.get(requestId)?.delete(collectorId);
     }
     if (
       collectorId === undefined ||
-      this.#requestCollectors.get(requestId)?.size === 0
+      requestToCollectorsMap.get(requestId)?.size === 0
     ) {
-      this.#requestCollectors.delete(requestId);
+      requestToCollectorsMap.delete(requestId);
     }
   }
 
   #shouldCollectRequest(
     collectorId: string,
     request: NetworkRequest,
+    dataType: Network.DataType,
     topLevelBrowsingContext: BrowsingContext.BrowsingContext,
     userContext: Browser.UserContext,
   ): boolean {
-    if (!this.#collectors.has(collectorId)) {
+    const collector = this.#collectors.get(collectorId);
+
+    if (collector === undefined) {
       throw new NoSuchNetworkCollectorException(
         `Unknown collector ${collectorId}`,
       );
     }
-
-    const collector = this.#collectors.get(collectorId)!;
     if (
       collector.userContexts &&
       !collector.userContexts.includes(userContext)
@@ -138,23 +160,43 @@ export class CollectorsStorage {
       // Collector is aimed for a different top-level browsing context.
       return false;
     }
-    if (collector.maxEncodedDataSize < request.bytesReceived) {
+    if (!collector.dataTypes.includes(dataType)) {
+      // Collector is aimed for a different data type.
+      return false;
+    }
+
+    if (
+      dataType === Network.DataType.Request &&
+      request.bodySize > collector.maxEncodedDataSize
+    ) {
       this.#logger?.(
         LogType.debug,
-        `Request ${request.id} is too big for the collector ${collectorId}`,
+        `Request's ${request.id} body size is too big for the collector ${collectorId}`,
+      );
+      return false;
+    }
+
+    if (
+      dataType === Network.DataType.Response &&
+      request.bytesReceived > collector.maxEncodedDataSize
+    ) {
+      this.#logger?.(
+        LogType.debug,
+        `Request's ${request.id} response is too big for the collector ${collectorId}`,
       );
       return false;
     }
 
     this.#logger?.(
       LogType.debug,
-      `Collector ${collectorId} collected request ${request.id}`,
+      `Collector ${collectorId} collected ${dataType} of ${request.id}`,
     );
     return true;
   }
 
   collectIfNeeded(
     request: NetworkRequest,
+    dataType: Network.DataType,
     topLevelBrowsingContext: BrowsingContext.BrowsingContext,
     userContext: Browser.UserContext,
   ) {
@@ -162,12 +204,16 @@ export class CollectorsStorage {
       this.#shouldCollectRequest(
         collectorId,
         request,
+        dataType,
         topLevelBrowsingContext,
         userContext,
       ),
     );
     if (collectorIds.length > 0) {
-      this.#requestCollectors.set(request.id, new Set(collectorIds));
+      this.#getRequestToCollectorMap(dataType).set(
+        request.id,
+        new Set(collectorIds),
+      );
     }
   }
 
@@ -179,17 +225,26 @@ export class CollectorsStorage {
     }
     this.#collectors.delete(collectorId);
 
-    const releasedRequests = [];
+    const affectedRequests = [];
     // Clean up collected responses.
-    for (const [requestId, collectorIds] of this.#requestCollectors) {
+    for (const [requestId, collectorIds] of this.#responseCollectors) {
       if (collectorIds.has(collectorId)) {
         collectorIds.delete(collectorId);
         if (collectorIds.size === 0) {
-          this.#requestCollectors.delete(requestId);
-          releasedRequests.push(requestId);
+          this.#responseCollectors.delete(requestId);
+          affectedRequests.push(requestId);
         }
       }
     }
-    return releasedRequests;
+    for (const [requestId, collectorIds] of this.#requestBodyCollectors) {
+      if (collectorIds.has(collectorId)) {
+        collectorIds.delete(collectorId);
+        if (collectorIds.size === 0) {
+          this.#requestBodyCollectors.delete(requestId);
+          affectedRequests.push(requestId);
+        }
+      }
+    }
+    return affectedRequests;
   }
 }

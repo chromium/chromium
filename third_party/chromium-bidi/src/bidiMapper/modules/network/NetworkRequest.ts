@@ -245,7 +245,7 @@ export class NetworkRequest {
     return cookies;
   }
 
-  get #bodySize() {
+  get bodySize() {
     let bodySize = 0;
     if (typeof this.#requestOverrides?.bodySize === 'number') {
       bodySize = this.#requestOverrides.bodySize;
@@ -520,6 +520,7 @@ export class NetworkRequest {
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#request.info = event;
+    this.#networkStorage.collectIfNeeded(this, Network.DataType.Request);
     this.#emitEventsIfReady();
   }
 
@@ -551,7 +552,7 @@ export class NetworkRequest {
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
     this.#response.hasExtraInfo = event.hasExtraInfo;
     this.#response.info = event.response;
-    this.#networkStorage.collectIfNeeded(this);
+    this.#networkStorage.collectIfNeeded(this, Network.DataType.Response);
     this.#emitEventsIfReady();
   }
 
@@ -970,7 +971,7 @@ export class NetworkRequest {
       headers,
       cookies: this.#cookies,
       headersSize: computeHeadersSize(headers),
-      bodySize: this.#bodySize,
+      bodySize: this.bodySize,
       // TODO: populate
       destination: this.#getDestination(),
       // TODO: populate
