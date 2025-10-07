@@ -30,7 +30,7 @@ import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-// <if expr="enable_pdf_ink2">
+// <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
 import {BeforeUnloadProxyImpl} from './before_unload_proxy.js';
 // </if>
 import type {Bookmark} from './bookmark_type.js';
@@ -165,7 +165,7 @@ const BACKGROUND_COLOR: number = 0xff282828;
 // LINT.ThenChange(//chrome/browser/resources/pdf/pdf_embedder.css:PdfBackgroundColor, //components/pdf/common/pdf_util.cc:PdfBackgroundColor)
 // clang-format on
 
-// <if expr="enable_pdf_ink2">
+// <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
 function isEditedSaveRequestType(requestType: SaveRequestType): boolean {
   return requestType === SaveRequestType.ANNOTATION ||
       requestType === SaveRequestType.EDITED;
@@ -350,6 +350,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // `hasSavedEdits_` is true if the PDF has been saved with edits. Additional
   // changes or saves of the document will not update this property.
   private hasSavedEdits_: boolean = false;
+  // </if>
+  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
   // `hasUnsavedEdits_` is set whenever the user makes edits to the PDF that
   // have not been saved. This is used to determine whether to enable the
   // beforeunload dialog when the user navigates away with unsaved changes.
@@ -379,6 +381,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private pluginController_: PluginController = PluginController.getInstance();
   // <if expr="enable_pdf_ink2">
   private restoreAnnotationMode_: AnnotationMode = AnnotationMode.OFF;
+  // </if>
+  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
   private showBeforeUnloadDialog_: boolean = false;
   // </if>
   protected accessor showPasswordDialog_: boolean = false;
@@ -431,21 +435,19 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // <if expr="enable_pdf_save_to_drive">
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('saveToDriveState_') &&
-        changedPrivateProperties.get('saveToDriveState_') ===
-            SaveToDriveState.UPLOADING &&
-        this.saveToDriveState_ !== SaveToDriveState.UNINITIALIZED) {
-      this.getSaveToDriveBubble_().showAt(
-          this.$.toolbar.getSaveToDriveBubbleAnchor(),
-          /*autoDismiss=*/ true);
+    if (changedPrivateProperties.has('saveToDriveState_')) {
+      this.onSaveToDriveStateChanged_(
+          changedPrivateProperties.get('saveToDriveState_') as
+          SaveToDriveState);
     }
     // </if>
   }
 
-  // <if expr="enable_pdf_ink2">
+  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
   override connectedCallback() {
     super.connectedCallback();
     this.tracker.add(window, 'beforeunload', this.onBeforeUnload_.bind(this));
+    // <if expr="enable_pdf_ink2">
     const mediaQuery = window.matchMedia('(min-width: 960px)');
     this.useSidePanelForInk_ = mediaQuery.matches;
     this.tracker.add(mediaQuery, 'change', () => {
@@ -458,13 +460,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
                                        UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
       }
     });
+    // </if> enable_pdf_ink2
   }
 
   override disconnectedCallback() {
     this.tracker.removeAll();
     super.disconnectedCallback();
   }
-  // </if> enable_pdf_ink2
+  // </if> enable_pdf_ink2 or enable_pdf_save_to_drive
 
   getBackgroundColor(): number {
     return BACKGROUND_COLOR;
@@ -1405,6 +1408,50 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     assert(bubble);
     return bubble;
   }
+
+  private onSaveToDriveStateChanged_(oldSaveToDriveState: SaveToDriveState) {
+    // Transition from UNINITIALIZED to UPLOADING.
+    if (oldSaveToDriveState === SaveToDriveState.UNINITIALIZED &&
+        this.isSaveToDriveUploading_()) {
+      // Block unloading the window if upload is in progress.
+      this.setShowBeforeUnloadDialog_(true);
+      if (isEditedSaveRequestType(this.saveToDriveRequestType_)) {
+        this.hasUnsavedEdits_ = false;
+      }
+      return;
+    }
+    // Transition from a final state (COMPLETE, or any error state) to
+    // UNINITIALIZED.
+    if (oldSaveToDriveState !== SaveToDriveState.UPLOADING) {
+      // TODO(crbug.com/427449996): Add an assertion to check that the current
+      // state is UNINITIALIZED. Also update the tests to accommodate the
+      // change.
+      this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
+      return;
+    }
+    // Transition from UPLOADING to SUCCESS, cancelled, or error state.
+    if (this.saveToDriveState_ === SaveToDriveState.SUCCESS) {
+      this.onSaveSuccessful_(this.saveToDriveRequestType_);
+    } else {
+      // TODO(crbug.com/427449996): Fix an edge case where beforeunload dialog
+      // is still blocking if an EDITED upload is cancelled after a successful
+      // EDITED disk save. This could happen in the following order:
+      // 1. Make an edit.
+      // 2. Initiate an EDITED save to Drive.
+      // 3. Initiate an EDITED disk save.
+      // 4. Cancel the EDITED save to Drive upload.
+      // 5. `hasUnsavedEdits_` is restored to true from step 4.
+      // <if expr="enable_pdf_ink2">
+      this.onSaveFailedOrCancelled_(this.saveToDriveRequestType_);
+      // </if>
+      if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
+        return;
+      }
+    }
+    this.getSaveToDriveBubble_().showAt(
+        this.$.toolbar.getSaveToDriveBubbleAnchor(),
+        /*autoDismiss=*/ true);
+  }
   // </if> enable_pdf_save_to_drive
 
   protected onChangePage_(e: CustomEvent<ChangePageDetail>) {
@@ -1457,7 +1504,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // strokes have updated. If the user hasn't saved, only show the
     // beforeunload dialog if there's edits.
     this.setShowBeforeUnloadDialog_(
-        this.hasSavedEdits_ || this.hasUnsavedEdits_);
+        this.hasSavedEdits_ || this.shouldShowBeforeUnloadDialog_());
   }
   // </if>
 
@@ -1727,15 +1774,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * Performs required tasks after a successful save.
    */
   private onSaveSuccessful_(requestType: SaveRequestType) {
-    // <if expr="enable_pdf_ink2">
-    // Unblock closing the window if there are no unsaved edits.
-    this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
+    // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
+    this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
     this.hasSavedEdits_ =
         this.hasSavedEdits_ || requestType === SaveRequestType.EDITED;
     // </if>
   }
 
-  // <if expr="enable_pdf_ink2">
+  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
   /**
    * Performs required tasks after a failed or cancelled save.
    */
@@ -1745,7 +1791,20 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (isEditedSaveRequestType(requestType)) {
       this.hasUnsavedEdits_ = true;
     }
-    this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
+    this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
+  }
+
+  /**
+   * Returns whether the beforeunload dialog should be shown.
+   */
+  private shouldShowBeforeUnloadDialog_(): boolean {
+    let showBeforeUnloadDialog = this.hasUnsavedEdits_;
+    // <if expr="enable_pdf_save_to_drive">
+    // If Save to Drive is uploading, block closing the window.
+    showBeforeUnloadDialog =
+        showBeforeUnloadDialog || this.isSaveToDriveUploading_();
+    // </if>
+    return showBeforeUnloadDialog;
   }
   // </if>
 
@@ -1852,15 +1911,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
   // </if>
 
-  // <if expr="enable_pdf_ink2">
+  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
   /**
    * Handles the `BeforeUnloadEvent` event.
    * @param event The `BeforeUnloadEvent` object representing the event.
    */
   private onBeforeUnload_(event: BeforeUnloadEvent) {
-    // When a user tries to leave PDF with unsaved changes, show the 'Leave
-    // site' dialog. OOPIF PDF only, since MimeHandler handles the beforeunload
-    // event instead.
+    // When a user tries to leave PDF with unsaved changes or when Save to Drive
+    // is in progress, show the 'Leave site' dialog. OOPIF PDF only, since
+    // MimeHandler handles the beforeunload event instead.
     if (this.pdfOopifEnabled && this.showBeforeUnloadDialog_) {
       BeforeUnloadProxyImpl.getInstance().preventDefault(event);
     }
