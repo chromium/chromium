@@ -947,7 +947,10 @@ void GlicWindowControllerImpl::SetDraggingAreasAndWatchForMouseEvents() {
 }
 
 GlicView* GlicWindowControllerImpl::GetGlicView() const {
-  CHECK(IsShowing());
+  if (!IsShowing()) {
+    return nullptr;
+  }
+
   if (glic_view_) {
     return glic_view_;
   }
