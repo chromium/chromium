@@ -108,9 +108,7 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
   OCMExpect([mock_delegate_
                 reauthFinishedWithResult:ReauthResult::kSuccess
                                   gaiaID:ios::OCM::AnyPointer<GaiaId>()])
-      .andDo(^(NSInvocation* invocation) {
-        GaiaId* gaia_id;
-        [invocation getArgument:&gaia_id atIndex:3];
+      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
         EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
         reauth_coordinator = nil;
       });
@@ -151,10 +149,8 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCancelledByUser) {
   OCMExpect([[(id)mock_delegate_ ignoringNonObjectArgs]
                 reauthFinishedWithResult:ReauthResult::kCancelledByUser
                                   gaiaID:nullptr])
-      .andDo(^(NSInvocation* invocation) {
-        GaiaId gaia_id;
-        [invocation getArgument:&gaia_id atIndex:3];
-        EXPECT_EQ(gaia_id, GaiaId());
+      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
+        EXPECT_EQ(gaia_id, nil);
         reauth_coordinator = nil;
       });
   CHECK(completion_block);
@@ -194,10 +190,8 @@ TEST_F(SigninReauthCoordinatorTest, ReauthInterrupted) {
   OCMExpect([[(id)mock_delegate_ ignoringNonObjectArgs]
                 reauthFinishedWithResult:ReauthResult::kInterrupted
                                   gaiaID:nullptr])
-      .andDo(^(NSInvocation* invocation) {
-        GaiaId gaia_id;
-        [invocation getArgument:&gaia_id atIndex:3];
-        EXPECT_EQ(gaia_id, GaiaId());
+      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
+        EXPECT_EQ(gaia_id, nil);
         reauth_coordinator = nil;
       });
   OCMExpect([mock_interaction_manager_ cancelAuthActivityAnimated:NO]);
@@ -238,9 +232,7 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
   OCMExpect([[((id)mock_delegate_) ignoringNonObjectArgs]
                 reauthFinishedWithResult:ReauthResult::kSuccess
                                   gaiaID:ios::OCM::AnyPointer<GaiaId>()])
-      .andDo(^(NSInvocation* invocation) {
-        GaiaId* gaia_id;
-        [invocation getArgument:&gaia_id atIndex:3];
+      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
         EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
         reauth_coordinator = nil;
       });
