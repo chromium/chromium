@@ -18,15 +18,13 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // static
-PageInfoInfoBarDelegate* PageInfoInfoBarDelegate::Create(
-    infobars::ContentInfoBarManager* infobar_manager) {
-  auto* delegate = new PageInfoInfoBarDelegate();
+void PageInfoInfoBarDelegate::Create(
+    infobars::ContentInfoBarManager* infobar_manager,
+    content::ReloadType reload_type) {
   infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(delegate)));
-  return delegate;
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
+          new PageInfoInfoBarDelegate(reload_type))));
 }
-
-PageInfoInfoBarDelegate::PageInfoInfoBarDelegate() = default;
 
 PageInfoInfoBarDelegate::~PageInfoInfoBarDelegate() = default;
 
