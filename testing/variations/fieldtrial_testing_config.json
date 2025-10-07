@@ -679,6 +679,24 @@
             ]
         }
     ],
+    "AndroidBottomToolbarV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "force_bottom_for_focused_omnibox": "true"
+                    },
+                    "enable_features": [
+                        "AndroidBottomToolbarV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidComposeplate": [
         {
             "platforms": [
