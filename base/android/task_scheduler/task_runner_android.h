@@ -33,6 +33,14 @@ class BASE_EXPORT TaskRunnerAndroid {
 
   void PostDelayedTask(JNIEnv* env, jlong delay, jint taskIndex);
 
+  void PostDelayedTaskWithLocation(
+      JNIEnv* env,
+      jlong delay,
+      jint taskIndex,
+      const android::JavaParamRef<jstring>& fileName,
+      const android::JavaParamRef<jstring>& functionName,
+      jint lineNumber);
+
   bool BelongsToCurrentThread(JNIEnv* env);
 
   static std::unique_ptr<TaskRunnerAndroid> Create(jint task_runner_type,

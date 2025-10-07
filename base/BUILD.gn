@@ -55,6 +55,10 @@ if (is_win) {
   import("//build/config/win/control_flow_guard.gni")
 }
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
+
 declare_args() {
   # Unsafe developer build. Has developer-friendly features that may weaken or
   # disable security measures like sandboxing or ASLR.
@@ -5059,6 +5063,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/BackgroundOnlyAsyncTask.java",
       "android/java/src/org/chromium/base/task/ChainedTasks.java",
       "android/java/src/org/chromium/base/task/ChromeThreadPoolExecutor.java",
+      "android/java/src/org/chromium/base/task/Location.java",
       "android/java/src/org/chromium/base/task/PostTask.java",
       "android/java/src/org/chromium/base/task/SequencedTaskRunner.java",
       "android/java/src/org/chromium/base/task/SequencedTaskRunnerImpl.java",
@@ -5699,6 +5704,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/supplier/UnwrapObservableSupplierTest.java",
       "android/junit/src/org/chromium/base/task/AsyncTaskThreadTest.java",
       "android/junit/src/org/chromium/base/task/ChromiumExecutorServiceFactoryTest.java",
+      "android/junit/src/org/chromium/base/task/LocationTest.java",
       "android/junit/src/org/chromium/base/task/SequencedTaskRunnerTaskMigrationTest.java",
       "android/junit/src/org/chromium/base/util/GarbageCollectionTestUtilsUnitTest.java",
       "test/android/junit/src/org/chromium/base/test/SetUpStatementTest.java",

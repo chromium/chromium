@@ -173,13 +173,13 @@ public class TaskRunnerImpl implements TaskRunner {
         }
         // Lock-free path when native is initialized.
         if (mNativeTaskRunnerAndroid != 0) {
-            queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay);
+            queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, null);
             return;
         }
         synchronized (mPreNativeTaskLock) {
             oneTimeInitialization();
             if (mNativeTaskRunnerAndroid != 0) {
-                queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay);
+                queueDelayedTaskToNative(mNativeTaskRunnerAndroid, task, delay, null);
                 return;
             }
             // We don't expect a whole lot of these, if that changes consider pooling them.
@@ -264,13 +264,14 @@ public class TaskRunnerImpl implements TaskRunner {
         synchronized (mPreNativeTaskLock) {
             if (mPreNativeTasks != null) {
                 for (Runnable task : mPreNativeTasks) {
-                    queueDelayedTaskToNative(nativeTaskRunnerAndroid, task, 0);
+                    queueDelayedTaskToNative(nativeTaskRunnerAndroid, task, 0, null);
                 }
                 mPreNativeTasks = null;
             }
             if (mPreNativeDelayedTasks != null) {
                 for (Pair<Runnable, Long> task : mPreNativeDelayedTasks) {
-                    queueDelayedTaskToNative(nativeTaskRunnerAndroid, task.first, task.second);
+                    queueDelayedTaskToNative(
+                            nativeTaskRunnerAndroid, task.first, task.second, null);
                 }
                 mPreNativeDelayedTasks = null;
             }
@@ -291,10 +292,21 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     private static void queueDelayedTaskToNative(
-            long nativeTaskRunnerAndroid, Runnable task, long delay) {
+            long nativeTaskRunnerAndroid, Runnable task, long delay, @Nullable Location location) {
         // If there's no delay, then try to store it in the table. Otherwise use the map.
         int taskIndex = queueTask(task, /* useTable= */ delay == 0);
-        TaskRunnerImplJni.get().postDelayedTask(nativeTaskRunnerAndroid, delay, taskIndex);
+        if (location != null) {
+            TaskRunnerImplJni.get()
+                    .postDelayedTaskWithLocation(
+                            nativeTaskRunnerAndroid,
+                            delay,
+                            taskIndex,
+                            location.fileName,
+                            location.functionName,
+                            location.lineNumber);
+        } else {
+            TaskRunnerImplJni.get().postDelayedTask(nativeTaskRunnerAndroid, delay, taskIndex);
+        }
     }
 
     @CalledByNative
@@ -343,5 +355,13 @@ public class TaskRunnerImpl implements TaskRunner {
         void destroy(long nativeTaskRunnerAndroid);
 
         void postDelayedTask(long nativeTaskRunnerAndroid, long delay, int taskIndex);
+
+        void postDelayedTaskWithLocation(
+            long nativeTaskRunnerAndroid,
+            long delay,
+            int taskIndex,
+            String fileName,
+            String functionName,
+            int lineNumber);
     }
 }

@@ -18,6 +18,11 @@ declare_args() {
   is_java_debug = is_debug || incremental_install
 
   enable_javaless_renderers = false
+
+  # Enables rewriting of certain method invocations with overloads that take an
+  # additional argument of type org.chromium.base.task.Location (see
+  # //build/android/location_rewriter)
+  enable_java_location_rewrite = false
 }
 
 # These two combinations could theoretically be made to work, but they are
