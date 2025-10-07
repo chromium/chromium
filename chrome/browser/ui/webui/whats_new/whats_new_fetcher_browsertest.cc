@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -74,8 +75,12 @@ class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUp();
   }
   virtual void InitFeatures() {
-    feature_list_.InitWithFeatures({kTestModuleEnabled, kTestModule2Enabled},
-                                   {kTestModuleDisabled});
+    // Enabled/disable test data.
+    // Additionally, the refresh feature is disabled to simplify the tests.
+    // Eventually, the refresh URL will be the default, so this is fine for now.
+    feature_list_.InitWithFeatures(
+        {kTestModuleEnabled, kTestModule2Enabled},
+        {features::kWhatsNewDesktopRefresh, kTestModuleDisabled});
   }
   ~WhatsNewFetcherBrowserTest() override {
     GlobalFeatures::ReplaceGlobalFeaturesForTesting(base::NullCallback());
@@ -200,10 +205,13 @@ class WhatsNewFetcherOneCustomizationBrowserTest
     : public WhatsNewFetcherBrowserTest {
  public:
   void InitFeatures() override {
+    // Enabled/disable test data.
+    // Additionally, the refresh feature is disabled to simplify the tests.
+    // Eventually, the refresh URL will be the default, so this is fine for now.
     feature_list_.InitWithFeaturesAndParameters(
         {{kTestModuleEnabled, {{whats_new::kCustomizationParam, "abc"}}},
          {kTestModule2Enabled, {{}}}},
-        {kTestModuleDisabled});
+        {features::kWhatsNewDesktopRefresh, kTestModuleDisabled});
   }
 };
 
@@ -247,11 +255,14 @@ class WhatsNewFetcherMultipleCustomizationsBrowserTest
     : public WhatsNewFetcherBrowserTest {
  public:
   void InitFeatures() override {
+    // Enabled/disable test data.
+    // Additionally, the refresh feature is disabled to simplify the tests.
+    // Eventually, the refresh URL will be the default, so this is fine for now.
     feature_list_.InitWithFeaturesAndParameters(
         {{kTestModuleEnabled, {{whats_new::kCustomizationParam, "abc"}}},
          {kTestModule2Enabled, {{whats_new::kCustomizationParam, "def"}}},
          {kTestEditionEnabled, {{whats_new::kCustomizationParam, "hij"}}}},
-        {});
+        {features::kWhatsNewDesktopRefresh});
   }
 };
 

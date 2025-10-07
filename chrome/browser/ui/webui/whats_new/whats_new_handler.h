@@ -39,6 +39,8 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest,
                            SurveyIsNotTriggeredForPreviouslyUsedEdition);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewRefreshHandlerTest, GetServerUrl);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewRefreshHandlerTest, SurveyIsTriggered);
 
   void RecordTimeToLoadContent(base::Time time) override;
   void RecordVersionPageLoaded(bool is_auto_open) override;
