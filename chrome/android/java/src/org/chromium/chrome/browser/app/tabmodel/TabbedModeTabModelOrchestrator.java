@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
@@ -234,10 +235,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             createArchivedTabModelInDeferredTask(tabContentManager);
         }
 
-        if (ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()
-                && ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-            mTabStateStoreIsAuthoritative =
-                    ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue();
+        if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
+            mTabStateStoreIsAuthoritative = TabStateStorageFlagHelper.isStorageAuthoritative();
             // Temporary variable usage to avoid unused variable warning.
             Log.i(TAG, "mTabStateStoreIsAuthoritative: " + mTabStateStoreIsAuthoritative);
 
