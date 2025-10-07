@@ -2406,11 +2406,15 @@ public final class SafetyHubTest {
     }
 
     private void verifyButtonsNextToTextVisibility(String text, boolean visible) {
-        onView(
-                        allOf(
-                                withId(R.id.buttons_container),
-                                hasSibling(withChild(withChild(withText(text))))))
-                .check(matches(visible ? isDisplayed() : not(isDisplayed())));
+        Matcher<View> viewMatcher =
+                allOf(
+                        withId(R.id.buttons_container),
+                        hasSibling(withChild(withChild(withText(text)))));
+        if (visible) {
+            onViewWaiting(allOf(viewMatcher, isDisplayed())).check(matches(isDisplayed()));
+        } else {
+            onView(viewMatcher).check(matches(not(isDisplayed())));
+        }
     }
 
     private void verifySummaryNextToTextVisibility(String text, boolean visible) {
