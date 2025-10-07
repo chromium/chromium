@@ -224,7 +224,8 @@ public class CronetTestRule implements TestRule {
                 .that(implementationsUnderTest)
                 .isNotEmpty();
 
-        if (Build.VERSION.SDK_INT < 34) {
+        if (!new HttpEngineNativeProvider(ApplicationProvider.getApplicationContext())
+                .isEnabled()) {
             implementationsUnderTest.remove(CronetImplementation.AOSP_PLATFORM);
             assumeFalse(
                     desc.getMethodName()
