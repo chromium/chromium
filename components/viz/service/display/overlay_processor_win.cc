@@ -222,6 +222,8 @@ void OverlayProcessorWin::ProcessForOverlays(
     CHECK(primary_plane);
     primary_plane->is_opaque =
         !render_passes->back()->has_transparent_background;
+    primary_plane->layer_id = gfx::OverlayLayerId::MakeVizInternalRenderPass(
+        render_passes->back()->id);
   }
 
   if (is_page_fullscreen_mode_ &&

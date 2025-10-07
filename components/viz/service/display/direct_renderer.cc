@@ -152,7 +152,8 @@ void DirectRenderer::Reshape(
 }
 
 void DirectRenderer::DecideRenderPassAllocationsForFrame(
-    const AggregatedRenderPassList& render_passes_in_draw_order) {
+    const AggregatedRenderPassList& render_passes_in_draw_order,
+    bool skip_root_render_pass_allocation) {
   DCHECK(render_pass_bypass_quads_.empty());
 
   auto& root_render_pass = render_passes_in_draw_order.back();
@@ -162,26 +163,9 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
   for (const auto& pass : render_passes_in_draw_order) {
     const bool is_root = pass == root_render_pass;
 
-#if BUILDFLAG(IS_WIN)
-    // For delegated compositing the root pass is preserved, but not rendered.
-    // If a previous frame fell out of delegated compositing we want to make
-    // sure that we deallocate its backing when switching back to delegated
-    // compositing.
-    if (is_root && output_surface_->capabilities().renderer_allocates_images &&
-        !current_frame()->output_surface_plane) {
-      // We expect to be in delegated compositing mode, which means the root
-      // damage rect has been cleared.
-      CHECK(current_frame()->root_damage_rect.IsEmpty());
+    if (is_root && skip_root_render_pass_allocation) {
       continue;
     }
-#else
-    // TODO(crbug.com/40224327): Consider deallocating the primary plane in this
-    // case.
-    // Non-Windows platforms use BufferQueue, which are not owned by the render
-    // pass backing. ChromeOS must hold on to the root surface buffers to ensure
-    // overlay-ability and macOS wants to just discard the underlying surfaces
-    // for performance.
-#endif
 
     const RenderPassRequirements requirements =
         CalculateRenderPassRequirements(pass.get());
@@ -274,6 +258,9 @@ void DirectRenderer::DrawFrame(
           current_frame()->root_render_pass->has_transparent_background));
   gfx::Size surface_resource_size =
       CalculateSizeForOutputSurface(device_viewport_size);
+#if BUILDFLAG(IS_WIN)
+  bool has_primary_plane = false;
+#endif
   if (overlay_processor_) {
     // Display transform and viewport size are needed for overlay validator on
     // Android SurfaceControl, and viewport size is need on Windows. These need
@@ -284,13 +271,23 @@ void DirectRenderer::DrawFrame(
 
     // Before ProcessForOverlay calls into the hardware to ask about whether the
     // overlay setup can be handled, we need to set up the primary plane.
+    std::optional<OverlayCandidate> primary_plane;
     if (output_surface_->capabilities().renderer_allocates_images) {
-      current_frame()->output_surface_plane =
-          overlay_processor_->ProcessOutputSurfaceAsOverlay(
-              device_viewport_size, surface_resource_size, frame_si_format,
-              frame_color_space,
-              current_frame()->root_render_pass->has_transparent_background,
-              1.0f /*opacity*/, GetPrimaryPlaneOverlayTestingMailbox());
+      primary_plane = overlay_processor_->ProcessOutputSurfaceAsOverlay(
+          device_viewport_size, surface_resource_size, frame_si_format,
+          frame_color_space,
+          current_frame()->root_render_pass->has_transparent_background,
+          1.0f /*opacity*/, GetPrimaryPlaneOverlayTestingMailbox());
+
+      if (current_frame()->display_color_spaces.SupportsHDR() &&
+          current_frame()->root_render_pass->content_color_usage ==
+              gfx::ContentColorUsage::kHDR) {
+        primary_plane->hdr_metadata.extended_range.emplace();
+        // TODO(crbug.com/40263227): Track the actual brightness of the
+        // content. For now, assume that all HDR content is 1,000 nits.
+        primary_plane->hdr_metadata.extended_range->desired_headroom =
+            gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
+      }
     }
 
     // Attempt to replace some or all of the quads of the root render pass with
@@ -300,7 +297,7 @@ void DirectRenderer::DrawFrame(
         resource_provider_, render_passes_in_draw_order,
         output_surface_->color_matrix(), render_pass_filters_,
         render_pass_backdrop_filters_, std::move(surface_damage_rect_list),
-        current_frame()->output_surface_plane, &current_frame()->overlay_list,
+        primary_plane, &current_frame()->overlay_list,
         &current_frame()->root_damage_rect,
         &current_frame()->root_content_bounds);
     auto overlay_processing_time = overlay_processing_timer.Elapsed();
@@ -312,8 +309,36 @@ void DirectRenderer::DrawFrame(
         "Compositing.DirectRenderer.OverlayProcessingUs",
         overlay_processing_time, kMinTime, kMaxTime, kTimeBuckets);
 
-    overlay_processor_->AdjustOutputSurfaceOverlay(
-        current_frame()->output_surface_plane);
+    overlay_processor_->AdjustOutputSurfaceOverlay(primary_plane);
+
+    if (primary_plane) {
+#if BUILDFLAG(IS_OZONE)
+      // Ozone DRM needs the primary plane as the first overlay when overlay
+      // testing.
+      const auto insert_positon = current_frame()->overlay_list.begin();
+      current_frame()->overlay_list.insert(insert_positon,
+                                           std::move(primary_plane).value());
+#elif BUILDFLAG(IS_MAC)
+      // Mac doesn't use the plane_z_order field and it needs to have primary
+      // plane last in the list of overlays.
+      current_frame()->overlay_list.push_back(std::move(primary_plane).value());
+#elif BUILDFLAG(IS_ANDROID)
+      // Android respects plane_z_order and order in the list shouldn't matter,
+      // but it surfaces the bug when the planes are not hidden properly. As we
+      // use only underlays, we should keep primary plane first so it would hide
+      // planes that are not supposed to be visible.
+      const auto insert_positon = current_frame()->overlay_list.begin();
+      current_frame()->overlay_list.insert(insert_positon,
+                                           std::move(primary_plane).value());
+#else
+      // Other platforms respect plane_z_order so the list order doesn't matter.
+      current_frame()->overlay_list.push_back(std::move(primary_plane).value());
+#endif
+
+#if BUILDFLAG(IS_WIN)
+      has_primary_plane = true;
+#endif
+    }
   }
 
   // Only reshape when we know we are going to draw. Otherwise, the reshape
@@ -347,7 +372,7 @@ void DirectRenderer::DrawFrame(
     // If compositing is delegated, then there will be no output_surface_plane,
     // and we should not trigger a redraw of the root render pass.
     // Pixel tests will not be displayed as overlay planes, so they need redraw.
-    if (current_frame()->output_surface_plane ||
+    if (has_primary_plane ||
         !output_surface_->capabilities().renderer_allocates_images) {
       needs_full_frame_redraw = true;
     }
@@ -357,12 +382,30 @@ void DirectRenderer::DrawFrame(
 #endif
   }
 
-  // DecideRenderPassAllocationsForFrame needs
-  // current_frame()->display_color_spaces to decide the color space
-  // of each render pass. Overlay processing is also allowed to modify the
-  // render pass backing requirements due to e.g. a underlay promotion. On
-  // Windows, the root render pass' size is based on the |reshape_params_|.
-  DecideRenderPassAllocationsForFrame(*render_passes_in_draw_order);
+#if BUILDFLAG(IS_WIN)
+  // For delegated compositing the root pass is preserved, but not rendered.
+  // If a previous frame fell out of delegated compositing we want to make
+  // sure that we deallocate its backing when switching back to delegated
+  // compositing.
+  const bool skip_root_render_pass_allocation =
+      output_surface_->capabilities().renderer_allocates_images &&
+      !has_primary_plane;
+  if (skip_root_render_pass_allocation) {
+    // We expect to be in delegated compositing mode, which means the root
+    // damage rect has been cleared.
+    CHECK(current_frame()->root_damage_rect.IsEmpty());
+  }
+#else
+  // TODO(crbug.com/40224327): Consider deallocating the primary plane in this
+  // case.
+  // Non-Windows platforms use BufferQueue, which are not owned by the render
+  // pass backing. ChromeOS must hold on to the root surface buffers to ensure
+  // overlay-ability and macOS wants to just discard the underlying surfaces
+  // for performance.
+  const bool skip_root_render_pass_allocation = false;
+#endif
+  DecideRenderPassAllocationsForFrame(*render_passes_in_draw_order,
+                                      skip_root_render_pass_allocation);
 
   // Draw all non-root render passes except for the root render pass.
   total_pixels_rendered_this_frame_ = 0;

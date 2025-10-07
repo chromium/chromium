@@ -83,7 +83,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   void SetVisible(bool visible);
   void ReallocatedFrameBuffers();
   void DecideRenderPassAllocationsForFrame(
-      const AggregatedRenderPassList& render_passes_in_draw_order);
+      const AggregatedRenderPassList& render_passes_in_draw_order,
+      bool skip_root_render_pass_allocation);
   void DrawFrame(AggregatedRenderPassList* render_passes_in_draw_order,
                  float device_scale_factor,
                  const gfx::Size& device_viewport_size,
@@ -152,10 +153,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     gfx::AxisTransform2d target_to_device_transform;
 
     OverlayProcessorInterface::CandidateList overlay_list;
-    // When we have a buffer queue, the output surface could be treated as an
-    // overlay plane, and the struct to store that information is in
-    // |output_surface_plane|.
-    std::optional<OverlayCandidate> output_surface_plane;
   };
 
   void SetCurrentFrameForTesting(const DrawingFrame& frame);

@@ -1045,74 +1045,6 @@ void SkiaRenderer::FinishDrawingFrame() {
   MaybeScheduleBackgroundImage(current_frame()->overlay_list);
 #endif  // BUILDFLAG(IS_OZONE)
 
-  // TODO(weiliangc): Remove this once OverlayProcessor schedules overlays.
-  if (current_frame()->output_surface_plane) {
-    CHECK(output_surface_->capabilities().renderer_allocates_images);
-
-    auto& surface_candidate = current_frame()->output_surface_plane.value();
-    auto root_pass_backing =
-        render_pass_backings_.find(current_frame()->root_render_pass->id);
-    // The root pass backing should always exist.
-    DCHECK(root_pass_backing != render_pass_backings_.end());
-    surface_candidate.mailbox = root_pass_backing->second.mailbox;
-    if (current_frame()->display_color_spaces.SupportsHDR() &&
-        current_frame()->root_render_pass->content_color_usage ==
-            gfx::ContentColorUsage::kHDR) {
-      surface_candidate.hdr_metadata.extended_range.emplace();
-      // TODO(crbug.com/40263227): Track the actual brightness of the
-      // content. For now, assume that all HDR content is 1,000 nits.
-      surface_candidate.hdr_metadata.extended_range->desired_headroom =
-          gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
-    }
-    surface_candidate.damage_rect =
-        use_partial_swap_
-            ? gfx::RectF(swap_buffer_rect_)
-            : gfx::RectF(surface_candidate.resource_size_in_pixels);
-#if BUILDFLAG(IS_WIN)
-    surface_candidate.layer_id = gfx::OverlayLayerId::MakeVizInternalRenderPass(
-        current_frame()->root_render_pass->id);
-#endif
-#if BUILDFLAG(IS_OZONE)
-    // Ozone DRM needs the primary plane as the first overlay when overlay
-    // testing.
-    const auto insert_positon = current_frame()->overlay_list.begin();
-    current_frame()->overlay_list.insert(
-        insert_positon,
-        std::move(current_frame()->output_surface_plane).value());
-#elif BUILDFLAG(IS_MAC)
-    // Mac doesn't use the plane_z_order field and it needs to have primary
-    // plane last in the list of overlays.
-    current_frame()->overlay_list.push_back(
-        std::move(current_frame()->output_surface_plane).value());
-#elif BUILDFLAG(IS_ANDROID)
-    // Android respects plane_z_order and order in the list shouldn't matter,
-    // but it surfaces the bug when the planes are not hidden properly. As we
-    // use only underlays, we should keep primary plane first so it would hide
-    // planes that are not supposed to be visible.
-    const auto insert_positon = current_frame()->overlay_list.begin();
-    current_frame()->overlay_list.insert(
-        insert_positon,
-        std::move(current_frame()->output_surface_plane).value());
-#else
-    // Other platforms respect plane_z_order so the list order doesn't matter.
-    current_frame()->overlay_list.push_back(
-        std::move(current_frame()->output_surface_plane).value());
-#endif
-
-  } else {
-    if (buffer_queue_) {
-      // If there's no primary plane on these platforms it mean's we're
-      // delegating to the system compositor, and don't need the buffers
-      // anymore. On Mac the primary plane buffers are marked as purgeable so
-      // the OS can decide if they should be destroyed or not.
-#if BUILDFLAG(IS_WIN)
-      buffer_queue_->DestroyBuffers();
-#elif BUILDFLAG(IS_APPLE)
-      buffer_queue_->SetBuffersPurgeable();
-#endif
-    }
-  }
-
   ScheduleOverlays();
   debug_tint_modulate_count_++;
 }
@@ -2890,8 +2822,20 @@ void SkiaRenderer::ScheduleOverlays() {
   DCHECK(output_surface_->capabilities().supports_surfaceless);
 #endif
 
+  bool has_primary_plane_overlay = false;
+
   for (auto& overlay : current_frame()->overlay_list) {
     if (overlay.is_root_render_pass) {
+      CHECK(output_surface_->capabilities().renderer_allocates_images);
+
+      auto root_pass_backing =
+          render_pass_backings_.find(current_frame()->root_render_pass->id);
+      // The root pass backing should always exist.
+      DCHECK(root_pass_backing != render_pass_backings_.end());
+      overlay.mailbox = root_pass_backing->second.mailbox;
+      overlay.damage_rect = gfx::RectF(swap_buffer_rect_);
+
+      has_primary_plane_overlay = true;
       continue;
     }
 
@@ -3001,6 +2945,20 @@ void SkiaRenderer::ScheduleOverlays() {
 
   DCHECK(!current_gpu_commands_completed_fence_->was_set());
   DCHECK(!current_release_fence_->was_set());
+
+  if (!has_primary_plane_overlay) {
+    if (buffer_queue_) {
+      // If there's no primary plane on these platforms it mean's we're
+      // delegating to the system compositor, and don't need the buffers
+      // anymore. On Mac the primary plane buffers are marked as purgeable so
+      // the OS can decide if they should be destroyed or not.
+#if BUILDFLAG(IS_WIN)
+      buffer_queue_->DestroyBuffers();
+#elif BUILDFLAG(IS_APPLE)
+      buffer_queue_->SetBuffersPurgeable();
+#endif
+    }
+  }
 
   skia_output_surface_->ScheduleOverlays(
       std::move(current_frame()->overlay_list), std::move(sync_tokens));
