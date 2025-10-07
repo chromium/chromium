@@ -266,14 +266,12 @@ void DirectRenderer::DrawFrame(
     }
   }
 
-  bool frame_has_alpha =
-      current_frame()->root_render_pass->has_transparent_background;
   gfx::ColorSpace frame_color_space =
       RenderPassColorSpace(current_frame()->root_render_pass);
   SharedImageFormat frame_si_format = GetSharedImageFormat(
       current_frame()->display_color_spaces.GetOutputBufferFormat(
           current_frame()->root_render_pass->content_color_usage,
-          frame_has_alpha));
+          current_frame()->root_render_pass->has_transparent_background));
   gfx::Size surface_resource_size =
       CalculateSizeForOutputSurface(device_viewport_size);
   if (overlay_processor_) {
@@ -290,8 +288,9 @@ void DirectRenderer::DrawFrame(
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
               device_viewport_size, surface_resource_size, frame_si_format,
-              frame_color_space, frame_has_alpha, 1.0f /*opacity*/,
-              GetPrimaryPlaneOverlayTestingMailbox());
+              frame_color_space,
+              current_frame()->root_render_pass->has_transparent_background,
+              1.0f /*opacity*/, GetPrimaryPlaneOverlayTestingMailbox());
     }
 
     // Attempt to replace some or all of the quads of the root render pass with
@@ -313,15 +312,6 @@ void DirectRenderer::DrawFrame(
         "Compositing.DirectRenderer.OverlayProcessingUs",
         overlay_processing_time, kMinTime, kMaxTime, kTimeBuckets);
 
-    // If we promote any quad to an underlay then the main plane must support
-    // alpha.
-    // TODO(ccameron): We should update |frame_color_space|, and
-    // |frame_si_format| based on the change in |frame_has_alpha|.
-    if (current_frame()->output_surface_plane) {
-      frame_has_alpha |= !current_frame()->output_surface_plane->is_opaque;
-      root_render_pass->has_transparent_background = frame_has_alpha;
-    }
-
     overlay_processor_->AdjustOutputSurfaceOverlay(
         current_frame()->output_surface_plane);
   }
@@ -337,8 +327,9 @@ void DirectRenderer::DrawFrame(
   reshape_params.device_scale_factor = device_scale_factor;
   reshape_params.color_space = frame_color_space;
   reshape_params.format = frame_si_format;
-  reshape_params.alpha_type = frame_has_alpha ? RenderPassAlphaType::kPremul
-                                              : RenderPassAlphaType::kOpaque;
+  reshape_params.alpha_type = root_render_pass->has_transparent_background
+                                  ? RenderPassAlphaType::kPremul
+                                  : RenderPassAlphaType::kOpaque;
   if (next_frame_needs_full_frame_redraw_ ||
       reshape_params != reshape_params_ ||
       display_transform != reshape_display_transform_) {
@@ -869,13 +860,9 @@ DirectRenderer::CalculateRenderPassRequirements(
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
     requirements.format = reshape_si_format();
-    if (is_root) {
-      requirements.alpha_type = reshape_alpha_type();
-    } else {
-      requirements.alpha_type = render_pass->has_transparent_background
-                                    ? RenderPassAlphaType::kPremul
-                                    : RenderPassAlphaType::kOpaque;
-    }
+    requirements.alpha_type = render_pass->has_transparent_background
+                                  ? RenderPassAlphaType::kPremul
+                                  : RenderPassAlphaType::kOpaque;
   } else {
     requirements.generate_mipmap = render_pass->generate_mipmap;
     requirements.color_space = RenderPassColorSpace(render_pass);

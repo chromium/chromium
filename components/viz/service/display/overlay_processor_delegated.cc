@@ -216,6 +216,10 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     previous_frame_overlay_rect_ = gfx::Rect();
     // This is only relevant when delegating.
     unassigned_damage_ = gfx::RectF();
+
+    CHECK(primary_plane);
+    render_passes->back()->has_transparent_background |=
+        !primary_plane->is_opaque;
   }
 
   DebugLogAfterDelegation(delegated_status_, *candidates, *damage_rect);

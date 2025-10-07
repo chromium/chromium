@@ -407,6 +407,10 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
         primary_plane, candidates, content_bounds, damage_rect);
   }
 
+  if (primary_plane) {
+    render_pass->has_transparent_background |= !primary_plane->is_opaque;
+  }
+
   DCHECK(candidates->empty() || success);
   UMA_HISTOGRAM_COUNTS_100(kNumOverlaysPromotedHistogramName,
                            candidates->size());

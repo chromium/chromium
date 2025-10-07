@@ -409,10 +409,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     DCHECK(reshape_params_);
     return reshape_params_->color_space;
   }
-  RenderPassAlphaType reshape_alpha_type() const {
-    DCHECK(reshape_params_);
-    return reshape_params_->alpha_type;
-  }
 
   // Sets a DelegatedInkPointRendererSkiaForTest to be used for testing only, in
   // order to save delegated ink metadata values that would otherwise be reset.

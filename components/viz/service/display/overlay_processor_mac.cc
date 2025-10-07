@@ -85,6 +85,9 @@ void OverlayProcessorMac::ProcessForOverlays(
         resource_provider, render_pass, gfx::RectF(render_pass->output_rect),
         &render_pass->quad_list, render_pass_filters,
         render_pass_backdrop_filters, candidates);
+
+    CHECK(primary_plane);
+    render_pass->has_transparent_background |= !primary_plane->is_opaque;
   }
 }
 
