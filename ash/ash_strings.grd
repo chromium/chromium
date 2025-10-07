@@ -3117,6 +3117,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE_ACCESSIBLE" desc="The message used by accessibility to indicate that battery charging is unreliable.">
         Plugged in to a low-power charger. Battery charging may not be reliable.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_INCOMPATIBLE_CHARGER_ACCESSIBLE" desc="The message used by accessibility to announce that an incompatible charger is connected." translateable="false">
+        Plugged in to an incompatible charger. Connect the original charger (or a similar wattage charger) to charge your device.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR" desc="The separator symbol between battery percentage string and battery remaining time string">
         ''' - '''
       </message>
