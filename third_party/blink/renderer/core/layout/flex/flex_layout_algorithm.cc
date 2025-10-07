@@ -261,6 +261,10 @@ LayoutUnit ColumnGap(const ComputedStyle& style,
 // +---------------------X2----------------------------------------+
 // More information on gap intersections can be found in the spec:
 // https://drafts.csswg.org/css-gaps-1/#layout-painting
+//
+// Important to note that all of this is fragment-relative. If the flexbox is
+// fragmented, each fragment will have its own `GapGeometry`.
+//
 // TODO(javiercon): Consider refactoring this code to be able to be reused for
 // masonry, by abstracting away the flex-specific logic.
 class GapAccumulator {
@@ -276,12 +280,11 @@ class GapAccumulator {
       : gap_between_items_(gap_between_items),
         gap_between_lines_(gap_between_lines),
         container_builder_(container_builder),
-        is_column_(is_column),
-        num_lines_(num_lines),
-        main_gaps_(num_lines - 1) {
+        is_column_(is_column) {
     CHECK(container_builder_);
 
     cross_gaps_.ReserveInitialCapacity(num_flex_items);
+    main_gaps_.ReserveInitialCapacity(num_lines - 1);
   }
 
   const GapGeometry* BuildGapGeometry() {
@@ -405,26 +408,29 @@ class GapAccumulator {
   // |            .                             .                           |
   // |            .                             .                           |
   // +----------------------------------------------------------------------+
+  //
   // For more information on GapDecorations implementation see
   // `third_party/blink/renderer/core/layout/gap/README.md`.
   void BuildGapsForCurrentItem(const FlexLineVector& flex_lines,
                                wtf_size_t flex_line_index,
                                wtf_size_t item_index_in_line,
-                               LogicalOffset item_offset) {
+                               LogicalOffset item_offset,
+                               bool is_first_line,
+                               bool is_last_line,
+                               LayoutUnit line_cross_start,
+                               LayoutUnit line_cross_end) {
     CHECK_LT(flex_line_index, flex_lines.size());
     const FlexLine& flex_line = flex_lines[flex_line_index];
-
-    // "last" and "first" here refers to the block direction.
-    const bool is_last_line = flex_line_index == flex_lines.size() - 1;
-    const bool is_first_line = flex_line_index == 0;
 
     // "first" and "last" here refers to the inline direction.
     const bool is_first_item = item_index_in_line == 0;
     const bool is_last_item =
         item_index_in_line == flex_line.item_indices.size() - 1;
 
+    const bool single_line = is_first_line && is_last_line;
+
     if (is_first_line && is_first_item) {
-      content_cross_start_ = flex_line.cross_axis_offset;
+      content_cross_start_ = line_cross_start;
       content_main_start_ =
           is_column_
               ? container_builder_->BorderScrollbarPadding().block_start
@@ -435,17 +441,16 @@ class GapAccumulator {
     }
 
     if (is_last_line && is_first_item) {
-      content_cross_end_ = flex_line.LineCrossEnd();
+      content_cross_end_ = line_cross_end;
     }
 
     // The first item in any line doesn't have any `CrossGap` associated with
     // it.
     if (is_first_item) {
       // We set the `MainGap` start offset when we process the first item in a
-      // line, and nothing else. The last line does not have any `MainGap`s
-      // (number of main gaps = `num_lines_` - 1)
-      if (num_lines_ > 1 && !is_last_line) {
-        PopulateMainGapForFirstItem(flex_line, flex_line_index);
+      // line, and nothing else. The last line does not have any `MainGap`s.
+      if (!single_line && !is_last_line) {
+        PopulateMainGapForFirstItem(line_cross_end);
 
         if (flex_line.item_indices.size() == 1) {
           LayoutUnit border_scrollbar_padding =
@@ -469,8 +474,9 @@ class GapAccumulator {
     const LayoutUnit main_intersection_offset =
         main_offset - (gap_between_items_ / 2);
 
-    PopulateCrossGapForCurrentItem(flex_line, flex_line_index,
-                                   flex_lines.size(), main_intersection_offset);
+    PopulateCrossGapForCurrentItem(flex_line, flex_line_index, is_first_line,
+                                   is_last_line, single_line,
+                                   main_intersection_offset, line_cross_start);
 
     if (is_last_item) {
       LayoutUnit border_scrollbar_padding =
@@ -489,15 +495,17 @@ class GapAccumulator {
     }
   }
 
-  void PopulateMainGapForFirstItem(const FlexLine& flex_line,
-                                   wtf_size_t flex_line_index) {
-    CHECK_LT(flex_line_index, main_gaps_.size());
-    LayoutUnit gap_offset = flex_line.LineCrossEnd() + (gap_between_lines_ / 2);
-    main_gaps_[flex_line_index].SetGapOffset(gap_offset);
+  void PopulateMainGapForFirstItem(LayoutUnit cross_end) {
+    LayoutUnit gap_offset = cross_end + (gap_between_lines_ / 2);
+    main_gaps_.emplace_back(gap_offset);
   }
 
   void HandleCrossGapRangesForCurrentItem(wtf_size_t flex_line_index,
                                           wtf_size_t cross_gap_index) {
+    if (main_gaps_.empty()) {
+      return;
+    }
+
     if (flex_line_index < main_gaps_.size()) {
       main_gaps_[flex_line_index].IncrementRangeOfCrossGapsBefore(
           cross_gap_index);
@@ -514,8 +522,11 @@ class GapAccumulator {
 
   void PopulateCrossGapForCurrentItem(const FlexLine& flex_line,
                                       wtf_size_t flex_line_index,
-                                      wtf_size_t num_lines,
-                                      LayoutUnit main_intersection_offset) {
+                                      bool is_first_line,
+                                      bool is_last_line,
+                                      bool single_line,
+                                      LayoutUnit main_intersection_offset,
+                                      LayoutUnit cross_start) {
     // If we are in the first or last flex line, our the `CrossGap` associated
     // with this item will start at the point given by
     // `main_intersection_offset`, and the either cross axis of the line or the
@@ -524,14 +535,12 @@ class GapAccumulator {
     // If we are in the middle flex line, the `CrossGap` associated with this
     // item will start at the point given by `main_intersection_offset`, and the
     // midpoint between the start of the line and the end of the last line.
-    const bool is_first_line = flex_line_index == 0;
-    const bool is_last_line = (flex_line_index + 1) == num_lines;
 
-    LayoutUnit cross_intersection_offset = flex_line.cross_axis_offset;
+    LayoutUnit cross_intersection_offset = cross_start;
     CrossGap::EdgeIntersectionState edge_state =
         CrossGap::EdgeIntersectionState::kNone;
 
-    if (num_lines == 1) {
+    if (single_line) {
       // If there is only one line, the cross gap will start and end at the
       // content edge.
       edge_state = CrossGap::EdgeIntersectionState::kBoth;
@@ -565,8 +574,6 @@ class GapAccumulator {
   LayoutUnit gap_between_lines_;
   const BoxFragmentBuilder* container_builder_ = nullptr;
   bool is_column_ = false;
-
-  wtf_size_t num_lines_;
 
   Vector<MainGap> main_gaps_;
   Vector<CrossGap> cross_gaps_;
@@ -2077,7 +2084,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
   std::optional<GapAccumulator> gap_accumulator = std::nullopt;
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule()) {
+      Style().HasGapRule() &&
+      !InvolvedInBlockFragmentation(container_builder_)) {
     gap_accumulator = GapAccumulator(gap_between_items_, gap_between_lines_,
                                      flex_lines->size(), flex_items_.size(),
                                      &container_builder_, is_column_);
@@ -2290,8 +2298,10 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       }
 
       if (gap_accumulator) {
-        gap_accumulator->BuildGapsForCurrentItem(*flex_lines, flex_line_idx,
-                                                 item_index_in_line, offset);
+        gap_accumulator->BuildGapsForCurrentItem(
+            *flex_lines, flex_line_idx, item_index_in_line, offset,
+            is_first_line, is_last_line, flex_line.cross_axis_offset,
+            flex_line.LineCrossEnd());
       }
 
       item_index_in_line++;
@@ -2371,11 +2381,31 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   BaselineAccumulator baseline_accumulator(Style());
   bool broke_before_row =
       *break_before_row != FlexBreakTokenData::kNotBreakBeforeRow;
+
+  wtf_size_t fragment_relative_line_index = 0;
+  // Used to keep track of the last line index we tracked in this fragment.
+  wtf_size_t last_line_tracked = kNotFound;
+
+  std::optional<GapAccumulator> gap_accumulator = std::nullopt;
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      Style().HasGapRule()) {
+    gap_accumulator = GapAccumulator(gap_between_items_, gap_between_lines_,
+                                     flex_lines->size(), flex_items_.size(),
+                                     &container_builder_, is_column_);
+  }
+
   for (auto entry = item_iterator.NextItem(broke_before_row);
        FlexItemData* flex_item = entry.flex_item;
        entry = item_iterator.NextItem(broke_before_row)) {
     wtf_size_t flex_item_idx = entry.flex_item_idx;
     wtf_size_t flex_line_idx = entry.flex_line_idx;
+    if (last_line_tracked == kNotFound) {
+      last_line_tracked = flex_line_idx;
+    } else if (flex_line_idx > last_line_tracked) {
+      ++fragment_relative_line_index;
+      last_line_tracked = flex_line_idx;
+    }
+
     FlexLine& flex_line = (*flex_lines)[flex_line_idx];
     const auto* item_break_token = To<BlockBreakToken>(entry.token);
     bool last_item_in_line =
@@ -2815,6 +2845,19 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     intrinsic_block_size_ = std::max(item_block_end, intrinsic_block_size_);
     container_builder_.AddResult(*layout_result, offset);
+    if (gap_accumulator.has_value()) {
+      const bool is_last_line_in_fragment =
+          item_block_end == fragmentainer_space ||
+          (item_block_end + gap_between_lines_ >= fragmentainer_space) ||
+          (flex_line_idx == flex_lines->size() - 1);
+      LayoutUnit line_cross_end = item_block_end;
+      LayoutUnit line_cross_start = offset.block_offset;
+
+      gap_accumulator->BuildGapsForCurrentItem(
+          *flex_lines, fragment_relative_line_index, flex_item_idx, offset,
+          /*is_first_line=*/fragment_relative_line_index == 0,
+          is_last_line_in_fragment, line_cross_start, line_cross_end);
+    }
     if (current_column_break_info) {
       current_column_break_info->break_after =
           container_builder_.PreviousBreakAfter();
@@ -2867,6 +2910,10 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   *total_intrinsic_block_size =
       std::max(*total_intrinsic_block_size,
                intrinsic_block_size_ + previously_consumed_block_size);
+
+  if (gap_accumulator) {
+    container_builder_.SetGapGeometry(gap_accumulator->BuildGapGeometry());
+  }
 
   return status;
 }
