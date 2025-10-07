@@ -37,6 +37,13 @@ constexpr gfx::Size kCanvasSize(100, 100);
 constexpr SkColor kDefaultColor = SK_ColorGREEN;
 
 constexpr PageCharacterIndex kTestChar0{0, 0};
+constexpr PageCharacterIndex kTestChar1{0, 1};
+constexpr PageCharacterIndex kTestChar2{0, 2};
+constexpr PageCharacterIndex kTestChar3{0, 3};
+constexpr PageCharacterIndex kTestChar4{0, 4};
+constexpr PageCharacterIndex kTestChar5{0, 5};
+constexpr PageCharacterIndex kTestPage1Char0{1, 0};
+constexpr PageCharacterIndex kTestPage1Char1{1, 1};
 
 constexpr gfx::Rect kDefaultCaret{10, 10, 1, 12};
 constexpr gfx::Rect kTestChar0ScreenRect{10, 10, 12, 14};
@@ -231,7 +238,7 @@ class PdfCaretTest : public testing::Test {
   void SetUpTwoCharLineTest() {
     SetUpPagesWithCharCounts({2});
     SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-    SetUpChar({0, 1}, 'b', {kTestChar1ScreenRect});
+    SetUpChar(kTestChar1, 'b', {kTestChar1ScreenRect});
   }
 
   void SetUpNoTextPageTest() {
@@ -242,8 +249,8 @@ class PdfCaretTest : public testing::Test {
   void SetUpMultiPageTest() {
     SetUpPagesWithCharCounts({1, 2, 0, 1});
     SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-    SetUpChar({1, 0}, 'b', {kTestMultiPage1Char0ScreenRect});
-    SetUpChar({1, 1}, 'c', {kTestMultiPage1Char1ScreenRect});
+    SetUpChar(kTestPage1Char0, 'b', {kTestMultiPage1Char0ScreenRect});
+    SetUpChar(kTestPage1Char1, 'c', {kTestMultiPage1Char1ScreenRect});
     SetUpChar({2, 0}, '\0', {kTestMultiPage2NonTextScreenRect});
     SetUpChar({3, 0}, 'd', {kTestMultiPage3Char0ScreenRect});
   }
@@ -432,7 +439,7 @@ TEST_F(PdfCaretTest, Blink) {
   // Moving to another char should reset the blink duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kOneMs);
 
-  caret().SetCharAndDraw({0, 1});
+  caret().SetCharAndDraw(kTestChar1);
   TestDrawCaret(kTestChar1Caret);
 
   GetPdfTestTaskEnvironment().FastForwardBy(PdfCaret::kDefaultBlinkInterval -
@@ -498,7 +505,7 @@ TEST_F(PdfCaretTest, SetChar) {
 
   EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
 
-  caret().SetChar({0, 1});
+  caret().SetChar(kTestChar1);
 
   // New caret position should not be invalidated.
   EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
@@ -513,17 +520,17 @@ TEST_F(PdfCaretTest, SetCharAndDraw) {
   SetUpPagesWithCharCounts({2});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   // Set up second char two pixels to the right of the first char.
-  SetUpChar({0, 1}, 'b', {gfx::Rect(24, 10, 12, 14)});
+  SetUpChar(kTestChar1, 'b', {gfx::Rect(24, 10, 12, 14)});
   InitializeVisibleCaretAtChar(kTestChar0);
 
   caret().SetCharAndDraw(kTestChar0);
   TestDrawCaret(kTestChar0Caret);
 
-  caret().SetCharAndDraw({0, 1});
+  caret().SetCharAndDraw(kTestChar1);
   TestDrawCaret(gfx::Rect(24, 10, 1, 14));
 
   constexpr gfx::Rect kSecondCharEndCaret{36, 10, 1, 14};
-  caret().SetCharAndDraw({0, 2});
+  caret().SetCharAndDraw(kTestChar2);
   TestDrawCaret(kSecondCharEndCaret);
 
   // Setting the position should still work, even when not visible. The effects
@@ -539,9 +546,9 @@ TEST_F(PdfCaretTest, SetCharAndDraw) {
 TEST_F(PdfCaretTest, SetCharAndDrawSpecialChars) {
   SetUpPagesWithCharCounts({4});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, ' ', {});
-  SetUpChar({0, 2}, '\n', {});
-  SetUpChar({0, 3}, 'b', {gfx::Rect(10, 26, 10, 8)});
+  SetUpChar(kTestChar1, ' ', {});
+  SetUpChar(kTestChar2, '\n', {});
+  SetUpChar(kTestChar3, 'b', {gfx::Rect(10, 26, 10, 8)});
   InitializeVisibleCaretAtChar(kTestChar0);
 
   caret().SetCharAndDraw(kTestChar0);
@@ -549,16 +556,16 @@ TEST_F(PdfCaretTest, SetCharAndDrawSpecialChars) {
 
   // Synthetic whitespaces and newlines added by PDFium do not have screen
   // rects. Caret should be directly to the right of the first char's rect.
-  caret().SetCharAndDraw({0, 1});
+  caret().SetCharAndDraw(kTestChar1);
   TestDrawCaret(kTestChar1Caret);
 
   // Consecutive chars with empty screen rects should still use the right of the
   // previous char's rect.
-  caret().SetCharAndDraw({0, 2});
+  caret().SetCharAndDraw(kTestChar2);
   TestDrawCaret(kTestChar1Caret);
 
   // Char with different width and height after newline.
-  caret().SetCharAndDraw({0, 3});
+  caret().SetCharAndDraw(kTestChar3);
   TestDrawCaret(gfx::Rect{10, 26, 1, 8});
 }
 
@@ -575,10 +582,10 @@ TEST_F(PdfCaretTest, SetCharAndDrawMultiPage) {
   caret().SetCharAndDraw({3, 1});
   TestDrawCaret(kTestMultiPage3Char0EndCaret);
 
-  caret().SetCharAndDraw({1, 1});
+  caret().SetCharAndDraw(kTestPage1Char1);
   TestDrawCaret(kTestMultiPage1Char1Caret);
 
-  caret().SetCharAndDraw({1, 0});
+  caret().SetCharAndDraw(kTestPage1Char0);
   TestDrawCaret(kTestMultiPage1Char0Caret);
 }
 
@@ -608,11 +615,11 @@ class PdfCaretMoveTest : public PdfCaretTest {
     SetUpPagesWithCharCounts({10});
     SetUpPagesWithSynthesizedChars({{2, 3, 6, 7}});
     SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-    SetUpChar({0, 1}, 'b', {kTestChar1ScreenRect});
-    SetUpChar({0, 2}, '\r', {});
-    SetUpChar({0, 3}, '\n', {});
-    SetUpChar({0, 4}, 'c', {gfx::Rect(11, 26, 10, 12)});
-    SetUpChar({0, 5}, 'd', {gfx::Rect(21, 26, 10, 12)});
+    SetUpChar(kTestChar1, 'b', {kTestChar1ScreenRect});
+    SetUpChar(kTestChar2, '\r', {});
+    SetUpChar(kTestChar3, '\n', {});
+    SetUpChar(kTestChar4, 'c', {gfx::Rect(11, 26, 10, 12)});
+    SetUpChar(kTestChar5, 'd', {gfx::Rect(21, 26, 10, 12)});
     SetUpChar({0, 6}, '\r', {});
     SetUpChar({0, 7}, '\n', {});
     SetUpChar({0, 8}, 'e', {gfx::Rect(10, 50, 14, 16)});
@@ -669,8 +676,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRight) {
   TestDrawCaret(kTestChar1EndCaret);
 
   // Right of char 1.
-  PageCharacterIndex kTestLastCaret{0, 2};
-  EXPECT_CALL(client(), IsSynthesizedNewline(kTestLastCaret)).Times(0);
+  EXPECT_CALL(client(), IsSynthesizedNewline(kTestChar2)).Times(0);
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
   TestDrawCaret(kTestChar1EndCaret);
@@ -695,7 +701,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightMultiPage) {
   SetUpMultiPageTest();
 
   // Start at left of page 1, char 0.
-  InitializeVisibleCaretAtChar({1, 0});
+  InitializeVisibleCaretAtChar(kTestPage1Char0);
 
   // Right of page 0, char 0.
   EXPECT_TRUE(
@@ -742,9 +748,9 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightSkipNewlines) {
   SetUpPagesWithCharCounts({4});
   SetUpPagesWithSynthesizedChars({{1, 2}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, '\r', {});
-  SetUpChar({0, 2}, '\n', {});
-  SetUpChar({0, 3}, 'b', {gfx::Rect(10, 26, 12, 14)});
+  SetUpChar(kTestChar1, '\r', {});
+  SetUpChar(kTestChar2, '\n', {});
+  SetUpChar(kTestChar3, 'b', {gfx::Rect(10, 26, 12, 14)});
 
   // Start at left of page 0, char 0.
   InitializeVisibleCaretAtChar(kTestChar0);
@@ -768,7 +774,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightSkipNewlines) {
 TEST_F(PdfCaretMoveTest, MoveCharLeftRightStartEndNewlines) {
   SetUpPagesWithCharCounts({2});
   SetUpChar(kTestChar0, '\n', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, '\n', {kTestChar1ScreenRect});
+  SetUpChar(kTestChar1, '\n', {kTestChar1ScreenRect});
 
   // Start at left of page 0, char 0.
   InitializeVisibleCaretAtChar(kTestChar0);
@@ -798,13 +804,13 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightConsecutiveNewlines) {
   SetUpPagesWithCharCounts({5});
   SetUpPagesWithSynthesizedChars({{1, 2}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, '\r', {});
-  SetUpChar({0, 2}, '\n', {});
-  SetUpChar({0, 3}, '\n', {gfx::Rect(10, 26, 12, 14)});
-  SetUpChar({0, 4}, 'b', {gfx::Rect(22, 26, 12, 14)});
+  SetUpChar(kTestChar1, '\r', {});
+  SetUpChar(kTestChar2, '\n', {});
+  SetUpChar(kTestChar3, '\n', {gfx::Rect(10, 26, 12, 14)});
+  SetUpChar(kTestChar4, 'b', {gfx::Rect(22, 26, 12, 14)});
 
   // Start at left of page 0, char 1.
-  InitializeVisibleCaretAtChar({0, 1});
+  InitializeVisibleCaretAtChar(kTestChar1);
 
   // Left of page 0, char 3 '\n', skipping one newline.
   constexpr gfx::Rect kTestChar3Caret{10, 26, 1, 14};
@@ -832,8 +838,8 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightSingleSyntheticNewline) {
   SetUpPagesWithCharCounts({3});
   SetUpPagesWithSynthesizedChars({{1}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, '\n', {});
-  SetUpChar({0, 2}, 'b', {gfx::Rect(10, 26, 12, 14)});
+  SetUpChar(kTestChar1, '\n', {});
+  SetUpChar(kTestChar2, 'b', {gfx::Rect(10, 26, 12, 14)});
 
   // Start at left of page 0, char 0.
   InitializeVisibleCaretAtChar(kTestChar0);
@@ -858,9 +864,9 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDown) {
   SetUpPagesWithCharCounts({4});
   SetUpPagesWithSynthesizedChars({{1, 2}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, '\r', {});
-  SetUpChar({0, 2}, '\n', {});
-  SetUpChar({0, 3}, 'b', {gfx::Rect(10, 24, 12, 14)});
+  SetUpChar(kTestChar1, '\r', {});
+  SetUpChar(kTestChar2, '\n', {});
+  SetUpChar(kTestChar3, 'b', {gfx::Rect(10, 24, 12, 14)});
 
   // Start at left of char 0.
   InitializeVisibleCaretAtChar(kTestChar0);
@@ -894,7 +900,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownSingleLine) {
   SetUpTwoCharLineTest();
 
   // Start at right of char 0.
-  InitializeVisibleCaretAtChar({0, 1});
+  InitializeVisibleCaretAtChar(kTestChar1);
 
   // Left of char 0.
   EXPECT_TRUE(
@@ -921,7 +927,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownMultiLine) {
   SetUpMultiLineTest();
 
   // Start at left of char 1 'b'.
-  InitializeVisibleCaretAtChar({0, 1});
+  InitializeVisibleCaretAtChar(kTestChar1);
 
   // Left of char 5 'd'.
   constexpr gfx::Rect kTestChar5Caret{21, 26, 1, 12};
@@ -946,18 +952,17 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownMultiLine) {
 }
 
 TEST_F(PdfCaretMoveTest, MoveCharUpDownStartOnNewline) {
-  constexpr PageCharacterIndex kStartNewline{0, 2};
   SetUpPagesWithCharCounts({6});
   SetUpPagesWithSynthesizedChars({{2, 3}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, 'b', {kTestChar1ScreenRect});
-  SetUpChar(kStartNewline, '\r', {});
-  SetUpChar({0, 3}, '\n', {});
-  SetUpChar({0, 4}, 'c', {gfx::Rect(10, 22, 12, 14)});
-  SetUpChar({0, 5}, 'd', {gfx::Rect(22, 22, 12, 14)});
+  SetUpChar(kTestChar1, 'b', {kTestChar1ScreenRect});
+  SetUpChar(kTestChar2, '\r', {});
+  SetUpChar(kTestChar3, '\n', {});
+  SetUpChar(kTestChar4, 'c', {gfx::Rect(10, 22, 12, 14)});
+  SetUpChar(kTestChar5, 'd', {gfx::Rect(22, 22, 12, 14)});
 
   // Start at right of char 1 '\r'.
-  InitializeVisibleCaretAtChar(kStartNewline);
+  InitializeVisibleCaretAtChar(kTestChar2);
 
   TestDrawCaret(kTestChar1EndCaret);
 
@@ -967,7 +972,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownStartOnNewline) {
   TestDrawCaret(gfx::Rect(34, 22, 1, 14));
 
   // Reset back to right of char 1.
-  caret().SetCharAndDraw(kStartNewline);
+  caret().SetCharAndDraw(kTestChar2);
   TestDrawCaret(kTestChar1EndCaret);
 
   // Left of char 0 'a'.
@@ -980,7 +985,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownMultiPage) {
   SetUpMultiPageTest();
 
   // Start at right of page 0, char 0 'a'.
-  InitializeVisibleCaretAtChar({0, 1});
+  InitializeVisibleCaretAtChar(kTestChar1);
 
   // Left of page 1, char 1 'c', which is closer than the right.
   EXPECT_TRUE(
@@ -1017,15 +1022,15 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownLongerFirstLine) {
   SetUpPagesWithCharCounts({6});
   SetUpPagesWithSynthesizedChars({{3, 4}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, 'b', {kTestChar1ScreenRect});
-  SetUpChar({0, 2}, 'c', {gfx::Rect(34, 10, 12, 14)});
-  SetUpChar({0, 3}, '\r', {});
-  SetUpChar({0, 4}, '\n', {});
-  SetUpChar({0, 5}, 'd', {gfx::Rect(10, 22, 12, 14)});
+  SetUpChar(kTestChar1, 'b', {kTestChar1ScreenRect});
+  SetUpChar(kTestChar2, 'c', {gfx::Rect(34, 10, 12, 14)});
+  SetUpChar(kTestChar3, '\r', {});
+  SetUpChar(kTestChar4, '\n', {});
+  SetUpChar(kTestChar5, 'd', {gfx::Rect(10, 22, 12, 14)});
 
   // Start at left of char 2 'c'.
   constexpr gfx::Rect kTestChar2Caret{34, 10, 1, 14};
-  InitializeVisibleCaretAtChar({0, 2});
+  InitializeVisibleCaretAtChar(kTestChar2);
 
   TestDrawCaret(kTestChar2Caret);
 
@@ -1044,11 +1049,11 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownLongerSecondLine) {
   SetUpPagesWithCharCounts({6});
   SetUpPagesWithSynthesizedChars({{1, 2}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar({0, 1}, '\r', {});
-  SetUpChar({0, 2}, '\n', {});
-  SetUpChar({0, 3}, 'b', {gfx::Rect(10, 22, 12, 14)});
-  SetUpChar({0, 4}, 'c', {gfx::Rect(22, 22, 12, 14)});
-  SetUpChar({0, 5}, 'd', {gfx::Rect(34, 22, 12, 14)});
+  SetUpChar(kTestChar1, '\r', {});
+  SetUpChar(kTestChar2, '\n', {});
+  SetUpChar(kTestChar3, 'b', {gfx::Rect(10, 22, 12, 14)});
+  SetUpChar(kTestChar4, 'c', {gfx::Rect(22, 22, 12, 14)});
+  SetUpChar(kTestChar5, 'd', {gfx::Rect(34, 22, 12, 14)});
 
   // Start at right of char 5 'd'.
   InitializeVisibleCaretAtChar({0, 6});
@@ -1084,8 +1089,7 @@ TEST_F(PdfCaretSelectionTest, SelectRight) {
   // Move right. Select char 1.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
   EXPECT_CALL(client(), StartSelection(kTestChar0));
-  EXPECT_CALL(client(),
-              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestChar1));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
 
@@ -1099,14 +1103,12 @@ TEST_F(PdfCaretSelectionTest, SelectLeft) {
   SetUpTwoCharLineTest();
 
   // Start at right of char 1.
-  constexpr PageCharacterIndex kTestChar2End{0, 2};
-  InitializeVisibleCaretAtChar(kTestChar2End);
+  InitializeVisibleCaretAtChar(kTestChar2);
 
   // Move left. Select char 1.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
-  EXPECT_CALL(client(), StartSelection(kTestChar2End));
-  EXPECT_CALL(client(),
-              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_CALL(client(), StartSelection(kTestChar2));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestChar1));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
 
@@ -1120,7 +1122,6 @@ TEST_F(PdfCaretSelectionTest, SelectDown) {
   SetUpMultiLineTest();
 
   // Start at left of char 1 'b'.
-  constexpr PageCharacterIndex kTestChar1{0, 1};
   InitializeVisibleCaretAtChar(kTestChar1);
 
   // Move down. Select chars 1, 2, 3, 4.
@@ -1168,8 +1169,7 @@ TEST_F(PdfCaretSelectionTest, SelectUp) {
 
   // Move up. Select chars 4, 3, 2, 1.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
-  EXPECT_CALL(client(),
-              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestChar1));
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
 
@@ -1188,7 +1188,7 @@ TEST_F(PdfCaretSelectionTest, SelectUp) {
 TEST_F(PdfCaretSelectionTest, SelectStartOnNonTextPageMoveToNonTextPage) {
   SetUpPagesWithCharCounts({0, 0});
   SetUpChar(kTestChar0, '\0', {kDefaultCaret});
-  SetUpChar({1, 0}, '\0', {gfx::Rect(10, 50, 1, 12)});
+  SetUpChar(kTestPage1Char0, '\0', {gfx::Rect(10, 50, 1, 12)});
 
   InitializeVisibleCaretAtChar(kTestChar0);
 
@@ -1208,7 +1208,7 @@ TEST_F(PdfCaretSelectionTest, SelectStartOnNonTextPageMoveToNonTextPage) {
 TEST_F(PdfCaretSelectionTest, SelectStartOnTextPageMoveToNonTextPages) {
   SetUpPagesWithCharCounts({1, 0, 0});
   SetUpChar(kTestChar0, '\0', {kTestChar0ScreenRect});
-  SetUpChar({1, 0}, '\0', {gfx::Rect(10, 50, 1, 12)});
+  SetUpChar(kTestPage1Char0, '\0', {gfx::Rect(10, 50, 1, 12)});
   SetUpChar({2, 0}, '\0', {gfx::Rect(10, 100, 1, 12)});
 
   InitializeVisibleCaretAtChar(kTestChar0);
@@ -1216,8 +1216,7 @@ TEST_F(PdfCaretSelectionTest, SelectStartOnTextPageMoveToNonTextPages) {
   // Select page 0, char 0.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
   EXPECT_CALL(client(), StartSelection(kTestChar0));
-  EXPECT_CALL(client(),
-              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestChar1));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
 
@@ -1271,13 +1270,12 @@ TEST_F(PdfCaretSelectionTest, MoveCaretWithShiftDownMultiPage) {
   SetUpMultiPageTest();
 
   // Start at right of page 0, char 0.
-  InitializeVisibleCaretAtChar({0, 1});
+  InitializeVisibleCaretAtChar(kTestChar1);
 
   // Move down. Select page 1, char 0 'b'.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
-  EXPECT_CALL(client(), StartSelection(PageCharacterIndex(0, 1)));
-  EXPECT_CALL(client(),
-              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(1, 1)));
+  EXPECT_CALL(client(), StartSelection(kTestChar1));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestPage1Char1));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
 
@@ -1326,8 +1324,7 @@ TEST_F(PdfCaretSelectionTest, MoveCaretWithShiftUpMultiPage) {
 
   // Move up. Select page 1, char 1 'c' and page 1, char 0 'b'.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
-  EXPECT_CALL(client(),
-              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestChar1));
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
 
