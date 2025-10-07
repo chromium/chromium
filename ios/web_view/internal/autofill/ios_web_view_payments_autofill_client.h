@@ -24,6 +24,7 @@ class AutofillProgressDialogController;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
+class CreditCardRiskBasedAuthenticator;
 class WebViewAutofillClientIOS;
 class PaymentsDataManager;
 
@@ -186,6 +187,8 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
+
+  std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
 
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 

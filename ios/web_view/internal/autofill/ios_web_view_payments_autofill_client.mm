@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -223,7 +224,11 @@ IOSWebViewPaymentsAutofillClient::GetOtpAuthenticator() {
 
 CreditCardRiskBasedAuthenticator*
 IOSWebViewPaymentsAutofillClient::GetRiskBasedAuthenticator() {
-  return nullptr;
+  if (!risk_based_authenticator_) {
+    risk_based_authenticator_ =
+        std::make_unique<CreditCardRiskBasedAuthenticator>(&client_.get());
+  }
+  return risk_based_authenticator_.get();
 }
 
 bool IOSWebViewPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable()
