@@ -806,11 +806,6 @@ const char kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[] =
     "be considered valid on the restored device, leading to the choice screen "
     "potentially retriggering.";
 
-const char kIOSQuickDeleteName[] = "Quick Delete for iOS";
-const char kIOSQuickDeleteDescription[] =
-    "Enables a new way for users to more easily delete their browsing data in "
-    "iOS.";
-
 const char kNewShareExtensionName[] = "New Share Extension for iOS";
 const char kNewShareExtensionDescription[] =
     "Update the share extension UI and add new share entries";

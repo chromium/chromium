@@ -124,7 +124,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_prefs.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -1166,9 +1165,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   // Added 09/2024.
-  if (IsIosQuickDeleteEnabled()) {
-    browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
-  }
+  browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
 
   // Added 11/2024
   prefs->ClearPref(kEnableDoNotTrackIos);

@@ -30,8 +30,6 @@ source_set("cells") {
     "settings_search_engine_item.mm",
     "sync_switch_item.h",
     "sync_switch_item.mm",
-    "table_view_clear_browsing_data_item.h",
-    "table_view_clear_browsing_data_item.mm",
     "version_item.h",
     "version_item.mm",
   ]

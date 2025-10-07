@@ -131,7 +131,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_saving_scene_agent.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
@@ -2861,24 +2860,6 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-- (void)showClearBrowsingDataSettings {
-  CHECK(!IsIosQuickDeleteEnabled());
-
-  UIViewController* baseViewController = self.currentInterface.viewController;
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showClearBrowsingDataSettings];
-    return;
-  }
-  Browser* browser = self.mainInterface.browser;
-
-  self.settingsNavigationController = [SettingsNavigationController
-      clearBrowsingDataControllerForBrowser:browser
-                                   delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
-}
-
 // Displays the Safety Check (via Settings) for `referrer`.
 - (void)showAndStartSafetyCheckForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
@@ -3372,15 +3353,9 @@ using UserFeedbackDataCallback =
   __weak CommandDispatcher* weakDispatcher =
       self.mainInterface.browser->GetCommandDispatcher();
   ProceduralBlock openQuickDeleteBlock = ^{
-    if (IsIosQuickDeleteEnabled()) {
-      id<QuickDeleteCommands> quickDeleteHandler =
-          HandlerForProtocol(weakDispatcher, QuickDeleteCommands);
-      [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
-    } else {
-      id<SettingsCommands> settingsHandler =
-          HandlerForProtocol(weakDispatcher, SettingsCommands);
-      [settingsHandler showClearBrowsingDataSettings];
-    }
+    id<QuickDeleteCommands> quickDeleteHandler =
+        HandlerForProtocol(weakDispatcher, QuickDeleteCommands);
+    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
   };
 
   if (self.currentInterface.incognito) {

@@ -6,14 +6,6 @@ source_set("clear_browsing_data") {
   sources = [
     "browsing_data_counter_wrapper_producer.h",
     "browsing_data_counter_wrapper_producer.mm",
-    "clear_browsing_data_consumer.h",
-    "clear_browsing_data_coordinator.h",
-    "clear_browsing_data_coordinator.mm",
-    "clear_browsing_data_manager.h",
-    "clear_browsing_data_manager.mm",
-    "clear_browsing_data_table_view_controller.h",
-    "clear_browsing_data_table_view_controller.mm",
-    "clear_browsing_data_ui_delegate.h",
     "pop_up_menu_control.h",
     "pop_up_menu_control.mm",
     "quick_delete_browsing_data_coordinator.h",
@@ -112,7 +104,6 @@ source_set("ui_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "clear_browsing_data_manager_unittest.mm",
     "quick_delete_mediator_unittest.mm",
     "quick_delete_util_unittest.mm",
     "time_range_selector_table_view_controller_unittest.mm",
@@ -190,12 +181,10 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
-    "clear_browsing_data_egtest.mm",
     "quick_delete_browsing_data_egtest.mm",
     "quick_delete_egtest.mm",
   ]
   deps = [
-    ":features",
     ":ui_constants",
     "//base/test:test_support",
     "//components/browsing_data/core",
@@ -234,14 +223,6 @@ source_set("eg2_tests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
 }
 
 source_set("util") {

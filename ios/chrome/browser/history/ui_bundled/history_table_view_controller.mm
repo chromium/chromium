@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -535,19 +534,14 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       browsing_data::DeleteBrowsingDataDialogAction::
           kHistoryEntryPointSelected);
 
-  if (IsIosQuickDeleteEnabled()) {
-    if (!self.browser) {
-      return;
-    }
-    id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler
-        showQuickDeleteAndCanPerformTabsClosureAnimation:
-            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
+  if (!self.browser) {
     return;
   }
-
-  [self.delegate displayClearHistoryData];
+  id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QuickDeleteCommands);
+  [quickDeleteHandler
+      showQuickDeleteAndCanPerformTabsClosureAnimation:
+          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
 }
 
 #pragma mark - Setter & Getters

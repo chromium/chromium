@@ -4,20 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 
-NSString* const kClearBrowsingDataViewAccessibilityIdentifier =
-    @"ClearBrowsingDataViewAccessibilityIdentifier";
-
-NSString* const kClearBrowsingHistoryCellAccessibilityIdentifier =
-    @"ClearBrowsingHistoryCellAccessibilityIdentifier";
-NSString* const kClearCookiesCellAccessibilityIdentifier =
-    @"ClearCookiesCellAccessibilityIdentifier";
-NSString* const kClearCacheCellAccessibilityIdentifier =
-    @"ClearCacheCellAccessibilityIdentifier";
-NSString* const kClearSavedPasswordsCellAccessibilityIdentifier =
-    @"ClearSavedPasswordsCellAccessibilityIdentifier";
-NSString* const kClearAutofillCellAccessibilityIdentifier =
-    @"ClearAutofillCellAccessibilityIdentifier";
-
 NSString* const kQuickDeletePopUpButtonIdentifier =
     @"QuickDeletePopUpButtonIdentifier";
 

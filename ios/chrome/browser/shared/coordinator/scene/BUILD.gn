@@ -166,7 +166,6 @@ source_set("scene") {
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/sessions/model:session_saving",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
-    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:features",
     "//ios/chrome/browser/settings/ui_bundled/password",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup",
     "//ios/chrome/browser/settings/ui_bundled/sync",

@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -558,11 +557,7 @@ using base::UserMetricsAction;
       browsing_data::DeleteBrowsingDataDialogAction::
           kKeyboardEntryPointSelected);
 
-  if (IsIosQuickDeleteEnabled()) {
-    [_quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
-  } else {
-    [_settingsHandler showClearBrowsingDataSettings];
-  }
+  [_quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
 }
 
 #pragma mark - Private

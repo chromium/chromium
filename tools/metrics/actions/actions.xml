@@ -16464,16 +16464,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="IOSClearBrowsingDataCloseWithSwipe">
-  <owner>edchin@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <description>
-    Reported when Clear Browsing Data Settings UI was dismissed using swipe down
-    gesture. iOS only.
-  </description>
-</action>
-
 <action name="IOSCollaborationInitJoin">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
@@ -23759,30 +23749,6 @@ should be able to be added at any place in this file.
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when BWG Settings UI was dismissed. iOS only.
-  </description>
-</action>
-
-<action name="MobileClearBrowsingDataClose">
-  <owner>edchin@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <description>
-    Reported when Clear Browsing Data Settings UI was dismissed. iOS only.
-  </description>
-</action>
-
-<action name="MobileClearBrowsingDataTriggeredFromLegacyUI">
-  <owner>sczs@chromium.org</owner>
-  <description>
-    Clear browsing data button was tapped on the legacy Clear browsing data UI.
-  </description>
-</action>
-
-<action name="MobileClearBrowsingDataTriggeredFromUIRefresh">
-  <owner>sczs@chromium.org</owner>
-  <description>
-    Clear browsing data button was tapped on the UI Refresh Clear browsing data
-    UI.
   </description>
 </action>
 
@@ -32883,11 +32849,6 @@ should be able to be added at any place in this file.
 <action name="Options_StorageOpenAndroidStorage">
   <owner>fukino@chromium.org</owner>
   <description>Settings: Storage management: Android storage</description>
-</action>
-
-<action name="Options_StorageOpenClearBrowsingData">
-  <owner>fukino@chromium.org</owner>
-  <description>Settings: Storage management: Browsing data</description>
 </action>
 
 <action name="Options_StorageOpenClearDriveCache">

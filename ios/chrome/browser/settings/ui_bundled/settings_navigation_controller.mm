@@ -23,9 +23,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/default_browser/default_browser_settings_table_view_controller.h"
@@ -88,7 +85,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 @interface SettingsNavigationController () <
     AutofillProfileEditCoordinatorDelegate,
     BWGSettingsCoordinatorDelegate,
-    ClearBrowsingDataCoordinatorDelegate,
     ContentSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     ManageAccountsCoordinatorDelegate,
@@ -131,11 +127,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // BWG settings coordinator.
 @property(nonatomic, strong) BWGSettingsCoordinator* BWGSettingsCoordinator;
-
-// TODO(crbug.com/335387869): Delete this coordinator when Quick Delete is fully
-// launched. The coordinator for the clear browsing data screen.
-@property(nonatomic, strong)
-    ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
 
 // Safety Check coordinator.
 @property(nonatomic, strong) SafetyCheckCoordinator* safetyCheckCoordinator;
@@ -563,27 +554,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
-    clearBrowsingDataControllerForBrowser:(Browser*)browser
-                                 delegate:
-                                     (id<SettingsNavigationControllerDelegate>)
-                                         delegate {
-  CHECK(!IsIosQuickDeleteEnabled());
-  SettingsNavigationController* navigationController =
-      [[SettingsNavigationController alloc]
-          initWithRootViewController:nil
-                             browser:browser
-                            delegate:delegate];
-  navigationController.clearBrowsingDataCoordinator =
-      [[ClearBrowsingDataCoordinator alloc]
-          initWithBaseNavigationController:navigationController
-                                   browser:browser];
-  navigationController.clearBrowsingDataCoordinator.delegate =
-      navigationController;
-  [navigationController.clearBrowsingDataCoordinator start];
-  return navigationController;
-}
-
-+ (instancetype)
     inactiveTabsControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate {
@@ -728,7 +698,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopGoogleServicesSettingsCoordinator];
   [self stopPasswordsCoordinator];
   [self stopSafetyCheckCoordinator];
-  [self stopClearBrowsingDataCoordinator];
   [self stopPrivacySafeBrowsingCoordinator];
   [self stopPrivacySettingsCoordinator];
   [self stopInactiveTabSettingsCoordinator];
@@ -952,13 +921,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.savedPasswordsCoordinator = nil;
 }
 
-// Stops the underlying clear browsing data coordinator if it exists.
-- (void)stopClearBrowsingDataCoordinator {
-  [self.clearBrowsingDataCoordinator stop];
-  self.clearBrowsingDataCoordinator.delegate = nil;
-  self.clearBrowsingDataCoordinator = nil;
-}
-
 // Stops the underlying inactive tabs settings coordinator if it exists.
 - (void)stopInactiveTabSettingsCoordinator {
   [self.inactiveTabsSettingsCoordinator stop];
@@ -1066,14 +1028,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (AutofillProfileEditCoordinator*)coordinator {
   DCHECK_EQ(self.autofillProfileEditCoordinator, coordinator);
   [self stopAutofillProfileEditCoordinator];
-}
-
-#pragma mark - ClearBrowsingDataCoordinatorDelegate
-
-- (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:
-    (ClearBrowsingDataCoordinator*)coordinator {
-  DCHECK_EQ(self.clearBrowsingDataCoordinator, coordinator);
-  [self stopClearBrowsingDataCoordinator];
 }
 
 #pragma mark - SafetyCheckCoordinatorDelegate
@@ -1312,17 +1266,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   ConfigureHandlers(controller, _browser->GetCommandDispatcher());
   controller.source = source;
   [self pushViewController:controller animated:YES];
-}
-
-- (void)showClearBrowsingDataSettings {
-  CHECK(!IsIosQuickDeleteEnabled());
-  [self stopClearBrowsingDataCoordinator];
-
-  self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
-      initWithBaseNavigationController:self
-                               browser:self.browser];
-  self.clearBrowsingDataCoordinator.delegate = self;
-  [self.clearBrowsingDataCoordinator start];
 }
 
 // Shows the Safety Check page and starts the Safety Check for `referrer`.

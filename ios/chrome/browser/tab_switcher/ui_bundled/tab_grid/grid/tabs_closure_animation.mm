@@ -330,10 +330,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
 }
 
 - (void)animateWithCompletion:(ProceduralBlock)completion {
-  // TODO(crbug.com/335387869): Remove NotFatalUntil and disabling the user
-  // interaction when we're sure the window user interaction is always disabled
-  // at this point.
-  CHECK(!_window.userInteractionEnabled, base::NotFatalUntil::M139);
+  CHECK(!_window.userInteractionEnabled);
   _window.userInteractionEnabled = NO;
 
   [CATransaction begin];

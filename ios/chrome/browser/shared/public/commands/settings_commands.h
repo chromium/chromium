@@ -90,9 +90,6 @@ enum class PushNotificationClientId;
                                             (DefaultBrowserSettingsPageSource)
                                                 source;
 
-// Shows the settings page allowing the user to clear their browsing data.
-- (void)showClearBrowsingDataSettings;
-
 // Shows the Safety Check page and starts the Safety Check for `referrer`.
 - (void)showAndStartSafetyCheckForReferrer:
     (password_manager::PasswordCheckReferrer)referrer;

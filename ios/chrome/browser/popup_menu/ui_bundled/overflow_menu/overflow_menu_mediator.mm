@@ -68,7 +68,6 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -2247,12 +2246,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
           kMenuItemEntryPointSelected);
 
   [self dismissMenu];
-  if (IsIosQuickDeleteEnabled()) {
-    [self.quickDeleteHandler
-        showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
-  } else {
-    [self.settingsHandler showClearBrowsingDataSettings];
-  }
+  [self.quickDeleteHandler
+      showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
 }
 
 // Dismisses the menu and adds the current page as a bookmark or opens the

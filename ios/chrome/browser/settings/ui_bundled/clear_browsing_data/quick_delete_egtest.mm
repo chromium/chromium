@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_ui_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -281,7 +280,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(kIOSQuickDelete);
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(
@@ -294,7 +292,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 - (void)relaunchAppWithInactiveTabsTestMode {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kIOSQuickDelete);
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

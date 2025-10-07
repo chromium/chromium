@@ -220,15 +220,6 @@ extern NSString* const kSettingsDoneButtonId;
                                       delegate
                           sourceForUMA:(DefaultBrowserSettingsPageSource)source;
 
-// Creates a new ClearBrowsingDataTableViewController and the chrome
-// around it. `browser` is the browser where settings are being displayed and
-// should not be nil. `delegate` may be nil.
-+ (instancetype)
-    clearBrowsingDataControllerForBrowser:(Browser*)browser
-                                 delegate:
-                                     (id<SettingsNavigationControllerDelegate>)
-                                         delegate;
-
 // Creates a new SafetyCheckTableViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil. `referrer` represents where in the

@@ -7,16 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// The accessibility identifier of the clear browsing data view.
-extern NSString* const kClearBrowsingDataViewAccessibilityIdentifier;
-
-// The accessibility identifiers of the cells in the clear browsing data view.
-extern NSString* const kClearBrowsingHistoryCellAccessibilityIdentifier;
-extern NSString* const kClearCookiesCellAccessibilityIdentifier;
-extern NSString* const kClearCacheCellAccessibilityIdentifier;
-extern NSString* const kClearSavedPasswordsCellAccessibilityIdentifier;
-extern NSString* const kClearAutofillCellAccessibilityIdentifier;
-
 // The accessibility identifier for the button inside a pop-up cell.
 extern NSString* const kQuickDeletePopUpButtonIdentifier;
 

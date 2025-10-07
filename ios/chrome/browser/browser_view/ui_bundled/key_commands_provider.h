@@ -25,7 +25,6 @@ class Browser;
 // Key command actions are converted to Chrome commands and sent to these
 // handlers.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
-@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 @property(nonatomic, weak) id<FindInPageCommands> findInPageHandler;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
