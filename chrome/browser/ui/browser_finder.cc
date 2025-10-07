@@ -61,16 +61,16 @@ const uint32_t kMatchNotClosing = 1 << 5;
 // but there are outliers.
 const uint32_t kIncludeBrowsersScheduledForDeletion = 1 << 6;
 
-bool DoesBrowserMatchProfile(Browser& browser,
+bool DoesBrowserMatchProfile(BrowserWindowInterface& browser,
                              Profile* profile,
                              uint32_t match_types) {
   if (match_types & kMatchOriginalProfile) {
-    if (browser.profile()->GetOriginalProfile() !=
+    if (browser.GetProfile()->GetOriginalProfile() !=
         profile->GetOriginalProfile()) {
       return false;
     }
   } else {
-    if (browser.profile() != profile) {
+    if (browser.GetProfile() != profile) {
       return false;
     }
   }
@@ -84,7 +84,7 @@ bool DoesBrowserMatchProfile(Browser& browser,
         ash::Shell::Get()->multi_user_window_manager();
     const AccountId& shown_account_id =
         multi_user_window_manager->GetUserPresentingWindow(
-            browser.window()->GetNativeWindow());
+            browser.GetWindow()->GetNativeWindow());
     Profile* shown_profile =
         shown_account_id.is_valid()
             ? multi_user_util::GetProfileFromAccountId(shown_account_id)
@@ -111,70 +111,80 @@ bool DoesBrowserMatchProfile(Browser& browser,
 //   |CanSupportWindowFeature(window_feature)| must return true.
 // . If it contains kMatchNormal, the browser must be a normal tabbed browser.
 // . If it contains kMatchNotClosing, the browser must not be a closing browser.
-bool BrowserMatches(Browser* browser,
+bool BrowserMatches(BrowserWindowInterface* browser,
                     Profile* profile,
                     Browser::WindowFeature window_feature,
                     uint32_t match_types,
                     int64_t display_id) {
   if ((match_types & kMatchCanSupportWindowFeature) &&
-      !browser->CanSupportWindowFeature(window_feature)) {
+      !browser->GetBrowserForMigrationOnly()->CanSupportWindowFeature(
+          window_feature)) {
     return false;
   }
 
-  if (!DoesBrowserMatchProfile(*browser, profile, match_types)) {
+  if (!DoesBrowserMatchProfile(*browser->GetBrowserForMigrationOnly(), profile,
+                               match_types)) {
     return false;
   }
 
-  if ((match_types & kMatchNormal) && !browser->is_type_normal()) {
+  if ((match_types & kMatchNormal) &&
+      browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     return false;
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Note that |browser->window()| might be nullptr in tests.
   if ((match_types & kMatchCurrentWorkspace) &&
-      (!browser->window() || !browser->window()->IsOnCurrentWorkspace())) {
+      (!browser->GetBrowserForMigrationOnly()->window() ||
+       !browser->GetBrowserForMigrationOnly()
+            ->window()
+            ->IsOnCurrentWorkspace())) {
     return false;
   }
 #endif
 
   if (match_types & kMatchDisplayId &&
       display::Screen::Get()
-              ->GetDisplayNearestWindow(browser->window()->GetNativeWindow())
+              ->GetDisplayNearestWindow(browser->GetWindow()->GetNativeWindow())
               .id() != display_id) {
     return false;
   }
 
-  if ((match_types & kMatchNotClosing) && IsBrowserClosing(browser)) {
+  if ((match_types & kMatchNotClosing) &&
+      IsBrowserClosing(browser->GetBrowserForMigrationOnly())) {
     return false;
   }
 
   if ((match_types & kIncludeBrowsersScheduledForDeletion) == 0 &&
-      browser->is_delete_scheduled()) {
+      browser->GetBrowserForMigrationOnly()->is_delete_scheduled()) {
     return false;
   }
 
   return true;
 }
 
-// Returns the first browser in the specified iterator that returns true from
+// Returns the first BrowserWindowInterface that returns true from
 // |BrowserMatches|, or null if no browsers match the arguments. See
 // |BrowserMatches| for details on the arguments.
-template <class T>
-Browser* FindBrowserMatching(const T& begin,
-                             const T& end,
-                             Profile* profile,
-                             Browser::WindowFeature window_feature,
-                             uint32_t match_types,
-                             int64_t display_id = display::kInvalidDisplayId) {
-  for (T i = begin; i != end; ++i) {
-    if (BrowserMatches(*i, profile, window_feature, match_types, display_id)) {
-      return *i;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* FindBrowserOrderedByActivationMatching(
+    Profile* profile,
+    Browser::WindowFeature window_feature,
+    uint32_t match_types,
+    int64_t display_id = display::kInvalidDisplayId) {
+  BrowserWindowInterface* match = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (BrowserMatches(browser, profile, window_feature, match_types,
+                           display_id)) {
+          match = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return match;
 }
 
-Browser* FindBrowserWithTabbedOrAnyType(
+BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
     Profile* profile,
     bool match_tabbed,
     bool match_original_profiles,
@@ -204,15 +214,8 @@ Browser* FindBrowserWithTabbedOrAnyType(
     match_types |= kMatchNotClosing;
   }
 
-  Browser* browser = FindBrowserMatching(
-      browser_list_impl->begin_browsers_ordered_by_activation(),
-      browser_list_impl->end_browsers_ordered_by_activation(), profile,
-      Browser::FEATURE_NONE, match_types, display_id);
-  // Fall back to a forward scan of all Browsers if no active one was found.
-  return browser ? browser
-                 : FindBrowserMatching(
-                       browser_list_impl->begin(), browser_list_impl->end(),
-                       profile, Browser::FEATURE_NONE, match_types, display_id);
+  return FindBrowserOrderedByActivationMatching(profile, Browser::FEATURE_NONE,
+                                                match_types, display_id);
 }
 
 size_t GetBrowserCountImpl(Profile* profile,
@@ -239,22 +242,27 @@ Browser* FindTabbedBrowser(Profile* profile,
                            bool match_original_profiles,
                            int64_t display_id,
                            bool ignore_closing_browsers) {
-  return FindBrowserWithTabbedOrAnyType(
+  BrowserWindowInterface* browser = FindBrowserWithTabbedOrAnyType(
       profile, true, match_original_profiles,
       /*match_current_workspace=*/true,
       /*match_not_closing=*/ignore_closing_browsers, display_id);
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles) {
-  return FindBrowserWithTabbedOrAnyType(profile, false, match_original_profiles,
-                                        /*match_current_workspace=*/false,
-                                        /*match_not_closing=*/false);
+  BrowserWindowInterface* browser =
+      FindBrowserWithTabbedOrAnyType(profile, false, match_original_profiles,
+                                     /*match_current_workspace=*/false,
+                                     /*match_not_closing=*/false);
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 Browser* FindBrowserWithProfile(Profile* profile) {
-  return FindBrowserWithTabbedOrAnyType(profile, false, false,
-                                        /*match_current_workspace=*/false,
-                                        /*match_not_closing=*/false);
+  BrowserWindowInterface* browser =
+      FindBrowserWithTabbedOrAnyType(profile, false, false,
+                                     /*match_current_workspace=*/false,
+                                     /*match_not_closing=*/false);
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 std::vector<Browser*> FindAllTabbedBrowsersWithProfile(
@@ -344,12 +352,11 @@ Browser* FindBrowserWithUiElementContext(ui::ElementContext context) {
 }
 
 Browser* FindLastActiveWithProfile(Profile* profile) {
-  BrowserList* list = BrowserList::GetInstance();
   // We are only interested in last active browsers, so we don't fall back to
   // all browsers like FindBrowserWith* do.
-  return FindBrowserMatching(list->begin_browsers_ordered_by_activation(),
-                             list->end_browsers_ordered_by_activation(),
-                             profile, Browser::FEATURE_NONE, kMatchAny);
+  BrowserWindowInterface* browser = FindBrowserOrderedByActivationMatching(
+      profile, Browser::FEATURE_NONE, kMatchAny);
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 Browser* FindLastActive() {
