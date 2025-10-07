@@ -709,13 +709,6 @@ const base::FeatureParam<int>
     kAutofillEnableCacheForRegexMatchingCacheSizeParam{
         &kAutofillEnableCacheForRegexMatching, "cache_size", 1000};
 
-// If enabled, AutofillType may be populated with multiple FieldTypes where all
-// but one FieldType are Autofill AI FieldTypes.
-// This is a kill switch.
-// TODO(crbug.com/432645177): Clean up when launched.
-BASE_FEATURE(kAutofillUnionTypesForAutofillAi,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAutofillUKMExperimentalFields, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket0{
     &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket0", ""};

@@ -7584,12 +7584,6 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
 class BrowserAutofillManagerTest_AutofillAi
     : public BrowserAutofillManagerTest {
  public:
-  BrowserAutofillManagerTest_AutofillAi() {
-    feature_list_.InitWithFeatures({features::kAutofillAiWithDataSchema,
-                                    features::kAutofillUnionTypesForAutofillAi},
-                                   {});
-  }
-
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
     autofill_client().set_entity_data_manager(
@@ -7682,7 +7676,8 @@ class BrowserAutofillManagerTest_AutofillAi
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWithDataSchema};
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   FormData passport_form_;

@@ -79,15 +79,10 @@ class DetermineAttributeTypesTest : public testing::Test {
  public:
   static constexpr DetermineAttributeTypesPassKey kPassKey = {};
 
-  DetermineAttributeTypesTest() {
-    feature_list_.InitWithFeatures({features::kAutofillAiWithDataSchema,
-                                    features::kAutofillUnionTypesForAutofillAi},
-                                   {});
-  }
-
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWithDataSchema};
 };
 
 // Tests that DetermineAttributeTypes() doesn't crash on empty lists.
@@ -410,8 +405,6 @@ TEST_F(DetermineAttributeTypesTest, DistinguishesBetweenSections) {
 // of AutofillField::Type(). We test it here nonetheless because it is an
 // important property of DetermineAttributeTypes().
 TEST_F(DetermineAttributeTypesTest, AtMostOneAttributePerFieldPerEntity) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillUnionTypesForAutofillAi);
   using enum AttributeTypeName;
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(

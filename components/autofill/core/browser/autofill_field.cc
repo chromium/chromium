@@ -629,9 +629,7 @@ AutofillType AutofillField::MakeAutofillType(FieldType primary_field_type,
   // Indicates whether `ft` may be part of the union type.
   auto is_union_type_candidate = [](FieldType ft) {
     return GroupTypeOfFieldType(ft) == FieldTypeGroup::kAutofillAi &&
-           base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema) &&
-           base::FeatureList::IsEnabled(
-               features::kAutofillUnionTypesForAutofillAi);
+           base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema);
   };
 
   // Returns the union of

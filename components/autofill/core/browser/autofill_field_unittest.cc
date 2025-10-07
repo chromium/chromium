@@ -187,63 +187,37 @@ TEST_F(AutofillFieldTest, UnionTypesFromServerTypes) {
   EXPECT_THAT(f(NAME_FIRST, USERNAME), ElementsAre(NAME_FIRST));
   EXPECT_THAT(f(USERNAME, NAME_FIRST), ElementsAre(USERNAME));
 
-  {
-    // If kAutofillUnionTypesForAutofillAi is disabled, the Autofill AI
-    // predictions do not affect the overall type.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kAutofillUnionTypesForAutofillAi);
-    EXPECT_THAT(f(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY),
-                UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
-    EXPECT_THAT(f(PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_COUNTRY),
-                UnorderedElementsAre(PASSPORT_ISSUING_COUNTRY));
-    EXPECT_THAT(
-        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION, VEHICLE_PLATE_STATE),
-        UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
-    EXPECT_THAT(f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER,
-                  DRIVERS_LICENSE_REGION, VEHICLE_LICENSE_PLATE),
-                UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
-    EXPECT_THAT(
-        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
-          VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
-        UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
-  }
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAiWithDataSchema);
 
-  {
-    // If kAutofillUnionTypesForAutofillAi is enabled, the Autofill AI
-    // predictions are part of the overall type.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
-                                   features::kAutofillUnionTypesForAutofillAi},
-                                  {});
-    EXPECT_THAT(
-        f(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY),
-        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY));
-    EXPECT_THAT(f(PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_COUNTRY),
-                UnorderedElementsAre(PASSPORT_ISSUING_COUNTRY));
-    // Multiple Autofill AI predictions may coexist.
-    EXPECT_THAT(
-        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION, VEHICLE_PLATE_STATE),
-        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION,
-                             VEHICLE_PLATE_STATE));
-    // Conflict resolution: when there are multiple predictions from the same
-    // entities, we take the longest prefix that satisfies the AutofillType
-    // constraints.
-    EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
-                UnorderedElementsAre(NAME_FULL));
-    EXPECT_THAT(
-        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
-          VEHICLE_LICENSE_PLATE),
-        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
-    EXPECT_THAT(
-        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
-          VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
-        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
-    EXPECT_THAT(
-        f(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_STATE, DRIVERS_LICENSE_NUMBER,
-          DRIVERS_LICENSE_REGION, VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
-        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
-  }
+  // The Autofill AI predictions are part of the overall type.
+  EXPECT_THAT(
+      f(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY),
+      UnorderedElementsAre(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY));
+  EXPECT_THAT(f(PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_COUNTRY),
+              UnorderedElementsAre(PASSPORT_ISSUING_COUNTRY));
+  // Multiple Autofill AI predictions may coexist.
+  EXPECT_THAT(
+      f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION, VEHICLE_PLATE_STATE),
+      UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION,
+                           VEHICLE_PLATE_STATE));
+  // Conflict resolution: when there are multiple predictions from the same
+  // entities, we take the longest prefix that satisfies the AutofillType
+  // constraints.
+  EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
+              UnorderedElementsAre(NAME_FULL));
+  EXPECT_THAT(
+      f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
+        VEHICLE_LICENSE_PLATE),
+      UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
+  EXPECT_THAT(
+      f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
+        VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
+      UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
+  EXPECT_THAT(
+      f(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_STATE, DRIVERS_LICENSE_NUMBER,
+        DRIVERS_LICENSE_REGION, VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
+      UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
 }
 
 // Tests that if a heuristic type is set, additional server types may influence
