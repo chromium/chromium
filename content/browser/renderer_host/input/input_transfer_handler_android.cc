@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/input/features.h"
 #include "components/input/utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -123,16 +124,18 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     // TODO(crbug.com/406485568): Investigate this negative delta and
     // potentially file an Android platform bug.
     TRACE_EVENT_INSTANT("input,input.scrolling", "DownTimeAfterEventTime");
-    EmitTransferResultHistogramAndTraceEvent(
-        TransferInputToVizResult::kDownTimeAfterEventTime);
-    if (active_touch_sequence_on_viz) {
-      OnStartDroppingSequence(
-          event,
-          InputOnVizSequenceDroppedReason::kActiveSeqOnVizAbnormalDownTime);
-      return true;
+    if (!input::features::kTransferSequencesWithAbnormalDownTime.Get()) {
+      EmitTransferResultHistogramAndTraceEvent(
+          TransferInputToVizResult::kDownTimeAfterEventTime);
+      if (active_touch_sequence_on_viz) {
+        OnStartDroppingSequence(
+            event,
+            InputOnVizSequenceDroppedReason::kActiveSeqOnVizAbnormalDownTime);
+        return true;
+      }
+      // Let browser handle this sequence.
+      return false;
     }
-    // Let browser handle this sequence.
-    return false;
   }
 
   const bool is_transferred_back_sequence = delta > 0;

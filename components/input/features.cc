@@ -13,6 +13,12 @@ namespace input::features {
 BASE_FEATURE(kInputOnViz, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseAndroidBufferedInputDispatch,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to transfer the sequences to Viz which have down time after event
+// time.
+const base::FeatureParam<bool> kTransferSequencesWithAbnormalDownTime{
+    &features::kInputOnViz,
+    /*name=*/"transfer_sequences_with_abnormal_down_time", true};
 #endif
 
 BASE_FEATURE(kDispatchSingleEventIfNoPrediction,

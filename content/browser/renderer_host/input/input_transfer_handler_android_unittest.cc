@@ -97,10 +97,14 @@ std::unique_ptr<ui::MotionEventAndroid> GetMotionEventAndroid(
 // to help simplifying test logic and use mock time source.
 class InputTransferHandlerTest : public testing::Test {
  public:
-  InputTransferHandlerTest() : finger_pointer_(0, 0, 0, 0, 0, 0, 0, 0, 0) {}
+explicit   InputTransferHandlerTest(bool init_feature = true)
+      : finger_pointer_(0, 0, 0, 0, 0, 0, 0, 0, 0),
+        init_feature_(init_feature) {}
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(input::features::kInputOnViz);
+    if (init_feature_) {
+      scoped_feature_list_.InitAndEnableFeature(input::features::kInputOnViz);
+    }
 
     if (!input::InputUtils::IsTransferInputToVizSupported()) {
       GTEST_SKIP()
@@ -131,9 +135,10 @@ class InputTransferHandlerTest : public testing::Test {
   std::unique_ptr<FakeInputTransferHandlerClient>
       input_transfer_handler_client_;
   ui::MotionEventAndroid::Pointer finger_pointer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  bool init_feature_;
 };
 
 TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
@@ -536,22 +541,38 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
   }
 }
 
-TEST_F(InputTransferHandlerTest, DownTimeAfterEventTimeBrowserHandlesSequence) {
+class DownTimeAfterEventTimeTest
+    : public InputTransferHandlerTest,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  DownTimeAfterEventTimeTest()
+      : InputTransferHandlerTest(/* init_feature= */ false) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        input::features::kInputOnViz,
+        {{input::features::kTransferSequencesWithAbnormalDownTime.name,
+          GetParam()}});
+  }
+};
+
+TEST_P(DownTimeAfterEventTimeTest, TransferBasic) {
   base::HistogramTester histogram_tester;
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
   base::TimeTicks down_time = event_time + base::Milliseconds(8);
-  auto down_event = GetMotionEventAndroid(
+  auto abnormal_down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
 
-  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).Times(0);
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event));
-  histogram_tester.ExpectUniqueSample(
-      InputTransferHandlerAndroid::kTransferInputToVizResultHistogram,
-      TransferInputToVizResult::kDownTimeAfterEventTime, 1);
+  const bool expected_transfer = GetParam() == "true";
+  if (expected_transfer) {
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+        .WillOnce(Return(kSuccessfullyTransferred));
+  } else {
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).Times(0);
+  }
+  EXPECT_EQ(transfer_handler_->OnTouchEvent(*abnormal_down_event),
+            expected_transfer);
 }
 
-TEST_F(InputTransferHandlerTest,
-       DownTimeAfterEventTimeButActiveTouchSequenceOnViz) {
+TEST_P(DownTimeAfterEventTimeTest, TransferWhileActiveTouchSequenceOnViz) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
   base::TimeTicks down_time = event_time;
   auto down_event_1 = GetMotionEventAndroid(
@@ -571,7 +592,20 @@ TEST_F(InputTransferHandlerTest,
   down_time = event_time + base::Milliseconds(8);
   auto down_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
+  const bool expected_transfer = GetParam() == "true";
+  if (expected_transfer) {
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+        .WillOnce(Return(kSuccessfullyTransferred));
+  } else {
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).Times(0);
+  }
+  // In both cases InputTransferHandler consumes the event. Just that the
+  // sequence is dropped when `kTransferSequencesWithAbnormalDownTime` is false.
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
 }
+
+INSTANTIATE_TEST_SUITE_P(DownTimeAfterEventTimeTest,
+                         DownTimeAfterEventTimeTest,
+                         ::testing::Values("false", "true"));
 
 }  // namespace content
