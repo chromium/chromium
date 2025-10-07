@@ -723,6 +723,27 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
     return nullptr;
   }
 
+  // Resolve and validate the link state fragment before acquiring the Router
+  // lock. This avoids a potential lock order inversion between `Router::mutex_`
+  // and `BufferPool::mutex_`, as `AdoptFragmentRefIfValid` may acquire the
+  // BufferPool lock.
+  FragmentRef<RouterLinkState> link_state;
+  if (new_decaying_sublink) {
+    link_state =
+        from_node_link.memory().AdoptFragmentRefIfValid<RouterLinkState>(
+            descriptor.new_link_state_fragment);
+    if (link_state.is_null()) {
+      // Central links require a valid link state fragment.
+      return nullptr;
+    }
+  } else {
+    if (!descriptor.new_link_state_fragment.is_null()) {
+      // No RouterLinkState fragment should be provided for this new
+      // peripheral link.
+      return nullptr;
+    }
+  }
+
   auto router = MakeRefCounted<Router>();
   Ref<RemoteRouterLink> new_outward_link;
   {
@@ -769,13 +790,6 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
               ? descriptor.decaying_incoming_sequence_length
               : descriptor.next_incoming_sequence_number);
 
-      auto link_state =
-          from_node_link.memory().AdoptFragmentRefIfValid<RouterLinkState>(
-              descriptor.new_link_state_fragment);
-      if (link_state.is_null()) {
-        // Central links require a valid link state fragment.
-        return nullptr;
-      }
       new_outward_link = from_node_link.AddRemoteRouterLink(
           descriptor.new_sublink, std::move(link_state), LinkType::kCentral,
           LinkSide::kB, router);
@@ -790,11 +804,6 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
                << descriptor.new_sublink << " and decaying sublink "
                << *new_decaying_sublink;
     } else {
-      if (!descriptor.new_link_state_fragment.is_null()) {
-        // No RouterLinkState fragment should be provided for this new
-        // peripheral link.
-        return nullptr;
-      }
       new_outward_link = from_node_link.AddRemoteRouterLink(
           descriptor.new_sublink, nullptr, LinkType::kPeripheralOutward,
           LinkSide::kB, router);
