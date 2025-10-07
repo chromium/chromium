@@ -37,6 +37,7 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -6244,20 +6245,20 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
                                         0.5)}}};
 
   gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB());
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kWideColorGamut, false /* needs_alpha */,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::SRGB),
-      gfx::BufferFormat::RGBA_8888);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      SinglePlaneFormat::kRGBA_8888);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kWideColorGamut, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_8888);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      gfx::ColorSpace::CreateSRGBLinear(), SinglePlaneFormat::kRGBA_8888);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, false /* needs_alpha */,
-      gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::BGRA_1010102);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      gfx::ColorSpace::CreateHDR10(), SinglePlaneFormat::kBGRA_1010102);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_F16);
+      gfx::ColorSpace::CreateSRGBLinear(), SinglePlaneFormat::kRGBA_F16);
 
   std::vector<Pass> passes = {
       Pass(quads[0], CompositorRenderPassId{2}, kSurfaceSize),
@@ -6346,14 +6347,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
   // content can be drawn into a BT2020 buffer as 10-10-10-2, but transparent
   // content needs to bump up to 16-bit, and therefore (until we find a way
   // around this) linear color space.
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, false /* needs_alpha */,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::SRGB),
-      gfx::BufferFormat::BGRA_1010102);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      SinglePlaneFormat::kBGRA_1010102);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_F16);
+      gfx::ColorSpace::CreateSRGBLinear(), SinglePlaneFormat::kRGBA_F16);
 
   // Opaque content renders to the appropriate space directly.
   passes[1].has_transparent_background = false;
