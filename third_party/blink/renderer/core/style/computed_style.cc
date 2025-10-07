@@ -3204,15 +3204,21 @@ ComputedStyleBuilder::MutableNonInheritedVariables() {
 
 void ComputedStyleBuilder::SetInheritedVariablesFrom(
     const ComputedStyle* style) {
-  MutableInheritedVariablesInternal() = style->InheritedVariablesInternal();
-  has_own_inherited_variables_ = false;
+  if (!base::ValuesEquivalent(InheritedVariablesInternal(),
+                              style->InheritedVariablesInternal())) {
+    MutableInheritedVariablesInternal() = style->InheritedVariablesInternal();
+    has_own_inherited_variables_ = false;
+  }
 }
 
 void ComputedStyleBuilder::SetNonInheritedVariablesFrom(
     const ComputedStyle* style) {
-  MutableNonInheritedVariablesInternal() =
-      style->NonInheritedVariablesInternal();
-  has_own_non_inherited_variables_ = false;
+  if (!base::ValuesEquivalent(NonInheritedVariablesInternal(),
+                              style->NonInheritedVariablesInternal())) {
+    MutableNonInheritedVariablesInternal() =
+        style->NonInheritedVariablesInternal();
+    has_own_non_inherited_variables_ = false;
+  }
 }
 
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
