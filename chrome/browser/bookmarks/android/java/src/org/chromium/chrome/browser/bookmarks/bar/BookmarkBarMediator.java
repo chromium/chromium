@@ -445,7 +445,13 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         mActivity,
                         bookmarkItems,
-                        (model) -> model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null));
+                        (model) -> {
+                            View.OnClickListener clickListener =
+                                    model.get(ListMenuItemProperties.CLICK_LISTENER);
+                            if (clickListener != null) {
+                                clickListener.onClick(null);
+                            }
+                        });
 
         // Go through the entire model list and add the click listeners.
         popupListMenu.setupCallbacksRecursively(
@@ -758,6 +764,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     return false;
                 };
 
+        // When building this model, we add both a touch and click listener. This click listener is
+        // to handle AccessibilityServices, which send click events rather than touch events.
+        // Without the listener added here, actions performed on a leaf node in the anchored pop up
+        // will have no effect. Taps, keyboard, and mice all send touch events and do not send click
+        // events, so there are no cases of double events be received.
         PropertyModel model =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
@@ -766,6 +777,15 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .with(ListMenuItemProperties.TOUCH_LISTENER, touchListener)
+                        .with(
+                                ListMenuItemProperties.CLICK_LISTENER,
+                                (v) -> {
+                                    // Open url.
+                                    BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
+                                    mBookmarkOpener.openBookmarkInCurrentTab(
+                                            bookmarkItem.getId(),
+                                            mProfileSupplier.get().isOffTheRecord());
+                                })
                         .build();
         if (mImageFetcher != null) {
             mImageFetcher.fetchFaviconForBookmark(
