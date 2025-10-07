@@ -121,6 +121,12 @@ void PdfCaret::OnGeometryChanged() {
 }
 
 bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
+  // The caret is not visible during text selection, so key events should still
+  // be handled when not visible.
+  if (!enabled_) {
+    return false;
+  }
+
   bool should_select =
       !!(event.GetModifiers() & blink::WebInputEvent::Modifiers::kShiftKey);
   switch (event.windows_key_code) {

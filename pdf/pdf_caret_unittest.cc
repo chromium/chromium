@@ -671,12 +671,45 @@ class PdfCaretMoveTest : public PdfCaretTest {
   }
 };
 
-TEST_F(PdfCaretMoveTest, OnKeyDown) {
+TEST_F(PdfCaretMoveTest, OnKeyDownNotEnabledNotVisible) {
   SetUpSingleCharLineTest();
   InitializeCaretAtChar(kTestChar0);
 
-  // Relevant key events still handled even when caret is not enabled.
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_0)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+}
+
+TEST_F(PdfCaretMoveTest, OnKeyDownNotEnabledVisible) {
+  SetUpSingleCharLineTest();
+  InitializeCaretAtChar(kTestChar0);
+
   caret().SetVisible(true);
+
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_0)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+  EXPECT_FALSE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+}
+
+TEST_F(PdfCaretMoveTest, OnKeyDownEnabledNotVisible) {
+  SetUpSingleCharLineTest();
+  InitializeCaretAtChar(kTestChar0);
+
+  caret().SetEnabled(true);
 
   EXPECT_FALSE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_0)));
@@ -688,8 +721,11 @@ TEST_F(PdfCaretMoveTest, OnKeyDown) {
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+}
 
-  caret().SetEnabled(true);
+TEST_F(PdfCaretMoveTest, OnKeyDownEnabledVisible) {
+  SetUpSingleCharLineTest();
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   EXPECT_FALSE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_0)));
