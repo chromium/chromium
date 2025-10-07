@@ -910,7 +910,7 @@ void PeerConnectionTracker::TrackSignalingStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "signalingstatechange",
+      id, "onsignalingstatechange",
       StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
               "\""}));
 }
@@ -923,7 +923,7 @@ void PeerConnectionTracker::TrackIceConnectionStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "iceconnectionstatechange",
+      id, "oniceconnectionstatechange",
       StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
               "\""}));
 }
@@ -936,7 +936,7 @@ void PeerConnectionTracker::TrackConnectionStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "connectionstatechange",
+      id, "onconnectionstatechange",
       StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
               "\""}));
 }
@@ -949,7 +949,7 @@ void PeerConnectionTracker::TrackIceGatheringStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "icegatheringstatechange",
+      id, "onicegatheringstatechange",
       StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
               "\""}));
 }
@@ -1010,7 +1010,7 @@ void PeerConnectionTracker::TrackOnRenegotiationNeeded(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "negotiationneeded", g_empty_string);
+  SendPeerConnectionUpdate(id, "onnegotiationneeded", g_empty_string);
 }
 
 void PeerConnectionTracker::TrackGetUserMedia(

@@ -229,7 +229,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
   if (it == peer_connection_data().end())
     return;
 
-  if (type == "iceconnectionstatechange") {
+  if (type == "oniceconnectionstatechange") {
     if (value == "\"connected\"" || value == "\"checking\"" ||
         value == "\"completed\"") {
       MaybeMarkPeerConnectionAsConnected(*it);
