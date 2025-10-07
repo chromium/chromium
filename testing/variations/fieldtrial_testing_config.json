@@ -12763,7 +12763,6 @@
                 "android",
                 "android_weblayer",
                 "android_webview",
-                "chromeos",
                 "fuchsia"
             ],
             "experiments": [
