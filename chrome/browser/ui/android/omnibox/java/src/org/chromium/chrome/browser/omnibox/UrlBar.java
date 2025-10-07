@@ -389,16 +389,23 @@ public class UrlBar extends AutocompleteEditText {
      * <p>Should be called whenever focus or text contents change.
      */
     private void fixupTextDirection() {
-        // When unfocused, force left-to-right rendering at the paragraph level (which is desired
-        // for URLs). Right-to-left runs are still rendered RTL, but will not flip the whole URL
-        // around. This is consistent with OmniboxViewViews on desktop. When focused, render text
-        // normally (to allow users to make non-URL searches and to avoid showing Android's split
-        // insertion point when an RTL user enters RTL text). Also render text normally when the
-        // text field is empty (because then it displays an instruction that is not a URL).
-        if (mFocused || length() == 0) {
+        // 4 states to cover, depending on focus state and text presence:
+        // - focus with text      -> follow the natural text direction
+        // - no focus with text   -> always LTR (this is 100% the URL)
+        // - focus with no text   -> follow the locale (Focused state hint text)
+        // - no focus and no text -> follow the locale (NTP hint text)
+        if (length() == 0) {
+            // Always language specific text direction to show hint text.
             setTextDirection(TEXT_DIRECTION_INHERIT);
+            setTextAlignment(TEXT_ALIGNMENT_VIEW_START);
+        } else if (mFocused) {
+            // Always input-specific text direction
+            setTextDirection(TEXT_DIRECTION_INHERIT);
+            setTextAlignment(TEXT_ALIGNMENT_TEXT_START);
         } else {
+            // Always LTR (URL)
             setTextDirection(TEXT_DIRECTION_LTR);
+            setTextAlignment(TEXT_ALIGNMENT_TEXT_START);
         }
     }
 
