@@ -20,7 +20,7 @@ histograms along with a detailed description for each histogram.
 
 <histogram name="OnDeviceModel.Android.GenerateResult{ModelExecutionFeature}"
     enum="OnDeviceModelAndroidGenerateResult" expires_after="2026-01-28">
-  <owner>cduvall@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <summary>
     Records the result of generate on Android for {ModelExecutionFeature}.
@@ -32,7 +32,7 @@ histograms along with a detailed description for each histogram.
 <histogram
     name="OnDeviceModel.Android.IsModelDownloadSuccessful{ModelExecutionFeature}"
     enum="BooleanSuccess" expires_after="2026-01-28">
-  <owner>asully@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <summary>
     Records whether the on-device model download was successful on Android for
@@ -46,7 +46,7 @@ histograms along with a detailed description for each histogram.
     name="OnDeviceModel.Android.ModelDownloadFailureReason{ModelExecutionFeature}"
     enum="OnDeviceModelAndroidModelDownloadFailureReason"
     expires_after="2026-01-28">
-  <owner>asully@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <summary>
     Records the failure reason of on-device model download on Android for
