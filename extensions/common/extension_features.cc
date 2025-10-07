@@ -155,7 +155,6 @@ BASE_FEATURE(kDebuggerAPIRestrictedToDevMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionBrowserNamespaceAlternative,
-             "ExtensionBrowserNamespaceAlternative",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizeServiceWorkerStartRequests,
@@ -168,7 +167,6 @@ BASE_FEATURE(kContentVerifyJobUseJobVersionForHashing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport,
-             "RuntimeOnMessageWebExtensionPolyfillSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

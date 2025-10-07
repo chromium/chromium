@@ -30,9 +30,7 @@ BASE_FEATURE(kEnableSimulatedGamepadDataFetcher,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables gamepad raw input change events.
-BASE_FEATURE(kGamepadRawInputChangeEvent,
-             "GamepadRawInputChangeEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGamepadRawInputChangeEvent, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGamepadMultitouchEnabled() {
   if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {
