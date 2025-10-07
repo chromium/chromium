@@ -276,13 +276,6 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Android context menu has been proven not compatible well with theme changes. Use Chrome's ListMenu instead. See crbug.com/339864862."/>
     </module>
-    <module name="RegexpSinglelineJava">
-      <property name="id" value="IntDefsNotEnums"/>
-      <property name="severity" value="warning"/>
-      <property name="format" value="\benum [A-Z].*{"/>
-      <property name="ignoreComments" value="true"/>
-      <property name="message" value="Use an @IntDef / @StringDef / @LongDef / custom class rather than an enum. See https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Enums" />
-    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
