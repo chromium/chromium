@@ -9,8 +9,10 @@
       ]
     }
   },
-  "background": {
-    "scripts": ["test.js"]
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
   },
   "permissions": [
     "fileSystem"

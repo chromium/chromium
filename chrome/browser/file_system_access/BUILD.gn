@@ -118,6 +118,10 @@ if (!is_android) {
       "//ui/shell_dialogs",
       "//url",
     ]
+
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/apps/app_service" ]
+    }
   }
 }
 

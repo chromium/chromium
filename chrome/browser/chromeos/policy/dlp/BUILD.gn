@@ -220,6 +220,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/file_system_access",
     "//chrome/browser/profiles:profile",

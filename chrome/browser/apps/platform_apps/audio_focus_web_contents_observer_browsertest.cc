@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
+
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/test/extension_test_message_listener.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
 
 namespace apps {
 
@@ -39,10 +45,20 @@ IN_PROC_BROWSER_TEST_F(AudioFocusWebContentsObserverBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ExtensionTestMessageListener launched_listener("Launched");
-  const extensions::Extension* extension =
-      InstallAndLaunchPlatformApp("minimal");
+
+  const extensions::Extension* extension = InstallPlatformApp("minimal");
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->is_platform_app());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
+#endif
+  {
+    content::CreateAndLoadWebContentsObserver app_loaded_observer;
+    LaunchPlatformApp(extension);
+    app_loaded_observer.Wait();
+  }
 
   // Wait for the extension to tell us it's initialized its context menus and
   // launched a window.

@@ -37,6 +37,10 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
+
 namespace {
 
 class TestFileSystemAccessPermissionContext
@@ -1192,6 +1196,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
       InstallPlatformApp("file_system_test");
   ASSERT_TRUE(extension);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
+#endif
+
   // Launch Platform App
   LaunchPlatformApp(extension);
   app_loaded_observer.Wait();
@@ -1213,6 +1222,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
   const extensions::Extension* extension =
       InstallPlatformApp("file_system_test");
   ASSERT_TRUE(extension);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
+#endif
 
   // Launch Platform App.
   LaunchPlatformApp(extension);

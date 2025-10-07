@@ -82,6 +82,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
+
 namespace extensions {
 
 namespace {
@@ -2240,6 +2244,11 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsAppBrowserTest, WebViewContentScript) {
   dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPage);
   const Extension* app = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(app);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      app->id());
+#endif
 
   // Launch the test app and grab its WebContents.
   content::WebContents* app_contents = nullptr;
