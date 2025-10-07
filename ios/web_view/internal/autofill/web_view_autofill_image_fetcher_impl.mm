@@ -50,9 +50,8 @@ GURL WebViewAutofillImageFetcherImpl::ResolveImageURL(
       const int width = 40 * screen_scale_;
       const int height = 24 * screen_scale_;
       GURL::Replacements replacements;
-      std::string path =
-          base::StrCat({image_url.path_piece(),
-                        base::StringPrintf("=w%d-h%d-s", width, height)});
+      std::string path = base::StrCat(
+          {image_url.path(), base::StringPrintf("=w%d-h%d-s", width, height)});
       replacements.SetPathStr(path);
       return image_url.ReplaceComponents(replacements);
     }

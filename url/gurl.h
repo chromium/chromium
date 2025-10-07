@@ -308,24 +308,18 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string_view scheme() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.scheme);
   }
-  // Deprecated. Use scheme(). See crbug.com/448174617.
-  std::string_view scheme_piece() const LIFETIME_BOUND { return scheme(); }
 
   bool has_username() const { return parsed_.username.is_valid(); }
   std::string GetUsername() const { return ComponentString(parsed_.username); }
   std::string_view username() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.username);
   }
-  // Deprecated. Use username(). See crbug.com/448174617.
-  std::string_view username_piece() const LIFETIME_BOUND { return username(); }
 
   bool has_password() const { return parsed_.password.is_valid(); }
   std::string GetPassword() const { return ComponentString(parsed_.password); }
   std::string_view password() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.password);
   }
-  // Deprecated. Use password(). See crbug.com/448174617.
-  std::string_view password_piece() const LIFETIME_BOUND { return password(); }
 
   // The host may be a hostname, an IPv4 address, or an IPv6 literal surrounded
   // by square brackets, like "[2001:db8::1]". To exclude these brackets, use
@@ -338,8 +332,6 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string_view host() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.host);
   }
-  // Deprecated. Use host(). See crbug.com/448174617.
-  std::string_view host_piece() const LIFETIME_BOUND { return host(); }
 
   // The port if one is explicitly specified. Most callers will want IntPort()
   // or EffectiveIntPort() instead of these. The getters will not include the
@@ -349,8 +341,6 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string_view port() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.port);
   }
-  // Deprecated. Use port(). See crbug.com/448174617.
-  std::string_view port_piece() const LIFETIME_BOUND { return port(); }
 
   // Including first slash following host, up to the query. The URL
   // "http://www.google.com/" has a path of "/".
@@ -359,8 +349,6 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string_view path() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.path);
   }
-  // Deprecated. Use path(). See crbug.com/448174617.
-  std::string_view path_piece() const LIFETIME_BOUND { return path(); }
 
   // Stuff following '?' up to the ref. The getters will not include the '?'.
   bool has_query() const { return parsed_.query.is_valid(); }
@@ -368,8 +356,6 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string_view query() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.query);
   }
-  // Deprecated. Use query(). See crbug.com/448174617.
-  std::string_view query_piece() const LIFETIME_BOUND { return query(); }
 
   // Stuff following '#' to the end of the string. This will be %-escaped UTF-8.
   // The getters will not include the '#'.
@@ -378,8 +364,6 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string_view ref() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.ref);
   }
-  // Deprecated. Use ref(). See crbug.com/448174617.
-  std::string_view ref_piece() const LIFETIME_BOUND { return ref(); }
 
   // Returns a parsed version of the port. Can also be any of the special
   // values defined in Parsed for ExtractPort.
