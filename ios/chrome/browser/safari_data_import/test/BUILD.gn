@@ -22,13 +22,32 @@ source_set("eg_test_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "safari_data_import_app_interface.h",
+    "safari_data_import_app_interface_stub.mm",
     "safari_data_import_earl_grey_ui.h",
     "safari_data_import_earl_grey_ui.mm",
   ]
   deps = [
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/safari_data_import/public:utils",
     "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "safari_data_import_app_interface.h",
+    "safari_data_import_app_interface.mm",
+  ]
+  deps = [
+    "//components/user_data_importer/utility:test_archive_bundle_data",
+    "//ios/chrome/browser/shared/ui/util",
   ]
 }

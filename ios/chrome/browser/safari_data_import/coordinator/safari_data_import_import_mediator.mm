@@ -175,7 +175,7 @@
 
 - (void)documentPicker:(UIDocumentPickerViewController*)controller
     didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls {
-  // Early exit. Workaround for file picker latencies.
+  /// Early exit. Workaround for file picker latencies.
   if (_currentSecurityScopedURL) {
     return;
   }
@@ -184,6 +184,8 @@
     return;
   }
   if (![_currentSecurityScopedURL startAccessingSecurityScopedResource]) {
+    /// Cannot access security scoped resource.
+    /// TODO(crbug.com/449982000): Display error and reset stage?
     _currentSecurityScopedURL = nil;
     return;
   }

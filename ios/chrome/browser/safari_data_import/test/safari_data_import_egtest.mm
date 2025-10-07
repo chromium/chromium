@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/passwords/model/features.h"
+#import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -15,6 +16,8 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+
+using chrome_test_util::PromoScreenSecondaryButtonMatcher;
 
 /// Tests for Safari data import.
 @interface SafariDataImportTestCase : ChromeTestCase
@@ -58,8 +61,7 @@
         ensureAppLaunchedWithConfiguration:firstRunConfig];
     /// Go through first run screens by tapping the secondary action twice
     /// (skipping default browser settings and sign-in.)
-    id<GREYMatcher> buttonMatcher =
-        grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier);
+    id<GREYMatcher> buttonMatcher = PromoScreenSecondaryButtonMatcher();
     id<GREYMatcher> scrollViewMatcher =
         grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
     id<GREYAction> searchAction =
@@ -166,6 +168,28 @@
         grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
     [[EarlGrey selectElementWithMatcher:buttonInNavBar]
         performAction:grey_tap()];
+    /// Verify that NTP logo is interactable, which means that the entry point
+    /// is dismissed.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+        assertWithMatcher:grey_interactable()];
+    GREYAssertFalse(IsSafariDataImportEntryPointVisible(),
+                    @"Safari data import workflow is not fully dismissed.");
+  }
+}
+
+/// Tests that the workflow imports all data from Safari without displaying the
+/// password conflict resolution table when there is no password conflicts.
+- (void)testNoPasswordConflict {
+  if (@available(iOS 18.2, *)) {
+    GoToImportScreen();
+    LoadFile(SafariDataImportTestFile::kValid);
+    /// Check that the items table has displayed.
+    ExpectImportTableHasRowCount(4);
+    /// Import the data and wait until completion.
+    ImportLoadedFile();
+    WaitForImportCompletes();
+    /// TODO(crbug.com/441124865): Check invalid passwords.
+    CompletesImportWorkflow();
     /// Verify that NTP logo is interactable, which means that the entry point
     /// is dismissed.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
