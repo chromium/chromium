@@ -25,6 +25,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,9 +37,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_file_icon_extractor.h"
-#include "chrome/browser/download/download_open_prompt.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/download_stats.h"
@@ -50,8 +49,6 @@
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -68,6 +65,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/warning_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
@@ -81,9 +79,18 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/download/download_danger_prompt.h"
+#include "chrome/browser/download/download_open_prompt.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -1434,6 +1441,7 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
     return;
   }
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionAcceptDanger);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // DownloadDangerPrompt displays a modal dialog using native widgets that the
   // user must either accept or cancel. It cannot be scripted.
   DownloadDangerPrompt* prompt = DownloadDangerPrompt::Create(
@@ -1446,6 +1454,10 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
     on_prompt_created_ = nullptr;
   }
   // Function finishes in DangerPromptCallback().
+#else
+  NOTIMPLEMENTED();
+  Respond(Error("DownloadDangerPrompt not implemented"));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void DownloadsAcceptDangerFunction::DangerPromptCallback(
@@ -1561,6 +1573,7 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   // TODO(qinmin): check if user prefers to open all download using the same
   // extension, or check the recent user gesture on the originating webcontents
   // to avoid showing the prompt.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DownloadOpenPrompt* download_open_prompt =
       DownloadOpenPrompt::CreateDownloadOpenConfirmationDialog(
           active_contents,
@@ -1572,6 +1585,10 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
     std::move(*on_prompt_created_cb_).Run(download_open_prompt);
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionOpen);
   return RespondLater();
+#else
+  NOTIMPLEMENTED();
+  return RespondNow(Error("DownloadOpenPrompt not implemented"));
+#endif
 }
 
 void DownloadsOpenFunction::OpenPromptDone(int download_id, bool accept) {
@@ -1624,7 +1641,7 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
     if (!match_current_service || current_service->IsDownloadUiEnabled()) {
       continue;
     }
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
     // Calling this API affects the download bubble as well, so extensions
     // using this API is still compatible with the new download bubble. This
     // API will eventually be deprecated (replaced by the SetUiOptions API
@@ -1678,7 +1695,7 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
       continue;
     }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
     Browser* browser = window->GetBrowser();
     if (browser->window()->GetDownloadBubbleUIController()) {
       browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();

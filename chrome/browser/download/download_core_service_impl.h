@@ -39,7 +39,7 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   // DownloadCoreService
   ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
   DownloadHistory* GetDownloadHistory() override;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ExtensionDownloadsEventRouter* GetExtensionEventRouter() override;
 #endif
   bool HasCreatedDownloadManager() override;
@@ -78,7 +78,7 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
 // Once we have extensions on android, we probably need the EventRouter
 // in ContentViewDownloadDelegate which knows about both GET and POST
 // downloads.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // The ExtensionDownloadsEventRouter dispatches download creation, change, and
   // erase events to extensions. Like ChromeDownloadManagerDelegate, it's a
   // chrome-level concept and its lifetime should match DownloadManager. There
