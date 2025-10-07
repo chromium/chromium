@@ -1256,10 +1256,13 @@ ContextResult WebGPUDecoderImpl::Initialize(
     force_fallback_adapter_ = true;
   }
 
-  // Create a Chrome-side EGL context. This isn't actually used by Dawn,
-  // but it prevents rendering artifacts in Chrome. This workaround should
-  // be revisited once EGL context creation is reworked. See crbug.com/1465911
-  if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
+  // Create a Chrome-side EGL context. Dawn actually creates its own
+  // EGL contexts per-device, but since Chrome is unaware of those
+  // contexts, this wrapper context keeps Chrome's virtual context
+  // bookkeeping up-to-date.
+  // This is only an issue for native EGL/GLES, not ANGLE (which is
+  // aware of the the EGL contexts created by Dawn).
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2) {
     scoped_refptr<gl::GLSurface> gl_surface(new gl::SurfacelessEGL(
         gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(1, 1)));
     gl::GLContextAttribs attribs;
@@ -1268,7 +1271,6 @@ ContextResult WebGPUDecoderImpl::Initialize(
     gl_context_ = new gl::GLContextEGL(nullptr);
     gl_context_->Initialize(gl_surface.get(), attribs);
     DCHECK(gl_context_->default_surface());
-    gl_context_->MakeCurrentDefault();
   }
   return ContextResult::kSuccess;
 }
