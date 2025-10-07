@@ -1,4 +1,5 @@
-<style include="cr-shared-style settings-shared passwords-shared">
+<style include="cr-shared-style settings-shared passwords-shared
+    your-saved-info-shared">
   .expiration-column {
     align-items: center;
     display: flex;
@@ -18,8 +19,12 @@
   }
 
 </style>
-<settings-subpage page-title="$i18n{creditCards}"
-    learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}">
+<settings-subpage page-title="[[getPageTitleLabel_(isYourSavedInfoSubpage_)]]"
+    learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
+    class$="[[getMultiCardClass_(isYourSavedInfoSubpage_)]]">
+
+<div class="card">
+
 <settings-toggle-button id="autofillCreditCardToggle"
     no-extension-indicator label="$i18n{enableCreditCardsLabel}"
     sub-label="$i18n{enableCreditCardsSublabel}"
@@ -87,6 +92,10 @@
   <!-- This span lays out the link correctly, relative to the text. -->
   <div class="cr-padded-text">$i18nRaw{manageCreditCardsLabel}</div>
 </div>
+
+</div>
+
+<div class="card">
 
 <div class="cr-row continuation">
   <h2 class="flex">$i18n{creditCards}</h2>
@@ -218,4 +227,7 @@
       on-close="onShowBulkRemoveCvcConfirmationDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>
+
+</div>
+
 </settings-subpage>
