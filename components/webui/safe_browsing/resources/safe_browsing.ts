@@ -289,7 +289,7 @@ function addPolicies(result: string[]) {
   addContentHelper(result, 'result-template', 'policies-list', 'span');
 }
 
-function addCookie(result: string[]) {
+function addCookie(result: [string, number]) {
   const cookiePanel = $('cookie-panel');
   const cookieTemplate = $<HTMLTemplateElement>('cookie-template');
   assert(cookieTemplate);
@@ -305,7 +305,7 @@ function addCookie(result: string[]) {
   assert(firstElement);
   assert(secondElement);
   assert(firstResult);
-  assert(secondResult);
+  assert(secondResult !== null && secondResult !== undefined);
 
   firstElement.textContent = firstResult;
   secondElement.textContent = (new Date(secondResult)).toLocaleString();
