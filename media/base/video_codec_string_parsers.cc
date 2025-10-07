@@ -7,7 +7,6 @@
 #include <array>
 #include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -674,10 +673,7 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  std::array<uint8_t, 6> constraint_flags;
-  UNSAFE_TODO(memset(constraint_flags.data(), 0,
-                     (constraint_flags.size() *
-                      sizeof(decltype(constraint_flags)::value_type))));
+  std::array<uint8_t, 6> constraint_flags = {};
 
   if (elem.size() > 10) {
     DVLOG(4) << __func__ << ": unexpected number of trailing bytes in HEVC "
