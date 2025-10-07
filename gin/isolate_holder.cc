@@ -189,8 +189,8 @@ IsolateHolder::getDefaultIsolateParams() {
       std::make_unique<v8::Isolate::CreateParams>();
   params->code_event_handler = DebugImpl::GetJitCodeEventHandler();
   params->constraints.ConfigureDefaults(
-      base::SysInfo::AmountOfPhysicalMemory().InBytes(),
-      base::SysInfo::AmountOfVirtualMemory());
+      base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned(),
+      base::SysInfo::AmountOfVirtualMemory().InBytesUnsigned());
   params->array_buffer_allocator = g_array_buffer_allocator;
   params->allow_atomics_wait = true;
   params->external_references = g_reference_table;

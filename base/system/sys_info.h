@@ -87,8 +87,7 @@ class BASE_EXPORT SysInfo {
   // Return the number of bytes of virtual memory of this process. A return
   // value of zero means that there is no limit on the available virtual
   // memory.
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
-  static uint64_t AmountOfVirtualMemory();
+  static ByteCount AmountOfVirtualMemory();
 
   // Return the available disk space in bytes on the volume containing |path|,
   // or -1 on failure.

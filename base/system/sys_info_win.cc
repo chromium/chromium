@@ -202,8 +202,8 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
 }
 
 // static
-uint64_t SysInfo::AmountOfVirtualMemory() {
-  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalVirtual).InBytesUnsigned();
+ByteCount SysInfo::AmountOfVirtualMemory() {
+  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalVirtual);
 }
 
 // static

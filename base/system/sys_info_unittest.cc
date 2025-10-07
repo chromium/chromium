@@ -91,7 +91,7 @@ TEST_F(SysInfoTest, AmountOfMem) {
   // We aren't actually testing that it's correct, just that it's sane.
   EXPECT_GT(SysInfo::AmountOfPhysicalMemory(), ByteCount(0));
   // The maxmimal amount of virtual memory can be zero which means unlimited.
-  EXPECT_GE(SysInfo::AmountOfVirtualMemory(), 0u);
+  EXPECT_GE(SysInfo::AmountOfVirtualMemory(), ByteCount(0));
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

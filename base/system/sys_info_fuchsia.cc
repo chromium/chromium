@@ -111,10 +111,10 @@ int SysInfo::NumberOfProcessors() {
 }
 
 // static
-uint64_t SysInfo::AmountOfVirtualMemory() {
+ByteCount SysInfo::AmountOfVirtualMemory() {
   // Fuchsia does not provide this type of information.
   // Return zero to indicate that there is unlimited available virtual memory.
-  return 0;
+  return ByteCount(0);
 }
 
 // static
