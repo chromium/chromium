@@ -281,6 +281,15 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
       const std::string& id_token,
       const ScopeSet& scopes);
 
+  // Similar to WaitForAccessTokenRequestIfNecessaryAndRespondWithToken above
+  // apart from the fact that it issues tokens for the scopes of a given
+  // OAuthConsumerId instead of issuing all tokens for all requests (the method
+  // variant above).
+  void WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
+      const std::string& token,
+      const base::Time& expiration,
+      const OAuthConsumerId oauth_consumer_id);
+
   // Issues |error| in response to any access token request that either has (a)
   // already occurred and has not been matched by a previous call to this or
   // other WaitFor... method, or (b) will occur in the future. In the latter

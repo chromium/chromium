@@ -759,6 +759,7 @@ chromium-metrics-reviews@google.com.
   <int value="65" label="Extensions Identity API"/>
   <int value="66" label="Manta"/>
   <int value="67" label="Chrome Memex"/>
+  <int value="68" label="Devtools Aida Client"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

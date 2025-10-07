@@ -97,6 +97,7 @@ constexpr char kDataSharingAndroidName[] = "data_sharing_android";
 constexpr char kExtensionsIdentityAPIName[] = "extensions_identity_api";
 constexpr char kMantaName[] = "manta";
 constexpr char kChromeMemexName[] = "chrome_memex";
+constexpr char kDevtoolsAidaName[] = "devtools_aida_client";
 
 }  // namespace
 
@@ -418,6 +419,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kChromeMemexName,
           /*scopes=*/{GaiaConstants::kChromeMemexOAuth2Scope});
+    case OAuthConsumerId::kDevtoolsAida:
+      return OAuthConsumer(
+          /*name=*/kDevtoolsAidaName,
+          /*scopes=*/{GaiaConstants::kAidaOAuth2Scope});
   }
   NOTREACHED();
 }

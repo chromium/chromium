@@ -36,6 +36,7 @@
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -532,6 +533,16 @@ void IdentityTestEnvironment::
                                                .WithExpirationTime(expiration)
                                                .WithIdToken(id_token)
                                                .build());
+}
+
+void IdentityTestEnvironment::
+    WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
+        const std::string& token,
+        const base::Time& expiration,
+        const OAuthConsumerId oauth_consumer_id) {
+  OAuthConsumer oauth_consumer = GetOAuthConsumerFromId(oauth_consumer_id);
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+      token, expiration, oauth_consumer.GetName(), oauth_consumer.GetScopes());
 }
 
 void IdentityTestEnvironment::
