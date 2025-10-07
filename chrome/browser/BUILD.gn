@@ -4863,22 +4863,6 @@ static_library("browser") {
       "apps/intent_helper/chromeos_disabled_apps_throttle.h",
       "browser_process_platform_part_ash.cc",
       "browser_process_platform_part_ash.h",
-      "certificate_provider/certificate_provider.h",
-      "certificate_provider/certificate_provider_service.cc",
-      "certificate_provider/certificate_provider_service.h",
-      "certificate_provider/certificate_provider_service_factory.cc",
-      "certificate_provider/certificate_provider_service_factory.h",
-      "certificate_provider/certificate_requests.cc",
-      "certificate_provider/certificate_requests.h",
-      "certificate_provider/pin_dialog_manager.cc",
-      "certificate_provider/pin_dialog_manager.h",
-      "certificate_provider/security_token_pin_dialog_host.h",
-      "certificate_provider/security_token_pin_dialog_host_popup_impl.cc",
-      "certificate_provider/security_token_pin_dialog_host_popup_impl.h",
-      "certificate_provider/sign_requests.cc",
-      "certificate_provider/sign_requests.h",
-      "certificate_provider/thread_safe_certificate_map.cc",
-      "certificate_provider/thread_safe_certificate_map.h",
       "chrome_browser_interface_binders_webui_parts_chromeos.cc",
       "component_updater/app_provisioning_component_installer.cc",
       "component_updater/app_provisioning_component_installer.h",
@@ -5534,6 +5518,8 @@ static_library("browser") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
+      "//chrome/browser/certificate_provider",
+      "//chrome/browser/certificate_provider:impl",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/cros_apps",
@@ -6171,6 +6157,11 @@ static_library("browser") {
       # TODO: crbug.com/395179599 - Remove once //chrome/browser/net has its own
       # build target.
       "//remoting/host/chromeos:browser_interop",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when:
+      # - c/b/profiles/profile_manager.h"
+      # gets componentized.
+      "//chrome/browser/certificate_provider:impl",
     ]
 
     if (is_chrome_branded) {

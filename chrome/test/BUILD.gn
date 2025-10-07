@@ -981,10 +981,6 @@ static_library("test_support") {
     sources += [
       "../browser/apps/app_service/metrics/website_metrics_browser_test_mixin.cc",
       "../browser/apps/app_service/metrics/website_metrics_browser_test_mixin.h",
-      "../browser/certificate_provider/test_certificate_provider_extension.cc",
-      "../browser/certificate_provider/test_certificate_provider_extension.h",
-      "../browser/certificate_provider/test_certificate_provider_extension_mixin.cc",
-      "../browser/certificate_provider/test_certificate_provider_extension_mixin.h",
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.h",
       "../browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.cc",
@@ -4922,6 +4918,7 @@ if (!is_android) {
           "//build/config/chromebox_for_meetings:buildflags",
           "//chrome/browser/ash/scanning",
           "//chrome/browser/ash/scanning:test_support",
+          "//chrome/browser/certificate_provider",
           "//chrome/browser/chromeos/extensions/smart_card_provider_private:browser_tests",
           "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/chromeos/extensions/vpn_provider",
@@ -8761,7 +8758,6 @@ test("unit_tests") {
     ]
     sources += [
       "../browser/ash/scalable_iph/scalable_iph_factory_impl_unittest.cc",
-      "../browser/certificate_provider/certificate_provider_service_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
@@ -8985,6 +8981,7 @@ test("unit_tests") {
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/wallpaper_handlers:test_support",
+      "//chrome/browser/certificate_provider:unit_tests",
       "//chrome/browser/chromeos/office_web_app",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",

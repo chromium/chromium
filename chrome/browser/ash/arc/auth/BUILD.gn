@@ -72,6 +72,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/test:test_support",
+    "//chrome/browser/certificate_provider",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/ui",

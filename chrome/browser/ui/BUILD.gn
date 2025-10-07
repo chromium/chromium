@@ -2208,6 +2208,7 @@ static_library("ui") {
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper",
       "//chrome/browser/ash/wallpaper_handlers",
+      "//chrome/browser/certificate_provider",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/cros_apps",

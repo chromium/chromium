@@ -120,6 +120,7 @@ static_library("login") {
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/system",
+    "//chrome/browser/certificate_provider",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/safe_browsing",

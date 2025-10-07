@@ -1132,6 +1132,7 @@ source_set("extensions") {
       ]
 
       deps += [
+        "//chrome/browser/certificate_provider",
         "//chrome/browser/chromeos/extensions/desk_api",
         "//chrome/browser/chromeos/extensions/external_loader",
         "//chrome/browser/chromeos/extensions/login_screen/login_state",

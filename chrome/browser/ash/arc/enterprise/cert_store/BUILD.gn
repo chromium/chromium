@@ -25,6 +25,7 @@ static_library("cert_store") {
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/remote_commands",
+    "//chrome/browser/certificate_provider",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/platform_keys",

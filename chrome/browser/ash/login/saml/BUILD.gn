@@ -90,6 +90,7 @@ static_library("test_support") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/certificate_provider:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/proximity_auth",

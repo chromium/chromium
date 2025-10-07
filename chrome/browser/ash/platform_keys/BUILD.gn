@@ -22,6 +22,7 @@ static_library("platform_keys") {
     "//base",
     "//chrome/browser/ash/kcer",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/certificate_provider",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/kcer",
