@@ -970,16 +970,7 @@ class VideoTextureBacking : public cc::TextureBacking {
                                    /*plane_index=*/0, dst_pixels);
   }
 
-  void FlushPendingSkiaOps() override {
-    if (!raster_context_provider_ || !sk_image_) {
-      return;
-    }
-    GrDirectContext* ctx = raster_context_provider_->GrContext();
-    if (!ctx) {
-      return;
-    }
-    ctx->flushAndSubmit(sk_image_);
-  }
+  void FlushPendingSkiaOps() override {}
 
   const gpu::SyncToken& sync_token() { return sync_token_; }
   void UpdateSyncToken(const gpu::SyncToken& sync_token) {
