@@ -750,7 +750,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/380024812")
     @Feature({"Sync", "RenderTest"})
     public void testSigninSettingsTopAvatarWithNoName() throws Exception {
         mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
