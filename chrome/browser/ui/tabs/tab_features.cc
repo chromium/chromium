@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -214,6 +215,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       manage_passwords_page_action_controller_ =
           std::make_unique<ManagePasswordsPageActionController>(
               *page_action_controller_);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kCookieControls)) {
+      cookie_controls_page_action_controller_ =
+          GetUserDataFactory()
+              .CreateInstance<CookieControlsPageActionController>(
+                  tab, tab, *profile, *page_action_controller_);
+      cookie_controls_page_action_controller_->Init();
     }
   }
 

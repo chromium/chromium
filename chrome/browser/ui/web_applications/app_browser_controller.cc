@@ -380,8 +380,12 @@ std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::vector<actions::ActionId> types_enabled = {
-      kActionFind,       kActionShowPasswordsBubbleOrPage, kActionShowTranslate,
-      kActionZoomNormal, kActionShowFileSystemAccess,
+      kActionFind,
+      kActionShowPasswordsBubbleOrPage,
+      kActionShowTranslate,
+      kActionZoomNormal,
+      kActionShowFileSystemAccess,
+      kActionShowCookieControls,
   };
 
 #if DCHECK_IS_ON()
