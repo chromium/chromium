@@ -92,7 +92,9 @@ AccountChooserController::AccountChooserController(
     : tab_(tabs::TabInterface::MaybeGetFromContents(web_contents)),
       identity_manager_(identity_manager),
       add_account_popup_observer_(
-          std::make_unique<AddAccountPopupObserver>(this)) {}
+          std::make_unique<AddAccountPopupObserver>(this)) {
+  CHECK(identity_manager_);
+}
 
 AccountChooserController::~AccountChooserController() {
   OnFlowCancelled();
