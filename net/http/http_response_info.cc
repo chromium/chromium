@@ -138,8 +138,8 @@ enum {
 // These values can be bit-wise combined to form the extra flags field of the
 // serialized HttpResponseInfo.
 enum {
-  // This bit is set if the request usd a shared dictionary for decoding its
-  // body.
+  // This bit was set if the request used a shared dictionary for decoding its
+  // body but is no longer persisted.
   RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY = 1,
 
   // This bit is set if the response has valid `proxy_chain`.
@@ -366,8 +366,10 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
     browser_run_id = std::make_optional(id);
   }
 
-  did_use_shared_dictionary =
-      (extra_flags & RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY) != 0;
+  // Do NOT restore the did_use_shared_dictionary flag since
+  // dictionary-compressed responses are decoded before being stored in cache.
+  // It is no longer persisted but old cache entries may have it set.
+  did_use_shared_dictionary = false;
 
   if (extra_flags & RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN) {
     std::optional<ProxyChain> unpickled_proxy_chain =
@@ -434,10 +436,6 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickle(
     flags |= RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO;
   if (browser_run_id.has_value())
     flags |= RESPONSE_INFO_BROWSER_RUN_ID;
-
-  if (did_use_shared_dictionary) {
-    extra_flags |= RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY;
-  }
 
   if (proxy_chain.IsValid()) {
     extra_flags |= RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN;
