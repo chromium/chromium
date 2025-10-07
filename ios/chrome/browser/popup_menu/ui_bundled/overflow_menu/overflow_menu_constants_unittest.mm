@@ -141,6 +141,9 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::HideToolbars:
         finalExpectedActionType = overflow_menu::ActionType::HideToolbars;
         break;
+      case overflow_menu::ActionType::TabGroup:
+        finalExpectedActionType = overflow_menu::ActionType::TabGroup;
+        break;
     }
 
     // If there's no finalExpectedActionType, then the loop has looped through

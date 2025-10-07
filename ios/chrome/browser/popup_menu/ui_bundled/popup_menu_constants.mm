@@ -47,3 +47,4 @@ NSString* const kToolsMenuPriceNotifications = @"kToolsMenuPriceNotifications";
 NSString* const kToolsMenuEditActionsId = @"kToolsMenuEditActionsId";
 NSString* const kToolsMenuOpenAskBWG = @"kToolsMenuOpenAskBWG";
 NSString* const kToolsMenuHideToolbars = @"kToolsMenuHideToolbars";
+NSString* const kToolsMenuNewTabGroupId = @"kToolsMenuNewTabGroupId";

@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -279,6 +280,8 @@ using base::UserMetricsAction;
     mediator.applicationHandler =
         HandlerForProtocol(dispatcher, ApplicationCommands);
     mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
+    mediator.tabGroupsHandler =
+        HandlerForProtocol(dispatcher, TabGroupsCommands);
     mediator.bookmarksHandler =
         HandlerForProtocol(dispatcher, BookmarksCommands);
     if (IsLensOverlayAvailable(profile->GetPrefs())) {

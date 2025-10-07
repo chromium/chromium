@@ -118,6 +118,8 @@ std::optional<ActionType> ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::AskBWG;
   } else if (action == "HideToolbars") {
     return overflow_menu::ActionType::HideToolbars;
+  } else if (action == "TabGroup") {
+    return overflow_menu::ActionType::TabGroup;
   } else {
     return std::nullopt;
   }
@@ -169,6 +171,8 @@ std::string StringNameForActionType(ActionType action) {
       return "AskBWG";
     case overflow_menu::ActionType::HideToolbars:
       return "HideToolbars";
+    case overflow_menu::ActionType::TabGroup:
+      return "TabGroup";
   }
 }
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.cc:stringToActionType)
