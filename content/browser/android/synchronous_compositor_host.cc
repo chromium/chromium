@@ -68,6 +68,18 @@ void EstablishGpuChannelToEstablishVizConnection() {
 
 }  // namespace
 
+struct SynchronousCompositorHost::SharedMemoryWithSize {
+  base::WritableSharedMemoryMapping shared_memory;
+  const size_t stride;
+  const size_t buffer_size;
+
+  SharedMemoryWithSize(size_t stride, size_t buffer_size)
+      : stride(stride), buffer_size(buffer_size) {}
+
+  SharedMemoryWithSize(const SharedMemoryWithSize&) = delete;
+  SharedMemoryWithSize& operator=(const SharedMemoryWithSize&) = delete;
+};
+
 // This class runs on the IO thread and is destroyed when the renderer
 // side closes the mojo channel.
 class SynchronousCompositorControlHost
@@ -372,18 +384,6 @@ class SynchronousCompositorHost::ScopedSendZeroMemory {
 
  private:
   const raw_ptr<SynchronousCompositorHost> host_;
-};
-
-struct SynchronousCompositorHost::SharedMemoryWithSize {
-  base::WritableSharedMemoryMapping shared_memory;
-  const size_t stride;
-  const size_t buffer_size;
-
-  SharedMemoryWithSize(size_t stride, size_t buffer_size)
-      : stride(stride), buffer_size(buffer_size) {}
-
-  SharedMemoryWithSize(const SharedMemoryWithSize&) = delete;
-  SharedMemoryWithSize& operator=(const SharedMemoryWithSize&) = delete;
 };
 
 bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
