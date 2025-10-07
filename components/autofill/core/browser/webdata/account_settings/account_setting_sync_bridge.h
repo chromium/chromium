@@ -19,10 +19,13 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
       syncer::OnceDataTypeStoreFactory store_factory);
   ~AccountSettingSyncBridge() override;
 
-  // Returns the specifics for the setting of the given `name` if the bridge
-  // is aware of any such setting. Otherwise, nullopt is returned.
+  // Returns the value for the setting of the given `name` if the bridge
+  // is aware of any such setting, and the setting has the expected type.
+  // Otherwise, nullopt is returned.
   // Virtual for testing.
-  virtual std::optional<sync_pb::AccountSettingSpecifics> GetSetting(
+  virtual std::optional<bool> GetBoolSetting(std::string_view name) const;
+  virtual std::optional<int> GetIntSetting(std::string_view name) const;
+  virtual std::optional<std::string> GetStringSetting(
       std::string_view name) const;
 
   // syncer::DataTypeSyncBridge:

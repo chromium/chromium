@@ -9,9 +9,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_test_util.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_util.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
@@ -29,9 +29,9 @@ namespace autofill {
 namespace {
 
 using SettingSpecifics = sync_pb::AccountSettingSpecifics;
+using ::base::test::EqualsProto;
 using ::testing::_;
-using ::testing::Optional;
-using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedPointwise;
 
 syncer::EntityData EntityFromSpecifics(const SettingSpecifics& specifics) {
   syncer::EntityData entity;
@@ -56,11 +56,11 @@ class AccountSettingSyncBridgeTest : public testing::Test {
  public:
   AccountSettingSyncBridgeTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
-    RecreateBridgeAnsWaitForModelToSync();
+    RecreateBridgeAndWaitForModelToSync();
   }
 
   template <typename... Args>
-  void RecreateBridgeAnsWaitForModelToSync(Args&&... args) {
+  void RecreateBridgeAndWaitForModelToSync(Args&&... args) {
     // Even though the test uses an in-memory store, it still posts tasks. Wait
     // for initialisation to complete.
     base::RunLoop run_loop;
@@ -73,8 +73,8 @@ class AccountSettingSyncBridgeTest : public testing::Test {
 
     run_loop.Run();
   }
-  void RecreateBridgeAnsWaitForModelToSync() {
-    RecreateBridgeAnsWaitForModelToSync(_);
+  void RecreateBridgeAndWaitForModelToSync() {
+    RecreateBridgeAndWaitForModelToSync(_);
   }
 
   AccountSettingSyncBridge& bridge() { return *bridge_; }
@@ -115,7 +115,7 @@ TEST_F(AccountSettingSyncBridgeTest, GetStorageKey) {
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_InitialSync) {
-  RecreateBridgeAnsWaitForModelToSync();
+  RecreateBridgeAndWaitForModelToSync();
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
@@ -131,7 +131,7 @@ TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
 
   // Expect that `ModelReadyToSync()` is called with the stored metadata when
   // the bridge is created.
-  RecreateBridgeAnsWaitForModelToSync(syncer::MetadataBatchContains(
+  RecreateBridgeAndWaitForModelToSync(syncer::MetadataBatchContains(
       /*state=*/syncer::HasInitialSyncDone(),
       /*entities=*/testing::IsEmpty()));
 }
@@ -140,12 +140,10 @@ TEST_F(AccountSettingSyncBridgeTest, MergeFullSyncData) {
   EXPECT_TRUE(
       StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
   // Expect that the setting is available immediately.
-  EXPECT_THAT(bridge().GetSetting("name"),
-              Optional(HasStringSetting("name", "value")));
+  EXPECT_THAT(bridge().GetStringSetting("name"), "value");
   // Recreate the bridge, reloading from the `store()`.
-  RecreateBridgeAnsWaitForModelToSync();
-  EXPECT_THAT(bridge().GetSetting("name"),
-              Optional(HasStringSetting("name", "value")));
+  RecreateBridgeAndWaitForModelToSync();
+  EXPECT_THAT(bridge().GetStringSetting("name"), "value");
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
@@ -163,22 +161,20 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
       bridge().CreateMetadataChangeList(), std::move(change_list)));
 
   // Expect that the setting is available immediately.
-  EXPECT_THAT(bridge().GetSetting("name1"),
-              Optional(HasStringSetting("name1", "new-string")));
-  EXPECT_THAT(bridge().GetSetting("name2"),
-              Optional(HasIntSetting("name2", 123)));
+  EXPECT_THAT(bridge().GetStringSetting("name1"), "new-string");
+  EXPECT_THAT(bridge().GetIntSetting("name2"), 123);
   // Recreate the bridge, reloading from the `store()`.
-  RecreateBridgeAnsWaitForModelToSync();
-  EXPECT_THAT(bridge().GetSetting("name1"),
-              Optional(HasStringSetting("name1", "new-string")));
-  EXPECT_THAT(bridge().GetSetting("name2"),
-              Optional(HasIntSetting("name2", 123)));
+  RecreateBridgeAndWaitForModelToSync();
+  EXPECT_THAT(bridge().GetStringSetting("name1"), "new-string");
+  EXPECT_THAT(bridge().GetIntSetting("name2"), 123);
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   ASSERT_TRUE(
-      StartSyncingWithServerData({CreateSettingSpecifics("name", true),
+      StartSyncingWithServerData({CreateSettingSpecifics("name1", true),
                                   CreateSettingSpecifics("name2", "string")}));
+  ASSERT_THAT(bridge().GetBoolSetting("name1"), true);
+  ASSERT_THAT(bridge().GetStringSetting("name2"), "string");
 
   syncer::EntityChangeList change_list;
   change_list.push_back(
@@ -186,38 +182,38 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
       bridge().CreateMetadataChangeList(), std::move(change_list)));
   // Expect that the change was applied immediately.
-  EXPECT_FALSE(bridge().GetSetting("name1"));
-  EXPECT_THAT(bridge().GetSetting("name2"),
-              Optional(HasStringSetting("name2", "string")));
+  EXPECT_FALSE(bridge().GetBoolSetting("name1").has_value());
+  EXPECT_THAT(bridge().GetStringSetting("name2"), "string");
   // Recreate the bridge, reloading from the `store()`.
-  RecreateBridgeAnsWaitForModelToSync();
-  EXPECT_FALSE(bridge().GetSetting("name1"));
-  EXPECT_THAT(bridge().GetSetting("name2"),
-              Optional(HasStringSetting("name2", "string")));
+  RecreateBridgeAndWaitForModelToSync();
+  EXPECT_FALSE(bridge().GetBoolSetting("name1").has_value());
+  EXPECT_THAT(bridge().GetStringSetting("name2"), "string");
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ApplyDisableSyncChanges) {
   ASSERT_TRUE(
       StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
-  ASSERT_THAT(bridge().GetSetting("name"),
-              Optional(HasStringSetting("name", "value")));
+  ASSERT_THAT(bridge().GetStringSetting("name"), "value");
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
   // Expect that the change was applied immediately.
-  EXPECT_FALSE(bridge().GetSetting("name"));
+  EXPECT_FALSE(bridge().GetStringSetting("name").has_value());
   // Recreate the bridge, reloading from the `store()`.
-  RecreateBridgeAnsWaitForModelToSync();
-  EXPECT_FALSE(bridge().GetSetting("name"));
+  RecreateBridgeAndWaitForModelToSync();
+  EXPECT_FALSE(bridge().GetStringSetting("name").has_value());
 }
 
 TEST_F(AccountSettingSyncBridgeTest, GetAllDataForDebugging) {
+  sync_pb::AccountSettingSpecifics bool_setting =
+      CreateSettingSpecifics("name1", true);
+  sync_pb::AccountSettingSpecifics int_setting =
+      CreateSettingSpecifics("name2", 123);
+  sync_pb::AccountSettingSpecifics string_setting =
+      CreateSettingSpecifics("name3", "string");
   ASSERT_TRUE(
-      StartSyncingWithServerData({CreateSettingSpecifics("name1", "string"),
-                                  CreateSettingSpecifics("name2", true),
-                                  CreateSettingSpecifics("name3", 123)}));
+      StartSyncingWithServerData({bool_setting, int_setting, string_setting}));
   EXPECT_THAT(ExtractSpecificsFromBatch(bridge().GetAllDataForDebugging()),
-              UnorderedElementsAre(HasStringSetting("name1", "string"),
-                                   HasBoolSetting("name2", true),
-                                   HasIntSetting("name3", 123)));
+              UnorderedPointwise(EqualsProto(),
+                                 {bool_setting, int_setting, string_setting}));
 }
 
 TEST_F(AccountSettingSyncBridgeTest, IsEntityDataValid) {

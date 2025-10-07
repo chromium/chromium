@@ -36,17 +36,6 @@ class AccountSettingService : public KeyedService {
   GetSyncControllerDelegate();
 
  private:
-  // Internals helpers to get the setting value for a given setting name by
-  // type. If no setting of the given name exists, `default_value` is returned.
-  //
-  // If a setting of the given name exists, but the type doesn't match...
-  // - a DCHECK() will fail. This is intended to catch coding errors during
-  //   development.
-  // - `default_value` is returned with DCHECKs disabled. This choice was made
-  //   to avoid that external factors lead to a crashing state, since settings
-  //   are received via the network.
-  bool GetBoolean(std::string_view name, bool default_value) const;
-
   std::unique_ptr<AccountSettingSyncBridge> sync_bridge_;
 };
 

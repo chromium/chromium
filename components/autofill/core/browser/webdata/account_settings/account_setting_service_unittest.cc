@@ -25,8 +25,8 @@ using ::testing::Return;
 class MockAccountSettingSyncBridge : public AccountSettingSyncBridge {
  public:
   using AccountSettingSyncBridge::AccountSettingSyncBridge;
-  MOCK_METHOD(std::optional<sync_pb::AccountSettingSpecifics>,
-              GetSetting,
+  MOCK_METHOD(std::optional<bool>,
+              GetBoolSetting,
               (std::string_view),
               (const, override));
 };
@@ -54,9 +54,8 @@ class AccountSettingServiceTest : public testing::Test {
 
 TEST_F(AccountSettingServiceTest, GetValue) {
   EXPECT_FALSE(service().IsWalletPrivacyContextualSurfacingEnabled());
-  ON_CALL(bridge(), GetSetting("WALLET_PRIVACY_CONTEXTUAL_SURFACING"))
-      .WillByDefault(Return(
-          CreateSettingSpecifics("WALLET_PRIVACY_CONTEXTUAL_SURFACING", true)));
+  ON_CALL(bridge(), GetBoolSetting("WALLET_PRIVACY_CONTEXTUAL_SURFACING"))
+      .WillByDefault(Return(true));
   EXPECT_TRUE(service().IsWalletPrivacyContextualSurfacingEnabled());
 }
 

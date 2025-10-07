@@ -52,13 +52,31 @@ AccountSettingSyncBridge::AccountSettingSyncBridge(
 
 AccountSettingSyncBridge::~AccountSettingSyncBridge() = default;
 
-std::optional<sync_pb::AccountSettingSpecifics>
-AccountSettingSyncBridge::GetSetting(std::string_view name) const {
+std::optional<bool> AccountSettingSyncBridge::GetBoolSetting(
+    std::string_view name) const {
   auto it = settings_.find(name);
-  if (it == settings_.end()) {
+  if (it == settings_.end() || !it->second.has_bool_value()) {
     return std::nullopt;
   }
-  return it->second;
+  return it->second.bool_value();
+}
+
+std::optional<int> AccountSettingSyncBridge::GetIntSetting(
+    std::string_view name) const {
+  auto it = settings_.find(name);
+  if (it == settings_.end() || !it->second.has_int_value()) {
+    return std::nullopt;
+  }
+  return it->second.int_value();
+}
+
+std::optional<std::string> AccountSettingSyncBridge::GetStringSetting(
+    std::string_view name) const {
+  auto it = settings_.find(name);
+  if (it == settings_.end() || !it->second.has_string_value()) {
+    return std::nullopt;
+  }
+  return it->second.string_value();
 }
 
 std::unique_ptr<syncer::MetadataChangeList>
