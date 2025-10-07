@@ -8,27 +8,23 @@
 
 #include "base/auto_reset.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/browser_url_handler.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
+#include "ui/base/base_window.h"
 
 namespace extensions {
 
@@ -132,25 +128,26 @@ void MaybeShowExtensionControlledSearchNotification(
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
     return;
   }
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(browser->profile());
+      settings_overridden_params::GetSearchOverriddenParams(profile);
   if (!params) {
     return;
   }
 
   auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
-      std::move(*params), browser->profile());
+      std::move(*params), profile);
   if (!dialog->ShouldShow()) {
     return;
   }
 
-  ShowSettingsOverriddenDialog(std::move(dialog),
-                               browser->window()->GetNativeWindow());
+  gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
+  ShowSettingsOverriddenDialog(std::move(dialog), parent_window);
 #endif
 }
 
