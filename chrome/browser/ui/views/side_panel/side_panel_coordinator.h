@@ -29,7 +29,6 @@
 #include "ui/views/view_observer.h"
 
 class BrowserView;
-class SidePanelHeader;
 
 namespace actions {
 class ActionItem;
@@ -93,15 +92,12 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   SidePanelEntry* GetLoadingEntryForTesting() const;
 
-  SidePanelHeader* GetSidePanelHeaderForTesting() { return side_panel_header_; }
-
  private:
   friend class SidePanelCoordinatorTest;
 
   actions::ActionItem* GetActionItem(SidePanelEntry::Key entry_key);
 
   void UpdatePinState();
-  void UpdateHeaderPinButtonState();
 
   void OnClosed();
 
@@ -125,10 +121,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // for global and contextual registries.
   void ClearCachedEntryViews(SidePanelEntry::PanelType type);
 
-  void UpdatePanelIconAndTitle(const ui::ImageModel& icon,
-                               std::u16string_view text,
-                               const bool should_show_title_text,
-                               const bool is_extension);
+  void UpdateSidePanelHeader(SidePanelEntry* entry);
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
@@ -145,7 +138,9 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void NotifyPinnedContainerOfActiveStateChange(SidePanelEntryKey key,
                                                 bool show_active_in_toolbar);
 
-  void MaybeQueuePinPromo();
+  bool GetPinnedStateFor(SidePanelEntryKey key);
+
+  void MaybeQueuePinPromo(SidePanelEntryId id);
   void ShowPinPromo();
   void MaybeEndPinPromo(bool pinned);
 
@@ -178,9 +173,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // This subscription is used to update the side panel title when the action
   // item associated with the side panel entry changes.
   base::CallbackListSubscription action_item_controller_subscription_;
-
-  raw_ptr<SidePanelHeader, AcrossTasksDanglingUntriaged> side_panel_header_ =
-      nullptr;
 
   // Model for the more info menu.
   std::unique_ptr<ui::MenuModel> more_info_menu_model_;

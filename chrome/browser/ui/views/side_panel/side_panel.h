@@ -54,6 +54,11 @@ class SidePanel : public views::AccessiblePaneView,
     keyboard_resized_ = keyboard_resized;
   }
 
+  template <typename T>
+  T* GetHeaderView() {
+    return views::AsViewClass<T>(header_view_);
+  }
+
   // Add a header view that gets painted over the side panel border. The top
   // border area grows to accommodate the additional height of the header,
   // pushing the other side panel content down.
@@ -86,8 +91,6 @@ class SidePanel : public views::AccessiblePaneView,
 
   // This is the parent view for the contents of the side panel.
   views::View* GetContentParentView();
-
-  views::View* get_header_for_testing() { return header_view_; }
 
  private:
   class VisibleBoundsViewClipper;

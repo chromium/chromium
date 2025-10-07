@@ -181,11 +181,15 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     EXPECT_EQ(entry.value(), id);
   }
 
+  SidePanelHeader* GetHeader() {
+    return browser()
+        ->GetBrowserView()
+        .contents_height_side_panel()
+        ->GetHeaderView<SidePanelHeader>();
+  }
+
   std::u16string_view GetTitleText() {
-    return coordinator()
-        ->GetSidePanelHeaderForTesting()
-        ->panel_title()
-        ->GetText();
+    return GetHeader()->panel_title()->GetText();
   }
 
   void AddTabToBrowser(const GURL& tab_url) {
@@ -2211,11 +2215,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, HeaderlessSidePanel) {
   // Verify the side panel is showing with no header.
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
-  EXPECT_FALSE(browser()
-                   ->GetBrowserView()
-                   .contents_height_side_panel()
-                   ->get_header_for_testing()
-                   ->GetVisible());
+  EXPECT_FALSE(GetHeader()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -2247,11 +2247,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                    .has_value());
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
-  EXPECT_FALSE(browser()
-                   ->GetBrowserView()
-                   .contents_height_side_panel()
-                   ->get_header_for_testing()
-                   ->GetVisible());
+  EXPECT_FALSE(GetHeader()->GetVisible());
 
   // Switch tabs and open a different side panel and verify the header is
   // showing.
@@ -2261,22 +2257,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator()->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
-  EXPECT_TRUE(browser()
-                  ->GetBrowserView()
-                  .contents_height_side_panel()
-                  ->get_header_for_testing()
-                  ->GetVisible());
+  EXPECT_TRUE(GetHeader()->GetVisible());
 
   // Verify the header is not showing if we switch back to the tab with the
   // headerless side panel open.
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
-  EXPECT_FALSE(browser()
-                   ->GetBrowserView()
-                   .contents_height_side_panel()
-                   ->get_header_for_testing()
-                   ->GetVisible());
+  EXPECT_FALSE(GetHeader()->GetVisible());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -2286,10 +2274,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator()->SetNoDelaysForTesting(true);
   coordinator()->DisableAnimationsForTesting();
   coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(coordinator()
-                  ->GetSidePanelHeaderForTesting()
-                  ->header_pin_button()
-                  ->GetVisible());
+  EXPECT_TRUE(GetHeader()->header_pin_button()->GetVisible());
 
   // Make a guest window. This process can be either synchronous or
   // asynchronous, so use RunUntil.
@@ -2306,7 +2291,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator->SetNoDelaysForTesting(true);
   coordinator->DisableAnimationsForTesting();
   coordinator->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(coordinator->GetSidePanelHeaderForTesting()
+  EXPECT_FALSE(guest_browser->GetBrowserView()
+                   .contents_height_side_panel()
+                   ->GetHeaderView<SidePanelHeader>()
                    ->header_pin_button()
                    ->GetVisible());
 }
@@ -2327,8 +2314,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(
       GetKeyForExtension(extension->id())));
 
-  views::ToggleImageButton* pin_button =
-      coordinator()->GetSidePanelHeaderForTesting()->header_pin_button();
+  views::ToggleImageButton* pin_button = GetHeader()->header_pin_button();
   EXPECT_TRUE(pin_button->GetVisible());
   EXPECT_FALSE(pin_button->GetToggled());
 
@@ -2363,8 +2349,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLensOverlayTest,
   VerifyEntryExistenceAndValue(contextual_registries_[1]->GetActiveEntryFor(
                                    SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kLensOverlayResults);
-  views::ImageButton* more_info_button =
-      coordinator()->GetSidePanelHeaderForTesting()->header_more_info_button();
+  views::ImageButton* more_info_button = GetHeader()->header_more_info_button();
   EXPECT_TRUE(more_info_button->GetVisible());
 }
 
@@ -2376,8 +2361,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLensOverlayTest,
   VerifyEntryExistenceAndValue(contextual_registries_[1]->GetActiveEntryFor(
                                    SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kLens);
-  views::ImageButton* more_info_button =
-      coordinator()->GetSidePanelHeaderForTesting()->header_more_info_button();
+  views::ImageButton* more_info_button = GetHeader()->header_more_info_button();
   EXPECT_FALSE(more_info_button->GetVisible());
 }
 

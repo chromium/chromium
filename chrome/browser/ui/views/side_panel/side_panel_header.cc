@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
@@ -215,3 +216,6 @@ void SidePanelHeader::Layout(PassKey) {
 
   SetBoundsRect(header_bounds);
 }
+
+BEGIN_METADATA(SidePanelHeader)
+END_METADATA

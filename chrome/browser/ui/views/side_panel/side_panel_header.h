@@ -18,6 +18,8 @@ class ToggleImageButton;
 // Side Panel border. The header is added as a separate view over the side panel
 // border so it can process events since the border cannot process events.
 class SidePanelHeader : public views::View {
+  METADATA_HEADER(SidePanelHeader, views::View)
+
  public:
   using TogglePinStateCallback = base::RepeatingClosure;
   using OpenInNewTabCallback = base::RepeatingClosure;
