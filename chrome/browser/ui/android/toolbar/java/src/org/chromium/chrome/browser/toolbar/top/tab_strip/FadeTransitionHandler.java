@@ -9,7 +9,6 @@ import android.util.DisplayMetrics;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.ui.base.ViewUtils;
 
@@ -49,10 +48,6 @@ class FadeTransitionHandler {
     }
 
     private void requestTransition(boolean forceFadeInStrip) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)) {
-            return;
-        }
         mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
                 mCallbackController.makeCancelable(
                         delegate -> maybeUpdateTabStripVisibility(forceFadeInStrip)));

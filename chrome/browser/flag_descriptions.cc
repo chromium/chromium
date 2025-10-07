@@ -5473,12 +5473,6 @@ const char kTabStripMouseCloseResizeDelayName[] =
 const char kTabStripMouseCloseResizeDelayDescription[] =
     "Delays resizing the tab strip when closing a tab with the mouse.";
 
-const char kTabStripTransitionInDesktopWindowName[] =
-    "Tab Strip Transition in Desktop Window";
-const char kTabStripTransitionInDesktopWindowDescription[] =
-    "Allows hiding / showing the tab strip with varying desktop window widths "
-    "by initiating a fade transition.";
-
 const char kToolbarSnapshotRefactorName[] = "Toolbar Snapshot Refactor";
 const char kToolbarSnapshotRefactorDescription[] =
     "Updates the margin and snapshotting of the Toolbar on Android.";

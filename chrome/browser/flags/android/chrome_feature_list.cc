@@ -428,7 +428,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripIncognitoMigration,
     &kTabStripLayoutOptimization,
     &kTabStripMouseCloseResizeDelay,
-    &kTabStripTransitionInDesktopWindow,
     &kTabSwitcherDragDropAndroid,
     &kTabSwitcherForeignFaviconSupport,
     &kTabSwitcherGroupSuggestionsAndroid,
@@ -1069,9 +1068,6 @@ BASE_FEATURE(kTabStripIncognitoMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabStripLayoutOptimization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripMouseCloseResizeDelay, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabStripTransitionInDesktopWindow,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabSwitcherDragDropAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 

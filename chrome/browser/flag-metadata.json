@@ -9762,11 +9762,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "tab-strip-transition-in-desktop-window",
-    "owners": [ "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "tab-switcher-color-blend-animate",
     "owners": [ "skym@chromium.org", "mfiaz@google.com" ],
     "expiry_milestone": 140
