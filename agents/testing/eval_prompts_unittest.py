@@ -850,6 +850,26 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertEqual(args.retries, 2)
         self.assertEqual(args.isolated_script_test_repeat, 3)
 
+    def test_parse_args_isolated_script_test_launcher_retry_limit(self):
+        """Tests the --isolated-script-test-launcher-retry-limit argument."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--isolated-script-test-launcher-retry-limit',
+            '3'
+        ]
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.retries, 3)
+
+    def test_parse_args_retries_exclusive_group(self):
+        """Tests that retry arguments are mutually exclusive."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--retries', '2',
+            '--isolated-script-test-launcher-retry-limit', '3'
+        ]
+        # stderr mocked to silence the automatic help output by the parser when
+        # parsing fails.
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
+
     def test_parse_args_promptfoo_bin(self):
         """Tests --promptfoo-bin."""
         self.mock_argv[:] = [

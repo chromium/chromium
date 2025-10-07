@@ -429,10 +429,16 @@ def _parse_args() -> argparse.Namespace:
         help=('The number of parallel workers to run tests in. Changing this '
               'is not recommended if the Chromium checkout being used is not '
               'on btrfs.'))
-    group.add_argument('--retries',
-                       type=int,
-                       default=0,
-                       help='Number of times to retry a failed test.')
+    retry_group = group.add_mutually_exclusive_group()
+    retry_group.add_argument('--retries',
+                             type=int,
+                             default=0,
+                             help='Number of times to retry a failed test.')
+    retry_group.add_argument('--isolated-script-test-launcher-retry-limit',
+                             dest='retries',
+                             type=int,
+                             help=('Alias for --retries to conform to the '
+                                   'isolated script standard.'))
     group.add_argument('--isolated-script-test-repeat',
                        type=int,
                        default=0,
