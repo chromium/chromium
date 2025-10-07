@@ -148,6 +148,9 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     }
 
     @Override
+    public void discard(Runnable onDiscarded) {}
+
+    @Override
     public boolean isLoading() {
         return false;
     }

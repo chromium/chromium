@@ -165,6 +165,9 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   base::android::ScopedJavaLocalRef<jstring> GetEncoding(JNIEnv* env) const;
 
+  void Discard(JNIEnv* env,
+               const base::android::JavaParamRef<jobject>& on_discarded);
+
   void SetOverscrollRefreshHandler(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& overscroll_refresh_handler);

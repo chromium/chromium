@@ -218,6 +218,15 @@ public interface WebContents extends Parcelable {
     String getEncoding();
 
     /**
+     * Discards the RenderFrameHost associated with this WebContents.
+     *
+     * @param onDiscarded a callback to be called when the RenderFrameHost is discarded. May never
+     *     be called if the operation fails.
+     *     <p>TODO(crbug.com/441841249): Change the runnable to a callback.
+     */
+    void discard(Runnable onDiscarded);
+
+    /**
      * @return Whether this WebContents is loading a resource.
      */
     boolean isLoading();

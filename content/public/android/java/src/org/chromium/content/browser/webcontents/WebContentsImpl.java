@@ -51,6 +51,7 @@ import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -66,6 +67,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
@@ -514,6 +516,13 @@ public class WebContentsImpl
     public String getEncoding() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getEncoding(mNativeWebContentsAndroid);
+    }
+
+    @Override
+    public void discard(Runnable onDiscarded) {
+        checkNotDestroyed();
+        assert ContentFeatureMap.isEnabled(ContentFeatures.WEB_CONTENTS_DISCARD);
+        WebContentsImplJni.get().discard(mNativeWebContentsAndroid, onDiscarded);
     }
 
     @Override
@@ -1316,6 +1325,8 @@ public class WebContentsImpl
         int getVirtualKeyboardMode(long nativeWebContentsAndroid);
 
         String getEncoding(long nativeWebContentsAndroid);
+
+        void discard(long nativeWebContentsAndroid, Runnable onDiscarded);
 
         boolean isLoading(long nativeWebContentsAndroid);
 
