@@ -80,6 +80,11 @@ Please include this info when reporting issues.
 **Important Note**: Passkeys won't be supported by ReAuth. A physical security
 key is required.
 
+**If you use Firefox**: You need to allow the website to collect extended
+information about your security key in this dialog. Otherwise the key won't be
+able to ReAuth (you'll see BAD_REQUEST error in the log). If you've already
+registered the key, remove it from the security key list, then re-adding it.
+
 If you’re using a Google Workspace account, make sure
 "[2-Step Verification](https://myaccount.google.com/signinoptions/twosv)" is
 turned on.
