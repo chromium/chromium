@@ -98,10 +98,11 @@ if (current_toolchain == _framework_toolchain) {
   _copy_targets = []
   _copy_sources = [ "$_output_dir/$_output_name.framework" ]
   if (enable_dsyms) {
+    _dsym_contents_dir = "$_output_dir/$_output_name.dSYM/Contents"
     _copy_sources += [
-      "$_output_dir/$_output_name.dSYM/Contents/Info.plist",
-      "$_output_dir/$_output_name.dSYM/Contents/Resources/" +
-          "DWARF/$_output_name",
+      "$_dsym_contents_dir/Info.plist",
+      "$_dsym_contents_dir/Resources/DWARF/$_output_name",
+      "$_dsym_contents_dir/Resources/Relocations/$dsym_arch/$_output_name.yml",
     ]
   }
 

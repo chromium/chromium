@@ -352,6 +352,8 @@ template("mac_framework_bundle") {
       data = [
         "$root_out_dir/$_output_name.dSYM/Contents/Info.plist",
         "$root_out_dir/$_output_name.dSYM/Contents/Resources/DWARF/$_output_name",
+        "$root_out_dir/$_output_name.dSYM/Contents/Resources/Relocations/" +
+            "$dsym_arch/$_output_name.yml",
       ]
     }
 
@@ -548,6 +550,8 @@ template("mac_app_bundle") {
       data = [
         "$root_out_dir/$_output_name.dSYM/Contents/Info.plist",
         "$root_out_dir/$_output_name.dSYM/Contents/Resources/DWARF/$_output_name",
+        "$root_out_dir/$_output_name.dSYM/Contents/Resources/Relocations/" +
+            "$dsym_arch/$_output_name.yml",
       ]
     }
 
@@ -619,6 +623,8 @@ template("mac_plugin_bundle") {
       data = [
         "$root_out_dir/$_output_name.so.dSYM/Contents/Info.plist",
         "$root_out_dir/$_output_name.so.dSYM/Contents/Resources/DWARF/$_output_name.so",
+        "$root_out_dir/$_output_name.so.dSYM/Contents/Resources/Relocations/" +
+            "$dsym_arch/$_output_name.so.yml",
       ]
     }
 
