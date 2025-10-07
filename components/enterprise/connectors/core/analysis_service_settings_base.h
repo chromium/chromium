@@ -30,6 +30,26 @@ class AnalysisServiceSettingsBase {
 
   virtual ~AnalysisServiceSettingsBase();
 
+  // Get the block_until_verdict setting if the settings are valid.
+  bool ShouldBlockUntilVerdict() const;
+
+  // Get the default_action setting if the settings are valid.
+  bool ShouldBlockByDefault() const;
+
+  // Get the custom message/learn more URL. Returns std::nullopt if the
+  // settings are invalid or if the message/URL are empty.
+  std::optional<std::u16string> GetCustomMessage(const std::string& tag);
+  std::optional<GURL> GetLearnMoreUrl(const std::string& tag);
+  bool GetBypassJustificationRequired(const std::string& tag);
+
+  std::string service_provider_name() const { return service_provider_name_; }
+
+  // Helpers for convenient check of the underlying variant.
+  bool is_cloud_analysis() const;
+  bool is_local_analysis() const;
+
+  const AnalysisConfig* GetAnalysisConfig() const { return analysis_config_; }
+
  protected:
   // The setting to apply when a specific URL pattern is matched.
   struct URLPatternSettings {
@@ -70,6 +90,15 @@ class AnalysisServiceSettingsBase {
                              bool enabled,
                              base::MatcherStringPattern::ID* id);
 
+  // Returns true if the settings were initialized correctly. If this returns
+  // false, then GetAnalysisSettings will always return std::nullopt.
+  bool IsValid() const;
+
+  // Return tags found in |enabled_patterns_settings| corresponding to the
+  // matches while excluding the ones in |disable_patterns_settings|.
+  std::map<std::string, TagSettings> GetTags(
+      const std::set<base::MatcherStringPattern::ID>& matches) const;
+
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
@@ -107,6 +136,11 @@ class AnalysisServiceSettingsBase {
 
  private:
   static constexpr size_t kDefaultMinimumDataSize = 100;
+
+  // Accessors for the pattern setting maps.
+  static std::optional<URLPatternSettings> GetPatternSettings(
+      const PatternSettings& patterns,
+      base::MatcherStringPattern::ID match);
 
   // Parses the "source_destination_list" from the analysis settings. This is
   // intended to be called only during the construction of the base class.

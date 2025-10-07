@@ -213,6 +213,134 @@ void AnalysisServiceSettingsBase::AddUrlPatternSettings(
   }
 }
 
+bool AnalysisServiceSettingsBase::IsValid() const {
+  // The settings are invalid if no provider was given.
+  if (!analysis_config_) {
+    return false;
+  }
+
+  // The settings are invalid if no enabled pattern(s) exist since that would
+  // imply no URL can ever have an analysis.
+  return !enabled_patterns_settings_.empty();
+}
+
+std::map<std::string, TagSettings> AnalysisServiceSettingsBase::GetTags(
+    const std::set<base::MatcherStringPattern::ID>& matches) const {
+  std::set<std::string> enable_tags;
+  std::set<std::string> disable_tags;
+  for (const base::MatcherStringPattern::ID match : matches) {
+    // Enabled patterns need to be checked first, otherwise they always match
+    // the first disabled pattern.
+    bool enable = true;
+    auto maybe_pattern_setting =
+        GetPatternSettings(enabled_patterns_settings_, match);
+    if (!maybe_pattern_setting.has_value()) {
+      maybe_pattern_setting =
+          GetPatternSettings(disabled_patterns_settings_, match);
+      enable = false;
+    }
+
+    DCHECK(maybe_pattern_setting.has_value());
+    auto tags = std::move(maybe_pattern_setting.value().tags);
+    if (enable) {
+      enable_tags.insert(tags.begin(), tags.end());
+    } else {
+      disable_tags.insert(tags.begin(), tags.end());
+    }
+  }
+
+  for (const std::string& tag_to_disable : disable_tags) {
+    enable_tags.erase(tag_to_disable);
+  }
+
+  std::map<std::string, TagSettings> output;
+  for (const std::string& tag : enable_tags) {
+    if (tags_.count(tag)) {
+      output[tag] = tags_.at(tag);
+    } else {
+      output[tag] = TagSettings();
+    }
+  }
+
+  return output;
+}
+
+// static
+std::optional<AnalysisServiceSettingsBase::URLPatternSettings>
+AnalysisServiceSettingsBase::GetPatternSettings(
+    const PatternSettings& patterns,
+    base::MatcherStringPattern::ID match) {
+  // If the pattern exists directly in the map, return its settings.
+  if (patterns.count(match) == 1) {
+    return patterns.at(match);
+  }
+
+  // If the pattern doesn't exist in the map, it might mean that it wasn't the
+  // only pattern to correspond to its settings and that the ID added to
+  // the map was the one of the last pattern corresponding to those settings.
+  // This means the next match ID greater than |match| has the correct
+  // settings if it exists.
+  auto next = patterns.upper_bound(match);
+  if (next != patterns.end()) {
+    return next->second;
+  }
+
+  return std::nullopt;
+}
+
+bool AnalysisServiceSettingsBase::ShouldBlockUntilVerdict() const {
+  if (!IsValid()) {
+    return false;
+  }
+
+  return block_until_verdict_ == BlockUntilVerdict::kBlock;
+}
+
+bool AnalysisServiceSettingsBase::ShouldBlockByDefault() const {
+  if (!IsValid()) {
+    return false;
+  }
+
+  return default_action_ == DefaultAction::kBlock;
+}
+
+std::optional<std::u16string> AnalysisServiceSettingsBase::GetCustomMessage(
+    const std::string& tag) {
+  const auto& element = tags_.find(tag);
+
+  if (!IsValid() || element == tags_.end() ||
+      element->second.custom_message.message.empty()) {
+    return std::nullopt;
+  }
+
+  return element->second.custom_message.message;
+}
+
+std::optional<GURL> AnalysisServiceSettingsBase::GetLearnMoreUrl(
+    const std::string& tag) {
+  const auto& element = tags_.find(tag);
+
+  if (!IsValid() || element == tags_.end() ||
+      element->second.custom_message.learn_more_url.is_empty()) {
+    return std::nullopt;
+  }
+
+  return element->second.custom_message.learn_more_url;
+}
+
+bool AnalysisServiceSettingsBase::GetBypassJustificationRequired(
+    const std::string& tag) {
+  return tags_.find(tag) != tags_.end() && tags_.at(tag).requires_justification;
+}
+
+bool AnalysisServiceSettingsBase::is_cloud_analysis() const {
+  return analysis_config_ && analysis_config_->url != nullptr;
+}
+
+bool AnalysisServiceSettingsBase::is_local_analysis() const {
+  return analysis_config_ && analysis_config_->local_path != nullptr;
+}
+
 AnalysisServiceSettingsBase::AnalysisServiceSettingsBase(
     AnalysisServiceSettingsBase&&) = default;
 AnalysisServiceSettingsBase& AnalysisServiceSettingsBase::operator=(
