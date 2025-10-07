@@ -86,6 +86,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -999,14 +1000,19 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void PauseActorTask(int32_t task_id,
-                      mojom::ActorTaskPauseReason pause_reason) override {
+                      mojom::ActorTaskPauseReason pause_reason,
+                      std::optional<int32_t> tab_id) override {
     if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
       receiver_.ReportBadMessage(
           "PauseActorTask cannot be called without GlicActor enabled.");
       return;
     }
+    tabs::TabInterface::Handle tab_handle;
+    if (tab_id.has_value()) {
+      tab_handle = tabs::TabInterface::Handle(*tab_id);
+    }
     host().instance_delegate().PauseActorTask(actor::TaskId(task_id),
-                                              pause_reason);
+                                              pause_reason, tab_handle);
   }
 
   void ResumeActorTask(int32_t task_id,

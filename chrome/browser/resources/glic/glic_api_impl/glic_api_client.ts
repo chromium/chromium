@@ -652,10 +652,13 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     });
   }
 
-  pauseActorTask?(taskId: number, pauseReason?: ActorTaskPauseReason): void {
+  pauseActorTask?
+      (taskId: number, pauseReason?: ActorTaskPauseReason, tabId?: string):
+          void {
     this.sender.requestNoResponse('glicBrowserPauseActorTask', {
       taskId,
       pauseReason: pauseReason ?? ActorTaskPauseReason.PAUSED_BY_MODEL,
+      tabId: tabId ?? '',
     });
   }
 

@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "components/tabs/public/tab_interface.h"
 
 class Profile;
 
@@ -115,7 +116,9 @@ class GlicInstanceImpl : public GlicInstance,
   void StopActorTask(actor::TaskId task_id,
                      mojom::ActorTaskStopReason stop_reason) override;
   void PauseActorTask(actor::TaskId task_id,
-                      mojom::ActorTaskPauseReason pause_reason) override;
+
+                      mojom::ActorTaskPauseReason pause_reason,
+                      tabs::TabInterface::Handle tab_handle) override;
   void ResumeActorTask(
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& context_options,

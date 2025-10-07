@@ -613,11 +613,14 @@ interface WebClientHandler {
 
   // Pauses the task associated with the given id. Any restrictions on the tab
   // which would prevent user interaction with it are lifted. The pause_reason
-  // indicates the reason for why the pause was initiated. ResumeActorTask
+  // indicates the reason for why the pause was initiated. The optional tab_id
+  // indicates the tab that belongs to this actor task. ResumeActorTask
   // restores these restrictions, and allows for further actions. Any in flight
   // actions are canceled and their callbacks will be (asynchronously) invoked.
   // No-op if a task with the given id does not exist.
-  PauseActorTask(int32 task_id, ActorTaskPauseReason pause_reason);
+  PauseActorTask(int32 task_id,
+                 ActorTaskPauseReason pause_reason,
+                 int32? tab_id);
 
   // Resumes a paused task associated with the given id, allowing for further
   // actions. Any restrictions on the tab lifted by PauseActorTask are

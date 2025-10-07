@@ -172,6 +172,7 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     request: {
       taskId: number,
       pauseReason: ActorTaskPauseReason,
+      tabId: string,
     },
     backgroundAllowed: true,
   },

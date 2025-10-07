@@ -560,9 +560,9 @@ void GlicKeyedService::StopActorTask(actor::TaskId task_id,
   actor_keyed_service_->StopTask(task->id(), success);
 }
 
-void GlicKeyedService::PauseActorTask(
-    actor::TaskId task_id,
-    mojom::ActorTaskPauseReason pause_reason) {
+void GlicKeyedService::PauseActorTask(actor::TaskId task_id,
+                                      mojom::ActorTaskPauseReason pause_reason,
+                                      tabs::TabInterface::Handle tab_handle) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || task->IsStopped() || task->IsPaused()) {
     actor_keyed_service_->GetJournal().Log(
@@ -573,6 +573,11 @@ void GlicKeyedService::PauseActorTask(
             .Add("id", task_id.value())
             .Build());
     return;
+  }
+
+  if (tab_handle != tabs::TabHandle::Null()) {
+    // Pausing the task on a tab means we're actuating on it.
+    task->AddTab(tab_handle, base::DoNothing());
   }
 
   bool from_actor = false;

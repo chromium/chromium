@@ -92,7 +92,8 @@ class Host : public GlicSharingManagerProvider {
     virtual void StopActorTask(actor::TaskId task_id,
                                mojom::ActorTaskStopReason stop_reason) = 0;
     virtual void PauseActorTask(actor::TaskId task_id,
-                                mojom::ActorTaskPauseReason pause_reason) = 0;
+                                mojom::ActorTaskPauseReason pause_reason,
+                                tabs::TabInterface::Handle tab_handle) = 0;
     virtual void ResumeActorTask(
         actor::TaskId task_id,
         const mojom::GetTabContextOptions& context_options,

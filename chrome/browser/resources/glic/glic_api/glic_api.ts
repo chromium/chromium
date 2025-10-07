@@ -295,11 +295,15 @@ export declare interface GlicBrowserHost {
    * from interacting with the associated tab. Any in progress actions are
    * canceled and the associated Promises are rejected.
    *
+   * If the tabId is provided, it is added to the actor task.
+   *
    * If the pauseReason is not provided, it uses the default value
    * ActorTaskPauseReason.PAUSED_BY_MODEL.
    *
    */
-  pauseActorTask?(taskId: number, pauseReason?: ActorTaskPauseReason): void;
+  pauseActorTask?
+      (taskId: number, pauseReason?: ActorTaskPauseReason, tabId?: string):
+          void;
 
   /**
    * Resumes a previously paused actor task with the given ID.

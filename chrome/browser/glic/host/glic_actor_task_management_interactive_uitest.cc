@@ -224,6 +224,32 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
+                       PauseThenResumeActorTaskBeforePerformAction) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(
+      // clang-format off
+    InitializeWithOpenGlicWindow(),
+    StartActorTaskInNewTab(task_url, kNewActorTabId),
+
+    GetPageContextFromFocusedTab(),
+
+    PauseActorTask(),
+    ResumeActorTask(UpdatedContextOptions(), true),
+    CheckIsActingOnTab(kNewActorTabId, true),
+
+    // Ensure actions work after pause and resume.
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
+    WaitForJsResult(kNewActorTabId, "() => button_clicked")
+      // clang-format on
+  );
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        ResumeActorTaskWithoutATask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 

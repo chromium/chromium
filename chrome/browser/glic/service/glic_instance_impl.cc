@@ -249,10 +249,10 @@ void GlicInstanceImpl::StopActorTask(actor::TaskId task_id,
   service_->StopActorTask(task_id, stop_reason);
 }
 
-void GlicInstanceImpl::PauseActorTask(
-    actor::TaskId task_id,
-    mojom::ActorTaskPauseReason pause_reason) {
-  service_->PauseActorTask(task_id, pause_reason);
+void GlicInstanceImpl::PauseActorTask(actor::TaskId task_id,
+                                      mojom::ActorTaskPauseReason pause_reason,
+                                      tabs::TabInterface::Handle tab_handle) {
+  service_->PauseActorTask(task_id, pause_reason, tab_handle);
 }
 
 void GlicInstanceImpl::ResumeActorTask(

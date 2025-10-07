@@ -184,7 +184,8 @@ class GlicKeyedService : public KeyedService,
   void StopActorTask(actor::TaskId task_id,
                      mojom::ActorTaskStopReason stop_reason) override;
   void PauseActorTask(actor::TaskId task_id,
-                      mojom::ActorTaskPauseReason pause_reason) override;
+                      mojom::ActorTaskPauseReason pause_reason,
+                      tabs::TabInterface::Handle tab_handle) override;
   // TODO(crbug.com/446696379) - The ResumeActorTask Glic API should, like the
   // rest of actor observations, operate in terms of TabObservation rather than
   // TabContext.

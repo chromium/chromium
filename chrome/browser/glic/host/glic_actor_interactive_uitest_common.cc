@@ -360,11 +360,14 @@ MultiStep GlicActorUiTest::StopActorTask() {
 MultiStep GlicActorUiTest::PauseActorTask() {
   return Steps(InAnyContext(WithElement(
                    kGlicContentsElementId,
-                   [&task_id = task_id_](ui::TrackedElement* el) {
+                   [&task_id = task_id_,
+                    &tab_handle = tab_handle_](ui::TrackedElement* el) {
                      content::WebContents* glic_contents =
                          AsInstrumentedWebContents(el)->web_contents();
                      std::string script = content::JsReplace(
-                         "client.browser.pauseActorTask($1);", task_id.value());
+                         "client.browser.pauseActorTask($1, /* pauseReason= "
+                         "*/0, /* tabId= */'$2');",
+                         task_id.value(), tab_handle.raw_value());
                      ASSERT_TRUE(content::ExecJs(glic_contents, script));
                    })),
                RoundTrip());
