@@ -248,14 +248,6 @@ void ProfileManagementDisclaimerService::
 
   CHECK(!state_->profile_creation_controller);
 
-  // If the account is already registered for policy, we can check the result
-  // immediately. Otherwise, we need to register for policy updates.
-  if (!policy_fetch_tracker_by_account_id_.contains(account_id)) {
-    policy_fetch_tracker_by_account_id_[account_id] =
-        TurnSyncOnHelperPolicyFetchTracker::CreateInstance(&profile_.get(),
-                                                           info);
-  }
-
   // If the account cannot try to register for policies because of delays
   // between failures, we can reset the state and wait for another attempt.
   if (!CanTryPolicyRegistration(
@@ -266,16 +258,26 @@ void ProfileManagementDisclaimerService::
     return;
   }
 
-  auto& policy_fetch_tracker = policy_fetch_tracker_by_account_id_[account_id];
-  if (policy_fetch_tracker->GetPolicyRegistrationResult().has_value() &&
-      policy_fetch_tracker->GetPolicyRegistrationResult().value()) {
-    OnRegisteredForPolicy(
-        /*is_from_cached_registration_result=*/true,
-        policy_fetch_tracker->GetPolicyRegistrationResult().value());
+  // If the account is already registered for policy, we can check the result
+  // immediately. Otherwise, we need to register for policy updates.
+  bool has_cached_successful_registration_result =
+      policy_fetch_tracker_by_account_id_.contains(account_id) &&
+      policy_fetch_tracker_by_account_id_[account_id]
+          ->GetPolicyRegistrationResult()
+          .value_or(false);
+
+  if (has_cached_successful_registration_result) {
+    OnRegisteredForPolicy(/*is_from_cached_registration_result=*/true,
+                          /*is_managed_account=*/true);
     return;
   }
 
-  policy_fetch_tracker->RegisterForPolicy(
+  // Create a new tracker for the account, if it doesn't exist yet or if it had
+  // a cached failure. This will also reset any cached failure.
+  policy_fetch_tracker_by_account_id_[account_id] =
+      TurnSyncOnHelperPolicyFetchTracker::CreateInstance(&profile_.get(), info);
+
+  policy_fetch_tracker_by_account_id_[account_id]->RegisterForPolicy(
       base::BindOnce(&ProfileManagementDisclaimerService::OnRegisteredForPolicy,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_from_cached_registration_result=*/false),
@@ -301,9 +303,6 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
       signin_prefs_.SetPolicyDisclaimerLastRegistrationFailureTime(
           gaia_id, base::Time::Now());
     }
-    // No need to keep the tracker if the account is not managed anymore, it is
-    // already handled by the retry delay logic.
-    policy_fetch_tracker_by_account_id_.erase(state_->account_id);
     Reset();
     return;
   }

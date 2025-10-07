@@ -48,7 +48,9 @@ void FakeUserPolicySigninService::RegisterForPolicyWithAccountId(
     const CoreAccountId& account_id,
     bool is_registration_for_management_consistency_check,
     PolicyRegistrationCallback callback) {
-  std::move(callback).Run(dm_token_, client_id_, std::vector<std::string>());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), dm_token_, client_id_,
+                                std::vector<std::string>()));
 }
 
 void FakeUserPolicySigninService::FetchPolicyForSignedInUser(
@@ -58,7 +60,8 @@ void FakeUserPolicySigninService::FetchPolicyForSignedInUser(
     const std::vector<std::string>& user_affiliation_ids,
     scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
     PolicyFetchCallback callback) {
-  std::move(callback).Run(true);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeUserPolicySigninService::UpdateDMTokenAndClientId(
