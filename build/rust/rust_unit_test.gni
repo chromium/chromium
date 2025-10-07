@@ -118,8 +118,7 @@ template("rust_unit_test") {
       rustenv = []
     }
 
-    rustenv += [ "OUT_DIR=" +
-                 rebase_path(_env_out_dir, get_path_info(_crate_root, "dir")) ]
+    rustenv += [ "OUT_DIR=" + rebase_path(_env_out_dir, root_build_dir) ]
     metadata = {
       # Consumed by "rust_unit_tests_group" gni template.
       rust_unit_test_executables = [ _crate_name ]
