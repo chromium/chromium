@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(HistogramEncoder, HistogramBucketFields) {
   // Create buckets: 1-5, 5-7, 7-8, 8-9, 9-10, 10-11, 11-12.
@@ -68,4 +69,5 @@ TEST(HistogramEncoder, HistogramBucketFields) {
   EXPECT_EQ(12, histogram_proto.bucket(4).max());
 }
 
+}  // namespace
 }  // namespace metrics

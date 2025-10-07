@@ -9,6 +9,7 @@
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
+namespace {
 
 class AndroidMetricsProviderTest : public testing::Test {
  public:
@@ -31,4 +32,5 @@ TEST_F(AndroidMetricsProviderTest, OnDidCreateMetricsLog_IsLowRamDevice) {
   histogram_tester_.ExpectTotalCount("MemoryAndroid.LowRamDevice", 1);
 }
 
+}  // namespace
 }  // namespace metrics

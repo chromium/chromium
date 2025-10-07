@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics::private_metrics {
+namespace {
 
 // Tests that calling SetMetric() repeatedly on a DkmEntryBuilder updates the
 // value stored for the metric.
@@ -45,4 +46,5 @@ TEST(DkmEntryBuilderTest, BuilderAllowsAddingStudiesOfInterest) {
                                    testing::Pair("Study2", true)));
 }
 
+}  // namespace
 }  // namespace metrics::private_metrics

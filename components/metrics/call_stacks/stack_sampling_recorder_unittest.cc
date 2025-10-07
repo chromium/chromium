@@ -76,6 +76,8 @@ class StackSamplingRecorderTest : public testing::Test {
   scoped_refptr<TestingStackSamplingRecorder> recorder_;
 };
 
+namespace {
+
 TEST_F(StackSamplingRecorderTest, ProducesValidFile) {
   metrics::CallStackProfileMetricsProvider::ProcessThreadCount counts;
   counts[metrics::BROWSER_PROCESS][metrics::MAIN_THREAD] = 5;
@@ -339,4 +341,5 @@ TEST_F(StackSamplingRecorderTest, DoesNotWriteToLockedFile) {
             17);
 }
 
+}  // namespace
 }  // namespace metrics

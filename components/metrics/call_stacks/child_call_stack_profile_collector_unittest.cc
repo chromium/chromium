@@ -96,6 +96,8 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
   ChildCallStackProfileCollector child_collector_;
 };
 
+namespace {
+
 // Test the behavior when an interface is provided.
 TEST_F(ChildCallStackProfileCollectorTest, InterfaceProvided) {
   EXPECT_EQ(0u, profiles().size());
@@ -167,4 +169,5 @@ TEST_F(ChildCallStackProfileCollectorTest, HeapProfiles) {
                 mojom::ProfileType::kHeap);
 }
 
+}  // namespace
 }  // namespace metrics

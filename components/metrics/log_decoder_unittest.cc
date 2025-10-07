@@ -11,6 +11,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace metrics {
+namespace {
 
 TEST(LogDecoderTest, DecodeLogDataToProto) {
   ChromeUserMetricsExtension uma_log1;
@@ -29,4 +30,5 @@ TEST(LogDecoderTest, DecodeLogDataToProto) {
   EXPECT_EQ(log_data1, log_data2);
 }
 
+}  // namespace
 }  // namespace metrics

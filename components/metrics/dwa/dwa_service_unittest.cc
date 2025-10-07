@@ -21,6 +21,7 @@
 #include "third_party/federated_compute/src/fcp/confidentialcompute/crypto.h"
 
 namespace metrics::dwa {
+namespace {
 
 const char kDwaInitSequenceHistogramName[] = "DWA.InitSequence";
 
@@ -518,4 +519,5 @@ TEST_F(DwaServiceEnvironmentTest, LogsRotatedPeriodically) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
 }
 
+}  // namespace
 }  // namespace metrics::dwa
