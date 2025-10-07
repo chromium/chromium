@@ -458,12 +458,6 @@ BASE_FEATURE(kAutofillFixFormTracking, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the ordering for rationalization and sectioning is the same for
-// server and heuristic predictions.
-// TODO(crbug.com/408497919): Remove when launched.
-BASE_FEATURE(kAutofillUnifyRationalizationAndSectioningOrder,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
 // triggering events. See `AutofillAgent::GetSubmittedForm()` for more

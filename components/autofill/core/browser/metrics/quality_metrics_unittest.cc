@@ -295,7 +295,8 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationOk) {
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
-  form_structure->RationalizePhoneNumberFieldsForFilling();
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -333,7 +334,8 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationGood) {
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
-  form_structure->RationalizePhoneNumberFieldsForFilling();
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -376,7 +378,8 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
-  form_structure->RationalizePhoneNumberFieldsForFilling();
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -427,7 +430,8 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
-  form_structure->RationalizePhoneNumberFieldsForFilling();
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);

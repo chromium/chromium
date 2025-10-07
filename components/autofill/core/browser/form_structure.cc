@@ -182,31 +182,24 @@ void FormStructure::DetermineFieldRanks() {
 void FormStructure::RationalizeAndAssignSections(
     const GeoIpCountryCode& client_country,
     const LanguageCode& current_page_language,
-    LogManager* log_manager,
-    bool legacy_order) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUnifyRationalizationAndSectioningOrder)) {
-    // We call AssignSections() before *and* after rationalization because
-    // - rationalization depends on sections and
-    // - sectioning depends on field types, which rationalization may change.
-    AssignSections(fields_);
-    // TODO(crbug.com/408497919): Merge the two Rationalize*() functions when
-    // kAutofillUnifyRationalizationAndSectioningOrder is launched.
-    RationalizeFormStructure(client_country, current_page_language,
-                             log_manager);
-    RationalizePhoneNumberFieldsForFilling();
-    AssignSections(fields_);
-  } else if (!legacy_order) {
-    AssignSections(fields_);
-    RationalizeFormStructure(client_country, current_page_language,
-                             log_manager);
-    RationalizePhoneNumberFieldsForFilling();
-  } else {
-    RationalizeFormStructure(client_country, current_page_language,
-                             log_manager);
-    AssignSections(fields_);
-    RationalizePhoneNumberFieldsForFilling();
-  }
+    LogManager* log_manager) {
+  // We call AssignSections() before *and* after rationalization because
+  // - rationalization depends on sections and
+  // - sectioning depends on field types, which rationalization may change.
+  AssignSections(fields_);
+  FormStructureRationalizer rationalizer(fields_);
+  // Rationalize the form's autocomplete attributes, repeated fields and field
+  // type predictions.
+  rationalizer.RationalizeContentEditables(log_manager);
+  rationalizer.RationalizeAutocompleteAttributes(log_manager);
+  rationalizer.RationalizeFieldTypePredictions(
+      main_frame_origin(), client_country, current_page_language, log_manager);
+  // Rationalize phone number fields so that, in every section, only the first
+  // complete phone number is filled automatically. This is useful for when a
+  // form contains a first phone number and second phone number, which usually
+  // should be distinct.
+  rationalizer.RationalizePhoneNumbersForFilling();
+  AssignSections(fields_);
 
   // Log the field type predicted by rationalization.
   // The sections are mapped to consecutive natural numbers starting at 1.
@@ -609,22 +602,6 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
     }
   }
   return form_types;
-}
-
-void FormStructure::RationalizePhoneNumberFieldsForFilling() {
-  FormStructureRationalizer rationalizer(fields_);
-  rationalizer.RationalizePhoneNumbersForFilling();
-}
-
-void FormStructure::RationalizeFormStructure(
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& current_page_language,
-    LogManager* log_manager) {
-  FormStructureRationalizer rationalizer(fields_);
-  rationalizer.RationalizeContentEditables(log_manager);
-  rationalizer.RationalizeAutocompleteAttributes(log_manager);
-  rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin(), client_country, current_page_language, log_manager);
 }
 
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {

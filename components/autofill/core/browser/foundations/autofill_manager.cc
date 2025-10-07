@@ -935,8 +935,7 @@ void AutofillManager::OnLoadedServerPredictions(
 
   for (const raw_ptr<FormStructure, VectorExperimental> form : queried_forms) {
     form->RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
-                                       GetCurrentPageLanguage(), log_manager(),
-                                       /*legacy_order=*/true);
+                                       GetCurrentPageLanguage(), log_manager());
 
     autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
         *form, client().GetFormInteractionsUkmLogger(),

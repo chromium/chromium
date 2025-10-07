@@ -150,8 +150,7 @@ std::unique_ptr<FormStructure> BuildFormStructure(
       response_string, {form_structure.get()},
       test::GetEncodedSignatures({form_structure.get()}), nullptr);
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
-                                               LanguageCode(""), nullptr,
-                                               /*legacy_order=*/true);
+                                               LanguageCode(""), nullptr);
   return form_structure;
 }
 

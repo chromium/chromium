@@ -299,10 +299,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, AutofillAgent will store its cached form and fields as renderer ids "
                         + "instead of holding strong references to blink::WebElement objects."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_UNIFY_RATIONALIZATION_AND_SECTIONING_ORDER,
-                "When enabled, the same rationalization/sectioning order is used for heuristic and"
-                        + " server predictions."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_IN_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for India."),
         Flag.baseFeature(

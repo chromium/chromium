@@ -75,8 +75,7 @@ class FormStructure {
   // TODO(crbug.com/408497919): Make the order consistent.
   void RationalizeAndAssignSections(const GeoIpCountryCode& client_country,
                                     const LanguageCode& current_page_language,
-                                    LogManager* log_manager,
-                                    bool legacy_order = false);
+                                    LogManager* log_manager);
 
   // Returns predictions that can be sent to the renderer process for debugging.
   FormDataPredictions GetFieldTypePredictions() const;
@@ -181,18 +180,6 @@ class FormStructure {
   // `reason`, a different subset of data can be copied.
   void RetrieveFromCache(const FormStructure& cached_form,
                          RetrieveFromCacheReason reason);
-
-  // Rationalize phone number fields so that, in every section, only the first
-  // complete phone number is filled automatically. This is useful for when a
-  // form contains a first phone number and second phone number, which usually
-  // should be distinct.
-  void RationalizePhoneNumberFieldsForFilling();
-
-  // Rationalize the form's autocomplete attributes, repeated fields and field
-  // type predictions.
-  void RationalizeFormStructure(const GeoIpCountryCode& client_country,
-                                const LanguageCode& current_page_language,
-                                LogManager* log_manager);
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
