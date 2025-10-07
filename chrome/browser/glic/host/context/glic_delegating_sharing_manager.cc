@@ -263,21 +263,16 @@ void GlicDelegatingSharingManager::ForceNotify(
         tabs::TabInterface::GetFromContents(tab), false);
   }
 
-  if (!sharing_manager_delegate_) {
-    return;
-  }
-
   for (auto* tab : GetPinnedTabs()) {
     tab_pinning_status_changed_callback_list_.Notify(
         tabs::TabInterface::GetFromContents(tab), true);
   }
 
-  focused_tab_changed_callback_list_.Notify(
-      sharing_manager_delegate_->GetFocusedTabData());
-  focused_browser_changed_callback_list_.Notify(
-      sharing_manager_delegate_->GetFocusedBrowser());
-  pinned_tabs_changed_callback_list_.Notify(
-      sharing_manager_delegate_->GetPinnedTabs());
+  // Note: in the case where delegate is now null, we still want to fire these
+  // (with empty arguments).
+  focused_tab_changed_callback_list_.Notify(GetFocusedTabData());
+  focused_browser_changed_callback_list_.Notify(GetFocusedBrowser());
+  pinned_tabs_changed_callback_list_.Notify(GetPinnedTabs());
 }
 
 }  // namespace glic
