@@ -2364,7 +2364,7 @@
 <translation id="2598136842498757793">دکمه‌های سفارشی‌سازی نوارابزار</translation>
 <translation id="2598710988533271874">‏Chrome جدید دردسترس است</translation>
 <translation id="2599048253926156421">نام کاربری در بریده‌دان کپی شد</translation>
-<translation id="2602501489742255173">برای شروع‌به‌کار تند بکشید</translation>
+<translation id="2602501489742255173">تند با بالا کشیدن برای شروع کردن به کار</translation>
 <translation id="2603115962224169880">پاک کردن رایانه</translation>
 <translation id="2603355571917519942">‏Voice Match آماده است</translation>
 <translation id="2604129989323098489">سایت‌ها معمولاً اطلاعاتی درباره نمایشگرهایتان درخواست می‌کنند تا بتوانند پنجره‌ها را به‌صورت هوشمندانه باز و جای‌گذاری کنند، مثلاً اسناد یا محتوای تمام‌صفحه را در کنار هم نشان دهند</translation>
@@ -4405,7 +4405,7 @@
 <translation id="3986813315215454677">‏بلوتوث ChromeOS</translation>
 <translation id="3987307536043958493">مسدود و ترک کردن</translation>
 <translation id="3987544746655539083">دسترسی این سایت به مکان شما همچنان مسدود شود</translation>
-<translation id="3987993985790029246">کپی پیوند</translation>
+<translation id="3987993985790029246">کپی کردن پیوند</translation>
 <translation id="3988124842897276887">‏این زبانه به دستگاه USB متصل است</translation>
 <translation id="3988996860813292272">انتخاب منطقه زمانی</translation>
 <translation id="3989635538409502728">خروج از سیستم</translation>
@@ -6156,7 +6156,7 @@
 <translation id="5244234799035360187">‏ازاین‌پس OneDrive در برنامه Files نشان داده خواهد شد</translation>
 <translation id="5244466461749935369">فعلاً نگه داشته شود</translation>
 <translation id="5244474230056479698">درحال همگام‌سازی در <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">شروع‌به‌کار با حساب مدرسه</translation>
+<translation id="5245610266855777041">شروع کردن به کار با حساب مدرسه</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> خراب شده است. برای راه‌اندازی مجدد برنامه بر روی این بالون کلیک کنید.</translation>
 <translation id="5247051749037287028">نام نمایشی (اختیاری)</translation>
 <translation id="5247243947166567755">انتخاب <ph name="BOOKMARK_TITLE" /></translation>
