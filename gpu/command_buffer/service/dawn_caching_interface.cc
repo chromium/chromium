@@ -106,7 +106,7 @@ void DawnCachingInterfaceFactory::ReleaseHandle(
 }
 
 void DawnCachingInterfaceFactory::PurgeMemory(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   for (auto& [key, backend] : backends_) {
     CHECK(std::holds_alternative<GpuDiskCacheDawnGraphiteHandle>(key) ||
           std::holds_alternative<GpuDiskCacheDawnWebGPUHandle>(key));
@@ -256,7 +256,7 @@ void DawnCachingBackend::StoreData(const std::string& key,
 }
 
 void DawnCachingBackend::PurgeMemory(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   base::AutoLock lock(mutex_);
   size_t new_limit = gpu::UpdateShaderCacheSizeOnMemoryPressure(
       max_size_, memory_pressure_level);

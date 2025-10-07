@@ -171,11 +171,10 @@ PlayerCompositorDelegateAndroid::GetRootFrameOffsets(JNIEnv* env) {
 }
 
 void PlayerCompositorDelegateAndroid::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   // Don't handle the critical case leave that to the base class implementation
   // which should kill the preview.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     Java_PlayerCompositorDelegateImpl_onModerateMemoryPressure(
         base::android::AttachCurrentThread(), java_ref_);
   }
@@ -277,8 +276,7 @@ void PlayerCompositorDelegateAndroid::OnJavaBitmapCallback(
       mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed) {
     base::android::RunRunnableAndroid(j_error_callback);
     // Treat this as a critical memory pressure failure. We should abort.
-    OnMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     return;
   }
 

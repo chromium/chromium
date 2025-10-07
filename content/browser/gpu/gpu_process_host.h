@@ -214,8 +214,7 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
 
 #if !BUILDFLAG(IS_ANDROID)
   // Memory pressure handler, called by |memory_pressure_listener_|.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 #endif
 
   // The serial number of the GpuProcessHost.

@@ -195,8 +195,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
 
   // Mock methods related to tab (renderer) per process reclaim.
   MOCK_METHOD1(TrimWorkingSet, void(const ProcessNode*));
-  MOCK_METHOD1(OnMemoryPressure,
-               void(base::MemoryPressureListener::MemoryPressureLevel level));
+  MOCK_METHOD1(OnMemoryPressure, void(base::MemoryPressureLevel level));
 
   // Mock methods related to ARC process trimming.
   MOCK_METHOD0(TrimArcProcesses, void(void));
@@ -206,15 +205,13 @@ class MockWorkingSetTrimmerPolicyChromeOS
   MOCK_METHOD1(TrimArcProcess, void(const base::ProcessId));
 
   // Mock methods related to ARCVM process trimming.
-  MOCK_METHOD1(TrimArcVmProcesses,
-               void(base::MemoryPressureListener::MemoryPressureLevel));
+  MOCK_METHOD1(TrimArcVmProcesses, void(base::MemoryPressureLevel));
   MOCK_METHOD2(OnTrimArcVmProcesses, void(mechanism::ArcVmReclaimType, bool));
   MOCK_METHOD2(OnArcVmTrimEnded, void(mechanism::ArcVmReclaimType, bool));
   MOCK_METHOD0(GetTrimmer, mechanism::WorkingSetTrimmerChromeOS*(void));
 
   // Exposes the default implementations so they can be used in tests.
-  void DefaultOnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level) {
+  void DefaultOnMemoryPressure(base::MemoryPressureLevel level) {
     WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(level);
   }
 
@@ -234,8 +231,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
         proc);
   }
 
-  void DefaultTrimArcVmProcesses(
-      base::MemoryPressureListener::MemoryPressureLevel level) {
+  void DefaultTrimArcVmProcesses(base::MemoryPressureLevel level) {
     WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(level);
   }
 
@@ -404,7 +400,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DISABLED_GraphWalkBackoffPeriod) {
   ASSERT_EQ(initial_walk_time, base::TimeTicks());
 
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(1));
 
@@ -414,7 +410,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DISABLED_GraphWalkBackoffPeriod) {
   EXPECT_LT(initial_walk_time, last_walk_time);
 
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(1));
 
@@ -433,7 +429,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
   ASSERT_EQ(initial_walk_time, base::TimeTicks());
 
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(1));
 
@@ -445,7 +441,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
   FastForwardBy(base::Days(1));
 
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Finally advance the clock beyond the backoff period and it should allow it
   // to walk again.
@@ -479,7 +475,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   // Triger memory pressure and we should observe the walk.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(1));
 
@@ -504,7 +500,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DontTrimIfNoMainFrame) {
 
   // Triger memory pressure and we should observe the walk.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Days(1));
 }
@@ -524,7 +520,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimIfInvisibleLongEnough) {
   // Triger memory pressure and we should observe the walk since we've never
   // walked before.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(1));
 
@@ -546,7 +542,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DoNotTrimWhileSuspended) {
   EXPECT_CALL(*policy(), TrimWorkingSet(testing::_)).Times(0);
 
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   FastForwardBy(base::Seconds(1));
 }
 
@@ -565,7 +561,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DoNotTrimJustAfterResumed) {
   EXPECT_CALL(*policy(), TrimWorkingSet(testing::_)).Times(0);
 
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   FastForwardBy(base::Seconds(1));
 }
 
@@ -585,7 +581,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, Trim15MinutesAfterResumed) {
   EXPECT_CALL(*policy(), TrimWorkingSet(page->process_node_.get())).Times(1);
 
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   FastForwardBy(base::Seconds(1));
 }
 
@@ -598,7 +594,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcDontTrimOnlyIfDisabled) {
   EXPECT_CALL(*policy(), TrimArcProcesses).Times(0);
   FastForwardBy(base::Seconds(1));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
 // TODO(crbug.com/40748300) Re-enable test
@@ -607,7 +603,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DISABLED_ArcTrimOnlyIfEnabled) {
   FastForwardBy(base::Seconds(1));
   EXPECT_CALL(*policy(), TrimArcProcesses).Times(1);
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
 // This test will validate that we don't fetch the ARC process list at an
@@ -627,18 +623,18 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Now as we pass through the backoff time we expect that we can be called
   // again.
   EXPECT_CALL(*policy(), TrimArcProcesses).Times(Exactly(1));
   FastForwardBy(policy()->params().arc_process_list_fetch_backoff_time);
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
 // This test validates that a process which is focused is not eligible.
@@ -821,7 +817,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmDontTrimOnlyIfDisabled) {
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(0);
   FastForwardBy(base::Seconds(1));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
 // This test will validate that we do try to trim the ARCVM process on memory
@@ -842,7 +838,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimOnlyIfEnabled) {
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   run_loop()->Run();
 }
 
@@ -964,7 +960,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimPageLimits) {
 
   // Trigger pressure event and wait until last expectation is met.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   run_loop()->Run();
   RecreateRunLoop();
 
@@ -984,7 +980,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimPageLimits) {
 
   // Trigger pressure event and wait until last expectation is met.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   run_loop()->Run();
   RecreateRunLoop();
 
@@ -1004,7 +1000,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimPageLimits) {
 
   // Trigger pressure event and wait until last expectation is met.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
   RecreateRunLoop();
 
@@ -1026,7 +1022,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimPageLimits) {
 
   // Trigger pressure event and wait until last expectation is met.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
   RecreateRunLoop();
 
@@ -1045,7 +1041,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimPageLimits) {
 
   // Trigger pressure event and wait until last expectation is met.
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
 }
 
@@ -1070,11 +1066,11 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Now as we pass through the backoff time we expect that we can be called
   // again.
@@ -1088,7 +1084,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(policy()->params().arcvm_trim_backoff_time);
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   run_loop()->Run();
 }
 
@@ -1107,11 +1103,11 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
@@ -1123,7 +1119,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(policy()->params().arcvm_trim_backoff_time);
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
 }
 
@@ -1147,7 +1143,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesIneligible) {
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   run_loop()->Run();
   RecreateRunLoop();
@@ -1164,7 +1160,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesIneligible) {
   FastForwardBy(base::Seconds(1));
   FastForwardBy(policy()->params().arcvm_trim_backoff_time);
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
 }
 
@@ -1191,7 +1187,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   run_loop()->Run();
   RecreateRunLoop();
 
@@ -1211,7 +1207,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   run_loop()->Run();
 }
 
@@ -1237,7 +1233,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
 
   FastForwardBy(base::Seconds(12));
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   run_loop()->Run();
   RecreateRunLoop();
@@ -1254,7 +1250,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
   FastForwardBy(base::Seconds(1));
   FastForwardBy(policy()->params().arcvm_trim_backoff_time);
   policy()->listener().SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
 }
 

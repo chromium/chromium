@@ -550,8 +550,7 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel(
           base::MemoryPressureMonitorTag::kWebUIContentsPreloadManager) >=
-          base::MemoryPressureMonitor::MemoryPressureLevel::
-              MEMORY_PRESSURE_LEVEL_MODERATE) {
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return false;
   }
 

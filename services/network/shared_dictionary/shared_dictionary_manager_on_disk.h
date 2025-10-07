@@ -174,8 +174,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
     return writing_disk_cache_key_tokens_;
   }
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
   uint64_t cache_max_size() const { return cache_max_size_; }
   uint64_t cache_max_count() const { return cache_max_count_; }

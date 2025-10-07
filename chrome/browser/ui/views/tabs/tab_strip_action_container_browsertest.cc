@@ -89,8 +89,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // This will temporarily disable preloading.
     glic::GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MemoryPressureMonitor::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     fre_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
@@ -213,8 +212,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
   void ResetMemoryPressure() {
     glic::GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MemoryPressureMonitor::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_NONE);
+        base::MEMORY_PRESSURE_LEVEL_NONE);
   }
 
   const GURL& fre_url() { return fre_url_; }

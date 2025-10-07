@@ -160,10 +160,10 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
 
   // Virtual for tests.
   virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level);
 
   void HandleMemoryPressureOnSequence(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level);
 
   int32_t next_client_id_;
 

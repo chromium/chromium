@@ -24,7 +24,7 @@ void MemoryPressureControllerImpl::AddReceiver(
 }
 
 void MemoryPressureControllerImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   for (auto& observer : observers_)
     observer->MemoryPressureLevelChanged(level);
 }

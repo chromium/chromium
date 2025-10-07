@@ -1153,9 +1153,7 @@ TEST_F(BlobMemoryControllerTest, OnMemoryPressure) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
   EXPECT_EQ(size_to_load, controller.memory_usage());
 
-  controller.OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
+  controller.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   EXPECT_TRUE(file_runner_->HasPendingTask());
 

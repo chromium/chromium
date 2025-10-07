@@ -251,9 +251,10 @@ std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
 }
 
 void VulkanInProcessContextProvider::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+    base::MemoryPressureLevel level) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
+  }
 
   critical_memory_pressure_expiration_time_ =
       base::TimeTicks::Now() + cooldown_duration_at_memory_pressure_critical_;

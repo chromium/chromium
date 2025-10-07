@@ -34,8 +34,7 @@ class MemoryPressureListenerTest : public testing::Test {
   }
 
  private:
-  MOCK_METHOD1(OnMemoryPressure,
-               void(MemoryPressureListener::MemoryPressureLevel));
+  MOCK_METHOD1(OnMemoryPressure, void(MemoryPressureLevel));
 
   SyncMemoryPressureListener listener_;
 };
@@ -44,28 +43,28 @@ TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
   // Memory pressure notifications are not suppressed by default.
   EXPECT_FALSE(MemoryPressureListenerRegistry::AreNotificationsSuppressed());
   ExpectNotification(&MemoryPressureListenerRegistry::NotifyMemoryPressure,
-                     MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+                     MEMORY_PRESSURE_LEVEL_MODERATE);
   ExpectNotification(
       &MemoryPressureListenerRegistry::SimulatePressureNotification,
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+      MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Enable suppressing memory pressure notifications.
   MemoryPressureListenerRegistry::SetNotificationsSuppressed(true);
   EXPECT_TRUE(MemoryPressureListenerRegistry::AreNotificationsSuppressed());
   ExpectNoNotification(&MemoryPressureListenerRegistry::NotifyMemoryPressure,
-                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+                       MEMORY_PRESSURE_LEVEL_MODERATE);
   ExpectNotification(
       &MemoryPressureListenerRegistry::SimulatePressureNotification,
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+      MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Disable suppressing memory pressure notifications.
   MemoryPressureListenerRegistry::SetNotificationsSuppressed(false);
   EXPECT_FALSE(MemoryPressureListenerRegistry::AreNotificationsSuppressed());
   ExpectNotification(&MemoryPressureListenerRegistry::NotifyMemoryPressure,
-                     MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+                     MEMORY_PRESSURE_LEVEL_CRITICAL);
   ExpectNotification(
       &MemoryPressureListenerRegistry::SimulatePressureNotification,
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
@@ -73,7 +72,7 @@ TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
 
   auto listener_to_be_deleted = std::make_unique<MemoryPressureListener>(
       FROM_HERE, base::MemoryPressureListenerTag::kTest,
-      BindRepeating([](MemoryPressureListener::MemoryPressureLevel) {
+      BindRepeating([](MemoryPressureLevel) {
         FAIL() << "Async callback should not be called.";
       }));
 
@@ -87,7 +86,7 @@ TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
   // This should trigger the sync callback in |deleter_listener|, which will
   // delete |listener_to_be_deleted|.
   ExpectNotification(&MemoryPressureListener::NotifyMemoryPressure,
-                     MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+                     MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 }  // namespace base

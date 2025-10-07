@@ -53,9 +53,7 @@ class MemoryPurgeManagerTest : public testing::Test {
   unsigned memory_pressure_count_ = 0;
 
  private:
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel) {
-    memory_pressure_count_++;
-  }
+  void OnMemoryPressure(base::MemoryPressureLevel) { memory_pressure_count_++; }
 };
 
 // Verify that OnPageFrozen() triggers a memory pressure notification in a

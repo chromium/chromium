@@ -95,8 +95,7 @@ void StubGpuService::OnBackgrounded() {}
 void StubGpuService::OnForegrounded() {}
 
 #if !BUILDFLAG(IS_ANDROID)
-void StubGpuService::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {}
+void StubGpuService::OnMemoryPressure(base::MemoryPressureLevel level) {}
 #endif
 
 #if BUILDFLAG(IS_APPLE)

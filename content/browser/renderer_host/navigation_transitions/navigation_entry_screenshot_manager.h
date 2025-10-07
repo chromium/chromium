@@ -96,8 +96,7 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
 
   // Used by `listener_`. When the system memory is under critical pressure, all
   // screenshots under this `Profile` are purged.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
   FRIEND_TEST_ALL_PREFIXES(NavigationEntryScreenshotCacheTest,
                            OnMemoryPressureCritical);
 

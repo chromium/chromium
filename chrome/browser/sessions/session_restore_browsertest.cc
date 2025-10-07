@@ -369,8 +369,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
     // Stop loading anything more if we are running out of space.
     if (!no_memory_pressure) {
       fake_memory_pressure_monitor_.SetAndNotifyMemoryPressure(
-          base::MemoryPressureMonitor::MemoryPressureLevel::
-              MEMORY_PRESSURE_LEVEL_CRITICAL);
+          base::MEMORY_PRESSURE_LEVEL_CRITICAL);
       // Wait for async memory notifications to be delivered to Performance
       // Manager on the main thread.
       // TODO(crbug.com/436324601): Remove once memory pressure notifications

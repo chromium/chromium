@@ -325,8 +325,7 @@ class NET_EXPORT HttpNetworkSession : public base::PowerSuspendObserver {
   ClientSocketPoolManager* GetSocketPoolManager(SocketPoolType pool_type);
 
   // Flush sockets on low memory notifications callback.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   const raw_ptr<NetLog> net_log_;
   const raw_ptr<HttpServerProperties> http_server_properties_;

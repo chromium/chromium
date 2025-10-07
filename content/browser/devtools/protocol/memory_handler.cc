@@ -88,11 +88,11 @@ Response MemoryHandler::SetPressureNotificationsSuppressed(
 
 Response MemoryHandler::SimulatePressureNotification(
     const std::string& level) {
-  base::MemoryPressureListener::MemoryPressureLevel parsed_level;
+  base::MemoryPressureLevel parsed_level;
   if (level == protocol::Memory::PressureLevelEnum::Moderate) {
-    parsed_level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    parsed_level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
   } else if (level == protocol::Memory::PressureLevelEnum::Critical) {
-    parsed_level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    parsed_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   } else {
     return Response::InvalidParams(base::StringPrintf(
         "Invalid memory pressure level '%s'", level.c_str()));

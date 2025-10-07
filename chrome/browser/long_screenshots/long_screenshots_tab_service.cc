@@ -103,7 +103,7 @@ void LongScreenshotsTabService::CaptureTab(
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel(
           base::MemoryPressureMonitorTag::kLongScreenshotsTabService) >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LongScreenshotsTabService_processCaptureTabStatus(
         env, java_ref_, Status::kLowMemoryDetected);

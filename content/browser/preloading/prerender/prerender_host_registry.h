@@ -356,8 +356,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       GURL back_url,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   void RecordPotentialPrerenderProcessReuse(bool has_machable_hosts,
                                             const GURL& naivgation_url);

@@ -34,11 +34,9 @@ namespace performance_manager::policies {
 
 namespace {
 
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
 struct PolicyTestParam {
-  const MemoryPressureLevel memory_pressure_level =
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
+  const base::MemoryPressureLevel memory_pressure_level =
+      base::MEMORY_PRESSURE_LEVEL_MODERATE;
   bool tab_backgrounded = false;
   bool enable_policy = true;
   int foreground_cache_size_on_moderate_pressure = 3;
@@ -56,12 +54,10 @@ const PolicyTestParam kPolicyTestParams[] = {
     // Tab backgrounded, moderate memory pressure.
     {.tab_backgrounded = true, .expected_cached_pages = 2},
     // Tab foregrounded, critical memory pressure.
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .expected_cached_pages = 1},
     // Tab backgrounded, critical memory pressure.
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .tab_backgrounded = true,
      .expected_cached_pages = 0},
     // Tab foregrounded, moderate memory pressure, cache limit is -1 (no limit).
@@ -70,12 +66,10 @@ const PolicyTestParam kPolicyTestParams[] = {
     {.tab_backgrounded = true,
      .background_cache_size_on_moderate_pressure = -1},
     // Tab foregrounded, critical memory pressure, cache limit is -1 (no limit).
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .foreground_cache_size_on_critical_pressure = -1},
     // Tab backgrounded, critical memory pressure, cache limit is -1 (no limit).
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .tab_backgrounded = true,
      .background_cache_size_on_critical_pressure = -1}};
 

@@ -459,7 +459,7 @@ TEST_F(SSLClientSessionCacheTest, TestFlushOnMemoryNotifications) {
 
   // Fire a notification that will flush expired sessions.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   base::RunLoop().RunUntilIdle();
 
   // Expired session's cache should be flushed.
@@ -470,7 +470,7 @@ TEST_F(SSLClientSessionCacheTest, TestFlushOnMemoryNotifications) {
 
   // Fire notification that will flush everything.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, cache.size());
 }

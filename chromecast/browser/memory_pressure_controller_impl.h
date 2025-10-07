@@ -31,8 +31,7 @@ class MemoryPressureControllerImpl : public mojom::MemoryPressureController {
   void AddObserver(
       mojo::PendingRemote<mojom::MemoryPressureObserver> observer) override;
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
   mojo::RemoteSet<mojom::MemoryPressureObserver> observers_;
   mojo::ReceiverSet<mojom::MemoryPressureController> receivers_;

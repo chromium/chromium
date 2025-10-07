@@ -618,9 +618,8 @@ ThumbnailCache::ThumbnailMetaData::ThumbnailMetaData(
     GURL url)
     : capture_time_(current_time), url_(std::move(url)) {}
 
-void ThumbnailCache::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+void ThumbnailCache::OnMemoryPressure(base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     cache_.Clear();
   }
 }

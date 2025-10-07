@@ -38,8 +38,7 @@ class TabLoaderTester {
 
   // Additional exposed TabLoader functions.
   void ForceLoadTimerFired();
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
   void SetTabLoadingEnabled(bool enabled);
   bool IsLoadingEnabled() const;
 

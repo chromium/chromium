@@ -54,7 +54,7 @@ GPU_GLES2_EXPORT uint32_t GetTextureTargetForIOSurfaces();
 
 GPU_GLES2_EXPORT size_t UpdateShaderCacheSizeOnMemoryPressure(
     size_t max_cache_size,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+    base::MemoryPressureLevel memory_pressure_level);
 
 }  // namespace gpu
 

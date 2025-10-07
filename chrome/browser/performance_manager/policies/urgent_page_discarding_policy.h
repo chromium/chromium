@@ -35,8 +35,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned {
   static void DisableForTesting();
 
  private:
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel new_level);
+  void OnMemoryPressure(base::MemoryPressureLevel new_level);
 
   // Callback called when a discard attempt has completed.
   void PostDiscardAttemptCallback(bool success);

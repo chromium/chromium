@@ -134,8 +134,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   size_t GetStorageCountForTesting();
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
   void DeletePreloadedDictionaries(
       PreloadedDictionaries* preloaded_dictionaries);
@@ -144,8 +143,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
                  scoped_refptr<SharedDictionaryStorage>>
       cached_storages_;
   std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
-  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel memory_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
 
   std::map<net::SharedDictionaryIsolationKey, raw_ptr<SharedDictionaryStorage>>
       storages_;

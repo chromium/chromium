@@ -242,8 +242,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
       uint64_t min_page_file_size);
 
   // Schedule paging until our memory usage is below our memory limit.
-  void MaybeScheduleEvictionUntilSystemHealthy(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void MaybeScheduleEvictionUntilSystemHealthy(base::MemoryPressureLevel level);
 
   // Called when we've completed evicting a list of items to disk. This is where
   // we swap the bytes items for file items, and update our bookkeeping.
@@ -253,8 +252,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
       size_t total_items_size,
       std::pair<FileCreationInfo, int64_t /* avail_disk */> result);
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   void GrantMemoryAllocations(
       std::vector<scoped_refptr<ShareableBlobDataItem>>* items,

@@ -467,20 +467,18 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest,
   network_service_test.FlushForTesting();
 
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel memory_pressure_level =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
   network_service_test->GetLatestMemoryPressureLevel(&memory_pressure_level);
-  EXPECT_EQ(memory_pressure_level,
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_EQ(memory_pressure_level, base::MEMORY_PRESSURE_LEVEL_NONE);
 
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   FlushNetworkServiceInstanceForTesting();
 
   network_service_test->GetLatestMemoryPressureLevel(&memory_pressure_level);
-  EXPECT_EQ(memory_pressure_level,
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_EQ(memory_pressure_level, base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 // Verifies that sync XHRs don't hang if the network service crashes.

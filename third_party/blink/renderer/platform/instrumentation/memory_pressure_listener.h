@@ -20,8 +20,7 @@ class PLATFORM_EXPORT MemoryPressureListener : public GarbageCollectedMixin {
  public:
   virtual ~MemoryPressureListener() = default;
 
-  virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel) {}
+  virtual void OnMemoryPressure(base::MemoryPressureLevel) {}
 
   // This is called just after calling OnMemoryPressure(
   // MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL).
@@ -69,7 +68,7 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   void RegisterClient(MemoryPressureListener*);
   void UnregisterClient(MemoryPressureListener*);
 
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel);
+  void OnMemoryPressure(base::MemoryPressureLevel);
 
   void OnPurgeMemory();
 

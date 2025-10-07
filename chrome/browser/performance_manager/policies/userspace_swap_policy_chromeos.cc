@@ -139,8 +139,8 @@ base::TimeTicks UserspaceSwapPolicy::GetLastSwapTime(
 }
 
 void UserspaceSwapPolicy::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel new_level) {
-  if (new_level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+    base::MemoryPressureLevel new_level) {
+  if (new_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 

@@ -80,8 +80,7 @@ class GlicProfileManagerUiTest
     // web client before we've initialized the embedded test server and can set
     // the correct URL.
     GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MemoryPressureMonitor::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     GlicProfileManager::ForceConnectionTypeForTesting(
         network::mojom::ConnectionType::CONNECTION_ETHERNET);
     fre_server_.ServeFilesFromDirectory(
@@ -169,8 +168,7 @@ class GlicProfileManagerUiTest
   auto ResetMemoryPressure() {
     return Do([]() {
       GlicProfileManager::ForceMemoryPressureForTesting(
-          base::MemoryPressureMonitor::MemoryPressureLevel::
-              MEMORY_PRESSURE_LEVEL_NONE);
+          base::MEMORY_PRESSURE_LEVEL_NONE);
     });
   }
 
@@ -209,11 +207,9 @@ class GlicProfileManagerUiTest
   auto SendMemoryPressureSignal(bool primary_profile) {
     return Do([this, primary_profile]() {
       GlicProfileManager::ForceMemoryPressureForTesting(
-          base::MemoryPressureMonitor::MemoryPressureLevel::
-              MEMORY_PRESSURE_LEVEL_CRITICAL);
+          base::MEMORY_PRESSURE_LEVEL_CRITICAL);
       GetService(primary_profile)
-          ->OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel::
-                                 MEMORY_PRESSURE_LEVEL_CRITICAL);
+          ->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     });
   }
 

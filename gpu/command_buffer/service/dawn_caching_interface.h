@@ -41,8 +41,7 @@ class GPU_GLES2_EXPORT DawnCachingBackend
   size_t LoadData(const std::string& key, void* value_out, size_t value_size);
   void StoreData(const std::string& key, const void* value, size_t value_size);
 
-  void PurgeMemory(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::ProcessMemoryDump* pmd);
@@ -175,8 +174,7 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
   // released.
   void ReleaseHandle(const gpu::GpuDiskCacheHandle& handle);
 
-  void PurgeMemory(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

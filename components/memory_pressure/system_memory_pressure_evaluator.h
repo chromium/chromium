@@ -31,9 +31,7 @@ class SystemMemoryPressureEvaluator {
   SystemMemoryPressureEvaluator& operator=(
       const SystemMemoryPressureEvaluator&) = delete;
 
-  base::MemoryPressureListener::MemoryPressureLevel current_vote() const {
-    return current_vote_;
-  }
+  base::MemoryPressureLevel current_vote() const { return current_vote_; }
 
  protected:
   explicit SystemMemoryPressureEvaluator(
@@ -41,7 +39,7 @@ class SystemMemoryPressureEvaluator {
 
   // Sets the Evaluator's |current_vote_| member without casting vote to the
   // MemoryPressureVoteAggregator.
-  void SetCurrentVote(base::MemoryPressureListener::MemoryPressureLevel level);
+  void SetCurrentVote(base::MemoryPressureLevel level);
 
   // Uses the Evaluators' |voter_| to cast/update its vote on memory pressure
   // level. The MemoryPressureListeners will only be notified of the newly
@@ -49,7 +47,7 @@ class SystemMemoryPressureEvaluator {
   void SendCurrentVote(bool notify) const;
 
  private:
-  base::MemoryPressureListener::MemoryPressureLevel current_vote_;
+  base::MemoryPressureLevel current_vote_;
 
   // In charge of forwarding votes from here to the
   // MemoryPressureVoteAggregator.

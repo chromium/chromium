@@ -134,8 +134,7 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   }
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 
-  cache_.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  cache_.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(cache_.num_cache_entries(), 0u);
 }
 
@@ -155,13 +154,11 @@ TEST_F(GrShaderCacheTest, AggressiveCacheAndMemoryPressure) {
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 
   // Moderate memory pressure is ignored
-  cache_.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  cache_.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 
   // But not critical, except on Android
-  cache_.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  cache_.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 #else

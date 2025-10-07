@@ -93,10 +93,9 @@ class DbusMemoryPressureEvaluatorLinux
   void OnLowMemoryWarning(dbus::Signal* signal);
 
   // Converts a pressure level from LMM to base's memory pressure constants.
-  base::MemoryPressureListener::MemoryPressureLevel LmmToBasePressureLevel(
-      uint8_t lmm_level);
+  base::MemoryPressureLevel LmmToBasePressureLevel(uint8_t lmm_level);
 
-  void UpdateLevel(base::MemoryPressureListener::MemoryPressureLevel new_level);
+  void UpdateLevel(base::MemoryPressureLevel new_level);
 
   scoped_refptr<dbus::Bus> system_bus_;
   scoped_refptr<dbus::Bus> session_bus_;

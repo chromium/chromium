@@ -243,20 +243,18 @@ base::LazyInstance<scoped_refptr<base::SingleThreadTaskRunner>>::
     DestructorAtExit g_main_task_runner = LAZY_INSTANCE_INITIALIZER;
 
 // v8::MemoryPressureLevel should correspond to base::MemoryPressureListener.
+static_assert(
+    static_cast<v8::MemoryPressureLevel>(base::MEMORY_PRESSURE_LEVEL_NONE) ==
+        v8::MemoryPressureLevel::kNone,
+    "none level not align");
 static_assert(static_cast<v8::MemoryPressureLevel>(
-                  base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) ==
-                  v8::MemoryPressureLevel::kNone,
-              "none level not align");
-static_assert(
-    static_cast<v8::MemoryPressureLevel>(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) ==
-        v8::MemoryPressureLevel::kModerate,
-    "moderate level not align");
-static_assert(
-    static_cast<v8::MemoryPressureLevel>(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) ==
-        v8::MemoryPressureLevel::kCritical,
-    "critical level not align");
+                  base::MEMORY_PRESSURE_LEVEL_MODERATE) ==
+                  v8::MemoryPressureLevel::kModerate,
+              "moderate level not align");
+static_assert(static_cast<v8::MemoryPressureLevel>(
+                  base::MEMORY_PRESSURE_LEVEL_CRITICAL) ==
+                  v8::MemoryPressureLevel::kCritical,
+              "critical level not align");
 
 // Feature to migrate the Media thread to a SequencedTaskRunner backed from
 // the base::ThreadPool. Does not currently work on Fuchsia due to FIDL
@@ -1556,7 +1554,7 @@ void RenderThreadImpl::PurgeResourceCache(PurgeResourceCacheCallback callback) {
 }
 
 void RenderThreadImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   TRACE_EVENT(
       "memory", "RenderThreadImpl::OnMemoryPressure",
       [&](perfetto::EventContext ctx) {
@@ -1567,8 +1565,7 @@ void RenderThreadImpl::OnMemoryPressure(
       });
   if (blink_platform_impl_)
     blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     discardable_memory_allocator_->ReleaseFreeMemory();
 
     // Do not call into blink if it is not initialized.
@@ -1711,7 +1708,7 @@ void RenderThreadImpl::OnRendererForegrounded() {
 }
 
 void RenderThreadImpl::OnSyncMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   v8::MemoryPressureLevel v8_memory_pressure_level =
       static_cast<v8::MemoryPressureLevel>(memory_pressure_level);
 
@@ -1802,7 +1799,7 @@ void RenderThreadImpl::SetPrivateMemoryFootprint(
 }
 
 void RenderThreadImpl::OnMemoryPressureFromBrowserReceived(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   // To avoid that the browser process requests a signal while a renderer
   // is creating and blink has not been initialized yet, check
   // |blink_platform_impl_| here.

@@ -123,8 +123,7 @@ class CC_EXPORT StagingBufferPool final
   void StagingStateAsValueInto(
       base::trace_event::TracedValue* staging_state) const;
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;

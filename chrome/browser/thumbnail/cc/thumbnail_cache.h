@@ -159,8 +159,7 @@ class ThumbnailCache : ThumbnailDelegate {
   void NotifyObserversOfThumbnailRead(TabId tab_id);
   void RemoveOnMatchedTimeStamp(TabId tab_id, const base::Time& time_stamp);
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
   // Default priority as most of the time there is a placeholder available.
   const scoped_refptr<base::SequencedTaskRunner>

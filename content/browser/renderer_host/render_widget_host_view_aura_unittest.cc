@@ -664,8 +664,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   void TearDown() override { TearDownEnvironment(); }
 
-  void SimulateMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level) {
+  void SimulateMemoryPressure(base::MemoryPressureLevel level) {
     // Here should be base::MemoryPressureListener::NotifyMemoryPressure, but
     // since the FrameEvictionManager is installing a MemoryPressureListener
     // which uses base::ObserverListThreadSafe, which furthermore remembers the
@@ -3431,8 +3430,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_HAS_FRAME(views[0]);
   // Using a lesser memory pressure event however, should evict.
-  SimulateMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   base::RunLoop().RunUntilIdle();
   EXPECT_EVICTED(views[0]);
 
@@ -3440,8 +3438,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
   views[1]->Hide();
   base::RunLoop().RunUntilIdle();
   EXPECT_HAS_FRAME(views[1]);
-  SimulateMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   EXPECT_EVICTED(views[1]);
 

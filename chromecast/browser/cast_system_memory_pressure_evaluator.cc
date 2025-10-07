@@ -83,8 +83,7 @@ CastSystemMemoryPressureEvaluator::~CastSystemMemoryPressureEvaluator() =
 
 void CastSystemMemoryPressureEvaluator::PollPressureLevel() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  base::MemoryPressureListener::MemoryPressureLevel level =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel level = base::MEMORY_PRESSURE_LEVEL_NONE;
 
   base::SystemMemoryInfo info;
   if (!base::GetSystemMemoryInfo(&info)) {
@@ -105,16 +104,16 @@ void CastSystemMemoryPressureEvaluator::PollPressureLevel() {
     const float ratio = available / static_cast<float>(total);
 
     if (ratio < critical_memory_fraction_)
-      level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+      level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
     else if (ratio < moderate_memory_fraction_)
-      level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+      level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
   } else {
     // Backup method purely using 'free' memory.  It may generate more
     // pressure events than necessary, since more memory may actually be free.
     if (info.free.InKiB() < kCriticalFreeMemoryKB) {
-      level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+      level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
     } else if (info.free.InKiB() < kModerateFreeMemoryKB) {
-      level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+      level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
     }
   }
 
@@ -128,13 +127,13 @@ void CastSystemMemoryPressureEvaluator::PollPressureLevel() {
 }
 
 void CastSystemMemoryPressureEvaluator::UpdateMemoryPressureLevel(
-    base::MemoryPressureListener::MemoryPressureLevel new_level) {
+    base::MemoryPressureLevel new_level) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   auto old_vote = current_vote();
   SetCurrentVote(new_level);
 
   SendCurrentVote(/* notify = */ current_vote() !=
-                  base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+                  base::MEMORY_PRESSURE_LEVEL_NONE);
 
   if (old_vote == current_vote())
     return;

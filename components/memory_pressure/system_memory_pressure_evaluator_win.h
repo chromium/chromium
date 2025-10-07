@@ -26,8 +26,6 @@ namespace memory_pressure::win {
 class SystemMemoryPressureEvaluator
     : public memory_pressure::SystemMemoryPressureEvaluator {
  public:
-  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
   // The memory sampling period, currently 5s.
   static constexpr base::TimeDelta kDefaultPeriod = base::Seconds(5);
 
@@ -96,7 +94,7 @@ class SystemMemoryPressureEvaluator
   // Calculates the current instantaneous memory pressure level. This does not
   // use any hysteresis and simply returns the result at the current moment. Can
   // be called on any thread.
-  MemoryPressureLevel CalculateCurrentPressureLevel();
+  base::MemoryPressureLevel CalculateCurrentPressureLevel();
 
   // Gets system memory status. This is virtual as a unittesting hook. Returns
   // true if the system call succeeds, false otherwise. Can be called on any

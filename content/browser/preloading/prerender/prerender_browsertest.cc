@@ -183,17 +183,16 @@ ukm::SourceId ToSourceId(int64_t navigation_id) {
 // base::MemoryPressureMonitor::Get() provides access to the instance.
 class FakeMemoryPressureMonitor : public base::MemoryPressureMonitor {
  public:
-  explicit FakeMemoryPressureMonitor(MemoryPressureLevel level)
+  explicit FakeMemoryPressureMonitor(base::MemoryPressureLevel level)
       : level_(level) {}
 
-  MemoryPressureLevel GetCurrentPressureLevel(
+  base::MemoryPressureLevel GetCurrentPressureLevel(
       base::MemoryPressureMonitorTag tag) const override {
     return level_;
   }
 
  private:
-  const MemoryPressureLevel level_ =
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  const base::MemoryPressureLevel level_ = base::MEMORY_PRESSURE_LEVEL_NONE;
 };
 
 // Example class which inherits the DocumentUserData, all the data is
@@ -11761,10 +11760,10 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
 
   // Emulate moderate-level memory pressure state.
   FakeMemoryPressureMonitor memory_pressure_monitor(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(
                 base::MemoryPressureMonitorTag::kTest),
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+            base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Triggering prerendering should not be canceled due to the moderate level
   // memory pressure.
@@ -11785,10 +11784,10 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
 
   // Emulate critical-level memory pressure state.
   FakeMemoryPressureMonitor memory_pressure_monitor(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(
                 base::MemoryPressureMonitorTag::kTest),
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+            base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   // Triggering prerendering should be canceled due to the critical level memory
   // pressure.
@@ -11823,7 +11822,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   // Emulate moderate-level memory pressure event. This shouldn't cancel
   // prerendering.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Run the message loop to give a chance to unexpectedly cancel prerendering
   // due to some bug.
@@ -11857,7 +11856,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   // Emulate critical-level memory pressure event. This should cancel
   // prerendering.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   for (auto& observer : observers) {
     observer->WaitForDestroyed();
   }

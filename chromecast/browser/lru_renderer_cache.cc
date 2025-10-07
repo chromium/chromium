@@ -107,9 +107,8 @@ void LRURendererCache::StartNextPrelauncher(const GURL& page_url) {
 }
 
 void LRURendererCache::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     DLOG(INFO) << "Dropping prelauncher cache due to memory pressure.";
     cache_.clear();
   }

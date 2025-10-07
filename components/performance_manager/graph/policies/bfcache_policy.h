@@ -29,15 +29,14 @@ class BFCachePolicy : public GraphOwned {
   void OnTakenFromGraph(Graph* graph) override;
 
  protected:
-  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
   // Try to flush the BFCache associated with |page_node|. This will be a no-op
   // if there's a pending navigation.
-  virtual void MaybeFlushBFCache(const PageNode* page_node,
-                                 MemoryPressureLevel memory_pressure_level);
+  virtual void MaybeFlushBFCache(
+      const PageNode* page_node,
+      base::MemoryPressureLevel memory_pressure_level);
 
  private:
-  void OnMemoryPressure(MemoryPressureLevel new_level);
+  void OnMemoryPressure(base::MemoryPressureLevel new_level);
 
   base::MemoryPressureListener memory_pressure_listener_;
 };

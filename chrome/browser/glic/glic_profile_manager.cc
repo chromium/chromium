@@ -28,8 +28,7 @@
 
 namespace {
 std::optional<Profile*> g_forced_profile_for_launch_;
-std::optional<base::MemoryPressureMonitor::MemoryPressureLevel>
-    g_forced_memory_pressure_level_;
+std::optional<base::MemoryPressureLevel> g_forced_memory_pressure_level_;
 std::optional<network::mojom::ConnectionType> g_forced_connection_type_;
 }  // namespace
 
@@ -304,7 +303,7 @@ void GlicProfileManager::ForceProfileForLaunchForTesting(
 
 // static
 void GlicProfileManager::ForceMemoryPressureForTesting(
-    std::optional<base::MemoryPressureMonitor::MemoryPressureLevel> level) {
+    std::optional<base::MemoryPressureLevel> level) {
   g_forced_memory_pressure_level_ = level;
 }
 
@@ -316,16 +315,14 @@ void GlicProfileManager::ForceConnectionTypeForTesting(
 
 bool GlicProfileManager::IsUnderMemoryPressure() const {
   // TODO(crbug.com/390719004): Look at discarding when pressure increases.
-  base::MemoryPressureMonitor::MemoryPressureLevel memory_pressure = base::
-      MemoryPressureMonitor::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel memory_pressure = base::MEMORY_PRESSURE_LEVEL_NONE;
   if (g_forced_memory_pressure_level_) {
     memory_pressure = *g_forced_memory_pressure_level_;
   } else if (const auto* memory_monitor = base::MemoryPressureMonitor::Get()) {
     memory_pressure = memory_monitor->GetCurrentPressureLevel(
         base::MemoryPressureMonitorTag::kGlicProfileManager);
   }
-  return memory_pressure >= base::MemoryPressureMonitor::MemoryPressureLevel::
-                                MEMORY_PRESSURE_LEVEL_MODERATE;
+  return memory_pressure >= base::MEMORY_PRESSURE_LEVEL_MODERATE;
 }
 
 void GlicProfileManager::CanPreloadForProfile(Profile* profile,

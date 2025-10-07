@@ -812,10 +812,9 @@ bool CacheStorageManager::IsValidQuotaStorageKey(
   return !storage_key.origin().opaque();
 }
 
-void CacheStorageManager::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+void CacheStorageManager::OnMemoryPressure(base::MemoryPressureLevel level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
 

@@ -38,7 +38,7 @@ TEST(StagingBufferPoolTest, ShutdownImmediatelyAfterCreation) {
   // MemoryPressureListener.
   pool = nullptr;
   base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   // Allow the callbacks in the observers to run.
   flush_message_loop();
   // No crash.

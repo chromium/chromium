@@ -96,9 +96,8 @@ class SharedStorageManager {
   }
 
   // Called when the system is under memory pressure.
-  void OnMemoryPressure(
-      base::OnceCallback<void()> callback,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::OnceCallback<void()> callback,
+                        base::MemoryPressureLevel memory_pressure_level);
 
   // Tallies database errors, watching for consecutive ones. If the threshold
   // `max_allowed_consecutive_operation_errors_` is exceeded, then the database

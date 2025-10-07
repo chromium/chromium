@@ -130,8 +130,7 @@ class NET_EXPORT SSLClientSessionCache {
   void FlushExpiredSessions();
 
   // Clear cache on low memory notifications callback.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   raw_ptr<base::Clock> clock_;
   uint64_t generation_number_ = 0;

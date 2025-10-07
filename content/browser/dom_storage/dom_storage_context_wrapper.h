@@ -151,8 +151,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void RemoveNamespace(const std::string& namespace_id);
 
   // Called on UI thread when the system is under memory pressure.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   void PurgeMemory(PurgeOption purge_option);
 

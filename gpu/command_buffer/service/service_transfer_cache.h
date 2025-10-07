@@ -93,8 +93,7 @@ class GPU_GLES2_EXPORT ServiceTransferCache
       size_t buffer_byte_size,
       bool needs_mips);
 
-  void PurgeMemory(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

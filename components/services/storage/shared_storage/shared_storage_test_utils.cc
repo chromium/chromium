@@ -177,7 +177,7 @@ std::u16string TestDatabaseOperationReceiver::SerializeSetBehavior(
 
 // static
 std::u16string TestDatabaseOperationReceiver::SerializeMemoryPressureLevel(
-    MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   return base::NumberToString16(static_cast<int>(level));
 }
 

@@ -29,8 +29,7 @@ BASE_FEATURE_PARAM(std::string,
 }  // namespace
 
 MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
-    : current_pressure_level_(
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE),
+    : current_pressure_level_(base::MEMORY_PRESSURE_LEVEL_NONE),
       dispatch_callback_(base::BindRepeating(
           &base::MemoryPressureListener::NotifyMemoryPressure)),
       aggregator_(this),
@@ -50,7 +49,7 @@ void MultiSourceMemoryPressureMonitor::MaybeStartPlatformVoter() {
       SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(this);
 }
 
-base::MemoryPressureListener::MemoryPressureLevel
+base::MemoryPressureLevel
 MultiSourceMemoryPressureMonitor::GetCurrentPressureLevel(
     base::MemoryPressureMonitorTag tag) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -64,9 +63,8 @@ MultiSourceMemoryPressureMonitor::GetCurrentPressureLevel(
     if (tag_index < mask.size() &&
         (mask[tag_index] == '2' ||
          (mask[tag_index] == '1' &&
-          current_pressure_level_ ==
-              base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE))) {
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+          current_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_MODERATE))) {
+      return base::MEMORY_PRESSURE_LEVEL_NONE;
     }
   }
   return current_pressure_level_;
@@ -79,7 +77,7 @@ MultiSourceMemoryPressureMonitor::CreateVoter() {
 }
 
 void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(current_pressure_level_, level);
 

@@ -648,12 +648,11 @@ void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
 }
 
 void DiscardableSharedMemoryManager::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   memory_pressure_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::MemoryPressureListener::MemoryPressureLevel
-                 memory_pressure_level) {
+          [](base::MemoryPressureLevel memory_pressure_level) {
             // It is safe to access the global instance because memory pressure
             // worker thread will be flushed in destructor if the thread is
             // still running.
@@ -666,19 +665,19 @@ void DiscardableSharedMemoryManager::OnMemoryPressure(
 }
 
 void DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(memory_pressure_task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock lock(lock_);
 
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       // Purge memory until usage is within half of |memory_limit_|.
       ReduceMemoryUsageUntilWithinLimit(memory_limit_ / 2);
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // Purge everything possible when pressure is critical.
       ReduceMemoryUsageUntilWithinLimit(0);
       break;

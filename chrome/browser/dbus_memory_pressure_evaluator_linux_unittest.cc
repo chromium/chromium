@@ -27,8 +27,7 @@ namespace {
 
 class MockMemoryPressureVoter : public memory_pressure::MemoryPressureVoter {
  public:
-  MOCK_METHOD2(SetVote,
-               void(base::MemoryPressureListener::MemoryPressureLevel, bool));
+  MOCK_METHOD2(SetVote, void(base::MemoryPressureLevel, bool));
 };
 
 }  // namespace
@@ -160,66 +159,44 @@ const char* const
         DbusMemoryPressureEvaluatorLinux::kXdgPortalMemoryMonitorInterface;
 
 TEST_F(DbusMemoryPressureEvaluatorLinuxTest, Basic) {
-  EXPECT_CALL(
-      *mock_voter(),
-      SetVote(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, false))
+  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE, false))
       .WillOnce(Return());
 
   EmitLowMemoryWarning(0);
-  EXPECT_EQ(evaluator()->current_vote(),
-            base::MemoryPressureMonitor::MemoryPressureLevel::
-                MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_NONE);
 
-  EXPECT_CALL(
-      *mock_voter(),
-      SetVote(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-              true))
+  EXPECT_CALL(*mock_voter(),
+              SetVote(base::MEMORY_PRESSURE_LEVEL_MODERATE, true))
       .Times(2)
       .WillRepeatedly(Return());
 
   EmitLowMemoryWarning(50);
-  EXPECT_EQ(evaluator()->current_vote(),
-            base::MemoryPressureMonitor::MemoryPressureLevel::
-                MEMORY_PRESSURE_LEVEL_MODERATE);
+  EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   EmitLowMemoryWarning(100);
-  EXPECT_EQ(evaluator()->current_vote(),
-            base::MemoryPressureMonitor::MemoryPressureLevel::
-                MEMORY_PRESSURE_LEVEL_MODERATE);
+  EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
-  EXPECT_CALL(
-      *mock_voter(),
-      SetVote(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
-              true))
+  EXPECT_CALL(*mock_voter(),
+              SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL, true))
       .WillOnce(Return());
 
   EmitLowMemoryWarning(255);
-  EXPECT_EQ(evaluator()->current_vote(),
-            base::MemoryPressureMonitor::MemoryPressureLevel::
-                MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 TEST_F(DbusMemoryPressureEvaluatorLinuxTest, PeriodicReset) {
   // Verify that the level will be reset after the time delta.
   EmitLowMemoryWarning(100);
-  EXPECT_EQ(evaluator()->current_vote(),
-            base::MemoryPressureMonitor::MemoryPressureLevel::
-                MEMORY_PRESSURE_LEVEL_MODERATE);
+  EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
-  EXPECT_CALL(
-      *mock_voter(),
-      SetVote(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, false))
+  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE, false))
       .WillOnce(Return());
 
   task_environment().FastForwardBy(kResetVotePeriod);
-  EXPECT_EQ(evaluator()->current_vote(),
-            base::MemoryPressureMonitor::MemoryPressureLevel::
-                MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_NONE);
 
   // Verify that no reset is sent for already-none levels.
-  EXPECT_CALL(
-      *mock_voter(),
-      SetVote(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, false))
+  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE, false))
       .WillOnce(Return());
 
   EmitLowMemoryWarning(0);

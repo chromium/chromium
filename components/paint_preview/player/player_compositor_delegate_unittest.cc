@@ -158,8 +158,8 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
         base::OnTaskRunnerDeleter(task_runner_));
   }
 
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
-                            memory_pressure_level) override {
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {
     // no-op.
   }
 
@@ -898,7 +898,7 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressure) {
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
 
     player_compositor_delegate.OnMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     loop.Run();
   }
   env.RunUntilIdle();
@@ -915,7 +915,7 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
     base::RunLoop loop;
     memory_pressure::test::FakeMemoryPressureMonitor memory_pressure_monitor;
     memory_pressure_monitor.SetAndNotifyMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     PlayerCompositorDelegateImpl player_compositor_delegate;
     player_compositor_delegate.SetFakeMemoryPressureMonitor(
         &memory_pressure_monitor);
@@ -931,7 +931,7 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
     env.RunUntilIdle();
 
     player_compositor_delegate.OnMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     loop.Run();
   }
   env.RunUntilIdle();
@@ -980,7 +980,7 @@ TEST_F(PlayerCompositorDelegateTest,
     request_loop.Run();
 
     player_compositor_delegate.OnMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+        base::MEMORY_PRESSURE_LEVEL_MODERATE);
     loop.Run();
   }
   env.RunUntilIdle();

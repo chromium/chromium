@@ -69,10 +69,9 @@ void EnterpriseMemoryLimitEvaluator::OnTotalResidentSetKbSample(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Limit is in mb, must convert to kb.
   bool is_critical = resident_set_sample_kb > (resident_set_limit_mb_ * 1024);
-  voter_->SetVote(
-      is_critical ? base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL
-                  : base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
-      /* notify_listeners = */ is_critical);
+  voter_->SetVote(is_critical ? base::MEMORY_PRESSURE_LEVEL_CRITICAL
+                              : base::MEMORY_PRESSURE_LEVEL_NONE,
+                  /* notify_listeners = */ is_critical);
 }
 
 void EnterpriseMemoryLimitEvaluator::SetResidentSetLimitMb(

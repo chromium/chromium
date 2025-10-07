@@ -168,17 +168,17 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Get the previous pressure level and update the current one.
-  MemoryPressureLevel old_vote = current_vote();
+  base::MemoryPressureLevel old_vote = current_vote();
   SetCurrentVote(CalculateCurrentPressureLevel());
 
   // |notify| will be set to true if MemoryPressureListeners need to be
   // notified of a memory pressure level state change.
   bool notify = false;
   switch (current_vote()) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
 
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       if (old_vote != current_vote()) {
         // This is a new transition to moderate pressure so notify.
         moderate_pressure_repeat_count_ = 0;
@@ -196,7 +196,7 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
       }
       break;
 
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // Always notify of critical pressure levels.
       notify = true;
       break;
@@ -205,13 +205,13 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
   SendCurrentVote(notify);
 }
 
-base::MemoryPressureListener::MemoryPressureLevel
+base::MemoryPressureLevel
 SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   MEMORYSTATUSEX mem_status = {};
   bool got_system_memory_status = GetSystemMemoryStatus(&mem_status);
 
   if (!got_system_memory_status) {
-    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+    return base::MEMORY_PRESSURE_LEVEL_NONE;
   }
   RecordCommitHistograms(mem_status);
 
@@ -228,21 +228,21 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
     // No memory pressure under any of the 2 detection systems. Return
     // early to avoid activating the experiment for clients who don't
     // have memory pressure.
-    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+    return base::MEMORY_PRESSURE_LEVEL_NONE;
   }
 
   if (base::FeatureList::IsEnabled(kCommitAvailableMemoryPressureThresholds)) {
     if (commit_available <
         base::MiB(kCommitAvailableCriticalThresholdMB.Get())) {
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+      return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
     }
 
     if (commit_available <
         base::MiB(kCommitAvailableModerateThresholdMB.Get())) {
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+      return base::MEMORY_PRESSURE_LEVEL_MODERATE;
     }
 
-    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+    return base::MEMORY_PRESSURE_LEVEL_NONE;
   }
 
   // TODO(chrisha): This should eventually care about address space pressure,
@@ -255,16 +255,16 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
 
   // Determine if the physical memory is under critical memory pressure.
   if (phys_free <= critical_threshold_) {
-    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 
   // Determine if the physical memory is under moderate memory pressure.
   if (phys_free <= moderate_threshold_) {
-    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    return base::MEMORY_PRESSURE_LEVEL_MODERATE;
   }
 
   // No memory pressure was detected.
-  return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  return base::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
 bool SystemMemoryPressureEvaluator::GetSystemMemoryStatus(

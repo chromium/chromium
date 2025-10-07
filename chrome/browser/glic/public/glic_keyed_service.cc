@@ -784,10 +784,8 @@ void GlicKeyedService::Reload() {
   }
 }
 
-void GlicKeyedService::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level == base::MemoryPressureListener::MemoryPressureLevel::
-                   MEMORY_PRESSURE_LEVEL_NONE ||
+void GlicKeyedService::OnMemoryPressure(base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE ||
       (this == GlicProfileManager::GetInstance()->GetLastActiveGlic())) {
     return;
   }

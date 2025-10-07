@@ -460,7 +460,7 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.MemoryPressureLevel"
-          cpp = "::base::MemoryPressureListener::MemoryPressureLevel"
+          cpp = "::base::MemoryPressureLevel"
         },
       ]
       traits_headers =

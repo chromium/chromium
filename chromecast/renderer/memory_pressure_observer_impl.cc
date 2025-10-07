@@ -17,8 +17,7 @@ MemoryPressureObserverImpl::~MemoryPressureObserverImpl() = default;
 void MemoryPressureObserverImpl::MemoryPressureLevelChanged(
     int32_t pressure_level) {
   base::MemoryPressureListener::NotifyMemoryPressure(
-      static_cast<base::MemoryPressureListener::MemoryPressureLevel>(
-          pressure_level));
+      static_cast<base::MemoryPressureLevel>(pressure_level));
 }
 
 }  // namespace chromecast

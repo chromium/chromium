@@ -57,8 +57,7 @@ class RASTER_EXPORT GrShaderCache
 
   void PopulateCache(const std::string& key, const std::string& data);
   void CacheClientIdOnDisk(int32_t client_id);
-  void PurgeMemory(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

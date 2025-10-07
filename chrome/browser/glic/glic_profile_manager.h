@@ -92,7 +92,7 @@ class GlicProfileManager : public ProfileManagerObserver {
   // constructed.
   static void ForceProfileForLaunchForTesting(std::optional<Profile*> profile);
   static void ForceMemoryPressureForTesting(
-      std::optional<base::MemoryPressureMonitor::MemoryPressureLevel> level);
+      std::optional<base::MemoryPressureLevel> level);
   static void ForceConnectionTypeForTesting(
       std::optional<network::mojom::ConnectionType> type);
 

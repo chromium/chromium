@@ -2855,8 +2855,7 @@ void GpuImageDecodeCache::TouchCacheEntryForTesting(
   image_data->last_use = base::TimeTicks::Now();
 }
 
-void GpuImageDecodeCache::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+void GpuImageDecodeCache::OnMemoryPressure(base::MemoryPressureLevel level) {
   if (!ImageDecodeCacheUtils::ShouldEvictCaches(level))
     return;
 

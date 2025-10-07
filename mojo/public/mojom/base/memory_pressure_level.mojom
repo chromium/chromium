@@ -4,7 +4,7 @@
 
 module mojo_base.mojom;
 
-// Mirror of base::MemoryPressureListener::MemoryPressureLevel.
+// Mirror of base::MemoryPressureLevel.
 enum MemoryPressureLevel {
   NONE,
   MODERATE,

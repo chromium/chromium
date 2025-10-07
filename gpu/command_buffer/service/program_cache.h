@@ -126,8 +126,7 @@ class GPU_GLES2_EXPORT ProgramCache {
   virtual size_t Trim(size_t limit) = 0;
 
   // Reduces cache usage based on the given MemoryPressureLevel
-  void HandleMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void HandleMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
  protected:
   size_t max_size_bytes() const { return max_size_bytes_; }

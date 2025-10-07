@@ -59,14 +59,13 @@ SharedStorageManager::~SharedStorageManager() {
 
 void SharedStorageManager::OnMemoryPressure(
     base::OnceCallback<void()> callback,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(callback);
   DCHECK(database_);
 
   // TODO(cammie): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
   // ignored.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 

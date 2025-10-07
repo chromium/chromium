@@ -58,8 +58,8 @@ class TestDiscardableSharedMemoryManager
 
  private:
   // Overriden from DiscardableSharedMemoryManager:
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
-                            memory_pressure_level) override {
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {
     DiscardableSharedMemoryManager::OnMemoryPressure(memory_pressure_level);
     ++on_memory_pressure_call_count_;
   }
@@ -253,9 +253,9 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnMemoryPressure) {
   // notifications are received..
   task_environment_.RunUntilIdle();
 
-  const base::MemoryPressureListener::MemoryPressureLevel pressure_levels[] = {
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL};
+  const base::MemoryPressureLevel pressure_levels[] = {
+      base::MEMORY_PRESSURE_LEVEL_MODERATE,
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL};
 
   for (auto pressure : pressure_levels) {
     base::MemoryPressureListener::NotifyMemoryPressure(pressure);

@@ -146,7 +146,7 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
   unsigned memory_pressure_count_ = 0;
 
  private:
-  void OnSyncMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel) {
+  void OnSyncMemoryPressure(base::MemoryPressureLevel) {
     ++memory_pressure_count_;
   }
 };

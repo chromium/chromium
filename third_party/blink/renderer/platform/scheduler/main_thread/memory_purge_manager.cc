@@ -188,7 +188,7 @@ void MemoryPurgeManager::PerformMemoryPurge() {
   if (!purge_inhibited_because_purge_on_freeze_disabled &&
       !purge_inhibited_because_already_purged_with_frozen_page) {
     base::MemoryPressureListener::NotifyMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 
   if (AreAllPagesFrozen()) {

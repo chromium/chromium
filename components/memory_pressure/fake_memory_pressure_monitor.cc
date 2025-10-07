@@ -14,13 +14,12 @@ FakeMemoryPressureMonitor::FakeMemoryPressureMonitor() = default;
 FakeMemoryPressureMonitor::~FakeMemoryPressureMonitor() = default;
 
 void FakeMemoryPressureMonitor::SetAndNotifyMemoryPressure(
-    MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   memory_pressure_level_ = level;
   base::MemoryPressureListener::SimulatePressureNotification(level);
 }
 
-base::MemoryPressureMonitor::MemoryPressureLevel
-FakeMemoryPressureMonitor::GetCurrentPressureLevel(
+base::MemoryPressureLevel FakeMemoryPressureMonitor::GetCurrentPressureLevel(
     base::MemoryPressureMonitorTag tag) const {
   return memory_pressure_level_;
 }

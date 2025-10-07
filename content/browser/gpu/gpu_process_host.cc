@@ -1484,8 +1484,7 @@ int GpuProcessHost::GetIDForTesting() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void GpuProcessHost::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+void GpuProcessHost::OnMemoryPressure(base::MemoryPressureLevel level) {
   gpu_host_->gpu_service()->OnMemoryPressure(level);
 }
 #endif

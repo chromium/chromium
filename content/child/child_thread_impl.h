@@ -152,7 +152,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 #if BUILDFLAG(IS_ANDROID)
   // Received memory pressure signal sent by the browser process.
   virtual void OnMemoryPressureFromBrowserReceived(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+      base::MemoryPressureLevel level);
 #endif
 
  private:

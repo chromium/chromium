@@ -54,8 +54,7 @@ TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
           ::testing::DoAll(::testing::Invoke(&run_loop, &base::RunLoop::Quit),
                            ::testing::Return(true)));
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop.Run();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -69,8 +68,7 @@ TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
                            ::testing::Return(true)));
   DiscardEligibilityPolicy::RemovesDiscardAttemptMarkerForTesting(page_node());
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop2.Run();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -78,8 +76,7 @@ TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
 TEST_F(UrgentPageDiscardingPolicyTest, NoDiscardOnModeratePressure) {
   // No tab should be discarded on moderate pressure.
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   task_env().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }

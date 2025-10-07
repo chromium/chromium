@@ -173,7 +173,7 @@ void GrShaderCache::CacheClientIdOnDisk(int32_t client_id) {
 }
 
 void GrShaderCache::PurgeMemory(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   base::AutoLock auto_lock(lock_);
   size_t original_limit = cache_size_limit_;
 

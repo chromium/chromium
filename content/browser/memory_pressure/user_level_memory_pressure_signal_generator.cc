@@ -262,8 +262,7 @@ void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
     content::ChildProcessHostImpl* host =
         static_cast<content::ChildProcessHostImpl*>(iter.GetHost());
     host->NotifyMemoryPressureToChildProcess(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 
   // Notifies renderer processes.
@@ -277,15 +276,12 @@ void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
       continue;
 
     static_cast<content::RenderProcessHostImpl*>(host)
-        ->NotifyMemoryPressureToRenderer(
-            base::MemoryPressureListener::MemoryPressureLevel::
-                MEMORY_PRESSURE_LEVEL_CRITICAL);
+        ->NotifyMemoryPressureToRenderer(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 
   // Notifies browser process.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 // static

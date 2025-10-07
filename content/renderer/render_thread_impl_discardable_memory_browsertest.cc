@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   // main thread, so it is sufficient to RunAllTasksUntilIdle(), after which
   // the manager should report that the memory has been freed.
   base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   RunAllTasksUntilIdle();
   EXPECT_EQ(0u, discardable_memory::DiscardableSharedMemoryManager::Get()

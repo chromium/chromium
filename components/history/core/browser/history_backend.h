@@ -853,8 +853,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void InitImpl(const HistoryDatabaseParams& history_database_params);
 
   // Called when the system is under memory pressure.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   // Closes all databases managed by HistoryBackend. Commits any pending
   // transactions.

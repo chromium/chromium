@@ -153,7 +153,7 @@ void UserLevelMemoryPressureSignalGenerator::Generate(base::TimeTicks now) {
   if (!last_generated_.has_value() ||
       (now - last_generated_.value()) >= minimum_interval_) {
     base::MemoryPressureListener::NotifyMemoryPressure(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     last_generated_ = now;
   }
   has_pending_request_ = false;

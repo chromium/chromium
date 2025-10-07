@@ -678,10 +678,8 @@ std::string HangWatcher::GetTimeSinceLastSystemPowerResumeCrashKeyValue()
   return NumberToString(time_since_last_system_resume.InSeconds());
 }
 
-void HangWatcher::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+void HangWatcher::OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == MEMORY_PRESSURE_LEVEL_CRITICAL) {
     last_critical_memory_pressure_.store(base::TimeTicks::Now(),
                                          std::memory_order_relaxed);
   }

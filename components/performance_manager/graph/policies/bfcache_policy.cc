@@ -76,10 +76,8 @@ bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
   return false;
 }
 
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
 void MaybeFlushBFCacheImpl(content::WebContents* contents,
-                           MemoryPressureLevel memory_pressure_level) {
+                           base::MemoryPressureLevel memory_pressure_level) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(contents);
 
@@ -88,13 +86,13 @@ void MaybeFlushBFCacheImpl(content::WebContents* contents,
   bool foregrounded =
       (contents->GetVisibility() == content::Visibility::VISIBLE);
   switch (memory_pressure_level) {
-    case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       cache_size = foregrounded ? ForegroundCacheSizeOnModeratePressure()
                                 : BackgroundCacheSizeOnModeratePressure();
       reason = content::BackForwardCache::NotRestoredReason::
           kCacheLimitPrunedOnModerateMemoryPressure;
       break;
-    case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       cache_size = foregrounded ? ForegroundCacheSizeOnCriticalPressure()
                                 : BackgroundCacheSizeOnCriticalPressure();
       reason = content::BackForwardCache::NotRestoredReason::
@@ -147,15 +145,15 @@ void BFCachePolicy::OnTakenFromGraph(Graph* graph) {}
 
 void BFCachePolicy::MaybeFlushBFCache(
     const PageNode* page_node,
-    MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(page_node);
   MaybeFlushBFCacheImpl(page_node->GetWebContents().get(),
                         memory_pressure_level);
 }
 
-void BFCachePolicy::OnMemoryPressure(MemoryPressureLevel new_level) {
+void BFCachePolicy::OnMemoryPressure(base::MemoryPressureLevel new_level) {
   // This shouldn't happen but add the check anyway in case the API changes.
-  if (new_level == MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (new_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 

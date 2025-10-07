@@ -163,7 +163,7 @@ void NetworkServiceClient::OnClientCertStoreChanged() {
 }
 
 void NetworkServiceClient::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   GetNetworkService()->OnMemoryPressure(memory_pressure_level);
 }
 

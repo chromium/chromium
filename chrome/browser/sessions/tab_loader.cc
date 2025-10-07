@@ -361,7 +361,7 @@ void TabLoader::OnStopTracking(WebContents* web_contents,
 }
 
 void TabLoader::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   ReentrancyHelper lifetime_helper(this);
   TRACE_EVENT_INSTANT(
       "browser", "TabLoader::OnMemoryPressure",
@@ -373,10 +373,10 @@ void TabLoader::OnMemoryPressure(
       });
 
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       StopLoadingTabs();
       break;
   }
@@ -393,7 +393,7 @@ bool TabLoader::ShouldStopLoadingTabs() const {
   if (base::MemoryPressureMonitor::Get()) {
     return base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(
                base::MemoryPressureMonitorTag::kTabLoader) !=
-           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+           base::MEMORY_PRESSURE_LEVEL_NONE;
   }
   return false;
 }

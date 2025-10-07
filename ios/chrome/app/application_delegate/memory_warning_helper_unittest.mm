@@ -28,11 +28,10 @@ class MemoryWarningHelperTest : public PlatformTest {
         base::MemoryPressureListenerTag::kTest,
         base::BindRepeating(&MemoryWarningHelperTest::OnMemoryPressure,
                             base::Unretained(this))));
-    memory_pressure_level_ =
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    memory_pressure_level_ = base::MEMORY_PRESSURE_LEVEL_MODERATE;
   }
 
-  base::MemoryPressureListener::MemoryPressureLevel GetMemoryPressureLevel() {
+  base::MemoryPressureLevel GetMemoryPressureLevel() {
     return memory_pressure_level_;
   }
 
@@ -44,14 +43,13 @@ class MemoryWarningHelperTest : public PlatformTest {
   }
 
   // Callback for `memory_pressure_listener_`.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
     memory_pressure_level_ = memory_pressure_level;
   }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_;
+  base::MemoryPressureLevel memory_pressure_level_;
   std::unique_ptr<base::SyncMemoryPressureListener> memory_pressure_listener_;
   MemoryWarningHelper* memory_helper_;
 };
@@ -74,8 +72,7 @@ TEST_F(MemoryWarningHelperTest, VerifyForegroundMemoryWarningCountReset) {
 // callback (i.e. MainControllerTest::OnMemoryPressure) is invoked.
 TEST_F(MemoryWarningHelperTest, VerifyApplicationDidReceiveMemoryWarning) {
   [GetMemoryHelper() handleMemoryPressure];
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
-            GetMemoryPressureLevel());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, GetMemoryPressureLevel());
 }
 
 // Invokes applicationDidReceiveMemoryWarning and verifies the flags (i.e.

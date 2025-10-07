@@ -61,9 +61,8 @@ constexpr int kDefaultMaxChunksTotal = 32;
 
 // The default for "memory_pressure_disable_level". When a memory pressure
 // notification of this level or higher arrives, SlopBucket will disable itself.
-constexpr base::MemoryPressureListener::MemoryPressureLevel
-    kDefaultMemoryPressureDisableLevel =
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+constexpr base::MemoryPressureLevel kDefaultMemoryPressureDisableLevel =
+    base::MEMORY_PRESSURE_LEVEL_MODERATE;
 
 // Mapping of name and value for net::RequestPriority enum.
 constexpr base::FeatureParam<net::RequestPriority>::Option
@@ -102,24 +101,20 @@ constexpr base::FeatureParam<int> kMaxChunksTotalParam(&kSlopBucket,
                                                        kDefaultMaxChunksTotal);
 
 // Mapping of name and value for
-// base::MemoryPressureListener::MemoryPressureLevel enum.
-constexpr base::FeatureParam<
-    base::MemoryPressureListener::MemoryPressureLevel>::Option
+// base::MemoryPressureLevel enum.
+constexpr base::FeatureParam<base::MemoryPressureLevel>::Option
     kMemoryPressureLevelOptions[] = {
-        {base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, "NONE"},
-        {base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-         "MODERATE"},
-        {base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
-         "CRITICAL"},
+        {base::MEMORY_PRESSURE_LEVEL_NONE, "NONE"},
+        {base::MEMORY_PRESSURE_LEVEL_MODERATE, "MODERATE"},
+        {base::MEMORY_PRESSURE_LEVEL_CRITICAL, "CRITICAL"},
 };
 
 // "memory_pressure_disable_level" parameter.
-constexpr base::FeatureParam<base::MemoryPressureListener::MemoryPressureLevel>
-    kMemoryPressureDisableLevelParam(
-        &kSlopBucket,
-        "memory_pressure_disable_level",
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-        &kMemoryPressureLevelOptions);
+constexpr base::FeatureParam<base::MemoryPressureLevel>
+    kMemoryPressureDisableLevelParam(&kSlopBucket,
+                                     "memory_pressure_disable_level",
+                                     base::MEMORY_PRESSURE_LEVEL_MODERATE,
+                                     &kMemoryPressureLevelOptions);
 
 }  // namespace
 
@@ -137,8 +132,7 @@ class SlopBucket::Configuration {
   size_t min_buffer_size() const { return min_buffer_size_; }
   size_t max_chunks_per_request() const { return max_chunks_per_request_; }
   size_t max_chunks_total() const { return max_chunks_total_; }
-  base::MemoryPressureListener::MemoryPressureLevel
-  memory_pressure_disable_level() const {
+  base::MemoryPressureLevel memory_pressure_disable_level() const {
     return memory_pressure_disable_level_;
   }
 
@@ -213,8 +207,8 @@ class SlopBucket::Configuration {
 
   size_t max_chunks_total_ = size_t{kDefaultMaxChunksTotal};
 
-  base::MemoryPressureListener::MemoryPressureLevel
-      memory_pressure_disable_level_ = kDefaultMemoryPressureDisableLevel;
+  base::MemoryPressureLevel memory_pressure_disable_level_ =
+      kDefaultMemoryPressureDisableLevel;
 };
 
 // SlopBucketManager tracks global state for SlopBuckets. It is thread-hostile.
@@ -383,8 +377,7 @@ class SlopBucket::Manager {
 
   // Responds to a memory pressure notification by emptying the free pool and
   // possibly disabling SlopBucket.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level) {
+  void OnMemoryPressure(base::MemoryPressureLevel level) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (disabled()) {
       return;

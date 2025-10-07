@@ -14,14 +14,14 @@
 namespace base::trace_event {
 
 perfetto::protos::pbzero::MemoryPressureLevel MemoryPressureLevelToTraceEnum(
-    MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    MemoryPressureLevel memory_pressure_level) {
   using ProtoLevel = perfetto::protos::pbzero::MemoryPressureLevel;
   switch (memory_pressure_level) {
-    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case MEMORY_PRESSURE_LEVEL_NONE:
       return ProtoLevel::MEMORY_PRESSURE_LEVEL_NONE;
-    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case MEMORY_PRESSURE_LEVEL_MODERATE:
       return ProtoLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
-    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case MEMORY_PRESSURE_LEVEL_CRITICAL:
       return ProtoLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 }

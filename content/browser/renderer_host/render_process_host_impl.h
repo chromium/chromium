@@ -874,8 +874,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
 #if BUILDFLAG(IS_ANDROID)
   // Notifies the renderer process of memory pressure level.
-  void NotifyMemoryPressureToRenderer(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void NotifyMemoryPressureToRenderer(base::MemoryPressureLevel level);
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

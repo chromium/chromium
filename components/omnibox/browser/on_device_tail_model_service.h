@@ -46,8 +46,7 @@ class OnDeviceTailModelService
       ResultCallback result_callback);
 
   // Helper which unloads the executor from memory when memory pressure is high.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
  private:
   friend class OnDeviceTailModelServiceTest;

@@ -179,8 +179,7 @@ class CONTENT_EXPORT CacheStorageManager
   bool IsMemoryBacked() const { return profile_path_.empty(); }
 
   // MemoryPressureListener callback
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
 #if DCHECK_IS_ON()
   bool CacheStoragePathIsUnique(const base::FilePath& path);

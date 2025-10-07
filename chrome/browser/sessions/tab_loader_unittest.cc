@@ -309,8 +309,7 @@ TEST_F(TabLoaderTest, OnMemoryPressure) {
 
   // Simulate memory pressure and expect the tab loader to disable loading.
   EXPECT_TRUE(tab_loader_.IsLoadingEnabled());
-  tab_loader_.OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  tab_loader_.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_FALSE(tab_loader_.IsLoadingEnabled());
 
   // Finish loading the tab and expect the tab loader to disconnect.

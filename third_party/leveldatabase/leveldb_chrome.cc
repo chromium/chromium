@@ -27,7 +27,6 @@
 #include "third_party/leveldatabase/src/helpers/memenv/memenv.h"
 #include "util/mutexlock.h"
 
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpArgs;
 using base::trace_event::MemoryDumpProvider;
@@ -88,9 +87,8 @@ class Globals {
   Cache* browser_block_cache() const { return browser_block_cache_.get(); }
 
   // Called when the system is under memory pressure.
-  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
-    if (memory_pressure_level ==
-        MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE)
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+    if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE)
       return;
     browser_block_cache()->Prune();
     if (browser_block_cache() == web_block_cache())

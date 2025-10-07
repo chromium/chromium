@@ -69,14 +69,14 @@ size_t DiscardableCacheSizeLimit() {
 
 size_t DiscardableCacheSizeLimitForPressure(
     size_t base_cache_limit,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       return base_cache_limit;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       // With moderate pressure, shrink to 1/4 our normal size.
       return base_cache_limit / 4;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // With critical pressure, purge as much as possible.
       return 0;
 
@@ -394,7 +394,7 @@ int ServiceTransferCache::RemoveOldEntriesUntil(
 }
 
 void ServiceTransferCache::PurgeMemory(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   base::AutoReset<size_t> reset_limit(
       &cache_size_limit_, DiscardableCacheSizeLimitForPressure(
                               cache_size_limit_, memory_pressure_level));

@@ -139,8 +139,7 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   void EvictTill(int target_size);
 
   // Called when we get low on memory.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   raw_ptr<base::Clock> custom_clock_for_testing_ = nullptr;  // usually nullptr.
 

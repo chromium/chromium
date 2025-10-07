@@ -57,8 +57,7 @@ class NetworkServiceClient
   void OnTrustStoreChanged() override;
   void OnClientCertStoreChanged() override;
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_presure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_presure_level);
 
   // Called when there is a change in the count of media connections that
   // require low network latency.

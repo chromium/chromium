@@ -91,8 +91,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
 
   bool Initialize();
 
-  void HandleMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void HandleMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
   void OnBackgroundedOnCompositorGpuThread();
 
   raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;

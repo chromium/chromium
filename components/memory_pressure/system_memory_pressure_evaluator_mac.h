@@ -39,8 +39,8 @@ class SystemMemoryPressureEvaluator
  private:
   friend TestSystemMemoryPressureEvaluator;
 
-  static base::MemoryPressureListener::MemoryPressureLevel
-  MemoryPressureLevelForMacMemoryPressureLevel(int mac_memory_pressure_level);
+  static base::MemoryPressureLevel MemoryPressureLevelForMacMemoryPressureLevel(
+      int mac_memory_pressure_level);
 
   // Returns the raw memory pressure level from the macOS. Exposed for
   // unit testing.
@@ -76,8 +76,8 @@ class SystemMemoryPressureEvaluator
   base::RepeatingTimer disk_space_check_timer_;
 
   // The pressure level calculated from the available disk space.
-  base::MemoryPressureListener::MemoryPressureLevel disk_pressure_vote_ =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel disk_pressure_vote_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
 
   // The path to the user data directory, used for the disk space check.
   base::FilePath user_data_dir_;

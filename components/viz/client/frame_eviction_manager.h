@@ -76,8 +76,7 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
 
   // React on memory pressure events to adjust the number of cached frames.
   // Please make this private when crbug.com/443824 has been fixed.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
   // Purges all unlocked frames, allowing us to reclaim resources.
   void PurgeAllUnlockedFrames();

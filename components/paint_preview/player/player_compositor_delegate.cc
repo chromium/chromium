@@ -126,7 +126,7 @@ void PlayerCompositorDelegate::Initialize(
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel(
           base::MemoryPressureMonitorTag::kPlayerCompositorDelegate) >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(compositor_error),
@@ -179,8 +179,7 @@ void PlayerCompositorDelegate::InitializeInternal(
     base::TimeDelta timeout_duration,
     std::array<size_t, PressureLevelCount::kLevels> max_requests_map) {
   max_requests_map_ = max_requests_map;
-  max_requests_ = max_requests_map_
-      [base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE];
+  max_requests_ = max_requests_map_[base::MEMORY_PRESSURE_LEVEL_NONE];
   main_frame_mode_ = main_frame_mode;
   compositor_error_ = std::move(compositor_error);
   paint_preview_service_ = paint_preview_service;
@@ -271,7 +270,7 @@ std::vector<const GURL*> PlayerCompositorDelegate::OnClick(
 }
 
 void PlayerCompositorDelegate::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   TRACE_EVENT1("paint_preview", "PlayerCompositorDelegate::OnMemoryPressure",
                "memory_pressure_level",
                static_cast<int>(memory_pressure_level));
@@ -284,8 +283,7 @@ void PlayerCompositorDelegate::OnMemoryPressure(
              PressureLevelCount::kLevels);
   max_requests_ = max_requests_map_[memory_pressure_level];
   if (max_requests_ == 0 ||
-      memory_pressure_level ==
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     if (paint_preview_compositor_client_)
       paint_preview_compositor_client_.reset();
 

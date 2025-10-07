@@ -252,8 +252,7 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
     interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
-    factory.PurgeMemory(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
   }
 }
@@ -280,13 +279,11 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
     // Moderate memory pressure is ignored
-    factory.PurgeMemory(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_MODERATE);
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
     // But not critical, except on Android
-    factory.PurgeMemory(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 #else

@@ -453,7 +453,7 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
 }
 
 void BackgroundTabLoadingPolicy::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel new_level) {
+    base::MemoryPressureLevel new_level) {
   TRACE_EVENT_INSTANT(
       "browser", "BackgroundTabLoadingPolicy::OnMemoryPressure",
       [&](perfetto::EventContext ctx) {
@@ -463,10 +463,10 @@ void BackgroundTabLoadingPolicy::OnMemoryPressure(
             base::trace_event::MemoryPressureLevelToTraceEnum(new_level));
       });
   switch (new_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       StopLoadingTabs();
       break;
   }

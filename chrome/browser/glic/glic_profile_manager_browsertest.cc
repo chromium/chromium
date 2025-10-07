@@ -222,8 +222,7 @@ class GlicProfileManagerPreloadingTest
     // We initialize memory pressure to moderate to prevent any premature
     // preloading.
     GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MemoryPressureMonitor::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_MODERATE);
+        base::MEMORY_PRESSURE_LEVEL_MODERATE);
     GlicProfileManager::ForceConnectionTypeForTesting(
         network::mojom::ConnectionType::CONNECTION_WIFI);
   }
@@ -246,8 +245,7 @@ class GlicProfileManagerPreloadingTest
 
   void ResetMemoryPressure() {
     GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MemoryPressureMonitor::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_NONE);
+        base::MEMORY_PRESSURE_LEVEL_NONE);
   }
 
   GlicPrewarmingChecksResult WaitForShouldPreload() {

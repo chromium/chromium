@@ -127,8 +127,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   base::Value::Dict DescribeSystemNodeData(
       const SystemNode* node) const override;
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel new_level);
+  void OnMemoryPressure(base::MemoryPressureLevel new_level);
 
   // Returns the SiteDataReader instance for |page_node|, if any. Virtual for
   // testing.

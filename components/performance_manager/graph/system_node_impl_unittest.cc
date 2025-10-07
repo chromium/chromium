@@ -4,11 +4,9 @@
 
 #include "components/performance_manager/graph/system_node_impl.h"
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -45,7 +43,6 @@ TEST_F(SystemNodeImplDeathTest, SafeDowncast) {
 
 namespace {
 
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using testing::_;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;

@@ -84,8 +84,7 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
 
 #if BUILDFLAG(IS_ANDROID)
   // Notifies the child process of memory pressure level.
-  void NotifyMemoryPressureToChildProcess(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void NotifyMemoryPressureToChildProcess(base::MemoryPressureLevel level);
 #endif
 
  private:

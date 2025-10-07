@@ -283,8 +283,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   THREAD_CHECKER(constructing_thread_checker_);
 
   // Invoked on memory pressure signal.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
   // Returns a ScopedCrashKeyString that sets the crash key with the time since
   // last critical memory pressure signal.

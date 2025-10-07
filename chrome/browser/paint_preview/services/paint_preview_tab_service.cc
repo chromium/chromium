@@ -136,7 +136,7 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel(
           base::MemoryPressureMonitorTag::kPaintPreviewTabService) >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return;
   }
 

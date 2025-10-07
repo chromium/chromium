@@ -841,7 +841,7 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel(
           base::MemoryPressureMonitorTag::kSubframeShutdownDelay) >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return kZeroDelay;
   }
 

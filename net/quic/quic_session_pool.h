@@ -952,8 +952,7 @@ class QuicSessionPool::QuicCryptoClientConfigOwner {
 
   QuicSessionPool* quic_session_pool() { return quic_session_pool_; }
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
  private:
   friend class CryptoClientConfigHandle;

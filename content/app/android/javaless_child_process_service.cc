@@ -246,10 +246,8 @@ ScopedAStatus ChildProcessService::onMemoryPressure(int32_t pressure) {
     // renderer, so we trust what it sends entirely.
     base::ThreadPool::PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &base::MemoryPressureListener::NotifyMemoryPressure,
-            static_cast<base::MemoryPressureListener::MemoryPressureLevel>(
-                pressure)));
+        base::BindOnce(&base::MemoryPressureListener::NotifyMemoryPressure,
+                       static_cast<base::MemoryPressureLevel>(pressure)));
   }
   return ScopedAStatus::ok();
 }

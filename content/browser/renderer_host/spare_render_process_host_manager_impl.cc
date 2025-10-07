@@ -226,7 +226,7 @@ bool IsCurrentlyUnderMemoryPressure() {
 
   return memory_pressure_monitor->GetCurrentPressureLevel(
              base::MemoryPressureMonitorTag::kSpareRendererHostManager) !=
-         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+         base::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
 // Returns the number of spare hosts that should be created. Ensures the field
@@ -322,14 +322,11 @@ void LogSpareProcessTakeActionUMAs(
 
 // Returns the MemoryPressureLevel threshold that determines when a spare RPH
 // can be created or killed.
-base::MemoryPressureListener::MemoryPressureLevel
-GetMemoryPressureLevelThreshold() {
+base::MemoryPressureLevel GetMemoryPressureLevelThreshold() {
   if (base::FeatureList::IsEnabled(kSpareRPHUseCriticalMemoryPressure)) {
-    return base::MemoryPressureListener::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_CRITICAL;
+    return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
-  return base::MemoryPressureListener::MemoryPressureLevel::
-      MEMORY_PRESSURE_LEVEL_MODERATE;
+  return base::MEMORY_PRESSURE_LEVEL_MODERATE;
 }
 
 }  // namespace
@@ -957,13 +954,12 @@ void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
 }
 
 void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   if (memory_pressure_level < GetMemoryPressureLevelThreshold()) {
     return;
   }
 
-  CHECK_NE(memory_pressure_level,
-           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  CHECK_NE(memory_pressure_level, base::MEMORY_PRESSURE_LEVEL_NONE);
   if (check_memory_pressure_timer_.IsRunning() ||
       !base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
     return;

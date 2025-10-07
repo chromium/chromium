@@ -614,13 +614,13 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   if (const auto* const monitor = base::MemoryPressureMonitor::Get()) {
     switch (monitor->GetCurrentPressureLevel(
         base::MemoryPressureMonitorTag::kTabHoverCardController)) {
-      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
         capture_delay = base::TimeDelta::Max();
         break;
-      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
         capture_delay += kMemoryPressureCaptureDelay;
         break;
-      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      case base::MEMORY_PRESSURE_LEVEL_NONE:
         break;
     }
   }
@@ -672,10 +672,9 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
 
   // Do not capture thumbnails during critical memory pressure.
   const auto* const monitor = base::MemoryPressureMonitor::Get();
-  if (monitor &&
-      monitor->GetCurrentPressureLevel(
-          base::MemoryPressureMonitorTag::kTabHoverCardController) ==
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (monitor && monitor->GetCurrentPressureLevel(
+                     base::MemoryPressureMonitorTag::kTabHoverCardController) ==
+                     base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     // Because we're blocked, we'll show a placeholder instead of nothing or
     // the wrong image.
     if (thumbnail_wait_state_ ==

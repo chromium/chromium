@@ -16,10 +16,9 @@ TEST(EnterpriseMemoryLimitEvaluatorTest, OnProcessMemoryMetricsAvailable) {
 
   memory_pressure::MultiSourceMemoryPressureMonitor monitor;
   bool cb_called = false;
-  monitor.SetDispatchCallbackForTesting(base::BindLambdaForTesting(
-      [&](base::MemoryPressureListener::MemoryPressureLevel level) {
-        EXPECT_EQ(level,
-                  base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  monitor.SetDispatchCallbackForTesting(
+      base::BindLambdaForTesting([&](base::MemoryPressureLevel level) {
+        EXPECT_EQ(level, base::MEMORY_PRESSURE_LEVEL_CRITICAL);
         cb_called = true;
       }));
 
@@ -36,7 +35,7 @@ TEST(EnterpriseMemoryLimitEvaluatorTest, OnProcessMemoryMetricsAvailable) {
   observer->OnProcessMemoryMetricsAvailableForTesting(1023);
   EXPECT_FALSE(cb_called);
   EXPECT_EQ(monitor.aggregator_for_testing()->EvaluateVotesForTesting(),
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+            base::MEMORY_PRESSURE_LEVEL_NONE);
 
   evaluator.StopForTesting();
 }

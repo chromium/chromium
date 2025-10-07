@@ -41,7 +41,8 @@ enum class MemoryPressureMonitorTag {
 // all MemoryPressureListener instances via a callback.
 class BASE_EXPORT MemoryPressureMonitor {
  public:
-  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
+  // TODO(pmonette): Delete this MemoryPressureLevel alias.
+  using MemoryPressureLevel = MemoryPressureLevel;
   using DispatchCallback =
       base::RepeatingCallback<void(MemoryPressureLevel level)>;
 

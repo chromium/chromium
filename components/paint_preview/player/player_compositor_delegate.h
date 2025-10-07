@@ -43,7 +43,7 @@ class DirectoryKey;
 class PlayerCompositorDelegate {
  public:
   enum PressureLevelCount : size_t {
-    kLevels = base::MemoryPressureListener::kMaxValue + 1,
+    kLevels = base::MemoryPressureLevel::kMaxValue + 1,
   };
 
   PlayerCompositorDelegate();
@@ -108,7 +108,7 @@ class PlayerCompositorDelegate {
   // Called when under memory pressure. The default implementation kills the
   // compositor service and client under critical pressure.
   virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level);
 
   gfx::Point GetRootFrameOffsets() const { return root_frame_offsets_; }
 

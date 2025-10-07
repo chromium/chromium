@@ -254,8 +254,7 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   void Prune();
 
   // Called by the memory pressure listener when the memory pressure rises.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level);
 
   // These helper methods are called while |lock_| is held.
   template <class T, class U, class V>

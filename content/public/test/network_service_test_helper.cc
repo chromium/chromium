@@ -806,8 +806,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 
  private:
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
     latest_memory_pressure_level_ = memory_pressure_level;
   }
 
@@ -837,9 +836,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
   std::optional<base::SyncMemoryPressureListener> memory_pressure_listener_;
-  base::MemoryPressureListener::MemoryPressureLevel
-      latest_memory_pressure_level_ =
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel latest_memory_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
   int write_result_;
   std::unique_ptr<disk_cache::Backend> disk_cache_backend_;
 

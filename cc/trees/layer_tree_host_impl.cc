@@ -4088,8 +4088,7 @@ void LayerTreeHostImpl::ActivateStateForImages() {
   tile_manager_.DidActivateSyncTree();
 }
 
-void LayerTreeHostImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+void LayerTreeHostImpl::OnMemoryPressure(base::MemoryPressureLevel level) {
   if (settings_.trees_in_viz_in_viz_process) {
     return;
   }

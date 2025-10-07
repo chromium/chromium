@@ -52,21 +52,21 @@ BASE_FEATURE_PARAM(int,
 constexpr base::TimeDelta kDiskSpaceCheckPeriod = base::Seconds(5);
 }  // namespace
 
-base::MemoryPressureListener::MemoryPressureLevel
+base::MemoryPressureLevel
 SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
     int mac_memory_pressure_level) {
   switch (mac_memory_pressure_level) {
     case DISPATCH_MEMORYPRESSURE_NORMAL:
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+      return base::MEMORY_PRESSURE_LEVEL_NONE;
     case DISPATCH_MEMORYPRESSURE_WARN:
       if (base::FeatureList::IsEnabled(kSkipModerateMemoryPressureLevelMac)) {
-        return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+        return base::MEMORY_PRESSURE_LEVEL_NONE;
       }
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+      return base::MEMORY_PRESSURE_LEVEL_MODERATE;
     case DISPATCH_MEMORYPRESSURE_CRITICAL:
-      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+      return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
-  return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  return base::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
@@ -182,8 +182,7 @@ void SystemMemoryPressureEvaluator::CheckDiskSpace() {
 void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
     int64_t free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::MemoryPressureListener::MemoryPressureLevel new_disk_vote =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel new_disk_vote = base::MEMORY_PRESSURE_LEVEL_NONE;
 
   // The minimum free disk space before dispatching a critical memory pressure
   // signal.
@@ -191,8 +190,7 @@ void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
       base::MiB(kMacCriticalDiskSpacePressureThresholdMB.Get());
 
   if (free_bytes != -1 && base::ByteCount(free_bytes) < threshold) {
-    new_disk_vote =
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    new_disk_vote = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 
   if (disk_pressure_vote_ != new_disk_vote) {
@@ -210,8 +208,7 @@ void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
   // Run the callback that's waiting on memory pressure change notifications.
   // The convention is to not send notifications on memory pressure returning to
   // normal.
-  bool notify = current_vote() !=
-                base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  bool notify = current_vote() != base::MEMORY_PRESSURE_LEVEL_NONE;
   SendCurrentVote(notify);
 
   if (notify) {

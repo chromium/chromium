@@ -9,6 +9,6 @@ interface MemoryPressureController {
 };
 
 interface MemoryPressureObserver {
-  // Levels defined in base::MemoryPressureListener::MemoryPressureLevel
+  // Levels defined in base::MemoryPressureLevel
   MemoryPressureLevelChanged(int32 pressure_level);
 };

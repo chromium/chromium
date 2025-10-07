@@ -183,8 +183,8 @@ void OnDeviceTailModelService::OnModelUpdated(
 }
 
 void OnDeviceTailModelService::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    base::MemoryPressureLevel level) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
 
@@ -204,7 +204,7 @@ void OnDeviceTailModelService::GetPredictionsForInput(
     if (!monitor ||
         monitor->GetCurrentPressureLevel(
             base::MemoryPressureMonitorTag::kOnDeviceTailModelService) !=
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+            base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
       model_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&RunTailModelExecutor, tail_model_executor_.get(),

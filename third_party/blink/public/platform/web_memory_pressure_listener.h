@@ -13,8 +13,7 @@ namespace blink {
 class BLINK_PLATFORM_EXPORT WebMemoryPressureListener {
  public:
   // Called when a memory pressure notification is received.
-  static void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel);
+  static void OnMemoryPressure(base::MemoryPressureLevel);
 
   static void OnPurgeMemory();
 };

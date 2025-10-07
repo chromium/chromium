@@ -230,10 +230,9 @@ void NavigationEntryScreenshotManager::EvictIfOutOfMemoryBudget() {
 }
 
 void NavigationEntryScreenshotManager::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (memory_pressure_level !=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (memory_pressure_level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
   // Using a while loop because `Purge` erases the iterator.

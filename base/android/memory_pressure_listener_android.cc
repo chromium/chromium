@@ -30,8 +30,7 @@ static void JNI_MemoryPressureListener_OnMemoryPressure(
       FROM_HERE,
       base::BindOnce(
           &base::MemoryPressureListener::NotifyMemoryPressure,
-          static_cast<base::MemoryPressureListener::MemoryPressureLevel>(
-              memory_pressure_level)));
+          static_cast<base::MemoryPressureLevel>(memory_pressure_level)));
 }
 
 static void JNI_MemoryPressureListener_OnPreFreeze(JNIEnv* env) {

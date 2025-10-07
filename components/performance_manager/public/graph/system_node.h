@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/observer_list_types.h"
 #include "components/performance_manager/public/graph/node.h"
 
@@ -17,8 +16,6 @@ class SystemNodeObserver;
 // system node. This node has the same lifetime has the graph that owns it.
 class SystemNode : public TypedNode<SystemNode> {
  public:
-  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kSystem; }
 
   SystemNode();

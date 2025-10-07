@@ -36,8 +36,8 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       float page_scale_factor,
       std::unique_ptr<ui::AXTreeUpdate> ax_tree) override;
 
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
-                            memory_pressure_level) override;
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   base::android::ScopedJavaLocalRef<jintArray> GetRootFrameOffsets(JNIEnv* env);
 
