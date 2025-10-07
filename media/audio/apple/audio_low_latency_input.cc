@@ -1179,11 +1179,11 @@ void AUAudioInputStream::HandleError(OSStatus err,
 }
 
 void AUAudioInputStream::SetInputCallbackIsActive(bool enabled) {
-  base::subtle::Release_Store(&input_callback_is_active_, enabled);
+  input_callback_is_active_.store(enabled, std::memory_order_release);
 }
 
 bool AUAudioInputStream::GetInputCallbackIsActive() {
-  return (base::subtle::Acquire_Load(&input_callback_is_active_) != false);
+  return input_callback_is_active_.load(std::memory_order_acquire);
 }
 
 void AUAudioInputStream::CheckInputStartupSuccess() {

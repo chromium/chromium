@@ -37,10 +37,10 @@
 
 #include <AudioUnit/AudioUnit.h>
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -224,7 +224,7 @@ class MEDIA_EXPORT AUAudioInputStream
   // is safe since after stopping the audio unit there is no current callback
   // ongoing and no further callbacks coming.
   bool got_input_callback_ = false;
-  base::subtle::Atomic32 input_callback_is_active_ = false;
+  std::atomic<bool> input_callback_is_active_ = false;
 
   // Timer which triggers CheckInputStartupSuccess() to verify that input
   // callbacks have started as intended after a successful call to Start().

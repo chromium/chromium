@@ -328,11 +328,11 @@ void PCMQueueInAudioInputStream::HandleInputBuffer(
 }
 
 void PCMQueueInAudioInputStream::SetInputCallbackIsActive(bool enabled) {
-  base::subtle::Release_Store(&input_callback_is_active_, enabled);
+  input_callback_is_active_.store(enabled, std::memory_order_release);
 }
 
 bool PCMQueueInAudioInputStream::GetInputCallbackIsActive() {
-  return (base::subtle::Acquire_Load(&input_callback_is_active_) != false);
+  return input_callback_is_active_.load(std::memory_order_acquire);
 }
 
 void PCMQueueInAudioInputStream::CheckInputStartupSuccess() {
