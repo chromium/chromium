@@ -586,7 +586,7 @@ uint16_t HTMLPermissionElement::GetTranslatedMessageID(
       .value_or(message_id);
 }
 
-void HTMLPermissionElement::UpdateText() {
+void HTMLPermissionElement::UpdateAppearance() {
   bool permission_granted;
   PermissionName permission_name;
   wtf_size_t permission_count;
@@ -604,16 +604,10 @@ void HTMLPermissionElement::UpdateText() {
     permission_name = permission_status_map_.begin()->key;
     permission_count = permission_status_map_.size();
   }
-  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
-          GetDocument().GetExecutionContext())) {
-    GetTaskRunner()->PostTask(
-        FROM_HERE,
-        BindOnce(&HTMLPermissionIconElement::SetIcon,
-                 WrapWeakPersistent(permission_internal_icon_.Get()),
-                 permission_count == 1 ? permission_name
-                                       : PermissionName::VIDEO_CAPTURE,
-                 is_precise_location_));
-  }
+
+  UpdateIcon(permission_count == 1 ? permission_name
+                                   : PermissionName::VIDEO_CAPTURE);
+
   AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
 
   uint16_t untranslated_message_id =
@@ -628,10 +622,19 @@ void HTMLPermissionElement::UpdateText() {
       GetLocale().QueryString(translated_message_id));
 }
 
+void HTMLPermissionElement::UpdateIcon(PermissionName permnission) {
+  if (!RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    return;
+  }
+
+  permission_internal_icon_->SetIcon(permnission, is_precise_location_);
+}
+
 void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
   UpdatePermissionStatus();
   PseudoStateChanged(CSSSelector::kPseudoPermissionGranted);
-  UpdateText();
+  UpdateAppearance();
 }
 
 mojom::blink::EmbeddedPermissionRequestDescriptorPtr
@@ -808,7 +811,7 @@ void HTMLPermissionElement::EnsureUnregisterPageEmbeddedPermissionControl() {
 }
 
 void HTMLPermissionElement::LangAttributeChanged() {
-  UpdateText();
+  UpdateAppearance();
   HTMLElement::LangAttributeChanged();
 }
 
@@ -827,7 +830,7 @@ void HTMLPermissionElement::AttributeChanged(
     }
 
     is_precise_location_ = true;
-    UpdateText();
+    UpdateAppearance();
   }
 
   HTMLElement::AttributeChanged(params);

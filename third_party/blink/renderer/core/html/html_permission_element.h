@@ -115,7 +115,9 @@ class CORE_EXPORT HTMLPermissionElement
   void setType(const AtomicString& type);
   uint16_t GetTranslatedMessageID(uint16_t message_id,
                                   const AtomicString& language_string);
-  virtual void UpdateText();
+  virtual void UpdateAppearance();
+
+  virtual void UpdateIcon(mojom::blink::PermissionName);
 
   // Update permission statuses and appearance based on the current statuses.
   virtual void UpdatePermissionStatusAndAppearance();
@@ -133,6 +135,8 @@ class CORE_EXPORT HTMLPermissionElement
   }
 
   bool is_precise_location() const { return is_precise_location_; }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration
@@ -416,8 +420,6 @@ class CORE_EXPORT HTMLPermissionElement
   bool is_registered_in_browser_process() const {
     return is_registered_in_browser_process_;
   }
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   // Checks whether clicking is enabled at the moment. Clicking is disabled if
   // either:

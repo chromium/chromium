@@ -39,7 +39,7 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   void Trace(Visitor*) const override;
 
   // HTMLPermissionElement:
-  void UpdateText() override;
+  void UpdateAppearance() override;
   void UpdatePermissionStatusAndAppearance() override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;

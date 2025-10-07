@@ -38,7 +38,9 @@ void HTMLGeolocationElement::Trace(Visitor* visitor) const {
   HTMLPermissionElement::Trace(visitor);
 }
 
-void HTMLGeolocationElement::UpdateText() {
+void HTMLGeolocationElement::UpdateAppearance() {
+  UpdateIcon(mojom::blink::PermissionName::GEOLOCATION);
+
   // TODO(crbug.com/435376388): There will be more strings related to location
   // data querying, for example: Sending location.
   uint16_t message_id = GetTranslatedMessageID(

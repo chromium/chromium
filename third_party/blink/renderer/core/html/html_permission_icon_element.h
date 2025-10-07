@@ -23,6 +23,8 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
                bool is_precise_location);
 
  private:
+  void SetIconImpl(mojom::blink::PermissionName permission_type,
+                   bool is_precise_location);
   // blink::Element overrides.
   void AdjustStyle(ComputedStyleBuilder& builder) override;
 

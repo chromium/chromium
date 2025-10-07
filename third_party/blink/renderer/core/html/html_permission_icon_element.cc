@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 
+#include "base/functional/bind.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_utils.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -28,6 +30,17 @@ HTMLPermissionIconElement::HTMLPermissionIconElement(Document& document)
 
 void HTMLPermissionIconElement::SetIcon(PermissionName permission_type,
                                         bool is_precise_location) {
+  // We need `PostTask` here because creating a new element (the svg instead of
+  // setInnerHtml) starts dispatching events and it hits a DCHECK.
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE, BindOnce(&HTMLPermissionIconElement::SetIconImpl,
+                                     WrapWeakPersistent(this), permission_type,
+                                     is_precise_location));
+}
+
+void HTMLPermissionIconElement::SetIconImpl(PermissionName permission_type,
+                                            bool is_precise_location) {
   if (is_icon_set_) {
     return;
   }
