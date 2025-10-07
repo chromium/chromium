@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.safety_hub;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 
 import android.content.Context;
+import android.text.BidiFormatter;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -48,9 +49,9 @@ public class SafetyHubNoCompromisedPasswordsModuleHelper implements SafetyHubMod
     }
 
     @Override
-    public String getSummary() {
+    public CharSequence getSummary() {
         if (isAccountModule()) {
-            return mAccount
+            return BidiFormatter.getInstance().unicodeWrap(mAccount)
                     + "\n"
                     + mContext.getString(R.string.safety_hub_no_compromised_passwords_summary);
         }

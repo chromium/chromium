@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleStat
 interface SafetyHubModuleHelper {
     String getTitle();
 
-    @Nullable String getSummary();
+    @Nullable CharSequence getSummary();
 
     @Nullable String getPrimaryButtonText();
 
