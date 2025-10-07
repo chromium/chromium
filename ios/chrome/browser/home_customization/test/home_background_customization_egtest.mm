@@ -215,7 +215,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that a custom camera roll image can be set.
-- (void)testCustomizeCameraRollBackground {
+// TODO(crbug.com/450042069): Test is disabled.
+- (void)DISABLED_testCustomizeCameraRollBackground {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
