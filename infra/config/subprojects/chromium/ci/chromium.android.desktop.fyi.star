@@ -88,6 +88,7 @@ ci.builder(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.chrome_public_test_apk.filter",
+                    "--skia-gold-consider-unsupported",
                 ],
                 ci_only = True,
             ),
