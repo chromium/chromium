@@ -364,6 +364,10 @@
     display: none;
   }
 
+  :host(:not([enable-lens-aim-suggestions])) #composebox::part(context-entrypoint) {
+    display: none;
+  }
+
   :host([enable-lens-aim-suggestions]) #composebox::part(dropdown) {
     background-color: var(--search-background-color);
     /* Stack the dropdown on top of the other elements in the composebox. */
