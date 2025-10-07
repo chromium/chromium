@@ -138,7 +138,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, General) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('General');");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Layouts) {
+// TODO(https://crbug.com/449760234): Times out on linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Layouts DISABLED_Layouts
+#else
+#define MAYBE_Layouts Layouts
+#endif
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, MAYBE_Layouts) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('Layouts');");
 }
 
