@@ -36,7 +36,6 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -940,8 +939,10 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
     FrameResource* hardware_resource) {
   CHECK(!hardware_resource->is_software());
   viz::SharedImageFormat resource_format = hardware_resource->format();
-  size_t bytes_per_row = viz::ResourceSizes::CheckedWidthInBytes<size_t>(
-      video_frame->coded_size().width(), resource_format);
+  size_t bytes_per_row =
+      viz::SharedMemoryRowSizeForSharedImageFormat(
+          resource_format, 0, video_frame->coded_size().width())
+          .value();
   const int stride = video_frame->stride(VideoFrame::Plane::kARGB);
   const bool has_compatible_stride =
       stride > 0 && static_cast<size_t>(stride) == bytes_per_row;
