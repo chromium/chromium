@@ -22,7 +22,8 @@
 
 #actions-focus-border:focus-within,
 /* Keep outline when chip receives active state after being focused. */
-#actions-focus-border:focus-within:has(#action:active) {
+#actions-focus-border:focus-within:has(#action:active),
+#actions-focus-border:has(#action.selected) {
   outline: 2px solid var(--color-searchbox-results-action-chip-focus-outline);
   border-radius: 10px;
   margin-inline-start: -2px;
@@ -55,6 +56,12 @@
   height: 38px;
   padding-top: 3px;
   padding-bottom: 3px;
+}
+
+:host([has-action][is-top-chrome-searchbox_]) .container {
+  height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 :host(:not([is-lens-searchbox_])) .container:not(.actions) {
@@ -233,7 +240,7 @@
   display: inline-flex;
 }
 
-.selected {
+.selected:not(#action) {
   box-shadow: inset 0 0 0 2px
       var(--color-searchbox-results-icon-focused-outline);
 }
