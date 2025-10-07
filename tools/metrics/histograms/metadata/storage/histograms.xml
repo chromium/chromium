@@ -526,6 +526,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IndexedDB.NumTransactionsInIDBDatabaseOnTransactionCreated.10kTransactions"
+    units="transactions" expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of transactions in a blink::IDBDatabase when a blink::IDBTransaction
+    is created. Recorded every time a blink::IDBTransaction is created and the
+    number of transactions in the blink::IDBDatabase is greater than 10k. Will
+    be used to diagnose crbug.com/381086791.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.QuotaCheckTime2.{QuotaCheckResult}" units="ms"
     expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
