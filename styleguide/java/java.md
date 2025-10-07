@@ -206,12 +206,18 @@ public class ValueClass {
 
 ### Enums
 
-Banned. Use [`@IntDef`](#intdefs) instead.
+Banned. Use [`@IntDef`](#intdefs) / `@LongDef` / `@StringDef` instead.
 
 **Rationale:**
 
-Java enums generate a lot of bytecode. Use constants where possible. When a
-custom type hierarchy is required, use explicit classes with inheritance.
+Java enums generate a lot of bytecode and some of their APIs rely on reflection
+under-the-hood. They also implement `Serializable`, which can lead to the
+inability to change them.
+
+* Use `@IntDef` where possible.
+* When a custom type is required, use explicit classes with inheritance.
+* When serialization is required, use explicit serialization / deserialization
+  logic.
 
 ### Optional
 
