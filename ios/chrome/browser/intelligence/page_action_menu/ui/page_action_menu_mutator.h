@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class PageActionMenuFeature;
+
 // Page Menu Action Feature types.
 typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 
@@ -36,6 +38,12 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 
 // Returns the current site domain for permission context.
 - (NSString*)currentSiteDomain;
+
+// Revokes the specified permission for the current site.
+- (void)revokePermission:(PageActionMenuFeatureType)featureType;
+
+// Returns array of currently active features to display.
+- (NSArray<PageActionMenuFeature*>*)activeFeatures;
 
 @end
 

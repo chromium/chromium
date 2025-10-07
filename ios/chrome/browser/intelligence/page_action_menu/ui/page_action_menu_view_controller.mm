@@ -95,6 +95,9 @@ const CGFloat kFeatureRowHorizontalPadding = 16;
 // The vertical padding within feature rows.
 const CGFloat kFeatureRowVerticalPadding = 12;
 
+// The animation duration for permissions feature row change.
+const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
+
 }  // namespace
 
 @interface PageActionMenuViewController ()
@@ -116,6 +119,9 @@ const CGFloat kFeatureRowVerticalPadding = 12;
 
   // The entry point for the Lens overlay.
   UIButton* _lensButton;
+
+  // Stack view containing dynamically generated feature rows.
+  UIStackView* _featureRowsStackView;
 
   // Horizontal stack view containing the side-by-side small buttons.
   UIStackView* _smallButtonsStackView;
@@ -196,6 +202,19 @@ const CGFloat kFeatureRowVerticalPadding = 12;
 
 - (void)pageLoadStatusChanged {
   [self updateButton:_BWGButton enabled:[self.mutator isGeminiAvailable]];
+}
+
+- (void)updateFeatureRowsAvailability {
+  CHECK(IsProactiveSuggestionsFrameworkEnabled());
+  [self rebuildFeatureRows];
+
+  // Animate the layout change.
+  [self.view setNeedsLayout];
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kPermissionsFeatureAnimationDuration
+                   animations:^{
+                     [weakSelf.view layoutIfNeeded];
+                   }];
 }
 
 #pragma mark - Private
@@ -625,76 +644,6 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   button.enabled = enabled;
 }
 
-// Generates array of active features to display as rows in the Page Action
-// Menu.
-- (NSArray<PageActionMenuFeature*>*)generateActiveFeatures {
-  NSMutableArray<PageActionMenuFeature*>* features =
-      [[NSMutableArray alloc] init];
-
-  // Translate feature.
-  if ([self.mutator isFeatureAvailable:PageActionMenuTranslate]) {
-    PageActionMenuFeature* translateFeature = [[PageActionMenuFeature alloc]
-        initWithFeatureType:PageActionMenuTranslate
-                      title:l10n_util::GetNSString(
-                                IDS_IOS_AI_HUB_TRANSLATE_LABEL)
-                       icon:DefaultSymbolWithPointSize(kTranslateSymbol,
-                                                       kFeatureRowIconSize)
-                 actionType:PageActionMenuButtonAction];
-    translateFeature.subtitle = [self.mutator translateLanguagePair];
-    translateFeature.actionText = l10n_util::GetNSString(
-        IDS_IOS_AI_HUB_TRANSLATE_SHOW_ORIGINAL_BUTTON_LABEL);
-    [features addObject:translateFeature];
-  }
-
-  // Popup blocker feature.
-  if ([self.mutator isFeatureAvailable:PageActionMenuPopupBlocker]) {
-    PageActionMenuFeature* popupFeature = [[PageActionMenuFeature alloc]
-        initWithFeatureType:PageActionMenuPopupBlocker
-                      title:l10n_util::GetNSString(
-                                IDS_IOS_AI_HUB_POPUP_BLOCKER_LABEL)
-                       icon:CustomSymbolWithPointSize(kPopupBadgeMinusSymbol,
-                                                      kFeatureRowIconSize)
-                 actionType:PageActionMenuButtonAction];
-
-    NSInteger blockedCount = [self.mutator blockedPopupCount];
-    NSString* countString =
-        [NSString stringWithFormat:@"%ld", (long)blockedCount];
-    popupFeature.subtitle =
-        l10n_util::GetNSStringF(IDS_IOS_AI_HUB_POPUP_BLOCKER_COUNT_SUBTITLE,
-                                base::SysNSStringToUTF16(countString));
-    popupFeature.actionText =
-        l10n_util::GetNSString(IDS_IOS_AI_HUB_POPUP_ALWAYS_SHOW_BUTTON_LABEL);
-    [features addObject:popupFeature];
-  }
-
-  // Camera permission feature.
-  if ([self.mutator isFeatureAvailable:PageActionMenuCameraPermission]) {
-    PageActionMenuFeature* cameraFeature = [[PageActionMenuFeature alloc]
-        initWithFeatureType:PageActionMenuCameraPermission
-                      title:l10n_util::GetNSString(
-                                IDS_IOS_AI_HUB_CAMERA_PERMISSION_LABEL)
-                       icon:CustomSymbolWithPointSize(kCameraFillSymbol,
-                                                      kFeatureRowIconSize)
-                 actionType:PageActionMenuToggleAction];
-    cameraFeature.toggleState = YES;
-    [features addObject:cameraFeature];
-  }
-
-  // Microphone permission feature.
-  if ([self.mutator isFeatureAvailable:PageActionMenuMicrophonePermission]) {
-    PageActionMenuFeature* micFeature = [[PageActionMenuFeature alloc]
-        initWithFeatureType:PageActionMenuMicrophonePermission
-                      title:l10n_util::GetNSString(
-                                IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_LABEL)
-                       icon:DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
-                                                       kFeatureRowIconSize)
-                 actionType:PageActionMenuToggleAction];
-    micFeature.toggleState = YES;
-    [features addObject:micFeature];
-  }
-
-  return features;
-}
 
 // Sets up blurred background effect for the Page Action Menu.
 - (void)setupBlurredBackground {
@@ -730,31 +679,16 @@ const CGFloat kFeatureRowVerticalPadding = 12;
                               afterView:originalReaderModeSection];
   }
 
-  // Generate feature rows based on availability.
+  // Create dedicated feature rows container.
   if (IsProactiveSuggestionsFrameworkEnabled()) {
-    NSArray<PageActionMenuFeature*>* activeFeatures =
-        [self generateActiveFeatures];
+    _featureRowsStackView = [[UIStackView alloc] init];
+    _featureRowsStackView.axis = UILayoutConstraintAxisVertical;
+    _featureRowsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentStackView addArrangedSubview:_featureRowsStackView];
 
-    UIView* lastFeatureView = nil;
-    for (PageActionMenuFeature* feature in activeFeatures) {
-      UIView* featureRowSection = [self createFeatureRowWithData:feature];
-      [_contentStackView addArrangedSubview:featureRowSection];
-      [_contentStackView setCustomSpacing:kStackViewMargins
-                                afterView:featureRowSection];
-      lastFeatureView = featureRowSection;
-    }
-
-    // Add permission explanation if permissions features are shown.
-    if ([self hasPermissionFeatures:activeFeatures]) {
-      UILabel* permissionExplanation = [self createPermissionExplanationLabel];
-      [_contentStackView addArrangedSubview:permissionExplanation];
-      lastFeatureView = permissionExplanation;
-    }
-
-    if (lastFeatureView) {
-      [self addDividerAfterView:lastFeatureView];
-    }
+    [self rebuildFeatureRows];
   }
+
   // Horizontal stack view for the 2 side-by-side buttons.
   _smallButtonsStackView = [self createSmallButtonsStackView];
   [_contentStackView addArrangedSubview:_smallButtonsStackView];
@@ -805,6 +739,62 @@ const CGFloat kFeatureRowVerticalPadding = 12;
     [_smallButtonsStackView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
+}
+
+// Rebuilds feature rows based on current availability state.
+- (void)rebuildFeatureRows {
+  CHECK(IsProactiveSuggestionsFrameworkEnabled());
+
+  // Clear existing feature rows.
+  for (UIView* view in _featureRowsStackView.arrangedSubviews) {
+    [_featureRowsStackView removeArrangedSubview:view];
+    [view removeFromSuperview];
+  }
+
+  // Get active features from mediator.
+  NSArray<PageActionMenuFeature*>* activeFeatures =
+      [self.mutator activeFeatures];
+
+  UIView* lastView = nil;
+
+  for (PageActionMenuFeature* feature in activeFeatures) {
+    UIView* featureRow = [self createFeatureRowWithData:feature];
+    [_featureRowsStackView addArrangedSubview:featureRow];
+    [_featureRowsStackView setCustomSpacing:kStackViewMargins
+                                  afterView:featureRow];
+    lastView = featureRow;
+  }
+
+  // Add permission explanation if needed.
+  if ([self hasPermissionFeatures:activeFeatures]) {
+    UILabel* explanation = [self createPermissionExplanationLabel];
+    [_featureRowsStackView addArrangedSubview:explanation];
+    lastView = explanation;
+  }
+
+  if (lastView) {
+    UIView* divider = [self createDivider];
+    [_featureRowsStackView addArrangedSubview:divider];
+    [_featureRowsStackView setCustomSpacing:kStackViewMargins
+                                  afterView:lastView];
+    [_featureRowsStackView setCustomSpacing:kStackViewMargins
+                                  afterView:divider];
+  }
+
+  if (_featureRowsStackView.arrangedSubviews.count > 0) {
+    [_contentStackView setCustomSpacing:kStackViewMargins
+                              afterView:_featureRowsStackView];
+  }
+}
+
+// Adds horizontal divider line with spacing after the last view in the content
+// stack.
+- (UIView*)createDivider {
+  UIView* divider = [[UIView alloc] init];
+  divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  divider.translatesAutoresizingMaskIntoConstraints = NO;
+  [divider.heightAnchor constraintEqualToConstant:1].active = YES;
+  return divider;
 }
 
 // Registers for trait collection changes to handle device orientation updates.
@@ -950,23 +940,6 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   return NO;
 }
 
-// Adds horizontal divider line with spacing after the last view in the content
-// stack.
-- (void)addDividerAfterView:(UIView*)view {
-  if (!view) {
-    return;
-  }
-
-  UIView* divider = [[UIView alloc] init];
-  divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  divider.translatesAutoresizingMaskIntoConstraints = NO;
-  [divider.heightAnchor constraintEqualToConstant:1].active = YES;
-  [_contentStackView addArrangedSubview:divider];
-
-  // Set spacing before and after divider.
-  [_contentStackView setCustomSpacing:kStackViewMargins afterView:view];
-  [_contentStackView setCustomSpacing:kStackViewMargins afterView:divider];
-}
 
 // Handles toggle switch changes for permission-based features.
 - (void)handleFeatureToggle:(UISwitch*)toggleSwitch {
@@ -974,16 +947,7 @@ const CGFloat kFeatureRowVerticalPadding = 12;
   PageActionMenuFeatureType featureType =
       (PageActionMenuFeatureType)toggleSwitch.tag;
 
-  switch (featureType) {
-    case PageActionMenuCameraPermission:
-      // TODO(crbug.com/447649727): Handle camera permission toggle.
-      break;
-    case PageActionMenuMicrophonePermission:
-      // TODO(crbug.com/447649727): Handle microphone permission toggle.
-      break;
-    default:
-      break;
-  }
+  [self.mutator revokePermission:featureType];
 }
 
 // Handles button taps for action-based features like translate and popup

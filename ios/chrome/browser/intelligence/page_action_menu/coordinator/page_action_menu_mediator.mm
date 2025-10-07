@@ -10,17 +10,28 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
+#import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// The size of icons displayed in feature rows.
+const CGFloat kFeatureRowIconSize = 20;
+
+}  // namespace
 
 @interface PageActionMenuMediator () <CRWWebStateObserver>
 @end
@@ -169,6 +180,105 @@
   }
   GURL url = _webState->GetLastCommittedURL();
   return base::SysUTF8ToNSString(url.GetHost());
+}
+
+- (void)revokePermission:(PageActionMenuFeatureType)featureType {
+  if (!_webState) {
+    return;
+  }
+
+  web::Permission permission;
+  switch (featureType) {
+    case PageActionMenuCameraPermission:
+      permission = web::PermissionCamera;
+      break;
+    case PageActionMenuMicrophonePermission:
+      permission = web::PermissionMicrophone;
+      break;
+    case PageActionMenuTranslate:
+    case PageActionMenuPopupBlocker:
+      CHECK(false)
+          << "revokePermission called with non-permission feature type: "
+          << featureType;
+  }
+
+  _webState->SetStateForPermission(web::PermissionStateBlocked, permission);
+
+  // Post task to ensure WebState has processed the permission change.
+  __weak PageActionMenuMediator* weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf.consumer updateFeatureRowsAvailability];
+      }));
+}
+
+- (NSArray<PageActionMenuFeature*>*)activeFeatures {
+  NSMutableArray<PageActionMenuFeature*>* features =
+      [[NSMutableArray alloc] init];
+
+  // Translate feature.
+  if ([self isFeatureAvailable:PageActionMenuTranslate]) {
+    PageActionMenuFeature* translateFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuTranslate
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_TRANSLATE_LABEL)
+                       icon:DefaultSymbolWithPointSize(kTranslateSymbol,
+                                                       kFeatureRowIconSize)
+                 actionType:PageActionMenuButtonAction];
+    translateFeature.subtitle = [self translateLanguagePair];
+    translateFeature.actionText = l10n_util::GetNSString(
+        IDS_IOS_AI_HUB_TRANSLATE_SHOW_ORIGINAL_BUTTON_LABEL);
+    [features addObject:translateFeature];
+  }
+
+  // Popup blocker feature.
+  if ([self isFeatureAvailable:PageActionMenuPopupBlocker]) {
+    PageActionMenuFeature* popupFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuPopupBlocker
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_POPUP_BLOCKER_LABEL)
+                       icon:CustomSymbolWithPointSize(kPopupBadgeMinusSymbol,
+                                                      kFeatureRowIconSize)
+                 actionType:PageActionMenuButtonAction];
+
+    NSInteger blockedCount = [self blockedPopupCount];
+    NSString* countString =
+        [NSString stringWithFormat:@"%ld", (long)blockedCount];
+    popupFeature.subtitle =
+        l10n_util::GetNSStringF(IDS_IOS_AI_HUB_POPUP_BLOCKER_COUNT_SUBTITLE,
+                                base::SysNSStringToUTF16(countString));
+    popupFeature.actionText =
+        l10n_util::GetNSString(IDS_IOS_AI_HUB_POPUP_ALWAYS_SHOW_BUTTON_LABEL);
+    [features addObject:popupFeature];
+  }
+
+  // Camera permission feature.
+  if ([self isFeatureAvailable:PageActionMenuCameraPermission]) {
+    PageActionMenuFeature* cameraFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuCameraPermission
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_CAMERA_PERMISSION_LABEL)
+                       icon:CustomSymbolWithPointSize(kCameraFillSymbol,
+                                                      kFeatureRowIconSize)
+                 actionType:PageActionMenuToggleAction];
+    cameraFeature.toggleState = YES;
+    [features addObject:cameraFeature];
+  }
+
+  // Microphone permission feature.
+  if ([self isFeatureAvailable:PageActionMenuMicrophonePermission]) {
+    PageActionMenuFeature* micFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuMicrophonePermission
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_LABEL)
+                       icon:DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
+                                                       kFeatureRowIconSize)
+                 actionType:PageActionMenuToggleAction];
+    micFeature.toggleState = YES;
+    [features addObject:micFeature];
+  }
+
+  return features;
 }
 
 #pragma mark - CRWWebStateObserver
