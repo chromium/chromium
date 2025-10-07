@@ -5,16 +5,23 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_BAGUETTE_DOWNLOAD_H_
 #define CHROME_BROWSER_ASH_CROSTINI_BAGUETTE_DOWNLOAD_H_
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_forward.h"
-#include "services/network/public/cpp/mutable_network_traffic_annotation_tag_mojom_traits.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "url/gurl.h"
 
 class PrefService;
 class Profile;
+
+namespace net {
+struct NetworkTrafficAnnotationTag;
+}  // namespace net
+
 namespace network {
 class SimpleURLLoader;
 }  // namespace network
