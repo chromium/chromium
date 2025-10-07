@@ -272,6 +272,10 @@ if (enable_pdf) {
         "pdfium/pdfium_ink_writer.h",
       ]
 
+      # TODO(crbug.com/450044203): Remove when all usage in this build target
+      # have been migrated.
+      configs += [ "//third_party/ink:allow_deprecated" ]
+
       public_deps += [ "//third_party/ink" ]
     }
 
@@ -564,6 +568,10 @@ if (enable_pdf) {
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",
       ]
+
+      # TODO(crbug.com/450044203): Remove when all usage in this build target
+      # have been migrated.
+      configs += [ "//third_party/ink:allow_deprecated" ]
 
       deps += [
         "//third_party/ink",

@@ -6,6 +6,11 @@ config("public_config") {
   include_dirs = [ "//third_party/ink/src" ]
 }
 
+# TODO(crbug.com/450044203): Remove when there are no references remaining.
+config("allow_deprecated") {
+  cflags = [ "-Wno-deprecated-declarations" ]
+}
+
 source_set("ink") {
   sources = [
     "src/ink/brush/brush.cc",
@@ -175,6 +180,10 @@ source_set("ink") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
+  # TODO(crbug.com/450044203): Remove when Ink stops using `opacity_multiplier`
+  # internally.
+  configs += [ ":allow_deprecated" ]
+
   public_deps = [
     "//skia",
     "//third_party/abseil-cpp:absl",
@@ -196,6 +205,10 @@ source_set("brush_test_support") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  # TODO(crbug.com/450044203): Remove when all usage in this build target have
+  # been migrated.
+  configs += [ "//third_party/ink:allow_deprecated" ]
 
   public_deps = [
     ":ink",
