@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
@@ -380,6 +381,8 @@ class VIEWS_EXPORT Textfield : public View,
   // TextfieldModel::Delegate overrides:
   void OnCompositionTextConfirmedOrCleared() override;
   void OnTextChanged() override;
+  void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                            const std::u16string_view& text) override;
 
   // ContextMenuController overrides:
   void ShowContextMenuForViewImpl(

@@ -48,6 +48,9 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   void OnBeforeUserAction(Textfield* sender) override;
   void OnAfterUserAction(Textfield* sender) override;
   void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_type) override;
+  bool HandleWriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                                  const std::u16string_view& text) override;
+  bool AllowStartDragEvent(const std::u16string_view& selected_text) override;
 
   void InitTextfield(int count = 1);
   ui::MenuModel* GetContextMenuModel();
@@ -178,6 +181,8 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   ui::ClipboardBuffer copied_to_clipboard_ = ui::ClipboardBuffer::kMaxValue;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   raw_ptr<View> event_target_ = nullptr;
+  bool handle_write_to_clipboard_ = false;
+  bool allow_drag_event_ = true;
 };
 
 }  // namespace test

@@ -16,6 +16,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
@@ -57,6 +58,10 @@ class VIEWS_EXPORT TextfieldModel {
 
     // Called any time that the text property is modified in TextfieldModel
     virtual void OnTextChanged() {}
+
+    // Writes `text` to `clipboard_buffer`, if permitted by the implementation.
+    virtual void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                                      const std::u16string_view& text) {}
 
    protected:
     virtual ~Delegate();
