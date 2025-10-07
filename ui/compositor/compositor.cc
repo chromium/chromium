@@ -890,6 +890,10 @@ void Compositor::NotifyCompositorMetricsTrackerResults(
     ReportMetricsForTracker(pair.first, std::move(pair.second));
 }
 
+void Compositor::DidReceiveCompositorFrameAckDeprecatedForCompositor() {
+  observer_list_.Notify(&CompositorObserver::OnCompositingAckDeprecated, this);
+}
+
 void Compositor::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& frame_timing_details) {

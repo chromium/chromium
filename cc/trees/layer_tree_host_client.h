@@ -206,6 +206,15 @@ class CC_EXPORT LayerTreeHostClient {
   // display overlay.
   virtual std::string GetPausedDebuggerLocalizedMessage();
 
+  // This is an inaccurate signal that has been used to represent that content
+  // was displayed. This actually maps to the removal of backpressure by the
+  // GPU. This can be signalled when the GPU attempts to Draw; when a submitted
+  // frame, that has not drawn, is being replaced by a newer one; or merged with
+  // future OnBeginFrames.
+  //
+  // To determine when presentation occurred see `DidPresentCompositorFrame`.
+  virtual void DidReceiveCompositorFrameAckDeprecatedForCompositor() {}
+
  protected:
   virtual ~LayerTreeHostClient() = default;
 };
