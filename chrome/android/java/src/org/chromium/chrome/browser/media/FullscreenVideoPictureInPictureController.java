@@ -657,12 +657,6 @@ public class FullscreenVideoPictureInPictureController {
         }
 
         @Override
-        public void webContentsWillSwap(Tab tab) {
-            dismissActivityIfNeeded(mActivity, MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN);
-            cleanupWebContentsObserver();
-        }
-
-        @Override
         public void onContentChanged(Tab tab) {
             if (tab != mTab) return;
             // While webContentsWillSwap() probably did this, doesn't hurt to do it again.

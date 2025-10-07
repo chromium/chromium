@@ -233,15 +233,6 @@ public class EdgeToEdgeControllerImpl
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
-                    public void onWebContentsSwapped(
-                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                        drawToEdge(
-                                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
-                                /* changedWindowState= */ false);
-                        updateWebContentsObserver(tab);
-                    }
-
-                    @Override
                     public void onContentChanged(Tab tab) {
                         assert tab.getWebContents() != null
                                 : "onContentChanged called on tab w/o WebContents: "

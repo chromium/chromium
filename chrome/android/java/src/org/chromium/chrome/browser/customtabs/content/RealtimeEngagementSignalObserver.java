@@ -157,12 +157,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     }
 
     @Override
-    public void webContentsWillSwap(Tab tab) {
-        collectUserInteraction(tab);
-        removeWebContentsDependencies(tab.getWebContents());
-    }
-
-    @Override
     public void onHidden(Tab tab, @TabHidingType int reason) {
         if (reason == TabHidingType.CHANGED_TABS) {
             ScrollState.from(tab).resetMaxScrollPercentage();

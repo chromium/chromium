@@ -132,16 +132,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                     }
 
                     @Override
-                    public void onWebContentsSwapped(
-                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                        if (!didStartLoad) return;
-
-                        // As we may have missed the main frame commit notification for the
-                        // swapped web contents, schedule the enabling of fullscreen now.
-                        scheduleEnableFullscreenLoadDelayIfNecessary();
-                    }
-
-                    @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
                         if (!ChromeFeatureList.sControlsVisibilityFromNavigations.isEnabled()) {

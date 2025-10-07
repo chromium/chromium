@@ -72,11 +72,6 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
     }
 
     @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-        updatePopupControllerObserving(tab);
-    }
-
-    @Override
     public void onContentChanged(Tab tab) {
         updatePopupControllerObserving(tab);
     }

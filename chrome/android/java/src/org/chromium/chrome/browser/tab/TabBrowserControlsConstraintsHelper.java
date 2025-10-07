@@ -170,12 +170,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                             updateEnabledState();
                         }
                     }
-
-                    @Override
-                    public void onWebContentsSwapped(
-                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                        updateAfterRendererProcessSwitch(tab, true);
-                    }
                 });
         if (mTab.isInitialized() && !mTab.isDetached()) updateVisibilityDelegate();
     }

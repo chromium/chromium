@@ -105,11 +105,6 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     }
 
     @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-        updatePointers();
-    }
-
-    @Override
     public void onContentChanged(Tab tab) {
         updatePointers();
     }

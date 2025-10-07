@@ -94,18 +94,6 @@ public class LoadProgressMediator {
                             }
 
                             @Override
-                            public void onWebContentsSwapped(
-                                    Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                                // If loading both started and finished before we swapped in the
-                                // WebContents, we won't get any load progress signals. Otherwise,
-                                // we should receive at least one real signal so we don't need to
-                                // simulate them.
-                                if (didStartLoad && didFinishLoad && !mPreventUpdates) {
-                                    mLoadProgressSimulator.start();
-                                }
-                            }
-
-                            @Override
                             public void onCrash(Tab tab) {
                                 finishLoadProgress(false);
                             }

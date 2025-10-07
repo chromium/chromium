@@ -117,17 +117,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void removesGestureStateListenerWhenWebContentsWillSwap() {
-        initializeTabForTest();
-        GestureStateListener listener = captureGestureStateListener();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.webContentsWillSwap(env.tabProvider.getTab());
-        }
-        verify(mGestureListenerManagerImpl).removeListener(listener);
-    }
-
-    @Test
     public void removesGestureStateListenerWhenTabDetached() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener();
@@ -637,7 +626,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -659,7 +647,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -682,7 +669,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -701,7 +687,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         Tab tab = mock(Tab.class);
         doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
@@ -719,7 +704,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         Tab tab = mock(Tab.class);
         doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);

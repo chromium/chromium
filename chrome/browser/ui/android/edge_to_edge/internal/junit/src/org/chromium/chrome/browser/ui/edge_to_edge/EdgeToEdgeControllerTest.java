@@ -8,7 +8,6 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -546,32 +545,6 @@ public class EdgeToEdgeControllerTest {
         assertToEdgeExpectations();
     }
 
-    /** Test that we update WebContentsObservers when a Tab changes WebContents. */
-    @Test
-    public void onTabSwitched_onWebContentsSwapped() {
-        // Standard setup of a Web Tab ToEdge
-        when(mTab.isNativePage()).thenReturn(false);
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-
-        // Grab the WebContentsObserver, and setup.
-        WebContentsObserver initialWebContentsObserver =
-                mEdgeToEdgeControllerImpl.getWebContentsObserver();
-        when(mTab.getWebContents()).thenReturn(mWebContents);
-        doNothing().when(mTab).addObserver(mTabObserverArgumentCaptor.capture());
-
-        // When onTabSwitched is called, we capture the TabObserver created for the Tab.
-        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
-        // Simulate the tab getting new WebContents.
-        mTabObserverArgumentCaptor.getValue().onWebContentsSwapped(mTab, true, true);
-        assertNotNull(initialWebContentsObserver);
-        assertNotNull(mEdgeToEdgeControllerImpl.getWebContentsObserver());
-        assertNotEquals(
-                "onWebContentsSwapped not handling WebContentsObservers correctly",
-                initialWebContentsObserver,
-                mEdgeToEdgeControllerImpl.getWebContentsObserver());
-    }
-
     @Test
     public void onTabSwitched_onContentChanged() {
         // Start with a Tab with no WebContents
@@ -591,12 +564,6 @@ public class EdgeToEdgeControllerTest {
         tabObserver.onContentChanged(mTab);
         WebContentsObserver firstObserver = mEdgeToEdgeControllerImpl.getWebContentsObserver();
         assertNotNull(firstObserver);
-
-        // Make sure we can still swap to another WebContents.
-        tabObserver.onWebContentsSwapped(mTab, true, true);
-        WebContentsObserver secondObserver = mEdgeToEdgeControllerImpl.getWebContentsObserver();
-        assertNotNull(secondObserver);
-        assertNotEquals(firstObserver, secondObserver);
     }
 
     @Test

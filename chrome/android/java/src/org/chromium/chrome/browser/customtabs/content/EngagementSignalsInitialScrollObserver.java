@@ -70,11 +70,6 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
     }
 
     @Override
-    public void webContentsWillSwap(Tab tab) {
-        cleanUpListeners();
-    }
-
-    @Override
     public void onHidden(Tab tab, @TabHidingType int reason) {
         if (reason == TabHidingType.CHANGED_TABS) {
             mHadScrollDown = false;

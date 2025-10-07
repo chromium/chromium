@@ -2353,16 +2353,6 @@ public class ReadAloudControllerUnitTest {
   }
 
   @Test
-  public void testTranslationListenersUnregisteredBeforeWebContentsSwap() {
-    // Listener should be registered already because onTabSelected() is called when
-    // TabModelTabObserver is created.
-    assertEquals(1, mFakeTranslateBridge.getObserverCount());
-
-    mController.getTabModelTabObserverforTests().webContentsWillSwap(mTab);
-    assertEquals(0, mFakeTranslateBridge.getObserverCount());
-  }
-
-  @Test
   public void testTranslationListenerRegisteredOnPageLoad() {
     // Listener should be registered already because onTabSelected() is called when
     // TabModelTabObserver is created.

@@ -1390,16 +1390,6 @@ public class ToolbarManager
                     }
 
                     @Override
-                    public void onWebContentsSwapped(
-                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                        onBackPressStateChanged();
-                        if (!didStartLoad) return;
-                        mLocationBarModel.notifyWebContentsSwapped();
-                        mLocationBarModel.notifyUrlChanged(false);
-                        mLocationBarModel.notifySecurityStateChanged();
-                    }
-
-                    @Override
                     public void onLoadUrl(
                             Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
                         onBackPressStateChanged();

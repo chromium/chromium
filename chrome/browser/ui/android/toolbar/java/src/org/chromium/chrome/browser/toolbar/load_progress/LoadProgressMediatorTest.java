@@ -15,7 +15,6 @@ import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +31,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
@@ -233,36 +231,6 @@ public class LoadProgressMediatorTest {
                 LoadProgressMediator.MINIMUM_LOAD_PROGRESS,
                 mModel.get(LoadProgressProperties.PROGRESS),
                 MathUtils.EPSILON);
-    }
-
-    @Test
-    @SmallTest
-    public void testSwapWebContents() {
-        initMediator();
-        assertEquals(
-                CompletionState.FINISHED_DONT_ANIMATE,
-                mModel.get(LoadProgressProperties.COMPLETION_STATE));
-        // Swap web contents after loading started and finished. As loading already happened we
-        // simulate the load events.
-        mTabObserver.onWebContentsSwapped(mTab, true, true);
-        assertEquals(
-                CompletionState.UNFINISHED, mModel.get(LoadProgressProperties.COMPLETION_STATE));
-        assertEquals(0, mModel.get(LoadProgressProperties.PROGRESS), MathUtils.EPSILON);
-
-        // Ensure load events are simulated as expected.
-        float expectedProgress = LoadProgressSimulator.PROGRESS_INCREMENT;
-        while (expectedProgress < 1.0f + LoadProgressSimulator.PROGRESS_INCREMENT) {
-            mShadowLooper.runOneTask();
-            final float nextExpectedProgress = expectedProgress;
-            Criteria.checkThat(
-                    (double) mModel.get(LoadProgressProperties.PROGRESS),
-                    Matchers.closeTo(nextExpectedProgress, MathUtils.EPSILON));
-            expectedProgress += LoadProgressSimulator.PROGRESS_INCREMENT;
-        }
-
-        assertEquals(
-                CompletionState.FINISHED_DO_ANIMATE,
-                mModel.get(LoadProgressProperties.COMPLETION_STATE));
     }
 
     @Test

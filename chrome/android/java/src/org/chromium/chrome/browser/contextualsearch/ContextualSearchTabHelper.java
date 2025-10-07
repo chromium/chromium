@@ -159,11 +159,6 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     }
 
     @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-        updateHooksForTab(tab);
-    }
-
-    @Override
     public void onDestroyed(Tab tab) {
         if (mNativeHelper != 0) {
             ContextualSearchTabHelperJni.get().destroy(mNativeHelper);
