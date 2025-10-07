@@ -42,7 +42,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
                  scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
                  scoped_refptr<gpu::MemoryTracker> memory_tracker,
                  scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-                 gpu::SharedImageManager* shared_image_manager);
+                 gpu::SharedImageManager* shared_image_manager,
+                 scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ContextImplDml(const WebNNContextImpl&) = delete;
   ContextImplDml& operator=(const ContextImplDml&) = delete;

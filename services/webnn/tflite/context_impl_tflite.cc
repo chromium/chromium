@@ -17,6 +17,30 @@
 
 namespace webnn::tflite {
 
+// static
+scoped_refptr<WebNNContextImpl> ContextImplTflite::Create(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
+    mojom::CreateContextOptionsPtr options,
+    mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+    gpu::CommandBufferId command_buffer_id,
+    std::unique_ptr<ScopedSequence> sequence,
+    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    ScopedTrace scoped_trace) {
+  DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
+  return base::MakeRefCounted<ContextImplTflite>(
+      std::move(receiver), std::move(context_provider), std::move(options),
+      std::move(write_tensor_consumer), std::move(read_tensor_producer),
+      command_buffer_id, std::move(sequence), std::move(scheduler_task_runner),
+      std::move(memory_tracker), std::move(owning_task_runner),
+      shared_image_manager, std::move(main_task_runner));
+}
+
 ContextImplTflite::ContextImplTflite(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -28,7 +52,8 @@ ContextImplTflite::ContextImplTflite(
     scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-    gpu::SharedImageManager* shared_image_manager)
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
                        GraphBuilderTflite::GetContextProperties(),
@@ -40,7 +65,8 @@ ContextImplTflite::ContextImplTflite(
                        std::move(scheduler_task_runner),
                        std::move(memory_tracker),
                        std::move(owning_task_runner),
-                       shared_image_manager) {}
+                       shared_image_manager,
+                       std::move(main_task_runner)) {}
 
 ContextImplTflite::~ContextImplTflite() = default;
 

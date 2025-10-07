@@ -67,9 +67,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     kWebNNEnabled = 3,
   };
 
-  // Called when a WebNNContextImpl has a connection error. After this call, it
-  // is no longer safe to access |impl|.
-  void RemoveWebNNContextImpl(WebNNContextImpl* impl);
+  // Disassociates a `WebNNContextImpl` instance owned by this provider by its
+  // handle. Called when a `WebNNContext` instance has a connection error. After
+  // this call, it is no longer safe to use the WebNNContextImpl.
+  void RemoveWebNNContextImpl(const blink::WebNNContextToken& handle);
 
 #if BUILDFLAG(IS_WIN)
   // Send the contexts lost reason to the renderer process and kill the GPU
@@ -101,16 +102,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
         scoped_refptr<gpu::MemoryTracker> memory_tracker,
         scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
         gpu::SharedImageManager* shared_image_manager,
+        scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         CreateWebNNContextCallback callback) = 0;
   };
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
   int32_t client_id() const { return client_id_; }
-
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner() const {
-    return main_thread_task_runner_;
-  }
 
   scoped_refptr<gpu::SharedContextState> shared_context_state() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -147,6 +145,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     return weak_factory_.GetWeakPtr();
   }
 
+  // Called after CreateWebNNContext successfully creates a `WebNNContextImpl`.
+  // This associates the context with this provider on the specified sequence.
+  void OnCreateWebNNContextImpl(
+      WebNNContextProvider::CreateWebNNContextCallback callback,
+      mojo::PendingRemote<::webnn::mojom::WebNNContext> remote,
+      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+      scoped_refptr<WebNNContextImpl> context_impl);
+
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
@@ -170,7 +177,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   // Contexts created by this provider. When a context disconnects,
   // it will destroy itself by removing itself from this set.
-  WebNNContextImplSet context_impls_;
+  WebNNContextImplSet context_impls_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Specifies the thread on which the GPU scheduler should run tasks.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

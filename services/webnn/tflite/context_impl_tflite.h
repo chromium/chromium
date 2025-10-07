@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_TFLITE_H_
 
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -20,6 +21,23 @@ namespace tflite {
 // for creating a `GraphImplTflite` which uses TFLite for inference.
 class ContextImplTflite final : public WebNNContextImpl {
  public:
+  // Constructs a new `ContextImplTflite`. Must be called on
+  // `owning_task_runner`.
+  static scoped_refptr<WebNNContextImpl> Create(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      ScopedTrace scoped_trace);
+
   ContextImplTflite(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -31,7 +49,8 @@ class ContextImplTflite final : public WebNNContextImpl {
       scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-      gpu::SharedImageManager* shared_image_manager);
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ContextImplTflite(const WebNNContextImpl&) = delete;
   ContextImplTflite& operator=(const ContextImplTflite&) = delete;

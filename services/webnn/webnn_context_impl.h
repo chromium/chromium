@@ -71,7 +71,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-      gpu::SharedImageManager* shared_image_manager);
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -276,6 +277,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // the GPU service and destroyed after the provider, ensuring the raw pointer
   // remains valid.
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
+
+  // Task runner used to remove this context from its provider.
+  const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 };
 
 }  // namespace webnn

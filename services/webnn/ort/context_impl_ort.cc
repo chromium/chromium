@@ -19,6 +19,34 @@
 
 namespace webnn::ort {
 
+// static
+scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
+    const EpWorkarounds& ep_workarounds,
+    mojom::CreateContextOptionsPtr options,
+    mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+    scoped_refptr<Environment> env,
+    gpu::CommandBufferId command_buffer_id,
+    std::unique_ptr<ScopedSequence> sequence,
+    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    ScopedTrace scoped_trace) {
+  DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
+  return base::MakeRefCounted<ContextImplOrt>(
+      std::move(receiver), std::move(context_provider),
+      std::move(ep_workarounds), std::move(options),
+      std::move(write_tensor_consumer), std::move(read_tensor_producer),
+      std::move(env), command_buffer_id, std::move(sequence),
+      std::move(scheduler_task_runner), std::move(memory_tracker),
+      std::move(owning_task_runner), shared_image_manager,
+      std::move(main_task_runner));
+}
+
 ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -32,7 +60,8 @@ ContextImplOrt::ContextImplOrt(
     scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-    gpu::SharedImageManager* shared_image_manager)
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : WebNNContextImpl(
           std::move(receiver),
           std::move(context_provider),
@@ -45,7 +74,8 @@ ContextImplOrt::ContextImplOrt(
           std::move(scheduler_task_runner),
           std::move(memory_tracker),
           std::move(owning_task_runner),
-          shared_image_manager),
+          shared_image_manager,
+          std::move(main_task_runner)),
       env_(std::move(env)),
       session_options_(SessionOptions::Create(this->options().device, env_)) {}
 

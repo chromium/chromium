@@ -49,7 +49,8 @@ WebNNContextImpl::WebNNContextImpl(
     scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-    gpu::SharedImageManager* shared_image_manager)
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : WebNNObjectImpl<mojom::WebNNContext,
                       blink::WebNNContextToken,
                       mojo::Receiver<mojom::WebNNContext>>(
@@ -65,7 +66,8 @@ WebNNContextImpl::WebNNContextImpl(
       write_tensor_consumer_(std::move(write_tensor_consumer)),
       read_tensor_producer_(std::move(read_tensor_producer)),
       memory_type_tracker_(std::move(memory_tracker)),
-      shared_image_manager_(shared_image_manager) {
+      shared_image_manager_(shared_image_manager),
+      main_task_runner_(std::move(main_task_runner)) {
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // Initialize XNNPACK
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
@@ -92,7 +94,15 @@ WebNNContextImpl::~WebNNContextImpl() {
 }
 
 void WebNNContextImpl::OnDisconnect() {
-  context_provider_->RemoveWebNNContextImpl(this);
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebNNContextProviderImpl::RemoveWebNNContextImpl,
+                       context_provider_, handle()));
+    return;
+  }
+
+  context_provider_->RemoveWebNNContextImpl(handle());
 }
 
 void WebNNContextImpl::ReportBadGraphBuilderMessage(
