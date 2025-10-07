@@ -23,13 +23,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.AnnotatedPageContent;
 import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.ContentAttributes;
 import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.ContentNode;
 import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.TextInfo;
 import org.chromium.content_public.browser.WebContents;
-
-import java.util.Optional;
 
 /** Unit tests for {@link PageContentProtoProviderBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,11 +51,11 @@ public class PageContentProtoProviderBridgeUnitTest {
         setNativePageContentResult(expectedResult);
         PageContentProtoProviderBridge.getAiPageContent(
                 mWebContents,
-                new Callback<Optional<AnnotatedPageContent>>() {
+                new Callback<@Nullable AnnotatedPageContent>() {
                     @Override
-                    public void onResult(Optional<AnnotatedPageContent> result) {
-                        assertTrue(result.isPresent());
-                        assertContentEquals(expectedResult, result.get());
+                    public void onResult(AnnotatedPageContent result) {
+                        assertTrue(result != null);
+                        assertContentEquals(expectedResult, result);
                     }
                 });
     }
@@ -66,10 +65,10 @@ public class PageContentProtoProviderBridgeUnitTest {
         setEmptyNativePageContentResult();
         PageContentProtoProviderBridge.getAiPageContent(
                 mWebContents,
-                new Callback<Optional<AnnotatedPageContent>>() {
+                new Callback<@Nullable AnnotatedPageContent>() {
                     @Override
-                    public void onResult(Optional<AnnotatedPageContent> result) {
-                        assertTrue(result.isEmpty());
+                    public void onResult(AnnotatedPageContent result) {
+                        assertTrue(result == null);
                     }
                 });
     }

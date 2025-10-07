@@ -93,7 +93,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** Unit tests for {@link AppMenuPropertiesDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -379,14 +378,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         Long clusterId = 1L;
         doReturn(
                         new ShoppingService.ProductInfo(
-                                "",
-                                new GURL(""),
-                                Optional.of(clusterId),
-                                Optional.empty(),
-                                "",
-                                0,
-                                "",
-                                Optional.empty()))
+                                "", new GURL(""), clusterId, null, "", 0, "", null))
                 .when(mShoppingService)
                 .getAvailableProductInfoForUrl(any());
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());

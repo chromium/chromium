@@ -640,7 +640,7 @@ public class SensitiveContentTest {
                         () ->
                                 SensitiveContentClient.fromWebContents(
                                         secondTabAfterFreeze[0].getWebContents()));
-        assertTrue(client.getContentRestoredFromTabStateIsSensitive().orElse(false));
+        assertTrue(Boolean.TRUE.equals(client.getContentRestoredFromTabStateIsSensitive()));
         assertEquals(
                 View.CONTENT_SENSITIVITY_SENSITIVE,
                 secondTabAfterFreeze[0].getContentView().getContentSensitivity());

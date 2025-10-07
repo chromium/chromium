@@ -70,7 +70,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
 import java.util.Set;
 
 /** Tests for the password checkup-related methods in {@link PasswordManagerHelper}. */
@@ -678,7 +677,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -694,7 +693,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -712,7 +711,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -730,7 +729,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -749,7 +748,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -768,7 +767,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -786,7 +785,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -807,7 +806,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -826,7 +825,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -847,7 +846,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -868,7 +867,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -885,7 +884,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -906,7 +905,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -923,7 +922,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -946,7 +945,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),
@@ -965,7 +964,7 @@ public class PasswordManagerCheckupHelperTest {
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext(),

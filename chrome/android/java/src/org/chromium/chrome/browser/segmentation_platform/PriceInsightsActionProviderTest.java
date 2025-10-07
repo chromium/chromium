@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -32,7 +33,6 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
 
 /** Unit tests for {@link PriceInsightsActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -44,25 +44,16 @@ public class PriceInsightsActionProviderTest {
     @Mock private ShoppingService mShoppingService;
 
     private static final PriceInsightsInfo EMPTY_PRICE_INSIGHTS_INFO =
-            new PriceInsightsInfo(
-                    Optional.empty(),
-                    "",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.empty(),
-                    new ArrayList<>(),
-                    Optional.empty(),
-                    0,
-                    false);
+            new PriceInsightsInfo(null, "", null, null, null, new ArrayList<>(), null, 0, false);
     private static final PriceInsightsInfo PRICE_INSIGHTS_INFO =
             new PriceInsightsInfo(
-                    Optional.empty(),
+                    null,
                     "USD",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.of("Stainless steel, Espresso Bundle"),
+                    null,
+                    null,
+                    "Stainless steel, Espresso Bundle",
                     Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
-                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    JUnitTestGURLs.EXAMPLE_URL,
                     0,
                     true);
 
@@ -138,7 +129,8 @@ public class PriceInsightsActionProviderTest {
         doReturn(isEligible).when(mShoppingService).isPriceInsightsEligible();
     }
 
-    private void mockShoppingServiceGetPriceInsightsInfoForUrlResult(PriceInsightsInfo info) {
+    private void mockShoppingServiceGetPriceInsightsInfoForUrlResult(
+            @Nullable PriceInsightsInfo info) {
         doAnswer(
                         invocation -> {
                             PriceInsightsInfoCallback callback = invocation.getArgument(1);

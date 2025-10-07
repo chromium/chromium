@@ -112,7 +112,7 @@ public class PriceInsightsBottomSheetMediator {
         ShoppingService service = ShoppingServiceFactory.getForProfile(mTab.getProfile());
         if (service == null) return false;
         ProductInfo info = service.getAvailableProductInfoForUrl(mTab.getUrl());
-        return info != null && info.productClusterId.isPresent();
+        return info != null && info.productClusterId != null;
     }
 
     private void updatePriceTrackingButtonIneligible() {
@@ -203,20 +203,21 @@ public class PriceInsightsBottomSheetMediator {
                 && info.catalogAttributes != null
                 && !info.catalogAttributes.isEmpty()) {
             priceHistoryTitleResId = R.string.price_history_multiple_catalogs_title;
-            mPropertyModel.set(PRICE_HISTORY_DESCRIPTION, info.catalogAttributes.get());
+            mPropertyModel.set(PRICE_HISTORY_DESCRIPTION, info.catalogAttributes);
         }
         mPropertyModel.set(PRICE_HISTORY_TITLE, mContext.getString(priceHistoryTitleResId));
         mPropertyModel.set(
                 PRICE_HISTORY_CHART,
                 mPriceInsightsDelegate.getPriceHistoryChartForPriceInsightsInfo(info));
 
-        boolean hasJackpotUrl = !(info.jackpotUrl == null || info.jackpotUrl.isEmpty());
-        mPropertyModel.set(OPEN_URL_BUTTON_VISIBLE, hasJackpotUrl);
-        if (hasJackpotUrl) {
+        GURL jackpotUrl = info.jackpotUrl;
+        boolean hasJackpotUrl = false;
+        if (jackpotUrl != null && !jackpotUrl.isEmpty()) {
+            hasJackpotUrl = true;
             mPropertyModel.set(
-                    OPEN_URL_BUTTON_ON_CLICK_LISTENER,
-                    view -> openJackpotUrl(info.jackpotUrl.get()));
+                    OPEN_URL_BUTTON_ON_CLICK_LISTENER, view -> openJackpotUrl(jackpotUrl));
         }
+        mPropertyModel.set(OPEN_URL_BUTTON_VISIBLE, hasJackpotUrl);
     }
 
     private void openJackpotUrl(GURL url) {

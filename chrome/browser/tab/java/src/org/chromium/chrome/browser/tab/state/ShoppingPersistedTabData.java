@@ -614,15 +614,15 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     protected void parsePriceTrackingDataProto(Tab tab, ProductInfo info) {
         @FoundBuyableProduct int foundBuyableProduct = FoundBuyableProduct.NOT_FOUND;
 
-        if (info.previousAmountMicros.isPresent()) {
+        if (info.previousAmountMicros != null) {
             setPriceMicros(info.amountMicros);
-            setPreviousPriceMicros(info.previousAmountMicros.get());
+            setPreviousPriceMicros(info.previousAmountMicros);
             setCurrencyCode(info.currencyCode);
 
             setLastUpdatedMs(System.currentTimeMillis());
 
-            if (info.offerId.isPresent()) {
-                setMainOfferId(UnsignedLongs.toString(info.offerId.get()));
+            if (info.offerId != null) {
+                setMainOfferId(UnsignedLongs.toString(info.offerId));
             }
             setPriceDropGurl(tab.getUrl());
             setProductTitle(info.title);

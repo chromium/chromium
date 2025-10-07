@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Util class for survey related testing. */
@@ -46,7 +45,7 @@ public class TestSurveyUtils {
                         false,
                         psdBitFields,
                         psdStringFields,
-                        Optional.empty(),
+                        null,
                         SurveyConfig.RequestedBrowserType.REGULAR));
     }
 

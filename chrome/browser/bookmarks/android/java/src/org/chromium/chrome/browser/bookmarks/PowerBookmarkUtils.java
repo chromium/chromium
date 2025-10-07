@@ -64,7 +64,7 @@ public class PowerBookmarkUtils {
 
         ShoppingService.ProductInfo info = service.getAvailableProductInfoForUrl(tab.getUrl());
 
-        return info != null && info.productClusterId.isPresent();
+        return info != null && info.productClusterId != null;
     }
 
     /**

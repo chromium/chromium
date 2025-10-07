@@ -655,7 +655,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                 PageContentProtoProviderBridge.getAiPageContent(
                                         webContents,
                                         result -> {
-                                            if (result.isEmpty()) {
+                                            if (result == null) {
                                                 PageContentProviderMetrics.recordPageProviderEvent(
                                                         requestType,
                                                         Format.PROTO,
@@ -664,8 +664,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                                 pageContentFuture.completeExceptionally(
                                                         new Exception("Error during extraction"));
                                             } else {
-                                                pageContentFuture.complete(
-                                                        result.get().toByteArray());
+                                                pageContentFuture.complete(result.toByteArray());
                                             }
                                         });
                             }

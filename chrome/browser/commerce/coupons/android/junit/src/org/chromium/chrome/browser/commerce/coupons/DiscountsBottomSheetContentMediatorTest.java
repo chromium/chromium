@@ -106,8 +106,7 @@ public class DiscountsBottomSheetContentMediatorTest {
         verify(mMockCallback).onResult(true);
 
         for (int i = 0; i < infoList.size(); i++) {
-            assertEquals(
-                    mModelList.get(i).model.get(DISCOUNT_CODE), infoList.get(i).discountCode.get());
+            assertEquals(mModelList.get(i).model.get(DISCOUNT_CODE), infoList.get(i).discountCode);
             assertEquals(
                     mModelList.get(i).model.get(DESCRIPTION_DETAIL),
                     infoList.get(i).descriptionDetail);

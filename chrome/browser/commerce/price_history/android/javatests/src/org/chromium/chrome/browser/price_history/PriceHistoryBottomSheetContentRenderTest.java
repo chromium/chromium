@@ -54,7 +54,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 
 /** Render Tests for the price history bottom sheet content. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -92,24 +91,24 @@ public class PriceHistoryBottomSheetContentRenderTest {
     private static final String CATALOG_ATTRIBUTES = "Stainless steel, Espresso Bundle";
     private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_SINGLE_CATALOG =
             new PriceInsightsInfo(
-                    Optional.empty(),
+                    null,
                     "USD",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.empty(),
+                    null,
+                    null,
+                    null,
                     Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
-                    Optional.of(TEST_URL),
+                    TEST_URL,
                     0,
                     false);
     private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS =
             new PriceInsightsInfo(
-                    Optional.empty(),
+                    null,
                     "USD",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.of(CATALOG_ATTRIBUTES),
+                    null,
+                    null,
+                    CATALOG_ATTRIBUTES,
                     Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
-                    Optional.of(TEST_URL),
+                    TEST_URL,
                     0,
                     true);
 

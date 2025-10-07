@@ -44,8 +44,6 @@ import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Optional;
-
 /** Unit tests for {@link CurrentTabPriceTrackingStateSupplier} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CurrentTabPriceTrackingStateSupplierUnitTest {
@@ -71,14 +69,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
     private ProductInfo createProductInfoWithId(long productId) {
         return new ProductInfo(
-                "Product",
-                GURL.emptyGURL(),
-                Optional.of(productId),
-                Optional.empty(),
-                "USD",
-                1000,
-                "US",
-                Optional.empty());
+                "Product", GURL.emptyGURL(), productId, null, "USD", 1000, "US", null);
     }
 
     @Test

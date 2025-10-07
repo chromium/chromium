@@ -128,7 +128,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
 
     private void onProductInfoRetrieved(GURL checkedUrl, @Nullable ProductInfo productInfo) {
         if (productInfo == null
-                || !productInfo.productClusterId.isPresent()
+                || productInfo.productClusterId == null
                 || mShoppingService == null) {
             mCurrentTabCommerceSubscription = null;
             updatePriceTrackingState(false);
@@ -141,7 +141,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
                 new CommerceSubscription(
                         SubscriptionType.PRICE_TRACK,
                         IdentifierType.PRODUCT_CLUSTER_ID,
-                        UnsignedLongs.toString(productInfo.productClusterId.get()),
+                        UnsignedLongs.toString(productInfo.productClusterId),
                         ManagementType.USER_MANAGED,
                         null);
 

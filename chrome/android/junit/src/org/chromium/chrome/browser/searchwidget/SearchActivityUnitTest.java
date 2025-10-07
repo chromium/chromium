@@ -93,7 +93,6 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -627,14 +626,14 @@ public class SearchActivityUnitTest {
         var searchTypes =
                 Map.of(
                         SearchType.TEXT,
-                        Optional.of(SearchActivity.USED_TEXT_FROM_SHORTCUTS_WIDGET),
+                        SearchActivity.USED_TEXT_FROM_SHORTCUTS_WIDGET,
                         SearchType.VOICE,
-                        Optional.of(SearchActivity.USED_VOICE_FROM_SHORTCUTS_WIDGET),
+                        SearchActivity.USED_VOICE_FROM_SHORTCUTS_WIDGET,
                         SearchType.LENS,
-                        Optional.of(SearchActivity.USED_LENS_FROM_SHORTCUTS_WIDGET),
+                        SearchActivity.USED_LENS_FROM_SHORTCUTS_WIDGET,
                         // Invalid search type.
                         ~0,
-                        Optional.empty());
+                        "");
 
         for (var searchType : searchTypes.entrySet()) {
             var tester = new UserActionTester();
@@ -647,7 +646,7 @@ public class SearchActivityUnitTest {
                 assertEquals(0, actions.size());
             } else {
                 assertEquals(1, actions.size());
-                assertEquals(value.get(), actions.get(0));
+                assertEquals(value, actions.get(0));
             }
 
             tester.tearDown();

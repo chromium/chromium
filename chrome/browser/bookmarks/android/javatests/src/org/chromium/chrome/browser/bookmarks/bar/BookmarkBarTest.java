@@ -78,7 +78,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -278,8 +277,7 @@ public class BookmarkBarTest {
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds =
                 IntStream.range(0, 100)
-                        .mapToObj(i -> optionalOfThrowable(() -> addBookmark(i, "" + i, url)))
-                        .map(Optional::get)
+                        .mapToObj(i -> itemOrNull(() -> addBookmark(i, "" + i, url)))
                         .collect(Collectors.toList());
         onViewWaiting(bookmarkBarOverflowButton()).check(matches(isDisplayed())).perform(click());
         // The full-screen Bookmark Manager should not appear.
@@ -389,11 +387,11 @@ public class BookmarkBarTest {
         return onViewWaiting(allOf(viewMatcher, isDisplayed()));
     }
 
-    private <T> @NonNull Optional<T> optionalOfThrowable(@NonNull Callable<T> callable) {
+    private @Nullable <T> T itemOrNull(@NonNull Callable<T> callable) {
         try {
-            return Optional.of(callable.call());
+            return callable.call();
         } catch (@NonNull Throwable e) {
-            return Optional.empty();
+            return null;
         }
     }
 

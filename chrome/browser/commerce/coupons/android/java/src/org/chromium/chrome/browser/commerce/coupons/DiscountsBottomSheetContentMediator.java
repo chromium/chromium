@@ -80,18 +80,18 @@ public class DiscountsBottomSheetContentMediator {
             return;
         }
         for (DiscountInfo info : infoList) {
-            if (info == null || info.discountCode.isEmpty()) {
+            if (info == null || info.discountCode == null) {
                 continue;
             }
             PropertyModel.Builder propertyModelBuilder =
                     new PropertyModel.Builder(ALL_KEYS)
-                            .with(DISCOUNT_CODE, info.discountCode.get())
+                            .with(DISCOUNT_CODE, info.discountCode)
                             .with(DESCRIPTION_DETAIL, info.descriptionDetail)
                             .with(
                                     COPY_BUTTON_TEXT,
                                     mContext.getString(R.string.discount_code_copy_button_text));
-            if (info.expiryTimeSec.isPresent()) {
-                propertyModelBuilder.with(EXPIRY_TIME, formatExpiryTime(info.expiryTimeSec.get()));
+            if (info.expiryTimeSec != null) {
+                propertyModelBuilder.with(EXPIRY_TIME, formatExpiryTime(info.expiryTimeSec));
             } else {
                 propertyModelBuilder.with(EXPIRY_TIME, null);
             }

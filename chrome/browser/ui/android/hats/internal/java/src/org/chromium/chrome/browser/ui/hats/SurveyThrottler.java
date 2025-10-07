@@ -104,16 +104,16 @@ public class SurveyThrottler {
 
     /** Logs in SharedPreferences that the survey prompt was displayed. */
     public void recordSurveyPromptDisplayed() {
-        getMetadata().setPromptDisplayed(mSurveyConfig.mCooldownPeriodOverride.isPresent());
+        getMetadata().setPromptDisplayed(mSurveyConfig.mCooldownPeriodOverride != null);
     }
 
     private boolean doesCooldownApply() {
         int today = getMetadata().getCurrentDate();
-        if (mSurveyConfig.mCooldownPeriodOverride.isPresent()) {
+        if (mSurveyConfig.mCooldownPeriodOverride != null) {
             return today
                             - SurveyMetadata
                                     .getLastPromptDisplayedDateForAnySurveyWithCooldownOverride()
-                    < mSurveyConfig.mCooldownPeriodOverride.get();
+                    < mSurveyConfig.mCooldownPeriodOverride;
         } else {
             return today - SurveyMetadata.getLastPromptDisplayedDateForAnySurvey()
                     < MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED;

@@ -77,7 +77,7 @@ public class PriceTrackingBottomSheetContentMediator {
         shoppingService.getProductInfoForUrl(
                 tab.getUrl(),
                 (url, info) -> {
-                    boolean hasProductInfo = info != null && info.productClusterId.isPresent();
+                    boolean hasProductInfo = info != null && info.productClusterId != null;
                     if (hasProductInfo) {
                         updatePriceTrackingButtonModel(
                                 assumeNonNull(mPriceTrackingStateSupplier).get());

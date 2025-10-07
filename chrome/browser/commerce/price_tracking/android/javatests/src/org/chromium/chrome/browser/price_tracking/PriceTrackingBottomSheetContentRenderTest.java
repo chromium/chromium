@@ -51,7 +51,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
-import java.util.Optional;
 
 /** Render Tests for the price tracking bottom sheet content. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -83,15 +82,7 @@ public class PriceTrackingBottomSheetContentRenderTest {
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final ProductInfo PRODUCT_INFO =
-            new ProductInfo(
-                    null,
-                    null,
-                    Optional.of(12345L),
-                    Optional.empty(),
-                    null,
-                    0,
-                    null,
-                    Optional.empty());
+            new ProductInfo(null, null, 12345L, null, null, 0, null, null);
 
     private View mContentView;
     private PriceTrackingBottomSheetContentCoordinator mCoordinator;

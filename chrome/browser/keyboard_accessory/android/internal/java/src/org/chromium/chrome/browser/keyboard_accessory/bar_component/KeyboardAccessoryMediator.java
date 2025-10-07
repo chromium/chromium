@@ -54,7 +54,6 @@ import org.chromium.ui.modelutil.PropertyObservable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -76,7 +75,7 @@ class KeyboardAccessoryMediator
     private final Supplier<Integer> mBackgroundColorSupplier;
     private final Supplier<Boolean> mIsLargeFormFactorSupplier;
     private final Profile mProfile;
-    private Optional<Boolean> mHasFilteredTouchEvent = Optional.empty();
+    private @Nullable Boolean mHasFilteredTouchEvent;
     private final ObserverList<KeyboardAccessoryVisualStateProvider.Observer> mVisualObservers =
             new ObserverList<>();
 
@@ -303,12 +302,12 @@ class KeyboardAccessoryMediator
     void dismiss() {
         mTabSwitcher.closeActiveTab();
         mModel.set(VISIBLE, false);
-        if (!mHasFilteredTouchEvent.orElse(true)) {
+        if (!(mHasFilteredTouchEvent == null || mHasFilteredTouchEvent)) {
             // Log the metric if the accessory received touch events, but none of them were
             // filtered.
             ManualFillingMetricsRecorder.recordHasFilteredTouchEvents(false);
         }
-        mHasFilteredTouchEvent = Optional.empty();
+        mHasFilteredTouchEvent = null;
     }
 
     @Override
@@ -361,14 +360,16 @@ class KeyboardAccessoryMediator
 
     private void onTouchEvent(boolean eventFiltered) {
         if (!eventFiltered) {
-            mHasFilteredTouchEvent = Optional.of(mHasFilteredTouchEvent.orElse(false));
+            if (mHasFilteredTouchEvent == null) {
+                mHasFilteredTouchEvent = false;
+            }
             return;
         }
-        if (!mHasFilteredTouchEvent.orElse(false)) {
+        if (mHasFilteredTouchEvent == null || !mHasFilteredTouchEvent) {
             // Log the metric if none of the previous touch events were filtered.
             ManualFillingMetricsRecorder.recordHasFilteredTouchEvents(true);
         }
-        mHasFilteredTouchEvent = Optional.of(true);
+        mHasFilteredTouchEvent = true;
     }
 
     /**

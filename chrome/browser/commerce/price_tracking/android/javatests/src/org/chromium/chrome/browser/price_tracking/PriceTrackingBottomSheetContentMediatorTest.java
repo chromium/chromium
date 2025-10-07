@@ -64,7 +64,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /** Tests for {@link PriceTrackingBottomSheetContentMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -91,25 +90,17 @@ public class PriceTrackingBottomSheetContentMediatorTest {
     private static final @PriceBucket int PRICE_BUCKET = 1;
     private static final PriceInsightsInfo PRICE_INSIGHTS_INFO =
             new PriceInsightsInfo(
-                    Optional.empty(),
+                    null,
                     "USD",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.empty(),
+                    null,
+                    null,
+                    null,
                     Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
-                    Optional.of(TEST_URL),
+                    TEST_URL,
                     PRICE_BUCKET,
                     false);
     private static final ProductInfo PRODUCT_INFO =
-            new ProductInfo(
-                    null,
-                    null,
-                    Optional.of(12345L),
-                    Optional.empty(),
-                    null,
-                    0,
-                    null,
-                    Optional.empty());
+            new ProductInfo(null, null, 12345L, null, null, 0, null, null);
 
     private PriceTrackingBottomSheetContentMediator mMediator;
     private final PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);

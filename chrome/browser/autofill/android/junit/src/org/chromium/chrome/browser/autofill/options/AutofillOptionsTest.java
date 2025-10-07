@@ -55,6 +55,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -73,8 +74,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-
-import java.util.Optional;
 
 /** Unit tests for autofill options settings screen. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -229,7 +228,7 @@ public class AutofillOptionsTest {
 
         // Enabling the option should be recorded once.
         getRadioButtonComponent().getOptInButton().performClick();
-        verifyAndDismissDialogManager(Optional.of(ButtonType.POSITIVE));
+        verifyAndDismissDialogManager(ButtonType.POSITIVE);
         verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(true));
         histogramWatcher.assertExpected();
 
@@ -243,7 +242,7 @@ public class AutofillOptionsTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, false);
         getRadioButtonComponent().getDefaultButton().performClick();
-        verifyAndDismissDialogManager(Optional.of(ButtonType.POSITIVE));
+        verifyAndDismissDialogManager(ButtonType.POSITIVE);
         verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(false));
         histogramWatcher.assertExpected();
 
@@ -278,7 +277,7 @@ public class AutofillOptionsTest {
 
         getRadioButtonComponent().getOptInButton().performClick();
 
-        verifyAndDismissDialogManager(Optional.of(ButtonType.POSITIVE));
+        verifyAndDismissDialogManager(ButtonType.POSITIVE);
 
         verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(true));
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
@@ -302,7 +301,7 @@ public class AutofillOptionsTest {
 
         getRadioButtonComponent().getOptInButton().performClick();
 
-        verifyAndDismissDialogManager(Optional.of(ButtonType.NEGATIVE));
+        verifyAndDismissDialogManager(ButtonType.NEGATIVE);
 
         verify(mPrefs, times(0))
                 .setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), anyBoolean());
@@ -475,30 +474,29 @@ public class AutofillOptionsTest {
         assertEquals(getRadioButtonComponent().getOptInButton().isChecked(), uses_third_party);
     }
 
-    /** {@see verifyAndDismissDialogManager(Optional<Integer> optButtonToClick)} */
+    /** {@see verifyAndDismissDialogManager(@Nullable Integer buttonToClick)} */
     private void verifyAndDismissDialogManager() {
-        verifyAndDismissDialogManager(Optional.empty());
+        verifyAndDismissDialogManager(null);
     }
 
     /**
      * Checks the mock was called. Captures the triggered dialog model and dismisses it. If given,
-     * the it emulates a click on {@link optButtonToClick}. Otherwise, it calls {@code onDismiss}.
+     * the it emulates a click on {@link buttonToClick}. Otherwise, it calls {@code onDismiss}.
      *
-     * @param optButtonToClick An optional containing a {@link ButtonType}.
+     * @param buttonToClick An optional containing a {@link ButtonType}.
      */
-    private void verifyAndDismissDialogManager(Optional<Integer> optButtonToClick) {
+    private void verifyAndDismissDialogManager(@Nullable Integer buttonToClick) {
         verify(mDialogManager)
                 .showDialog(
                         mRestartConfirmationDialogModelCaptor.capture(), eq(ModalDialogType.APP));
         PropertyModel model = mRestartConfirmationDialogModelCaptor.getValue();
         ModalDialogProperties.Controller mediator = model.get(ModalDialogProperties.CONTROLLER);
-        if (optButtonToClick.isEmpty()) {
+        if (buttonToClick == null) {
             mediator.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
             return;
         }
-        assertTrue(optButtonToClick.isPresent());
-        mediator.onClick(model, optButtonToClick.get());
-        if (optButtonToClick.get() == ButtonType.NEGATIVE) {
+        mediator.onClick(model, buttonToClick);
+        if (buttonToClick == ButtonType.NEGATIVE) {
             verify(mDialogManager)
                     .dismissDialog(eq(model), eq(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
             mediator.onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);

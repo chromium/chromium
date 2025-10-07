@@ -57,7 +57,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /** Tests for {@link PriceInsightsBottomSheetCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -93,13 +92,13 @@ public class PriceInsightsBottomSheetCoordinatorTest {
     private static final String OPEN_URL_TITLE = "Search buying options";
     private static final PriceInsightsInfo PRICE_INSIGHTS_INFO =
             new PriceInsightsInfo(
-                    Optional.empty(),
+                    null,
                     "USD",
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.empty(),
+                    null,
+                    null,
+                    null,
                     Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
-                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    JUnitTestGURLs.EXAMPLE_URL,
                     0,
                     false);
 

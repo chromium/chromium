@@ -12,17 +12,16 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.AnnotatedPageContent;
 import org.chromium.content_public.browser.WebContents;
-
-import java.util.Optional;
 
 @JNINamespace("optimization_guide::android")
 @NullMarked
 public class PageContentProtoProviderBridge {
 
     public static void getAiPageContent(
-            WebContents webContents, Callback<Optional<AnnotatedPageContent>> callback) {
+            WebContents webContents, Callback<@Nullable AnnotatedPageContent> callback) {
         PageContentProtoProviderBridgeJni.get()
                 .getAiPageContent(
                         webContents,
@@ -30,16 +29,16 @@ public class PageContentProtoProviderBridge {
                             @Override
                             public void onResult(byte[] result) {
                                 if (result.length == 0) {
-                                    callback.onResult(Optional.empty());
+                                    callback.onResult(null);
                                     return;
                                 }
 
                                 try {
                                     AnnotatedPageContent proto =
                                             AnnotatedPageContent.parseFrom(result);
-                                    callback.onResult(Optional.of(proto));
+                                    callback.onResult(proto);
                                 } catch (InvalidProtocolBufferException e) {
-                                    callback.onResult(Optional.empty());
+                                    callback.onResult(null);
                                 }
                             }
                         });

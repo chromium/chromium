@@ -173,14 +173,13 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
                 webContents,
                 result -> {
                     RecordHistogram.recordBooleanHistogram(
-                            "Android.PageContentProtoViewStructureBuilder.Result",
-                            !result.isEmpty());
+                            "Android.PageContentProtoViewStructureBuilder.Result", result != null);
 
-                    if (result.isEmpty()) {
+                    if (result == null) {
                         rootNode.asyncCommit();
                         return;
                     }
-                    populateVirtualStructureWithPageContentProto(rootNode, result.get());
+                    populateVirtualStructureWithPageContentProto(rootNode, result);
                 });
     }
 

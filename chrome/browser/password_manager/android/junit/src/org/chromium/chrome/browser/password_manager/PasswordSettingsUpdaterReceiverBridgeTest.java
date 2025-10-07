@@ -27,8 +27,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 
-import java.util.Optional;
-
 /** Tests that settings updater callbacks invoke the right native callbacks. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -52,9 +50,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Test
     public void testOnSettingValueFetchedCalled() {
         mReceiverBridge.onSettingValueFetched(
-                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                Optional.of(true),
-                mMetricsRecorderMock);
+                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS, true, mMetricsRecorderMock);
         verify(mReceiverBridgeJniMock)
                 .onSettingValueFetched(
                         sFakeNativePointer, PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS, true);
@@ -64,9 +60,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Test
     public void testOnSettingValueAbsentCalled() {
         mReceiverBridge.onSettingValueFetched(
-                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                Optional.empty(),
-                mMetricsRecorderMock);
+                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS, null, mMetricsRecorderMock);
         verify(mReceiverBridgeJniMock)
                 .onSettingValueAbsent(
                         sFakeNativePointer, PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS);

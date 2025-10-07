@@ -45,7 +45,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** A helper class for showing PasswordSettings. TODO(crbug.com/40853413): Split up this class */
@@ -224,16 +223,13 @@ public class PasswordManagerHelper {
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert accountEmail == null || !accountEmail.isEmpty();
 
-        Optional<String> account =
-                accountEmail == null ? Optional.empty() : Optional.of(accountEmail);
-
         LoadingModalDialogCoordinator loadingDialogCoordinator =
                 LoadingModalDialogCoordinator.create(
                         () -> assertNonNull(modalDialogManagerSupplier.get()), context);
 
         launchPasswordCheckup(
                 referrer,
-                account,
+                accountEmail,
                 loadingDialogCoordinator,
                 modalDialogManagerSupplier,
                 context,
@@ -271,11 +267,11 @@ public class PasswordManagerHelper {
                 referrer,
                 accountName,
                 result -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(null);
                     successCallback.onResult(null);
                 },
                 error -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    passwordCheckupMetricsRecorder.recordMetrics(error);
                     failureCallback.onResult(error);
                 });
     }
@@ -310,11 +306,11 @@ public class PasswordManagerHelper {
                 referrer,
                 accountName,
                 result -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(null);
                     successCallback.onResult(result);
                 },
                 error -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    passwordCheckupMetricsRecorder.recordMetrics(error);
                     failureCallback.onResult(error);
                 });
     }
@@ -349,11 +345,11 @@ public class PasswordManagerHelper {
                 referrer,
                 accountName,
                 result -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(null);
                     successCallback.onResult(result);
                 },
                 error -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    passwordCheckupMetricsRecorder.recordMetrics(error);
                     failureCallback.onResult(error);
                 });
     }
@@ -388,11 +384,11 @@ public class PasswordManagerHelper {
                 referrer,
                 accountName,
                 result -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(null);
                     successCallback.onResult(result);
                 },
                 error -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    passwordCheckupMetricsRecorder.recordMetrics(error);
                     failureCallback.onResult(error);
                 });
     }
@@ -453,7 +449,7 @@ public class PasswordManagerHelper {
     @VisibleForTesting
     void launchPasswordCheckup(
             @PasswordCheckReferrer int referrer,
-            Optional<String> account,
+            @Nullable String account,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Context context,
@@ -474,9 +470,9 @@ public class PasswordManagerHelper {
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
         checkupClient.getPasswordCheckupIntent(
                 referrer,
-                account.orElse(null),
+                account,
                 (intent) -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(null);
                     maybeLaunchIntentWithLoadingDialog(
                             loadingDialogCoordinator,
                             intent,
@@ -484,7 +480,7 @@ public class PasswordManagerHelper {
                                     .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
                 },
                 (error) -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    passwordCheckupMetricsRecorder.recordMetrics(error);
                     loadingDialogCoordinator.dismiss();
                 });
     }

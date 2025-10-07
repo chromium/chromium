@@ -67,7 +67,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                         offerToSavePasswords ->
                                 mReceiverBridge.onSettingValueFetched(
                                         OFFER_TO_SAVE_PASSWORDS,
-                                        offerToSavePasswords,
+                                        offerToSavePasswords.orElse(null),
                                         metricsRecorder),
                         exception ->
                                 handleFetchingExceptionOnUiThread(
@@ -78,7 +78,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                         getAccount(account),
                         autoSignIn ->
                                 mReceiverBridge.onSettingValueFetched(
-                                        AUTO_SIGN_IN, autoSignIn, metricsRecorder),
+                                        AUTO_SIGN_IN, autoSignIn.orElse(null), metricsRecorder),
                         exception ->
                                 handleFetchingExceptionOnUiThread(
                                         AUTO_SIGN_IN, exception, metricsRecorder));
@@ -143,7 +143,9 @@ public class PasswordSettingsUpdaterDispatcherBridge {
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () -> mReceiverBridge.onSettingValueFetched(setting, value, metricsRecorder));
+                () ->
+                        mReceiverBridge.onSettingValueFetched(
+                                setting, value.orElse(null), metricsRecorder));
     }
 
     private void handleFetchingExceptionOnUiThread(

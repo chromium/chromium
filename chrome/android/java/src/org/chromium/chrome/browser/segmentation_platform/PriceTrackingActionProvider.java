@@ -53,7 +53,7 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                             tab.getUrl(),
                             (url, info) -> {
                                 boolean canTrackPrice =
-                                        info != null && info.productClusterId.isPresent();
+                                        info != null && info.productClusterId != null;
 
                                 signalAccumulator.setSignal(
                                         AdaptiveToolbarButtonVariant.PRICE_TRACKING, canTrackPrice);

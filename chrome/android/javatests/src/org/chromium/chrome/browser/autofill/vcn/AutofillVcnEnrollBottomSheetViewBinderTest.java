@@ -57,7 +57,6 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
 
@@ -303,9 +302,9 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
                         Comparator.comparingInt((IssuerIcon issuerIcon) -> issuerIcon.mIconResource)
                                 .thenComparing(
                                         (IssuerIcon issuerIcon) ->
-                                                Optional.of(issuerIcon.mIconUrl)
-                                                        .map(Object::toString)
-                                                        .orElse(null)));
+                                                issuerIcon.mIconUrl != null
+                                                        ? issuerIcon.mIconUrl.toString()
+                                                        : null));
 
         private void putBitmap(IssuerIcon issuerIcon, Bitmap bitmap) {
             mIconBitmapLookup.put(issuerIcon, bitmap);
