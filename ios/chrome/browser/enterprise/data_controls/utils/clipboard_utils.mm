@@ -23,18 +23,24 @@ PastePolicyVerdict IsPasteAllowedByPolicy(
     ProfileIOS* source_profile,  // Can be null if the source isn't Chrome
     ProfileIOS* destination_profile) {
   CHECK(destination_profile);
-  // TODO(crbug.com/438202190): This is the place holder for paste policy
-  // evaluation API.
 
-  PastePolicyVerdict policy_verdict{Verdict::NotSet(), false};
+  auto des_verdict = IOSRulesServiceFactory::GetForProfile(destination_profile)
+                         ->GetPasteVerdict(source_url, destination_url,
+                                           source_profile, destination_profile);
+  bool triggered_by_source = false;
+  if (source_profile && source_profile != destination_profile) {
+    auto source_verdict =
+        IOSRulesServiceFactory::GetForProfile(source_profile)
+            ->GetPasteVerdict(source_url, destination_url, source_profile,
+                              destination_profile);
+    if (des_verdict.level() < source_verdict.level()) {
+      triggered_by_source = true;
+    }
+    des_verdict = Verdict::MergePasteVerdicts(std::move(source_verdict),
+                                              std::move(des_verdict));
+  }
 
-  IOSRulesService* rules_service =
-      IOSRulesServiceFactory::GetForProfile(destination_profile);
-  CHECK(rules_service);
-
-  policy_verdict.verdict = rules_service->GetPasteVerdict(
-      source_url, destination_url, source_profile, destination_profile);
-  return policy_verdict;
+  return {std::move(des_verdict), triggered_by_source};
 }
 
 CopyPolicyVerdicts IsCopyAllowedByPolicy(const GURL& source_url,
