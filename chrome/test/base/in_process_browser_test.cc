@@ -595,6 +595,10 @@ void InProcessBrowserTest::CreatedBrowserMainParts(
       std::make_unique<OSCryptAsyncExtraSetUp>());
 }
 
+void InProcessBrowserTest::SetBrowser(BrowserWindowInterface* browser) {
+  browser_ = browser->GetBrowserForMigrationOnly();
+}
+
 void InProcessBrowserTest::SelectFirstBrowser() {
   const BrowserList* browser_list = BrowserList::GetInstance();
   if (!browser_list->empty())

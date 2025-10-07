@@ -184,13 +184,18 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Returns the browser created by BrowserMain().
   // If no browser is created in BrowserMain(), this will return nullptr unless
   // another browser instance is created at a later time and
-  // SelectFirstBrowser() is called.
+  // `SelectFirstBrowser()` or `SetBrowser()` is called.
   Browser* browser() const { return browser_; }
+
+  // Sets the default `browser_` instance for the fixture.
+  void SetBrowser(BrowserWindowInterface* browser);
 
   // Set |browser_| to the first browser on the browser list.
   // Call this when your test subclass wants to access a non-null browser
   // instance through browser() but browser creation is delayed until after
   // PreRunTestOnMainThread().
+  // DEPRECATED: Clients should not rely on ordering in the global BrowserList,
+  // use SetBrowser() instead.
   void SelectFirstBrowser();
 
   // This function is used to record a set of properties for a test case in

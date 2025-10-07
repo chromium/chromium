@@ -33,6 +33,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -729,9 +731,10 @@ IN_PROC_BROWSER_TEST_F(
     SubframeDocumentLoadFiltering) {
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
@@ -834,8 +837,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open an incognito instance but keep using the non-incognito browser for
   // testing.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
-  SelectFirstBrowser();
+  SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   ASSERT_NE(browser(), incognito);
 
   GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
@@ -908,9 +912,10 @@ IN_PROC_BROWSER_TEST_F(
     PerformanceMeasurementsHistogramsAreRecorded) {
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   base::HistogramTester histogram_tester;
@@ -1065,9 +1070,10 @@ IN_PROC_BROWSER_TEST_F(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
@@ -1190,9 +1196,10 @@ IN_PROC_BROWSER_TEST_F(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
@@ -1322,9 +1329,10 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
 
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // Go to same URL.
@@ -1352,9 +1360,10 @@ IN_PROC_BROWSER_TEST_F(
   Profile* nonincognito_profile = browser()->profile();
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(nonincognito_profile);
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(nonincognito_profile);
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
@@ -1401,9 +1410,10 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
 
   // Close incognito and open nonincognito browser instance.
-  Browser* nonincognito = CreateBrowser(nonincognito_profile);
+  BrowserWindowInterface* const nonincognito =
+      CreateBrowser(nonincognito_profile);
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(nonincognito);
   ASSERT_EQ(browser(), nonincognito);
 
   // Go to same URL.
@@ -1495,9 +1505,10 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
@@ -1561,9 +1572,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
@@ -1689,9 +1701,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // Disable FPP in TrackingProtectionSettings.
