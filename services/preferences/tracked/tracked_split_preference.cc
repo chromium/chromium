@@ -108,14 +108,21 @@ bool TrackedSplitPreference::EnforceAndReport(
         value_state == ValueState::CHANGED_ENCRYPTED) {
       DCHECK(!invalid_keys.empty());
 
-      base::Value::Dict* reset_prefs =
-          pref_store_contents.EnsureDict(user_prefs::kTrackedPreferencesReset);
-      for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
-           it != invalid_keys.end(); ++it) {
-        const base::Value* invalid_value = dict_value->Find(*it);
-        DCHECK(invalid_value);
-        reset_prefs->Set(pref_path_ + "." + *it, invalid_value->Clone());
-        dict_value->Remove(*it);
+      // `dict_value` can be null here. This happens when the entire preference
+      // dictionary is missing from the pref store, but a hash for it still
+      // exists in the hash store. As a result of the inconsistency, the
+      // function reports this as `CHANGED`. This check prevents a crash when
+      // attempting to reset keys on a non-existent dictionary.
+      if (dict_value) {
+        base::Value::Dict* reset_prefs = pref_store_contents.EnsureDict(
+            user_prefs::kTrackedPreferencesReset);
+        for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
+             it != invalid_keys.end(); ++it) {
+          const base::Value* invalid_value = dict_value->Find(*it);
+          DCHECK(invalid_value);
+          reset_prefs->Set(pref_path_ + "." + *it, invalid_value->Clone());
+          dict_value->Remove(*it);
+        }
       }
     } else {
       if (value) {
