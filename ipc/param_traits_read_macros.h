@@ -11,7 +11,6 @@
 #undef IPC_STRUCT_TRAITS_PARENT
 #undef IPC_STRUCT_TRAITS_END
 #undef IPC_ENUM_TRAITS_VALIDATE
-#undef IPC_MESSAGE_DECL
 
 #define IPC_STRUCT_TRAITS_BEGIN(struct_name)                              \
   bool ParamTraits<struct_name>::Read(                                    \
@@ -32,8 +31,6 @@
     *p = static_cast<param_type>(value);                                  \
     return true;                                                          \
   }
-
-#define IPC_MESSAGE_DECL(...)
 
 #endif  // IPC_PARAM_TRAITS_READ_MACROS_H_
 

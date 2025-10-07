@@ -11,7 +11,6 @@
 #undef IPC_STRUCT_TRAITS_PARENT
 #undef IPC_STRUCT_TRAITS_END
 #undef IPC_ENUM_TRAITS_VALIDATE
-#undef IPC_MESSAGE_DECL
 
 #define IPC_STRUCT_TRAITS_BEGIN(struct_name) \
   void ParamTraits<struct_name>::Write(base::Pickle* m, const param_type& p) {
@@ -25,8 +24,6 @@
     DCHECK(validation_expression);                                 \
     m->WriteInt(static_cast<int>(value));                          \
   }
-
-#define IPC_MESSAGE_DECL(...)
 
 #endif  // IPC_PARAM_TRAITS_WRITE_MACROS_H_
 

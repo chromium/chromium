@@ -27,22 +27,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
+#include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-// IPC messages for testing ----------------------------------------------------
-
-#define IPC_MESSAGE_IMPL
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_message_start.h"
-
-#define IPC_MESSAGE_START TestMsgStart
-
-IPC_MESSAGE_CONTROL0(TestMsgClassEmpty)
-
-IPC_MESSAGE_CONTROL1(TestMsgClassI, int)
-
-IPC_SYNC_MESSAGE_CONTROL1_1(TestMsgClassIS, int, std::string)
 
 namespace IPC {
 
@@ -229,68 +216,6 @@ TEST(IPCMessageTest, FindNextOverflow) {
   EXPECT_FALSE(next.message_found);
   EXPECT_EQ(next.message_size,
             message.header()->payload_size + sizeof(IPC::Message::Header));
-}
-
-class IPCMessageParameterTest : public testing::Test {
- public:
-  IPCMessageParameterTest() : extra_param_("extra_param"), called_(false) {}
-
-  bool OnMessageReceived(const IPC::Message& message) {
-    bool handled = true;
-    IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(IPCMessageParameterTest, message,
-                                     &extra_param_)
-      IPC_MESSAGE_HANDLER(TestMsgClassEmpty, OnEmpty)
-      IPC_MESSAGE_HANDLER(TestMsgClassI, OnInt)
-      //IPC_MESSAGE_HANDLER(TestMsgClassIS, OnSync)
-      IPC_MESSAGE_UNHANDLED(handled = false)
-    IPC_END_MESSAGE_MAP()
-
-    return handled;
-  }
-
-  void OnEmpty(std::string* extra_param) {
-    EXPECT_EQ(extra_param, &extra_param_);
-    called_ = true;
-  }
-
-  void OnInt(std::string* extra_param, int foo) {
-    EXPECT_EQ(extra_param, &extra_param_);
-    EXPECT_EQ(foo, 42);
-    called_ = true;
-  }
-
-  /* TODO: handle sync IPCs
-    void OnSync(std::string* extra_param, int foo, std::string* out) {
-    EXPECT_EQ(extra_param, &extra_param_);
-    EXPECT_EQ(foo, 42);
-    called_ = true;
-    *out = std::string("out");
-  }
-
-  bool Send(IPC::Message* reply) {
-    delete reply;
-    return true;
-  }*/
-
-  std::string extra_param_;
-  bool called_;
-};
-
-TEST_F(IPCMessageParameterTest, EmptyDispatcherWithParam) {
-  TestMsgClassEmpty message;
-  EXPECT_TRUE(OnMessageReceived(message));
-  EXPECT_TRUE(called_);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_OneIntegerWithParam DISABLED_OneIntegerWithParam
-#else
-#define MAYBE_OneIntegerWithParam OneIntegerWithParam
-#endif
-TEST_F(IPCMessageParameterTest, MAYBE_OneIntegerWithParam) {
-  TestMsgClassI message(42);
-  EXPECT_TRUE(OnMessageReceived(message));
-  EXPECT_TRUE(called_);
 }
 
 TEST(IPCMessageIntegrity, ReadBeyondBufferStr) {

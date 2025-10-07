@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Get basic type definitions.
-#define IPC_MESSAGE_IMPL
 #include "chrome/common/common_message_generator.h"
 
 // Generate param traits write methods.

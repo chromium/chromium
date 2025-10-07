@@ -6,8 +6,7 @@
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#define IPC_MESSAGE_IMPL
-#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
+// Get basic type definitions.
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
 
 // Generate ipc protobuf traits write methods.

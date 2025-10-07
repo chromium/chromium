@@ -5,7 +5,6 @@
 #include "chrome/common/importer/profile_import_process_param_traits.h"
 
 // Get basic type definitions.
-#define IPC_MESSAGE_IMPL
 #include "chrome/common/importer/profile_import_process_param_traits_macros.h"
 
 // Generate param traits write methods.

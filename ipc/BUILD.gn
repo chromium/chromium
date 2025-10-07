@@ -42,9 +42,6 @@ component("ipc") {
       "ipc_message_macros.h",
       "ipc_message_pipe_reader.cc",
       "ipc_message_pipe_reader.h",
-      "ipc_message_start.h",
-      "ipc_message_templates.h",
-      "ipc_message_templates_impl.h",
       "ipc_mojo_bootstrap.cc",
       "ipc_mojo_bootstrap.h",
       "ipc_sender.h",
@@ -229,8 +226,6 @@ if (use_blink) {
       "ipc_message_utils_unittest.cc",
       "ipc_mojo_bootstrap_unittest.cc",
       "ipc_sync_channel_unittest.cc",
-      "ipc_sync_message_unittest.cc",
-      "ipc_sync_message_unittest.h",
       "tracing_helpers_unittest.cc",
     ]
 
