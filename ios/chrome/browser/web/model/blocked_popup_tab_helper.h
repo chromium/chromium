@@ -45,6 +45,9 @@ class BlockedPopupTabHelper
   // `referrer` represents the frame which requested this popup.
   void HandlePopup(const GURL& popup_url, const web::Referrer& referrer);
 
+  // Returns the number of currently blocked popups for this tab.
+  size_t GetBlockedPopupCount() const { return popups_.size(); }
+
   // infobars::InfoBarManager::Observer implementation.
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
   void OnManagerWillBeDestroyed(
