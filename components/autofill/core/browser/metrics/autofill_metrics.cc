@@ -1518,13 +1518,11 @@ void AutofillMetrics::LogDeleteAddressProfileFromPopup() {
 }
 
 // static
-void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory() {
-  // Only the "confirmed" bucket is recorded here, as the cancellation can only
-  // be recorded from Java.
+void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory(
+    bool delete_confirmed) {
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.KeyboardAccessory",
-                            /*delete_confirmed=*/true);
-  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
-                            /*delete_confirmed=*/true);
+                            delete_confirmed);
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any", delete_confirmed);
 }
 
 // static

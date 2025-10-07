@@ -469,6 +469,11 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
 
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
+
+  if (filling_product == FillingProduct::kAddress) {
+    AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory(confirmed);
+  }
+
   if (!confirmed) {
     return;
   }
@@ -478,7 +483,8 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   }
   switch (filling_product) {
     case FillingProduct::kAddress:
-      AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory();
+      // Address metrics are recorded earlier in this function because they are
+      // recorded even if user canceled the dialog.
       break;
     case FillingProduct::kAutocomplete:
       AutofillMetrics::OnAutocompleteSuggestionDeleted(

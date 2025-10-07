@@ -465,5 +465,47 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
       autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
+// Tests that the profile deletion metric is recorded as true (accepted) when
+// the user confirms the deletion dialog.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       RecordsAcceptedDeletionMetric) {
+  base::HistogramTester histogram_tester;
+  AutofillProfile complete_profile = test::GetFullProfile();
+  ShowAutofillProfileSuggestion(complete_profile);
+  ASSERT_TRUE(client().popup_view());
+
+  // Simulate user accepting deletion dialog.
+  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
+      .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/true));
+  client().popup_controller(manager()).RemoveSuggestion(
+      /*index=*/0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
+}
+
+// Tests that the profile deletion metric is recorded as false (canceled) when
+// the user cancels the deletion dialog.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       RecordsCanceledDeletionMetric) {
+  base::HistogramTester histogram_tester;
+  AutofillProfile complete_profile = test::GetFullProfile();
+  ShowAutofillProfileSuggestion(complete_profile);
+  ASSERT_TRUE(client().popup_view());
+
+  // Simulate user cancelling deletion dialog.
+  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
+      .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/false));
+  client().popup_controller(manager()).RemoveSuggestion(
+      /*index=*/0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileDeleted.KeyboardAccessory", 0, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 1);
+}
+
 }  // namespace
 }  // namespace autofill

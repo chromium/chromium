@@ -896,9 +896,11 @@ class AutofillMetrics {
   // using shift+delete.
   static void LogDeleteAddressProfileFromPopup();
 
-  // This metric is recorded when an address is deleted from the keyboard
-  // accessory.
-  static void LogDeleteAddressProfileFromKeyboardAccessory();
+  // Records the outcome of an address profile deletion initiated from the
+  // keyboard accessory. `delete_confirmed` is true if the user confirmed the
+  // deletion prompt, and false if they canceled.
+  static void LogDeleteAddressProfileFromKeyboardAccessory(
+      bool delete_confirmed);
 
   static void LogAutocompleteEvent(AutocompleteEvent event);
 
