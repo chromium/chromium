@@ -892,6 +892,7 @@ StyleRulePageMargin::StyleRulePageMargin(CSSAtRuleID id,
 StyleRulePageMargin::StyleRulePageMargin(
     const StyleRulePageMargin& page_margin_rule)
     : StyleRuleBase(page_margin_rule),
+      id_(page_margin_rule.id_),
       properties_(page_margin_rule.properties_->MutableCopy()) {}
 
 MutableCSSPropertyValueSet& StyleRulePageMargin::MutableProperties() {

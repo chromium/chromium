@@ -93,6 +93,27 @@ TEST_F(StyleRuleTest, StyleRulePropertyCopy) {
   EXPECT_EQ(rule->GetInitialValue(), copy->GetInitialValue());
 }
 
+TEST_F(StyleRuleTest, StyleRuleMarginCopy) {
+  auto* page_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
+    @page {
+      @bottom-right {
+        content: "Page " counter(pageNumber);
+      }
+    }
+    )CSS");
+
+  auto base_rule = DynamicTo<StyleRulePage>(page_rule)->ChildRules()[0];
+
+  ASSERT_TRUE(base_rule);
+  auto* rule = DynamicTo<StyleRulePageMargin>(&*base_rule);
+  ASSERT_TRUE(rule);
+
+  auto* base_copy = base_rule->Clone(nullptr, nullptr);
+  EXPECT_NE(base_rule, base_copy);
+  auto* copy = DynamicTo<StyleRulePageMargin>(base_copy);
+  EXPECT_EQ(rule->ID(), copy->ID());
+}
+
 TEST_F(StyleRuleTest, StyleRuleFunctionCopy) {
   auto* base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
       @function --f(--p1, --p2) returns <length> {
