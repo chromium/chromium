@@ -524,6 +524,8 @@ const char kTrackingProtectionSettingsURL[] =
       [cell createDetailTextLabel];
       [cell setDetailTextNumberOfLines:0];
       cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+      cell.separatorInset =
+          UIEdgeInsetsMake(0, kPageInfoTableViewSeparatorInset, 0, 0);
 
       if (_trackingProtectionInfo.hasTrackingProtectionException) {
         cell.textLabel.text = l10n_util::GetNSString(
