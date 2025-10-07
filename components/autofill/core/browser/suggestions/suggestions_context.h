@@ -31,10 +31,6 @@ struct SuggestionsContext {
   SuggestionsContext& operator=(const SuggestionsContext&);
   ~SuggestionsContext();
 
-  // Returns what `FillingProduct`s should be asked for filling given this
-  // `trigger_source`.
-  DenseSet<FillingProduct> GetFillingProductsToSuggest() const;
-
   FillingProduct filling_product = FillingProduct::kNone;
   SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
   // Indicates whether generating Autofill and AutofillAI suggestions
@@ -44,8 +40,6 @@ struct SuggestionsContext {
   // TODO(crbug.com/409962888): Remove once each suggestion generator is capable
   // of checking all of their requirements.
   bool do_not_generate_autofill_suggestions = false;
-  AutofillSuggestionTriggerSource trigger_source =
-      AutofillSuggestionTriggerSource::kUnspecified;
 };
 
 }  // namespace autofill

@@ -515,6 +515,36 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
 #endif
 }
 
+// Returns what `FillingProduct`s should be asked for filling given this
+// `trigger_source`.
+DenseSet<FillingProduct> GetFillingProductsToSuggest(
+    AutofillSuggestionTriggerSource trigger_source) {
+  using enum AutofillSuggestionTriggerSource;
+  switch (trigger_source) {
+    case kUnspecified:
+      return {};
+    case kTextareaFocusedWithoutClick:
+    case kComposeDialogLostFocus:
+    case kComposeDelayedProactiveNudge:
+    case kContentEditableClicked:
+      return {FillingProduct::kCompose};
+    case kPasswordManager:
+    case kProactivePasswordRecovery:
+    case kPasswordManagerProcessedFocusedField:
+    case kManualFallbackPasswords:
+      return {FillingProduct::kPassword, FillingProduct::kPasskey};
+    case kManualFallbackPlusAddresses:
+      return {FillingProduct::kPlusAddresses};
+    case kPlusAddressUpdatedInBrowserProcess:
+    case kOpenTextDataListChooser:
+    case kFormControlElementClicked:
+    case kTextFieldValueChanged:
+    case kTextFieldDidReceiveKeyDown:
+    case kiOS:
+      return DenseSet<FillingProduct>::all();
+  }
+}
+
 // Populates all the fields (except for ablation study related fields) in
 // `SuggestionsContext` based on the given params.
 SuggestionsContext BuildSuggestionsContext(
@@ -524,7 +554,6 @@ SuggestionsContext BuildSuggestionsContext(
     const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source) {
   SuggestionsContext context;
-  context.trigger_source = trigger_source;
 
   // When Compose suggestions or manual fallback for plus addresses are
   // requested, there is no need to load Autofill suggestions.
@@ -1164,7 +1193,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
-  InitializeSuggestionGenerators(context, field.global_id());
+  InitializeSuggestionGenerators(trigger_source, field.global_id());
 
   auto barrier_callback = base::BarrierCallback<
       std::pair<SuggestionGenerator::SuggestionDataSource,
@@ -3482,13 +3511,13 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
 }
 
 void BrowserAutofillManager::InitializeSuggestionGenerators(
-    const SuggestionsContext& context,
+    AutofillSuggestionTriggerSource trigger_source,
     FieldGlobalId field_id) {
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
   const DenseSet<FillingProduct> relevant_filling_products =
-      context.GetFillingProductsToSuggest();
+      GetFillingProductsToSuggest(trigger_source);
 
   if (relevant_filling_products.contains(FillingProduct::kAutofillAi)) {
     suggestion_generators_.push_back(
@@ -3519,7 +3548,7 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
       client().GetComposeDelegate()) {
     suggestion_generators_.push_back(
         std::make_unique<ComposeSuggestionGenerator>(
-            client().GetComposeDelegate(), context.trigger_source));
+            client().GetComposeDelegate(), trigger_source));
   }
   if (relevant_filling_products.contains(FillingProduct::kIdentityCredential)) {
     if (auto* delegate = client().GetIdentityCredentialDelegate()) {

@@ -649,9 +649,10 @@ class BrowserAutofillManager : public AutofillManager {
           identification_time);
 
   // Populates `suggestion_generators_` with those capable of producing
-  // suggestions for field with `field_id` given `context`.
-  void InitializeSuggestionGenerators(const SuggestionsContext& context,
-                                      FieldGlobalId field_id);
+  // suggestions for field with `field_id` given `trigger_source`.
+  void InitializeSuggestionGenerators(
+      AutofillSuggestionTriggerSource trigger_source,
+      FieldGlobalId field_id);
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.
