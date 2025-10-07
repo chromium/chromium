@@ -418,6 +418,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'privacy',
         },
         {
+          route: routes.SITE_SETTINGS_SITE_DETAILS,
+          viewId: 'siteSettingsSiteDetails',
+          parentViewId: 'privacy',
+        },
+        {
           route: routes.SITE_SETTINGS_SOUND,
           viewId: 'siteSettingsSound',
           parentViewId: 'privacy',
