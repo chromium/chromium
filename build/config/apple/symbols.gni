@@ -28,17 +28,3 @@ declare_args() {
 # useful to preserve the original output when enable_stripping=true but
 # we're not actually generating real dSYMs.
 save_unstripped_output = enable_stripping && !enable_dsyms
-
-# When generating dSYM files, the bundle contains relocation information in
-# a directory named after the binary architecture. However, the name of the
-# architecture is different from the one used in gn, so expose dsym_arch as
-# a variable with name as found in dSYM files.
-if (enable_dsyms) {
-  if (current_cpu == "arm64") {
-    dsym_arch = "aarch64"
-  } else if (current_cpu == "x64") {
-    dsym_arch = "x86_64"
-  } else {
-    assert(false, "Need to define dsym_arch for $current_cpu!")
-  }
-}
