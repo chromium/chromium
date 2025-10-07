@@ -37,6 +37,8 @@ class ProfileCustomizationSyncedThemeWaiter
     kTimeout,
   };
 
+  // This object must be destroyed before `sync_service` or `theme_service` are
+  // shut down.
   ProfileCustomizationSyncedThemeWaiter(
       syncer::SyncService* sync_service,
       ThemeService* theme_service,
@@ -53,6 +55,7 @@ class ProfileCustomizationSyncedThemeWaiter
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // ThemeSyncableService::Observer:
   void OnThemeSyncStarted(ThemeSyncableService::ThemeSyncState state) override;

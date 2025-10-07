@@ -71,6 +71,12 @@ void ProfileCustomizationSyncedThemeWaiter::OnStateChanged(
   CheckThemeSyncPreconditions();
 }
 
+void ProfileCustomizationSyncedThemeWaiter::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Unreachable: This object must be destroyed before SyncService shutdown.
+  NOTREACHED();
+}
+
 void ProfileCustomizationSyncedThemeWaiter::OnThemeSyncStarted(
     ThemeSyncableService::ThemeSyncState state) {
   switch (state) {
