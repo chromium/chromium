@@ -808,6 +808,60 @@ class WebIdlSchemaTest(unittest.TestCase):
     normal_property = getProperty(schema, 'NORMAL_PROPERTY')
     self.assertFalse(hasattr(normal_property, 'nodoc'))
 
+  # Tests that the nocompile extended attribute used in various places gets the
+  # related attribute set to True after processing.
+  # Note: Practically with how nocompile works during actual schema compilation
+  # this schema doesn't really make sense, as the top level schema node would be
+  # deleted, making all the other 'nocompile's redundant. However we can still
+  # use this schema to check that the attribute is set correctly on each node
+  # after just the parsing and processing steps (before compilation).
+  def testNoCompileExtendedAttribute(self):
+    idl = web_idl_schema.Load('test/web_idl/nocompile_examples.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    # Top level namespace:
+    self.assertEqual('nocompileAPI', schema['namespace'])
+    self.assertTrue(schema['nocompile'])
+
+    # Enums:
+    nocompile_enum = getType(schema, 'EnumWithNoCompile')
+    self.assertTrue(nocompile_enum['nocompile'])
+    normal_enum = getType(schema, 'NormalEnum')
+    self.assertFalse(hasattr(normal_enum, 'nocompile'))
+
+    # Dictionaries:
+    nocompile_dict = getType(schema, 'DictionaryWithNoCompile')
+    self.assertTrue(nocompile_dict['nocompile'])
+    normal_dict = getType(schema, 'NormalDictionary')
+    self.assertFalse(hasattr(normal_dict, 'nocompile'))
+
+    # Dictionary members:
+    nocompile_dict_member = getType(schema, 'DictionaryWithNoCompileMember')
+    self.assertTrue(
+        nocompile_dict_member['properties']['nocompileMember']['nocompile'])
+    self.assertFalse(
+        hasattr(nocompile_dict_member['properties']['normalMember'],
+                'nocompile'))
+
+    # Functions:
+    nocompile_function = getFunction(schema, 'functionWithNoCompile')
+    self.assertTrue(nocompile_function['nocompile'])
+    normal_function = getFunction(schema, 'normalFunction')
+    self.assertFalse(hasattr(normal_function, 'nocompile'))
+
+    # Events:
+    nocompile_event = getEvent(schema, 'noCompileEvent')
+    self.assertTrue(nocompile_event['nocompile'])
+    normal_event = getEvent(schema, 'normalEvent')
+    self.assertFalse(hasattr(normal_event, 'nocompile'))
+
+    # Properties:
+    nocompile_property = getProperty(schema, 'PROPERTY_WITH_NOCOMPILE')
+    self.assertTrue(nocompile_property['nocompile'])
+    normal_property = getProperty(schema, 'NORMAL_PROPERTY')
+    self.assertFalse(hasattr(normal_property, 'nocompile'))
+
   # Tests that the deprecated extended attribute used in various places get the
   # related attribute set to the provided string after processing.
   # TODO(crbug.com/340297705): Enum values are not allowed to have extended

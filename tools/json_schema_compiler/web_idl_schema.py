@@ -147,8 +147,8 @@ def AddCommonExtendedAttributeProperties(node: IDLNode, properties: dict):
     properties['deprecated'] = deprecated
   if HasExtendedAttribute(node, 'nodoc'):
     properties['nodoc'] = True
-  # TODO(crbug.com/340297705): Add the nocompile extended attribute here too and
-  # test for it on associated nodes.
+  if HasExtendedAttribute(node, 'nocompile'):
+    properties['nocompile'] = True
 
 
 def _ExtractNodeComment(node: IDLNode) -> str:
