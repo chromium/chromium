@@ -68,6 +68,10 @@ void AutofillBubbleControllerBase::HideBubble() {
   }
 }
 
+bool AutofillBubbleControllerBase::CanBeReshown() const {
+  return true;
+}
+
 bool AutofillBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }

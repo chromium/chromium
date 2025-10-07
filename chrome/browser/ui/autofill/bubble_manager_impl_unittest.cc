@@ -92,6 +92,7 @@ class MockBubbleController : public BubbleControllerBase {
 
   MOCK_METHOD(void, ShowBubble, (), (override));
   MOCK_METHOD(void, HideBubble, (), (override));
+  MOCK_METHOD(bool, CanBeReshown, (), (const, override));
   MOCK_METHOD(BubbleType, GetBubbleType, (), (const, override));
   MOCK_METHOD(bool, IsShowingBubble, (), (const, override));
   MOCK_METHOD(bool, IsMouseHovered, (), (const, override));
@@ -116,10 +117,12 @@ class BubbleManagerImplTest : public ::testing::Test {
 
   // Creates and returns a new `MockBubbleController` with `bubble_type`.
   std::unique_ptr<MockBubbleController> CreateController(
-      BubbleType bubble_type) {
+      BubbleType bubble_type,
+      bool can_be_reshown = true) {
     std::unique_ptr<MockBubbleController> controller =
         std::make_unique<MockBubbleController>();
     controller->SetBubbleType(bubble_type);
+    ON_CALL(*controller, CanBeReshown).WillByDefault(Return(can_be_reshown));
     return controller;
   }
 
@@ -756,6 +759,99 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_LogsTimeInQueue) {
   histogram_tester_.ExpectUniqueTimeSample(
       "Autofill.Bubble.Queue.TimeInQueue.SaveUpdateAddress", base::Seconds(5),
       1);
+}
+
+// Test that a confirmation bubble is dropped if requested while another bubble
+// is active.
+TEST_F(BubbleManagerImplTest,
+       RequestShow_ConfirmationBubbleWhileActive_IsDropped) {
+  // Show a regular, non-confirmation bubble.
+  std::unique_ptr<MockBubbleController> card_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+  EXPECT_CALL(*card_controller, ShowBubble());
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(card_controller->IsShowingBubble());
+
+  // Create a confirmation bubble.
+  std::unique_ptr<MockBubbleController> confirmation_controller =
+      CreateController(BubbleType::kVirtualCardEnrollConfirmation,
+                       /*can_be_reshown=*/false);
+
+  // Attempt to show the confirmation bubble. It should not be shown or queued.
+  EXPECT_CALL(*confirmation_controller, ShowBubble()).Times(0);
+  bubble_manager().RequestShowController(*confirmation_controller,
+                                         /*force_show=*/false);
+
+  // The original bubble should still be active, and the confirmation bubble
+  // should not be showing or pending.
+  EXPECT_TRUE(card_controller->IsShowingBubble());
+  EXPECT_FALSE(confirmation_controller->IsShowingBubble());
+  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+      BubbleType::kVirtualCardEnrollConfirmation));
+}
+
+// Test that when a confirmation bubble is preempted, it is not re-queued.
+TEST_F(BubbleManagerImplTest,
+       RequestShow_PreemptConfirmationBubble_IsNotReQueued) {
+  // Show a confirmation bubble.
+  std::unique_ptr<MockBubbleController> confirmation_controller =
+      CreateController(BubbleType::kVirtualCardEnrollConfirmation,
+                       /*can_be_reshown=*/false);
+  EXPECT_CALL(*confirmation_controller, ShowBubble());
+  bubble_manager().RequestShowController(*confirmation_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(confirmation_controller->IsShowingBubble());
+
+  // Create a higher-priority bubble to preempt the active one.
+  std::unique_ptr<MockBubbleController> password_controller =
+      CreateController(BubbleType::kPassword);
+
+  // Expect the confirmation bubble to be hidden and the new one shown.
+  {
+    InSequence sequence;
+    EXPECT_CALL(*confirmation_controller, HideBubble());
+    EXPECT_CALL(*password_controller, ShowBubble());
+  }
+
+  // Show the higher-priority bubble.
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
+
+  // Verify the new bubble is active and the confirmation bubble is not.
+  EXPECT_TRUE(password_controller->IsShowingBubble());
+  EXPECT_FALSE(confirmation_controller->IsShowingBubble());
+
+  // Verify the confirmation bubble was NOT added back to the queue.
+  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+      BubbleType::kVirtualCardEnrollConfirmation));
+}
+
+// Test that a confirmation bubble is not queued if requested while the tab is
+// inactive.
+TEST_F(BubbleManagerImplTest,
+       RequestShow_ConfirmationBubbleOnInactiveTab_IsNotQueued) {
+  // Deactivate the tab.
+  tab_interface()->Deactivate();
+
+  // Create a confirmation bubble.
+  std::unique_ptr<MockBubbleController> confirmation_controller =
+      CreateController(BubbleType::kVirtualCardEnrollConfirmation,
+                       /*can_be_reshown=*/false);
+
+  // Try to show the bubble. Since the tab is inactive and it's a confirmation
+  // bubble, it should be dropped entirely, not queued.
+  EXPECT_CALL(*confirmation_controller, ShowBubble()).Times(0);
+  bubble_manager().RequestShowController(*confirmation_controller,
+                                         /*force_show=*/false);
+
+  // Verify it wasn't queued.
+  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+      BubbleType::kVirtualCardEnrollConfirmation));
+
+  // Reactivating the tab should not trigger the bubble to show.
+  tab_interface()->Activate();
+  EXPECT_FALSE(confirmation_controller->IsShowingBubble());
 }
 
 // Tests that if the web contents is deactivated, the show bubble request leads

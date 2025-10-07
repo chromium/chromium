@@ -217,6 +217,13 @@ void BubbleManagerImpl::HideActiveBubbleForPreemption() {
 void BubbleManagerImpl::AddToPendingQueue(
     base::WeakPtr<BubbleControllerBase> controller) {
   CHECK(controller);
+  if (!controller->CanBeReshown()) {
+    // Bubbles that cannot be reshown should not be added to the queue. This is
+    // the case for bubbles that are time-bound or clear their state when
+    // closed.
+    return;
+  }
+
   const BubbleType new_bubble_type = controller->GetBubbleType();
   const base::TimeTicks now = base::TimeTicks::Now();
   int priority = GetPriorityForBubbleType(new_bubble_type);

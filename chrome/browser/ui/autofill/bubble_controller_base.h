@@ -58,6 +58,11 @@ class BubbleControllerBase {
   // Returns true if the mouse is currently inside the bubble view.
   virtual bool IsMouseHovered() const = 0;
 
+  // Returns false if the bubble should not be queued and shown again later
+  // (e.g. after being preempted). This is the case for bubbles that are
+  // time-sensitive or whose state is cleared upon closing.
+  virtual bool CanBeReshown() const = 0;
+
   // Subclasses need to implement this method so that the resulting weak
   // pointers are invalidated as soon as the derived class is destroyed.
   virtual base::WeakPtr<BubbleControllerBase>

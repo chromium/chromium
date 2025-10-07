@@ -34,6 +34,10 @@ void WalletablePassConsentBubbleController::ShowConsentBubble(
   QueueOrShowBubble();
 }
 
+bool WalletablePassConsentBubbleController::CanBeReshown() const {
+  return true;
+}
+
 base::WeakPtr<autofill::BubbleControllerBase>
 WalletablePassConsentBubbleController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

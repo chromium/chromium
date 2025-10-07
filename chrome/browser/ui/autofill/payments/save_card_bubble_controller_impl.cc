@@ -834,6 +834,10 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   }
 }
 
+bool SaveCardBubbleControllerImpl::CanBeReshown() const {
+  return current_bubble_type_ != PaymentsBubbleType::kUploadComplete;
+}
+
 BubbleType SaveCardBubbleControllerImpl::GetBubbleType() const {
   return BubbleType::kSaveUpdateCard;
 }

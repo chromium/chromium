@@ -1517,6 +1517,10 @@ ManagePasswordsUIController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+bool ManagePasswordsUIController::CanBeReshown() const {
+  return true;
+}
+
 void ManagePasswordsUIController::OnMouseEntered() {
   is_mouse_hovered_ = true;
 }

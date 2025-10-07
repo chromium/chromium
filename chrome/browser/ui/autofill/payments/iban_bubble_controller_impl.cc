@@ -486,6 +486,10 @@ void IbanBubbleControllerImpl::DoShowBubble() {
   }
 }
 
+bool IbanBubbleControllerImpl::CanBeReshown() const {
+  return current_bubble_type_ != IbanBubbleType::kUploadCompleted;
+}
+
 BubbleType IbanBubbleControllerImpl::GetBubbleType() const {
   return BubbleType::kSaveIban;
 }

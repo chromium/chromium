@@ -103,6 +103,7 @@ class IbanBubbleControllerImpl
   GetConfirmationUiParams() const override;
 
   // BubbleControllerBase:
+  bool CanBeReshown() const override;
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 

@@ -26,6 +26,7 @@ class WalletablePassConsentBubbleController
   ~WalletablePassConsentBubbleController() override;
 
   // BubbleControllerBase:
+  bool CanBeReshown() const override;
   autofill::BubbleType GetBubbleType() const override;
   base::WeakPtr<autofill::BubbleControllerBase> GetBubbleControllerBaseWeakPtr()
       override;

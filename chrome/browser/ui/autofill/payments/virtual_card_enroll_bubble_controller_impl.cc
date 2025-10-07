@@ -405,6 +405,14 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   }
 }
 
+bool VirtualCardEnrollBubbleControllerImpl::CanBeReshown() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return enrollment_status_ != EnrollmentStatus::kCompleted;
+#else
+  NOTREACHED();
+#endif
+}
+
 BubbleType VirtualCardEnrollBubbleControllerImpl::GetBubbleType() const {
   return BubbleType::kVirtualCardEnrollConfirmation;
 }

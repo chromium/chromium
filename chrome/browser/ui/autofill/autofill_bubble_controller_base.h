@@ -47,6 +47,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   // BubbleControllerBase:
   void ShowBubble() override;
   void HideBubble() override;
+  bool CanBeReshown() const override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;
 
