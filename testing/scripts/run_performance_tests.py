@@ -53,6 +53,9 @@ import time
 import tempfile
 import traceback
 
+if sys.platform == 'darwin':
+  import plistlib
+
 # vpython-provided modules.
 # pylint: disable=import-error
 import six
@@ -1240,14 +1243,53 @@ def get_browser_versions(isolated_out_dir):
                                         capture_output=True,
                                         encoding='utf8',
                                         check=True).stdout.strip()
+  elif sys.platform == 'darwin':
+    channels = {
+        'stable': {
+            'driver': '/usr/bin/safaridriver',
+            'prefix': 'Included with Safari ',
+        },
+        # pylint: disable=line-too-long
+        'technology-preview': {
+            'plist': '/Applications/Safari Technology Preview.app/Contents/Info.plist',
+            'driver': '/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver',
+            'prefix': 'Included with Safari Technology Preview ',
+        },
+        # pylint: enable=line-too-long
+    }
+    for channel, info in channels.items():
+      driver_version = subprocess.run([info['driver'], '--version'],
+                                      capture_output=True,
+                                      encoding='utf8',
+                                      check=True).stdout.strip()
+      prefix = info['prefix']
+      if not driver_version.startswith(prefix):
+        # pylint: disable=line-too-long
+        print(f'Missing expected prefix from Safari {channel} output: {driver_version}')
+        # pylint: enable=line-too-long
+        return 1
+      driver_version = driver_version[len(prefix):]
+      # For Safari stable, the version reported by safaridriver is complete and
+      # can be used as is. For Safari Technology Preview, however, the version
+      # reported by safaridriver is missing the main version (such as '26.0'),
+      # and we need to retrieve it from the app's plist file.
+      if plist_path := info.get('plist'):
+        plist = plistlib.loads(pathlib.Path(plist_path).read_bytes())
+        version = plist.get('CFBundleShortVersionString')
+        if not version:
+          print(f'Missing version info for Safari {channel}')
+          return 1
+        results[channel] = f'{version} {driver_version}'
+      else:
+        results[channel] = driver_version
   else:
-    # TODO(b/433796487): Handle Mac.
-    print('Only Windows OS is supported')
+    print('Only Windows OS and MacOS are supported')
     return 1
 
   with open(os.path.join(isolated_out_dir, CBB_BROWSER_VERSIONS_FILENAME),
             'w') as f:
     json.dump(results, f)
+    f.write('\n')
 
   return 0
 
