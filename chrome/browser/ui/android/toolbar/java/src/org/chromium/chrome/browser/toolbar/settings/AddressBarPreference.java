@@ -11,16 +11,21 @@ import android.widget.RadioGroup;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
+import org.chromium.components.prefs.PrefService;
 
 /** Preferences that allows the user to configure address bar. */
 @NullMarked
@@ -30,10 +35,27 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
     private RadioButtonWithDescription mTopButton;
     private RadioButtonWithDescription mBottomButton;
 
+    // We choose this as a "default return value" because top omnibox is the default today. Choose
+    // TOP_SETTINGS because TOP_LONG_PRESS causes an animation (see ToolbarPositionController).
+    private static final @ToolbarPositionAndSource int DEFAULT_POSITION_AND_SOURCE =
+            ToolbarPositionAndSource.TOP_SETTINGS;
+
     public AddressBarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Inflating from XML.
         setLayoutResource(R.layout.address_bar_preference);
+    }
+
+    /** If native is initialized, writes the toolbar position and source. */
+    public static void setToolbarPositionAndSource(@ToolbarPositionAndSource int sharedPref) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        @Nullable PrefService localPrefService = LocalStatePrefs.get();
+        if (localPrefService != null) {
+            // Set the local pref service value first, since this is the source of truth.
+            localPrefService.setBoolean(
+                    Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, isToolbarAtBottom(sharedPref));
+        }
+        sharedPreferencesManager.writeInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, sharedPref);
     }
 
     /**
@@ -42,6 +64,53 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
      * configurable for experimental purposes but defaults to top.
      */
     public static boolean isToolbarConfiguredToShowOnTop() {
+        // enumToBoolean is true if position is bottom, but this method wants whether it's on top.
+        var t = computeToolbarPositionAndSource();
+        return !isToolbarAtBottom(t);
+    }
+
+    /** Returns enum representing toolbar position and source (why the toolbar position was set.) */
+    public static @ToolbarPositionAndSource int computeToolbarPositionAndSource() {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        @ToolbarPositionAndSource int existingPositionAndSource = computeToolbarTopAnchoredPref();
+        boolean isChromeSharedPrefSet =
+                existingPositionAndSource != ToolbarPositionAndSource.UNDEFINED;
+        boolean existingPositionAsBool = isToolbarAtBottom(existingPositionAndSource);
+
+        @Nullable PrefService localPrefService = LocalStatePrefs.get();
+        if (localPrefService == null) return existingPositionAndSource;
+        boolean isLocalStateSet = localPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
+        boolean existingLocalState =
+                localPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
+
+        // Chrome shared pref is set, local state is not
+        if (isChromeSharedPrefSet && !isLocalStateSet) {
+            localPrefService.setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, existingPositionAsBool);
+            return existingPositionAndSource;
+        }
+        // Chrome pref is not set and local state is set.
+        if (!isChromeSharedPrefSet && isLocalStateSet) {
+            int positionAndSource = fromLocalState(existingLocalState);
+            sharedPreferencesManager.writeInt(
+                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, positionAndSource);
+            return positionAndSource;
+        }
+        // Chrome shared pref and local state are both set, and ...
+        if (isChromeSharedPrefSet && isLocalStateSet) {
+            // ... the prefs agree:
+            if (existingLocalState == existingPositionAsBool) {
+                return existingPositionAndSource;
+            }
+            // ... the prefs don't agree. Use local state as source of truth:
+            @ToolbarPositionAndSource int positionAndSource = fromLocalState(existingLocalState);
+            sharedPreferencesManager.writeInt(
+                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, positionAndSource);
+        }
+        // Neither is set.
+        return DEFAULT_POSITION_AND_SOURCE;
+    }
+
+    private static @ToolbarPositionAndSource int computeToolbarTopAnchoredPref() {
         try {
             Boolean oldPrefValue =
                     ChromeSharedPreferences.getInstance()
@@ -58,28 +127,27 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
                             .writeInt(
                                     ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
                                     ToolbarPositionAndSource.TOP_SETTINGS);
+                    return ToolbarPositionAndSource.TOP_SETTINGS;
                 } else {
                     ChromeSharedPreferences.getInstance()
                             .writeInt(
                                     ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
                                     ToolbarPositionAndSource.BOTTOM_SETTINGS);
+                    return ToolbarPositionAndSource.BOTTOM_SETTINGS;
                 }
             }
-            return oldPrefValue;
         } catch (ClassCastException e) {
-            int prefValue =
-                    ChromeSharedPreferences.getInstance()
-                            .readInt(
-                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                                    ToolbarPositionAndSource.UNDEFINED);
-            return switch (prefValue) {
-                case ToolbarPositionAndSource.TOP_LONG_PRESS,
-                        ToolbarPositionAndSource.TOP_SETTINGS -> true;
-                case ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
-                        ToolbarPositionAndSource.BOTTOM_SETTINGS -> false;
-                default -> ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue();
-            };
         }
+        @ToolbarPositionAndSource
+        int posAndSource =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(
+                                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                                ToolbarPositionAndSource.UNDEFINED);
+        if (posAndSource == ToolbarPositionAndSource.UNDEFINED) {
+            return fromLocalState(!ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue());
+        }
+        return posAndSource;
     }
 
     @Override
@@ -119,15 +187,9 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         boolean isTop = mTopButton.isChecked();
         if (isTop) {
-            ChromeSharedPreferences.getInstance()
-                    .writeInt(
-                            ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                            ToolbarPositionAndSource.TOP_SETTINGS);
+            setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
         } else {
-            ChromeSharedPreferences.getInstance()
-                    .writeInt(
-                            ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                            ToolbarPositionAndSource.BOTTOM_SETTINGS);
+            setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
         }
     }
 
@@ -145,5 +207,15 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
     @VisibleForTesting
     RadioButtonWithDescription getBottomRadioButton() {
         return mBottomButton;
+    }
+
+    private static boolean isToolbarAtBottom(@ToolbarPositionAndSource int pref) {
+        return (pref == ToolbarPositionAndSource.BOTTOM_LONG_PRESS
+                || pref == ToolbarPositionAndSource.BOTTOM_SETTINGS);
+    }
+
+    private static @ToolbarPositionAndSource int fromLocalState(boolean isInBottomPosition) {
+        if (isInBottomPosition) return ToolbarPositionAndSource.BOTTOM_SETTINGS;
+        return DEFAULT_POSITION_AND_SOURCE;
     }
 }

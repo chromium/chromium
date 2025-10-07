@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.computeToolbarPositionAndSource;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
@@ -604,11 +604,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         } else if (prefStateChanged) {
             // Animate when the pref changes via the long press menu, but not if it was changed via
             // the settings UI.
-            int positionAndSource =
-                    ChromeSharedPreferences.getInstance()
-                            .readInt(
-                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                                    ToolbarPositionAndSource.UNDEFINED);
+            int positionAndSource = computeToolbarPositionAndSource();
             boolean animate =
                     positionAndSource == ToolbarPositionAndSource.TOP_LONG_PRESS
                             || positionAndSource == ToolbarPositionAndSource.BOTTOM_LONG_PRESS;

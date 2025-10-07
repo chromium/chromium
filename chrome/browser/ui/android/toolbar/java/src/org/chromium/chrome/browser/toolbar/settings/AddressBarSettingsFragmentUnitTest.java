@@ -7,6 +7,14 @@ package org.chromium.chrome.browser.toolbar.settings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
@@ -23,6 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -30,16 +41,25 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.TestActivity;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link AddressBarSettingsFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddressBarSettingsFragmentUnitTest {
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -51,11 +71,29 @@ public class AddressBarSettingsFragmentUnitTest {
     private RadioButtonWithDescription mBottomButton;
     private Preference mAddressBarTitle;
     private ImageView mToolbarPositionImage;
+    private @Mock LocalStatePrefs.Natives mLocalStatePrefsNatives;
+    private @Mock PrefService mLocalPrefService;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
+        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
+        when(mLocalStatePrefsNatives.getPrefService()).thenReturn(mLocalPrefService);
+
+        AtomicReference<@Nullable Boolean> localPrefValue = new AtomicReference<>();
+        doAnswer(
+                        invocation -> {
+                            localPrefValue.set(invocation.getArgument(1));
+                            return null;
+                        })
+                .when(mLocalPrefService)
+                .setBoolean(eq(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION), anyBoolean());
+        when(mLocalPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
+                .thenAnswer(invocation -> localPrefValue.get() != null);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
+                .thenAnswer(invocation -> localPrefValue.get() != null && localPrefValue.get());
     }
 
     @After
@@ -115,6 +153,7 @@ public class AddressBarSettingsFragmentUnitTest {
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_currently_on_top),
                 mToolbarPositionImage.getContentDescription());
+        clearInvocations(mLocalPrefService);
 
         mBottomButton.performClick();
 
@@ -127,6 +166,7 @@ public class AddressBarSettingsFragmentUnitTest {
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_currently_on_bottom),
                 mToolbarPositionImage.getContentDescription());
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
     }
 
     @Test
@@ -140,6 +180,7 @@ public class AddressBarSettingsFragmentUnitTest {
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
         assertFalse(mToolbarPositionImage.isSelected());
+        clearInvocations(mLocalPrefService);
 
         mTopButton.performClick();
 
@@ -149,6 +190,33 @@ public class AddressBarSettingsFragmentUnitTest {
                 ToolbarPositionAndSource.TOP_SETTINGS,
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         assertTrue(mToolbarPositionImage.isSelected());
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        verify(mLocalPrefService, never()).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+    }
+
+    @Test
+    @SmallTest
+    public void testBottomAndThenSelectTop_localPrefNotInitialized() {
+        LocalStatePrefs.setNativePrefsLoadedForTesting(false);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_SETTINGS);
+
+        launchFragment();
+        assertFalse(mTopButton.isChecked());
+        assertTrue(mBottomButton.isChecked());
+        assertFalse(mToolbarPositionImage.isSelected());
+        clearInvocations(mLocalPrefService);
+
+        mTopButton.performClick();
+
+        assertTrue(mTopButton.isChecked());
+        assertFalse(mBottomButton.isChecked());
+        assertEquals(
+                ToolbarPositionAndSource.TOP_SETTINGS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+        assertTrue(mToolbarPositionImage.isSelected());
+        verify(mLocalStatePrefsNatives, never()).getPrefService();
     }
 
     @Test

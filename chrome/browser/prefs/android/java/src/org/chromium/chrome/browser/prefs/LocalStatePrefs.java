@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.prefs.PrefService;
@@ -32,6 +33,15 @@ public class LocalStatePrefs {
     @CalledByNative
     private static void setNativePrefsLoaded() {
         sIsNativeReady = true;
+    }
+
+    public static void setNativePrefsLoadedForTesting(boolean state) {
+        boolean oldState = sIsNativeReady;
+        sIsNativeReady = state;
+        ResettersForTesting.register(
+                () -> {
+                    sIsNativeReady = oldState;
+                });
     }
 
     @NativeMethods

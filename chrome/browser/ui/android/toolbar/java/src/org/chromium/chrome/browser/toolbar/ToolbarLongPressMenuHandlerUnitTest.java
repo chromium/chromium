@@ -9,7 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -17,6 +21,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -51,6 +57,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -59,10 +66,14 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarApi26;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -77,6 +88,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link ToolbarLongPressMenuHandler}. */
@@ -106,6 +118,8 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DisplayAndroid mDisplayAndroid;
     @Spy PopupWindow mSpyPopupWindow;
+    @Mock LocalStatePrefs.Natives mLocalStatePrefsNatives;
+    @Mock PrefService mLocalPrefService;
 
     private ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
     private ObservableSupplierImpl mProfileSupplier;
@@ -158,7 +172,23 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                 .when(mBasicListMenu)
                 .getMenuDimensions();
 
+        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
+        when(mLocalStatePrefsNatives.getPrefService()).thenReturn(mLocalPrefService);
+
+        AtomicReference<@Nullable Boolean> localPrefValue = new AtomicReference<>();
+        doAnswer(
+                        invocation -> {
+                            localPrefValue.set(invocation.getArgument(1));
+                            return null;
+                        })
+                .when(mLocalPrefService)
+                .setBoolean(eq(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION), anyBoolean());
+        when(mLocalPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
+                .thenAnswer(invocation -> localPrefValue.get() != null);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
+                .thenAnswer(invocation -> localPrefValue.get() != null && localPrefValue.get());
     }
 
     @After
@@ -279,39 +309,41 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Test
     @SmallTest
     public void testHandleMoveAddressBarTo() {
-        mSharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_LONG_PRESS);
+        setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_LONG_PRESS);
+        clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
         assertEquals(
                 ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
-        mSharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
+        setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
+        clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
         assertEquals(
                 ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
-        mSharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+        setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+        clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
         assertEquals(
                 ToolbarPositionAndSource.TOP_LONG_PRESS,
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
 
-        mSharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
         assertEquals(
                 ToolbarPositionAndSource.TOP_LONG_PRESS,
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
     }
 
     @Test
