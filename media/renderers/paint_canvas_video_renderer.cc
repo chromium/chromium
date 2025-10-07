@@ -1833,10 +1833,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
   // Holding |video_frame| longer than this call when using GPUVideoDecoder
   // could cause problems since the pool of VideoFrames has a fixed size.
   if (video_frame->HasSharedImage()) {
-    DCHECK(raster_context_provider);
-    bool gpu_rasterization =
-        raster_context_provider->ContextCapabilities().gpu_rasterization;
-    DCHECK(gpu_rasterization || raster_context_provider->GrContext());
+    CHECK(raster_context_provider);
+    CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
     auto* ri = raster_context_provider->RasterInterface();
     DCHECK(ri);
     const auto video_frame_si = video_frame->shared_image();
@@ -1874,10 +1872,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     ri->CopySharedImage(
         video_frame_si->mailbox(), client_shared_image->mailbox(), 0, 0, 0, 0,
         video_frame->coded_size().width(), video_frame->coded_size().height());
-
-    if (!gpu_rasterization) {
-      raster_context_provider->GrContext()->flushAndSubmit();
-    }
 
     // Ensure that |video_frame| not be deleted until the above copy is
     // completed.
