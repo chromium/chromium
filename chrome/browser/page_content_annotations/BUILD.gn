@@ -4,8 +4,6 @@
 
 source_set("extraction_service") {
   sources = [
-    "page_content_cache_handler.cc",
-    "page_content_cache_handler.h",
     "page_content_extraction_service.h",
     "page_content_extraction_service_factory.h",
     "page_content_extraction_types.h",

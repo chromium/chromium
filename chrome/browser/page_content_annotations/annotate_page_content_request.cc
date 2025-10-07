@@ -11,7 +11,6 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/page_content_annotations/page_content_cache_handler.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"

@@ -8,13 +8,32 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
-#include "chrome/browser/page_content_annotations/page_content_cache_handler.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_cache_handler.h"
+#include "components/page_content_annotations/core/web_state_wrapper.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 
 namespace page_content_annotations {
+
+namespace {
+
+WebStateWrapper ToWebStateWrapper(content::WebContents* web_contents) {
+  return WebStateWrapper(
+      web_contents->GetBrowserContext()->IsOffTheRecord(),
+      web_contents->GetLastCommittedURL(),
+      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
+      web_contents->GetVisibility() == content::Visibility::VISIBLE
+          ? PageContentVisibility::kVisible
+          : PageContentVisibility::kHidden);
+}
+
+}  // namespace
 
 PageContentExtractionService::PageContentExtractionService(
     os_crypt_async::OSCryptAsync* os_crypt_async,
@@ -64,7 +83,7 @@ void PageContentExtractionService::OnPageContentExtracted(
   }
 
   page_content_cache_handler_->ProcessPageContentExtraction(
-      tab_id, web_contents, page_content);
+      tab_id, ToWebStateWrapper(web_contents), page_content);
 }
 
 std::optional<ExtractedPageContentResult>
@@ -89,7 +108,7 @@ void PageContentExtractionService::OnVisibilityChanged(
         GetCachedContentsFromWebContents(web_contents);
     if (extracted_result) {
       page_content_cache_handler_->OnVisibilityChanged(
-          tab_id, web_contents, visibility,
+          tab_id, ToWebStateWrapper(web_contents),
           std::move(extracted_result->page_content));
     }
   }
@@ -99,7 +118,8 @@ void PageContentExtractionService::OnNewNavigation(
     std::optional<int64_t> tab_id,
     content::WebContents* web_contents) {
   if (page_content_cache_handler_) {
-    page_content_cache_handler_->OnNewNavigation(tab_id, web_contents);
+    page_content_cache_handler_->OnNewNavigation(
+        tab_id, ToWebStateWrapper(web_contents));
   }
 }
 

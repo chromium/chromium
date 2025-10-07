@@ -33,8 +33,12 @@ static_library("core") {
     "page_content_annotator.h",
     "page_content_cache.cc",
     "page_content_cache.h",
+    "page_content_cache_handler.cc",
+    "page_content_cache_handler.h",
     "page_content_store.cc",
     "page_content_store.h",
+    "web_state_wrapper.cc",
+    "web_state_wrapper.h",
   ]
   if (build_with_tflite_lib) {
     sources += [

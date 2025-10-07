@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_content_annotations/page_content_cache_handler.h"
+#include "components/page_content_annotations/core/page_content_cache_handler.h"
 
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/page.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "components/page_content_annotations/core/web_state_wrapper.h"
 
 namespace page_content_annotations {
 
@@ -29,13 +24,12 @@ void PageContentCacheHandler::OnTabClosed(int64_t tab_id) {
 
 void PageContentCacheHandler::OnVisibilityChanged(
     std::optional<int64_t> tab_id,
-    content::WebContents* web_contents,
-    content::Visibility visibility,
+    const WebStateWrapper& web_state,
     std::optional<optimization_guide::proto::AnnotatedPageContent> result) {
-  if (!tab_id || web_contents->GetBrowserContext()->IsOffTheRecord()) {
+  if (!tab_id || web_state.is_off_the_record) {
     return;
   }
-  if (visibility != content::Visibility::HIDDEN || !result) {
+  if (web_state.visibility != PageContentVisibility::kHidden || !result) {
     return;
   }
   // Even if background trigger is enabled, update the cache with available page
@@ -44,16 +38,15 @@ void PageContentCacheHandler::OnVisibilityChanged(
   // ProcessPageContentExtraction().
 
   // TODO(crbug.com/440643544): Pass in the extraction timestamp.
-  page_content_cache_->CachePageContent(
-      *tab_id, web_contents->GetLastCommittedURL(),
-      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
-      base::Time::Now(), *result);
+  page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
+                                        web_state.navigation_timestamp,
+                                        base::Time::Now(), *result);
 }
 
 void PageContentCacheHandler::OnNewNavigation(
     std::optional<int64_t> tab_id,
-    content::WebContents* web_contents) {
-  if (!tab_id || web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    const WebStateWrapper& web_state) {
+  if (!tab_id || web_state.is_off_the_record) {
     return;
   }
   // Delete cached contents for the tab_id when page is updated.
@@ -62,21 +55,19 @@ void PageContentCacheHandler::OnNewNavigation(
 
 void PageContentCacheHandler::ProcessPageContentExtraction(
     std::optional<int64_t> tab_id,
-    content::WebContents* web_contents,
+    const WebStateWrapper& web_state,
     const optimization_guide::proto::AnnotatedPageContent& page_content) {
-  if (!tab_id || !web_contents ||
-      web_contents->GetBrowserContext()->IsOffTheRecord()) {
+  if (!tab_id || web_state.is_off_the_record) {
     return;
   }
 
   // This method only handles the case when extraction finishes when tab is
   // already backgrounded. We do not cache contents for active tab since it can
   // be extracted on demand.
-  if (web_contents->GetVisibility() == content::Visibility::HIDDEN) {
-    page_content_cache_->CachePageContent(
-        *tab_id, web_contents->GetLastCommittedURL(),
-        web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
-        base::Time::Now(), page_content);
+  if (web_state.visibility == PageContentVisibility::kHidden) {
+    page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
+                                          web_state.navigation_timestamp,
+                                          base::Time::Now(), page_content);
   }
 }
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/page_content_annotations/android/page_content_extraction_tab_model_observer_android.h"
 
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/page_content_annotations/page_content_cache_handler.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/page.h"
