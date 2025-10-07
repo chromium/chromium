@@ -419,6 +419,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
 
     const int top_container_bottom = top_container_bounds.bottom();
     const int& contents_container_bounds =
+        browser_view->main_container()->bounds().y() -
         browser_view->contents_container()->bounds().y();
     EXPECT_EQ(top_container_bottom, contents_container_bounds);
 

@@ -119,7 +119,8 @@ class BrowserViewLayout : public views::LayoutManager {
   void LayoutTabStripRegion(gfx::Rect& available_bounds);
   void LayoutWebUITabStrip(gfx::Rect& available_bounds);
   void LayoutToolbar(gfx::Rect& available_bounds);
-  void LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds);
+  void LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds,
+                                 int browser_view_y);
   void LayoutBookmarkBar(gfx::Rect& available_bounds);
   void LayoutInfoBar(gfx::Rect& available_bounds);
 

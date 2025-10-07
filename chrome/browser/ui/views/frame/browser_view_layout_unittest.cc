@@ -315,7 +315,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
 
   // Top views are zero-height.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), toolbar()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 0), toolbar()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), infobar_container()->bounds());
   // Contents split fills the window.
   EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 600), contents_container()->bounds());
@@ -331,10 +331,8 @@ TEST_F(BrowserViewLayoutTest, Layout) {
       gfx::Rect(0, kToolbarHeight, kBaseWidth, views::Separator::kThickness),
       separator()->bounds());
   EXPECT_EQ(gfx::Rect(0, 30, 0, 0), infobar_container()->bounds());
-
-  // browser_main_view contains the toolbar and separator
-  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 600), browser_main_view()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 30, kBaseWidth, 570), contents_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 30, kBaseWidth, 570), browser_main_view()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 570), contents_container()->bounds());
 
   // Disable the contents separator.
   delegate()->set_content_separator_enabled(false);
@@ -345,8 +343,8 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, kToolbarHeight), toolbar()->bounds());
   EXPECT_FALSE(separator()->GetVisible());
   EXPECT_EQ(gfx::Rect(0, 29, 0, 0), infobar_container()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 600), browser_main_view()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 29, kBaseWidth, 571), contents_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 29, kBaseWidth, 571), browser_main_view()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 571), contents_container()->bounds());
 
   // TODO(jamescook): Tab strip and bookmark bar.
 }
@@ -363,8 +361,8 @@ TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
   EXPECT_EQ(
       gfx::Rect(0, kToolbarHeight, kBaseWidth, views::Separator::kThickness),
       separator()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 600), browser_main_view()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 30, kBaseWidth, 570), contents_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 30, kBaseWidth, 570), browser_main_view()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 570), contents_container()->bounds());
 
   // Top controls are half shown, half hidden.
   delegate()->set_top_controls_shown_ratio(0.5f);
@@ -374,8 +372,8 @@ TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
   EXPECT_EQ(
       gfx::Rect(0, kToolbarHeight, kBaseWidth, views::Separator::kThickness),
       separator()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 600), browser_main_view()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 30, kBaseWidth, 570), contents_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 30, kBaseWidth, 570), browser_main_view()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, kBaseWidth, 570), contents_container()->bounds());
 
   // Top controls are fully hidden. the contents are expanded in height by an
   // amount equal to the top controls height.
@@ -395,6 +393,8 @@ TEST_F(BrowserViewLayoutTest, WebUITabStripPushesDownContents) {
   delegate()->set_toolbar_visible(true);
   webui_tab_strip()->SetVisible(false);
   InvalidateAndRunScheduledLayoutOnBrowserView();
+  const gfx::Rect original_browser_main_view_bounds =
+      browser_main_view()->bounds();
   const gfx::Rect original_contents_bounds = contents_container()->bounds();
   EXPECT_EQ(gfx::Size(), webui_tab_strip()->size());
 
@@ -403,5 +403,6 @@ TEST_F(BrowserViewLayoutTest, WebUITabStripPushesDownContents) {
   EXPECT_LT(0, webui_tab_strip()->size().height());
   EXPECT_EQ(original_contents_bounds.size(), contents_container()->size());
   EXPECT_EQ(webui_tab_strip()->size().height(),
-            contents_container()->bounds().y() - original_contents_bounds.y());
+            browser_main_view()->bounds().y() -
+                original_browser_main_view_bounds.y());
 }
