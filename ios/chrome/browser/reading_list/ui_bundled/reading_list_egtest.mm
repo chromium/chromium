@@ -820,9 +820,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that the "Cancel", "Edit" and "Mark Unread" buttons are not visible
 // after delete (using swipe).
-// TODO(crbug.com/440119404): Re-enable after roll is complete and testers are
-// also updated.
-- (void)DISABLED_testVisibleButtonsAfterSwipeDeletion {
+- (void)testVisibleButtonsAfterSwipeDeletion {
   AddEntriesAndOpenReadingList();
 
   [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kReadTitle)]
@@ -848,7 +846,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
 
   if (!matchedElement) {
-    // Delete button is still on screen, tap it
+    // Delete button is still on screen, tap it.
     [[EarlGrey selectElementWithMatcher:deleteButtonMatcher]
         performAction:grey_tap()];
   }

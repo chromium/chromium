@@ -1189,7 +1189,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)swipeActionDeleteButton {
-  NSString* buttonClass = @"_UISwipeActionDynamicButton";
+  NSString* buttonClass;
+  if (iOS26_OR_ABOVE()) {
+    buttonClass = @"_UISwipeActionDynamicButton";
+  } else {
+    buttonClass = @"UISwipeActionStandardButton";
+  }
   return grey_allOf(
       [ChromeMatchersAppInterface
           buttonWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE],

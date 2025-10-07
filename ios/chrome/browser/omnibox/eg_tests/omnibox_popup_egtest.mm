@@ -225,9 +225,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Test that swiping left on a historical suggestion and tapping
 // the delete button , removes the suggestions.
-// TODO(crbug.com/440119404): Re-enable after roll is complete and testers are
-// also updated.
-- (void)DISABLED_testDeleteHistoricalSuggestion {
+- (void)testDeleteHistoricalSuggestion {
   [self populateHistory];
   NSString* omniboxInput = [NSString
       stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],

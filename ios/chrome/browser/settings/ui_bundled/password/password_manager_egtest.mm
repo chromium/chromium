@@ -4139,9 +4139,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// TODO(crbug.com/440119404): Re-enable after roll is complete and testers are
-// also updated.
-- (void)DISABLED_testSwipingAnotherAffiliatedGroupWhenAnotherIsInEditMode {
+- (void)testSwipingAnotherAffiliatedGroupWhenAnotherIsInEditMode {
   // Form an affiliated group with two passwords.
   SavePasswordFormToProfileStore(/*password=*/@"password1",
                                  /*username=*/@"user1",
