@@ -845,19 +845,18 @@ void OneTimeMessageHandler::OnDelayedOneTimeMessageCallbackCollected(
     callbacks.erase(callback_id);
     if (callbacks.empty()) {
       data->pending_receiver_callbacks.erase(port_id_iter);
+    } else {
+      // If we've deleted the callback, but there's still a remaining callback
+      // then this should only happen iff polyfill support is enabled.
+      DCHECK(OnMessagePolyfillSupportEnabled());
+      // When polyfill support is enabled we'll create two callbacks (message
+      // response and promise reject) that can be collected at different times.
+      // Only the last callback of these two collected should continue on to
+      // close the port. Otherwise it could cause the other callback to not
+      // fully run if called because it'll think the port was already closed.
+      return;
     }
   }
-
-  // TODO(crbug.com/40753031): When the promise support feature is on this needs
-  // to take into account if there are any other pending_callbacks that could be
-  // run and not close the port if that is true. Otherwise, as-is, the
-  // collection logic can close the port too early and prevent a response (or
-  // error) from being sent back to the sender. For example if the message
-  // response callback was never used and we get to this point, but the listener
-  // returned a promise that hasn't settled yet, then the message response being
-  // collected here will delete the receiver which will then prevent the promise
-  // callback from running since it will think the absence of the receiver means
-  // the message port has already closed.
 
   auto iter = data->receivers.find(port_id);
   // The channel may already be closed (if the receiver replied before the reply
