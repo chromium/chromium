@@ -288,7 +288,7 @@ void BabelOrcaConsumer::JoinSessionTachyonGroup() {
   }
   join_group_authed_client_.reset();
   auto oauth_token_fetcher = std::make_unique<OAuthTokenFetcher>(
-      identity_manager_, boca::kSchoolToolsAuthScope,
+      identity_manager_, signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth,
       /*uma_name=*/"SchoolTools");
   join_group_token_manager_ =
       std::make_unique<TokenManagerImpl>(std::move(oauth_token_fetcher));

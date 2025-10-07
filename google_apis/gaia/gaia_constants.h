@@ -50,6 +50,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAuditRecordingOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClearCutOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFCMOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTachyonOAuthScope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSchoolToolsAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCastBackdropOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)

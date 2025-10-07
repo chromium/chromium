@@ -760,6 +760,8 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Manta"/>
   <int value="67" label="Chrome Memex"/>
   <int value="68" label="Devtools Aida Client"/>
+  <int value="69" label="Babel Orca"/>
+  <int value="70" label="Boca School Tools Auth"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

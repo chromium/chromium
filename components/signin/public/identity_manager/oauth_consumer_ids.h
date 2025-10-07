@@ -81,7 +81,9 @@ enum class OAuthConsumerId {
   kManta = 66,
   kChromeMemex = 67,
   kDevtoolsAida = 68,
-  kMaxValue = kDevtoolsAida,
+  kChromeOsBabelOrca = 69,
+  kChromeOsBocaSchoolToolsAuth = 70,
+  kMaxValue = kChromeOsBocaSchoolToolsAuth,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

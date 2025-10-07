@@ -94,6 +94,10 @@ const char kFCMOAuthScope[] =
 // OAuth2 scope for access to Tachyon api.
 const char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
 
+// OAuth2 scope for School Tools API.
+const char kSchoolToolsAuthScope[] =
+    "https://www.googleapis.com/auth/chromeosschooltools";
+
 // OAuth2 scope for access to the Photos API.
 const char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
 
