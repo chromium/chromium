@@ -296,11 +296,9 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(kContentType)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(
-          std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
+      .SetOAuthConsumerId(signin::OAuthConsumerId::kChromeMemex)
       .SetConsentLevel(consent_level_)
       .SetTimeout(base::Milliseconds(kTimeoutMs.Get()))
-      .SetOauthConsumerName(kOAuthName)
       .SetPostData(post_data);
   MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(

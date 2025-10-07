@@ -187,10 +187,9 @@ void AccountChecker::FetchPriceEmailPref() {
           }
         })");
   auto endpoint_fetcher = CreateEndpointFetcher(
-      kOAuthName, GURL(kNotificationsPrefUrl),
-      endpoint_fetcher::HttpMethod::kGet, kContentType,
-      std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
-      kTimeout, kEmptyPostData, traffic_annotation);
+      signin::OAuthConsumerId::kChromeMemex, GURL(kNotificationsPrefUrl),
+      endpoint_fetcher::HttpMethod::kGet, kContentType, kTimeout,
+      kEmptyPostData, traffic_annotation);
   endpoint_fetcher.get()->Fetch(base::BindOnce(
       &AccountChecker::HandleFetchPriceEmailPrefResponse,
       weak_ptr_factory_.GetWeakPtr(), std::move(endpoint_fetcher)));
@@ -276,10 +275,9 @@ void AccountChecker::OnPriceEmailPrefChanged() {
           }
         })");
   auto endpoint_fetcher = CreateEndpointFetcher(
-      kOAuthName, GURL(kNotificationsPrefUrl),
-      endpoint_fetcher::HttpMethod::kPost, kContentType,
-      std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
-      kTimeout, post_data, traffic_annotation);
+      signin::OAuthConsumerId::kChromeMemex, GURL(kNotificationsPrefUrl),
+      endpoint_fetcher::HttpMethod::kPost, kContentType, kTimeout, post_data,
+      traffic_annotation);
   endpoint_fetcher.get()->Fetch(base::BindOnce(
       &AccountChecker::HandleSendPriceEmailPrefResponse,
       weak_ptr_factory_.GetWeakPtr(), std::move(endpoint_fetcher)));
@@ -304,11 +302,10 @@ void AccountChecker::HandleSendPriceEmailPrefResponse(
 }
 
 std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
-    const std::string& oauth_consumer_name,
+    signin::OAuthConsumerId oauth_consumer_id,
     const GURL& url,
     const endpoint_fetcher::HttpMethod http_method,
     const std::string& content_type,
-    const std::vector<std::string>& scopes,
     const base::TimeDelta& timeout,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
@@ -324,10 +321,9 @@ std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(content_type)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(scopes)
+      .SetOAuthConsumerId(oauth_consumer_id)
       .SetConsentLevel(consent_level)
       .SetTimeout(timeout)
-      .SetOauthConsumerName(oauth_consumer_name)
       .SetPostData(post_data);
   MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(

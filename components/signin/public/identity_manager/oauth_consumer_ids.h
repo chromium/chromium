@@ -79,7 +79,8 @@ enum class OAuthConsumerId {
   kDataSharingAndroid = 64,
   kExtensionsIdentityAPI = 65,
   kManta = 66,
-  kMaxValue = kManta,
+  kChromeMemex = 67,
+  kMaxValue = kChromeMemex,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

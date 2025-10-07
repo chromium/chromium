@@ -150,11 +150,9 @@ std::unique_ptr<EndpointFetcher> ClusterServerProxy::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(kContentType)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(
-          std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
+      .SetOAuthConsumerId(signin::OAuthConsumerId::kChromeMemex)
       .SetConsentLevel(signin::ConsentLevel::kSignin)
       .SetTimeout(base::Milliseconds(kTimeoutMs))
-      .SetOauthConsumerName(kOAuthName)
       .SetPostData(post_data);
   commerce::MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(
