@@ -241,6 +241,8 @@ template("single_apple_toolchain") {
         "$dsym_output_dir/Contents/Info.plist",
         "$dsym_output_dir/Contents/Resources/DWARF/" +
             "{{target_output_name}}{{output_extension}}",
+        "$dsym_output_dir/Contents/Resources/Relocations/" +
+            "$dsym_arch/{{target_output_name}}{{output_extension}}.yml",
       ]
     } else {
       dsym_switch = ""
