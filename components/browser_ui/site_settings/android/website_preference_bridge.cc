@@ -1035,6 +1035,28 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
     }
   }
 
+  if (std::holds_alternative<ContentSetting>(value)) {
+    content_settings_uma_util::RecordContentSettingChange(
+        std::get<ContentSetting>(value), type);
+  } else {
+    if (std::get<GeolocationSetting>(value).approximate ==
+            PermissionOption::kAllowed ||
+        std::get<GeolocationSetting>(value).precise ==
+            PermissionOption::kAllowed) {
+      content_settings_uma_util::RecordContentSettingChange(
+          ContentSetting::CONTENT_SETTING_ALLOW, type);
+    } else if (std::get<GeolocationSetting>(value).approximate ==
+                   PermissionOption::kDenied ||
+               std::get<GeolocationSetting>(value).precise ==
+                   PermissionOption::kDenied) {
+      content_settings_uma_util::RecordContentSettingChange(
+          ContentSetting::CONTENT_SETTING_BLOCK, type);
+    } else {
+      content_settings_uma_util::RecordContentSettingChange(
+          ContentSetting::CONTENT_SETTING_ASK, type);
+    }
+  }
+
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->SetDefaultPermissionSetting(type, value);
 }
