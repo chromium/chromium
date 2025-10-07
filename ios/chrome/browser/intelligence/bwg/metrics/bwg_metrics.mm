@@ -236,3 +236,7 @@ void RecordAIHubNewBadgeTapped() {
 void RecordAIHubIconTapped() {
   base::RecordAction(base::UserMetricsAction("MobileAIHubIconTapped"));
 }
+
+void RecordBWGPromptSent() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiPromptSent"));
+}

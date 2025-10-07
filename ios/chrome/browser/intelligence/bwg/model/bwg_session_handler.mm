@@ -166,6 +166,10 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
 - (void)didSendQueryWithInputType:(BWGInputType)inputType
               pageContextAttached:(BOOL)pageContextAttached {
   _totalPromptsInSession++;
+
+  // Record user action for prompt sent.
+  RecordBWGPromptSent();
+
   // Check if this is the user's first prompt.
   if (!_hasSubmittedFirstPrompt) {
     _hasSubmittedFirstPrompt = YES;

@@ -177,4 +177,7 @@ void RecordAIHubNewBadgeTapped();
 // Records that the AI Hub icon was tapped.
 void RecordAIHubIconTapped();
 
+// Records that the user sent a prompt in a BWG session.
+void RecordBWGPromptSent();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
