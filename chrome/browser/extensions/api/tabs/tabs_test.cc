@@ -27,7 +27,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -85,8 +84,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/test_event_router_observer.h"
@@ -122,6 +119,12 @@
 #include "pdf/pdf_features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif
+
 namespace extensions {
 
 namespace keys = tabs_constants;
@@ -146,7 +149,7 @@ bool HasAnyPrivacySensitiveFields(const base::Value::Dict& dict) {
 class TestFunctionDispatcherDelegate
     : public extensions::ExtensionFunctionDispatcher::Delegate {
  public:
-  explicit TestFunctionDispatcherDelegate(Browser* browser)
+  explicit TestFunctionDispatcherDelegate(BrowserWindowInterface* browser)
       : browser_(browser) {}
   ~TestFunctionDispatcherDelegate() override = default;
 
@@ -159,10 +162,10 @@ class TestFunctionDispatcherDelegate
     return nullptr;
   }
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
-class ExtensionTabsTest : public PlatformAppBrowserTest {
+class ExtensionTabsTest : public ExtensionApiTest {
  public:
   ExtensionTabsTest() = default;
 
@@ -185,9 +188,9 @@ class ExtensionTabsTest : public PlatformAppBrowserTest {
   std::optional<base::Value> RunFunctionWithDispatcherDelegateAndReturnValue(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args,
-      Browser* browser) {
+      BrowserWindowInterface* browser) {
     auto dispatcher = std::make_unique<extensions::ExtensionFunctionDispatcher>(
-        browser->profile());
+        browser->GetProfile());
     TestFunctionDispatcherDelegate dispatcher_delegate(browser);
     dispatcher->set_delegate(&dispatcher_delegate);
     return utils::RunFunctionWithDelegateAndReturnSingleResult(
@@ -195,6 +198,12 @@ class ExtensionTabsTest : public PlatformAppBrowserTest {
         utils::FunctionMode::kNone);
   }
 };
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+using ExtensionTabsTestWithApps = PlatformAppBrowserTest;
+
+#endif
 
 class ExtensionWindowCreateTest : public ExtensionBrowserTest {
  public:
@@ -346,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   function = base::MakeRefCounted<WindowsGetCurrentFunction>();
   function->set_extension(extension.get());
   result = utils::ToDict(RunFunctionWithDispatcherDelegateAndReturnValue(
-      function.get(), "[{\"populate\": true}]", browser()));
+      function.get(), "[{\"populate\": true}]", browser_window_interface()));
 
   // The id should match the window id of the browser instance that was passed
   // to RunFunctionWithDispatcherDelegateAndReturnValue.
@@ -361,13 +370,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   EXPECT_GE(*tab0_id, 0);
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+
 // TODO(crbug.com/40745605): Test is flaky on Linux debug builds.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_GetAllWindows DISABLED_GetAllWindows
 #else
 #define MAYBE_GetAllWindows GetAllWindows
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_GetAllWindows) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, MAYBE_GetAllWindows) {
   const size_t NUM_WINDOWS = 5;
   std::set<int> window_ids;
   std::set<int> result_ids;
@@ -431,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_GetAllWindows) {
   CloseAppWindow(app_window);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, GetAllWindowsAllTypes) {
   const size_t NUM_WINDOWS = 5;
   std::set<int> window_ids;
   std::set<int> result_ids;
@@ -502,6 +513,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
 
   CloseAppWindow(app_window);
 }
+
+#endif  // BUIDFLAG(ENABLE_PLATFORM_APPS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateNoPermissions) {
   // The test empty extension has no permissions, therefore it should not get
@@ -607,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   function->set_extension(nullptr);
 
   const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("options_page"));
+      LoadExtension(test_data_dir_.AppendASCII("../options_page"));
   ASSERT_TRUE(extension);
   GURL extension_url = extension->ResolveExtensionURL("options.html");
 
@@ -734,7 +747,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
 
   base::Value::List result_tabs =
       utils::ToList(RunFunctionWithDispatcherDelegateAndReturnValue(
-          function.get(), "[{\"currentWindow\":true}]", browser()));
+          function.get(), "[{\"currentWindow\":true}]",
+          browser_window_interface()));
 
   // We should have one initial tab and one added tab.
   EXPECT_EQ(2u, result_tabs.size());
@@ -746,7 +760,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
   function = base::MakeRefCounted<TabsQueryFunction>();
   function->set_extension(ExtensionBuilder("Test").Build().get());
   result_tabs = utils::ToList(RunFunctionWithDispatcherDelegateAndReturnValue(
-      function.get(), "[{\"currentWindow\":false}]", browser()));
+      function.get(), "[{\"currentWindow\":false}]",
+      browser_window_interface()));
 
   // We should have one tab for each extra window.
   EXPECT_EQ(kExtraWindows, result_tabs.size());
@@ -1432,8 +1447,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsEventOnDevTools) {
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("api_test/tabs/no_events")));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("tabs/no_events")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
@@ -1446,7 +1460,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsEventOnDevTools) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsAppWindow) {
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, NoTabsAppWindow) {
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
@@ -1473,7 +1489,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsAppWindow) {
 #define MAYBE_FilteredEvents FilteredEvents
 #endif
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_FilteredEvents) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, MAYBE_FilteredEvents) {
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
@@ -1511,11 +1527,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_FilteredEvents) {
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, OnBoundsChanged) {
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("api_test/windows/bounds")));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("windows/bounds")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   gfx::Rect rect = browser_window_interface()->GetWindow()->GetBounds();
@@ -1530,7 +1547,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, OnBoundsChanged) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate) {
-  ASSERT_TRUE(RunExtensionTest("api_test/windows/create")) << message_;
+  ASSERT_TRUE(RunExtensionTest("windows/create")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExecuteScriptOnDevTools) {
