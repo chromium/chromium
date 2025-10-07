@@ -68,9 +68,16 @@ void PinnedToolbarButtonStatusIndicator::OnPaint(gfx::Canvas* canvas) {
                     height() / 2);
 
   cc::PaintFlags flags;
-  std::optional<ui::ColorId> color_id = GetWidget()->ShouldPaintAsActive()
-                                            ? active_color_id_
-                                            : inactive_color_id_;
+
+  // Non-mac desktop devices show active icon colors even when the browser
+  // window is inactive.
+  std::optional<ui::ColorId> color_id =
+#if BUILDFLAG(IS_MAC)
+      GetWidget()->ShouldPaintAsActive() ? active_color_id_
+                                         : inactive_color_id_;
+#else
+      active_color_id_;
+#endif
 
   flags.setColor(color_id.has_value()
                      ? GetColorProvider()->GetColor(color_id.value())
