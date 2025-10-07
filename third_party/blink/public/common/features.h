@@ -734,12 +734,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // Tracker: https://crbug.com/1356128
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKeepAliveInBrowserMigration);
 
-// Enables changing the influence of acceleration based on change of direction.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanHeuristics);
-// Enables discarding the prediction if the predicted direction is opposite from
-// the current direction.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanDirectionCutOff);
-
 // When enabled, PaintArtifactCompositor::Layerizer will limit the distance
 // (in number of non-mergeable intermediate PendingLayers) between merged
 // layers to kLayerMergeDistanceLimit, to reduce the cost of layerization.

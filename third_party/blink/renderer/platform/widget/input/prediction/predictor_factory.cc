@@ -18,23 +18,21 @@ namespace {
 using input_prediction::PredictorType;
 }
 
-// Set to UINT_MAX to trigger querying feature flags.
-unsigned int PredictorFactory::predictor_options_ = UINT_MAX;
-
 PredictorType PredictorFactory::GetPredictorTypeFromName(
     const std::string& predictor_name) {
-  if (predictor_name == ::features::kPredictorNameLinearResampling)
+  if (predictor_name == ::features::kPredictorNameLinearResampling) {
     return PredictorType::kScrollPredictorTypeLinearResampling;
-  else if (predictor_name == ::features::kPredictorNameLsq)
+  } else if (predictor_name == ::features::kPredictorNameLsq) {
     return PredictorType::kScrollPredictorTypeLsq;
-  else if (predictor_name == ::features::kPredictorNameKalman)
+  } else if (predictor_name == ::features::kPredictorNameKalman) {
     return PredictorType::kScrollPredictorTypeKalman;
-  else if (predictor_name == ::features::kPredictorNameLinearFirst)
+  } else if (predictor_name == ::features::kPredictorNameLinearFirst) {
     return PredictorType::kScrollPredictorTypeLinearFirst;
-  else if (predictor_name == ::features::kPredictorNameLinearSecond)
+  } else if (predictor_name == ::features::kPredictorNameLinearSecond) {
     return PredictorType::kScrollPredictorTypeLinearSecond;
-  else
+  } else {
     return PredictorType::kScrollPredictorTypeEmpty;
+  }
 }
 
 std::unique_ptr<ui::InputPredictor> PredictorFactory::GetPredictor(
@@ -44,7 +42,7 @@ std::unique_ptr<ui::InputPredictor> PredictorFactory::GetPredictor(
   } else if (predictor_type == PredictorType::kScrollPredictorTypeLsq) {
     return std::make_unique<ui::LeastSquaresPredictor>();
   } else if (predictor_type == PredictorType::kScrollPredictorTypeKalman) {
-    return std::make_unique<ui::KalmanPredictor>(GetKalmanPredictorOptions());
+    return std::make_unique<ui::KalmanPredictor>();
   } else if (predictor_type == PredictorType::kScrollPredictorTypeLinearFirst) {
     return std::make_unique<ui::LinearPredictor>(
         ui::LinearPredictor::EquationOrder::kFirstOrder);
@@ -55,19 +53,6 @@ std::unique_ptr<ui::InputPredictor> PredictorFactory::GetPredictor(
   } else {
     return std::make_unique<ui::EmptyPredictor>();
   }
-}
-
-unsigned int PredictorFactory::GetKalmanPredictorOptions() {
-  if (predictor_options_ == UINT_MAX) {
-    predictor_options_ =
-        (base::FeatureList::IsEnabled(blink::features::kKalmanHeuristics)
-             ? ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled
-             : 0) |
-        (base::FeatureList::IsEnabled(blink::features::kKalmanDirectionCutOff)
-             ? ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled
-             : 0);
-  }
-  return predictor_options_;
 }
 
 }  // namespace blink
