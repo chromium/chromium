@@ -105,6 +105,11 @@ class MIDIAccess final : public EventTarget,
     // has the implementation.
     NOTREACHED();
   }
+  void OnSessionStartFailed() override {
+    // This method is for MIDIAccess initialization: MIDIAccessInitializer
+    // has the implementation.
+    NOTREACHED();
+  }
   void DidReceiveMIDIData(unsigned port_index,
                           base::span<const uint8_t> data,
                           base::TimeTicks time_stamp) override;

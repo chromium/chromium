@@ -37,6 +37,7 @@ class MIDIDispatcher : public GarbageCollected<MIDIDispatcher>,
                                        midi::mojom::PortState) = 0;
 
     virtual void DidStartSession(midi::mojom::Result) = 0;
+    virtual void OnSessionStartFailed() = 0;
     virtual void DidReceiveMIDIData(unsigned port_index,
                                     base::span<const uint8_t> data,
                                     base::TimeTicks time_stamp) = 0;
@@ -68,6 +69,8 @@ class MIDIDispatcher : public GarbageCollected<MIDIDispatcher>,
   void Trace(Visitor* visitor) const;
 
  private:
+  void OnConnectionError();
+
   Member<Client> client_;
 
   bool initialized_ = false;
