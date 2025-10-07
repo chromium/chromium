@@ -260,8 +260,9 @@ void ExtensionDisabledGlobalError::OnExtensionUninstallDialogClosed(
 void ExtensionDisabledGlobalError::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (extension != extension_)
+  if (extension->id() != extension_->id()) {
     return;
+  }
   RemoveGlobalError();
 }
 
@@ -269,8 +270,9 @@ void ExtensionDisabledGlobalError::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UninstallReason reason) {
-  if (extension != extension_)
+  if (extension->id() != extension_->id()) {
     return;
+  }
   RemoveGlobalError();
 }
 
