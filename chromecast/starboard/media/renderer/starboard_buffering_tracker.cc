@@ -50,6 +50,9 @@ void StarboardBufferingTracker::OnPlayerStatus(
       metrics_helper_->LogTimeToBufferAv(
           chromecast::metrics::CastMetricsHelper::kInitialBuffering,
           preroll_duration);
+      metrics_helper_->RecordApplicationEventWithValue(
+          "Cast.Platform.InitialBufferingTime",
+          preroll_duration.InMilliseconds());
       prerolling_timer_ = std::nullopt;
 
       // Start tracking buffering after the initial buffering.

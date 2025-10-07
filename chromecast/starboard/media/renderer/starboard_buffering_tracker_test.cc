@@ -24,6 +24,7 @@ namespace {
 using ::chromecast::metrics::CastMetricsHelper;
 using ::chromecast::metrics::MockCastMetricsHelper;
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::MockFunction;
 using ::testing::Return;
 using ::testing::StrEq;
@@ -95,6 +96,9 @@ TEST_F(StarboardBufferingTrackerTest, ComputesBufferingTimeAfterUnderrun) {
                   CastMetricsHelper::BufferingType::kBufferingAfterUnderrun,
                   kUnderrunBufferingTime))
       .Times(1);
+  // Ignore metrics that are unrelated to this test.
+  EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(_, _))
+      .Times(AnyNumber());
   EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(
                                    StrEq("Cast.Platform.AutoPauseTime"),
                                    kUnderrunBufferingTime.InMilliseconds()))
@@ -152,6 +156,9 @@ TEST_F(StarboardBufferingTrackerTest,
                   CastMetricsHelper::BufferingType::kBufferingAfterUnderrun,
                   kUnderrunBufferingTime))
       .Times(1);
+  // Ignore metrics that are unrelated to this test.
+  EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(_, _))
+      .Times(AnyNumber());
   EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(
                                    StrEq("Cast.Platform.AutoPauseTime"),
                                    kUnderrunBufferingTime.InMilliseconds()))
@@ -207,6 +214,9 @@ TEST_F(StarboardBufferingTrackerTest,
                   CastMetricsHelper::BufferingType::kBufferingAfterUnderrun,
                   kUnderrunBufferingTime))
       .Times(1);
+  // Ignore metrics that are unrelated to this test.
+  EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(_, _))
+      .Times(AnyNumber());
   EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(
                                    StrEq("Cast.Platform.AutoPauseTime"),
                                    kUnderrunBufferingTime.InMilliseconds()))
@@ -256,6 +266,9 @@ TEST_F(StarboardBufferingTrackerTest, DoesNotCountPausedTimeAsBuffering) {
               LogTimeToBufferAv(
                   CastMetricsHelper::BufferingType::kBufferingAfterUnderrun, _))
       .Times(0);
+  // Ignore metrics that are unrelated to this test.
+  EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(_, _))
+      .Times(AnyNumber());
   EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(
                                    StrEq("Cast.Platform.AutoPauseTime"), _))
       .Times(0);
@@ -293,6 +306,30 @@ TEST_F(StarboardBufferingTrackerTest, DoesNotCountPausedTimeAsBuffering) {
   current_media_time = kFinalMediaTime;
   task_environment_.FastForwardBy(kFinalMediaTime - kInitialMediaTime);
   tracker.OnBufferPush();
+}
+
+TEST_F(StarboardBufferingTrackerTest, ComputesInitialBufferingDuration) {
+  constexpr auto kInitialMediaTime = base::Seconds(0);
+  constexpr auto kInitialBufferingDuration = base::Seconds(2);
+  base::TimeDelta current_media_time = kInitialMediaTime;
+
+  EXPECT_CALL(
+      metrics_helper_,
+      LogTimeToBufferAv(CastMetricsHelper::BufferingType::kInitialBuffering, _))
+      .Times(1);
+  EXPECT_CALL(metrics_helper_, RecordApplicationEventWithValue(
+                                   StrEq("Cast.Platform.InitialBufferingTime"),
+                                   kInitialBufferingDuration.InMilliseconds()))
+      .Times(1);
+
+  StarboardBufferingTracker tracker(
+      base::BindRepeating(&GetCurrentMediaTime, &current_media_time),
+      &metrics_helper_);
+
+  // Simulate prerolling and playback starting.
+  tracker.OnPlayerStatus(StarboardPlayerState::kStarboardPlayerStatePrerolling);
+  task_environment_.FastForwardBy(kInitialBufferingDuration);
+  tracker.OnPlayerStatus(StarboardPlayerState::kStarboardPlayerStatePresenting);
 }
 
 }  // namespace
