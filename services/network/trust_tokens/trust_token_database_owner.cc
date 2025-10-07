@@ -57,6 +57,15 @@ TrustTokenDatabaseOwner::~TrustTokenDatabaseOwner() {
   db_task_runner_->DeleteSoon(FROM_HERE, toplevel_table_.release());
   db_task_runner_->DeleteSoon(FROM_HERE, issuer_table_.release());
 
+  // Prevent `table_manager_` from holding a dangling pointer to
+  // `backing_database_`.
+  db_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&sqlite_proto::ProtoTableManager::WillShutdown,
+                     base::Unretained(table_manager_.get())),
+      base::BindOnce([](sqlite_proto::ProtoTableManager*) {},
+                     base::RetainedRef(table_manager_)));
+
   db_task_runner_->DeleteSoon(FROM_HERE, backing_database_.release());
 }
 
