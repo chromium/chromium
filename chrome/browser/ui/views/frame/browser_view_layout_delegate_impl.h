@@ -77,11 +77,10 @@ class BrowserViewLayoutDelegateImplOld
 
 // The new implementation of the layout delegate; uses new BrowserLayoutParams
 // API.
-class BrowserViewLayoutDelegateImplNew
-    : public BrowserViewLayoutDelegateImplBase {
+class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegateImplBase {
  public:
-  explicit BrowserViewLayoutDelegateImplNew(BrowserView& browser_view);
-  ~BrowserViewLayoutDelegateImplNew() override;
+  explicit BrowserViewLayoutDelegateImpl(BrowserView& browser_view);
+  ~BrowserViewLayoutDelegateImpl() override;
 
   gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override;
   gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override;

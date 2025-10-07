@@ -31,42 +31,6 @@
 
 namespace {
 
-// Requires that gfx::Rect `arg` approximately equals `expected`, with an origin
-// within `allowed_origin_error` of `expected`'s, and a bottom right corner
-// within `allowed_bottom_right_error` of `expected`. If the errors are zero, is
-// equivalent to checking equality.
-//
-// For example:
-// ```
-//   ApproximatelyEquals(
-//       expected,
-//       gfx::Outsets::TLBR(1, 1, 0, 0),
-//       gfx::Outsets::TLBR(0, 0, 1, 1))
-// ```
-// Would match a rectangle which can be up to one unit bigger than `expected` in
-// any direction.
-MATCHER_P3(ApproximatelyEquals,
-           /* gfx::Rect */ expected,
-           /* gfx::Outsets */ allowed_origin_error,
-           /* gfx::Outsets */ allowed_bottom_right_error,
-           "Is Approximately Equal To") {
-  gfx::Rect origin_target(expected.origin(), gfx::Size(1, 1));
-  origin_target.Outset(allowed_origin_error);
-  gfx::Rect bottom_right_target(expected.right(), expected.bottom(), 1, 1);
-  bottom_right_target.Outset(allowed_bottom_right_error);
-  if (origin_target.Contains(arg.origin()) &&
-      bottom_right_target.Contains(arg.bottom_right())) {
-    return true;
-  }
-  LOG(ERROR) << "Expected bounds: " << expected.ToString()
-             << "\nActual bounds: " << arg.ToString()
-             << "\nEither top left: " << arg.origin().ToString() << " not in "
-             << origin_target.ToString()
-             << "\nOr bottom right: " << arg.bottom_right().ToString()
-             << " not in " << bottom_right_target.ToString();
-  return false;
-}
-
 enum class WindowState { kNormal, kMaximized, kImmersiveMode };
 
 std::string WindowStateToString(WindowState state) {
@@ -157,7 +121,7 @@ class BrowserViewLayoutDelegateImplBrowsertest
     auto* const layout = browser_view->GetBrowserViewLayout();
     if (use_new_delegate) {
       layout->SetDelegateForTesting(
-          std::make_unique<BrowserViewLayoutDelegateImplNew>(*browser_view));
+          std::make_unique<BrowserViewLayoutDelegateImpl>(*browser_view));
     } else {
       layout->SetDelegateForTesting(
           std::make_unique<BrowserViewLayoutDelegateImplOld>(*browser_view));
@@ -219,19 +183,8 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
     SetUseLayoutDelegate(browser(), true);
 
     // Ensure the tabstrip is in the correct location.
-    gfx::Outsets allowed_tl_error;
-    gfx::Outsets allowed_br_error;
-#if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS under the new layout, the frame buttons can be a pixel taller
-    // than the default toolbar size; this will be reflected in the new API's
-    // sizing of the toolbar.
-    allowed_br_error = gfx::Outsets::TLBR(0, 0, 1, 0);
-#endif
     const gfx::Rect actual_tabstrip_bounds = GetBoundsInWindow(tabstrip);
-    EXPECT_THAT(actual_tabstrip_bounds,
-                ApproximatelyEquals(tabstrip_bounds, allowed_tl_error,
-                                    allowed_br_error))
-        << "Tabstrip bounds differ.";
+    EXPECT_EQ(tabstrip_bounds, actual_tabstrip_bounds);
 
     // Because the position of the tabstrip can vary, normalize expected toolbar
     // location by the bottom of the actual tabstrip.
