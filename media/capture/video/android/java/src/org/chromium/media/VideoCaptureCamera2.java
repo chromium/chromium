@@ -1507,8 +1507,10 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
         switch (supportedHWLevel) {
             case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
+            case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_3:
                 return VideoCaptureApi.ANDROID_API2_FULL;
             case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
+            case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_EXTERNAL:
                 return VideoCaptureApi.ANDROID_API2_LIMITED;
             default:
                 return VideoCaptureApi.ANDROID_API2_LEGACY;
