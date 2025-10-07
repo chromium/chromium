@@ -24,6 +24,7 @@ chrome.loginState = {};
 chrome.loginState.ProfileType = {
   SIGNIN_PROFILE: 'SIGNIN_PROFILE',
   USER_PROFILE: 'USER_PROFILE',
+  LOCK_PROFILE: 'LOCK_PROFILE',
 };
 
 /**

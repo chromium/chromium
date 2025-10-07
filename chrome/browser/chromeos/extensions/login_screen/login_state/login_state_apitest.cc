@@ -12,6 +12,7 @@ namespace extensions {
 
 using LoginStateApitest = ExtensionApiTest;
 
+// TODO(crbug.com/448041262): Add a test case for LOCK_PROFILE.
 // Test that |loginState.getProfileType()| returns |USER_PROFILE| for
 // extensions not running in the signin profile.
 IN_PROC_BROWSER_TEST_F(LoginStateApitest, GetProfileType_UserProfile) {

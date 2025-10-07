@@ -12,7 +12,10 @@ namespace loginState {
     SIGNIN_PROFILE,
 
     // Specifies that the extension is in the user profile.
-    USER_PROFILE
+    USER_PROFILE,
+
+    // Specifies that the extension is in the lock screen profile.
+    [nodoc] LOCK_PROFILE
   };
 
   enum SessionState {
