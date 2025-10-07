@@ -6,6 +6,7 @@
 import functools
 import logging
 import pathlib
+import shutil
 import subprocess
 
 
@@ -51,3 +52,12 @@ def get_gclient_root() -> pathlib.Path:
         check=True,
     )
     return pathlib.Path(result.stdout.strip())
+
+
+@functools.cache
+def get_depot_tools_path() -> pathlib.Path | None:
+    """Finds the path to the depot_tools directory."""
+    gclient_path = shutil.which('gclient')
+    if not gclient_path:
+        return None
+    return pathlib.Path(gclient_path).resolve().parent

@@ -31,6 +31,14 @@ class GeminiProviderUnittest(unittest.TestCase):
         mock_process.returncode = 0
         self.mock_popen.return_value = mock_process
 
+        get_depot_tools_path_patcher = unittest.mock.patch(
+            'gemini_provider.checkout_helpers.get_depot_tools_path')
+        self.mock_get_depot_tools_path = get_depot_tools_path_patcher.start()
+        self.addCleanup(get_depot_tools_path_patcher.stop)
+
+    def tearDown(self):
+        gemini_provider.checkout_helpers.get_depot_tools_path.cache_clear()
+
     def test_call_api_no_gemini_cli_bin(self):
         """Tests that the default command is used when no bin is provided."""
         options = {'config': {}}
@@ -73,6 +81,37 @@ class GeminiProviderUnittest(unittest.TestCase):
         run_kwargs = self.mock_run.call_args.kwargs
         self.assertIn('env', run_kwargs)
         self.assertEqual(run_kwargs['env']['HOME'], home_dir)
+
+    def test_call_api_sandbox_depot_tools_succeeds(self):
+        """Tests that sandbox flags are set when depot_tools is found."""
+        fake_depot_tools_path = pathlib.Path('/fake/depot_tools')
+        self.mock_get_depot_tools_path.return_value = fake_depot_tools_path
+        options = {'config': {}}
+        context = {'vars': {'sandbox': True}}
+
+        result = gemini_provider.call_api('test prompt', options, context)
+
+        self.assertNotIn('error', result)
+        self.mock_popen.assert_called_once()
+        popen_kwargs = self.mock_popen.call_args.kwargs
+        self.assertIn('env', popen_kwargs)
+        self.assertIn('SANDBOX_FLAGS', popen_kwargs['env'])
+        expected_flag = f'-v {fake_depot_tools_path.as_posix()}:/depot_tools'
+        self.assertIn(expected_flag, popen_kwargs['env']['SANDBOX_FLAGS'])
+
+    def test_call_api_sandbox_depot_tools_fails(self):
+        """Tests that an error is returned when depot_tools is not found."""
+        self.mock_get_depot_tools_path.return_value = None
+        options = {'config': {}}
+        context = {'vars': {'sandbox': True}}
+
+        result = gemini_provider.call_api('test prompt', options, context)
+
+        self.assertIn('error', result)
+        self.assertIn(
+            'Sandbox requires depot_tools, but it could not be located.',
+            result['error'])
+        self.mock_popen.assert_not_called()
 
 
 if __name__ == '__main__':

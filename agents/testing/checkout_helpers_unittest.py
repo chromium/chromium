@@ -92,5 +92,36 @@ class GetGclientRootUnittest(unittest.TestCase):
         mock_run.assert_called_once()
 
 
+class GetDepotToolsPathUnittest(unittest.TestCase):
+    """Unit tests for the `get_depot_tools_path` function."""
+
+    def tearDown(self):
+        checkout_helpers.get_depot_tools_path.cache_clear()
+
+    @mock.patch('shutil.which')
+    def test_get_depot_tools_path_success(self, mock_which):
+        """Tests that the depot_tools path is returned on success."""
+        mock_gclient_path = pathlib.Path('/path/to/depot_tools/gclient')
+        mock_which.return_value = str(mock_gclient_path.resolve())
+        result = checkout_helpers.get_depot_tools_path()
+        self.assertEqual(result, mock_gclient_path.resolve().parent)
+
+    @mock.patch('shutil.which')
+    def test_get_depot_tools_path_failure(self, mock_which):
+        """Tests that None is returned on failure."""
+        mock_which.return_value = None
+        result = checkout_helpers.get_depot_tools_path()
+        self.assertIsNone(result)
+
+    @mock.patch('shutil.which')
+    def test_get_depot_tools_path_is_cached(self, mock_which):
+        """Tests that the result of get_depot_tools_path is cached."""
+        mock_which.return_value = str(
+            pathlib.Path('/path/to/depot_tools/gclient'))
+        checkout_helpers.get_depot_tools_path()
+        checkout_helpers.get_depot_tools_path()
+        mock_which.assert_called_once()
+
+
 if __name__ == '__main__':
     unittest.main()

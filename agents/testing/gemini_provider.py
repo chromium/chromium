@@ -15,6 +15,11 @@ import time
 from collections.abc import Collection
 from typing import Any
 
+import constants
+
+sys.path.append(str(constants.CHROMIUM_SRC))
+from agents.testing import checkout_helpers
+
 DEFAULT_TIMEOUT_SECONDS = 600
 DEFAULT_EXTENSIONS = [
     'build-information',
@@ -40,11 +45,21 @@ def _stream_reader(stream, output_list: list[str], width):
 
 
 def _get_env_with_overrides(
-        home: pathlib.Path | None = None) -> dict[str, str]:
+        home: pathlib.Path | None = None,
+        sandbox_flags: list[str] | None = None,
+        sandbox_image: str | None = None) -> dict[str, str]:
     """Returns a copy of the environment with the given overrides."""
     env = os.environ.copy()
     if home:
         env['HOME'] = str(home)
+        logging.debug('HOME: %s', env.get('HOME'))
+    if sandbox_flags:
+        env['SANDBOX_FLAGS'] = ' '.join(sandbox_flags)
+        logging.debug('SANDBOX_FLAGS: %s', env.get('SANDBOX_FLAGS'))
+    if sandbox_image:
+        env['GEMINI_SANDBOX_IMAGE'] = sandbox_image
+        logging.debug('GEMINI_SANDBOX_IMAGE: %s',
+                      env.get('GEMINI_SANDBOX_IMAGE'))
     return env
 
 
@@ -146,8 +161,18 @@ def call_api(prompt: str, options: dict[str, Any],
         return {
             'error': f"'command' must be a list of strings, but got: {command}"
         }
+
+    sandbox_flags = []
+    sandbox_image = os.environ.get('GEMINI_SANDBOX_IMAGE')
     if provider_vars.get('sandbox', False):
         command.append('--sandbox')
+        depot_tools_path = checkout_helpers.get_depot_tools_path()
+        if not depot_tools_path:
+            return {
+                'error':
+                'Sandbox requires depot_tools, but it could not be located.'
+            }
+        sandbox_flags.append(f'-v {depot_tools_path.as_posix()}:/depot_tools')
 
     system_prompt = provider_config.get('system_prompt', '')
     try:
@@ -187,7 +212,9 @@ def call_api(prompt: str, options: dict[str, Any],
             stderr=subprocess.STDOUT,
             text=True,
             universal_newlines=True,
-            env=_get_env_with_overrides(home_dir),
+            env=_get_env_with_overrides(home=home_dir,
+                                        sandbox_flags=sandbox_flags,
+                                        sandbox_image=sandbox_image),
         )
         if process.stdin:
             process.stdin.write(f'{system_prompt}\n\n{prompt}')
