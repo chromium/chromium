@@ -25,6 +25,18 @@
 
 namespace ui {
 
+namespace {
+
+bool IsSystemForcedColorsActive() {
+  if (HIGHCONTRAST result = {.cbSize = sizeof(HIGHCONTRAST)};
+      SystemParametersInfo(SPI_GETHIGHCONTRAST, result.cbSize, &result, 0)) {
+    return !!(result.dwFlags & HCF_HIGHCONTRASTON);
+  }
+  return false;
+}
+
+}  // namespace
+
 OsSettingsProviderWin::OsSettingsProviderWin()
     : OsSettingsProvider(PriorityLevel::kProduction) {
   // If there's no sequenced task runner handle, we can't be called back for
@@ -51,6 +63,9 @@ OsSettingsProviderWin::OsSettingsProviderWin()
     }
   }
   UpdateColors();
+
+  // Initialize forced colors (high contrast) state.
+  forced_colors_active_ = IsSystemForcedColorsActive();
 
   // Histogram high contrast state.
   // NOTE: Reported in metrics; do not reorder, add additional values at end.
@@ -235,13 +250,10 @@ void OsSettingsProviderWin::OnWndProc(HWND hwnd,
       NotifyOnSettingsChanged(true);
     }
   } else if (message == WM_SETTINGCHANGE && wparam == SPI_SETHIGHCONTRAST) {
-    if (HIGHCONTRAST result = {.cbSize = sizeof(HIGHCONTRAST)};
-        SystemParametersInfo(SPI_GETHIGHCONTRAST, result.cbSize, &result, 0)) {
-      const bool old_forced_colors_active = ForcedColorsActive();
-      forced_colors_active_ = !!(result.dwFlags & HCF_HIGHCONTRASTON);
-      if (ForcedColorsActive() != old_forced_colors_active) {
-        NotifyOnSettingsChanged();
-      }
+    const bool old_forced_colors_active = ForcedColorsActive();
+    forced_colors_active_ = IsSystemForcedColorsActive();
+    if (ForcedColorsActive() != old_forced_colors_active) {
+      NotifyOnSettingsChanged();
     }
   }
 }
