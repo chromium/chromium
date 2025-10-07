@@ -32,9 +32,8 @@ per-file subprojects/chromium/ci/chromium.fuchsia.star=file://build/fuchsia/OWNE
 per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/fuchsia/OWNERS
 
 # For Android configs
-per-file subprojects/chromium/ci/chromium.android.fyi.star=wnwen@chromium.org
-per-file subprojects/chromium/ci/chromium.android.star=wnwen@chromium.org
-per-file subprojects/chromium/try/tryserver.chromium.android.star=wnwen@chromium.org
+per-file subprojects/chromium/ci/chromium.android*.star=wnwen@chromium.org
+per-file subprojects/chromium/try/tryserver.chromium.android*.star=wnwen@chromium.org
 
 # Autosharder owners
 per-file targets/autoshard_exceptions.json=chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com
