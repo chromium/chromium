@@ -100,8 +100,8 @@ bool WebNode::Contains(const WebNode* n) const {
   return private_->contains(n->private_.Get());
 }
 
-bool WebNode::ContainsIncludingHostElements(const WebNode* n) const {
-  return private_->ContainsIncludingHostElements(*n->private_.Get());
+bool WebNode::ContainsViaFlatTree(const WebNode* n) const {
+  return private_->ContainsViaFlatTree(*n->private_.Get());
 }
 
 WebNode WebNode::ParentNode() const {

@@ -1781,6 +1781,17 @@ bool Node::ContainsIncludingHostElements(const Node& node) const {
   return false;
 }
 
+bool Node::ContainsViaFlatTree(const Node& node) const {
+  const Node* current = &node;
+  do {
+    if (current == this) {
+      return true;
+    }
+    current = FlatTreeTraversal::Parent(*current);
+  } while (current);
+  return false;
+}
+
 Node* Node::CommonAncestor(const Node& other,
                            ContainerNode* (*parent)(const Node&)) const {
   if (this == other)

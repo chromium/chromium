@@ -60,6 +60,22 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionWithCoordinatesSucceeds) {
                   WaitForJsResult(kNewActorTabId, "expect_single_left_click"));
 }
 
+// A click on a button in a web component should work, but a click on another
+// element in the component should not.
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionInWebComponent) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url = embedded_test_server()->GetURL(
+      "/actor/page_with_web_component_button.html");
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      ClickAction(kClickableButtonLabel, ClickAction::LEFT,
+                  ClickAction::SINGLE),
+      WaitForJsResult(kNewActorTabId, "() => document.title", "Clicked"));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
