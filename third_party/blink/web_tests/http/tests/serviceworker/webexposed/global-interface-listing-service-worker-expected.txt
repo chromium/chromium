@@ -1481,6 +1481,7 @@ interface OffscreenCanvasRenderingContext2D
     setter textRendering
     setter wordSpacing
 interface Origin
+    static method from
     static method fromURL
     static method parse
     attribute @@toStringTag

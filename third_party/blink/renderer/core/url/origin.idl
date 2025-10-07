@@ -13,6 +13,7 @@
 
   static Origin? parse(USVString serializedOrigin);
   static Origin? fromURL(USVString serializedURL);
+  [CallWith=ScriptState, RaisesException] static Origin from(any value);
 
   stringifier USVString toJSON();
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_ORIGIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_ORIGIN_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -13,6 +14,7 @@
 namespace blink {
 
 class ExceptionState;
+class ScriptState;
 
 class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -33,6 +35,12 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
 
   // Parses |value|, returning `null` if it isn't a validly serialized URL:
   static DOMOrigin* fromURL(const String& value);
+
+  // Converts |value| to an Origin, throwing an error if conversion isn't
+  // possible.
+  static DOMOrigin* from(ScriptState* script_state,
+                         ScriptValue value,
+                         ExceptionState& exception_state);
 
   String toJSON() const;
 

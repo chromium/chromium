@@ -1413,6 +1413,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter textRendering
 [Worker]     setter wordSpacing
 [Worker] interface Origin
+[Worker]     static method from
 [Worker]     static method fromURL
 [Worker]     static method parse
 [Worker]     attribute @@toStringTag
