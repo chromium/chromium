@@ -151,14 +151,7 @@ TEST_F(WindowTreeHostTest, HoldPointerMovesOnChildResizing) {
   // Wait for a CompositorFrame to be activated.
   ui::DrawWaiterForTest::WaitForCompositingEnded(host()->compositor());
 
-  // Pointer moves should still be blocked until the child surface has
-  // activated.
-  EXPECT_TRUE(dispatcher_api.HoldingPointerMoves());
-
-  // Signal that the child has had its resized surface activated.
-  host()->compositor()->OnChildResizeActivated();
-
-  // Pointer moves should be routed normally after activation.
+  // Pointer moves should be routed normally after commit.
   EXPECT_FALSE(dispatcher_api.HoldingPointerMoves());
 }
 #endif

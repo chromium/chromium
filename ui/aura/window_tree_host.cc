@@ -809,25 +809,28 @@ void WindowTreeHost::MoveCursorToInternal(const gfx::Point& root_location,
   dispatcher()->OnCursorMovedToRootLocation(root_location);
 }
 
+void WindowTreeHost::OnCompositingAckDeprecated(ui::Compositor* compositor) {
+  // Currently, input is only throttled on ash and is not well supported on
+  // other platforms. See crbug.com/41359082.
 #if BUILDFLAG(IS_CHROMEOS)
-void WindowTreeHost::OnChildResizeActivated() {
-  if (!holding_pointer_moves_) {
+  if (!holding_pointer_moves_)
     return;
-  }
 
   dispatcher_->ReleasePointerMoves();
   holding_pointer_moves_ = false;
+#endif
 }
 
-void WindowTreeHost::OnCompositingChildResizing() {
+void WindowTreeHost::OnCompositingChildResizing(ui::Compositor* compositor) {
   // Currently, input is only throttled on ash and is not well supported on
   // other platforms. See crbug.com/41359082.
+#if BUILDFLAG(IS_CHROMEOS)
   if (!Env::GetInstance()->throttle_input_on_resize() || holding_pointer_moves_)
     return;
   dispatcher_->HoldPointerMoves();
   holding_pointer_moves_ = true;
+#endif
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WindowTreeHost::OnFrameSinksToThrottleUpdated(
     const base::flat_set<viz::FrameSinkId>& ids) {

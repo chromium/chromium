@@ -183,14 +183,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
       mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
           external_begin_frame_controller);
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Called when a child surface is about to resize.
   void OnChildResizing();
-  // Called when a child surface has activated for a resize. This occurs once
-  // all dependent surfaces are available in the GPU Process. This precedes
-  // drawing and presentation of the content of the surface.
-  void OnChildResizeActivated();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Schedules a redraw of the layer tree associated with this compositor.
   void ScheduleDraw();
