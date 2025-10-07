@@ -142,6 +142,15 @@ class TabHoverCardController : public views::ViewObserver,
     return thumbnail_wait_state_ != ThumbnailWaitState::kNotWaiting;
   }
 
+  views::Widget* GetCardWidget() const;
+
+  // Requests that the Widget close. Provides an abstraction for migration to
+  // the client-owned widget model.
+  void CloseCardWidget();
+
+  //  Resets controller state associated with a HoverCard widget.
+  void OnCardClosing();
+
   // Timestamp of the last time the hover card is hidden by the mouse leaving
   // the tab strip. This is used for reshowing the hover card without delay if
   // the mouse reenters within a given amount of time.

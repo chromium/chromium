@@ -244,8 +244,7 @@ bool TabHoverCardController::UseAnimations() {
 }
 
 bool TabHoverCardController::IsHoverCardVisible() const {
-  return hover_card_ != nullptr && hover_card_->GetWidget() &&
-         !hover_card_->GetWidget()->IsClosed();
+  return hover_card_ && GetCardWidget() && !GetCardWidget()->IsClosed();
 }
 
 bool TabHoverCardController::IsHoverCardShowingForTab(Tab* tab) const {
@@ -317,7 +316,7 @@ void TabHoverCardController::UpdateOrShowCard(
     TabSlotController::HoverCardUpdateType update_type) {
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
-  if (hover_card_ && hover_card_->GetWidget()->IsClosed()) {
+  if (hover_card_ && GetCardWidget()->IsClosed()) {
     OnViewIsDeleting(hover_card_);
   }
 
@@ -417,12 +416,11 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
 
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
-  hover_card_->GetWidget()->SetZOrderSublevel(
-      ChromeWidgetSublevel::kSublevelHoverable);
+  GetCardWidget()->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
 
   if (!is_initial || !UseAnimations()) {
     OnCardFullyVisible();
-    hover_card_->GetWidget()->Show();
+    GetCardWidget()->Show();
     return;
   }
 
@@ -430,7 +428,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
 }
 
 void TabHoverCardController::HideHoverCard() {
-  if (!hover_card_ || hover_card_->GetWidget()->IsClosed()) {
+  if (!hover_card_ || GetCardWidget()->IsClosed()) {
     return;
   }
 
@@ -450,7 +448,7 @@ void TabHoverCardController::HideHoverCard() {
   // This needs to be called whether we're doing a fade or a pop out.
   slide_animator_->StopAnimation();
   if (!UseAnimations()) {
-    hover_card_->GetWidget()->Close();
+    CloseCardWidget();
     return;
   }
   if (fade_animator_->IsFadingOut()) {
@@ -460,18 +458,22 @@ void TabHoverCardController::HideHoverCard() {
   fade_animator_->FadeOut();
 }
 
+void TabHoverCardController::OnCardClosing() {
+  tab_resource_usage_collector_->RemoveObserver(this);
+  delayed_show_timer_.Stop();
+  hover_card_observation_.Reset();
+  event_sniffer_.reset();
+  slide_progressed_subscription_ = base::CallbackListSubscription();
+  slide_complete_subscription_ = base::CallbackListSubscription();
+  fade_complete_subscription_ = base::CallbackListSubscription();
+  slide_animator_.reset();
+  fade_animator_.reset();
+  hover_card_ = nullptr;
+}
+
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
-    tab_resource_usage_collector_->RemoveObserver(this);
-    delayed_show_timer_.Stop();
-    hover_card_observation_.Reset();
-    event_sniffer_.reset();
-    slide_progressed_subscription_ = base::CallbackListSubscription();
-    slide_complete_subscription_ = base::CallbackListSubscription();
-    fade_complete_subscription_ = base::CallbackListSubscription();
-    slide_animator_.reset();
-    fade_animator_.reset();
-    hover_card_ = nullptr;
+    OnCardClosing();
   } else if (target_tab_ == observed_view) {
     UpdateHoverCard(nullptr,
                     TabSlotController::HoverCardUpdateType::kTabRemoved);
@@ -497,7 +499,7 @@ void TabHoverCardController::OnViewVisibilityChanged(views::View* observed_view,
 }
 
 void TabHoverCardController::OnTabResourceMetricsRefreshed() {
-  if (hover_card_ != nullptr && target_tab_ != nullptr) {
+  if (hover_card_ && target_tab_) {
     UpdateHoverCard(target_tab_,
                     TabSlotController::HoverCardUpdateType::kTabDataChanged);
   }
@@ -527,8 +529,7 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
   slide_complete_subscription_ = slide_animator_->AddSlideCompleteCallback(
       base::BindRepeating(&TabHoverCardController::OnSlideAnimationComplete,
                           weak_ptr_factory_.GetWeakPtr()));
-  fade_animator_ =
-      std::make_unique<views::WidgetFadeAnimator>(hover_card_->GetWidget());
+  fade_animator_ = std::make_unique<views::WidgetFadeAnimator>(GetCardWidget());
   fade_complete_subscription_ = fade_animator_->AddFadeCompleteCallback(
       base::BindRepeating(&TabHoverCardController::OnFadeAnimationEnded,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -759,7 +760,7 @@ void TabHoverCardController::OnFadeAnimationEnded(
   }
 
   if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut) {
-    hover_card_->GetWidget()->Close();
+    CloseCardWidget();
   }
 }
 
@@ -825,4 +826,12 @@ void TabHoverCardController::OnHovercardMemoryUsageEnabledChanged() {
   hover_card_memory_usage_enabled_ =
       g_browser_process->local_state()->GetBoolean(
           prefs::kHoverCardMemoryUsageEnabled);
+}
+
+views::Widget* TabHoverCardController::GetCardWidget() const {
+  return hover_card_->GetWidget();
+}
+
+void TabHoverCardController::CloseCardWidget() {
+  GetCardWidget()->Close();
 }

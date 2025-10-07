@@ -448,9 +448,16 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
             .WithOrder(1));
   }
 
-  // Set up widget.
+  SetProperty(views::kElementIdentifierKey, kHoverCardBubbleElementId);
 
+  // Create the widget from the view. Additional setup happens in
+  // `AddedToWidget()`.
   views::BubbleDialogDelegateView::CreateBubble(this);
+}
+
+TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
+
+void TabHoverCardBubbleView::AddedToWidget() {
   set_adjust_if_offscreen(true);
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
@@ -465,18 +472,16 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
   // Note that this code has to go after CreateBubble() above, since setting up
   // the placeholder image and background color require a ColorProvider, which
   // is only available once this View has been added to its widget.
+  Tab* tab = static_cast<Tab*>(GetAnchorView());
   if (thumbnail_view_ && !tab->HasThumbnail() && !tab->IsActive()) {
     thumbnail_view_->SetPlaceholderImage();
   }
 
   // Start in the fully "faded-in" position so that whatever text we initially
-  // display is visible.
+  // display is visible. For TBD reasons, this needs to be done after the
+  // CreateBubble() call, or the crossfades have an incorrect background color.
   SetTextFade(1.0);
-
-  SetProperty(views::kElementIdentifierKey, kHoverCardBubbleElementId);
 }
-
-TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
 CollaborationMessagingRowData
 TabHoverCardBubbleView::GetCollaborationMessagingData(
