@@ -189,6 +189,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testErrorFetchingAccounts() throws Exception {
         doThrow(AccountManagerDelegateException.class)
                 .doReturn(new Account[] {CoreAccountInfo.getAndroidAccountFrom(TEST_ACCOUNT)})
@@ -224,6 +225,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testErrorFetchingAccounts_maxNumberOfRetries() throws Exception {
         doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
         HistogramWatcher retriesHistogram =
@@ -252,6 +254,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testAccountFetchingFailsThenSucceeds() throws Exception {
         // Initially, account fetching fails.
         doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
@@ -300,6 +303,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testGetCoreAccountInfosWhenGaiaIdIsNull() throws Exception {
         final String accountEmail = "test@gmail.com";
         final GaiaId accountGaiaId = FakeAccountManagerDelegate.toGaiaId(accountEmail);
@@ -326,6 +330,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testCoreAccountInfosAreCached() throws Exception {
         final String accountEmail = "test@gmail.com";
         addTestAccount(accountEmail);
@@ -423,6 +428,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testCheckIsSubjectToParentalControls() {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
@@ -437,6 +443,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testCheckNotIsSubjectToParentalControls() {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
@@ -451,6 +458,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testCheckIsSubjectToParentalControlsWithException() {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
@@ -465,6 +473,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testGetAccountCapabilitiesResponseYes() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
@@ -485,6 +494,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testGetAccountCapabilitiesResponseNo() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
@@ -505,6 +515,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testGetAccountCapabilitiesResponseException() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
