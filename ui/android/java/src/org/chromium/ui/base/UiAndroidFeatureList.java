@@ -53,6 +53,12 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
 
+    public static final CachedFlag sReportBottomOverscrolls =
+            newCachedFlag(
+                    UiAndroidFeatures.REPORT_BOTTOM_OVERSCROLLS,
+                    /* defaultValue= */ true,
+                    /* defaultValueInTests= */ true);
+
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
                     sAndroidUseCorrectWindowBounds,

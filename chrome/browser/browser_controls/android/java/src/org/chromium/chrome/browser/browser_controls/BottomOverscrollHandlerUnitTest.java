@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.browser_controls;
 
 import static org.mockito.Mockito.doReturn;
 
@@ -16,13 +16,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.SwipeRefreshHandler.BottomControlsStatus;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler.BottomControlsStatus;
 
-/** Unit tests for {@link org.chromium.chrome.browser.ShortcutHelper}. */
+/** Unit test for {@link BottomOverscrollHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class SwipeRefreshHandlerUnitTest {
+public class BottomOverscrollHandlerUnitTest {
+
     private static final String OVERSCROLL_FROM_EDGE_UMA_NAME =
             "Android.OverscrollFromBottom.BottomControlsStatus";
 
@@ -32,40 +32,50 @@ public class SwipeRefreshHandlerUnitTest {
 
     /**
      * Test method for {@link
-     * SwipeRefreshHandler#recordEdgeToEdgeOverscrollFromBottom(BrowserControlsStateProvider)} .}
+     * BottomOverscrollHandler#recordEdgeToEdgeOverscrollFromBottom(BrowserControlsStateProvider)}
+     * .}
      */
     @Test
-    public void testRecordEdgeToEdgeOverscrollFromBottom() {
+    public void testRecordEdgeToEdgeOverscrollFromBottom_Zero() {
         doReturn(0).when(mBrowserControls).getBottomControlsHeight();
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         OVERSCROLL_FROM_EDGE_UMA_NAME, BottomControlsStatus.HEIGHT_ZERO)) {
-            SwipeRefreshHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+            BottomOverscrollHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
         }
+    }
 
+    @Test
+    public void testRecordEdgeToEdgeOverscrollFromBottom_Hidden() {
         doReturn(50).when(mBrowserControls).getBottomControlsHeight();
         doReturn(50).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         OVERSCROLL_FROM_EDGE_UMA_NAME, BottomControlsStatus.HIDDEN)) {
-            SwipeRefreshHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+            BottomOverscrollHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
         }
+    }
 
+    @Test
+    public void testRecordEdgeToEdgeOverscrollFromBottom_Full() {
         doReturn(50).when(mBrowserControls).getBottomControlsHeight();
         doReturn(0).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         OVERSCROLL_FROM_EDGE_UMA_NAME, BottomControlsStatus.VISIBLE_FULL_HEIGHT)) {
-            SwipeRefreshHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+            BottomOverscrollHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
         }
+    }
 
+    @Test
+    public void testRecordEdgeToEdgeOverscrollFromBottom_Partial() {
         doReturn(50).when(mBrowserControls).getBottomControlsHeight();
         doReturn(20).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         OVERSCROLL_FROM_EDGE_UMA_NAME,
                         BottomControlsStatus.VISIBLE_PARTIAL_HEIGHT)) {
-            SwipeRefreshHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+            BottomOverscrollHandler.recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
         }
     }
 }

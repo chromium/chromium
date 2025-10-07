@@ -26,6 +26,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kDisablePhotoPickerForVideoCapture,
     &ui::kFormFactorUseMaxWindowMetrics,
     &ui::kMirrorBackForwardGesturesInRTL,
+    &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,
 };
