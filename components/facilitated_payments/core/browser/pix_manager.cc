@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
-#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
@@ -259,7 +259,7 @@ void PixManager::OnGetClientToken(base::TimeTicks start_time,
 
 void PixManager::SendInitiatePaymentRequest() {
   if (auto* payments_network_interface =
-          client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface()) {
+          client_->GetFacilitatedPaymentsNetworkInterface()) {
     LogInitiatePaymentAttempt(kPaymentsType);
     payments_network_interface->InitiatePayment(
         std::move(initiate_payment_request_details_),

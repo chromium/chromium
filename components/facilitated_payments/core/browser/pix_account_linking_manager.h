@@ -8,7 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "url/origin.h"
 

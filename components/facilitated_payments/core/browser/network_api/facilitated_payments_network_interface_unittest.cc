@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 
 #include <cstdint>
 #include <memory>
@@ -17,23 +17,23 @@
 
 namespace payments::facilitated {
 
-class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
+class FacilitatedPaymentsNetworkInterfaceTest
     : public autofill::payments::PaymentsNetworkInterfaceTestBase,
       public testing::Test {
  public:
-  MultipleRequestFacilitatedPaymentsNetworkInterfaceTest() = default;
+  FacilitatedPaymentsNetworkInterfaceTest() = default;
 
-  MultipleRequestFacilitatedPaymentsNetworkInterfaceTest(
-      const MultipleRequestFacilitatedPaymentsNetworkInterfaceTest&) = delete;
-  MultipleRequestFacilitatedPaymentsNetworkInterfaceTest& operator=(
-      const MultipleRequestFacilitatedPaymentsNetworkInterfaceTest&) = delete;
+  FacilitatedPaymentsNetworkInterfaceTest(
+      const FacilitatedPaymentsNetworkInterfaceTest&) = delete;
+  FacilitatedPaymentsNetworkInterfaceTest& operator=(
+      const FacilitatedPaymentsNetworkInterfaceTest&) = delete;
 
-  ~MultipleRequestFacilitatedPaymentsNetworkInterfaceTest() override = default;
+  ~FacilitatedPaymentsNetworkInterfaceTest() override = default;
 
   void SetUp() override {
     SetUpTest();
     payments_network_interface_ =
-        std::make_unique<MultipleRequestFacilitatedPaymentsNetworkInterface>(
+        std::make_unique<FacilitatedPaymentsNetworkInterface>(
             test_shared_loader_factory_, *identity_test_env_.identity_manager(),
             test_personal_data_.payments_data_manager());
   }
@@ -53,7 +53,7 @@ class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
     request_details->pix_code_ = "a valid code";
     id_ = payments_network_interface_->InitiatePayment(
         std::move(request_details),
-        base::BindOnce(&MultipleRequestFacilitatedPaymentsNetworkInterfaceTest::
+        base::BindOnce(&FacilitatedPaymentsNetworkInterfaceTest::
                            OnInitiatePaymentResponseReceived,
                        weak_ptr_factory_.GetWeakPtr()),
         "language-LOCALE");
@@ -63,7 +63,7 @@ class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
     id_ = payments_network_interface_->GetDetailsForCreatePaymentInstrument(
         123,
         base::BindOnce(
-            &MultipleRequestFacilitatedPaymentsNetworkInterfaceTest::
+            &FacilitatedPaymentsNetworkInterfaceTest::
                 OnGetDetailsForCreatePaymentInstrumentResponseReceived,
             weak_ptr_factory_.GetWeakPtr()),
         "language-LOCALE");
@@ -83,7 +83,7 @@ class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
 
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
       response_details_;
-  std::unique_ptr<MultipleRequestFacilitatedPaymentsNetworkInterface>
+  std::unique_ptr<FacilitatedPaymentsNetworkInterface>
       payments_network_interface_;
   bool is_eligible_for_pix_account_linking_ = false;
 
@@ -103,13 +103,13 @@ class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
     is_eligible_for_pix_account_linking_ = is_eligible_for_pix_account_linking;
   }
 
-  MultipleRequestFacilitatedPaymentsNetworkInterface::RequestId id_;
+  FacilitatedPaymentsNetworkInterface::RequestId id_;
 
-  base::WeakPtrFactory<MultipleRequestFacilitatedPaymentsNetworkInterfaceTest>
+  base::WeakPtrFactory<FacilitatedPaymentsNetworkInterfaceTest>
       weak_ptr_factory_{this};
 };
 
-TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
        InitiatePaymentRequest_Success) {
   SendInitiatePaymentRequest();
   IssueOAuthToken();
@@ -135,7 +135,7 @@ TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
             response_details_->secure_payload_.action_token);
 }
 
-TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
        InitiatePaymentRequest_Failure) {
   SendInitiatePaymentRequest();
   IssueOAuthToken();
@@ -157,7 +157,7 @@ TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
   EXPECT_EQ("Something went wrong!", response_details_->error_message_.value());
 }
 
-TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
        GetDetailsForCreatePaymentInstrument_Success) {
   SendGetDetailsForCreatePaymentInstrumentRequest();
   IssueOAuthToken();
@@ -171,7 +171,7 @@ TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
   EXPECT_TRUE(is_eligible_for_pix_account_linking_);
 }
 
-TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
        GetDetailsForCreatePaymentInstrument_Failure) {
   SendGetDetailsForCreatePaymentInstrumentRequest();
   IssueOAuthToken();

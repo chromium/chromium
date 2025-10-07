@@ -40,7 +40,7 @@ class StrikeDatabase;
 namespace payments::facilitated {
 
 class PixAccountLinkingManager;
-class MultipleRequestFacilitatedPaymentsNetworkInterface;
+class FacilitatedPaymentsNetworkInterface;
 
 // A cross-platform client interface for showing UI for non-form based FOPs.
 class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
@@ -59,8 +59,8 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // used for making payment requests. It can be null if the browser context
   // associated with the WebContents is null. Support multiple active
   // requests at a time.
-  virtual MultipleRequestFacilitatedPaymentsNetworkInterface*
-  GetMultipleRequestFacilitatedPaymentsNetworkInterface() = 0;
+  virtual FacilitatedPaymentsNetworkInterface*
+  GetFacilitatedPaymentsNetworkInterface() = 0;
 
   // Provides access to the core information of the user's primary account.
   virtual std::optional<CoreAccountInfo> GetCoreAccountInfo() = 0;

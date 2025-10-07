@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
-#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 
 namespace payments::facilitated {
 
@@ -28,8 +28,8 @@ class FacilitatedPaymentsInitiatePaymentRequest
   FacilitatedPaymentsInitiatePaymentRequest(
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
           request_details,
-      MultipleRequestFacilitatedPaymentsNetworkInterface::
-          InitiatePaymentResponseCallback response_callback,
+      FacilitatedPaymentsNetworkInterface::InitiatePaymentResponseCallback
+          response_callback,
       const std::string& app_locale,
       const bool full_sync_enabled);
   FacilitatedPaymentsInitiatePaymentRequest(
@@ -68,8 +68,8 @@ class FacilitatedPaymentsInitiatePaymentRequest
       request_details_;
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
       response_details_;
-  MultipleRequestFacilitatedPaymentsNetworkInterface::
-      InitiatePaymentResponseCallback response_callback_;
+  FacilitatedPaymentsNetworkInterface::InitiatePaymentResponseCallback
+      response_callback_;
   std::string app_locale_;
   const bool full_sync_enabled_;
 };

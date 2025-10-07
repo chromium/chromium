@@ -78,12 +78,12 @@ class PaymentLinkManagerTest : public testing::Test {
     payments_data_manager_.SetPrefService(pref_service_.get());
     payments_data_manager_.SetSyncServiceForTest(&sync_service_);
     test_strike_database_ = std::make_unique<autofill::TestStrikeDatabase>();
-    payments_network_interface_ = std::make_unique<
-        MockMultipleRequestFacilitatedPaymentsNetworkInterface>(
-        *identity_test_env_.identity_manager(), payments_data_manager_);
+    payments_network_interface_ =
+        std::make_unique<MockFacilitatedPaymentsNetworkInterface>(
+            *identity_test_env_.identity_manager(), payments_data_manager_);
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(&payments_data_manager_));
-    ON_CALL(client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
+    ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(payments_network_interface_.get()));
     ON_CALL(client_, IsInLandscapeMode).WillByDefault(testing::Return(false));
     ON_CALL(client_, IsFoldable).WillByDefault(testing::Return(false));
@@ -133,7 +133,7 @@ class PaymentLinkManagerTest : public testing::Test {
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
   autofill::TestPaymentsDataManager payments_data_manager_;
-  std::unique_ptr<MockMultipleRequestFacilitatedPaymentsNetworkInterface>
+  std::unique_ptr<MockFacilitatedPaymentsNetworkInterface>
       payments_network_interface_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<autofill::TestStrikeDatabase> test_strike_database_;
@@ -645,7 +645,7 @@ TEST_F(PaymentLinkManagerTest, LogGetClientTokenResultAndLatency) {
 TEST_F(
     PaymentLinkManagerTest,
     SendInitiatePaymentRequest_PaymentsNetworkInterfaceNotAvailable_InitiatePaymentNotTriggered) {
-  EXPECT_CALL(client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
+  EXPECT_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
       .Times(1)
       .WillOnce(testing::Return(nullptr));
 

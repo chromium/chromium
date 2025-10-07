@@ -1309,21 +1309,20 @@ TEST_P(PixManagerTestForUiScreens, ScreenClosedByUser) {
 class PixManagerPaymentsNetworkInterfaceTest : public PixManagerTest {
  public:
   PixManagerPaymentsNetworkInterfaceTest() {
-    multiple_request_payments_network_interface_ = std::make_unique<
-        MockMultipleRequestFacilitatedPaymentsNetworkInterface>(
-        *identity_test_env_.identity_manager(), *payments_data_manager_);
+    payments_network_interface_ =
+        std::make_unique<MockFacilitatedPaymentsNetworkInterface>(
+            *identity_test_env_.identity_manager(), *payments_data_manager_);
   }
 
   void SetUp() override {
     PixManagerTest::SetUp();
-    ON_CALL(*client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
-        .WillByDefault(testing::Return(
-            multiple_request_payments_network_interface_.get()));
+    ON_CALL(*client_, GetFacilitatedPaymentsNetworkInterface)
+        .WillByDefault(testing::Return(payments_network_interface_.get()));
   }
 
  protected:
-  std::unique_ptr<MockMultipleRequestFacilitatedPaymentsNetworkInterface>
-      multiple_request_payments_network_interface_;
+  std::unique_ptr<MockFacilitatedPaymentsNetworkInterface>
+      payments_network_interface_;
 
  private:
   signin::IdentityTestEnvironment identity_test_env_;
@@ -1333,7 +1332,7 @@ class PixManagerPaymentsNetworkInterfaceTest : public PixManagerTest {
 // FacilitatedPaymentsNetworkInterface.
 TEST_F(PixManagerPaymentsNetworkInterfaceTest, SendInitiatePaymentRequest) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*multiple_request_payments_network_interface_,
+  EXPECT_CALL(*payments_network_interface_,
               InitiatePayment(testing::_, testing::_, testing::_));
 
   pix_manager_->SendInitiatePaymentRequest();
@@ -1495,7 +1494,7 @@ TEST_F(PixManagerPaymentsNetworkInterfaceTest,
 // Test that refreshing the page will cancel pending initiate payment request
 // callback.
 TEST_F(PixManagerPaymentsNetworkInterfaceTest, Reset) {
-  EXPECT_CALL(*multiple_request_payments_network_interface_, InitiatePayment);
+  EXPECT_CALL(*payments_network_interface_, InitiatePayment);
 
   pix_manager_->SendInitiatePaymentRequest();
   pix_manager_->Reset();

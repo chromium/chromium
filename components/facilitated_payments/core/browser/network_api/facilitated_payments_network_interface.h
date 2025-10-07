@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_MULTIPLE_REQUEST_FACILITATED_PAYMENTS_NETWORK_INTERFACE_H_
-#define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_MULTIPLE_REQUEST_FACILITATED_PAYMENTS_NETWORK_INTERFACE_H_
+#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_FACILITATED_PAYMENTS_NETWORK_INTERFACE_H_
+#define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_FACILITATED_PAYMENTS_NETWORK_INTERFACE_H_
 
 #include <memory>
 
@@ -32,7 +32,7 @@ class FacilitatedPaymentsInitiatePaymentResponseDetails;
 // Issues Payments RPCs and manages responses and failure conditions for
 // Facilitated Payments. Multiple request may be active at the same time.
 // Sending another request will not affect any pending requests.
-class MultipleRequestFacilitatedPaymentsNetworkInterface
+class FacilitatedPaymentsNetworkInterface
     : public autofill::payments::MultipleRequestPaymentsNetworkInterfaceBase {
  public:
   using InitiatePaymentResponseCallback = base::OnceCallback<void(
@@ -46,18 +46,18 @@ class MultipleRequestFacilitatedPaymentsNetworkInterface
       base::StrongAlias<struct autofill::payments::RequestIdTag, std::string>;
 
   // `identity_manager` and `account_info_getter` must outlive this.
-  MultipleRequestFacilitatedPaymentsNetworkInterface(
+  FacilitatedPaymentsNetworkInterface(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager& identity_manager,
       autofill::AccountInfoGetter& account_info_getter,
       bool is_off_the_record = false);
 
-  MultipleRequestFacilitatedPaymentsNetworkInterface(
-      const MultipleRequestFacilitatedPaymentsNetworkInterface&) = delete;
-  MultipleRequestFacilitatedPaymentsNetworkInterface& operator=(
-      const MultipleRequestFacilitatedPaymentsNetworkInterface&) = delete;
+  FacilitatedPaymentsNetworkInterface(
+      const FacilitatedPaymentsNetworkInterface&) = delete;
+  FacilitatedPaymentsNetworkInterface& operator=(
+      const FacilitatedPaymentsNetworkInterface&) = delete;
 
-  ~MultipleRequestFacilitatedPaymentsNetworkInterface() override;
+  ~FacilitatedPaymentsNetworkInterface() override;
 
   // Makes a `FacilitatedPaymentsInitiatePaymentRequest` to the Payments server.
   // This method is virtual so it can be overridden in tests.
@@ -80,4 +80,4 @@ class MultipleRequestFacilitatedPaymentsNetworkInterface
 
 }  // namespace payments::facilitated
 
-#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_MULTIPLE_REQUEST_FACILITATED_PAYMENTS_NETWORK_INTERFACE_H_
+#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_FACILITATED_PAYMENTS_NETWORK_INTERFACE_H_

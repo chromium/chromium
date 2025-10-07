@@ -23,7 +23,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
-#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/strike_databases/payment_link_suggestion_strike_database.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -338,9 +338,8 @@ void PaymentLinkManager::OnGetClientToken(base::TimeTicks start_time,
 }
 
 void PaymentLinkManager::SendInitiatePaymentRequest() {
-  MultipleRequestFacilitatedPaymentsNetworkInterface*
-      payments_network_interface =
-          client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface();
+  FacilitatedPaymentsNetworkInterface* payments_network_interface =
+      client_->GetFacilitatedPaymentsNetworkInterface();
 
   if (!payments_network_interface) {
     ShowErrorScreen();

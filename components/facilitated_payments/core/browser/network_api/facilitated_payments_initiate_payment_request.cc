@@ -31,8 +31,8 @@ FacilitatedPaymentsInitiatePaymentRequest::
     FacilitatedPaymentsInitiatePaymentRequest(
         std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
             request_details,
-        MultipleRequestFacilitatedPaymentsNetworkInterface::
-            InitiatePaymentResponseCallback response_callback,
+        FacilitatedPaymentsNetworkInterface::InitiatePaymentResponseCallback
+            response_callback,
         const std::string& app_locale,
         const bool full_sync_enabled)
     : request_details_(std::move(request_details)),
