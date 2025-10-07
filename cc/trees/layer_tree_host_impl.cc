@@ -4818,8 +4818,12 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
       const auto& scroll_tree = active_tree_->property_trees()->scroll_tree();
       if (const gfx::Rect* cull_rect =
               scroll_tree.ScrollingContentsCullRect(element_id)) {
-        if (const auto* scroll_node =
-                scroll_tree.FindNodeFromElementId(element_id)) {
+        const auto* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
+        // The `transform_id` can be invalid when the scroll is starting. By
+        // definition there can be no checkerboarding yet, so we can skip
+        // this calculation.
+        if (scroll_node &&
+            scroll_node->transform_id != kInvalidPropertyNodeId) {
           gfx::RectF visible_rect(
               gfx::Rect(scroll_node->container_origin,
                         scroll_tree.container_bounds(scroll_node->id)));
