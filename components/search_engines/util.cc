@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
+#include "components/google/core/common/google_util.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
@@ -49,6 +50,7 @@ constexpr char kVisualInputTypeQueryParameterImageValue[] = "img";
 constexpr char kVisualInputTypeQueryParameterWebpageValue[] = "wp";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
+constexpr char kAimUDM[] = "50";
 
 // Computes whether updates to the search engines database are needed.
 //
@@ -615,6 +617,15 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
   return std::ranges::find(*urls, url, &std::unique_ptr<TemplateURL>::get);
 }
 
+bool IsAimURL(const GURL& url) {
+  if (!google_util::IsGoogleSearchUrl(url)) {
+    return false;
+  }
+  std::string udm;
+  bool has_udm = net::GetValueForKeyInQuery(url, "udm", &udm);
+  return has_udm && udm == kAimUDM;
+}
+
 GURL GetUrlForAim(TemplateURLService* turl_service,
                   omnibox::ChromeAimEntryPoint aim_entrypoint,
                   const base::Time& query_start_time,
@@ -632,7 +643,7 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
                                                     param.second);
   }
   // This param triggers AI mode as opposed to traditional search.
-  result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", "50");
+  result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", kAimUDM);
   // Don't override the aep param from `additional_params`. This value could be
   // given alongside the match from the server. This should keep precedence
   // over the generic entrypoint value.

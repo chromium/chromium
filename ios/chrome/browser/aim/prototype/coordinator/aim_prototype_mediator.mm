@@ -572,6 +572,9 @@ CreateInputDataFromAnnotatedPageContent(
               destinationURL:(const GURL&)destinationURL
                 isSearchType:(BOOL)isSearchType {
   if (isSearchType) {
+    if (IsAimURL(destinationURL)) {
+      [self.consumer setAIModeEnabled:YES];
+    }
     [self sendText:[NSString cr_fromString16:text]];
   } else {
     [self.URLLoader loadURL:destinationURL];
