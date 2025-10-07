@@ -1854,6 +1854,13 @@ bool WebGLRenderingContextBase::
   }
 
   auto size = Host()->Size();
+  const auto& capabilities =
+      context_provider_wrapper->ContextProvider().GetCapabilities();
+  if (size.width() > capabilities.max_texture_size ||
+      size.height() > capabilities.max_texture_size) {
+    return false;
+  }
+
   auto format = GetSharedImageFormat();
 
   bool using_webgl_image_chromium =
@@ -1863,13 +1870,6 @@ bool WebGLRenderingContextBase::
   bool using_swap_chain =
       GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
   if (!using_swap_chain && !using_webgl_image_chromium) {
-    return false;
-  }
-
-  const auto& capabilities =
-      context_provider_wrapper->ContextProvider().GetCapabilities();
-  if (size.width() > capabilities.max_texture_size ||
-      size.height() > capabilities.max_texture_size) {
     return false;
   }
 
