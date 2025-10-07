@@ -1863,7 +1863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.ResourceExhaustedCase"
-    enum="ResourceExhaustedCase" expires_after="2026-02-01">
+    enum="ResourceExhaustedCase" expires_after="2026-04-05">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1875,7 +1875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.StartStatus"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-02-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-04-05">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1984,7 +1984,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.FWInstallTime" units="seconds"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>ujjwalpande@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -2008,7 +2008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.ModemRecoveryState"
-    enum="ModemfwdModemRecoveryState" expires_after="2026-02-01">
+    enum="ModemfwdModemRecoveryState" expires_after="2026-04-05">
   <owner>ujjwalpande@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>Report state of modem recovery operation.</summary>

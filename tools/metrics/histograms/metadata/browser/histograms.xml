@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventEnqueueResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-02-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-04-05">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -921,7 +921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.TimeToFirstBitmap" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -989,7 +989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-04-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -1029,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabService.DiskUsageAtStartup" units="KB"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -1193,7 +1193,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.AvailableMemory.SpareRenderer.{ProcessType}ProcessKillWithin{Time}"
-    units="MB" expires_after="2026-01-15">
+    units="MB" expires_after="2026-04-05">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1790,7 +1790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationResult"
-    enum="BrowserServicesVerificationResult" expires_after="2026-02-01">
+    enum="BrowserServicesVerificationResult" expires_after="2026-04-05">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1803,7 +1803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationTime.Offline" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -2106,7 +2106,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SidePanel.ResizedWidth" units="px" expires_after="2026-01-31">
+<histogram name="SidePanel.ResizedWidth" units="px" expires_after="2026-04-05">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2116,7 +2116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.ResizedWidthPercentage" units="% of window width"
-    expires_after="2026-01-31">
+    expires_after="2026-04-05">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2136,7 +2136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.{SidePanelEntry}.ResizedWidth" units="px"
-    expires_after="2026-01-31">
+    expires_after="2026-04-05">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2147,7 +2147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.{SidePanelEntry}.ResizedWidthPercentage"
-    units="% of window width" expires_after="2026-01-31">
+    units="% of window width" expires_after="2026-04-05">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.GmsCoreGetCredentialsResult"
-    enum="GmsCoreGetCredentialsResult" expires_after="2026-02-01">
+    enum="GmsCoreGetCredentialsResult" expires_after="2026-04-05">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.StartupRecordCount" units="records"
-    expires_after="2025-12-31">
+    expires_after="2026-04-05">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CredentialFetchDuration.GmsCore.{Source}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-04-05">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -527,7 +527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.PinRenewalFailureCause"
-    enum="WebAuthenticationPinRenewalFailureCause" expires_after="2026-02-01">
+    enum="WebAuthenticationPinRenewalFailureCause" expires_after="2026-04-05">
   <owner>agl@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.U2fSignOperation"
-    enum="U2fSignOperationResult" expires_after="2026-02-01">
+    enum="U2fSignOperationResult" expires_after="2026-04-05">
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

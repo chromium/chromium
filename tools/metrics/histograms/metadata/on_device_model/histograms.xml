@@ -174,7 +174,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.GpuErrorReason" enum="GpuErrorReason"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

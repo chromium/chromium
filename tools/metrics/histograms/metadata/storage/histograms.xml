@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.ClientKeepActiveRemotesCount" units="count"
-    expires_after="2026-03-29">
+    expires_after="2026-04-05">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

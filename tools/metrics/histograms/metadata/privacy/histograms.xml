@@ -1325,7 +1325,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="PrivacySandbox.Attestations.LoadAPKAssetStatus"
     enum="PrivacySandboxAttestationLoadAPKAssetStatus"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>

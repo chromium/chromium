@@ -1016,7 +1016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadResult"
-    enum="LoadPlatformModelStatus" expires_after="2026-02-01">
+    enum="LoadPlatformModelStatus" expires_after="2026-04-05">
   <owner>rajendrant@chromium.org</owner>
   <owner>holte@chromium.org</owner>
   <summary>
@@ -1216,7 +1216,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResultOnValidationStarted"
-    enum="OnDeviceModelValidationResult" expires_after="2026-02-01">
+    enum="OnDeviceModelValidationResult" expires_after="2026-04-05">
   <owner>cduvall@chromium.org</owner>
   <owner>holte@chromium.org</owner>
   <summary>
@@ -1314,7 +1314,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.{ModelExecutionFeature}"
-    enum="Boolean" expires_after="2026-02-01">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>holte@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
@@ -1561,7 +1561,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelHandler.HandlerCreated.{OptimizationTarget}"
-    enum="BooleanCreated" expires_after="2026-02-01">
+    enum="BooleanCreated" expires_after="2026-04-05">
   <owner>wittman@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -1885,7 +1885,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
     enum="OptimizationGuidePredictionModelDownloadStatus"
-    expires_after="2025-12-28">
+    expires_after="2026-04-05">
   <owner>rajendrant@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>

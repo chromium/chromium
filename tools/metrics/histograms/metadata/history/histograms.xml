@@ -2661,7 +2661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Is4XXOr5XXStatusCode" enum="Boolean"
-    expires_after="2026-01-31">
+    expires_after="2026-04-05">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2723,7 +2723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MostVisitedTilesVisualDeduplication" units="tiles"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>hitarthkothari@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -2740,7 +2740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.QueryAppDuration" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>jinsukkim@google.com</owner>
   <owner>chrome-connective-tissue-team@google.com</owner>
   <component>1456716</component>
@@ -3039,7 +3039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyURLCount" units="URLs"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>

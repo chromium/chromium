@@ -556,7 +556,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEntrypoint.Activated.UserTextPresent.ByPageContext.{OmniboxPageContext}"
-    enum="Boolean" expires_after="2025-12-15">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>khalidpeer@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -626,7 +626,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEntrypoint.Shown.ByPageContext.{OmniboxPageContext}"
-    enum="Boolean" expires_after="2025-12-15">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>khalidpeer@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -1368,7 +1368,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram name="Omnibox.DsePreload.Prefetch.NoVarySearchDataCacheUpdate"
     enum="SearchPreloadServiceNoVarySearchDataCacheUpdate"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -2421,7 +2421,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.OnPopupOpen.PaywallSignal" enum="PaywallSignal"
-    expires_after="2026-01-31">
+    expires_after="2026-04-05">
   <owner>juanmojica@google.com</owner>
   <owner>mercerd@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -3436,7 +3436,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestRequestsSent.ResponseTime2.RequestState{RemoteRequestType}{RemoteRequestCompleted}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-04-05">
   <owner>ananyaseelam@google.com</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -3477,7 +3477,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestRequestsSent.ResultCount.EnterpriseSearchAggregatorSuggest{EnterpriseSuggestionType}"
-    units="count" expires_after="2026-02-01">
+    units="count" expires_after="2026-04-05">
   <owner>ananyaseelam@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>

@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="GroupSuggestionsService.TimeSpent.PerGroup.{GroupCreationSource}"
-    units="ms" expires_after="2026-01-01">
+    units="ms" expires_after="2026-04-05">
   <owner>mfiaz@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <owner>salg@google.com</owner>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GroupSuggestionsService.TimeSpent.Total.{GroupCreationSource}"
-    units="ms" expires_after="2026-01-01">
+    units="ms" expires_after="2026-04-05">
   <owner>mfiaz@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <owner>salg@google.com</owner>

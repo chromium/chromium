@@ -1675,7 +1675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.UsagePattern"
-    enum="WebRtcPeerConnectionUsagePattern" expires_after="2026-02-01">
+    enum="WebRtcPeerConnectionUsagePattern" expires_after="2026-04-05">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

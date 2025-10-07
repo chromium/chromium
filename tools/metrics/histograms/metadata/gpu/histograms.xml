@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Android.HasEGLDupNativeFenceFunction" enum="Boolean"
-    expires_after="M145">
+    expires_after="2026-04-05">
   <owner>boliu@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
@@ -638,7 +638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayer.YUVOverlayCount"
-    units="overlays" expires_after="2026-02-01">
+    units="overlays" expires_after="2026-04-05">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1397,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SharedImage.SharedImageFormat" enum="SharedImageFormatUMA"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>hitawala@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -2003,7 +2003,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.RootDamageRect.Overlay"
-    enum="BooleanOverlayDamageRect" expires_after="2026-02-01">
+    enum="BooleanOverlayDamageRect" expires_after="2026-04-05">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

@@ -1152,7 +1152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.KeyEventLatency" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>Time taken by the engine to handle a key event.</summary>

@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.ProtocolUsed" enum="PrinterProtocol"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -522,7 +522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.EnumeratePrintersTime" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -795,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="WebAudio.AudioBuffer.Length" units="frames"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>

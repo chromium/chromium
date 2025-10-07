@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.FlowDuration" units="ms"
-    expires_after="2026-01-28">
+    expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.TotalFileSize" units="KB"
-    expires_after="2026-01-28">
+    expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.FileSize"
-    units="KB" expires_after="2026-01-28">
+    units="KB" expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserDataImporter.{ImportSource}.{ImportDataType}.ImportDuration"
-    units="ms" expires_after="2026-01-28">
+    units="ms" expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserDataImporter.{ImportSource}.{ImportDataType}.ImportedCount"
-    units="count" expires_after="2025-11-30">
+    units="count" expires_after="2026-04-05">
   <owner>fsenra@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.Outcome"
-    enum="UserDataImportOutcome" expires_after="2026-01-28">
+    enum="UserDataImportOutcome" expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserDataImporter.{ImportSource}.{ImportDataType}.PreparedCount"
-    units="items" expires_after="2026-01-28">
+    units="items" expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserDataImporter.{ImportSource}.{ImportDataType}.PrepareDuration"
-    units="ms" expires_after="2026-01-28">
+    units="ms" expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.SuccessRate"
-    units="%" expires_after="2026-01-28">
+    units="%" expires_after="2026-04-05">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>

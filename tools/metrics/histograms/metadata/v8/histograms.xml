@@ -2090,7 +2090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmDeoptsExecutedCount" units="deopts"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>mliedtke@chromium.org</owner>
   <owner>dlehmann@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
@@ -2108,7 +2108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmDeoptsPerFunction" units="deopts"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>mliedtke@chromium.org</owner>
   <owner>dlehmann@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>

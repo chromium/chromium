@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}CacheSizeOnInit2" units="MB"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>jkarlin@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}ConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2026-02-01">
+    enum="SimpleCacheConsistencyResult" expires_after="2026-04-05">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}DiskOpenLatency" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}Eviction.EntryCount" units="units"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}IndexFileStateOnLoad"
-    enum="SimpleIndexState" expires_after="2026-02-01">
+    enum="SimpleIndexState" expires_after="2026-04-05">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}IndexNumEntriesOnInit"
-    units="entries" expires_after="2026-02-01">
+    units="entries" expires_after="2026-04-05">
   <owner>jkarlin@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}MaxCacheSizeOnInit2" units="MB"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>morlovich@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>The size limit computed for the cache. {CacheInstance}</summary>
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleGeolocation.Provider.ClientId"
-    enum="SimpleGeolocationClientId" expires_after="2026-02-01">
+    enum="SimpleGeolocationClientId" expires_after="2026-04-05">
   <owner>alvinji@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleGeolocation.Provider.TimezoneResolverRequestInterval"
-    units="hours" expires_after="2026-02-01">
+    units="hours" expires_after="2026-04-05">
   <owner>alvinji@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

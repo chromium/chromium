@@ -237,7 +237,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountBubble.TypeOnShow"
-    enum="DiscountClusterType" expires_after="2026-02-01">
+    enum="DiscountClusterType" expires_after="2026-04-05">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubble.TypeOnCopy"
-    enum="DiscountClusterType" expires_after="2026-02-01">
+    enum="DiscountClusterType" expires_after="2026-04-05">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -280,7 +280,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubbleIsAutoShown"
-    enum="BooleanYesNo" expires_after="2026-02-01">
+    enum="BooleanYesNo" expires_after="2026-04-05">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -290,7 +290,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsPageActionIconIsExpanded"
-    enum="BooleanYesNo" expires_after="2026-02-01">
+    enum="BooleanYesNo" expires_after="2026-04-05">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.PageActionIcon.TypeOnShown"
-    enum="DiscountClusterType" expires_after="2026-02-01">
+    enum="DiscountClusterType" expires_after="2026-04-05">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -451,7 +451,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

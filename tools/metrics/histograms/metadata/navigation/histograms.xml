@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Eviction.Renderer"
-    enum="BackForwardCacheRendererEvictionReason" expires_after="2026-02-01">
+    enum="BackForwardCacheRendererEvictionReason" expires_after="2026-04-05">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Eviction.TimeUntilProcessKilled" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -552,7 +552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.NewPageNavHasPotentialMatch" enum="Boolean"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -566,7 +566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.NewPageNavHasPotentialMatchWithNoSubframes"
-    enum="Boolean" expires_after="2026-02-01">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -580,7 +580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.NonRestoredNavigationDirection"
-    enum="HistoryNavigationDirection" expires_after="2026-02-01">
+    enum="HistoryNavigationDirection" expires_after="2026-04-05">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.RestoredNavigationDirection"
-    enum="HistoryNavigationDirection" expires_after="2026-02-01">
+    enum="HistoryNavigationDirection" expires_after="2026-04-05">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1067,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.FCPFrameSubmissionToSurfaceEmbed" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1678,7 +1678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadOverheadTime" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
@@ -2322,7 +2322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.StartAdjustment.AllFrames"
-    enum="NavigationStartAdjustmentType" expires_after="2026-02-03">
+    enum="NavigationStartAdjustmentType" expires_after="2026-04-05">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <summary>
@@ -2441,7 +2441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.StartAdjustment.MainFrameOnly"
-    enum="NavigationStartAdjustmentType" expires_after="2026-02-03">
+    enum="NavigationStartAdjustmentType" expires_after="2026-04-05">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <summary>
@@ -2489,7 +2489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.SurfaceEmbedToFCPFrameSubmission" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -2895,7 +2895,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.URLLoader.OnAcceptCHFrameReceived.CriticalHintsMissingStatus"
-    enum="CriticalHintsMissingStatus" expires_after="2026-02-01">
+    enum="CriticalHintsMissingStatus" expires_after="2026-04-05">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

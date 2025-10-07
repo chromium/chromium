@@ -1448,7 +1448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.KeyMint.VerifiedBootHash.Result"
-    enum="ArcVerifiedBootHashResult" expires_after="2026-02-01">
+    enum="ArcVerifiedBootHashResult" expires_after="2026-04-05">
   <owner>batoon@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -1458,7 +1458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.KeyMint.VerifiedBootKey.Result"
-    enum="ArcVerifiedBootKeyResult" expires_after="2026-02-01">
+    enum="ArcVerifiedBootKeyResult" expires_after="2026-04-05">
   <owner>batoon@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -1468,7 +1468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.KeyMint.VerifiedBootState.Result"
-    enum="ArcVerifiedBootStateResult" expires_after="2026-02-01">
+    enum="ArcVerifiedBootStateResult" expires_after="2026-04-05">
   <owner>batoon@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -2473,7 +2473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.BatteryConsumption" units="%"
-    expires_after="2025-12-31">
+    expires_after="2026-04-05">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>

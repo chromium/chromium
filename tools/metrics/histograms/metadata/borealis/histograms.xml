@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.EngagementTime.{Variant}" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.Result" enum="BorealisInstallResult"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Launch.Source" enum="BorealisLaunchSource"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.TimeToFirstWindow" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>

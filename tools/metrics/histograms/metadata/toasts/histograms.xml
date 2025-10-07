@@ -8,7 +8,7 @@ found in the LICENSE file.
 
 <histograms>
 
-<histogram name="Toast.FailedToShow" enum="ToastId" expires_after="2026-02-01">
+<histogram name="Toast.FailedToShow" enum="ToastId" expires_after="2026-04-05">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>

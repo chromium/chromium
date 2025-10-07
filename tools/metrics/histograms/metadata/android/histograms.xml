@@ -438,7 +438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.SessionVariant"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-02-01">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-04-05">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -998,7 +998,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.IncorrectEdgeSwipe" enum="SwipeEdge"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>eleanorlee@google.com</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -1011,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.IncorrectEdgeSwipe.CountChained"
-    units="count" expires_after="2026-02-01">
+    units="count" expires_after="2026-04-05">
   <owner>eleanorlee@google.com</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2055,7 +2055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController"
-    enum="BackupNavbarInsetsSource" expires_after="2026-02-01">
+    enum="BackupNavbarInsetsSource" expires_after="2026-04-05">
   <owner>clhager@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>edge-to-edge@chromium.org</owner>
@@ -2139,7 +2139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch"
-    enum="HasSeenNonZeroNavBarState" expires_after="2026-02-01">
+    enum="HasSeenNonZeroNavBarState" expires_after="2026-04-05">
   <owner>clhager@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>edge-to-edge@chromium.org</owner>
@@ -2157,7 +2157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.EdgeToEdge.SupportedConfigurationSwitch2"
-    enum="SupportedConfigurationSwitch" expires_after="2026-02-01">
+    enum="SupportedConfigurationSwitch" expires_after="2026-04-05">
   <owner>clhager@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>edge-to-edge@chromium.org</owner>
@@ -2656,7 +2656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Viz.DroppedKeyEvent.Type"
-    enum="AInputEventType" expires_after="2026-01-18">
+    enum="AInputEventType" expires_after="2026-04-05">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2787,7 +2787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.InterceptNavigationDeferDuration" units="ms"
-    expires_after="2026-01-29">
+    expires_after="2026-04-05">
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -3289,7 +3289,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.MultiInstance.NumActivities.DesktopWindow.{InstanceAllocationType}"
-    units="activities" expires_after="2026-02-01">
+    units="activities" expires_after="2026-04-05">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -3435,7 +3435,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiWindowMode.Configuration" enum="WindowingMode"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4450,7 +4450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.AssistContent.IsEnterpriseInfoCached"
-    enum="Boolean" expires_after="2026-01-11">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4483,7 +4483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DocumentLoadInterval" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5051,7 +5051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreResult" enum="AndroidRestoreResult"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -5356,7 +5356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.StyleUtils.FontLoadingOutcome"
-    enum="FontLoadingOutcome" expires_after="2026-02-01">
+    enum="FontLoadingOutcome" expires_after="2026-04-05">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>

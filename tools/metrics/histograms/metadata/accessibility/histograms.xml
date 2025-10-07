@@ -2273,7 +2273,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TranslationDispatcher.LoadResult"
-    enum="TranslationDispatcherLoadResult" expires_after="2026-02-01">
+    enum="TranslationDispatcherLoadResult" expires_after="2026-04-05">
   <owner>evanliu@google.com</owner>
   <owner>chrome-accessibility-eng@google.com</owner>
   <summary>
@@ -2283,7 +2283,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TranslationDispatcher.ParseResult"
-    enum="TranslationDispatcherParseResult" expires_after="2026-02-01">
+    enum="TranslationDispatcherParseResult" expires_after="2026-04-05">
   <owner>evanliu@google.com</owner>
   <owner>chrome-accessibility-eng@google.com</owner>
   <summary>

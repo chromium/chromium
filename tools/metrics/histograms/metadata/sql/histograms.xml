@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Sql.Database.Open.FailureReason.{DatabaseTag}"
-    enum="OpenDatabaseFailedReason" expires_after="2026-02-01">
+    enum="OpenDatabaseFailedReason" expires_after="2026-04-05">
   <owner>anthonyvd@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Database.Open.FirstAttempt.Error.{DatabaseTag}"
-    enum="SqliteResultCode" expires_after="2026-02-01">
+    enum="SqliteResultCode" expires_after="2026-04-05">
   <owner>anthonyvd@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Database.Open.SecondAttempt.Error.{DatabaseTag}"
-    enum="SqliteResultCode" expires_after="2026-02-01">
+    enum="SqliteResultCode" expires_after="2026-04-05">
   <owner>anthonyvd@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result.{DatabaseTag}" enum="SqlRecoveryResult"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

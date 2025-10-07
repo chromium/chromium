@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.MerchantTrustEngagement.{Event}"
-    units="EngagementScore" expires_after="2026-01-30">
+    units="EngagementScore" expires_after="2026-04-05">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <summary>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.MerchantTrustInteraction.{SiteFamiliarity}"
-    enum="MerchantTrustInteraction" expires_after="2026-01-30">
+    enum="MerchantTrustInteraction" expires_after="2026-04-05">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <summary>
@@ -827,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnComplete" enum="SecurityLevel"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -928,7 +928,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -947,7 +947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
-    units="processes" expires_after="2026-02-01">
+    units="processes" expires_after="2026-04-05">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>

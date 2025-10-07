@@ -619,7 +619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.TokenDemandDuringBatchGeneration"
-    units="tokens" expires_after="2026-01-07">
+    units="tokens" expires_after="2026-04-05">
   <owner>jtoohill@google.com</owner>
   <owner>awillia@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
