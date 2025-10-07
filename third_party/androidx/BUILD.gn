@@ -1130,6 +1130,19 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_pdf_pdf_document_service_java") {
+    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_document_service/pdf-document-service.aar"
+    info_path = "../androidx/committed/libs/androidx_pdf_pdf_document_service/androidx_pdf_pdf_document_service.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_core_core_java",
+      ":androidx_pdf_pdf_viewer_java",
+      "//third_party/android_deps:com_google_code_gson_gson_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_viewer_java") {
     aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_viewer/pdf-viewer.aar"
     info_path = "../androidx/committed/libs/androidx_pdf_pdf_viewer/androidx_pdf_pdf_viewer.info"
@@ -3357,26 +3370,6 @@ if (!limit_android_deps) {
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_pdf_pdf_document_service_java") {
-    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_document_service/pdf-document-service.aar"
-    info_path = "../androidx/committed/libs/androidx_pdf_pdf_document_service/androidx_pdf_pdf_document_service.info"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [
-      ":androidx_core_core_java",
-      ":androidx_pdf_pdf_viewer_java",
-      "//third_party/android_deps:com_google_code_gson_gson_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
