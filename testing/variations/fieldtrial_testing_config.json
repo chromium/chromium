@@ -18486,6 +18486,7 @@
     "PermissionsAIv4": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",

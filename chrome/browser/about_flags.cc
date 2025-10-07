@@ -11475,7 +11475,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv3)},
 
     {"permissions-ai-v4", flag_descriptions::kPermissionsAIv4Name,
-     flag_descriptions::kPermissionsAIv4Description, kOsDesktop,
+     flag_descriptions::kPermissionsAIv4Description, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv4)},
 
     {"permissions-ai-p92", flag_descriptions::kPermissionsAIP92Name,
