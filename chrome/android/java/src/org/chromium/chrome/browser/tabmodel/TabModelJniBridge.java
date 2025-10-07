@@ -457,10 +457,10 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     @VisibleForTesting
-    public void openTabProgrammatically(GURL url, int index) {
+    public @JniType("TabAndroid*") @Nullable Tab openTabProgrammatically(GURL url, int index) {
         LoadUrlParams loadParams = new LoadUrlParams(url);
 
-        getTabCreator(isIncognitoBranded())
+        return getTabCreator(isIncognitoBranded())
                 .createNewTab(
                         loadParams,
                         TabLaunchType.FROM_TAB_LIST_INTERFACE,

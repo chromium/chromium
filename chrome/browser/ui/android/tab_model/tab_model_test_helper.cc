@@ -32,7 +32,7 @@
 // "chrome/browser/ui/browser_window" is available on desktop Android, but not
 // other Android builds.
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  //nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
 #endif
 
 TestTabModel::TestTabModel(Profile* profile,
@@ -141,8 +141,9 @@ int TestTabModel::GetTabCountNavigatedInTimeWindow(
 void TestTabModel::CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                                   const base::Time& end_time) {}
 
-void TestTabModel::OpenTab(const GURL& url, int index) {
+tabs::TabInterface* TestTabModel::OpenTab(const GURL& url, int index) {
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
 void TestTabModel::DiscardTab(tabs::TabHandle tab) {
@@ -382,8 +383,9 @@ void OwningTestTabModel::CloseTabsNavigatedInTimeWindow(
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::OpenTab(const GURL& url, int index) {
+tabs::TabInterface* OwningTestTabModel::OpenTab(const GURL& url, int index) {
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
 void OwningTestTabModel::DiscardTab(tabs::TabHandle tab) {

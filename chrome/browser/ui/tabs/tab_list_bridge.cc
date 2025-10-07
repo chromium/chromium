@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -67,7 +68,10 @@ tabs::TabInterface* TabListBridge::GetActiveTab() {
   return tab_strip_->GetActiveTab();
 }
 
-void TabListBridge::OpenTab(const GURL& url, int index) {}
+tabs::TabInterface* TabListBridge::OpenTab(const GURL& url, int index) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
 
 void TabListBridge::DiscardTab(tabs::TabHandle tab) {}
 

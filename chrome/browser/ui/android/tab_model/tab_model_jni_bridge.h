@@ -110,7 +110,7 @@ class TabModelJniBridge : public TabModel {
 
   // TODO(crbug.com/415351293): Implement these.
   // TabListInterface implementation.
-  void OpenTab(const GURL& url, int index) override;
+  tabs::TabInterface* OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
   tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;

@@ -245,12 +245,15 @@ public class TabModelImplTest {
                     assertEquals(1, mTabModelJni.getCount());
 
                     GURL url = new GURL("https://www.chromium.org");
-                    mTabModelJni.openTabProgrammatically(url, 0);
-                    assertEquals(2, mTabModelJni.getCount());
-
-                    Tab tab = mTabModelJni.getTabAt(0);
+                    Tab tab = mTabModelJni.openTabProgrammatically(url, 0);
                     assertNotNull(tab);
                     assertEquals(url, tab.getUrl());
+                    assertEquals(2, mTabModelJni.getCount());
+
+                    Tab found_tab = mTabModelJni.getTabAt(0);
+                    assertNotNull(found_tab);
+                    assertEquals(tab, found_tab);
+                    assertEquals(url, found_tab.getUrl());
                     assertEquals(
                             TabLaunchType.FROM_TAB_LIST_INTERFACE,
                             tab.getTabLaunchTypeAtCreation());

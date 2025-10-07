@@ -49,7 +49,7 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
   int GetTabCount() const override;
   int GetActiveIndex() const override;
   tabs::TabInterface* GetActiveTab() override;
-  void OpenTab(const GURL& url, int index) override;
+  tabs::TabInterface* OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
   tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
