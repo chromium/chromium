@@ -60,8 +60,9 @@ void DbusProperties::RegisterInterface(const std::string& interface) {
 DbusVariant* DbusProperties::GetProperty(const std::string& interface,
                                          const std::string& property_name) {
   auto interface_it = properties_.find(interface);
-  if (interface_it == properties_.end())
+  if (interface_it == properties_.end()) {
     return nullptr;
+  }
   auto name_it = interface_it->second.find(property_name);
   return name_it != interface_it->second.end() ? &name_it->second : nullptr;
 }
@@ -69,8 +70,9 @@ DbusVariant* DbusProperties::GetProperty(const std::string& interface,
 void DbusProperties::PropertyUpdated(const std::string& interface,
                                      const std::string& property_name,
                                      bool send_change) {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   // |signal| follows the PropertiesChanged API:
   // org.freedesktop.DBus.Properties.PropertiesChanged(

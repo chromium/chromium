@@ -26,16 +26,20 @@ BarrierInfo::BarrierInfo(size_t num_calls,
 
 void BarrierInfo::Run(bool success) {
   auto run = [&](bool success) {
-    if (done_callback_)
+    if (done_callback_) {
       std::move(done_callback_).Run(success);
+    }
   };
-  if (num_calls_left_ == 0)
+  if (num_calls_left_ == 0) {
     return;
+  }
   num_calls_left_--;
-  if (!success)
+  if (!success) {
     run(false);
-  else if (num_calls_left_ == 0)  // |success| must be true, no need to check.
+  } else if (num_calls_left_ == 0) {
+    // `success` must be true, no need to check.
     run(true);
+  }
 }
 
 }  // namespace

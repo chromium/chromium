@@ -44,8 +44,9 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusProperties {
         emit_signal && (property_it == interface_it->second.end() ||
                         property_it->second != new_value);
     (interface_it->second)[name] = std::move(new_value);
-    if (send_signal)
+    if (send_signal) {
       PropertyUpdated(interface, name, send_change);
+    }
   }
 
   DbusVariant* GetProperty(const std::string& interface,
