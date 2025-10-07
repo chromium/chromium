@@ -3328,12 +3328,6 @@
       name: "NoIdleEncodingForWebTests",
       status: "test",
     },
-    // Doesn't increase the end offset on getting the range for a new line
-    // character. See https://crbug.com/326888905
-    {
-      name: "NoIncreasingEndOffsetOnSplittingTextNodes",
-      status: "stable",
-    },
     // Doesn't insert empty blockquotes on outdenting a blockquote. See
     // https://crbug.com/323960902
     {

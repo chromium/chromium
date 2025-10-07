@@ -337,17 +337,6 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     if (end_style->ShouldPreserveBreaks() && start == end &&
         end.OffsetInContainerNode() <
             static_cast<int>(To<Text>(end.ComputeContainerNode())->length())) {
-      if (!RuntimeEnabledFeatures::
-              NoIncreasingEndOffsetOnSplittingTextNodesEnabled()) {
-        int end_offset = end.OffsetInContainerNode();
-        // TODO(yosin) We should use |PositionMoveType::CodePoint| for
-        // |previousPositionOf()|.
-        if (!IsNewLineAtPosition(
-                PreviousPositionOf(end, PositionMoveType::kCodeUnit)) &&
-            IsNewLineAtPosition(end)) {
-          end = Position(end.ComputeContainerNode(), end_offset + 1);
-        }
-      }
       if (is_end_and_end_of_last_paragraph_on_same_node &&
           end.OffsetInContainerNode() >=
               end_of_last_paragraph.OffsetInContainerNode())
