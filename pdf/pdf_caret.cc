@@ -44,6 +44,9 @@ void PdfCaret::SetEnabled(bool enabled) {
   }
 
   enabled_ = enabled;
+  if (ShouldDrawCaret()) {
+    caret_screen_rect_ = GetScreenRectForCaret(index_);
+  }
   RefreshDisplayState();
 }
 
@@ -53,6 +56,9 @@ void PdfCaret::SetVisible(bool visible) {
   }
 
   is_visible_ = visible;
+  if (ShouldDrawCaret()) {
+    caret_screen_rect_ = GetScreenRectForCaret(index_);
+  }
   RefreshDisplayState();
 }
 

@@ -52,6 +52,7 @@ constexpr gfx::Rect kTestChar0Caret{10, 10, 1, 14};
 constexpr gfx::Rect kTestChar0EndCaret{22, 10, 1, 14};
 constexpr gfx::Rect kTestChar1Caret = kTestChar0EndCaret;
 constexpr gfx::Rect kTestChar1EndCaret{34, 10, 1, 14};
+constexpr gfx::Rect kTestChar0ZoomedCaret{20, 20, 1, 28};
 
 constexpr gfx::Rect kTestMultiPage1Char0ScreenRect{15, 15, 8, 4};
 constexpr gfx::Rect kTestMultiPage1Char1ScreenRect{23, 15, 8, 4};
@@ -465,26 +466,25 @@ TEST_F(PdfCaretTest, OnGeometryChanged) {
   EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
 
   // Simulate a 200% zoom geometry change.
-  constexpr gfx::Rect kZoomedCaret{20, 20, 1, 28};
-  SetUpChar(kTestChar0, 'a', {kZoomedCaret});
+  SetUpChar(kTestChar0, 'a', {kTestChar0ZoomedCaret});
   caret().OnGeometryChanged();
 
-  EXPECT_EQ(kZoomedCaret, client().invalidated_rect());
+  EXPECT_EQ(kTestChar0ZoomedCaret, client().invalidated_rect());
   EXPECT_TRUE(caret().MaybeDrawCaret(GetRegionData(gfx::Point()),
                                      gfx::Rect(kCanvasSize)));
-  EXPECT_TRUE(VerifyCaretRendering(kZoomedCaret));
+  EXPECT_TRUE(VerifyCaretRendering(kTestChar0ZoomedCaret));
 
   ResetBitmap();
 
   // Simulate a scroll geometry change.
-  constexpr gfx::Rect kZoomedScrolledCaret{40, 60, 1, 28};
-  SetUpChar(kTestChar0, 'a', {kZoomedScrolledCaret});
+  constexpr gfx::Rect kTestChar0ZoomedScrolledCaret{40, 60, 1, 28};
+  SetUpChar(kTestChar0, 'a', {kTestChar0ZoomedScrolledCaret});
   caret().OnGeometryChanged();
 
-  EXPECT_EQ(kZoomedScrolledCaret, client().invalidated_rect());
+  EXPECT_EQ(kTestChar0ZoomedScrolledCaret, client().invalidated_rect());
   EXPECT_TRUE(caret().MaybeDrawCaret(GetRegionData(gfx::Point()),
                                      gfx::Rect(kCanvasSize)));
-  EXPECT_TRUE(VerifyCaretRendering(kZoomedScrolledCaret));
+  EXPECT_TRUE(VerifyCaretRendering(kTestChar0ZoomedScrolledCaret));
 
   ResetBitmap();
 
@@ -497,6 +497,50 @@ TEST_F(PdfCaretTest, OnGeometryChanged) {
   EXPECT_FALSE(caret().MaybeDrawCaret(GetRegionData(gfx::Point()),
                                       gfx::Rect(kCanvasSize)));
   EXPECT_TRUE(VerifyBlankRendering());
+}
+
+TEST_F(PdfCaretTest, OnGeometryChangedToggleEnabled) {
+  SetUpSingleCharLineTest();
+  InitializeVisibleCaretAtChar(kTestChar0);
+
+  EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
+
+  caret().SetEnabled(false);
+
+  // Call `OnGeometryChanged()` while the caret is disabled.
+  SetUpChar(kTestChar0, 'a', {kTestChar0ZoomedCaret});
+  caret().OnGeometryChanged();
+
+  EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
+
+  caret().SetEnabled(true);
+
+  EXPECT_EQ(kTestChar0ZoomedCaret, client().invalidated_rect());
+  EXPECT_TRUE(caret().MaybeDrawCaret(GetRegionData(gfx::Point()),
+                                     gfx::Rect(kCanvasSize)));
+  EXPECT_TRUE(VerifyCaretRendering(kTestChar0ZoomedCaret));
+}
+
+TEST_F(PdfCaretTest, OnGeometryChangedToggleVisible) {
+  SetUpSingleCharLineTest();
+  InitializeVisibleCaretAtChar(kTestChar0);
+
+  EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
+
+  caret().SetVisible(false);
+
+  // Call `OnGeometryChanged()` while the caret is not visible.
+  SetUpChar(kTestChar0, 'a', {kTestChar0ZoomedCaret});
+  caret().OnGeometryChanged();
+
+  EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
+
+  caret().SetVisible(true);
+
+  EXPECT_EQ(kTestChar0ZoomedCaret, client().invalidated_rect());
+  EXPECT_TRUE(caret().MaybeDrawCaret(GetRegionData(gfx::Point()),
+                                     gfx::Rect(kCanvasSize)));
+  EXPECT_TRUE(VerifyCaretRendering(kTestChar0ZoomedCaret));
 }
 
 TEST_F(PdfCaretTest, SetChar) {
