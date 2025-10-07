@@ -56,81 +56,12 @@ ComposeboxHandler::~ComposeboxHandler() {
   owned_controller_.reset();
 }
 
-void ComposeboxHandler::SubmitQuery(
-    const std::string& query_text,
-    WindowOpenDisposition disposition,
-    std::map<std::string, std::string> additional_params) {
-  // Update the query controller state to reflect any deleted contexts.
-  std::erase_if(deleted_context_tokens_,
-                [this](const base::UnguessableToken& context_token) {
-                  ComposeboxQueryController::FileInfo* file_info =
-                      query_controller_->GetFileInfo(context_token);
-
-                  if (file_info == nullptr) {
-                    return false;
-                  }
-
-                  lens::MimeType file_type = file_info
-                                                 ? file_info->mime_type_
-                                                 : lens::MimeType::kUnknown;
-                  FileUploadStatus file_status =
-                      file_info ? file_info->GetFileUploadStatus()
-                                : FileUploadStatus::kNotUploaded;
-
-                  bool success = query_controller_->DeleteFile(context_token);
-                  composebox_metrics_recorder_->RecordFileDeletedMetrics(
-                      success, file_type, file_status);
-
-                  return success;
-                });
-
-  if (deep_search_mode_enabled_) {
-    additional_params["dr"] = "1";
-  }
-
-  if (create_image_mode_enabled_) {
-    additional_params["imgn"] = "1";
-  }
-
-  // This is the time that the user clicked the submit button, however optional
-  // autocomplete logic may be run before this if there was a match associated
-  // with the query.
-  base::Time query_start_time = base::Time::Now();
-  composebox_metrics_recorder_->NotifySessionStateChanged(
-      SessionState::kQuerySubmitted);
-  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
-      search_url_request_info = std::make_unique<
-          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
-  search_url_request_info->query_text = query_text;
-  search_url_request_info->query_start_time = query_start_time;
-  search_url_request_info->additional_params = additional_params;
-  OpenUrl(
-      query_controller_->CreateSearchUrl(std::move(search_url_request_info)),
-      disposition);
-  composebox_metrics_recorder_->NotifySessionStateChanged(
-      SessionState::kNavigationOccurred);
-  composebox_metrics_recorder_->RecordQueryMetrics(
-      query_text.size(), query_controller_->num_files_in_request());
-}
-
 void ComposeboxHandler::SetDeepSearchMode(bool enabled) {
   deep_search_mode_enabled_ = enabled;
 }
 
 void ComposeboxHandler::SetCreateImageMode(bool enabled) {
   create_image_mode_enabled_ = enabled;
-}
-
-void ComposeboxHandler::SubmitQuery(const std::string& query_text,
-                                    uint8_t mouse_button,
-                                    bool alt_key,
-                                    bool ctrl_key,
-                                    bool meta_key,
-                                    bool shift_key) {
-  const WindowOpenDisposition disposition = ui::DispositionFromClick(
-      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
-      shift_key);
-  SubmitQuery(query_text, disposition, /*additional_params=*/{});
 }
 
 void ComposeboxHandler::FocusChanged(bool focused) {
@@ -140,13 +71,6 @@ void ComposeboxHandler::FocusChanged(bool focused) {
 
 void ComposeboxHandler::HandleLensButtonClick() {
   // Ignore, intentionally unimplemented for NTP.
-}
-
-void ComposeboxHandler::OpenUrl(GURL url,
-                                const WindowOpenDisposition disposition) {
-  content::OpenURLParams params(url, content::Referrer(), disposition,
-                                ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params, base::DoNothing());
 }
 
 void ComposeboxHandler::ExecuteAction(uint8_t line,
@@ -163,4 +87,31 @@ void ComposeboxHandler::ExecuteAction(uint8_t line,
 
 void ComposeboxHandler::OnThumbnailRemoved() {
   NOTREACHED();
+}
+
+void ComposeboxHandler::SubmitQuery(const std::string& query_text,
+                                    uint8_t mouse_button,
+                                    bool alt_key,
+                                    bool ctrl_key,
+                                    bool meta_key,
+                                    bool shift_key) {
+  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+  SubmitQuery(query_text, disposition, /*additional_params=*/{});
+}
+
+void ComposeboxHandler::SubmitQuery(
+    const std::string& query_text,
+    WindowOpenDisposition disposition,
+    std::map<std::string, std::string> additional_params) {
+  if (deep_search_mode_enabled_) {
+    additional_params["dr"] = "1";
+  }
+
+  if (create_image_mode_enabled_) {
+    additional_params["imgn"] = "1";
+  }
+
+  ComputeAndOpenQueryUrl(query_text, disposition, std::move(additional_params));
 }

@@ -33,8 +33,11 @@
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -44,6 +47,10 @@
 using composebox::SessionState;
 
 namespace {
+constexpr char kClientUploadDurationQueryParameter[] = "cud";
+constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
+constexpr char kQueryText[] = "query";
+
 class MockTabContextualizationController
     : public lens::TabContextualizationController {
  public:
@@ -54,6 +61,23 @@ class MockTabContextualizationController
               (GetPageContextCallback callback),
               (override));
 };
+
+GURL StripTimestampsFromAimUrl(const GURL& url) {
+  std::string qsubts_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      url, kQuerySubmissionTimeQueryParameter, &qsubts_param));
+
+  std::string cud_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      url, kClientUploadDurationQueryParameter, &cud_param));
+
+  GURL result_url = url;
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kQuerySubmissionTimeQueryParameter, std::nullopt);
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kClientUploadDurationQueryParameter, std::nullopt);
+  return result_url;
+}
 
 class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
  public:
@@ -113,6 +137,16 @@ class ContextualSearchboxHandlerTest
         std::move(query_controller_ptr));
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
+  }
+
+  void SubmitQueryAndWaitForNavigation() {
+    content::TestNavigationObserver navigation_observer(web_contents());
+    handler().SubmitQuery(kQueryText, 1, false, false, false, false);
+    auto navigation = content::NavigationSimulator::CreateFromPending(
+        web_contents()->GetController());
+    ASSERT_TRUE(navigation);
+    navigation->Commit();
+    navigation_observer.Wait();
   }
 
   FakeContextualSearchboxHandler& handler() { return *handler_; }
@@ -220,6 +254,53 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_Image) {
 TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
   EXPECT_CALL(query_controller(), ClearFiles);
   handler().ClearFiles();
+}
+
+TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  query_controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          run_loop.Quit();
+        }
+      }));
+
+  std::vector<SessionState> session_states;
+  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
+      .Times(3)
+      .WillRepeatedly([&](SessionState session_state) {
+        session_states.push_back(session_state);
+      });
+
+  // Start the session.
+  EXPECT_CALL(query_controller(), NotifySessionStarted)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          &query_controller(), &MockQueryController::NotifySessionStartedBase));
+  handler().NotifySessionStarted();
+  run_loop.Run();
+
+  SubmitQueryAndWaitForNavigation();
+
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = kQueryText;
+  search_url_request_info->query_start_time = base::Time::Now();
+  GURL expected_url =
+      query_controller().CreateSearchUrl(std::move(search_url_request_info));
+  GURL actual_url =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+
+  // Ensure navigation occurred.
+  EXPECT_EQ(StripTimestampsFromAimUrl(expected_url),
+            StripTimestampsFromAimUrl(actual_url));
+
+  EXPECT_THAT(session_states,
+              testing::ElementsAre(SessionState::kSessionStarted,
+                                   SessionState::kQuerySubmitted,
+                                   SessionState::kNavigationOccurred));
 }
 
 class ContextualSearchboxHandlerTestTabsTest

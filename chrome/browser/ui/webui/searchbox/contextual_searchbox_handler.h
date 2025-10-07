@@ -60,6 +60,12 @@ class ContextualSearchboxHandler
   void AddTabContext(int32_t tab_id, AddTabContextCallback) override;
   void DeleteContext(const base::UnguessableToken& file_token) override;
   void ClearFiles() override;
+  void SubmitQuery(const std::string& query_text,
+                   uint8_t mouse_button,
+                   bool alt_key,
+                   bool ctrl_key,
+                   bool meta_key,
+                   bool shift_key) override;
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
@@ -73,17 +79,23 @@ class ContextualSearchboxHandler
       const gfx::VectorIcon& icon) const override;
 
  protected:
-  std::set<base::UnguessableToken> deleted_context_tokens_;
-  std::unique_ptr<ComposeboxQueryController> query_controller_;
-  std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder_;
+  void ComputeAndOpenQueryUrl(
+      const std::string& query_text,
+      WindowOpenDisposition disposition,
+      std::map<std::string, std::string> additional_params);
 
  private:
   void OnGetTabPageContext(
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
+  void OpenUrl(GURL url, const WindowOpenDisposition disposition);
+
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
+  std::set<base::UnguessableToken> deleted_context_tokens_;
+  std::unique_ptr<ComposeboxQueryController> query_controller_;
+  std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder_;
   raw_ptr<content::WebContents> web_contents_;
 
   base::ScopedObservation<ComposeboxQueryController,
