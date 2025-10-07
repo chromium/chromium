@@ -11,20 +11,25 @@ assert(is_android)
 
 source_set("auxiliary_search") {
   sources = [
+    "auxiliary_search_donation_service.h",
+    "auxiliary_search_donation_service_factory.h",
     "auxiliary_search_provider.h",
     "auxiliary_search_top_site_provider_bridge.h",
     "fetch_and_rank_helper.h",
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/ntp_tiles",
+    "//components/page_content_annotations/core",
     "//components/visited_url_ranking/public",
   ]
 }
 
 source_set("impl") {
   sources = [
+    "auxiliary_search_donation_service_factory.cc",
     "auxiliary_search_provider.cc",
     "auxiliary_search_top_site_provider_bridge.cc",
     "fetch_and_rank_helper.cc",
