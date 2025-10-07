@@ -1305,6 +1305,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetForcedColorsModeThemeOverrideSchema,
     Emulation.SetGeolocationOverrideSchema,
     Emulation.SetLocaleOverrideSchema,
+    Emulation.SetNetworkConditionsSchema,
     Emulation.SetScreenOrientationOverrideSchema,
     Emulation.SetScriptingEnabledSchema,
     Emulation.SetTimezoneOverrideSchema,
@@ -1436,6 +1437,38 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export const SetLocaleOverrideResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Emulation {
+  export const SetNetworkConditionsSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setNetworkConditions'),
+      params: Emulation.SetNetworkConditionsParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetNetworkConditionsParametersSchema = z.lazy(() =>
+    z.object({
+      networkConditions: z.union([Emulation.NetworkConditionsSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const NetworkConditionsSchema = z.lazy(
+    () => Emulation.NetworkConditionsOfflineSchema,
+  );
+}
+export namespace Emulation {
+  export const NetworkConditionsOfflineSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('offline'),
+    }),
+  );
 }
 export namespace Emulation {
   export const SetScreenOrientationOverrideSchema = z.lazy(() =>

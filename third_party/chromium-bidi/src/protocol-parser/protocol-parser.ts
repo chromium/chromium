@@ -372,6 +372,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetLocaleOverrideParametersSchema,
     ) as Protocol.Emulation.SetLocaleOverrideParameters;
   }
+  export function parseSetNetworkConditionsParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetNetworkConditionsParametersSchema,
+    ) as Protocol.Emulation.SetNetworkConditionsParameters;
+  }
   export function parseSetScreenOrientationOverrideParams(params: unknown) {
     return parseObject(
       params,

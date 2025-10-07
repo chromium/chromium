@@ -24,6 +24,7 @@ import {
   type ChromiumBidi,
   type Script,
   NoSuchFrameException,
+  UnsupportedOperationException,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -336,6 +337,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'emulation.setLocaleOverride':
         return await this.#emulationProcessor.setLocaleOverride(
           this.#parser.parseSetLocaleOverrideParams(command.params),
+        );
+      case 'emulation.setNetworkConditions':
+        this.#parser.parseSetNetworkConditionsParams(command.params);
+        throw new UnsupportedOperationException(
+          `Method ${command.method} is not implemented.`,
         );
       case 'emulation.setScreenOrientationOverride':
         return await this.#emulationProcessor.setScreenOrientationOverride(
