@@ -84,8 +84,8 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
   if (![self.titleText length] || ![self.subtitleText length]) {
     // Sets default promo text if title and subtitle text are not explicitly
     // set.
-    CHECK(![self.titleText length], base::NotFatalUntil::M138);
-    CHECK(![self.subtitleText length], base::NotFatalUntil::M138);
+    CHECK(![self.titleText length]);
+    CHECK(![self.subtitleText length]);
     BOOL usesTabletStrings =
         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
     [self setPromoTitle:
