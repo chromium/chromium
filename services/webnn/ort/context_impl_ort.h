@@ -24,7 +24,7 @@ namespace ort {
 class ContextImplOrt final : public WebNNContextImpl {
  public:
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                 WebNNContextProviderImpl* context_provider,
+                 base::WeakPtr<WebNNContextProviderImpl> context_provider,
                  const EpWorkarounds& ep_workarounds,
                  mojom::CreateContextOptionsPtr options,
                  mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,

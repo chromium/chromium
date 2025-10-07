@@ -589,7 +589,7 @@ ContextProperties ContextImplDml::GetProperties(
 ContextImplDml::ContextImplDml(
     scoped_refptr<Adapter> adapter,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    WebNNContextProviderImpl* context_provider,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
@@ -602,7 +602,7 @@ ContextImplDml::ContextImplDml(
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager)
     : WebNNContextImpl(std::move(receiver),
-                       context_provider,
+                       std::move(context_provider),
                        GetProperties(adapter->max_supported_feature_level()),
                        std::move(options),
                        std::move(write_tensor_consumer),

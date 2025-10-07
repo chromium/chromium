@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   class BackendForTesting {
    public:
     virtual scoped_refptr<WebNNContextImpl> CreateWebNNContext(
-        WebNNContextProviderImpl* context_provider_impl,
+        base::WeakPtr<WebNNContextProviderImpl> context_provider_impl,
         mojom::CreateContextOptionsPtr options,
         gpu::CommandBufferId command_buffer_id,
         std::unique_ptr<ScopedSequence> sequence,
@@ -143,6 +143,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override;
 
+  base::WeakPtr<WebNNContextProviderImpl> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
@@ -178,6 +182,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // TODO(crbug.com/345352987): give WebNN its own memory source and
   // tracker.
   scoped_refptr<gpu::MemoryTracker> memory_tracker_;
+
+  base::WeakPtrFactory<WebNNContextProviderImpl> weak_factory_{this};
 };
 
 }  // namespace webnn

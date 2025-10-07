@@ -39,7 +39,7 @@ namespace webnn {
 
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    WebNNContextProviderImpl* context_provider,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
     ContextProperties properties,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -56,7 +56,7 @@ WebNNContextImpl::WebNNContextImpl(
           std::move(receiver),
           scheduler_task_runner,
           std::move(owning_task_runner)),
-      context_provider_(context_provider),
+      context_provider_(std::move(context_provider)),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
       command_buffer_id_(command_buffer_id),
@@ -66,8 +66,6 @@ WebNNContextImpl::WebNNContextImpl(
       read_tensor_producer_(std::move(read_tensor_producer)),
       memory_type_tracker_(std::move(memory_tracker)),
       shared_image_manager_(shared_image_manager) {
-  CHECK(context_provider_);
-
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // Initialize XNNPACK
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);

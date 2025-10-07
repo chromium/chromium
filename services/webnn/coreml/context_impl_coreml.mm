@@ -23,7 +23,7 @@ namespace webnn::coreml {
 
 ContextImplCoreml::ContextImplCoreml(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    WebNNContextProviderImpl* context_provider,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
@@ -32,7 +32,7 @@ ContextImplCoreml::ContextImplCoreml(
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager)
     : WebNNContextImpl(std::move(receiver),
-                       context_provider,
+                       std::move(context_provider),
                        GraphBuilderCoreml::GetContextProperties(),
                        std::move(options),
                        mojo::ScopedDataPipeConsumerHandle(),

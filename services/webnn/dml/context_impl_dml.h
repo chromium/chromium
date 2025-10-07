@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
  public:
   ContextImplDml(scoped_refptr<Adapter> adapter,
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                 WebNNContextProviderImpl* context_provider,
+                 base::WeakPtr<WebNNContextProviderImpl> context_provider,
                  mojom::CreateContextOptionsPtr options,
                  mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
                  mojo::ScopedDataPipeProducerHandle read_tensor_producer,

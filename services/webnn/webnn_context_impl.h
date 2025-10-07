@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   WebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      WebNNContextProviderImpl* context_provider,
+      base::WeakPtr<WebNNContextProviderImpl> context_provider,
       ContextProperties properties,
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -136,6 +136,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void OnLost(const std::string& reason);
 
   WebNNContextProviderImpl* context_provider() const {
+    // TODO https://crbug.com/436531065 - Replace this with a new
+    // `owning_sequence_checker_` when `scheduler_task_runner_` starts posting
+    // tasks to a different sequence.
+    DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
     return context_provider_.get();
   }
 
@@ -199,8 +203,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojom::TensorInfoPtr tensor_info,
       std::unique_ptr<gpu::WebNNTensorRepresentation> representation) = 0;
 
-  // Owns this object.
-  raw_ptr<WebNNContextProviderImpl> context_provider_;
+  // This weak pointer can only be dereferenced on the sequence where
+  // `context_provider_->main_thread_task_runner()` runs tasks.
+  base::WeakPtr<WebNNContextProviderImpl> context_provider_;
 
   // Context properties reported to the renderer process.
   const ContextProperties properties_;

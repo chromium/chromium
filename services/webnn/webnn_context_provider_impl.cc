@@ -196,7 +196,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
   if (g_backend_for_testing) {
     context_impls_.emplace(g_backend_for_testing->CreateWebNNContext(
-        this, std::move(options), command_buffer_id, std::move(sequence),
+        AsWeakPtr(), std::move(options), command_buffer_id, std::move(sequence),
         std::move(scheduler_task_runner), memory_tracker_,
         main_thread_task_runner_, shared_image_manager_, std::move(callback)));
     return;
@@ -235,7 +235,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                  << env_creation_results.error();
     } else {
       context_impl = base::MakeRefCounted<ort::ContextImplOrt>(
-          std::move(receiver), this,
+          std::move(receiver), AsWeakPtr(),
           env_creation_results.value()->GetEpWorkarounds(options->device),
           std::move(options), std::move(write_tensor_consumer),
           std::move(read_tensor_producer),
@@ -248,7 +248,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         context_creation_results = dml::CreateContextFromOptions(
             std::move(options), std::move(write_tensor_consumer),
             std::move(read_tensor_producer), gpu_feature_info_, gpu_info_,
-            shared_context_state_.get(), std::move(receiver), this,
+            shared_context_state_.get(), std::move(receiver), AsWeakPtr(),
             command_buffer_id, std::move(sequence),
             std::move(scheduler_task_runner), memory_tracker_,
             main_thread_task_runner_, shared_image_manager_);
@@ -274,9 +274,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       read_tensor_producer.reset();
       read_tensor_consumer.reset();
       context_impl = base::MakeRefCounted<coreml::ContextImplCoreml>(
-          std::move(receiver), this, std::move(options), command_buffer_id,
-          std::move(sequence), std::move(scheduler_task_runner),
-          memory_tracker_, main_thread_task_runner_, shared_image_manager_);
+          std::move(receiver), AsWeakPtr(), std::move(options),
+          command_buffer_id, std::move(sequence),
+          std::move(scheduler_task_runner), memory_tracker_,
+          main_thread_task_runner_, shared_image_manager_);
     }
   }
 #endif  // BUILDFLAG(IS_APPLE)
@@ -284,7 +285,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   if (!context_impl) {
     context_impl = base::MakeRefCounted<tflite::ContextImplTflite>(
-        std::move(receiver), this, std::move(options),
+        std::move(receiver), AsWeakPtr(), std::move(options),
         std::move(write_tensor_consumer), std::move(read_tensor_producer),
         command_buffer_id, std::move(sequence),
         std::move(scheduler_task_runner), memory_tracker_,
