@@ -14,8 +14,8 @@ namespace chrome_url_overrides {
     // Override for the chrome://history page.
     DOMString? history;
 
-    [nodoc, platforms=("chromeos")] DOMString? activationmessage;
-    [nodoc, platforms=("chromeos")] DOMString? keyboard;
+    [nodoc] DOMString? activationmessage;
+    [nodoc] DOMString? keyboard;
   };
 
   dictionary ManifestKeys {

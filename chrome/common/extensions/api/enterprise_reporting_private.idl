@@ -8,27 +8,21 @@ namespace enterprise.reportingPrivate {
   // Invoked by <code>UploadChromeDesktopReport</code> when the upload is
   // finished.
   // Also Invoked by <code>setDeviceData</code> when data is stored.
-  [platforms = ("win", "mac", "linux")]
   callback DoneCallback = void();
 
   // Invoked by <code>getDeviceId</code> to return the ID.
-  [platforms = ("win", "mac", "linux")]
   callback GetDeviceIdCallback = void(DOMString id);
 
   // Invoked by <code>getPersistentSecret</code> to return the secret.
-  [platforms = ("win", "mac")]
   callback GetPersistentSecretCallback = void(ArrayBuffer secret);
 
   // Invoked by <code>getDeviceDataCallback</code> to return the device data.
-  [platforms = ("win", "mac", "linux")]
   callback GetDeviceDataCallback = void(ArrayBuffer data);
 
   // Possible states a particular device setting can be in.
-  [platforms = ("win", "mac", "linux")]
   enum SettingValue { UNKNOWN, DISABLED, ENABLED };
 
   // Device info fields returned by the getDeviceInfo API.
-  [platforms = ("win", "mac", "linux")]
   dictionary DeviceInfo {
     DOMString osName;
     DOMString osVersion;
@@ -47,7 +41,6 @@ namespace enterprise.reportingPrivate {
   };
 
   // Invoked by <code>getDeviceInfo</code> to return device information.
-  [platforms = ("win", "mac", "linux")]
   callback GetDeviceInfoCallback = void(DeviceInfo deviceInfo);
 
   // Possible states for the EnterpriseRealTimeUrlCheckMode policy.
@@ -106,14 +99,12 @@ namespace enterprise.reportingPrivate {
 
   // Captures the type of event so it can be associated with user or device in
   // Chrome for reporting purposes
-  [platforms = ("chromeos")]
   enum EventType { DEVICE, USER };
 
   // Composite object that captures the information we need to report events.
   // Some fields like the record and priority are serialized to avoid any
   // dependency on proto definitions here, given the fact that they will likely
   // change in the future. These will be deserialized and validated in Chrome.
-  [platforms = ("chromeos")]
   dictionary EnqueueRecordRequest {
     // Serialized record data binary based on the proto definition in
     // //components/reporting/proto/synced/record.proto.
@@ -129,17 +120,14 @@ namespace enterprise.reportingPrivate {
   // collection request is for. This will be used to identify the organization
   // in which the user is, and can then be used to determine their affiliation
   // with the current browser management state.
-  [platforms = ("win")]
   dictionary UserContext {
     DOMString userId;
   };
 
   // Enumeration of the various states an AntiVirus software product can be in.
-  [platforms = ("win")]
   enum AntiVirusProductState { ON, OFF, SNOOZED, EXPIRED };
 
   // Metadata about a specific AntiVirus software product.
-  [platforms = ("win")]
   dictionary AntiVirusSignal {
     DOMString displayName;
     DOMString productId;
@@ -148,23 +136,19 @@ namespace enterprise.reportingPrivate {
 
   // Invoked by <code>getAvInfo</code> to return information about installed
   // AntiVirus software.
-  [platforms = ("win")]
   callback AvInfoCallback = void(AntiVirusSignal[] avSignals);
 
   // ID of an installed hotfix system update.
-  [platforms = ("win")]
   dictionary HotfixSignal {
     DOMString hotfixId;
   };
 
   // Invoked by <code>getHotfixes</code> to return the IDs of installed hotfix
   // system updates.
-  [platforms = ("win")]
   callback HotfixesCallback = void(HotfixSignal[] hotfixSignals);
 
   // Used to indicate whether a given signal was correctly found or not, or
   // indicate a reason for not being able to find it.
-  [platforms = ("win", "mac", "linux")]
   enum PresenceValue {
     // Was unable to determine whether the signal source exists or not. This
     // typically indicates that a failure occurred before even trying to assess
@@ -183,14 +167,12 @@ namespace enterprise.reportingPrivate {
 
   // Parameter used to collect information about a specific file system
   // resource.
-  [platforms = ("win", "mac", "linux")]
   dictionary GetFileSystemInfoOptions {
     DOMString path;
     boolean computeSha256;
     boolean computeExecutableMetadata;
   };
 
-  [platforms = ("win", "mac", "linux")]
   dictionary GetFileSystemInfoRequest {
     // Information about the for whom the signal collection request is for.
     UserContext userContext;
@@ -200,7 +182,6 @@ namespace enterprise.reportingPrivate {
     GetFileSystemInfoOptions[] options;
   };
 
-  [platforms = ("win", "mac", "linux")]
   dictionary GetFileSystemInfoResponse {
     // Path to the file system object for whom those signals were collected.
     DOMString path;
@@ -232,18 +213,15 @@ namespace enterprise.reportingPrivate {
     DOMString? version;
   };
 
-  [platforms = ("win", "mac", "linux")]
   callback FileSystemInfoCallback =
       void(GetFileSystemInfoResponse[] fileSystemSignals);
 
-  [platforms = ("win")]
   enum RegistryHive {
     HKEY_CLASSES_ROOT,
     HKEY_LOCAL_MACHINE,
     HKEY_CURRENT_USER
   };
 
-  [platforms = ("win", "mac")]
   dictionary GetSettingsOptions {
     // Path to a collection of settings.
     // On Windows it would be the path to the reg key inside the hive.
@@ -273,7 +251,6 @@ namespace enterprise.reportingPrivate {
     RegistryHive? hive;
   };
 
-  [platforms = ("win", "mac")]
   dictionary GetSettingsRequest {
     // Information about the for whom the signal collection request is for.
     UserContext userContext;
@@ -283,7 +260,6 @@ namespace enterprise.reportingPrivate {
     GetSettingsOptions[] options;
   };
 
-  [platforms = ("win", "mac")]
   dictionary GetSettingsResponse {
     // Path as given in the corresponding <code>GetSettingsOptions</code>
     // request.
@@ -307,7 +283,6 @@ namespace enterprise.reportingPrivate {
     DOMString? value;
   };
 
-  [platforms = ("win", "mac")]
   callback SettingsCallback =
       void(GetSettingsResponse[] settings);
 
