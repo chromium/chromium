@@ -3157,9 +3157,17 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
   std::unique_ptr<net::CookieCryptoDelegate> crypto_delegate = nullptr;
 
   if (params_->enable_encrypted_cookies) {
-    CHECK(params_->cookie_encryption_provider);
-    crypto_delegate = std::make_unique<CookieOSCryptAsyncDelegate>(
-        std::move(params_->cookie_encryption_provider));
+    if (params_->cookie_encryption_provider) {
+      crypto_delegate = std::make_unique<CookieOSCryptAsyncDelegate>(
+          std::move(params_->cookie_encryption_provider));
+    } else {
+#if !BUILDFLAG(IS_ANDROID)
+      // A cookie crypto delegate should not be created on Android to
+      // match the behavior of cookie_config::GetCookieCryptoDelegate().
+      // See https://crbug.com/449652881
+      NOTREACHED();
+#endif
+    }
   }
 
 #if BUILDFLAG(IS_WIN)
