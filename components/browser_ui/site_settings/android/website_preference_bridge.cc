@@ -34,6 +34,7 @@
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
@@ -964,7 +965,8 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
     jboolean allow) {
   ContentSettingsType type =
       static_cast<ContentSettingsType>(content_settings_type);
-  base::UmaHistogramEnumeration("Permissions.SiteSettingsChanged", type);
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      "Permissions.SiteSettingsChanged", type);
 
   if (type == ContentSettingsType::SOUND) {
     if (allow) {
