@@ -1301,6 +1301,10 @@ void RuleSet::NewlyAddedFromDifferentRuleSet(const RuleData& old_rule_data,
   // rulesets.
   AddRuleToIntervals(style_scope, rule_count_, scope_intervals_);
   ++rule_count_;
+
+#if DCHECK_IS_ON()
+  all_rules_.push_back(new_rule_data);
+#endif  // DCHECK_IS_ON()
 }
 
 void RuleSet::AddFilteredRulesFromOtherBucket(
