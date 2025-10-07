@@ -1025,11 +1025,9 @@ void PaintCanvasVideoRenderer::Paint(
           << "Can't render textured frames w/o viz::RasterContextProvider";
       return;  // Unable to get/create a shared main thread context.
     }
-    if (!raster_context_provider->GrContext() &&
-        !raster_context_provider->ContextCapabilities().gpu_rasterization) {
-      DLOG(ERROR)
-          << "Can't render textured frames w/o valid GrContext or GPU raster.";
-      return;  // The context has been lost.
+    if (!raster_context_provider->ContextCapabilities().gpu_rasterization) {
+      DLOG(ERROR) << "Can't render textured frames w/o GPU raster.";
+      return;
     }
   }
 
