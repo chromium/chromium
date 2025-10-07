@@ -1537,10 +1537,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   if (!raster_context_provider) {
     return false;
   }
-  GrDirectContext* gr_context = raster_context_provider->GrContext();
-  const bool gpu_rasterization =
-      raster_context_provider->ContextCapabilities().gpu_rasterization;
-  if (!gr_context && !gpu_rasterization) {
+  if (!raster_context_provider->ContextCapabilities().gpu_rasterization) {
     return false;
   }
   gpu::raster::RasterInterface* canvas_ri =
@@ -1553,19 +1550,14 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
   }
 
-  // This SI is used to cache the VideoFrame. We will eventually read out
-  // its contents into a destination GL texture via the GLES2 interface.
+  // This SI is used to cache the VideoFrame. We copy the contents of the source
+  // VideoFrame into the cached SI over the raster interface and will eventually
+  // read out its contents into a destination GL texture via the GLES2
+  // interface.
   gpu::SharedImageUsageSet src_usage =
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-  // We copy the contents of the source VideoFrame *into* the cached SI over the
-  // raster interface - the usage bits depend on whether OOP-Raster is enabled.
-  // TODO(crbug.com/40194377): Always use OOP_RASTERIZATION usage once OOP-C is
-  // fully launched.
-  if (gpu_rasterization) {
-    src_usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  } else {
-    src_usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
-  }
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   auto [rgb_shared_image, rgb_sync_token, status] =
       rgb_shared_image_cache_->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
