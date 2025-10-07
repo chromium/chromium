@@ -159,10 +159,9 @@ public class AutofillSuggestion extends DropdownItemBase {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof AutofillSuggestion)) {
+        if (!(o instanceof AutofillSuggestion other)) {
             return false;
         }
-        AutofillSuggestion other = (AutofillSuggestion) o;
         return Objects.equals(this.mLabel, other.mLabel)
                 && Objects.equals(this.mSecondaryLabel, other.mSecondaryLabel)
                 && this.mSublabel.equals(other.mSublabel)
@@ -175,6 +174,23 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && Objects.equals(this.mPayload, other.mPayload);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                this.mLabel,
+                this.mSecondaryLabel,
+                this.mSublabel,
+                this.mSecondarySublabel,
+                this.mIconId,
+                this.mSuggestionType,
+                this.mIsDeletable,
+                this.mApplyDeactivatedStyle,
+                this.mFeatureForIph,
+                this.mIphDescriptionText,
+                this.mCustomIconUrl,
+                this.mPayload);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
