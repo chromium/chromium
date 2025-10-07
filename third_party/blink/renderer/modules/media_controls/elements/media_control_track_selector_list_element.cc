@@ -132,9 +132,11 @@ void MediaControlTrackSelectorListElement::DefaultEventHandler(Event& event) {
 
     auto i = To<Element>(target)->GetIntegralAttribute(SelectedTrackIdAttr());
     if (is_video_) {
-      MediaElement().videoTracks().AnonymousIndexedGetter(i)->setSelected(true);
+      MediaElement().videoTracks().AnonymousIndexedGetter(i)->setSelected(
+          true, TrackBase::ChangeSource::kUser);
     } else {
-      MediaElement().audioTracks().AnonymousIndexedGetter(i)->setEnabled(true);
+      MediaElement().audioTracks().AnonymousIndexedGetter(i)->setEnabled(
+          true, TrackBase::ChangeSource::kUser);
     }
 
     // Close the list.

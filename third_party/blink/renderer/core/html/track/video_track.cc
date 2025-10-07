@@ -24,14 +24,14 @@ void VideoTrack::Trace(Visitor* visitor) const {
   TrackBase::Trace(visitor);
 }
 
-void VideoTrack::setSelected(bool selected) {
+void VideoTrack::setSelected(bool selected, ChangeSource source) {
   if (selected == selected_)
     return;
 
   selected_ = selected;
 
   if (MediaElement())
-    MediaElement()->SelectedVideoTrackChanged(this);
+    MediaElement()->SelectedVideoTrackChanged(this, source);
 }
 
 const AtomicString& VideoTrack::AlternativeKeyword() {

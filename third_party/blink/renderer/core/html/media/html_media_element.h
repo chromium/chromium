@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
+#include "third_party/blink/renderer/core/html/track/track_base.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
@@ -283,10 +284,10 @@ class CORE_EXPORT HTMLMediaElement
   void TogglePlayState();
 
   AudioTrackList& audioTracks();
-  void AudioTrackChanged(AudioTrack*);
+  void AudioTrackChanged(AudioTrack*, TrackBase::ChangeSource);
 
   VideoTrackList& videoTracks();
-  void SelectedVideoTrackChanged(VideoTrack*);
+  void SelectedVideoTrackChanged(VideoTrack*, TrackBase::ChangeSource);
 
   TextTrack* addTextTrack(const V8TextTrackKind& kind,
                           const AtomicString& label,

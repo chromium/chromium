@@ -38,6 +38,22 @@ class HTMLMediaElement;
 
 class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
  public:
+  // Subclasses of TrackBase including AudioTrack and VideoTrack allow changing
+  // whether a track is enabled or selected. There are three sources where this
+  // change can come from:
+  //  - The user controls (currently behind the experimental web platform flag)
+  //  - JS (currently behind the experimental web platform flag)
+  //  - The media pipeline (HLS demuxer, etc).
+  //  - The initial player startup.
+  // In order to prevent the circular notification of track changes, the source
+  // of the change is recorded here.
+  enum class ChangeSource {
+    kInitial,
+    kScript,
+    kUser,
+    kDemuxer,
+  };
+
   virtual ~TrackBase();
 
   String id() const { return id_; }

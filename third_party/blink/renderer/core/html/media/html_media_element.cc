@@ -2305,10 +2305,12 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
           }
         }
         if (default_audio_track) {
-          default_audio_track->setEnabled(true);
+          default_audio_track->setEnabled(true,
+                                          TrackBase::ChangeSource::kInitial);
         }
         if (default_video_track) {
-          default_video_track->setSelected(true);
+          default_video_track->setSelected(true,
+                                           TrackBase::ChangeSource::kInitial);
         }
       }
     }
@@ -3329,7 +3331,8 @@ AudioTrackList& HTMLMediaElement::audioTracks() {
   return *audio_tracks_;
 }
 
-void HTMLMediaElement::AudioTrackChanged(AudioTrack* track) {
+void HTMLMediaElement::AudioTrackChanged(AudioTrack* track,
+                                         TrackBase::ChangeSource source) {
   DVLOG(3) << "audioTrackChanged(" << *this
            << ") trackId= " << String(track->id())
            << " enabled=" << base::ToString(track->enabled())
@@ -3344,8 +3347,10 @@ void HTMLMediaElement::AudioTrackChanged(AudioTrack* track) {
   if (media_source_attachment_)
     media_source_attachment_->OnTrackChanged(media_source_tracer_, track);
 
-  if (!audio_tracks_timer_.IsActive())
+  if (source != TrackBase::ChangeSource::kDemuxer &&
+      !audio_tracks_timer_.IsActive()) {
     audio_tracks_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  }
 }
 
 void HTMLMediaElement::AudioTracksTimerFired(TimerBase*) {
@@ -3363,7 +3368,9 @@ VideoTrackList& HTMLMediaElement::videoTracks() {
   return *video_tracks_;
 }
 
-void HTMLMediaElement::SelectedVideoTrackChanged(VideoTrack* track) {
+void HTMLMediaElement::SelectedVideoTrackChanged(
+    VideoTrack* track,
+    TrackBase::ChangeSource source) {
   DVLOG(3) << "selectedVideoTrackChanged(" << *this << ") selectedTrackId="
            << (track->selected() ? String(track->id()) : "none");
 
@@ -3372,13 +3379,16 @@ void HTMLMediaElement::SelectedVideoTrackChanged(VideoTrack* track) {
 
   videoTracks().ScheduleChangeEvent();
 
-  if (media_source_attachment_)
+  if (media_source_attachment_) {
     media_source_attachment_->OnTrackChanged(media_source_tracer_, track);
+  }
 
-  if (track->selected()) {
-    web_media_player_->SelectedVideoTrackChanged(track->id());
-  } else {
-    web_media_player_->SelectedVideoTrackChanged(std::nullopt);
+  if (source != TrackBase::ChangeSource::kDemuxer) {
+    if (track->selected()) {
+      web_media_player_->SelectedVideoTrackChanged(track->id());
+    } else {
+      web_media_player_->SelectedVideoTrackChanged(std::nullopt);
+    }
   }
 }
 
