@@ -54,21 +54,25 @@ inline constexpr uint64_t kSqlBackendFakeIndexMagicNumber =
 // Version 4: https://crrev.com/c/7005549 changed the eviction logic to use
 //            `res_id` instead of `cache_key` and added a covering index on
 //            `(last_used, bytes_usage)` to the `resources` table.
+// Version 5: https://crrev.com/c/7005917 changed how doomed entries are
+//            cleaned up. Instead of a delayed task, cleanup is now triggered
+//            during browser idle periods. Also, the index on `res_id` for
+//            doomed entries was removed as it's no longer needed.
 // ----------------------------------------------------------------------------
 
 // The oldest database schema version that the current code can read.
 // A database with a version older than this will be razed as it's considered
 // obsolete and the code no longer supports migrating from it.
-inline constexpr int kSqlBackendLowestSupportedDatabaseVersion = 4;
+inline constexpr int kSqlBackendLowestSupportedDatabaseVersion = 5;
 
 // The current version of the database schema. This should be incremented for
 // any schema change.
-inline constexpr int kSqlBackendCurrentDatabaseVersion = 4;
+inline constexpr int kSqlBackendCurrentDatabaseVersion = 5;
 
 // The oldest application version that can use a database with the current
 // schema. If a schema change is not backward-compatible, this must be set to
 // the same value as `kSqlBackendCurrentDatabaseVersion`.
-inline constexpr int kSqlBackendCompatibleDatabaseVersion = 4;
+inline constexpr int kSqlBackendCompatibleDatabaseVersion = 5;
 
 // Estimated static size overhead for a resource entry in the database,
 // excluding the key and any blob data. This is a conservative estimate based on

@@ -66,14 +66,19 @@ struct StoreStatus {
 
 // The result of a successful initialization.
 struct InitResult {
-  InitResult(int64_t max_bytes, SqlPersistentStoreInMemoryIndex&& index)
-      : max_bytes(max_bytes), index(std::move(index)) {}
+  InitResult(int64_t max_bytes,
+             SqlPersistentStoreInMemoryIndex&& index,
+             std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids)
+      : max_bytes(max_bytes),
+        index(std::move(index)),
+        doomed_entry_res_ids(std::move(doomed_entry_res_ids)) {}
   ~InitResult() = default;
   InitResult(InitResult&& other) = default;
   InitResult& operator=(InitResult&& other) = default;
 
   int64_t max_bytes = 0;
   SqlPersistentStoreInMemoryIndex index;
+  std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids;
 };
 
 // A helper struct to associate an IOBuffer with a starting offset.
@@ -247,7 +252,6 @@ void RecordTimeAndErrorResultHistogram(std::string_view method_name,
       !db.Execute(GetQuery(Query::kInitSchema_CreateTableBlobs)) ||
       !db.Execute(GetQuery(Query::kIndex_ResourcesCacheKeyHashDoomed)) ||
       !db.Execute(GetQuery(Query::kIndex_LiveResourcesLastUsed)) ||
-      !db.Execute(GetQuery(Query::kIndex_DoomedResourcesResId)) ||
       !db.Execute(GetQuery(Query::kIndex_BlobsResIdStart))) {
     return false;
   }
@@ -341,7 +345,7 @@ class Backend {
   ErrorAndEvictionRequested DeleteDoomedEntry(const CacheEntryKey& key,
                                               ResId res_id,
                                               base::TimeTicks start_time);
-  Error DeleteDoomedEntries(base::flat_set<ResId> excluded_res_ids,
+  Error DeleteDoomedEntries(ResIdList res_ids_to_delete,
                             base::TimeTicks start_time);
   ResIdListOrErrorAndEvictionRequested DeleteLiveEntry(
       const CacheEntryKey& key,
@@ -408,7 +412,8 @@ class Backend {
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
   Error InitializeInternal(bool& corruption_detected,
-                           SqlPersistentStoreInMemoryIndex& index);
+                           SqlPersistentStoreInMemoryIndex& index,
+                           ResIdList& doomed_entry_res_ids);
   EntryInfoOrError OpenOrCreateEntryInternal(const CacheEntryKey& key,
                                              bool& corruption_detected);
   OptionalEntryInfoOrError OpenEntryInternal(const CacheEntryKey& key);
@@ -418,10 +423,8 @@ class Backend {
                                        bool& corruption_detected);
   Error DoomEntryInternal(ResId res_id, bool& corruption_detected);
   Error DeleteDoomedEntryInternal(ResId res_id);
-  Error DeleteDoomedEntriesInternal(
-      const base::flat_set<ResId>& excluded_res_ids,
-      size_t& deleted_count,
-      bool& corruption_detected);
+  Error DeleteDoomedEntriesInternal(const ResIdList& res_ids_to_delete,
+                                    bool& corruption_detected);
   ResIdListOrError DeleteLiveEntryInternal(const CacheEntryKey& key,
                                            bool& corruption_detected);
   Error DeleteAllEntriesInternal(bool& corruption_detected);
@@ -569,7 +572,9 @@ InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
   CHECK(!db_init_status_.has_value());
   bool corruption_detected = false;
   SqlPersistentStoreInMemoryIndex index;
-  db_init_status_ = InitializeInternal(corruption_detected, index);
+  ResIdList doomed_entry_res_ids;
+  db_init_status_ =
+      InitializeInternal(corruption_detected, index, doomed_entry_res_ids);
   RecordTimeAndErrorResultHistogram("Initialize", posting_delay,
                                     timer.Elapsed(), *db_init_status_,
                                     corruption_detected);
@@ -597,12 +602,14 @@ InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
   }
 
   return *db_init_status_ == Error::kOk
-             ? InitResultOrError(InitResult(max_bytes_, std::move(index)))
+             ? InitResultOrError(InitResult(max_bytes_, std::move(index),
+                                            std::move(doomed_entry_res_ids)))
              : base::unexpected(*db_init_status_);
 }
 
 Error Backend::InitializeInternal(bool& corruption_detected,
-                                  SqlPersistentStoreInMemoryIndex& index) {
+                                  SqlPersistentStoreInMemoryIndex& index,
+                                  ResIdList& doomed_entry_res_ids) {
   if (simulate_db_failure_for_testing_) {
     return Error::kFailedForTesting;
   }
@@ -662,9 +669,7 @@ Error Backend::InitializeInternal(bool& corruption_detected,
       const auto key_hash = CacheEntryKey::Hash(statement.ColumnInt64(1));
       const bool doomed = statement.ColumnBool(2);
       if (doomed) {
-        // TODO(crbug.com/443171275): Return information to SqlBackendImpl that
-        // a doomed entry exists, and if no doomed entry exists, do not execute
-        // TriggerDeleteDoomedEntries.
+        doomed_entry_res_ids.emplace_back(res_id);
       } else {
         index.Insert(key_hash, res_id);
       }
@@ -1047,34 +1052,31 @@ Error Backend::DeleteDoomedEntryInternal(ResId res_id) {
   return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
 }
 
-Error Backend::DeleteDoomedEntries(base::flat_set<ResId> excluded_res_ids,
+Error Backend::DeleteDoomedEntries(ResIdList res_ids_to_delete,
                                    base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT_BEGIN0("disk_cache", "SqlBackend.DeleteDoomedEntries");
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  size_t deleted_count = 0;
-  auto result = DeleteDoomedEntriesInternal(excluded_res_ids, deleted_count,
-                                            corruption_detected);
+  auto result =
+      DeleteDoomedEntriesInternal(res_ids_to_delete, corruption_detected);
   RecordTimeAndErrorResultHistogram("DeleteDoomedEntries", posting_delay,
                                     timer.Elapsed(), result,
                                     corruption_detected);
   base::UmaHistogramCounts100("Net.SqlDiskCache.DeleteDoomedEntriesCount",
-                              deleted_count);
+                              res_ids_to_delete.size());
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteDoomedEntries", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
-                     dict.Add("deleted_count", deleted_count);
+                     dict.Add("deleted_count", res_ids_to_delete.size());
                    });
   MaybeCrashIfCorrupted(corruption_detected);
   return result;
 }
 
-Error Backend::DeleteDoomedEntriesInternal(
-    const base::flat_set<ResId>& excluded_res_ids,
-    size_t& deleted_count,
-    bool& corruption_detected) {
+Error Backend::DeleteDoomedEntriesInternal(const ResIdList& res_ids_to_delete,
+                                           bool& corruption_detected) {
   if (simulate_db_failure_for_testing_) {
     return Error::kFailedForTesting;
   }
@@ -1084,42 +1086,21 @@ Error Backend::DeleteDoomedEntriesInternal(
     return Error::kFailedToStartTransaction;
   }
 
-  std::vector<ResId> res_ids_to_delete;
-
-  // 1. Select all doomed entries.
-  {
-    sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        GetQuery(Query::kDeleteDoomedEntries_SelectDoomedResources)));
-    // 2. Collect entries to be deleted, skipping excluded ones.
-    while (statement.Step()) {
-      ResId res_id(statement.ColumnInt64(0));
-      if (excluded_res_ids.contains(res_id)) {
-        continue;
-      }
-      res_ids_to_delete.push_back(res_id);
-    }
-  }
-
-  deleted_count = res_ids_to_delete.size();
-  if (deleted_count == 0) {
-    // Nothing to delete, abort the transaction and return kOk;
-    return Error::kOk;
-  }
-
-  // 3. Delete from `resources` table by `res_id`.
+  // 1. Delete from `resources` table by `res_id`.
   if (auto error = DeleteResourcesByResIds(res_ids_to_delete);
       error != Error::kOk) {
     return error;
   }
 
-  // 4. Delete corresponding blobs by res_id.
+  // 2. Delete corresponding blobs by res_id.
   if (auto error = DeleteBlobsByResIds(res_ids_to_delete);
       error != Error::kOk) {
     return error;
   }
 
-  // 5. Commit the transaction.
+  // 3. Commit the transaction.
+  // Note: The entries for the res IDs passed to this method are assumed to be
+  // doomed, so store_status_'s entry_count and total_size are not updated.
   return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
 }
 
@@ -2512,6 +2493,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                 if (result.has_value()) {
                   weak_ptr->SetMaxSize(result->max_bytes);
                   weak_ptr->index_ = std::move(result->index);
+                  weak_ptr->to_be_deleted_res_ids_ =
+                      std::move(result->doomed_entry_res_ids);
                 }
                 std::move(callback).Run(result.has_value() ? Error::kOk
                                                            : result.error());
@@ -2574,12 +2557,6 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
     backend_.AsyncCall(&Backend::DeleteDoomedEntry)
         .WithArgs(key, res_id, base::TimeTicks::Now())
         .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
-  }
-  void DeleteDoomedEntries(base::flat_set<ResId> excluded_res_ids,
-                           ErrorCallback callback) override {
-    backend_.AsyncCall(&Backend::DeleteDoomedEntries)
-        .WithArgs(std::move(excluded_res_ids), base::TimeTicks::Now())
-        .Then(WrapCallback(std::move(callback)));
   }
   void DeleteLiveEntry(const CacheEntryKey& key,
                        ErrorCallback callback) override {
@@ -2728,6 +2705,15 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   void GetSizeOfAllEntries(Int64Callback callback) const override {
     backend_.AsyncCall(&Backend::GetSizeOfAllEntries).Then(std::move(callback));
   }
+  bool MaybeRunCleanupDoomedEntries(ErrorCallback callback) override {
+    if (to_be_deleted_res_ids_.empty()) {
+      return false;
+    }
+    backend_.AsyncCall(&Backend::DeleteDoomedEntries)
+        .WithArgs(std::move(to_be_deleted_res_ids_), base::TimeTicks::Now())
+        .Then(WrapCallback(std::move(callback)));
+    return true;
+  }
   void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback) override {
     backend_.AsyncCall(&Backend::MaybeRunCheckpoint).Then(std::move(callback));
   }
@@ -2859,6 +2845,11 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   bool strict_corruption_check_enabled_ = false;
 
   std::optional<SqlPersistentStoreInMemoryIndex> index_;
+
+  // A list of resource IDs for entries that were doomed in a previous session
+  // and are scheduled for deletion.
+  ResIdList to_be_deleted_res_ids_;
+
   base::WeakPtrFactory<SqlPersistentStoreImpl> weak_factory_{this};
 };
 

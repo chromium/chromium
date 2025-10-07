@@ -70,12 +70,6 @@ inline constexpr const char kIndex_LiveResourcesLastUsed[] =
     "CREATE INDEX index_live_resources_last_used_bytes_usage ON "
     "resources(last_used, bytes_usage) WHERE doomed=0";
 
-// An index on `res_id` for doomed entries (`doomed=1`). This is used to
-// efficiently find and clean up doomed entries.
-inline constexpr const char kIndex_DoomedResourcesResId[] =
-    "CREATE INDEX index_doomed_resources_res_id ON "
-    "resources(res_id) WHERE doomed=1";
-
 // A unique index on `(res_id, start)` in the `blobs` table. This is critical
 // for quickly finding the correct data blobs for a given entry when reading or
 // writing data at a specific offset. The `UNIQUE` constraint ensures that
@@ -131,14 +125,6 @@ inline constexpr const char kDeleteDoomedEntry_DeleteFromResources[] =
     "WHERE "
         "res_id=? AND "  // 0
         "doomed=1";
-// clang-format on
-
-inline constexpr const char kDeleteDoomedEntries_SelectDoomedResources[] =
-    // clang-format off
-    "SELECT "
-        "res_id "       // 0
-    "FROM resources "
-    "WHERE doomed=1";
 // clang-format on
 
 inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
@@ -387,13 +373,11 @@ enum class Query {
 
   kIndex_ResourcesCacheKeyHashDoomed,
   kIndex_LiveResourcesLastUsed,
-  kIndex_DoomedResourcesResId,
   kIndex_BlobsResIdStart,
   kOpenEntry_SelectLiveResources,
   kCreateEntry_InsertIntoResources,
   kDoomEntry_MarkDoomedResources,
   kDeleteDoomedEntry_DeleteFromResources,
-  kDeleteDoomedEntries_SelectDoomedResources,
   kDeleteLiveEntry_DeleteFromResources,
   kDeleteAllEntries_DeleteFromResources,
   kDeleteAllEntries_DeleteFromBlobs,
@@ -433,8 +417,6 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kIndex_ResourcesCacheKeyHashDoomed;
     case Query::kIndex_LiveResourcesLastUsed:
       return internal::kIndex_LiveResourcesLastUsed;
-    case Query::kIndex_DoomedResourcesResId:
-      return internal::kIndex_DoomedResourcesResId;
     case Query::kIndex_BlobsResIdStart:
       return internal::kIndex_BlobsResIdStart;
     case Query::kOpenEntry_SelectLiveResources:
@@ -445,8 +427,6 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kDoomEntry_MarkDoomedResources;
     case Query::kDeleteDoomedEntry_DeleteFromResources:
       return internal::kDeleteDoomedEntry_DeleteFromResources;
-    case Query::kDeleteDoomedEntries_SelectDoomedResources:
-      return internal::kDeleteDoomedEntries_SelectDoomedResources;
     case Query::kDeleteLiveEntry_DeleteFromResources:
       return internal::kDeleteLiveEntry_DeleteFromResources;
     case Query::kDeleteAllEntries_DeleteFromResources:

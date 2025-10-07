@@ -176,13 +176,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                  ResId res_id,
                                  ErrorCallback callback) = 0;
 
-  // Physically deletes all entries that have been marked as doomed, except for
-  // those whose IDs are in `excluded_res_ids`. This is typically used for
-  // background cleanup of doomed entries that are no longer in use. `callback`
-  // is invoked upon completion.
-  virtual void DeleteDoomedEntries(base::flat_set<ResId> excluded_res_ids,
-                                   ErrorCallback callback) = 0;
-
   // Deletes a "live" entry, i.e., an entry whose `doomed` flag is not set.
   // This is for use for entries which are not open; open entries should have
   // `DoomEntry()` called, and then `DeleteDoomedEntry()` once they're no longer
@@ -323,6 +316,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Asynchronously retrieves the total size of all entries.
   virtual void GetSizeOfAllEntries(Int64Callback callback) const = 0;
+
+  // If there are entries that were doomed in a previous session, this method
+  // triggers a task to delete them from the database. The cleanup is performed
+  // in the background. Returns true if a cleanup task was scheduled, and false
+  // otherwise. `callback` is invoked upon completion of the cleanup task.
+  virtual bool MaybeRunCleanupDoomedEntries(ErrorCallback callback) = 0;
 
   // If the browser is idle and the number of pages recorded in the WAL exceeds
   // kSqlDiskCacheIdleCheckpointThreshold, a checkpoint is executed.

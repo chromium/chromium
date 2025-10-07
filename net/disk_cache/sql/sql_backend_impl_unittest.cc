@@ -1235,8 +1235,13 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
   entry2->Doom();
 
   base::HistogramTester histogram_tester;
-  task_environment_.FastForwardBy(kSqlBackendDeleteDoomedEntriesDelay +
-                                  base::Seconds(1));
+  backend->OnBrowserIdle();
+
+  // Flush the queue to ensure that cleanup task is completed.
+  net::TestCompletionCallback flush_cb;
+  backend->FlushQueueForTest(flush_cb.callback());
+  EXPECT_THAT(flush_cb.WaitForResult(), IsOk());
+
   // Verify that `DeleteDoomedEntriesCount` UMA was recorded in the histogram.
   histogram_tester.ExpectUniqueSample(
       "Net.SqlDiskCache.DeleteDoomedEntriesCount", 1, 1);
