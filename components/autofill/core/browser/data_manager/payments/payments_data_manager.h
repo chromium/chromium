@@ -456,6 +456,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // been shown, and this counter is used very similarly to a strike database
   // when it comes time to check whether we should show the promo.
   virtual void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
+  // Only checks if the user has enabled the feature. For the purposes of
+  // checking if Mandatory Reauth is enabled, use
+  // PaymentsAutofillClient::IsMandatoryReauthEnabled().
   virtual bool IsPaymentMethodsMandatoryReauthEnabled();
   bool ShouldShowPaymentMethodsMandatoryReauthPromo();
   void IncrementPaymentMethodsMandatoryReauthPromoShownCounter();

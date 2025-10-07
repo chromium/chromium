@@ -126,6 +126,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
   CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
   bool IsRiskBasedAuthEffectivelyAvailable() const override;
+  bool IsMandatoryReauthEnabled() override;
   void ShowMandatoryReauthOptInPrompt(
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,

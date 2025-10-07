@@ -770,6 +770,10 @@ bool ChromePaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable() const {
   return true;
 }
 
+bool ChromePaymentsAutofillClient::IsMandatoryReauthEnabled() {
+  return GetPaymentsDataManager().IsPaymentMethodsMandatoryReauthEnabled();
+}
+
 void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,

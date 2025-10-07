@@ -547,6 +547,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // defaults to false.
   virtual bool IsRiskBasedAuthEffectivelyAvailable() const = 0;
 
+  // Returns true if Mandatory Reauth is supported on this platform and enabled
+  // by the user, if applicable.
+  virtual bool IsMandatoryReauthEnabled() = 0;
+
   // Prompt the user to enable mandatory reauthentication for payment method
   // autofill. When enabled, the user will be asked to authenticate using
   // biometrics or device unlock before filling in payment method information.

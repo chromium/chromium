@@ -48,7 +48,7 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
               GetPaymentsAutofillClient()
                   .GetOrCreatePaymentsMandatoryReauthManager();
           mandatory_reauth_manager &&
-          GetPaymentsDataManager().IsPaymentMethodsMandatoryReauthEnabled()) {
+          GetPaymentsAutofillClient().IsMandatoryReauthEnabled()) {
         StartDeviceAuthenticationForFilling(
             std::move(on_iban_fetched), iban_copy.value(),
             NonInteractivePaymentMethodType::kLocalIban);
