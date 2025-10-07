@@ -134,6 +134,7 @@ source_set("impl") {
     "//components/regional_capabilities",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check:prefs",
     "//components/saved_tab_groups/public:prefs",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/segmentation_platform/embedder/default_model",
