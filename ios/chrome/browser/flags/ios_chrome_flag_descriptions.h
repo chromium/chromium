@@ -512,6 +512,9 @@ extern const char kIOSOneTimeDefaultBrowserNotificationDescription[];
 extern const char kIOSProvidesAppNotificationSettingsName[];
 extern const char kIOSProvidesAppNotificationSettingsDescription[];
 
+extern const char kIOSTipsNotificationsStringAlternativesName[];
+extern const char kIOSTipsNotificationsStringAlternativesDescription[];
+
 extern const char
     kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[];
 extern const char
