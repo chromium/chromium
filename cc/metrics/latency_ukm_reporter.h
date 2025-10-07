@@ -39,7 +39,7 @@ class CC_EXPORT LatencyUkmReporter {
           processed_blink_breakdown,
       const CompositorFrameReporter::ProcessedVizBreakdown&
           processed_viz_breakdown,
-      CompositorFrameReporter::ProcessedTreesInVizBreakdown*
+      const CompositorFrameReporter::ProcessedTreesInVizBreakdown&
           processed_trees_in_viz_breakdown);
 
   void ReportEventLatencyUkm(
