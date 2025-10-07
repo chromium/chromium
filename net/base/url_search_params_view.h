@@ -66,6 +66,15 @@ class NET_EXPORT UrlSearchParamsView final {
   // URL-decoding match those in `names`.
   void DeleteAllExceptWithNames(const base::flat_set<std::string>& names);
 
+  // Returns a serialized version of the query (not including the "?"), as a
+  // UTF-8 string. To save memory, only a small number of characters are
+  // %-escaped. In particular, top-bit-set characters are not %-escaped, so this
+  // is not directly valid in a URL, although GURL can parse and canonicalize it
+  // correctly. The output has the important property that `a.SerializeAsUtf8()
+  // == b.SerializeAsUtf8()` if and only if `a == b`, which allows it to be used
+  // as a hash key.
+  std::string SerializeAsUtf8() const;
+
   // Return a vector of name, value pairs. Not at all efficient; only for
   // testing purposes.
   std::vector<std::pair<std::string, std::string>> GetDecodedParamsForTesting()
@@ -89,6 +98,13 @@ class NET_EXPORT UrlSearchParamsView final {
     // unescaping.
     bool operator==(const KeyValue& other) const;
   };
+
+  // Estimates the size of the return value of SerializeAsUtf8(). Precisely
+  // measuring the size of the output string would be costly. Allocating the
+  // maximum possible size would be wasteful. This gives a cheap estimate which
+  // is good enough to get the string to about the right size and limit the
+  // number of resizes that need to be performed.
+  size_t EstimateSerializedOutputSize() const;
 
   // Keeps track of all key-value pairs representing all query search params.
   // The order from the original url is important.

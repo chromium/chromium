@@ -164,7 +164,9 @@ struct QueryPair {
 };
 
 GURL MakeUrlWithQuery(std::string_view query) {
-  return GURL(base::StrCat({"http://a.test/?", query}));
+  // The trailing "#" makes GURL preserve trailing spaces. It doesn't form part
+  // of the query and makes no difference in other cases.
+  return GURL(base::StrCat({"http://a.test/?", query, "#"}));
 }
 
 TEST(UrlSearchParamsViewTest, Equals) {
@@ -207,6 +209,50 @@ TEST(UrlSearchParamsViewTest, NotEquals) {
     const UrlSearchParamsView search_params_b(url_b);
     EXPECT_NE(search_params_a, search_params_b)
         << "a=" << url_a << ", b=" << url_b;
+  }
+}
+
+TEST(UrlSearchParamsViewTest, SerializeAsUtf8WithNoQuery) {
+  const GURL no_query("http://a.test/");
+  const UrlSearchParamsView params(no_query);
+  EXPECT_EQ(params.SerializeAsUtf8(), "");
+}
+
+TEST(UrlSearchParamsViewTest, SerializeAsUtf8Cases) {
+  static constexpr std::string_view kNulEqualsNul("\0=\0", 3);
+  static constexpr QueryPair kQueryAndExpected[] = {
+      {"", ""},
+      {"a", "a="},
+      {"&", "="},
+      {"&b", "=&b="},
+      {"&&", "=&="},
+      {"a==b", "a=%3Db"},
+      {"%3d=b", "%3D=b"},
+      {"%26&=%26", "%26=&=%26"},   // '&' is escaped in keys and values
+      {"+=+", " = "},              // ' ' is not escaped
+      {"%20=+%20+", " =   "},      // %20 is ' '
+      {"%=%", "%25=%25"},          // Invalid escape is made valid
+      {"%23=%23", "%23=%23"},      // '#' is escaped
+      {kNulEqualsNul, "%00=%00"},  // '\0' is escaped
+      {"%c2%a5", "\xc2\xa5="},     // Valid UTF-8 is not escaped
+      {"=%c2%a5", "=\xc2\xa5"},
+      {"%c2=%a5", "\xef\xbf\xbd=\xef\xbf\xbd"},  // Invalid UTF-8
+  };
+  for (const auto& [query, expected] : kQueryAndExpected) {
+    SCOPED_TRACE(testing::Message() << "query=\"" << query << "\", expected=\""
+                                    << expected << "\"");
+    const GURL url(MakeUrlWithQuery(query));
+    const UrlSearchParamsView params(url);
+    const std::string serialized = params.SerializeAsUtf8();
+    EXPECT_EQ(serialized, expected);
+
+    // Loop the result through GURL and UrlSearchParamsView again to verify it
+    // is unchanged. This property is not strictly necessary, but it is a useful
+    // way to guarantee that the output is SerializeAsUtf8() is an injective
+    // mapping w.r.t. UrlSearchParamsView objects.
+    const GURL url_from_serialized(MakeUrlWithQuery(serialized));
+    const UrlSearchParamsView recreated_params(url_from_serialized);
+    EXPECT_EQ(recreated_params.SerializeAsUtf8(), serialized);
   }
 }
 
