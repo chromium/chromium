@@ -148,7 +148,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kDeleteAllEntries_DeleteFromBlobs, ""},
            {Query::kDeleteLiveEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_live_resources_last_used "
+            "COVERING INDEX index_live_resources_last_used_bytes_usage "
             "(last_used>? AND last_used<?)"},
            {Query::kDeleteResourcesByResIds_DeleteFromResources,
             "`--SEARCH resources USING "
@@ -196,22 +196,23 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "(res_id=? AND start<?)"},
            {Query::kCalculateSizeOfEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_live_resources_last_used "
+            "COVERING INDEX index_live_resources_last_used_bytes_usage "
             "(last_used>? AND last_used<?)"},
            {Query::kOpenLatestEntryBeforeResId_SelectLiveResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid<?)"},
            {Query::kRunEviction_SelectLiveResources,
-            "`--SCAN resources USING INDEX index_live_resources_last_used"},
+            "`--SCAN resources USING "
+            "COVERING INDEX index_live_resources_last_used_bytes_usage"},
            {Query::kRunEviction_DeleteFromResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kCalculateResourceEntryCount_SelectCountFromLiveResources,
             "`--SCAN resources USING "
-            "COVERING INDEX index_live_resources_last_used"},
+            "COVERING INDEX index_live_resources_last_used_bytes_usage"},
            {Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources,
             "`--SCAN resources USING "
-            "INDEX index_live_resources_last_used"},
+            "COVERING INDEX index_live_resources_last_used_bytes_usage"},
            {Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources,
             "`--SCAN resources USING COVERING INDEX "
             "index_resources_cache_key_hash_doomed"}});

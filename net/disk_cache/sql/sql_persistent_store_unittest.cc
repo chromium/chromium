@@ -268,10 +268,10 @@ class SqlPersistentStoreTest : public testing::Test {
   SqlPersistentStore::Error DeleteLiveEntriesBetween(
       base::Time initial_time,
       base::Time end_time,
-      base::flat_set<CacheEntryKey> excluded_keys = {}) {
+      base::flat_set<SqlPersistentStore::ResId> excluded_ids = {}) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
     store_->DeleteLiveEntriesBetween(
-        initial_time, end_time, std::move(excluded_keys), future.GetCallback());
+        initial_time, end_time, std::move(excluded_ids), future.GetCallback());
     return future.Get();
   }
 
@@ -1587,7 +1587,9 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   const base::Time kTime1 = base::Time::Now();
 
   task_environment_.AdvanceClock(base::Minutes(1));
-  ASSERT_TRUE(CreateEntry(kKey2).has_value());
+  auto create_result = CreateEntry(kKey2);
+  ASSERT_TRUE(create_result.has_value());
+  SqlPersistentStore::ResId res_id2 = create_result->res_id;
 
   task_environment_.AdvanceClock(base::Minutes(1));
   ASSERT_TRUE(CreateEntry(kKey3).has_value());
@@ -1631,8 +1633,8 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   // kKey2 should be excluded.
   // Expected to delete: kKey1.
   // Expected to keep: kKey2, kKey3, kKey4, kKey5.
-  base::flat_set<CacheEntryKey> excluded_keys = {kKey2};
-  ASSERT_EQ(DeleteLiveEntriesBetween(kTime1, kTime3, excluded_keys),
+  base::flat_set<SqlPersistentStore::ResId> excluded_ids = {res_id2};
+  ASSERT_EQ(DeleteLiveEntriesBetween(kTime1, kTime3, excluded_ids),
             SqlPersistentStore::Error::kOk);
   EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
@@ -3603,12 +3605,16 @@ TEST_F(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
 
   // Add entries until size > high watermark.
   std::vector<CacheEntryKey> keys;
+  std::optional<SqlPersistentStore::ResId> first_res_id;
   int i = 0;
   while (GetSizeOfAllEntries() <= kHighWatermark) {
     const CacheEntryKey key(base::StringPrintf("key%d", i++));
     keys.push_back(key);
     auto create_result = CreateEntry(key);
     ASSERT_TRUE(create_result.has_value());
+    if (!first_res_id.has_value()) {
+      first_res_id = create_result->res_id;
+    }
     task_environment_.AdvanceClock(
         base::Seconds(1));  // To distinguish last_used
   }
@@ -3619,11 +3625,11 @@ TEST_F(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
   EXPECT_TRUE(store_->ShouldStartEviction());
 
   // Exclude the oldest entry.
-  base::flat_set<CacheEntryKey> excluded_keys = {keys[0]};
+  base::flat_set<SqlPersistentStore::ResId> excluded_res_ids = {*first_res_id};
 
   // Start eviction.
   base::test::TestFuture<SqlPersistentStore::Error> future;
-  store_->StartEviction(std::move(excluded_keys), future.GetCallback());
+  store_->StartEviction(std::move(excluded_res_ids), future.GetCallback());
   ASSERT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
 
   // After eviction, size should be <= low watermark.

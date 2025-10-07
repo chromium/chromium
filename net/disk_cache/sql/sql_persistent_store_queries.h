@@ -62,11 +62,13 @@ inline constexpr const char kIndex_ResourcesCacheKeyHashDoomed[] =
     "CREATE INDEX index_resources_cache_key_hash_doomed ON "
     "resources(cache_key_hash, doomed)";
 
-// An index on `last_used` for live entries (`doomed=0`). This is crucial for
-// eviction logic, which targets the least recently used entries.
+// An index on `last_used` and `bytes_usage` for live entries (`doomed=0`). This
+// is crucial for eviction logic, which targets the least recently used entries.
+// To avoid looking at the actual resources table during eviction, this creates
+// a covering index.
 inline constexpr const char kIndex_LiveResourcesLastUsed[] =
-    "CREATE INDEX index_live_resources_last_used ON "
-    "resources(last_used) WHERE doomed=0";
+    "CREATE INDEX index_live_resources_last_used_bytes_usage ON "
+    "resources(last_used, bytes_usage) WHERE doomed=0";
 
 // An index on `res_id` for doomed entries (`doomed=1`). This is used to
 // efficiently find and clean up doomed entries.
@@ -161,8 +163,7 @@ inline constexpr const char kDeleteLiveEntriesBetween_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "res_id,"       // 0
-        "bytes_usage,"  // 1
-        "cache_key "    // 2
+        "bytes_usage "  // 1
     "FROM resources "
     "WHERE "
         "last_used>=? AND "  // 0
@@ -344,8 +345,7 @@ inline constexpr const char kRunEviction_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "res_id,"       // 0
-        "cache_key,"    // 1
-        "bytes_usage "  // 2
+        "bytes_usage "  // 1
     "FROM resources "
     "WHERE "
         "doomed=0 "

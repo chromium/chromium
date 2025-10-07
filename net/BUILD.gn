@@ -1829,6 +1829,8 @@ component("net") {
       "disk_cache/sql/sql_entry_impl.h",
       "disk_cache/sql/sql_persistent_store.cc",
       "disk_cache/sql/sql_persistent_store.h",
+      "disk_cache/sql/sql_persistent_store_in_memory_index.cc",
+      "disk_cache/sql/sql_persistent_store_in_memory_index.h",
       "disk_cache/sql/sql_persistent_store_queries.h",
     ]
     deps += [
@@ -3512,6 +3514,7 @@ target(_test_target_type, "net_unittests") {
       "disk_cache/sql/exclusive_operation_coordinator_unittest.cc",
       "disk_cache/sql/indexed_pair_set_unittest.cc",
       "disk_cache/sql/sql_backend_impl_unittest.cc",
+      "disk_cache/sql/sql_persistent_store_in_memory_index_unittest.cc",
       "disk_cache/sql/sql_persistent_store_unittest.cc",
     ]
 

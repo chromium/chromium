@@ -29,6 +29,7 @@
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/sql/indexed_pair_set.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 #include "net/disk_cache/sql/sql_persistent_store_queries.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -57,9 +58,6 @@ enum class IndexMismatchLocation {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheIndexMismatchLocation)
 
-using HashResIdSet =
-    IndexedPairSet<CacheEntryKey::Hash, SqlPersistentStore::ResId>;
-
 // Holds summary statistics about the cache store.
 struct StoreStatus {
   int32_t entry_count = 0;
@@ -68,33 +66,20 @@ struct StoreStatus {
 
 // The result of a successful initialization.
 struct InitResult {
-  InitResult(int64_t max_bytes, HashResIdSet&& index)
+  InitResult(int64_t max_bytes, SqlPersistentStoreInMemoryIndex&& index)
       : max_bytes(max_bytes), index(std::move(index)) {}
   ~InitResult() = default;
   InitResult(InitResult&& other) = default;
   InitResult& operator=(InitResult&& other) = default;
 
   int64_t max_bytes = 0;
-  HashResIdSet index;
+  SqlPersistentStoreInMemoryIndex index;
 };
 
 // A helper struct to associate an IOBuffer with a starting offset.
 struct BufferWithStart {
   scoped_refptr<net::IOBuffer> buffer;
   int64_t start;
-};
-
-// A helper struct to hold a resource ID and a cache entry key hash.
-struct ResIdAndHashKey {
-  ResIdAndHashKey(SqlPersistentStore::ResId res_id,
-                  CacheEntryKey::Hash key_hash)
-      : res_id(res_id), key_hash(key_hash) {}
-  ~ResIdAndHashKey() = default;
-  ResIdAndHashKey(ResIdAndHashKey&&) = default;
-  ResIdAndHashKey& operator=(ResIdAndHashKey&&) = default;
-
-  SqlPersistentStore::ResId res_id;
-  CacheEntryKey::Hash key_hash;
 };
 
 using disk_cache_sql_queries::GetQuery;
@@ -110,8 +95,8 @@ using OptionalEntryInfoWithIdAndKey =
     SqlPersistentStore::OptionalEntryInfoWithIdAndKey;
 using IntOrError = SqlPersistentStore::IntOrError;
 using InitResultOrError = base::expected<InitResult, Error>;
-using ResIdAndHashKeyList = std::vector<ResIdAndHashKey>;
-using ResIdAndHashKeyListOrError = base::expected<ResIdAndHashKeyList, Error>;
+using ResIdList = std::vector<ResId>;
+using ResIdListOrError = base::expected<ResIdList, Error>;
 
 // A helper struct to bundle an operation's result with a flag indicating
 // whether an eviction check is needed. This allows the background sequence,
@@ -137,8 +122,8 @@ using ErrorAndEvictionRequested = ResultAndEvictionRequested<Error>;
 using EntryInfoOrErrorAndEvictionRequested =
     ResultAndEvictionRequested<EntryInfoOrError>;
 using IntOrErrorAndEvictionRequested = ResultAndEvictionRequested<IntOrError>;
-using ResIdAndHashKeyListOrErrorAndEvictionRequested =
-    ResultAndEvictionRequested<ResIdAndHashKeyListOrError>;
+using ResIdListOrErrorAndEvictionRequested =
+    ResultAndEvictionRequested<ResIdListOrError>;
 
 bool IsBlobSizeValid(int64_t blob_start,
                      int64_t blob_end,
@@ -205,7 +190,7 @@ void PopulateTraceDetails(
     dict.Add("entry_info", "not found");
   }
 }
-void PopulateTraceDetails(const ResIdAndHashKeyList& result,
+void PopulateTraceDetails(const ResIdList& result,
                           perfetto::TracedDictionary& dict) {
   dict.Add("doomed_entry_count", result.size());
 }
@@ -358,15 +343,15 @@ class Backend {
                                               base::TimeTicks start_time);
   Error DeleteDoomedEntries(base::flat_set<ResId> excluded_res_ids,
                             base::TimeTicks start_time);
-  ResIdAndHashKeyListOrErrorAndEvictionRequested DeleteLiveEntry(
+  ResIdListOrErrorAndEvictionRequested DeleteLiveEntry(
       const CacheEntryKey& key,
       base::TimeTicks start_time);
 
   ErrorAndEvictionRequested DeleteAllEntries(base::TimeTicks start_time);
-  ResIdAndHashKeyListOrErrorAndEvictionRequested DeleteLiveEntriesBetween(
+  ResIdListOrErrorAndEvictionRequested DeleteLiveEntriesBetween(
       base::Time initial_time,
       base::Time end_time,
-      base::flat_set<CacheEntryKey> excluded_keys,
+      base::flat_set<ResId> excluded_res_ids,
       base::TimeTicks start_time);
   Error UpdateEntryLastUsedByKey(const CacheEntryKey& key,
                                  base::Time last_used,
@@ -406,8 +391,8 @@ class Backend {
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       ResId res_id_cursor,
       base::TimeTicks start_time);
-  ResIdAndHashKeyListOrErrorAndEvictionRequested RunEviction(
-      base::flat_set<CacheEntryKey> excluded_keys,
+  ResIdListOrErrorAndEvictionRequested RunEviction(
+      base::flat_set<ResId> excluded_res_ids,
       base::TimeTicks start_time);
   bool MaybeRunCheckpoint();
 
@@ -422,7 +407,8 @@ class Backend {
  private:
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
-  Error InitializeInternal(bool& corruption_detected, HashResIdSet& index);
+  Error InitializeInternal(bool& corruption_detected,
+                           SqlPersistentStoreInMemoryIndex& index);
   EntryInfoOrError OpenOrCreateEntryInternal(const CacheEntryKey& key,
                                              bool& corruption_detected);
   OptionalEntryInfoOrError OpenEntryInternal(const CacheEntryKey& key);
@@ -436,13 +422,13 @@ class Backend {
       const base::flat_set<ResId>& excluded_res_ids,
       size_t& deleted_count,
       bool& corruption_detected);
-  ResIdAndHashKeyListOrError DeleteLiveEntryInternal(const CacheEntryKey& key,
-                                                     bool& corruption_detected);
+  ResIdListOrError DeleteLiveEntryInternal(const CacheEntryKey& key,
+                                           bool& corruption_detected);
   Error DeleteAllEntriesInternal(bool& corruption_detected);
-  ResIdAndHashKeyListOrError DeleteLiveEntriesBetweenInternal(
+  ResIdListOrError DeleteLiveEntriesBetweenInternal(
       base::Time initial_time,
       base::Time end_time,
-      const base::flat_set<CacheEntryKey>& excluded_keys,
+      const base::flat_set<ResId>& excluded_res_ids,
       bool& corruption_detected);
   Error UpdateEntryLastUsedByKeyInternal(const CacheEntryKey& key,
                                          base::Time last_used);
@@ -476,8 +462,8 @@ class Backend {
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       ResId res_id_cursor,
       bool& corruption_detected);
-  ResIdAndHashKeyListOrError RunEvictionInternal(
-      const base::flat_set<CacheEntryKey>& excluded_keys,
+  ResIdListOrError RunEvictionInternal(
+      const base::flat_set<ResId>& excluded_res_ids,
       bool& corruption_detected);
 
   // Trims blobs that overlap with the new write range [offset, end), and
@@ -582,7 +568,7 @@ InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
   base::ElapsedTimer timer;
   CHECK(!db_init_status_.has_value());
   bool corruption_detected = false;
-  HashResIdSet index;
+  SqlPersistentStoreInMemoryIndex index;
   db_init_status_ = InitializeInternal(corruption_detected, index);
   RecordTimeAndErrorResultHistogram("Initialize", posting_delay,
                                     timer.Elapsed(), *db_init_status_,
@@ -616,7 +602,7 @@ InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
 }
 
 Error Backend::InitializeInternal(bool& corruption_detected,
-                                  HashResIdSet& index) {
+                                  SqlPersistentStoreInMemoryIndex& index) {
   if (simulate_db_failure_for_testing_) {
     return Error::kFailedForTesting;
   }
@@ -1137,7 +1123,7 @@ Error Backend::DeleteDoomedEntriesInternal(
   return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
 }
 
-ResIdAndHashKeyListOrErrorAndEvictionRequested Backend::DeleteLiveEntry(
+ResIdListOrErrorAndEvictionRequested Backend::DeleteLiveEntry(
     const CacheEntryKey& key,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
@@ -1160,13 +1146,12 @@ ResIdAndHashKeyListOrErrorAndEvictionRequested Backend::DeleteLiveEntry(
                      dict.Add("corruption_detected", corruption_detected);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ResIdAndHashKeyListOrErrorAndEvictionRequested(std::move(result),
-                                                        ShouldStartEviction());
+  return ResIdListOrErrorAndEvictionRequested(std::move(result),
+                                              ShouldStartEviction());
 }
 
-ResIdAndHashKeyListOrError Backend::DeleteLiveEntryInternal(
-    const CacheEntryKey& key,
-    bool& corruption_detected) {
+ResIdListOrError Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
+                                                  bool& corruption_detected) {
   if (simulate_db_failure_for_testing_) {
     return base::unexpected(Error::kFailedForTesting);
   }
@@ -1178,10 +1163,9 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntryInternal(
 
   // We need to collect the res_ids of deleted entries to later remove their
   // corresponding data from the `blobs` table.
-  std::vector<ResId> res_ids_to_be_deleted;
+  ResIdList res_ids_to_be_deleted;
   // Use checked numerics to safely update the total cache size.
   base::CheckedNumeric<int64_t> total_size_delta = 0;
-  ResIdAndHashKeyList deleted_enties;
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDeleteLiveEntry_DeleteFromResources)));
@@ -1190,7 +1174,6 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntryInternal(
     while (statement.Step()) {
       const auto res_id = ResId(statement.ColumnInt64(0));
       res_ids_to_be_deleted.emplace_back(res_id);
-      deleted_enties.emplace_back(res_id, key.hash());
       // The size of the deleted entry is subtracted from the total.
       total_size_delta -= statement.ColumnInt64(1);
     }
@@ -1218,7 +1201,7 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntryInternal(
     corruption_detected = true;
     auto error = RecalculateStoreStatusAndCommitTransaction(transaction);
     return error == Error::kOk
-               ? ResIdAndHashKeyListOrError(std::move(deleted_enties))
+               ? ResIdListOrError(std::move(res_ids_to_be_deleted))
                : base::unexpected(error);
   }
 
@@ -1228,7 +1211,7 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntryInternal(
       -static_cast<int64_t>(res_ids_to_be_deleted.size()),
       /*total_size_delta=*/total_size_delta.ValueOrDie(), corruption_detected);
   return error == Error::kOk
-             ? ResIdAndHashKeyListOrError(std::move(deleted_enties))
+             ? ResIdListOrError(std::move(res_ids_to_be_deleted))
              : base::unexpected(error);
 }
 
@@ -1292,18 +1275,19 @@ Error Backend::DeleteAllEntriesInternal(bool& corruption_detected) {
       /*total_size_delta=*/-store_status_.total_size, corruption_detected);
 }
 
-ResIdAndHashKeyListOrErrorAndEvictionRequested
-Backend::DeleteLiveEntriesBetween(base::Time initial_time,
-                                  base::Time end_time,
-                                  base::flat_set<CacheEntryKey> excluded_keys,
-                                  base::TimeTicks start_time) {
+ResIdListOrErrorAndEvictionRequested Backend::DeleteLiveEntriesBetween(
+    base::Time initial_time,
+    base::Time end_time,
+    base::flat_set<ResId> excluded_res_ids,
+    base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteLiveEntriesBetween",
                      "data", [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
                        dict.Add("initial_time", initial_time);
                        dict.Add("end_time", end_time);
-                       dict.Add("excluded_keys_size", excluded_keys.size());
+                       dict.Add("excluded_res_ids_size",
+                                excluded_res_ids.size());
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
@@ -1311,7 +1295,7 @@ Backend::DeleteLiveEntriesBetween(base::Time initial_time,
   // DeleteLiveEntriesBetween, database corruption is ignored.
   bool corruption_detected = false;
   auto result = DeleteLiveEntriesBetweenInternal(
-      initial_time, end_time, excluded_keys, corruption_detected);
+      initial_time, end_time, excluded_res_ids, corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "DeleteLiveEntriesBetween", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
@@ -1321,14 +1305,14 @@ Backend::DeleteLiveEntriesBetween(base::Time initial_time,
                      PopulateTraceDetails(result, store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ResIdAndHashKeyListOrErrorAndEvictionRequested(std::move(result),
-                                                        ShouldStartEviction());
+  return ResIdListOrErrorAndEvictionRequested(std::move(result),
+                                              ShouldStartEviction());
 }
 
-ResIdAndHashKeyListOrError Backend::DeleteLiveEntriesBetweenInternal(
+ResIdListOrError Backend::DeleteLiveEntriesBetweenInternal(
     base::Time initial_time,
     base::Time end_time,
-    const base::flat_set<CacheEntryKey>& excluded_keys,
+    const base::flat_set<ResId>& excluded_res_ids,
     bool& corruption_detected) {
   if (simulate_db_failure_for_testing_) {
     return base::unexpected(Error::kFailedForTesting);
@@ -1339,8 +1323,7 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntriesBetweenInternal(
     return base::unexpected(Error::kFailedToStartTransaction);
   }
 
-  std::vector<ResId> res_ids_to_be_deleted;
-  ResIdAndHashKeyList deleted_enties;
+  ResIdList res_ids_to_be_deleted;
   base::CheckedNumeric<int64_t> total_size_delta = 0;
   {
     sql::Statement statement(db_.GetCachedStatement(
@@ -1349,12 +1332,10 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntriesBetweenInternal(
     statement.BindTime(0, initial_time);
     statement.BindTime(1, end_time);
     while (statement.Step()) {
-      const auto cache_key = CacheEntryKey(statement.ColumnString(2));
-      if (excluded_keys.contains(cache_key)) {
+      const auto res_id = ResId(statement.ColumnInt64(0));
+      if (excluded_res_ids.contains(res_id)) {
         continue;
       }
-      const auto res_id = ResId(statement.ColumnInt64(0));
-      deleted_enties.emplace_back(res_id, cache_key.hash());
       res_ids_to_be_deleted.emplace_back(res_id);
       total_size_delta -= statement.ColumnInt64(1);
     }
@@ -1379,17 +1360,17 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntriesBetweenInternal(
     corruption_detected = true;
     auto error = RecalculateStoreStatusAndCommitTransaction(transaction);
     return error == Error::kOk
-               ? ResIdAndHashKeyListOrError(std::move(deleted_enties))
+               ? ResIdListOrError(std::move(res_ids_to_be_deleted))
                : base::unexpected(error);
   }
 
   // Update the in-memory and on-disk store status (entry count and total size)
   // and commit the transaction.
   auto error = UpdateStoreStatusAndCommitTransaction(
-      transaction, -static_cast<int64_t>(deleted_enties.size()),
+      transaction, -static_cast<int64_t>(res_ids_to_be_deleted.size()),
       total_size_delta.ValueOrDie(), corruption_detected);
   return error == Error::kOk
-             ? ResIdAndHashKeyListOrError(std::move(deleted_enties))
+             ? ResIdListOrError(std::move(res_ids_to_be_deleted))
              : base::unexpected(error);
 }
 
@@ -2288,25 +2269,24 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
   return std::nullopt;
 }
 
-ResIdAndHashKeyListOrErrorAndEvictionRequested Backend::RunEviction(
-    base::flat_set<CacheEntryKey> excluded_keys,
+ResIdListOrErrorAndEvictionRequested Backend::RunEviction(
+    base::flat_set<ResId> excluded_res_ids,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT0("disk_cache", "SqlBackend.RunEviction");
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result =
-      RunEvictionInternal(std::move(excluded_keys), corruption_detected);
+  auto result = RunEvictionInternal(excluded_res_ids, corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "RunEviction", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
   MaybeCrashIfCorrupted(corruption_detected);
-  return ResIdAndHashKeyListOrErrorAndEvictionRequested(std::move(result),
-                                                        ShouldStartEviction());
+  return ResIdListOrErrorAndEvictionRequested(std::move(result),
+                                              ShouldStartEviction());
 }
 
-ResIdAndHashKeyListOrError Backend::RunEvictionInternal(
-    const base::flat_set<CacheEntryKey>& excluded_keys,
+ResIdListOrError Backend::RunEvictionInternal(
+    const base::flat_set<ResId>& excluded_res_ids,
     bool& corruption_detected) {
   int64_t size_to_be_removed = GetSizeOfAllEntries() - low_watermark_;
   sql::Transaction transaction(&db_);
@@ -2314,26 +2294,24 @@ ResIdAndHashKeyListOrError Backend::RunEvictionInternal(
     return base::unexpected(Error::kFailedToExecute);
   }
 
-  std::vector<ResId> res_ids_to_be_deleted;
+  ResIdList res_ids_to_be_deleted;
   int64_t entry_count_delta = 0;
   // Use checked numerics to safely update the total cache size.
   base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
   base::CheckedNumeric<int64_t> checked_removed_total_size = 0;
-  ResIdAndHashKeyList deleted_enties;
+  ResIdList deleted_enties;
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kRunEviction_SelectLiveResources)));
     while (size_to_be_removed > checked_removed_total_size.ValueOrDie() &&
            statement.Step()) {
       const ResId res_id = ResId(statement.ColumnInt64(0));
-      const CacheEntryKey cache_key = CacheEntryKey(statement.ColumnString(1));
-      if (excluded_keys.contains(cache_key)) {
+      if (excluded_res_ids.contains(res_id)) {
         continue;
       }
-      deleted_enties.emplace_back(res_id, cache_key.hash());
       res_ids_to_be_deleted.emplace_back(res_id);
       --entry_count_delta;
-      const int64_t bytes_usage = statement.ColumnInt64(2);
+      const int64_t bytes_usage = statement.ColumnInt64(1);
       checked_total_size_delta -= bytes_usage;
       checked_removed_total_size += bytes_usage;
       checked_removed_total_size += kSqlBackendStaticResourceSize;
@@ -2361,7 +2339,7 @@ ResIdAndHashKeyListOrError Backend::RunEvictionInternal(
       transaction, entry_count_delta, checked_total_size_delta.ValueOrDie(),
       corruption_detected);
   return error == Error::kOk
-             ? ResIdAndHashKeyListOrError(std::move(deleted_enties))
+             ? ResIdListOrError(std::move(res_ids_to_be_deleted))
              : base::unexpected(error);
 }
 
@@ -2629,10 +2607,10 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void DeleteLiveEntriesBetween(base::Time initial_time,
                                 base::Time end_time,
-                                base::flat_set<CacheEntryKey> excluded_keys,
+                                base::flat_set<ResId> excluded_res_ids,
                                 ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::DeleteLiveEntriesBetween)
-        .WithArgs(initial_time, end_time, std::move(excluded_keys),
+        .WithArgs(initial_time, end_time, std::move(excluded_res_ids),
                   base::TimeTicks::Now())
         .Then(WrapErrorCallbackToRemoveFromIndex(
             std::move(callback),
@@ -2714,23 +2692,22 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   bool ShouldStartEviction() override {
     return !eviction_in_progress_ && eviction_requested_;
   }
-  void StartEviction(base::flat_set<CacheEntryKey> excluded_keys,
+  void StartEviction(base::flat_set<ResId> excluded_res_ids,
                      ErrorCallback callback) override {
     CHECK(!eviction_in_progress_);
     eviction_in_progress_ = true;
     backend_.AsyncCall(&Backend::RunEviction)
-        .WithArgs(std::move(excluded_keys), base::TimeTicks::Now())
+        .WithArgs(std::move(excluded_res_ids), base::TimeTicks::Now())
         .Then(base::BindOnce(
             [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
                ErrorCallback callback,
-               ResIdAndHashKeyListOrErrorAndEvictionRequested result) {
+               ResIdListOrErrorAndEvictionRequested result) {
               if (weak_ptr) {
                 weak_ptr->eviction_in_progress_ = false;
                 if (result.result.has_value()) {
                   CHECK(weak_ptr->index_.has_value());
-                  for (const auto& res_id_and_key : *result.result) {
-                    if (!weak_ptr->index_->Remove(res_id_and_key.key_hash,
-                                                  res_id_and_key.res_id)) {
+                  for (ResId res_id : *result.result) {
+                    if (!weak_ptr->index_->Remove(res_id)) {
                       weak_ptr->RecordIndexMismatch(
                           IndexMismatchLocation::kStartEviction);
                     }
@@ -2842,19 +2819,18 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         weak_factory_.GetWeakPtr(), std::move(callback), key.hash(), location);
   }
 
-  base::OnceCallback<void(ResIdAndHashKeyListOrErrorAndEvictionRequested)>
+  base::OnceCallback<void(ResIdListOrErrorAndEvictionRequested)>
   WrapErrorCallbackToRemoveFromIndex(ErrorCallback callback,
                                      IndexMismatchLocation location) {
     return base::BindOnce(
         [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
            ErrorCallback callback, IndexMismatchLocation location,
-           ResIdAndHashKeyListOrErrorAndEvictionRequested result) {
+           ResIdListOrErrorAndEvictionRequested result) {
           if (weak_ptr) {
             if (result.result.has_value()) {
               CHECK(weak_ptr->index_.has_value());
-              for (const auto& hash_and_res_id : result.result.value()) {
-                if (!weak_ptr->index_->Remove(hash_and_res_id.key_hash,
-                                              hash_and_res_id.res_id)) {
+              for (ResId res_id : result.result.value()) {
+                if (!weak_ptr->index_->Remove(res_id)) {
                   weak_ptr->RecordIndexMismatch(location);
                 }
               }
@@ -2882,7 +2858,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   bool eviction_requested_ = false;
   bool strict_corruption_check_enabled_ = false;
 
-  std::optional<HashResIdSet> index_;
+  std::optional<SqlPersistentStoreInMemoryIndex> index_;
   base::WeakPtrFactory<SqlPersistentStoreImpl> weak_factory_{this};
 };
 
