@@ -107,7 +107,11 @@ public class SafetyHubNotificationsModuleMediatorTest {
                                 /* numSites= */ 1,
                                 /* numSites= */ 1);
         String expectedSummary =
-                mActivity.getString(R.string.safety_hub_notifications_review_warning_summary);
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_summary,
+                                /* numSites= */ 1);
         String expectedPrimaryButtonText =
                 mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
         String expectedSecondaryButtonText =
@@ -133,7 +137,11 @@ public class SafetyHubNotificationsModuleMediatorTest {
                                 /* numSites= */ 1,
                                 /* numSites= */ 1);
         String expectedSummary =
-                mActivity.getString(R.string.safety_hub_notifications_review_warning_summary);
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_summary,
+                                /* numSites= */ 1);
         String expectedPrimaryButtonText =
                 mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
         String expectedSecondaryButtonText =
@@ -146,5 +154,40 @@ public class SafetyHubNotificationsModuleMediatorTest {
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
 
         verify(mDelegate, times(1)).onUpdateNeeded();
+    }
+
+    @Test
+    public void hasSiteWithNotificationPermissions_multipleSites() {
+        NotificationPermissions anotherSiteNotificationPermissions =
+                NotificationPermissions.create("http://example2.com", "*", 5);
+        doReturn(List.of(NOTIFICATION_PERMISSIONS, anotherSiteNotificationPermissions))
+                .when(mNotificationPermissionReviewBridgeMock)
+                .getNotificationPermissions();
+
+        mModuleMediator.updateModule();
+
+        String expectedTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title,
+                                /* numSites= */ 2,
+                                /* numSites= */ 2);
+        String expectedSummary =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_summary,
+                                /* numSites= */ 2);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_view_sites_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
     }
 }

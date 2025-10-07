@@ -1604,7 +1604,9 @@ Your Google account may have other forms of browsing history like searches and a
         Chrome will let you know about sites that may be sending too many notifications
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_WARNING_SUMMARY" desc="Summary for the notifications module in the Safety Hub dashboard. It is displayed when the user has some notification permissions that need to be reviewed.">
-        You can stop these sites from sending future notifications
+        {NUM_SITES, plural,
+        =1 {You can stop this site from sending future notifications}
+        other {You can stop these sites from sending future notifications}}
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_OK_SUMMARY" desc="Summary for the permissions module in the Safety Hub dashboard. It is displayed when the user has no automatically revoked permissions that need to be reviewed.">
         Chrome automatically removes permissions from sites that abuse notifications or that you haven’t visited recently
