@@ -15,7 +15,7 @@
 namespace jni_zero {
 
 template <>
-tabs::TabStripCollection* FromJniType<tabs::TabStripCollection*>(
+inline tabs::TabStripCollection* FromJniType<tabs::TabStripCollection*>(
     JNIEnv* env,
     const JavaRef<jobject>& input) {
   return reinterpret_cast<tabs::TabStripCollection*>(
@@ -23,9 +23,9 @@ tabs::TabStripCollection* FromJniType<tabs::TabStripCollection*>(
 }
 
 template <>
-base::android::ScopedJavaLocalRef<jobject> ToJniType<tabs::TabStripCollection>(
-    JNIEnv* env,
-    const tabs::TabStripCollection& input) {
+inline base::android::ScopedJavaLocalRef<jobject>
+ToJniType<tabs::TabStripCollection>(JNIEnv* env,
+                                    const tabs::TabStripCollection& input) {
   return Java_TabStripCollection_Constructor(env,
                                              reinterpret_cast<jlong>(&input));
 }
