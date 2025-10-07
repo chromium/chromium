@@ -16,6 +16,7 @@
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -186,6 +187,8 @@ std::u16string GetChromeCounterTextFromResult(
           IDS_DEL_COOKIES_COUNTER_ADVANCED, origins);
 
       if (origins > 0 &&
+          ChromeSigninClientFactory::GetForProfile(profile)
+              ->IsClearPrimaryAccountAllowed() &&
           (ShouldShowCookieException(profile) ||
            (is_signed_in &&
             signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(

@@ -14,6 +14,7 @@
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 #include "chrome/browser/browsing_data/counters/site_data_counter.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -343,6 +344,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
     int num_sites;
     SigninState signin_state = SigninState::kSignedOut;
     std::string expected_output;
+    bool signout_allowed = true;
   };
 
   void SetSignedOutState(syncer::TestSyncService* test_sync_service) {
@@ -428,6 +430,13 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
             testing_profile.get(), base::BindOnce([](content::BrowserContext*) {
               return std::make_unique<syncer::TestSyncService>();
             }));
+
+    if (!test_case.signout_allowed) {
+      SigninClient* client =
+          ChromeSigninClientFactory::GetForProfile(testing_profile.get());
+      client->set_is_clear_primary_account_allowed_for_testing(
+          SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+    }
 
     switch (test_case.signin_state) {
       case SigninState::kSignedOut:
@@ -523,6 +532,8 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult_RevampEnabled) {
        "href=\"#\" target=\"_blank\" id=\"signOutLink\">sign out of "
        "Chrome</a>."},
       {/*num_sites= */ 0, SigninState::kSyncing, "None"},
+      {/*num_sites= */ 42, SigninState::kSyncing, "From 42 sites",
+       /*signout_allowed= */ false},
   };
 
   for (const TestCase& test_case : kTestCases) {
