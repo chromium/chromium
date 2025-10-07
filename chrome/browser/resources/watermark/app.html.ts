@@ -26,7 +26,7 @@ export function getHtml(this: WatermarkAppElement) {
         <cr-input id="fontSizeInput" class="font-size-input stroked"
             aria-label="Font size" type="number"
             min="1"
-            max="500
+            max="500"
             .value="${this.fontSize_.toString()}"
             @keydown="${this.onFontSizeInputKeyDown_}"
             @value-changed="${this.onFontSizeChanged_}">
@@ -39,22 +39,28 @@ export function getHtml(this: WatermarkAppElement) {
 
       <div class="control-row">
         <span>White outline opacity</span>
-        <cr-slider id="outlineOpacitySlider" aria-label="White outline opacity"
-            min="0" max="100"
-            .value="${this.outlineOpacity_}"
-            .ticks="${this.opacityTicks_}"
-            @cr-slider-value-changed="${this.onOutlineOpacityChanged_}">
-        </cr-slider>
+        <div class="slider-container">
+          <cr-slider id="outlineOpacitySlider" aria-label="White outline opacity"
+              min="0" max="100"
+              .value="${this.outlineOpacity_}"
+              .ticks="${this.opacityTicks_}"
+              @cr-slider-value-changed="${this.onOutlineOpacityChanged_}">
+          </cr-slider>
+          <span class="slider-percentage">${this.outlineOpacity_}%</span>
+        </div>
       </div>
 
       <div class="control-row">
         <span>Dark fill opacity</span>
-        <cr-slider id="fillOpacitySlider" aria-label="Dark fill opacity"
-            min="0" max="100"
-            .value="${this.fillOpacity_}"
-            .ticks="${this.opacityTicks_}"
-            @cr-slider-value-changed="${this.onFillOpacityChanged_}">
-        </cr-slider>
+        <div class="slider-container">
+          <cr-slider id="fillOpacitySlider" aria-label="Dark fill opacity"
+              min="0" max="100"
+              .value="${this.fillOpacity_}"
+              .ticks="${this.opacityTicks_}"
+              @cr-slider-value-changed="${this.onFillOpacityChanged_}">
+          </cr-slider>
+          <span class="slider-percentage">${this.fillOpacity_}%</span>
+        </div>
       </div>
     </div>
   `;

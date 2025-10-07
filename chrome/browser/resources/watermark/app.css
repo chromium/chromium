@@ -70,12 +70,25 @@
 }
 
 cr-slider {
-  width: 170px;
+  width: 160px;
   --cr-slider-active-color: #1F6DD2;
   --cr-slider-knob-color: #1A73E8;
   --cr-slider-container-color: #D2E3FC;
   --cr-slider-bar-height: 4px;
   line-height: 20px;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+}
+
+.slider-container > span {
+  color: #202124;
+  font-size: 13px;
+  width: 30px;
+  text-align: right;
+  display: inline-block;
 }
 
 cr-input.font-size-input.stroked {
