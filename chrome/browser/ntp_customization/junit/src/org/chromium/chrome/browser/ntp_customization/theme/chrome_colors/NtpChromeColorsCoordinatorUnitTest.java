@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -240,21 +243,25 @@ public class NtpChromeColorsCoordinatorUnitTest {
         createCoordinator();
         ImageView colorCircleImageView = mCoordinator.getBackgroundColorCircleImageViewForTesting();
         assertNotNull(colorCircleImageView);
+        assertEquals(INVISIBLE, colorCircleImageView.getVisibility());
 
         // Verifies null is returned for an invalid hexadecimal string.
         assertNull(mCoordinator.updateColorCircle("FF00", colorCircleImageView));
+        assertEquals(INVISIBLE, colorCircleImageView.getVisibility());
 
         // Verifies the method returns the expected color value for a valid hexadecimal string.
         String colorHex = "#FF0000";
         @ColorInt int color = Color.parseColor(colorHex);
         assertEquals(
                 color, mCoordinator.updateColorCircle(colorHex, colorCircleImageView).intValue());
+        assertEquals(VISIBLE, colorCircleImageView.getVisibility());
 
         // Verifies the missing "#" will be added automatically, and the method returns the expected
         // color value.
         colorHex = "FF0000";
         assertEquals(
                 color, mCoordinator.updateColorCircle(colorHex, colorCircleImageView).intValue());
+        assertEquals(VISIBLE, colorCircleImageView.getVisibility());
     }
 
     private void createCoordinator() {

@@ -248,6 +248,7 @@ public class NtpChromeColorsCoordinator {
         Drawable background = circleImageView.getBackground();
         if (background instanceof GradientDrawable) {
             ((GradientDrawable) background.mutate()).setColor(color);
+            circleImageView.setVisibility(View.VISIBLE);
             return color;
         }
         return null;
