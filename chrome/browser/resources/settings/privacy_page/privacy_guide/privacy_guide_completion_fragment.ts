@@ -61,9 +61,7 @@ export class PrivacyGuideCompletionFragmentElement extends
 
       shouldShowAiSettings_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableAiSettingsInPrivacyGuide') &&
-            loadTimeData.getBoolean('showAiPage'),
+        value: () => loadTimeData.getBoolean('showAiPage'),
       },
 
       shouldShowPrivacySandbox_: {

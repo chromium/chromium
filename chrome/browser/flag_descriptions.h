@@ -968,9 +968,6 @@ extern const char kEnableNetworkLoggingToFileDescription[];
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 
-extern const char kPrivacyGuideAiSettingsName[];
-extern const char kPrivacyGuideAiSettingsDescription[];
-
 extern const char kDeprecateAltClickName[];
 extern const char kDeprecateAltClickDescription[];
 

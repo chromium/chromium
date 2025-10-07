@@ -609,9 +609,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           show_glic_section || show_ai_features_section);
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
-  html_source->AddBoolean(
-      "enableAiSettingsInPrivacyGuide",
-      optimization_guide::features::IsPrivacyGuideAiSettingsEnabled());
 
   // Delete Browsing Data
   html_source->AddBoolean(

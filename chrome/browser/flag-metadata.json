@@ -8224,14 +8224,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "privacy-guide-ai-settings",
-    "owners": [
-      "zalmashni@google.com",
-      "rainhard@chromium.org",
-      "chrome-browser-privacy-team@google.com"],
-    "expiry_milestone": 139
-  },
-  {
     "name": "privacy-guide-android-3",
     "owners": [
       "msramek@chromium.org",

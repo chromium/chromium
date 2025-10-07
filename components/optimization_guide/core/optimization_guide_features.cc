@@ -131,9 +131,6 @@ BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
 // purposes only.
 BASE_FEATURE(kAiSettingsPageForceAvailable, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable AI settings page integration with Privacy Guide.
-BASE_FEATURE(kPrivacyGuideAiSettings, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOnDeviceModelPerformanceParams, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnnotatedPageContentWithActionableElements,
@@ -629,10 +626,6 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks() {
 
 bool ShouldEnableOptimizationGuideIconView() {
   return base::FeatureList::IsEnabled(kOptimizationGuideIconView);
-}
-
-bool IsPrivacyGuideAiSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kPrivacyGuideAiSettings);
 }
 
 }  // namespace features

@@ -1755,10 +1755,6 @@ const char kEnableWindowsGamingInputDataFetcherDescription[] =
     "Enable Windows.Gaming.Input by default to provide game controller "
     "support on Windows 10 desktop.";
 
-const char kPrivacyGuideAiSettingsName[] = "AI settings in Privacy Guide";
-const char kPrivacyGuideAiSettingsDescription[] =
-    "Enables the AI settings linkout in the Privacy Guide completion card.";
-
 const char kDeprecateAltClickName[] =
     "Enable Alt+Click deprecation notifications";
 const char kDeprecateAltClickDescription[] =

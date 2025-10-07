@@ -71,8 +71,6 @@ BASE_DECLARE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAiSettingsPageForceAvailable);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacyGuideAiSettings);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithActionableElements);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithMediaData);
@@ -401,10 +399,6 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
 // Returns whether the icon view should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldEnableOptimizationGuideIconView();
-
-// Whether Ai settings page integration with Privacy Guide is enabled.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsPrivacyGuideAiSettingsEnabled();
 
 }  // namespace features
 }  // namespace optimization_guide

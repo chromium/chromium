@@ -11641,14 +11641,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordFormGroupedAffiliations)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"privacy-guide-ai-settings",
-     flag_descriptions::kPrivacyGuideAiSettingsName,
-     flag_descriptions::kPrivacyGuideAiSettingsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(optimization_guide::features::kPrivacyGuideAiSettings)},
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"password-form-clientside-classifier",
      flag_descriptions::kPasswordFormClientsideClassifierName,
      flag_descriptions::kPasswordFormClientsideClassifierDescription, kOsAll,
