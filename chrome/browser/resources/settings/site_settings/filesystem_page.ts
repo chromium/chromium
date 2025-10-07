@@ -42,11 +42,11 @@ export class FilesystemPageElement extends FilesystemPageElementBase {
        * Whether the File System Access Persistent Permissions UI should be
        * displayed.
        */
-      enableShowPersistentPermissions_: {
+      enablePersistentPermissions_: {
         type: Boolean,
         readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('showPersistentPermissions');
+        value: () => {
+          return loadTimeData.getBoolean('enablePersistentPermissions');
         },
       },
 
@@ -54,7 +54,7 @@ export class FilesystemPageElement extends FilesystemPageElementBase {
   }
 
   declare searchTerm: string;
-  declare private enableShowPersistentPermissions_: boolean;
+  declare private enablePersistentPermissions_: boolean;
 
   // SettingsViewMixin implementation.
   override focusBackButton() {

@@ -3600,7 +3600,7 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
                               features::kWebBluetoothNewPermissionsBackend));
 
   html_source->AddBoolean(
-      "showPersistentPermissions",
+      "enablePersistentPermissions",
       base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions));
 

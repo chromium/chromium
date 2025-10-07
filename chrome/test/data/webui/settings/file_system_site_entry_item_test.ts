@@ -33,7 +33,7 @@ suite(
         CrSettingsPrefs.setInitialized();
 
         loadTimeData.overrideValues({
-          showPersistentPermissions: true,
+          enablePersistentPermissions: true,
         });
       });
 

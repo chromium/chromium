@@ -70,11 +70,11 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_AR = r.SITE_SETTINGS.createChild('ar');
   r.SITE_SETTINGS_AUTOMATIC_DOWNLOADS =
       r.SITE_SETTINGS.createChild('automaticDownloads');
-  if (loadTimeData.getBoolean('autoPictureInPictureEnabled')) {
+  if (loadTimeData.getBoolean('enableAutoPictureInPicture')) {
     r.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE =
         r.SITE_SETTINGS.createChild('autoPictureInPicture');
   }
-  if (loadTimeData.getBoolean('capturedSurfaceControlEnabled')) {
+  if (loadTimeData.getBoolean('enableCapturedSurfaceControl')) {
     r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL =
         r.SITE_SETTINGS.createChild('capturedSurfaceControl');
   }
@@ -139,7 +139,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_WINDOW_MANAGEMENT =
       r.SITE_SETTINGS.createChild('windowManagement');
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
-  if (loadTimeData.getBoolean('showPersistentPermissions')) {
+  if (loadTimeData.getBoolean('enablePersistentPermissions')) {
     r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS =
         r.SITE_SETTINGS_FILE_SYSTEM_WRITE.createChild('siteDetails');
   }

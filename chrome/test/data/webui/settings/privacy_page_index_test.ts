@@ -27,9 +27,9 @@ suite('PrivacyPageIndex', function() {
 
     loadTimeData.overrideValues(Object.assign(
         {
-          autoPictureInPictureEnabled: false,
-          capturedSurfaceControlEnabled: false,
+          enableAutoPictureInPicture: false,
           enableBundledSecuritySettings: false,
+          enableCapturedSurfaceControl: false,
           enableExperimentalWebPlatformFeatures: false,
           enableFederatedIdentityApiContentSetting: false,
           enableHandTrackingContentSetting: false,
@@ -37,6 +37,7 @@ suite('PrivacyPageIndex', function() {
           enableKeyboardLockPrompt: false,
           enableLocalNetworkAccessSetting: false,
           enablePaymentHandlerContentSetting: false,
+          enablePersistentPermissions: false,
           enableSafeBrowsingSubresourceFilter: false,
           enableSecurityKeysSubpage: false,
           // <if expr="is_chromeos">
@@ -48,7 +49,6 @@ suite('PrivacyPageIndex', function() {
           isGuest: false,
           isPrivacySandboxRestricted: false,
           isPrivacySandboxRestrictedNoticeEnabled: false,
-          showPersistentPermissions: false,
         },
         overrides || {}));
     resetPageVisibilityForTesting();
@@ -471,9 +471,8 @@ suite('PrivacyPageIndex', function() {
     });
 
     test('RoutingAutoPictureInPicture', async function() {
-      assertFalse(loadTimeData.getBoolean('autoPictureInPictureEnabled'));
-      await createPrivacyPageIndex({autoPictureInPictureEnabled: true});
-
+      assertFalse(loadTimeData.getBoolean('enableAutoPictureInPicture'));
+      await createPrivacyPageIndex({enableAutoPictureInPicture: true});
       return testViewsForRoute(
           routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
           ['siteSettingsAutoPictureInPicture'], 'privacy');
@@ -502,9 +501,8 @@ suite('PrivacyPageIndex', function() {
     });
 
     test('RoutingCapturedSurfaceControl', async function() {
-      assertFalse(loadTimeData.getBoolean('capturedSurfaceControlEnabled'));
-      await createPrivacyPageIndex({capturedSurfaceControlEnabled: true});
-
+      assertFalse(loadTimeData.getBoolean('enableCapturedSurfaceControl'));
+      await createPrivacyPageIndex({enableCapturedSurfaceControl: true});
       return testViewsForRoute(
           routes.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL,
           ['siteSettingsCapturedSurfaceControl'], 'privacy');
@@ -522,8 +520,8 @@ suite('PrivacyPageIndex', function() {
     });
 
     test('RoutingFileSystemWriteDetails', async function() {
-      assertFalse(loadTimeData.getBoolean('showPersistentPermissions'));
-      await createPrivacyPageIndex({showPersistentPermissions: true});
+      assertFalse(loadTimeData.getBoolean('enablePersistentPermissions'));
+      await createPrivacyPageIndex({enablePersistentPermissions: true});
 
       return testViewsForRoute(
           routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS,

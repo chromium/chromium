@@ -51,7 +51,7 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
     CrSettingsPrefs.setInitialized();
 
     loadTimeData.overrideValues({
-      showPersistentPermissions: true,
+      enablePersistentPermissions: true,
     });
   });
 

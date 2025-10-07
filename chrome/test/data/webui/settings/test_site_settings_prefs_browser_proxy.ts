@@ -121,7 +121,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       this.categoryList_.push(ContentSettingsTypes.WEB_PRINTING);
     }
 
-    if (loadTimeData.getBoolean('capturedSurfaceControlEnabled')) {
+    if (loadTimeData.getBoolean('enableCapturedSurfaceControl')) {
       this.categoryList_.push(ContentSettingsTypes.CAPTURED_SURFACE_CONTROL);
     }
 

@@ -149,9 +149,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       },
       // </if>
 
-      autoPictureInPictureEnabled_: {
+      enableAutoPictureInPicture_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
+        value: () => loadTimeData.getBoolean('enableAutoPictureInPicture'),
       },
 
       enableHandTrackingContentSetting_: {
@@ -160,9 +160,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
             loadTimeData.getBoolean('enableHandTrackingContentSetting'),
       },
 
-      capturedSurfaceControlEnabled_: {
+      enableCapturedSurfaceControl_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+        value: () => loadTimeData.getBoolean('enableCapturedSurfaceControl'),
       },
 
       enablePermissionSiteSettingsRadioButton_: {
@@ -210,9 +210,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   // <if expr="is_chromeos">
   declare private enableSmartCardReadersContentSetting_: boolean;
   // </if>
-  declare private autoPictureInPictureEnabled_: boolean;
+  declare private enableAutoPictureInPicture_: boolean;
+  declare private enableCapturedSurfaceControl_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
-  declare private capturedSurfaceControlEnabled_: boolean;
   declare private enablePermissionSiteSettingsRadioButton_: boolean;
   declare private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =

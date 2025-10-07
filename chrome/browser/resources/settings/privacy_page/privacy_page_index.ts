@@ -78,19 +78,19 @@ export class SettingsPrivacyPageIndexElement extends
         value: false,
       },
 
-      autoPictureInPictureEnabled_: {
+      enableAutoPictureInPicture_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
-      },
-
-      capturedSurfaceControlEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+        value: () => loadTimeData.getBoolean('enableAutoPictureInPicture'),
       },
 
       enableBundledSecuritySettings_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableBundledSecuritySettings'),
+      },
+
+      enableCapturedSurfaceControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableCapturedSurfaceControl'),
       },
 
       enableFederatedIdentityApiContentSetting_: {
@@ -127,6 +127,12 @@ export class SettingsPrivacyPageIndexElement extends
         value: () => {
           return loadTimeData.getBoolean('enablePaymentHandlerContentSetting');
         },
+      },
+
+      enablePersistentPermissions_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => loadTimeData.getBoolean('enablePersistentPermissions'),
       },
 
       enableSecurityKeysSubpage_: {
@@ -193,12 +199,6 @@ export class SettingsPrivacyPageIndexElement extends
         readOnly: true,
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
-
-      showPersistentPermissions_: {
-        type: Boolean,
-        readOnly: true,
-        value: () => loadTimeData.getBoolean('showPersistentPermissions'),
-      },
     };
   }
 
@@ -212,9 +212,9 @@ export class SettingsPrivacyPageIndexElement extends
   declare private pageVisibility_: PageVisibility;
   declare private routes_: SettingsRoutes;
   declare private showPrivacyGuidePromo_: boolean;
-  declare private autoPictureInPictureEnabled_: boolean;
-  declare private capturedSurfaceControlEnabled_: boolean;
+  declare private enableAutoPictureInPicture_: boolean;
   declare private enableBundledSecuritySettings_: boolean;
+  declare private enableCapturedSurfaceControl_: boolean;
   declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
@@ -226,13 +226,13 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
   declare private enablePaymentHandlerContentSetting_: boolean;
+  declare private enablePersistentPermissions_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;
   declare private enableWebAppInstallation_: boolean;
   declare private enableWebBluetoothNewPermissionsBackend_: boolean;
   declare private enableWebPrintingContentSetting_: boolean;
   declare private isAdPrivacyAvailable_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
-  declare private showPersistentPermissions_: boolean;
 
   private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private privacyGuidePromoWasShown_: boolean;

@@ -185,7 +185,7 @@
     </settings-anti-abuse-page>
   </template>
 
-  <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
+  <template is="dom-if" if="[[enableAutoPictureInPicture_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute,
         inSearchMode)]]">
@@ -251,7 +251,7 @@
     </settings-camera-page>
   </template>
 
-  <template is="dom-if" if="[[capturedSurfaceControlEnabled_]]">
+  <template is="dom-if" if="[[enableCapturedSurfaceControl_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, currentRoute,
         inSearchMode)]]">
@@ -291,7 +291,7 @@
     </settings-filesystem-page>
   </template>
 
-  <template is="dom-if" if="[[showPersistentPermissions_]]">
+  <template is="dom-if" if="[[enablePersistentPermissions_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS, currentRoute,
         inSearchMode)]]">
