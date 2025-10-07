@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -444,8 +445,15 @@ bool HTMLOptionElement::OwnElementDisabled() const {
 bool HTMLOptionElement::IsDisabledFormControl() const {
   if (OwnElementDisabled())
     return true;
-  if (Element* parent = parentElement())
-    return IsA<HTMLOptGroupElement>(*parent) && parent->IsDisabledFormControl();
+  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+    if (IsA<HTMLSelectElement>(ancestor) || IsA<HTMLOptionElement>(ancestor) ||
+        IsA<HTMLHRElement>(ancestor)) {
+      return false;
+    }
+    if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(ancestor)) {
+      return optgroup->IsDisabledFormControl();
+    }
+  }
   return false;
 }
 
