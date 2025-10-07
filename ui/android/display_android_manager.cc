@@ -159,18 +159,18 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
         gfx::ColorSpace::CreateSRGB(), viz::SinglePlaneFormat::kRGBA_8888);
     display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_luminance_ratio);
     for (auto needs_alpha : {true, false}) {
-      // TODO: Low-end devices should specify RGB_565 as the buffer format for
-      // opaque content.
-      display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      // TODO: Low-end devices should specify RGB_565 as the format for opaque
+      // content.
+      display_color_spaces.SetOutputColorSpaceAndFormat(
           gfx::ContentColorUsage::kSRGB, needs_alpha, cs_for_srgb,
-          gfx::BufferFormat::RGBA_8888);
-      display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+          viz::SinglePlaneFormat::kRGBA_8888);
+      display_color_spaces.SetOutputColorSpaceAndFormat(
           gfx::ContentColorUsage::kWideColorGamut, needs_alpha, cs_for_wcg,
-          gfx::BufferFormat::RGBA_8888);
+          viz::SinglePlaneFormat::kRGBA_8888);
       // TODO(crbug.com/40263227): Use 10-bit surfaces for opaque HDR.
-      display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      display_color_spaces.SetOutputColorSpaceAndFormat(
           gfx::ContentColorUsage::kHDR, needs_alpha, cs_for_hdr,
-          gfx::BufferFormat::RGBA_8888);
+          viz::SinglePlaneFormat::kRGBA_8888);
     }
     display->SetColorSpaces(display_color_spaces);
   }
