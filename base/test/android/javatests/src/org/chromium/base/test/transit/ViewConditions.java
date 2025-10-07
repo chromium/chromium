@@ -6,6 +6,7 @@ package org.chromium.base.test.transit;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 
@@ -21,6 +22,7 @@ import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Matcher;
@@ -71,6 +73,14 @@ public class ViewConditions {
         }
 
         @Override
+        public boolean shouldRunInPreCheck() {
+            // TODO(crbug.com/363308068): onView().inRoot(isDialog()) hangs for 60s waiting for a
+            // dialog root if there is no matching root, so only check when we actually expect a
+            // dialog to exist.
+            return !mOptions.mInDialogRoot;
+        }
+
+        @Override
         public String buildDescription() {
             StringBuilder description = new StringBuilder();
             description
@@ -87,6 +97,9 @@ public class ViewConditions {
             }
             if (mOptions.mExpectDisabled) {
                 description.append(", disabled");
+            }
+            if (mOptions.mInDialogRoot) {
+                description.append(", in dialog");
             }
             description.append(")");
             return description.toString();
@@ -120,10 +133,15 @@ public class ViewConditions {
                                     mViewMatched = view;
                                 }
                             };
+
+            ViewInteraction viewInteraction =
+                    onView(mMatcher).withFailureHandler(RawFailureHandler.getInstance());
+            if (mOptions.mInDialogRoot) {
+                viewInteraction = viewInteraction.inRoot(isDialog());
+            }
+
             try {
-                onView(mMatcher)
-                        .withFailureHandler(RawFailureHandler.getInstance())
-                        .perform(findViewActionFactory.get());
+                viewInteraction.perform(findViewActionFactory.get());
             } catch (NoMatchingViewException | NoMatchingRootException e) {
                 return notFulfilled(e.getClass().getSimpleName()).withoutResult();
             } catch (AmbiguousViewMatcherException e) {
@@ -275,6 +293,7 @@ public class ViewConditions {
         public static class Options {
             boolean mExpectEnabled = true;
             boolean mExpectDisabled;
+            boolean mInDialogRoot;
             int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
             int mSettleTimeMs;
 
@@ -283,6 +302,12 @@ public class ViewConditions {
             public class Builder {
                 public Options build() {
                     return Options.this;
+                }
+
+                /** Whether the View is expected to be a descendant of a dialog root. */
+                public Builder withInDialogRoot(boolean inDialogRoot) {
+                    mInDialogRoot = inDialogRoot;
+                    return this;
                 }
 
                 /** Whether the View is expected to be enabled. */

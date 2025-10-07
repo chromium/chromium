@@ -93,13 +93,14 @@ public class ConditionWaiter {
             mTimeUnfulfilled = mTimeStarted;
         }
 
-        private boolean update() {
+        private boolean update(boolean isPreCheck) {
             ConditionStatus status;
             try {
-                if (mCondition.isRunOnUiThread()) {
+                if (isPreCheck && !mCondition.shouldRunInPreCheck()) {
+                    status = Condition.awaiting(/* message= */ null);
+                } else if (mCondition.isRunOnUiThread()) {
                     // TODO(crbug.com/40284026): Post multiple checks in parallel, the UI thread
-                    // will
-                    // run them sequentially.
+                    // will run them sequentially.
                     status = ThreadUtils.runOnUiThreadBlocking(mCondition::check);
                 } else {
                     status = mCondition.check();
@@ -249,8 +250,7 @@ public class ConditionWaiter {
             wait.ensureTimerStarted();
         }
         TimeoutTimer timeoutTimer = new TimeoutTimer(mTransition.getOptions().getTimeoutMs());
-        boolean anyCriteriaMissing =
-                processWaits(/* startMonitoringNewWaits= */ false, timeoutTimer);
+        boolean anyCriteriaMissing = processWaits(/* isPreCheck= */ true, timeoutTimer);
 
         if (!anyCriteriaMissing && failOnAlreadyFulfilled) {
             throw new CriteriaNotSatisfiedException(
@@ -415,7 +415,7 @@ public class ConditionWaiter {
         return newWaits;
     }
 
-    private boolean processWaits(boolean startMonitoringNewWaits, TimeoutTimer timeoutTimer) {
+    private boolean processWaits(boolean isPreCheck, TimeoutTimer timeoutTimer) {
         assert isPreCheckDone();
 
         boolean anyCriteriaMissing = false;
@@ -441,7 +441,7 @@ public class ConditionWaiter {
                     return anyCriteriaMissing;
                 }
 
-                boolean stillNeedsWait = wait.update();
+                boolean stillNeedsWait = wait.update(isPreCheck);
                 anyCriteriaMissing |= stillNeedsWait;
                 ElementFactory generator = mConditionsGuardingFactories.get(wait.mCondition);
                 if (!stillNeedsWait && generator != null) {
@@ -482,7 +482,7 @@ public class ConditionWaiter {
                 // We do not want to start monitoring conditions (even newly
                 // created ones) during the first update cycle (aka preCheck)
                 // since we already do that after.
-                if (startMonitoringNewWaits) {
+                if (!isPreCheck) {
                     wait.getCondition().onStartMonitoring();
                 }
             }
@@ -651,8 +651,7 @@ public class ConditionWaiter {
             assert isPreCheckDone();
 
             boolean anyCriteriaMissing =
-                    ConditionWaiter.this.processWaits(
-                            /* startMonitoringNewWaits= */ true, mTimeoutTimer);
+                    ConditionWaiter.this.processWaits(/* isPreCheck= */ false, mTimeoutTimer);
 
             if (anyCriteriaMissing) {
                 throw new CriteriaNotSatisfiedException(

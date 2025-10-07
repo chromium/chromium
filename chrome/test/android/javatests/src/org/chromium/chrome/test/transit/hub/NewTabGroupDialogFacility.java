@@ -14,6 +14,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.ViewElement.inDialogOption;
+import static org.chromium.base.test.transit.ViewElement.newOptions;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.content.Context;
@@ -97,15 +99,16 @@ public class NewTabGroupDialogFacility<
         if (mTabIdsToGroup == null) {
             initTabGroupCreatedCondition();
         } else {
-            titleInputElement = declareView(createTitleViewSpec());
+            titleInputElement = declareView(createTitleViewSpec(), inDialogOption());
         }
 
         dialogElement =
                 declareView(
                         withId(R.id.visual_data_dialog_layout),
-                        ViewElement.displayingAtLeastOption(80));
+                        newOptions().inDialog().displayingAtLeast(80).build());
         declareView(
-                viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))));
+                viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))),
+                inDialogOption());
 
         // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
         declareView(withId(R.id.color_picker_container), ViewElement.displayingAtLeastOption(50));
@@ -118,16 +121,16 @@ public class NewTabGroupDialogFacility<
                 colorElements[i] =
                         declareView(
                                 colorPickerIconSpec(color, color.equals(mSelectedColor)),
-                                ViewElement.newOptions().unscoped().displayingAtLeast(60).build());
+                                newOptions().inDialog().unscoped().displayingAtLeast(60).build());
             } else {
                 colorElements[i] =
                         declareView(
                                 colorPickerIconSpec(color, /* selected= */ null),
-                                ViewElement.newOptions().unscoped().displayingAtLeast(60).build());
+                                newOptions().inDialog().unscoped().displayingAtLeast(60).build());
             }
         }
 
-        doneButtonElement = declareView(withId(R.id.positive_button));
+        doneButtonElement = declareView(withId(R.id.positive_button), inDialogOption());
     }
 
     @NonNull
@@ -150,7 +153,8 @@ public class NewTabGroupDialogFacility<
                                     () -> filter.getTabsInGroup(tabGroupIdElement.value()));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
-                    titleInputElement = delayedElements.declareView(createTitleViewSpec());
+                    titleInputElement =
+                            delayedElements.declareView(createTitleViewSpec(), inDialogOption());
                 });
     }
 

@@ -93,6 +93,11 @@ public abstract class Condition {
      */
     public abstract String buildDescription();
 
+    /** Override if Condition should not be run in preCheck(). */
+    public boolean shouldRunInPreCheck() {
+        return true;
+    }
+
     /**
      * Hook run right before the condition starts being checked. Used, for example, to get initial
      * callback counts and install observers.

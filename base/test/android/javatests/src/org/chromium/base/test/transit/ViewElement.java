@@ -64,6 +64,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
+                        .withInDialogRoot(mOptions.mInDialog)
                         .withExpectEnabled(mOptions.mExpectEnabled)
                         .withExpectDisabled(mOptions.mExpectDisabled)
                         .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
@@ -80,6 +81,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
+                        .withInDialogRoot(mOptions.mInDialog)
                         .withExpectEnabled(mOptions.mExpectEnabled)
                         .withExpectDisabled(mOptions.mExpectDisabled)
                         .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
@@ -185,6 +187,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     public static class Options {
         static final Options DEFAULT = new Options();
         protected boolean mScoped = true;
+        protected boolean mInDialog;
         protected boolean mExpectEnabled = true;
         protected boolean mExpectDisabled;
         protected int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
@@ -197,9 +200,15 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
                 return Options.this;
             }
 
-            /** Don't except the View to necessarily disappear when exiting the ConditionalState. */
+            /** Don't expect the View to necessarily disappear when exiting the ConditionalState. */
             public Builder unscoped() {
                 mScoped = false;
+                return this;
+            }
+
+            /** Expect the View to be in a dialog root. */
+            public Builder inDialog() {
+                mInDialog = true;
                 return this;
             }
 
@@ -246,6 +255,11 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     /** Convenience {@link Options} setting unscoped(). */
     public static Options unscopedOption() {
         return newOptions().unscoped().build();
+    }
+
+    /** Convenience {@link Options} setting inDialog(). */
+    public static Options inDialogOption() {
+        return newOptions().inDialog().build();
     }
 
     /** Convenience {@link Options} setting expectDisabled(). */
