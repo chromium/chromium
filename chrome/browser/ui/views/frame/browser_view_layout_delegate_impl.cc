@@ -20,19 +20,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
-namespace {
-
-// Feature that manages the transition between old and current browser layout
-// delegate. This feature is on by default and provided only as a killswitch.
-BASE_FEATURE(kDesktopNewTopAreaLayoutFeature, base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 // static
 std::unique_ptr<BrowserViewLayoutDelegate>
 BrowserViewLayoutDelegateImplBase::CreateDelegate(BrowserView& browser_view) {
-  if (base::FeatureList::IsEnabled(kDesktopNewTopAreaLayoutFeature)) {
-    return std::make_unique<BrowserViewLayoutDelegateImpl>(browser_view);
+  if (base::FeatureList::IsEnabled(features::kDesktopNewTopAreaLayoutFeature)) {
+    return std::make_unique<BrowserViewLayoutDelegateImplNew>(browser_view);
   }
   return std::make_unique<BrowserViewLayoutDelegateImplOld>(browser_view);
 }
@@ -233,13 +225,14 @@ BrowserViewLayoutDelegateImplOld::GetBoundsForWebAppFrameToolbarInBrowserView()
   return gfx::ToEnclosingRect(bounds_f);
 }
 
-BrowserViewLayoutDelegateImpl::BrowserViewLayoutDelegateImpl(
+BrowserViewLayoutDelegateImplNew::BrowserViewLayoutDelegateImplNew(
     BrowserView& browser_view)
     : BrowserViewLayoutDelegateImplBase(browser_view) {}
-BrowserViewLayoutDelegateImpl::~BrowserViewLayoutDelegateImpl() = default;
+BrowserViewLayoutDelegateImplNew::~BrowserViewLayoutDelegateImplNew() = default;
 
 gfx::Rect
-BrowserViewLayoutDelegateImpl::GetBoundsForTabStripRegionInBrowserView() const {
+BrowserViewLayoutDelegateImplNew::GetBoundsForTabStripRegionInBrowserView()
+    const {
   const gfx::Size tabstrip_minimum_size =
       browser_view().tab_strip_view()->GetMinimumSize();
   const auto layout = GetFrameView()->GetBrowserLayoutParams();
@@ -267,7 +260,7 @@ BrowserViewLayoutDelegateImpl::GetBoundsForTabStripRegionInBrowserView() const {
 }
 
 gfx::Rect
-BrowserViewLayoutDelegateImpl::GetBoundsForToolbarInVerticalTabBrowserView()
+BrowserViewLayoutDelegateImplNew::GetBoundsForToolbarInVerticalTabBrowserView()
     const {
   const gfx::Size toolbar_preferred_size =
       browser_view().toolbar()->GetPreferredSize();
@@ -293,7 +286,7 @@ BrowserViewLayoutDelegateImpl::GetBoundsForToolbarInVerticalTabBrowserView()
 }
 
 gfx::Rect
-BrowserViewLayoutDelegateImpl::GetBoundsForWebAppFrameToolbarInBrowserView()
+BrowserViewLayoutDelegateImplNew::GetBoundsForWebAppFrameToolbarInBrowserView()
     const {
   if (!GetFrameView()->ShouldShowWebAppFrameToolbar()) {
     return gfx::Rect();

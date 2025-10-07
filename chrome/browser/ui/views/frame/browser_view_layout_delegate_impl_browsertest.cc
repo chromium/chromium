@@ -157,7 +157,7 @@ class BrowserViewLayoutDelegateImplBrowsertest
     auto* const layout = browser_view->GetBrowserViewLayout();
     if (use_new_delegate) {
       layout->SetDelegateForTesting(
-          std::make_unique<BrowserViewLayoutDelegateImpl>(*browser_view));
+          std::make_unique<BrowserViewLayoutDelegateImplNew>(*browser_view));
     } else {
       layout->SetDelegateForTesting(
           std::make_unique<BrowserViewLayoutDelegateImplOld>(*browser_view));

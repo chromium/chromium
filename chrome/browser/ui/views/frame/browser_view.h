@@ -886,7 +886,7 @@ class BrowserView : public BrowserWindow,
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
-  friend class BrowserViewLayoutDelegateImpl;
+  friend class BrowserViewLayoutDelegateImplNew;
   friend class BrowserViewLayoutDelegateImplOld;
   friend class BrowserViewLayoutDelegateImplBrowsertest;
   friend class TopControlsSlideControllerTest;

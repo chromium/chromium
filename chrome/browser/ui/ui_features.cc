@@ -44,6 +44,12 @@ BASE_FEATURE(kCreateNewTabGroupAppMenuTopLevel,
 BASE_FEATURE(kFewerUpdateConfirmations, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kDesktopNewTopAreaLayoutFeature,
+             "DesktopNewTopAreaLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 BASE_FEATURE(kExtensionsCollapseMainMenu, base::FEATURE_DISABLED_BY_DEFAULT);
