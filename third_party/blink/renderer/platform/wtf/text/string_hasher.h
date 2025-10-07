@@ -52,8 +52,7 @@ class StringHasher {
   // that is not 8-bit elements, and do _not_ use compression factors or
   // similar, you'll need to multiply by sizeof(T) to get all data read.
   template <class Reader = PlainHashReader>
-  static unsigned ComputeHashAndMaskTop8Bits(const char* data,
-                                             unsigned length) {
+  static unsigned ComputeHashAndMaskTop8Bits(const char* data, size_t length) {
     return MaskTop8Bits(
         rapidhash<Reader>(reinterpret_cast<const uint8_t*>(data), length));
   }

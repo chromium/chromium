@@ -24,7 +24,7 @@
 
 // Case-insensitive hash lookups, using the Unicode case folding algorithm.
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -56,13 +56,15 @@ struct CaseFoldingHashReader {
 
   static inline uint64_t Read64(const uint8_t* ptr) {
     const T* p = reinterpret_cast<const T*>(ptr);
-    return UNSAFE_TODO(FoldCase(p[0]) | (FoldCase(p[1]) << 16) |
-                       (FoldCase(p[2]) << 32) | (FoldCase(p[3]) << 48));
+    // SAFETY: We expect the rapidhash library provides enough size for `ptr`.
+    return UNSAFE_BUFFERS(FoldCase(p[0]) | (FoldCase(p[1]) << 16) |
+                          (FoldCase(p[2]) << 32) | (FoldCase(p[3]) << 48));
   }
 
   static inline uint64_t Read32(const uint8_t* ptr) {
     const T* p = reinterpret_cast<const T*>(ptr);
-    return UNSAFE_TODO(FoldCase(p[0]) | (FoldCase(p[1]) << 16));
+    // SAFETY: We expect the rapidhash library provides enough size for `ptr`.
+    return UNSAFE_BUFFERS(FoldCase(p[0]) | (FoldCase(p[1]) << 16));
   }
 
   static inline uint64_t ReadSmall(const uint8_t* ptr, size_t k) {
@@ -94,31 +96,26 @@ class CaseFoldingHash {
   STATIC_ONLY(CaseFoldingHash);
 
  public:
-  static unsigned GetHash(const UChar* data, unsigned length) {
+  static unsigned GetHash(base::span<const UChar> span) {
     return StringHasher::ComputeHashAndMaskTop8Bits<
-        CaseFoldingHashReader<UChar>>(reinterpret_cast<const char*>(data),
-                                      length * 2);
+        CaseFoldingHashReader<UChar>>(
+        reinterpret_cast<const char*>(span.data()), span.size() * 2);
   }
 
   static unsigned GetHash(StringImpl* str) {
     if (str->Is8Bit())
-      return GetHash(UNSAFE_TODO(str->Characters8()), str->length());
-    return GetHash(UNSAFE_TODO(str->Characters16()), str->length());
+      return GetHash(str->Span8());
+    return GetHash(str->Span16());
   }
 
-  static unsigned GetHash(const LChar* data, unsigned length) {
+  static unsigned GetHash(base::span<const LChar> span) {
     return StringHasher::ComputeHashAndMaskTop8Bits<
-        CaseFoldingHashReader<LChar>>(reinterpret_cast<const char*>(data),
-                                      length * 2);
+        CaseFoldingHashReader<LChar>>(base::as_chars(span).data(),
+                                      span.size() * 2);
   }
 
-  static inline unsigned GetHash(const char* data, unsigned length) {
-    return GetHash(reinterpret_cast<const LChar*>(data), length);
-  }
-
-  static inline unsigned GetHash(const char* data) {
-    return GetHash(reinterpret_cast<const LChar*>(data),
-                   static_cast<unsigned>(strlen(data)));
+  static inline unsigned GetHash(base::span<const char> span) {
+    return GetHash(base::as_byte_span(span));
   }
 
   static inline bool Equal(const StringImpl* a, const StringImpl* b) {
