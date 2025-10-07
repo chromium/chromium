@@ -786,11 +786,23 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     }
     ScrollOffset scroll_offset(-event.data.scroll_update.delta_x,
                                -event.data.scroll_update.delta_y);
-    // TODO(crbug.com/414556050) We might have absolute scroll event types here,
-    // like scrollbar drag or panning touch gesture scroll. Need to add a way to
-    // identify them and pass correct `ScrollSourceType` below.
+    cc::ScrollSourceType scroll_source_type =
+        cc::ScrollSourceType::kAbsoluteScroll;
+    bool vertical_scrollbar_thumb_pressed =
+        scrollable->VerticalScrollbar() &&
+        scrollable->VerticalScrollbar()->PressedPart() == kThumbPart;
+    bool horizontal_scrollbar_thumb_pressed =
+        scrollable->HorizontalScrollbar() &&
+        scrollable->HorizontalScrollbar()->PressedPart() == kThumbPart;
+    if (event.SourceDevice() == mojom::blink::GestureDevice::kTouchpad ||
+        event.SourceDevice() == mojom::blink::GestureDevice::kTouchscreen ||
+        (event.SourceDevice() == mojom::blink::GestureDevice::kScrollbar &&
+         !vertical_scrollbar_thumb_pressed &&
+         !horizontal_scrollbar_thumb_pressed)) {
+      scroll_source_type = cc::ScrollSourceType::kRelativeScroll;
+    }
     scrollable->UserScroll(event.data.scroll_update.delta_units, scroll_offset,
-                           cc::ScrollSourceType::kRelativeScroll,
+                           scroll_source_type,
                            ScrollableArea::ScrollCallback());
     return WebInputEventResult::kHandledSystem;
   }

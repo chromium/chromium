@@ -1020,8 +1020,8 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type) {
   CancelScrollAnimation();
-  // TODO(crbug.com/414556050): Pass the correct `ScrollSourceType`.
-  ScrollOffsetChanged(offset, scroll_type, cc::ScrollSourceType::kNone);
+  ScrollOffsetChanged(offset, scroll_type,
+                      cc::ScrollSourceType::kAbsoluteScroll);
 }
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {

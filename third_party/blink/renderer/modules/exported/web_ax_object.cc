@@ -947,8 +947,10 @@ gfx::Point WebAXObject::MaximumScrollOffset() const {
 void WebAXObject::SetScrollOffset(const gfx::Point& offset) const {
   if (IsDetached())
     return;
-
-  private_->SetScrollOffset(offset);
+  // We can only reach here from `BlinkAXActionTarget::SetScrollOffset`, which
+  // is only used in browser tests, so we will use
+  // `ScrollSourceType::kAbsoluteScroll`.
+  private_->SetScrollOffset(offset, cc::ScrollSourceType::kAbsoluteScroll);
 }
 
 void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,

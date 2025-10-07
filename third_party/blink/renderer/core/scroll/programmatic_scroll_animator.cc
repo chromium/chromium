@@ -69,9 +69,7 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   start_time_ = base::TimeTicks();
   target_offset_ = offset;
   source_type_ = source_type;
-  // TODO(crbug.com/414556050): `ScrollOffsetAnimationCurve` should be aware of
-  // `ScrollSourceType`, so that when we have multiple scroll containers we will
-  // set last scroll direction correctly.
+
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_),
       cc::ScrollOffsetAnimationCurve::ScrollType::kProgrammatic);
@@ -137,6 +135,9 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
   }
 
   if (run_state_ == RunState::kWaitingToSendToCompositor) {
+    // Compositor would not aware of scroll source type of this programmatic
+    // scroll, so we will use cached `source_type_` once we send info back to
+    // the main thread in `ScrollableArea::DidCompositorScroll`.
     if (!element_id_)
       ReattachCompositorAnimationIfNeeded(
           GetScrollableArea()->GetCompositorAnimationTimeline());

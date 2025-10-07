@@ -71,6 +71,10 @@ struct AXNodeData;
 struct AXRelativeBounds;
 }
 
+namespace cc {
+enum class ScrollSourceType;
+}
+
 namespace blink {
 
 class AbstractInlineTextBox;
@@ -1435,8 +1439,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   gfx::Point GetScrollOffset() const;
   gfx::Point MinimumScrollOffset() const;
   gfx::Point MaximumScrollOffset() const;
-  void Scroll(ax::mojom::blink::Action scroll_action) const;
-  void SetScrollOffset(const gfx::Point&) const;
+  void Scroll(ax::mojom::blink::Action scroll_action,
+              cc::ScrollSourceType) const;
+  void SetScrollOffset(const gfx::Point&, cc::ScrollSourceType) const;
 
   // Tables and grids.
   bool IsTableLikeRole() const;

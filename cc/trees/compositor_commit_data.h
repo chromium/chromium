@@ -126,10 +126,8 @@ struct CC_EXPORT CompositorCommitData {
   // determine whether to fire scrollsnapchanging or not.
   std::unique_ptr<SnapSelectionStrategy> snap_strategy;
 
-  // Tracks different types of scrolling: absolute, relative, stationary.
+  // Tracks type of the last latched scroll: absolute, relative or stationary.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
-  // TODO(crbug.com/414556050): Check if dirrefent `ScrollUpdateInfo` can have
-  // different scroll types, store this state in `ScrollUpdateInfo` if yes.
   ScrollSourceType scroll_type = ScrollSourceType::kNone;
 };
 

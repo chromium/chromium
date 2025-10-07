@@ -7094,7 +7094,8 @@ gfx::Point AXObject::MaximumScrollOffset() const {
   return gfx::PointAtOffsetFromOrigin(area->MaximumScrollOffsetInt());
 }
 
-void AXObject::SetScrollOffset(const gfx::Point& offset) const {
+void AXObject::SetScrollOffset(const gfx::Point& offset,
+                               cc::ScrollSourceType source_type) const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
     return;
@@ -7102,11 +7103,11 @@ void AXObject::SetScrollOffset(const gfx::Point& offset) const {
   // TODO(bokan): This should potentially be a UserScroll.
   // TODO(crbug.com/414556050): Pass the correct `ScrollSourceType`.
   area->SetScrollOffset(ScrollOffset(offset.OffsetFromOrigin()),
-                        mojom::blink::ScrollType::kProgrammatic,
-                        cc::ScrollSourceType::kNone);
+                        mojom::blink::ScrollType::kProgrammatic, source_type);
 }
 
-void AXObject::Scroll(ax::mojom::blink::Action scroll_action) const {
+void AXObject::Scroll(ax::mojom::blink::Action scroll_action,
+                      cc::ScrollSourceType source_type) const {
   AXObject* offset_container = nullptr;
   gfx::RectF bounds;
   gfx::Transform container_transform;
@@ -7161,7 +7162,7 @@ void AXObject::Scroll(ax::mojom::blink::Action scroll_action) const {
       NOTREACHED();
   }
 
-  SetScrollOffset(gfx::Point(x, y));
+  SetScrollOffset(gfx::Point(x, y), source_type);
 
   if (!RuntimeEnabledFeatures::
           SynthesizedKeyboardEventsForAccessibilityActionsEnabled())
@@ -7537,7 +7538,10 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kSetAccessibilityFocus:
       return InternalSetAccessibilityFocusAction();
     case ax::mojom::blink::Action::kSetScrollOffset:
-      SetScrollOffset(action_data.target_point);
+      // TODO(crbug.com/414556050): Figure out if this can be called for
+      // relative scrolls.
+      SetScrollOffset(action_data.target_point,
+                      cc::ScrollSourceType::kAbsoluteScroll);
       return true;
     case ax::mojom::blink::Action::kSetSequentialFocusNavigationStartingPoint:
       return RequestSetSequentialFocusNavigationStartingPointAction();
@@ -7553,7 +7557,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kScrollLeft:
     case ax::mojom::blink::Action::kScrollRight:
     case ax::mojom::blink::Action::kScrollUp:
-      Scroll(action_data.action);
+      Scroll(action_data.action, cc::ScrollSourceType::kRelativeScroll);
       return true;
     case ax::mojom::blink::Action::kStitchChildTree:
       if (action_data.child_tree_id == ui::AXTreeIDUnknown()) {
