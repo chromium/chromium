@@ -994,8 +994,16 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/449897870): Flaky on Win-asan.
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
+  DISABLED_testGetZeroStateSuggestionsMultipleNavigations
+#else
+#define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
+  testGetZeroStateSuggestionsMultipleNavigations
+#endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsMultipleNavigations) {
+                       MAYBE_testGetZeroStateSuggestionsMultipleNavigations) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
