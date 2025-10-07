@@ -91,7 +91,7 @@ Response BrowserHandler::Disable() {
     if (browser_context) {
       PermissionControllerImpl* permission_controller =
           PermissionControllerImpl::FromBrowserContext(browser_context);
-      permission_controller->ResetOverridesForDevTools(base::DoNothing());
+      permission_controller->ResetPermissionOverrides(base::DoNothing());
     }
   }
   contexts_with_overridden_permissions_.clear();
@@ -438,7 +438,7 @@ void BrowserHandler::SetPermission(
     }
   }
 
-  permission_controller->SetOverrideForDevTools(
+  permission_controller->SetPermissionOverride(
       overridden_requesting_origin, overridden_embedding_origin, type,
       permission_status,
       base::BindOnce(
@@ -538,7 +538,7 @@ void BrowserHandler::ResetPermissions(
   }
   PermissionControllerImpl* permission_controller =
       PermissionControllerImpl::FromBrowserContext(browser_context);
-  permission_controller->ResetOverridesForDevTools(base::BindOnce(
+  permission_controller->ResetPermissionOverrides(base::BindOnce(
       &protocol::Browser::Backend::ResetPermissionsCallback::sendSuccess,
       std::move(callback)));
   contexts_with_overridden_permissions_.erase(browser_context_id.value_or(""));

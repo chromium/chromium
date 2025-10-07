@@ -1211,25 +1211,23 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
       main_rfh->GetBrowserContext()->GetPermissionController();
   url::Origin origin = url::Origin::Create(GetMainFrameURL());
 
-  SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, origin, blink::PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::GRANTED);
+  SetPermissionControllerOverride(permission_controller, origin, origin,
+                                  blink::PermissionType::GEOLOCATION,
+                                  blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/false,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/false);
 
-  SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, origin,
-      blink::PermissionType::VIDEO_CAPTURE,
-      blink::mojom::PermissionStatus::GRANTED);
+  SetPermissionControllerOverride(permission_controller, origin, origin,
+                                  blink::PermissionType::VIDEO_CAPTURE,
+                                  blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/false,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/true);
 
-  SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, origin,
-      blink::PermissionType::NOTIFICATIONS,
-      blink::mojom::PermissionStatus::GRANTED);
+  SetPermissionControllerOverride(permission_controller, origin, origin,
+                                  blink::PermissionType::NOTIFICATIONS,
+                                  blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/true,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/true);

@@ -388,21 +388,6 @@ void PermissionControllerImpl::GrantOverridesForDevTools(
                            std::move(callback));
 }
 
-void PermissionControllerImpl::SetOverrideForDevTools(
-    base::optional_ref<const url::Origin> requesting_origin,
-    base::optional_ref<const url::Origin> embedding_origin,
-    PermissionType permission,
-    const PermissionStatus& status,
-    base::OnceCallback<void(OverrideStatus)> callback) {
-  SetPermissionOverride(requesting_origin, embedding_origin, permission, status,
-                        std::move(callback));
-}
-
-void PermissionControllerImpl::ResetOverridesForDevTools(
-    base::OnceClosure callback) {
-  ResetPermissionOverrides(std::move(callback));
-}
-
 void PermissionControllerImpl::SetPermissionOverride(
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,

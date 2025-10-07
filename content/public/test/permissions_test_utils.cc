@@ -12,7 +12,7 @@
 
 namespace content {
 
-void SetPermissionControllerOverrideForDevTools(
+void SetPermissionControllerOverride(
     PermissionController* permission_controller,
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,
@@ -22,7 +22,7 @@ void SetPermissionControllerOverrideForDevTools(
 
   PermissionControllerImpl* permission_controller_impl =
       static_cast<PermissionControllerImpl*>(permission_controller);
-  permission_controller_impl->SetOverrideForDevTools(
+  permission_controller_impl->SetPermissionOverride(
       requesting_origin, embedding_origin, permission, status,
       future.GetCallback());
   ASSERT_EQ(future.Get(),

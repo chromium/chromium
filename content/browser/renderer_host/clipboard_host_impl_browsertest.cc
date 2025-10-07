@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardDocUrlBrowserTestP, HtmlUrl) {
   PermissionController* permission_controller =
       GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
   url::Origin origin = url::Origin::Create(main_url);
-  SetPermissionControllerOverrideForDevTools(
+  SetPermissionControllerOverride(
       permission_controller, origin, origin,
       blink::PermissionType::CLIPBOARD_SANITIZED_WRITE,
       blink::mojom::PermissionStatus::GRANTED);
@@ -187,9 +187,9 @@ class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
         GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
     url::Origin origin = url::Origin::Create(
         embedded_https_test_server().GetURL("/title1.html"));
-    SetPermissionControllerOverrideForDevTools(
-        permission_controller, origin, origin,
-        blink::PermissionType::CLIPBOARD_READ_WRITE, status);
+    SetPermissionControllerOverride(permission_controller, origin, origin,
+                                    blink::PermissionType::CLIPBOARD_READ_WRITE,
+                                    status);
   }
 
   void SetPermissionOverrideForStrictlyProcessedWriteTests(
@@ -198,7 +198,7 @@ class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
         GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
     url::Origin origin = url::Origin::Create(
         embedded_https_test_server().GetURL("/title1.html"));
-    SetPermissionControllerOverrideForDevTools(
+    SetPermissionControllerOverride(
         permission_controller, origin, origin,
         blink::PermissionType::CLIPBOARD_SANITIZED_WRITE, status);
   }

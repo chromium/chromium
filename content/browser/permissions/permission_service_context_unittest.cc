@@ -96,7 +96,7 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
       blink::mojom::PermissionStatus current_status) {
     base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
 
-    permission_controller()->SetOverrideForDevTools(
+    permission_controller()->SetPermissionOverride(
         origin_, origin_, type, last_status, future.GetCallback());
 
     EXPECT_EQ(future.Get(),
@@ -116,7 +116,7 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
   void SimulatePermissionChangedEvent(PermissionType type,
                                       blink::mojom::PermissionStatus status) {
     base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
-    permission_controller()->SetOverrideForDevTools(
+    permission_controller()->SetPermissionOverride(
         origin_, origin_, type, status, future.GetCallback());
     ASSERT_EQ(future.Get(),
               PermissionControllerImpl::OverrideStatus::kOverrideSet);

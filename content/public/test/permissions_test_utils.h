@@ -29,9 +29,9 @@ MATCHER_P(PermissionDescriptorToPermissionTypeMatcher, permission_type, "") {
 namespace content {
 
 // A helper method that gives access to
-// content/browser/PermissionControllerImpl::SetOverrideForDevTools to //content
+// content/browser/PermissionControllerImpl::SetPermissionOverride to //content
 // embedders in tests.
-void SetPermissionControllerOverrideForDevTools(
+void SetPermissionControllerOverride(
     PermissionController* permission_controller,
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,

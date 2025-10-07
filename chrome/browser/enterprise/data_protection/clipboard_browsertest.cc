@@ -97,10 +97,9 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
     content::PermissionController* permission_controller =
         rfh()->GetBrowserContext()->GetPermissionController();
     url::Origin origin = url::Origin::Create(url());
-    SetPermissionControllerOverrideForDevTools(
-        permission_controller, origin, origin,
-        blink::PermissionType::CLIPBOARD_READ_WRITE,
-        blink::mojom::PermissionStatus::GRANTED);
+    SetPermissionControllerOverride(permission_controller, origin, origin,
+                                    blink::PermissionType::CLIPBOARD_READ_WRITE,
+                                    blink::mojom::PermissionStatus::GRANTED);
     base::RunLoop().RunUntilIdle();
   }
 };

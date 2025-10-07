@@ -55,19 +55,12 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   // For the given |requesting_origin| and |embedding_origin|, grant permissions
   // in |overrides| and reject all others. If no |requesting_origin| and
   // |embedding_origin| are specified, grant permissions globally for context.
-  // It is invalid to call these methods with exactly one non-null origin.
+  // It is invalid to call this method with exactly one non-null origin.
   void GrantOverridesForDevTools(
       base::optional_ref<const url::Origin> requesting_origin,
       base::optional_ref<const url::Origin> embedding_origin,
       const std::vector<PermissionType>& permissions,
       base::OnceCallback<void(OverrideStatus)> callback);
-  void SetOverrideForDevTools(
-      base::optional_ref<const url::Origin> requesting_origin,
-      base::optional_ref<const url::Origin> embedding_origin,
-      PermissionType permission,
-      const PermissionStatus& status,
-      base::OnceCallback<void(OverrideStatus)> callback);
-  void ResetOverridesForDevTools(base::OnceClosure callback);
 
   // Sets status for |permissions| to GRANTED for |requesting_origin| and
   // |embedding_origin|, and DENIED for all others. Null |requesting_origin| and
