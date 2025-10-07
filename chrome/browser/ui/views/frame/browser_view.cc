@@ -133,6 +133,7 @@
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
+#include "chrome/browser/ui/views/frame/main_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
@@ -791,7 +792,9 @@ BrowserView::BrowserView(Browser* browser)
 
   browser_->tab_strip_model()->AddObserver(this);
 
-  top_container_ = AddChildView(std::make_unique<TopContainerView>(this));
+  main_container_ = AddChildView(std::make_unique<MainContainerView>());
+  top_container_ =
+      main_container_->AddChildView(std::make_unique<TopContainerView>(this));
 
   tab_strip_region_view_ =
       top_container_->AddChildView(std::make_unique<TabStripRegionView>(this));
@@ -848,7 +851,6 @@ BrowserView::BrowserView(Browser* browser)
   top_container_separator_->SetProperty(views::kElementIdentifierKey,
                                         kContentsSeparatorTopEdgeElementId);
 
-  main_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_ =
       main_container_->AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
@@ -885,8 +887,8 @@ BrowserView::BrowserView(Browser* browser)
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
-  infobar_container_ =
-      AddChildView(std::make_unique<InfoBarContainerView>(this));
+  infobar_container_ = main_container_->AddChildView(
+      std::make_unique<InfoBarContainerView>(this));
 
   // Create do-nothing view for the sake of controlling the z-order of the find
   // bar widget.
@@ -4059,11 +4061,11 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() {
 }
 
 void BrowserView::ReparentTopContainerForEndOfImmersive() {
-  if (top_container()->parent() == this) {
+  if (top_container()->parent() == main_container_) {
     return;
   }
   // TODO(crbug.com/442255944): In the case top_container() is not a child of
-  // BrowserView, we expect the overlay widget and overlay view to still be
+  // main_container_, we expect the overlay widget and overlay view to still be
   // present. Investigate why this may not always be the case on Mac and remove
   // this check.
   if (!overlay_view_tracker_) {
@@ -4074,7 +4076,7 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
 
   overlay_view_tracker_.view()->SetVisible(false);
   top_container()->DestroyLayer();
-  AddChildViewAt(top_container(), 0);
+  main_container_->AddChildViewAt(top_container(), 0);
   EnsureFocusOrder();
 }
 
@@ -4083,7 +4085,7 @@ void BrowserView::EnsureFocusOrder() {
   // bar (if present) or top container (i.e. toolbar, again if present).
   if (bookmark_bar_view_ && bookmark_bar_view_->parent() == this) {
     infobar_container_->InsertAfterInFocusList(bookmark_bar_view_.get());
-  } else if (top_container_->parent() == this) {
+  } else if (top_container_->parent() == main_container_) {
     infobar_container_->InsertAfterInFocusList(top_container_);
   }
 

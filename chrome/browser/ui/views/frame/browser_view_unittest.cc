@@ -720,8 +720,7 @@ TEST_F(BrowserViewHostedAppTest, Layout) {
   // Add a tab because the browser starts out without any tabs at all.
   AddTab(browser(), GURL("about:blank"));
 
-  const int contents_container_y = browser_view()->main_container()->y() -
-                                   browser_view()->contents_container()->y();
+  const int contents_container_y = browser_view()->contents_container()->y();
 
   // The tabstrip, toolbar and bookmark bar should not be visible for hosted
   // apps.
