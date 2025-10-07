@@ -120,6 +120,11 @@ class PdfCaretTest : public testing::Test {
 
   void InitializeCaretAtChar(const PageCharacterIndex& index) {
     caret_ = std::make_unique<PdfCaret>(&client_, index);
+  }
+
+  void InitializeVisibleCaretAtChar(const PageCharacterIndex& index) {
+    InitializeCaretAtChar(index);
+    caret_->SetEnabled(true);
     caret_->SetVisible(true);
   }
 
@@ -244,9 +249,7 @@ class PdfCaretTest : public testing::Test {
 TEST_F(PdfCaretTest, NonTextPage) {
   SetUpPagesWithCharCounts({0});
   SetUpChar(kTestChar0, '\0', {kDefaultCaret});
-  InitializeCaretAtChar(kTestChar0);
-
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   TestDrawCaret(kDefaultCaret);
 }
@@ -256,8 +259,9 @@ TEST_F(PdfCaretTest, SetEnabled) {
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
-  caret().SetEnabled(false);
+  caret().SetVisible(true);
 
+  // Default disabled.
   TestDrawCaretFails(kTestChar0Caret);
 
   caret().SetEnabled(true);
@@ -278,10 +282,7 @@ TEST_F(PdfCaretTest, SetVisible) {
 
   caret().SetEnabled(true);
 
-  TestDrawCaret(kTestChar0Caret);
-
-  caret().SetVisible(false);
-
+  // Default not visible.
   TestDrawCaretFails(kTestChar0Caret);
 
   caret().SetVisible(true);
@@ -300,7 +301,6 @@ TEST_F(PdfCaretTest, SetBlinkIntervalWhileNotVisible) {
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
-  caret().SetEnabled(false);
   TestDrawCaretFails(kTestChar0Caret);
 
   // Blinks by default, but not visible.
@@ -328,9 +328,7 @@ TEST_F(PdfCaretTest, SetBlinkIntervalWhileNotVisible) {
 TEST_F(PdfCaretTest, SetBlinkIntervalWhileVisible) {
   SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  InitializeCaretAtChar(kTestChar0);
-
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   TestDrawCaret(kTestChar0Caret);
 
@@ -359,9 +357,7 @@ TEST_F(PdfCaretTest, SetBlinkIntervalWhileVisible) {
 TEST_F(PdfCaretTest, SetBlinkIntervalNegative) {
   SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  InitializeCaretAtChar(kTestChar0);
-
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Setting blink interval to negative does nothing.
   caret().SetBlinkInterval(base::Milliseconds(-100));
@@ -385,6 +381,7 @@ TEST_F(PdfCaretTest, MaybeDrawCaret) {
                                       kTestChar0Caret));
 
   caret().SetEnabled(true);
+  caret().SetVisible(true);
 
   // Not dirty in screen.
   EXPECT_FALSE(caret().MaybeDrawCaret(GetRegionData(gfx::Point(70, 70)),
@@ -406,9 +403,8 @@ TEST_F(PdfCaretTest, MaybeDrawCaret) {
 TEST_F(PdfCaretTest, Blink) {
   SetUpPagesWithCharCounts({2});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  InitializeCaretAtChar(kTestChar0);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
-  caret().SetEnabled(true);
   TestDrawCaret(kTestChar0Caret);
 
   GetPdfTestTaskEnvironment().FastForwardBy(PdfCaret::kDefaultBlinkInterval -
@@ -447,8 +443,7 @@ TEST_F(PdfCaretTest, Blink) {
 TEST_F(PdfCaretTest, OnGeometryChanged) {
   SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
 
@@ -494,8 +489,7 @@ TEST_F(PdfCaretTest, OnGeometryChanged) {
 TEST_F(PdfCaretTest, SetChar) {
   SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   EXPECT_EQ(kTestChar0Caret, client().invalidated_rect());
 
@@ -515,8 +509,7 @@ TEST_F(PdfCaretTest, SetCharAndDraw) {
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   // Set up second char two pixels to the right of the first char.
   SetUpChar({0, 1}, 'b', {gfx::Rect(24, 10, 12, 14)});
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   caret().SetCharAndDraw(kTestChar0);
   TestDrawCaret(kTestChar0Caret);
@@ -541,8 +534,7 @@ TEST_F(PdfCaretTest, SetCharAndDraw) {
 TEST_F(PdfCaretTest, SetCharAndDrawSpecialChars) {
   SetUpPagesWithCharCounts({4});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   caret().SetCharAndDraw(kTestChar0);
   TestDrawCaret(kTestChar0Caret);
@@ -567,8 +559,7 @@ TEST_F(PdfCaretTest, SetCharAndDrawSpecialChars) {
 
 TEST_F(PdfCaretTest, SetCharAndDrawMultiPage) {
   SetUpMultiPageTest();
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   caret().SetCharAndDraw(kTestChar0);
   TestDrawCaret(kTestChar0Caret);
@@ -615,8 +606,8 @@ TEST_F(PdfCaretMoveTest, OnKeyDown) {
   SetUpChar({0, 1}, '\0', {});
   InitializeCaretAtChar(kTestChar0);
 
-  // Relevant key events still handled even when caret is not visible.
-  caret().SetEnabled(false);
+  // Relevant key events still handled even when caret is not enabled.
+  caret().SetVisible(true);
 
   EXPECT_FALSE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_0)));
@@ -648,8 +639,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRight) {
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
 
   // Start at left of char 0.
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Left of char 1.
   SetUpChar({0, 1}, 'b', {kTestChar1ScreenRect});
@@ -690,8 +680,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightMultiPage) {
   SetUpMultiPageTest();
 
   // Start at left of page 1, char 0.
-  InitializeCaretAtChar({1, 0});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({1, 0});
 
   // Right of page 0, char 0.
   EXPECT_TRUE(
@@ -743,8 +732,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightSkipNewlines) {
   SetUpChar({0, 3}, 'b', {gfx::Rect(10, 26, 12, 14)});
 
   // Start at left of page 0, char 0.
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Right of page 0, char 0.
   EXPECT_TRUE(
@@ -768,8 +756,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightStartEndNewlines) {
   SetUpChar({0, 1}, '\n', {kTestChar1ScreenRect});
 
   // Start at left of page 0, char 0.
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Left of page 0, char 1.
   EXPECT_TRUE(
@@ -802,8 +789,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightConsecutiveNewlines) {
   SetUpChar({0, 4}, 'b', {gfx::Rect(22, 26, 12, 14)});
 
   // Start at left of page 0, char 1.
-  InitializeCaretAtChar({0, 1});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({0, 1});
 
   // Left of page 0, char 3 '\n', skipping one newline.
   constexpr gfx::Rect kTestChar3Caret{10, 26, 1, 14};
@@ -835,8 +821,7 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightSingleSyntheticNewline) {
   SetUpChar({0, 2}, 'b', {gfx::Rect(10, 26, 12, 14)});
 
   // Start at left of page 0, char 0.
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Right of page 0, char 1.
   EXPECT_TRUE(
@@ -863,8 +848,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDown) {
   SetUpChar({0, 3}, 'b', {gfx::Rect(10, 24, 12, 14)});
 
   // Start at left of char 0.
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Left of char 3 'b'.
   EXPECT_TRUE(
@@ -881,8 +865,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownNonTextPage) {
   SetUpPagesWithCharCounts({0});
   SetUpChar(kTestChar0, '\0', {kDefaultCaret});
 
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
@@ -900,8 +883,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownSingleLine) {
   SetUpChar({0, 2}, 'c', {gfx::Rect(34, 10, 12, 14)});
 
   // Start at right of char 0.
-  InitializeCaretAtChar({0, 1});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({0, 1});
 
   // Left of char 0.
   EXPECT_TRUE(
@@ -940,8 +922,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownMultiLine) {
   SetUpChar({0, 9}, 'f', {gfx::Rect(24, 50, 14, 16)});
 
   // Start at left of char 1 'b'.
-  InitializeCaretAtChar({0, 1});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({0, 1});
 
   // Left of char 5 'd'.
   constexpr gfx::Rect kTestChar5Caret{21, 26, 1, 12};
@@ -977,8 +958,8 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownStartOnNewline) {
   SetUpChar({0, 5}, 'd', {gfx::Rect(22, 22, 12, 14)});
 
   // Start at right of char 1 '\r'.
-  InitializeCaretAtChar(kStartNewline);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kStartNewline);
+
   TestDrawCaret(kTestChar1EndCaret);
 
   // Right of char 5 'd'.
@@ -1000,8 +981,7 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownMultiPage) {
   SetUpMultiPageTest();
 
   // Start at right of page 0, char 0 'a'.
-  InitializeCaretAtChar({0, 1});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({0, 1});
 
   // Left of page 1, char 1 'c', which is closer than the right.
   EXPECT_TRUE(
@@ -1046,8 +1026,8 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownLongerFirstLine) {
 
   // Start at left of char 2 'c'.
   constexpr gfx::Rect kTestChar2Caret{34, 10, 1, 14};
-  InitializeCaretAtChar({0, 2});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({0, 2});
+
   TestDrawCaret(kTestChar2Caret);
 
   // Move down to char with closest screen rect. Right of char 5 'd'.
@@ -1072,8 +1052,8 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownLongerSecondLine) {
   SetUpChar({0, 5}, 'd', {gfx::Rect(34, 22, 12, 14)});
 
   // Start at right of char 5 'd'.
-  InitializeCaretAtChar({0, 6});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({0, 6});
+
   TestDrawCaret(gfx::Rect(46, 22, 1, 14));
 
   // Right of char 0 'a'.
@@ -1122,8 +1102,7 @@ TEST_F(PdfCaretSelectionTest, SelectRight) {
   SetUpSingleLineTest();
 
   // Start at left of char 0.
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Move right. Select char 1.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
@@ -1144,8 +1123,7 @@ TEST_F(PdfCaretSelectionTest, SelectLeft) {
 
   // Start at right of char 2.
   constexpr PageCharacterIndex kTestChar2End{0, 3};
-  InitializeCaretAtChar(kTestChar2End);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar2End);
 
   // Move left. Select char 2.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
@@ -1166,8 +1144,7 @@ TEST_F(PdfCaretSelectionTest, SelectDown) {
 
   // Start at left of char 1 'b'.
   constexpr PageCharacterIndex kTestChar1{0, 1};
-  InitializeCaretAtChar(kTestChar1);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar1);
 
   // Move down. Select chars 1, 2, 3, 4.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
@@ -1202,8 +1179,7 @@ TEST_F(PdfCaretSelectionTest, SelectUp) {
 
   // Start at left of char 9 'f'.
   constexpr PageCharacterIndex kTestChar9{0, 9};
-  InitializeCaretAtChar(kTestChar9);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar9);
 
   // Move up. Select chars 8, 7, 6, 5.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
@@ -1237,8 +1213,7 @@ TEST_F(PdfCaretSelectionTest, SelectStartOnNonTextPageMoveToNonTextPage) {
   SetUpChar(kTestChar0, '\0', {kDefaultCaret});
   SetUpChar({1, 0}, '\0', {gfx::Rect(10, 50, 1, 12)});
 
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Moving from a no-text page to another no-text page should not start a
   // selection.
@@ -1259,8 +1234,7 @@ TEST_F(PdfCaretSelectionTest, SelectStartOnTextPageMoveToNonTextPages) {
   SetUpChar({1, 0}, '\0', {gfx::Rect(10, 50, 1, 12)});
   SetUpChar({2, 0}, '\0', {gfx::Rect(10, 100, 1, 12)});
 
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   // Select page 0, char 0.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
@@ -1286,8 +1260,7 @@ TEST_F(PdfCaretSelectionTest, SelectNonTextPage) {
   SetUpPagesWithCharCounts({0});
   SetUpChar(kTestChar0, '\0', {kDefaultCaret});
 
-  InitializeCaretAtChar(kTestChar0);
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar(kTestChar0);
 
   EXPECT_CALL(client(), StartSelection(_)).Times(0);
   EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(_)).Times(0);
@@ -1306,8 +1279,7 @@ TEST_F(PdfCaretSelectionTest, SelectStartingOnNonTextPage) {
   SetUpMultiPageTest();
 
   // Start on the no-text page.
-  InitializeCaretAtChar({2, 0});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({2, 0});
 
   // `StartSelection()` should be called on the nearest caret position in the
   // direction of movement. In this case, it would be right of page 1, char 1.
@@ -1323,8 +1295,7 @@ TEST_F(PdfCaretSelectionTest, MoveCaretWithShiftDownMultiPage) {
   SetUpMultiPageTest();
 
   // Start at right of page 0, char 0.
-  InitializeCaretAtChar({0, 1});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({0, 1});
 
   // Move down. Select page 1, char 0 'b'.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
@@ -1360,8 +1331,7 @@ TEST_F(PdfCaretSelectionTest, MoveCaretWithShiftUpMultiPage) {
   SetUpMultiPageTest();
 
   // Start at right of page 3, char 0 'd'.
-  InitializeCaretAtChar({3, 1});
-  caret().SetEnabled(true);
+  InitializeVisibleCaretAtChar({3, 1});
 
   // Move up. Select page 3, char 0. Caret should be on no-text page.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
