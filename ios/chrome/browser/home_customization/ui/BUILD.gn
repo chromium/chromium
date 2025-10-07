@@ -62,6 +62,7 @@ source_set("ui") {
     "rainbow_slider.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
@@ -86,6 +87,14 @@ source_set("ui") {
     "//ui/base",
     "//ui/color/dynamic_color",
     "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "home_customization_accessibility_identifiers.h",
+    "home_customization_accessibility_identifiers.mm",
   ]
   frameworks = [ "UIKit.framework" ]
 }

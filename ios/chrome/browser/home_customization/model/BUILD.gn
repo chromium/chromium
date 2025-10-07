@@ -17,8 +17,6 @@ source_set("model") {
     "home_background_image_service.mm",
     "home_background_image_service_factory.h",
     "home_background_image_service_factory.mm",
-    "home_customization_seed_colors.h",
-    "home_customization_seed_colors.mm",
     "ntp_background_service_factory.h",
     "ntp_background_service_factory.mm",
     "user_uploaded_image_manager.h",
@@ -33,7 +31,6 @@ source_set("model") {
     "//components/sync/protocol",
     "//components/themes",
     "//components/themes:prefs",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -41,10 +38,23 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/colors",
     "//services/network/public/cpp",
     "//ui/base",
     "//url",
+  ]
+}
+
+source_set("seed_colors") {
+  sources = [
+    "home_customization_seed_colors.h",
+    "home_customization_seed_colors.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/protocol",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
   ]
 }
 

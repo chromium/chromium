@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class NewTabPageColorPalette;
+
 // App interface for the NTP.
 @interface NewTabPageAppInterface : NSObject
 
@@ -46,6 +48,11 @@
 // complete.
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete;
 
+// Returns the current color palette of the NTP's background.
++ (NewTabPageColorPalette*)currentBackgroundColor;
+
+// Returns whether the NTP has a custom background image.
++ (BOOL)hasBackgroundImage;
 
 @end
 

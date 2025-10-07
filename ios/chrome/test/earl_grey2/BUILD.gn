@@ -209,6 +209,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:eg2_tests",
     "//ios/chrome/browser/fullscreen/ui_bundled:eg2_tests",
     "//ios/chrome/browser/history/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/home_customization/test:eg2_tests",
     "//ios/chrome/browser/incognito_interstitial/ui_bundled:eg2_tests",
     "//ios/chrome/browser/infobars/ui_bundled:eg2_tests",
     "//ios/chrome/browser/intelligence/bwg/ui:eg2_tests",

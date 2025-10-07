@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
@@ -99,6 +100,9 @@
   // The primary view is set as the collection view for better integration with
   // the UISheetPresentationController which presents it.
   self.view = _collectionView;
+
+  _collectionView.accessibilityIdentifier =
+      kHomeCustomizationMainViewAccessibilityIdentifier;
 
   [_collectionConfigurator configureNavigationBar];
 }

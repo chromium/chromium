@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
@@ -387,11 +388,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(discardBackground)];
+  cancelButton.accessibilityIdentifier =
+      kPickerViewCancelButtonAccessibilityIdentifier;
 
   UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
                            action:@selector(confirmBackground)];
+  doneButton.accessibilityIdentifier =
+      kPickerViewDoneButtonAccessibilityIdentifier;
 
   self.consumer.navigationItem.leftBarButtonItem = cancelButton;
   self.consumer.navigationItem.rightBarButtonItem = doneButton;

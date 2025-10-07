@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -84,6 +85,14 @@ using set_up_list_prefs::SetUpListItemState;
   return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
              set_up_list::kAutofillItemID)
       .complete;
+}
+
++ (NewTabPageColorPalette*)currentBackgroundColor {
+  return ntp_home::CurrentBackgroundColor();
+}
+
++ (BOOL)hasBackgroundImage {
+  return ntp_home::HasBackgroundImage();
 }
 
 @end

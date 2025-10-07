@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -18,6 +19,14 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 }  // namespace
 
 @implementation HomeCustomizationBackgroundPickerCell
+
+- (id)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.accessibilityIdentifier = kBackgroundPickerCellAccessibilityIdentifier;
+  }
+  return self;
+}
 
 #pragma mark - HomeCustomizationBackgroundCell
 

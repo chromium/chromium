@@ -13,7 +13,10 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/common/uikit_ui_util.h"
 
@@ -74,6 +77,15 @@ SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(
     NSString* accessibility_id) {
   return base::apple::ObjCCast<SetUpListItemView>(
       SubviewWithAccessibilityIdentifier(accessibility_id, GetAnyKeyWindow()));
+}
+
+NewTabPageColorPalette* CurrentBackgroundColor() {
+  return [CollectionView().traitCollection objectForNewTabPageTrait];
+}
+
+BOOL HasBackgroundImage() {
+  return
+      [CollectionView().traitCollection boolForNewTabPageImageBackgroundTrait];
 }
 
 }  // namespace ntp_home
