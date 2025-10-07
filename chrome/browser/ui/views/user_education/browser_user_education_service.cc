@@ -981,27 +981,11 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForTutorialPromo(
           feature_engagement::kIPHSideBySideTabSwitchFeature,
-          kBrowserViewElementId, IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY,
+          kTopContainerElementId, IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY,
           kSplitViewTutorialId)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_TITLE)
-          .SetAnchorElementFilter(base::BindRepeating(
-              [](const ui::ElementTracker::ElementList& elements)
-                  -> ui::TrackedElement* {
-                if (elements.empty()) {
-                  return nullptr;
-                }
-                BrowserView* const browser_view =
-                    views::AsViewClass<BrowserView>(
-                        elements[0]->AsA<views::TrackedElementViews>()->view());
-
-                SplitViewIphController* split_view_iph_controller =
-                    SplitViewIphController::From(browser_view->browser());
-
-                return split_view_iph_controller->GetTabSwitchIPHAnchor(
-                    browser_view);
-              }))
           .SetMetadata(141, "lugli@google.com",
                        "Triggered when user swaps between two tabs three times "
                        "quickly.")));
