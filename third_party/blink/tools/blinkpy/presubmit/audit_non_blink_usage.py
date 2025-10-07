@@ -2749,6 +2749,14 @@ _CONFIG = [
         'allowed': [
             'viz::TestRasterInterface',
         ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/inspector/thread_debugger_common_impl.cc',
+        ],
+        'allowed': [
+            'gin::kThreadDebuggerCommonImplTag',
+        ]
     }
 ]
 
