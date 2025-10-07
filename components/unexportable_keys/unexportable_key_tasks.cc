@@ -62,8 +62,25 @@ ServiceErrorOr<std::vector<uint8_t>> SignSlowlyWithRefCountedKey(
   TRACE_EVENT("browser", "unexportable_keys::SignSlowlyWithRefCountedKey",
               perfetto::Flow::FromPointer(task_ptr_for_tracing));
   CHECK(signing_key);
-  return base::OptionalToExpected(signing_key->key().SignSlowly(data),
-                                  ServiceError::kCryptoApiFailed);
+  std::optional<std::vector<uint8_t>> signature =
+      signing_key->key().SignSlowly(data);
+  if (!signature.has_value()) {
+    return base::unexpected(ServiceError::kCryptoApiFailed);
+  }
+  // The analysis has proven that the returned signature does not always verify
+  // correctly. This is a very rare occurrence. Return an error if it does
+  // happen to force the retry mechanism to kick in as it is very likely to
+  // succeed on the next attempt.
+  crypto::SignatureVerifier verifier;
+  if (!verifier.VerifyInit(signing_key->key().Algorithm(), *signature,
+                           signing_key->key().GetSubjectPublicKeyInfo())) {
+    return base::unexpected(ServiceError::kVerifySignatureFailed);
+  }
+  verifier.VerifyUpdate(data);
+  if (!verifier.VerifyFinal()) {
+    return base::unexpected(ServiceError::kVerifySignatureFailed);
+  }
+  return *std::move(signature);
 }
 
 }  // namespace

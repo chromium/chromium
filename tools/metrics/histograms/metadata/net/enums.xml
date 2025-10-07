@@ -3255,6 +3255,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="No key provider"/>
   <int value="5" label="Algorithm not supported"/>
   <int value="6" label="Key not ready"/>
+  <int value="7" label="Verify signature failed"/>
 </enum>
 
 <enum name="UnsolicitedHttpsRecordStatus">

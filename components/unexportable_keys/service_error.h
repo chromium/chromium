@@ -28,8 +28,10 @@ enum class ServiceError {
   kAlgorithmNotSupported = 5,
   // The key object hasn't been created yet. Try again later.
   kKeyNotReady = 6,
+  // The returned signature did not verify with the corresponding public key.
+  kVerifySignatureFailed = 7,
 
-  kMaxValue = kKeyNotReady
+  kMaxValue = kVerifySignatureFailed
 };
 
 // Fake `ServiceError` value that can be used for metrics to signify that no

@@ -915,7 +915,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
   EXPECT_CALL(*mock_session_binding_helper_,
               GenerateBindingKeyAssertion(kChallenge, _, _))
       .WillOnce(RunOnceCallback<2>(base::unexpected(
-          SessionBindingHelper::Error::kVerifySignatureFailure)))
+          SessionBindingHelper::Error::kAppendSignatureFailure)))
       .WillOnce(RunOnceCallback<2>(kAssertionToken));
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback(), std::nullopt);
@@ -939,7 +939,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
                         /*expect_assertion_was_generated_count=*/2);
   histogram_tester_.ExpectUniqueSample(
       kGenerateAssertionFirstAttemptHistogram,
-      SessionBindingHelper::Error::kVerifySignatureFailure, 1);
+      SessionBindingHelper::Error::kAppendSignatureFailure, 1);
   histogram_tester_.ExpectUniqueSample(kGenerateAssertionSecondAttemptHistogram,
                                        SessionBindingHelper::kNoErrorForMetrics,
                                        1);
@@ -949,10 +949,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
        BothAttemptsFailed) {
   EXPECT_CALL(*mock_session_binding_helper_,
               GenerateBindingKeyAssertion(kChallenge, _, _))
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(SessionBindingHelper::Error::kSignAssertionFailure)))
       .WillOnce(RunOnceCallback<2>(base::unexpected(
-          SessionBindingHelper::Error::kVerifySignatureFailure)))
-      .WillOnce(RunOnceCallback<2>(base::unexpected(
-          SessionBindingHelper::Error::kVerifySignatureFailure)));
+          SessionBindingHelper::Error::kAppendSignatureFailure)));
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback(), std::nullopt);
   SimulateChallengeRequired(CreateChallengeHeaderValue(kChallenge));
@@ -965,10 +965,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
       /*expect_assertion_was_generated_count=*/2);
   histogram_tester_.ExpectUniqueSample(
       kGenerateAssertionFirstAttemptHistogram,
-      SessionBindingHelper::Error::kVerifySignatureFailure, 1);
+      SessionBindingHelper::Error::kSignAssertionFailure, 1);
   histogram_tester_.ExpectUniqueSample(
       kGenerateAssertionSecondAttemptHistogram,
-      SessionBindingHelper::Error::kVerifySignatureFailure, 1);
+      SessionBindingHelper::Error::kAppendSignatureFailure, 1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
@@ -1002,7 +1002,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
   EXPECT_CALL(*mock_session_binding_helper_,
               GenerateBindingKeyAssertion(kChallenge, _, _))
       .WillOnce(RunOnceCallback<2>(base::unexpected(
-          SessionBindingHelper::Error::kVerifySignatureFailure)))
+          SessionBindingHelper::Error::kAppendSignatureFailure)))
       .WillOnce(RunOnceCallback<2>(kAssertionToken));
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback(), std::nullopt);
@@ -1035,7 +1035,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
       histogram_tester_.GetAllSamples(kGenerateAssertionFirstAttemptHistogram),
       ElementsAre(
           base::Bucket(SessionBindingHelper::kNoErrorForMetrics, /*count=*/1),
-          base::Bucket(SessionBindingHelper::Error::kVerifySignatureFailure,
+          base::Bucket(SessionBindingHelper::Error::kAppendSignatureFailure,
                        /*count=*/1)));
   EXPECT_EQ(sec_session_challenge_response(), kAssertionToken);
   histogram_tester_.ExpectUniqueSample(kGenerateAssertionSecondAttemptHistogram,
