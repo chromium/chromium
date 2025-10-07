@@ -46,6 +46,9 @@ class PageContentCache {
   // Retrieves all tab IDs from the cache that has page contents cached.
   void GetAllTabIds(GetAllTabIdsCallback callback);
 
+  // Calculates and records cache-related metrics.
+  void RecordMetrics(std::set<int64_t> eligible_tab_ids);
+
   // Called when a tab is backgrounded. See PageContentStore::AddPageContent().
   void CachePageContent(
       int64_t tab_id,
@@ -60,10 +63,17 @@ class PageContentCache {
 
  private:
   void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor);
+  void OnCacheSizeCalculated(std::set<int64_t> eligible_tab_ids,
+                             int64_t total_cache_size);
+  void OnReceiveAllCachedTabIds(int64_t total_cache_size,
+                                std::set<int64_t> eligible_tab_ids,
+                                std::vector<int64_t> cached_tab_ids);
   void OnStoreInitialized();
 
   // Deletes old data from the store.
   void DeleteOldData();
+
+  const base::FilePath database_path_;
 
   // `true` once `store_` has been initialized.
   bool store_initialized_ = false;

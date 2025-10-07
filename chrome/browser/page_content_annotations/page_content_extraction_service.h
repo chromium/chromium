@@ -27,6 +27,7 @@ class OSCryptAsync;
 namespace page_content_annotations {
 
 struct ExtractedPageContentResult;
+class PageContentCache;
 class PageContentCacheHandler;
 
 class PageContentExtractionService : public KeyedService,
@@ -69,6 +70,9 @@ class PageContentExtractionService : public KeyedService,
   // Called when a new navigation happens in a WebContents.
   void OnNewNavigation(std::optional<int64_t> tab_id,
                        content::WebContents* web_contents);
+
+  // Disk cache for getting page contents for tabs without webcontents.
+  PageContentCache* GetPageContentCache();
 
  protected:
   friend class AnnotatedPageContentRequest;

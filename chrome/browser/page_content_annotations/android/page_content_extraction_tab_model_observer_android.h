@@ -47,11 +47,16 @@ class PageContentExtractionTabModelObserverAndroid
                              TabModel::TabClosingSource source) override;
 
  private:
+  void RunStartupMetricsComputation();
+
   raw_ptr<Profile> profile_;
   const raw_ptr<PageContentExtractionService> service_;
 
   base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
       tab_model_observations_{this};
+
+  base::WeakPtrFactory<PageContentExtractionTabModelObserverAndroid>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace page_content_annotations

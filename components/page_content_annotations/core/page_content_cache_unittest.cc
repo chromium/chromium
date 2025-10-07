@@ -7,7 +7,9 @@
 #include <optional>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -150,6 +152,48 @@ TEST_F(PageContentCacheTest, DeleteOldDataOnStartup) {
   // 5. Verify that the old data is gone and the new data is still there.
   EXPECT_FALSE(GetContentForTab(1));
   EXPECT_TRUE(GetContentForTab(2));
+}
+
+TEST_F(PageContentCacheTest, RecordMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Add some data to the cache.
+  GetOrCreateCache()->CachePageContent(1, GURL("https://one.com/"),
+                                       base::Time::Now(), base::Time::Now(),
+                                       TestContent("one"));
+  GetOrCreateCache()->CachePageContent(2, GURL("https://two.com/"),
+                                       base::Time::Now(), base::Time::Now(),
+                                       TestContent("two"));
+  GetOrCreateCache()->CachePageContent(3, GURL("https://three.com/"),
+                                       base::Time::Now(), base::Time::Now(),
+                                       TestContent("three"));
+
+  // 2. Call RecordMetrics.
+  // Eligible tabs are 1, 3, 4.
+  // Cached tabs are 1, 2, 3.
+  // Cached and eligible: 1, 3 (count = 2)
+  // Stale cache entries: 2 (count = 1)
+  // Not cached eligible tabs: 4 (count = 1)
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage");
+  GetOrCreateCache()->RecordMetrics({1, 3, 4});
+
+  // 3. Wait for metrics calculation to complete.
+  waiter.Wait();
+
+  // 4. Verify histograms.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.TotalCacheSize", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.CachedTabsCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.NotCachedTabsCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.StaleCacheEntriesCount", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.AvgPageSize", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage", 66, 1);
 }
 
 }  // namespace page_content_annotations

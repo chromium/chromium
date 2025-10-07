@@ -1802,6 +1802,99 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PageContentCache.AddPageContentResult"
+    enum="BooleanSuccess" expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the AddPageContent database operation was successful.
+    Recorded each time the operation is performed.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentCache.AvgPageSize" units="KB"
+    expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the average size of a cached page. Recorded after a delay
+    post-startup, only if there are cached tabs.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentCache.CachedTabsCount"
+    units="tabs" expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the number of tabs that have cached content. Recorded after a delay
+    post-startup, only if the tab model is loaded.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage"
+    units="%" expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the percentage of eligible tabs (tabs within last 7 days) that are
+    cached. Recorded after a delay post-startup, only if there are eligible
+    tabs.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentCache.ExtractionAndCachingStatus"
+    enum="PageContentExtractionAndCachingStatus" expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the status of page content extraction and caching. Recorded each
+    time one of the events occurs.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentCache.NotCachedTabsCount"
+    units="tabs" expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the number of tabs that do not have cached content. Recorded after a
+    delay post-startup, only if the tab model is loaded.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentCache.RemovePageContentForTabResult"
+    enum="BooleanSuccess" expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the RemovePageContentForTab database operation was
+    successful. Recorded each time the operation is performed.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentCache.StaleCacheEntriesCount"
+    units="entries" expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the number of stale cache entries without active tabs. Recorded
+    after a delay post-startup, only if the tab model is loaded.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentCache.TotalCacheSize" units="KB"
+    expires_after="2026-02-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the total size of the page content cache on disk. Recorded after a
+    delay post-startup.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.PredictionManager.DownloadServiceAvailabilityBlockedFetch"
     enum="BooleanBlocked" expires_after="2025-11-09">

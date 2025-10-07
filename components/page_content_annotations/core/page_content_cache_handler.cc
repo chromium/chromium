@@ -4,11 +4,40 @@
 
 #include "components/page_content_annotations/core/page_content_cache_handler.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/page_content_annotations/core/web_state_wrapper.h"
 
 namespace page_content_annotations {
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with PageContentExtractionAndCachingStatus in enums.xml.
+// LINT.IfChange(PageContentExtractionAndCachingStatus)
+enum class PageContentExtractionAndCachingStatus {
+  kUnknown = 0,
+  kExtractionObservedInForeground = 1,
+  kExtractionObservedInBackground = 2,
+  kContentsAvailableWhenBackgrounded = 3,
+  kContentsNotAvailableWhenBackgrounded = 4,
+  kContentsDeletedOnTabClose = 5,
+  kContentsDeletedOnTabUpdate = 6,
+  kMaxValue = kContentsDeletedOnTabUpdate,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/optimization/enums.xml:PageContentExtractionAndCachingStatus)
+
+void RecordExtractionAndCachingStatus(
+    PageContentExtractionAndCachingStatus status) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PageContentCache.ExtractionAndCachingStatus", status);
+}
+
+}  // namespace
 
 PageContentCacheHandler::PageContentCacheHandler(
     os_crypt_async::OSCryptAsync* os_crypt_async,
@@ -19,6 +48,8 @@ PageContentCacheHandler::PageContentCacheHandler(
 PageContentCacheHandler::~PageContentCacheHandler() = default;
 
 void PageContentCacheHandler::OnTabClosed(int64_t tab_id) {
+  RecordExtractionAndCachingStatus(
+      PageContentExtractionAndCachingStatus::kContentsDeletedOnTabClose);
   page_content_cache_->RemovePageContentForTab(tab_id);
 }
 
@@ -29,7 +60,12 @@ void PageContentCacheHandler::OnVisibilityChanged(
   if (!tab_id || web_state.is_off_the_record) {
     return;
   }
-  if (web_state.visibility != PageContentVisibility::kHidden || !result) {
+  if (web_state.visibility != PageContentVisibility::kHidden) {
+    return;
+  }
+  if (!result) {
+    RecordExtractionAndCachingStatus(PageContentExtractionAndCachingStatus::
+                                         kContentsNotAvailableWhenBackgrounded);
     return;
   }
   // Even if background trigger is enabled, update the cache with available page
@@ -41,6 +77,8 @@ void PageContentCacheHandler::OnVisibilityChanged(
   page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
                                         web_state.navigation_timestamp,
                                         base::Time::Now(), *result);
+  RecordExtractionAndCachingStatus(PageContentExtractionAndCachingStatus::
+                                       kContentsAvailableWhenBackgrounded);
 }
 
 void PageContentCacheHandler::OnNewNavigation(
@@ -49,6 +87,8 @@ void PageContentCacheHandler::OnNewNavigation(
   if (!tab_id || web_state.is_off_the_record) {
     return;
   }
+  RecordExtractionAndCachingStatus(
+      PageContentExtractionAndCachingStatus::kContentsDeletedOnTabUpdate);
   // Delete cached contents for the tab_id when page is updated.
   page_content_cache_->RemovePageContentForTab(*tab_id);
 }
@@ -65,9 +105,14 @@ void PageContentCacheHandler::ProcessPageContentExtraction(
   // already backgrounded. We do not cache contents for active tab since it can
   // be extracted on demand.
   if (web_state.visibility == PageContentVisibility::kHidden) {
+    RecordExtractionAndCachingStatus(
+        PageContentExtractionAndCachingStatus::kExtractionObservedInBackground);
     page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
                                           web_state.navigation_timestamp,
                                           base::Time::Now(), page_content);
+  } else {
+    RecordExtractionAndCachingStatus(
+        PageContentExtractionAndCachingStatus::kExtractionObservedInForeground);
   }
 }
 

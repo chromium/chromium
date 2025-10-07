@@ -123,6 +123,12 @@ void PageContentExtractionService::OnNewNavigation(
   }
 }
 
+PageContentCache* PageContentExtractionService::GetPageContentCache() {
+  return page_content_cache_handler_
+             ? page_content_cache_handler_->page_content_cache()
+             : nullptr;
+}
+
 std::optional<ExtractedPageContentResult>
 PageContentExtractionService::GetCachedContentsFromWebContents(
     content::WebContents* web_contents) {
