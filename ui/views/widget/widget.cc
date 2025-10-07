@@ -1954,7 +1954,7 @@ void Widget::OnNativeWidgetDestroyed() {
   // does not reset the Widget, the Widget will be left in a closed, zombie-like
   // state. It is strongly recommended to reset the Widget within the callback.
   if (weak_this && override_close_) {
-    std::move(override_close_).Run(ClosedReason::kUnspecified);
+    std::move(override_close_).Run(closed_reason());
   }
 }
 
