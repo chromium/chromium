@@ -56,6 +56,7 @@ class SyncStartupTracker : public syncer::SyncServiceObserver {
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   // Checks the current service state and notifies the
@@ -65,9 +66,6 @@ class SyncStartupTracker : public syncer::SyncServiceObserver {
   void CheckServiceState();
 
   void OnStartupTimeout();
-
-  // The SyncService we should track.
-  const raw_ptr<syncer::SyncService> sync_service_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
