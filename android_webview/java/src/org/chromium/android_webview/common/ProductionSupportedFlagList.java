@@ -253,9 +253,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_BETTER_LOCAL_HEURISTIC_PLACEHOLDER_SUPPORT,
                 "Treats placeholders as a separate signal for Autofill local heuristics"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_DETECT_FIELD_VISIBILITY,
-                "Populates FormFieldData::is_visible() with visibility rather than focusability"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
                 "Enables various improvements to handling expiration dates."),
         Flag.baseFeature(
