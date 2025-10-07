@@ -56,8 +56,9 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
             ->GetSupportedContentWorld();
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
-    ChromeIOSTranslateClient::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
+    ChromeIOSTranslateClient::CreateForWebState(
+        &web_state_, InfoBarManagerImpl::FromWebState(&web_state_));
   }
 
  protected:

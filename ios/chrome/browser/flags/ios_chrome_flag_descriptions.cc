@@ -1351,6 +1351,12 @@ const char kReaderModeTranslationName[] = "Enables Reader Mode Translation";
 const char kReaderModeTranslationDescription[] =
     "Enables translation of web pages in Reader Mode.";
 
+const char kReaderModeTranslationWithInfobarName[] =
+    "Enables Reader Mode Translation Settings";
+const char kReaderModeTranslationWithInfobarDescription[] =
+    "Enables translation of web pages in Reader Mode with Settings available "
+    "via the infobar.";
+
 const char kReaderModeDefaultBrowserPromoName[] =
     "Enables the default browser promo with Reader Mode criteria";
 const char kReaderModeDefaultBrowserPromoDescription[] =

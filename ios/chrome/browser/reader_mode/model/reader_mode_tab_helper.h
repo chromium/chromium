@@ -173,6 +173,9 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // `distillation_already_failed_` is set to true.
   void RecordDistillationFailure();
 
+  // Applies the language settings from the original source page.
+  void ApplyLanguageSettingsFromSource();
+
   // Script to be used to initialise the scrolling position when the Reader mode
   // content has loaded.
   std::string scroll_anchor_script_;
@@ -212,6 +215,14 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   raw_ptr<DistillerService> distiller_service_;
 
   std::unique_ptr<ReaderModeDistillerViewer> distiller_viewer_;
+
+  // The state of translation prior to distilling the source page.
+  struct TranslationState {
+    std::string source_code;
+    std::string target_code;
+    bool is_original_source_translated = false;
+  };
+  TranslationState source_translation_state_;
 
   // Records metrics for the Reader mode with `web_state_`.
   ReaderModeMetricsHelper metrics_helper_;

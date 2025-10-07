@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 
 #import "components/translate/core/browser/translate_manager.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -58,6 +59,13 @@ void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
   // The Reader mode content WebState should not attach tab helpers for
   // features which are not supported by the original WebState.
   AttachTabHelpers(web_state(), TabHelperFilter::kReaderMode);
+
+  // Attach the translate client explicitly to the Reader mode web state to
+  // reuse the infobar management system from the original web state. This is
+  // required since infobars and the relevant overlay queuing system are
+  // implicity attached to the original web state only.
+  ChromeIOSTranslateClient::CreateForWebState(
+      web_state(), InfoBarManagerImpl::FromWebState(original_web_state));
 
   web_state_delegate_ = std::make_unique<ReaderModeWebStateDelegate>(
       original_web_state, original_web_state->GetDelegate());

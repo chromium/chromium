@@ -309,9 +309,11 @@ void TestResponseProvider::GetLanguageResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableReaderModeTranslation);
+  config.features_enabled.push_back(kEnableReaderModeTranslationWithInfobar);
 
   if ([self isRunningTest:@selector(testTranslateInReaderMode)] ||
-      [self isRunningTest:@selector(testNoAutotranslateInReaderMode)]) {
+      [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
+      [self isRunningTest:@selector(testTranslateInClosedReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderMode);
   }
 
@@ -1379,7 +1381,7 @@ void TestResponseProvider::GetLanguageResponse(
   GREYAssertFalse([self isBeforeTranslateBannerVisible],
                   @"Before Translate banner was found");
 
-  // Verify translation is not available in the tools menu.
+  // Verify translation is available in the tools menu.
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
@@ -1391,9 +1393,7 @@ void TestResponseProvider::GetLanguageResponse(
                                    grey_accessibilityID(kToolsMenuTranslateId),
                                    grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:tableViewMatcher]
-      assertWithMatcher:grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled)];
+      onElementWithMatcher:tableViewMatcher] assertWithMatcher:grey_enabled()];
 
   // Verify page is translated.
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
@@ -1475,6 +1475,50 @@ void TestResponseProvider::GetLanguageResponse(
 
   // Verify page is not translated.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Translated"];
+}
+
+// Tests that for a tab where translation was applied in Reading Mode, deletion
+// of the original web state correctly closes Reading Mode state.
+- (void)testTranslateInClosedReaderMode {
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
+  }
+#endif
+  // Set up server with a French page.
+  std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
+  web::test::SetUpHttpServer(std::move(provider));
+
+  GURL URL = web::test::HttpServer::MakeUrl(
+      base::StringPrintf("http://%s", kFrenchPageDistillablePath));
+
+  // Load URL.
+  [ChromeEarlGrey loadURL:URL];
+
+  // Check Translate banner is presented.
+  GREYAssertTrue([self isBeforeTranslateBannerVisible],
+                 @"Before Translate banner was not found");
+  // Tap banner button to translate.
+  GREYAssertTrue([self selectTranslateButton],
+                 @"Could not tap on Translate banner action button");
+
+  // Open Reader Mode.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
+
+  // Verify Reader Mode is active.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Verify page is translated.
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+
+  // Close Reader Mode.
+  [ChromeEarlGrey closeTabAtIndex:0];
+
+  [ChromeEarlGrey waitForMainTabCount:0];
 }
 
 @end

@@ -300,8 +300,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     AutofillTabHelper::CreateForWebState(web_state);
   }
 
-  if (!for_lens_overlay && !for_prerender) {
-    ChromeIOSTranslateClient::CreateForWebState(web_state);
+  if (!for_lens_overlay && !for_prerender && !for_reader_mode) {
+    ChromeIOSTranslateClient::CreateForWebState(
+        web_state, InfoBarManagerImpl::FromWebState(web_state));
   }
 
   if (!for_lens_overlay && !for_reader_mode) {

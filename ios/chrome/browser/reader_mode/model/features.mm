@@ -40,6 +40,9 @@ BASE_FEATURE(kEnableReaderModeOmniboxEntryPoint,
 
 BASE_FEATURE(kEnableReaderModeTranslation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableReaderModeTranslationWithInfobar,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
@@ -97,4 +100,9 @@ int ReaderModeDefaultBrowserNumDaysCriteria() {
       kEnableReaderModeDefaultBrowserPromo,
       /*name=*/kReaderModeDefaultBrowserNumDaysCriteriaStringName,
       /*default_value=*/kReaderModeDefaultBrowserPromoNumDaysCriteria);
+}
+
+bool IsReaderModeTranslationAvailable() {
+  return base::FeatureList::IsEnabled(kEnableReaderModeTranslation) ||
+         base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar);
 }

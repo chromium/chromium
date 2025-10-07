@@ -12,6 +12,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "components/language/core/browser/accept_languages_service.h"
 #import "components/language/core/browser/language_model_manager.h"
 #import "components/language/core/browser/pref_names.h"
@@ -38,8 +39,11 @@
 #import "third_party/metrics_proto/translate_event.pb.h"
 #import "url/gurl.h"
 
-ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
+ChromeIOSTranslateClient::ChromeIOSTranslateClient(
+    web::WebState* web_state,
+    infobars::InfoBarManager* infobar_manager)
     : web_state_(web_state),
+      infobar_manager_(infobar_manager),
       translate_driver_(
           web_state,
           LanguageDetectionModelLoaderServiceIOSFactory::GetForProfile(
@@ -77,11 +81,16 @@ translate::TranslateManager* ChromeIOSTranslateClient::GetTranslateManager() {
 
 std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
+  // Skip the banner if the page is in the process of being translated or if
+  // the page has been translated programmatically. If the page is translated
+  // via a user action (triggering from a menu) then show the infobar so that
+  // they have access to translate Settings.
   bool skip_banner =
       delegate->translate_step() ==
           translate::TranslateStep::TRANSLATE_STEP_TRANSLATING ||
-      delegate->translate_step() ==
-          translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE;
+      (delegate->translate_step() ==
+           translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE &&
+       !delegate->triggered_from_menu());
   return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
                                       std::move(delegate), skip_banner);
 }
@@ -97,18 +106,17 @@ bool ChromeIOSTranslateClient::ShowTranslateUI(
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   }
 
-  // If infobar management is not available from the web state, as is the case
-  // for Reader mode web state then do not show translation infobar.
-  if (!InfoBarManagerImpl::FromWebState(web_state_)) {
+  // If infobar management is not available from the web state then
+  // do not show translation infobar.
+  if (!infobar_manager_) {
     return false;
   }
 
   // Infobar UI.
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE || triggered_from_menu,
-      translate_manager_->GetWeakPtr(),
-      InfoBarManagerImpl::FromWebState(web_state_), step, source_language,
-      target_language, error_type, triggered_from_menu);
+      translate_manager_->GetWeakPtr(), infobar_manager_.get(), step,
+      source_language, target_language, error_type, triggered_from_menu);
 
   return true;
 }
@@ -195,6 +203,7 @@ void ChromeIOSTranslateClient::WasHidden(web::WebState* web_state) {
 
 void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
+  infobar_manager_ = nullptr;
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 
