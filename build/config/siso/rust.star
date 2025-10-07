@@ -279,7 +279,7 @@ def __step_config(ctx, step_config):
             ],
             "handler": "rust_build_handler",
             "remote": remote and config.get(ctx, "cog"),
-            "input_root_absolute_path": True,
+            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
@@ -290,7 +290,7 @@ def __step_config(ctx, step_config):
                 "third_party/rust-toolchain/lib/rustlib:rlib",
             ],
             "remote": remote and config.get(ctx, "cog"),
-            "input_root_absolute_path": True,
+            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
