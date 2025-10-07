@@ -25,18 +25,27 @@ function $(id) {
   return document.getElementById(id);
 }
 
+/**
+ * A helper function that calls the post-processing functions on a given
+ * element.
+ * @param {HTMLElement} element The container element of the article.
+ */
+function postProcessElement(element) {
+  // Readability will leave iframes around, but they need the proper structure
+  // and classes to be styled correctly.
+  addClassesToYoutubeIFrames(element);
+  // DomDistiller will leave placeholders, which need to be replaced with
+  // actual iframes.
+  fillYouTubePlaceholders(element);
+  sanitizeLinks(element);
+  ImageClassifier.processImagesIn(element);
+}
+
 function addToPage(html) {
   const div = document.createElement('div');
   div.innerHTML = html;
   $('content').appendChild(div);
-  // Readability will leave iframes around, but they need the proper structure
-  // and classes to be styled correctly.
-  addClassesToYoutubeIFrames(div);
-  // DomDistiller will leave placeholders, which need to be replaced with
-  // actual iframes.
-  fillYouTubePlaceholders(div);
-  sanitizeLinks(div);
-  ImageClassifier.processImagesIn(div);
+  postProcessElement(div);
 }
 
 /**
