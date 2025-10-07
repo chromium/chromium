@@ -81,6 +81,17 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, PageLoadsWhenFeatureOn) {
   EXPECT_FALSE(ActorOverlayUI::IsActorOverlayWebContents(web_contents));
 }
 
+IN_PROC_BROWSER_TEST_F(ActorOverlayTest, PageDoesNotLoadInOTRBrowser) {
+  GURL kUrl(chrome::kChromeUIActorOverlayURL);
+  Browser* otr_browser = OpenURLOffTheRecord(browser()->profile(), kUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(otr_browser, kUrl));
+  content::WebContents* web_contents =
+      otr_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_NE(web_contents->GetTitle(), u"Actor Overlay");
+  EXPECT_FALSE(ActorOverlayUI::IsActorOverlayWebContents(web_contents));
+}
+
 // Verifies that the ActorUiWindowController and Actor Ui Tab Controller
 // should only exist for normal browser windows.
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ControllerExistsForNormalBrowsers) {

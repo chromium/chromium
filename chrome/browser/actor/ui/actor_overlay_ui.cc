@@ -20,7 +20,8 @@ namespace actor::ui {
 
 bool ActorOverlayUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::kGlicActorUiOverlay.Get();
+  return features::kGlicActorUiOverlay.Get() &&
+         !browser_context->IsOffTheRecord();
 }
 
 ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
