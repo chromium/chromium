@@ -72,6 +72,9 @@ class AccountChooserRadioGroupView : public views::BoxLayoutView,
  private:
   struct AccountInfoCmp {
     bool operator()(const AccountInfo& lhs, const AccountInfo& rhs) const {
+      if (lhs.full_name == rhs.full_name) {
+        return lhs.email < rhs.email;
+      }
       return lhs.full_name < rhs.full_name;
     }
   };
