@@ -1919,11 +1919,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "content-settings-partitioning",
-    "owners": [ "brettw@chromium.org", "lt-web-apps-team@google.com"],
-    "expiry_milestone": 132
-  },
-  {
     "name": "contextual-cueing",
     "owners": [ "perrier@chromium.org","jeffreycohen@chromium.org"],
     "expiry_milestone": 160

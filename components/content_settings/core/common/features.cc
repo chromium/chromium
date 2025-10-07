@@ -156,8 +156,6 @@ const base::FeatureParam<EnableForIframeTypes>
         kTpcdPopupHeuristicEnableForIframeInitiatorName,
         EnableForIframeTypes::kAll, &kEnableForIframeTypesOptions};
 
-BASE_FEATURE(kContentSettingsPartitioning, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kForceAllowStorageAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

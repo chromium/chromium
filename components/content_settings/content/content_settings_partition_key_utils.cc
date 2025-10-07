@@ -13,11 +13,6 @@
 namespace content_settings {
 
 PartitionKey GetPartitionKey(const content::StoragePartitionConfig& config) {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kContentSettingsPartitioning)) {
-    return PartitionKey(config.partition_domain(), config.partition_name(),
-                        config.in_memory());
-  }
   return PartitionKey();
 }
 

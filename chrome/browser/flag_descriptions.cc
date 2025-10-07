@@ -326,10 +326,6 @@ const char kContainerTypeNoLayoutContainmentDescription[] =
     "The container-type property was recently changed to not add layout "
     "containment, this allows users to temporarily disable this change.";
 
-const char kContentSettingsPartitioningName[] = "Content Settings Partitioning";
-const char kContentSettingsPartitioningDescription[] =
-    "Partition content settings by StoragePartitions";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kCredentialManagementThirdPartyWebApiRequestForwardingName[] =
     "Credential Management Third Party Web API Request Forwarding";

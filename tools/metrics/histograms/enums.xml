@@ -13816,7 +13816,6 @@ from previous Chrome versions.
   <int value="-122492389" label="enable-browser-task-scheduler"/>
   <int value="-122458532" label="FilesExtractArchive:enabled"/>
   <int value="-121563330" label="SecurePaymentConfirmationBrowser:disabled"/>
-  <int value="-121476972" label="ContentSettingsPartitioning:disabled"/>
   <int value="-120988078" label="OmniboxGroupingFrameworkForZPS:enabled"/>
   <int value="-120521482" label="DirectManipulationStylus:enabled"/>
   <int value="-120430245" label="EnableExpKitTextClassifier:enabled"/>
@@ -16744,7 +16743,6 @@ from previous Chrome versions.
       label="QuickAnswersAlwaysTriggerForSingleWord:disabled"/>
   <int value="920563204" label="AndroidHatsRefactor:enabled"/>
   <int value="921561616" label="WebAssemblyTiering:disabled"/>
-  <int value="923359298" label="ContentSettingsPartitioning:enabled"/>
   <int value="923752712" label="WelcomeTour:enabled"/>
   <int value="923923308" label="WifiSyncAllowDeletes:enabled"/>
   <int value="923947923" label="ReadPrinterCapabilitiesWithXps:disabled"/>

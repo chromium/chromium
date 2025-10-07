@@ -249,11 +249,6 @@ extern const base::FeatureParam<bool>
 // End of third-party cookie access heuristics features //
 //////////////////////////////////////////////////////////
 
-// Whether we should partition content settings (by StoragePartitions for
-// non-ios platforms).
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
-
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const char kUseTestMetadataName[];
 

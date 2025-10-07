@@ -234,9 +234,6 @@ extern const char kClipboardMaximumAgeDescription[];
 extern const char kContainerTypeNoLayoutContainmentName[];
 extern const char kContainerTypeNoLayoutContainmentDescription[];
 
-extern const char kContentSettingsPartitioningName[];
-extern const char kContentSettingsPartitioningDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kCredentialManagementThirdPartyWebApiRequestForwardingName[];
 extern const char
