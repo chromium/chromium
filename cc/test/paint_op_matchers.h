@@ -32,6 +32,7 @@ class PaintOpEq {
   using is_gtest_matcher = void;
 
   template <typename... Args>
+    requires(std::is_constructible_v<OpT, Args...>)
   explicit PaintOpEq(Args&&... args)
       : expected_op_(base::MakeRefCounted<base::RefCountedData<OpT>>(
             std::in_place,
