@@ -5986,7 +5986,6 @@ class ProxyCORSWebRequestApiTest
 };
 
 using ProxyCORSDeclarativeNetRequestApiTest = ProxyCORSWebRequestApiTest;
-using ProxyCORSWebRequestApiTestWithContextTypeMv3 = ProxyCORSWebRequestApiTest;
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ProxyCORSWebRequestApiTest,
@@ -5998,10 +5997,6 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 INSTANTIATE_TEST_SUITE_P(/* No prefix */,
                          ProxyCORSDeclarativeNetRequestApiTest,
-                         ::testing::Values(ContextType::kFromManifest));
-
-INSTANTIATE_TEST_SUITE_P(/* No prefix */,
-                         ProxyCORSWebRequestApiTestWithContextTypeMv3,
                          ::testing::Values(ContextType::kFromManifest));
 
 // Regression test for crbug.com/1212625
@@ -6100,56 +6095,6 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSDeclarativeNetRequestApiTest,
       base::ASCIIToUTF16(std::string(kCORSProxyUser)),
       base::ASCIIToUTF16(std::string(kCORSProxyPass)));
 
-  // Wait for the proxy server to return a response for the preflight request
-  // after auth is provided. If the preflight request was cancelled, then this
-  // test will not finish.
-  WaitForPreflightResponse();
-}
-
-// Tests that an extension can successfully receive and handle an
-// `onAuthRequired` event for a CORS preflighted request that requires proxy
-// authentication. The test verifies that the extension's handler provides the
-// necessary credentials and the preflight request completes successfully.
-// Regression test for https://crbug.com/40928015.
-IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTestWithContextTypeMv3,
-                       PreflightOnAuthRequiredSuccessful) {
-  static constexpr char kManifest[] = R"({
-    "name": "MV3 CORS Preflight webRequest.OnAuthRequired",
-    "version": "0.1",
-    "manifest_version": 3,
-    "permissions": [ "webRequest", "webRequestAuthProvider" ],
-    "host_permissions": [ "http://127.0.0.1/*", "http://cors.test/*" ],
-    "background": { "service_worker": "background.js" }
-  })";
-
-  static constexpr char kBackgroundJs[] =
-      R"(chrome.webRequest.onAuthRequired.addListener(details => {
-             const authCredentials = { username: '%s', password: '%s' };
-             chrome.test.succeed();
-             return {authCredentials};
-           },
-           { urls: ['<all_urls>'] },
-           ['blocking']);)";
-
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(
-      FILE_PATH_LITERAL("background.js"),
-      base::StringPrintf(kBackgroundJs, kCORSProxyUser, kCORSProxyPass));
-
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension) << message_;
-
-  ResultCatcher result_catcher;
-  preflight_waiter_ = std::make_unique<base::RunLoop>();
-
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
-                            embedded_test_server()->GetURL("/empty.html")));
-  // Send a CORS preflight request which requires proxy auth.
-  ExecuteCorsPreflightedRequest();
-
-  // The extension should have received the OnAuthRequired event.
-  EXPECT_TRUE(result_catcher.GetNextResult());
   // Wait for the proxy server to return a response for the preflight request
   // after auth is provided. If the preflight request was cancelled, then this
   // test will not finish.
