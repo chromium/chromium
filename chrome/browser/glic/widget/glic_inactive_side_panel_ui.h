@@ -46,6 +46,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   views::View* GetViewForTesting() override;
+  void Focus() override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;

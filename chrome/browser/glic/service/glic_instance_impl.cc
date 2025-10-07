@@ -124,6 +124,7 @@ GlicInstanceImpl::GlicInstanceImpl(
   // TODO(crbug.com/448160018): Figure out how to signal the web contents
   // opening so that this can be set to `true`.
   host_.CreateContents(/*initially_hidden=*/false);
+  host_observation_.Observe(&host_);
 }
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;
@@ -587,6 +588,14 @@ void GlicInstanceImpl::WillCloseFor(tabs::TabInterface* tab) {
 
 void GlicInstanceImpl::Attach(tabs::TabInterface* tab) {
   Show(EmbedderType::kSidePanel, tab);
+}
+
+void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
+  if (state == mojom::WebUiState::kReady) {
+    if (auto* embedder = GetActiveEmbedder()) {
+      embedder->Focus();
+    }
+  }
 }
 
 }  // namespace glic

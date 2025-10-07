@@ -27,6 +27,7 @@ class GlicInactiveFloatingUi : public GlicUiEmbedder {
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   views::View* GetViewForTesting() override;
+  void Focus() override;
 
  private:
   std::unique_ptr<views::View> CreateView();

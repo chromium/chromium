@@ -55,4 +55,7 @@ std::unique_ptr<GlicUiEmbedder> GlicInactiveFloatingUi::CreateInactiveEmbedder()
   NOTREACHED() << "The embedder is already inactive.";
 }
 
+void GlicInactiveFloatingUi::Focus() {
+  NOTIMPLEMENTED();
+}
 }  // namespace glic

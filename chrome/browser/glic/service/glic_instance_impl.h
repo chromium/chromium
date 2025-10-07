@@ -43,6 +43,7 @@ class GlicTabContentsObserver;
 class GlicInstanceImpl : public GlicInstance,
                          public BrowserListObserver,
                          public Host::InstanceDelegate,
+                         public Host::Observer,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate {
  public:
@@ -149,6 +150,9 @@ class GlicInstanceImpl : public GlicInstance,
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
 
+  // Host::Observer
+  void WebUiStateChanged(mojom::WebUiState state) override;
+
  private:
   // A tag type to represent the floating embedder key.
   struct FloatingEmbedderKey {
@@ -225,6 +229,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
+  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

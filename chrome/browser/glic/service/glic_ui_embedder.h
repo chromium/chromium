@@ -46,6 +46,9 @@ class GlicUiEmbedder {
   // Close the glic UI (keeps webclient alive for now)
   virtual void Close() = 0;
 
+  // Focus embedder's webcontents.
+  virtual void Focus() = 0;
+
   virtual views::View* GetViewForTesting() = 0;
 
   // Creates the inactive version of this embedder.

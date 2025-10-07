@@ -120,6 +120,10 @@ views::View* GlicInactiveSidePanelUi::GetViewForTesting() {
   return nullptr;
 }
 
+void GlicInactiveSidePanelUi::Focus() {
+  // Do nothing. Inactive view doesn't have webcontents to set focus on.
+}
+
 std::unique_ptr<GlicUiEmbedder>
 GlicInactiveSidePanelUi::CreateInactiveEmbedder() const {
   NOTREACHED() << "The embedder is already inactive.";

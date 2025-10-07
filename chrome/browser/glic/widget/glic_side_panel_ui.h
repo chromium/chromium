@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
+#include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,6 +39,7 @@ class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   views::View* GetViewForTesting() override;
+  void Focus() override;
 
   // Host::EmbedderDelegate:
   const mojom::PanelState& GetPanelState() const override;
@@ -67,6 +69,8 @@ class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
+  views::ViewTracker glic_view_tracker_;
+
   base::WeakPtrFactory<GlicSidePanelUi> weak_ptr_factory_{this};
 };
 

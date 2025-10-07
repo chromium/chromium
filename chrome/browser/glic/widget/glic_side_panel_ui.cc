@@ -45,6 +45,7 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
       profile, GlicWidget::GetInitialSize(), nullptr);
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
+  glic_view_tracker_.SetView(glic_view.get());
   return glic_view;
 }
 
@@ -95,10 +96,20 @@ bool GlicSidePanelUi::IsShowing() const {
   return true;
 }
 
+void GlicSidePanelUi::Focus() {
+  if (glic_view_tracker_.view()) {
+    static_cast<GlicView*>(glic_view_tracker_.view())
+        ->GetWebContents()
+        ->Focus();
+  }
+}
+
 void GlicSidePanelUi::VisibilityChanged(bool visible) {
   // Showing only happens through glic entrypoint, hiding can also be triggered
   // by side panel coordinator when replacing glic with another entry.
-  if (!visible && tab_) {
+  if (visible) {
+    Focus();
+  } else if (tab_) {
     delegate_->WillCloseFor(tab_.get());
   }
 }
