@@ -636,7 +636,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
   new_request->enable_load_timing = true;
 
   if (base::FeatureList::IsEnabled(
-          network::features::kRendererSideContentDecoding)) {
+          network::features::kRendererSideContentDecoding) &&
+      network::features::kRendererSideContentDecodingForNavigation.Get()) {
     new_request->client_side_content_decoding_enabled = true;
   }
 

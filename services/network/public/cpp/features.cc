@@ -306,6 +306,14 @@ BASE_FEATURE_PARAM(int,
                    &kRendererSideContentDecoding,
                    /*name=*/"RendererSideContentDecodingPipeSize",
                    /*default_value=*/0);
+// Enables renderer-side content decoding for navigations. This is a sub-feature
+// of `kRendererSideContentDecoding` and has no effect if that feature is
+// disabled.
+BASE_FEATURE_PARAM(bool,
+                   kRendererSideContentDecodingForNavigation,
+                   &kRendererSideContentDecoding,
+                   /*name=*/"RendererSideContentDecodingForNavigation",
+                   /*default_value=*/true);
 // For testing purposes only. If set to true, the creation of the Mojo data pipe
 // for the RendererSideContentDecoding feature will be forced to fail,
 // simulating an insufficient resources error (net::ERR_INSUFFICIENT_RESOURCES).
