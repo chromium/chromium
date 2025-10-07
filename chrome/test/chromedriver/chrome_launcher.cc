@@ -90,6 +90,8 @@ const char* const kCommonSwitches[] = {
     "allow-pre-commit-input",
     // https://crbug.com/445332809.
     "disable-features=IgnoreDuplicateNavs",
+    // https://crbug.com/431928370.
+    "disable-features=Prewarm",
 };
 
 const char* const kDesktopSwitches[] = {
