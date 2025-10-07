@@ -212,6 +212,9 @@ std::string GetGooglePasswordManagerSubPageURLStr() {
 #if !BUILDFLAG(IS_ANDROID)
 void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
+  if (!browser) {
+    return;
+  }
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
                                 referrer);
   chrome::ShowPasswordManager(browser);
@@ -220,6 +223,9 @@ void NavigateToManagePasswordsPage(Browser* browser,
 void NavigateToPasswordDetailsPage(Browser* browser,
                                    const std::string& password_domain_name,
                                    ManagePasswordsReferrer referrer) {
+  if (!browser) {
+    return;
+  }
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
                                 referrer);
   chrome::ShowPasswordDetailsPage(browser, password_domain_name);
