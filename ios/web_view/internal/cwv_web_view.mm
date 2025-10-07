@@ -84,6 +84,10 @@ NSString* const kProtobufStorageKey = @"protobufStorage";
 NSString* const kStorageKey = @"storage";
 NSString* const kSessionKey = @"session";
 
+// Policy to use when realizing the deserialized WebState.
+constexpr web::WebState::RealizationPolicy kRealizationPolicy =
+    web::WebState::RealizationPolicy::kEnforceNoAttachedData;
+
 // Converts base::Value expected to be a dictionary or list to NSDictionary or
 // NSArray, respectively.
 id NSObjectFromCollectionValue(const base::Value* value) {
@@ -223,10 +227,12 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 
 - (std::unique_ptr<web::WebState>)createWebState:
     (web::BrowserState*)browserState {
-  return web::WebState::CreateWithStorage(
+  auto webState = web::WebState::CreateWithStorage(
       browserState, _webStateID, _storage.metadata(),
       base::ReturnValueOnce(std::make_optional(std::move(_storage))),
       base::ReturnValueOnce<NSData*>(nil));
+  webState->ForceRealizedWithPolicy(kRealizationPolicy);
+  return webState;
 }
 
 - (const web::proto::WebStateStorage&)storage {
