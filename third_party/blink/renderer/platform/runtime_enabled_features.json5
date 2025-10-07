@@ -2837,7 +2837,7 @@
     {
       // crbug.com/1420675
       name: "InsertLineBreakIfPhrasingContent",
-      status: {"Android": "test", "default": "stable"},
+      status: "stable",
     },
     {
       // Improved support for debugging CSSNestedDeclarations.
