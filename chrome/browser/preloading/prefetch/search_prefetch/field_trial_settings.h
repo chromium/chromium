@@ -73,6 +73,9 @@ bool PrefetchSearchHistorySuggestions();
 // being the default match.
 bool OnlyAllowDefaultMatchPreloading();
 bool IsNoVarySearchDiskCacheEnabled();
+// TODO(https://crbug.com/413557424): Remove the DryRun mode once the
+// investigation is done.
+bool CacheAliasLoaderDryRunModeEnabled();
 
 // Allows the omnibox search prefetch in Incognito.
 //

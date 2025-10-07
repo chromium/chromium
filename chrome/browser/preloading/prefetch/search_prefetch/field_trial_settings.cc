@@ -21,6 +21,11 @@ BASE_FEATURE(kSearchPrefetchServicePrefetching,
 BASE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill-switch for debugging CacheAliasLoader and NVS's cache hit rate.
+// TODO(https://crbug.com/413557424): Remove the DryRun mode once the
+// investigation is done.
+BASE_FEATURE(kCacheAliasLoaderDryRunMode, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool SearchPrefetchServicePrefetchingIsEnabled() {
   if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
     return false;
@@ -114,6 +119,10 @@ bool OnlyAllowDefaultMatchPreloading() {
 bool IsNoVarySearchDiskCacheEnabled() {
   return base::FeatureList::IsEnabled(net::features::kHttpCacheNoVarySearch) &&
          base::FeatureList::IsEnabled(kSearchPrefetchWithNoVarySearchDiskCache);
+}
+
+bool CacheAliasLoaderDryRunModeEnabled() {
+  return base::FeatureList::IsEnabled(kCacheAliasLoaderDryRunMode);
 }
 
 bool IsPrefetchIncognitoEnabled() {

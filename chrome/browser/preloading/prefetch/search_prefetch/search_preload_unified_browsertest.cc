@@ -1302,15 +1302,11 @@ IN_PROC_BROWSER_TEST_P(HTTPCacheSearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url_1));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url_1));
 
-  if (!GetParam()) {
-    // If NoVarySearch is enabled, we do not use
-    // CacheAliasSearchPrefetchURLLoader so it does not record anything.
-    histogram_tester.ExpectUniqueSample(
-        "Omnibox.SearchPrefetch.CacheAliasFallbackReason",
-        CacheAliasSearchPrefetchURLLoader::FallbackReason::kNoFallback, 1);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.SearchPrefetch.CacheAliasElapsedTimeToFallback", 0);
-  }
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.CacheAliasFallbackReason",
+      CacheAliasSearchPrefetchURLLoader::FallbackReason::kNoFallback, 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.CacheAliasElapsedTimeToFallback", 0);
 }
 
 // Tests the started prerender is destroyed after prefetch request expired.

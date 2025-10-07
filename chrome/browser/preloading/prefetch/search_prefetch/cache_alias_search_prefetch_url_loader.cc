@@ -26,9 +26,19 @@
 
 CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     Profile* profile,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation)
+    : CacheAliasSearchPrefetchURLLoader(profile,
+                                        network_traffic_annotation,
+                                        /*prefetch_url=*/GURL(),
+                                        Mode::kDryRun) {}
+
+CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
+    Profile* profile,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    const GURL& prefetch_url)
-    : url_loader_factory_(profile->GetDefaultStoragePartition()
+    const GURL& prefetch_url,
+    Mode mode)
+    : mode_(mode),
+      url_loader_factory_(profile->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()),
       search_prefetch_service_(
           SearchPrefetchServiceFactory::GetForProfile(profile)->GetWeakPtr()),
@@ -80,7 +90,13 @@ void CacheAliasSearchPrefetchURLLoader::StartLoadCachedPrefetchResponse() {
   network::ResourceRequest prefetch_request = *resource_request_;
 
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;
-  prefetch_request.url = prefetch_url_;
+  switch (mode_) {
+    case Mode::kNormal:
+      prefetch_request.url = prefetch_url_;
+      break;
+    case Mode::kDryRun:
+      break;
+  }
 
   // Create a network service URL loader with passed in params.
   url_loader_factory_->CreateLoaderAndStart(

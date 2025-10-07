@@ -128,7 +128,8 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   if (handler) {
     return handler;
   }
-  if (IsNoVarySearchDiskCacheEnabled()) {
+  if (IsNoVarySearchDiskCacheEnabled() &&
+      !CacheAliasLoaderDryRunModeEnabled()) {
     return {};
   }
   if (tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
