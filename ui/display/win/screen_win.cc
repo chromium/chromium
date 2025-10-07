@@ -29,6 +29,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
@@ -233,15 +234,15 @@ gfx::DisplayColorSpaces GetDisplayColorSpacesForHdr(
     // Windows RS3, but RGB10A2 with HDR10 color space works fine (see
     // https://crbug.com/937108#c92).
     if (base::win::GetVersion() > base::win::Version::WIN10_RS3) {
-      color_spaces.SetOutputColorSpaceAndBufferFormat(
-          usage, !kNeedsAlpha, scrgb_linear, gfx::BufferFormat::RGBA_F16);
+      color_spaces.SetOutputColorSpaceAndFormat(
+          usage, !kNeedsAlpha, scrgb_linear, viz::SinglePlaneFormat::kRGBA_F16);
     } else {
-      color_spaces.SetOutputColorSpaceAndBufferFormat(
-          usage, !kNeedsAlpha, hdr10, gfx::BufferFormat::RGBA_1010102);
+      color_spaces.SetOutputColorSpaceAndFormat(
+          usage, !kNeedsAlpha, hdr10, viz::SinglePlaneFormat::kRGBA_1010102);
     }
     // Use RGBA F16 backbuffers for HDR if alpha channel is required.
-    color_spaces.SetOutputColorSpaceAndBufferFormat(
-        usage, kNeedsAlpha, scrgb_linear, gfx::BufferFormat::RGBA_F16);
+    color_spaces.SetOutputColorSpaceAndFormat(
+        usage, kNeedsAlpha, scrgb_linear, viz::SinglePlaneFormat::kRGBA_F16);
   }
   return color_spaces;
 }

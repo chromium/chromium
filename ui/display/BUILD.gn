@@ -124,6 +124,7 @@ component("display") {
     "//base",
     "//base:i18n",
     "//components/device_event_log",
+    "//components/viz/common/resources:shared_image_format",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/mojom:mojom_shared_cpp_sources",
     "//ui/display/util",
