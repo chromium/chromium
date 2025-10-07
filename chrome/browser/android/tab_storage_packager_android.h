@@ -15,6 +15,7 @@
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
+class StorageIdMapping;
 class StoragePackage;
 class TabInterface;
 class TabCollection;
@@ -31,7 +32,8 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
 
   // TabStoragePackager overrides:
   void Package(const TabInterface* tab) override;
-  void Package(const TabCollection* collection) override;
+  void Package(const TabCollection* collection,
+               StorageIdMapping& mapping) override;
   std::unique_ptr<StoragePackage> ReleasePackage() override;
 
   void ConsolidatePackageData(

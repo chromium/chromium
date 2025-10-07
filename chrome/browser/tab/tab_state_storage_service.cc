@@ -41,6 +41,16 @@ TabStateStorageService::TabStateStorageService(
 
 TabStateStorageService::~TabStateStorageService() = default;
 
+int TabStateStorageService::GetStorageId(const TabCollection* collection) {
+  return ::tabs::GetOrCreateStorageId(
+      collection, collection_handle_to_storage_id_, next_storage_id_);
+}
+
+int TabStateStorageService::GetStorageId(const TabInterface* tab) {
+  return ::tabs::GetOrCreateStorageId(tab, tab_handle_to_storage_id_,
+                                      next_storage_id_);
+}
+
 void TabStateStorageService::Save(const TabInterface* tab) {
   if (!packager_) {
     return;
@@ -50,7 +60,7 @@ void TabStateStorageService::Save(const TabInterface* tab) {
   std::unique_ptr<StoragePackage> package = packager_->ReleasePackage();
   DCHECK(package) << "Packager should return a package";
 
-  int storage_id = GetOrCreateStorageId(tab);
+  int storage_id = GetStorageId(tab);
   tab_backend_->Save(storage_id, TabStorageType::kTab, std::move(package));
 }
 
@@ -59,11 +69,11 @@ void TabStateStorageService::Save(const TabCollection* collection) {
     return;
   }
 
-  packager_->Package(collection);
+  packager_->Package(collection, *this);
   std::unique_ptr<StoragePackage> package = packager_->ReleasePackage();
   DCHECK(package) << "Packager should return a package";
 
-  int storage_id = GetOrCreateStorageId(collection);
+  int storage_id = GetStorageId(collection);
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   tab_backend_->Save(storage_id, type, std::move(package));
 }
@@ -89,17 +99,6 @@ void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
   }
   next_storage_id_ = max_storage_id + 1;
   std::move(callback).Run(std::move(tab_states));
-}
-
-int TabStateStorageService::GetOrCreateStorageId(
-    const TabCollection* collection) {
-  return ::tabs::GetOrCreateStorageId(
-      collection, collection_handle_to_storage_id_, next_storage_id_);
-}
-
-int TabStateStorageService::GetOrCreateStorageId(const TabInterface* tab) {
-  return ::tabs::GetOrCreateStorageId(tab, tab_handle_to_storage_id_,
-                                      next_storage_id_);
 }
 
 }  // namespace tabs

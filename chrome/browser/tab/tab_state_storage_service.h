@@ -13,6 +13,7 @@
 #include "base/android/token_android.h"
 #include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
@@ -27,7 +28,8 @@ class TabState;
 namespace tabs {
 
 class TabStateStorageService : public KeyedService,
-                               public base::SupportsUserData {
+                               public base::SupportsUserData,
+                               public StorageIdMapping {
  public:
   using LoadAllTabsCallback =
       base::OnceCallback<void(std::vector<tabs_pb::TabState>)>;
@@ -36,6 +38,10 @@ class TabStateStorageService : public KeyedService,
       std::unique_ptr<TabStateStorageBackend> tab_backend,
       std::unique_ptr<TabStoragePackager>);
   ~TabStateStorageService() override;
+
+  // StorageIdMapping:
+  int GetStorageId(const TabCollection* collection) override;
+  int GetStorageId(const TabInterface* tab) override;
 
   void Save(const TabInterface* tab);
   void Save(const TabCollection* collection);
@@ -50,9 +56,6 @@ class TabStateStorageService : public KeyedService,
  private:
   void OnAllTabsLoaded(LoadAllTabsCallback callback,
                        std::vector<NodeState> entries);
-
-  int GetOrCreateStorageId(const TabCollection* collection);
-  int GetOrCreateStorageId(const TabInterface* tab);
 
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;

@@ -12,6 +12,7 @@ namespace tabs {
 class TabInterface;
 class TabCollection;
 class StoragePackage;
+class StorageIdMapping;
 
 // This class is used to package tab data for use in the background thread.
 class TabStoragePackager {
@@ -31,7 +32,8 @@ class TabStoragePackager {
   // children's data. However the identity and order of children shold be
   // captured in this package. After packaging, its is available via the
   // #ReleasePackage() method.
-  virtual void Package(const TabCollection* collection) = 0;
+  virtual void Package(const TabCollection* collection,
+                       StorageIdMapping& mapping) = 0;
 
   // Allows the unique ownership of the underlying StoragePackage to be
   // transferred out of the packager. After this call, the stored package will
