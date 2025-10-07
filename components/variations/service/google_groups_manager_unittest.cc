@@ -18,6 +18,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace variations {
+namespace {
+
 class GoogleGroupsManagerTest : public ::testing::Test {
  public:
   GoogleGroupsManagerTest() {
@@ -253,3 +256,6 @@ TEST_F(GoogleGroupsManagerTest,
   EXPECT_FALSE(
       google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
 }
+
+}  // namespace
+}  // namespace variations

@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
+namespace {
 
 TEST(HashingTest, HashName) {
   // Checks that hashing is stable on all platforms.
@@ -35,4 +36,5 @@ TEST(HashingTest, HashNameAsHexString) {
   EXPECT_EQ("37e4f786", HashNameAsHexString("a"));
 }
 
+}  // namespace
 }  // namespace variations

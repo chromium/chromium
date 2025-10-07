@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
+namespace {
 
 TEST(ActiveFieldTrialsTest, GetFieldTrialActiveGroups) {
   typedef std::set<ActiveGroupId, ActiveGroupIdCompare> ActiveGroupIdSet;
@@ -100,4 +101,5 @@ TEST(ActiveFieldTrialsTest,
             HashName("group one_suffix_MANUALLY_FORCED"));
 }
 
+}  // namespace
 }  // namespace variations

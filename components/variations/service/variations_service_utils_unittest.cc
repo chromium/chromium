@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
+namespace {
 
 using VariationsServiceUtilsTest = ::testing::Test;
 
@@ -36,4 +37,6 @@ TEST(VariationsServiceUtilsTest, HasSeedExpiredSinceTime) {
               test.expired);
   }
 }
+
+}  // namespace
 }  // namespace variations

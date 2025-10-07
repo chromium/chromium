@@ -15,6 +15,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
+namespace {
 
 using SignedSeedDataTest = ::testing::TestWithParam<SignedSeedData>;
 
@@ -71,4 +72,5 @@ INSTANTIATE_TEST_SUITE_P(VariationsTestUtils,
                          SignedSeedDataTest,
                          ::testing::Values(kTestSeedData, kCrashingSeedData));
 
+}  // namespace
 }  // namespace variations

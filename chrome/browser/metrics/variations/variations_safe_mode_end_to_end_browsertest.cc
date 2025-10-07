@@ -51,6 +51,10 @@
 #endif
 
 namespace variations {
+namespace {
+
+constexpr char kSafeSeedFilename[] = "VariationsSafeSeedV1";
+constexpr char kSeedFilename[] = "VariationsSeedV1";
 
 class VariationsSafeModeEndToEndBrowserTestHelper
     : public InProcessBrowserTest {
@@ -232,10 +236,9 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
     ASSERT_EQ(local_state->GetString(prefs::kVariationsSafeCompressedSeed), "");
     // Write the seeds to the Seed Files.
     // TODO(crbug.com/380465790, crbug.com/369108446): Update seed file name.
-    ASSERT_TRUE(
-        base::WriteFile(user_data_dir().AppendASCII("VariationsSafeSeedV1"),
-                        kTestSeedData.GetCompressedData()));
-    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII("VariationsSeedV1"),
+    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII(kSafeSeedFilename),
+                                kTestSeedData.GetCompressedData()));
+    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII(kSeedFilename),
                                 kCrashingSeedData.GetCompressedData()));
   } else {
     // GetParam() == variations::kControlGroup
@@ -290,10 +293,9 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
     // Write the seeds to the Seed Files.
     // TODO(crbug.com/380465790, crbug.com/369108446): Update seed file name.
     auto seed_compressed_data = kCrashingSeedData.GetCompressedData();
-    ASSERT_TRUE(
-        base::WriteFile(user_data_dir().AppendASCII("VariationsSafeSeedV1"),
-                        seed_compressed_data));
-    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII("VariationsSeedV1"),
+    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII(kSafeSeedFilename),
+                                seed_compressed_data));
+    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII(kSeedFilename),
                                 seed_compressed_data));
   } else {
     // GetParam() == variations::kControlGroup
@@ -320,4 +322,5 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
   RunAndExpectSuccessfulSubTest(sub_test);
 }
 
+}  // namespace
 }  // namespace variations

@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
+namespace {
 
 TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
   base::test::TaskEnvironment task_environment;
@@ -60,4 +61,5 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
   ChildProcessFieldTrialSyncer::DeleteInstanceForTesting();
 }
 
+}  // namespace
 }  // namespace variations

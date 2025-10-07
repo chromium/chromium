@@ -25,6 +25,7 @@
 #endif
 
 namespace variations {
+namespace {
 
 TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
   std::string trial_list = "trial1/group1/*trial2/group2";
@@ -220,4 +221,5 @@ TEST(VariationsCommandLineTest, EncryptToString_EncryptAndDecryptUsingTestKey) {
 }
 #endif
 
+}  // namespace
 }  // namespace variations
