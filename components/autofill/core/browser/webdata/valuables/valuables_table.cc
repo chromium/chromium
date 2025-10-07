@@ -224,4 +224,53 @@ bool ValuablesTable::RemoveLoyaltyCard(ValuableId loyalty_card_id) {
                              loyalty_card_id.value());
 }
 
+bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
+  if (!card.IsValid()) {
+    return false;
+  }
+
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  sql::Statement s;
+  InsertBuilder(
+      db(), s, kLoyaltyCardsTable,
+      {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
+      /*or_replace=*/true);
+
+  int index = 0;
+  s.BindString(index++, card.id().value());
+  s.BindString(index++, card.merchant_name());
+  s.BindString(index++, card.program_name());
+  s.BindString(index++, card.program_logo().spec());
+  s.BindString(index++, card.loyalty_card_number());
+
+  if (!s.Run()) {
+    return false;
+  }
+
+  // Remove old merchant domains for this card.
+  if (!DeleteWhereColumnEq(db(), kLoyaltyCardMerchantDomainTable,
+                           kLoyaltyCardId, card.id().value())) {
+    return false;
+  }
+
+  // Insert new merchant domains.
+  for (const GURL& merchant_domain : card.merchant_domains()) {
+    sql::Statement insert_domain;
+    InsertBuilder(db(), insert_domain, kLoyaltyCardMerchantDomainTable,
+                  {kLoyaltyCardId, kMerchantDomain});
+    insert_domain.BindString(0, card.id().value());
+    insert_domain.BindString(1, merchant_domain.spec());
+    if (!insert_domain.Run()) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
+}
+
 }  // namespace autofill
