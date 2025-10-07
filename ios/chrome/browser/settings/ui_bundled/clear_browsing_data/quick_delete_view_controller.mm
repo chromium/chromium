@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -520,7 +521,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                }];
 
   RegisterTableViewCell<TableViewPopUpCell>(_tableView);
-  RegisterTableViewCell<TableViewDetailTextCell>(_tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:_tableView];
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(_tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =
@@ -556,22 +557,20 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return timeRangeCell;
     }
     case ItemIdentifierBrowsingData: {
-      TableViewDetailTextCell* browsingDataCell =
-          DequeueTableViewCell<TableViewDetailTextCell>(tableView);
-      browsingDataCell.textLabel.text =
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title =
           l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_TITLE);
-      browsingDataCell.detailTextLabel.text = _browsingDataSummary;
-      browsingDataCell.detailTextLabel.textColor =
-          [UIColor colorNamed:kTextSecondaryColor];
-      browsingDataCell.allowMultilineDetailText = YES;
-      browsingDataCell.accessoryType =
-          UITableViewCellAccessoryDisclosureIndicator;
-      browsingDataCell.userInteractionEnabled = YES;
-      browsingDataCell.backgroundColor =
-          [UIColor colorNamed:kSecondaryBackgroundColor];
-      browsingDataCell.accessibilityIdentifier =
-          kQuickDeleteBrowsingDataButtonIdentifier;
-      return browsingDataCell;
+      configuration.titleNumberOfLines = 1;
+      configuration.subtitle = _browsingDataSummary;
+
+      UITableViewCell* cell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:_tableView];
+      cell.contentConfiguration = configuration;
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+      cell.accessibilityIdentifier = kQuickDeleteBrowsingDataButtonIdentifier;
+      return cell;
     }
   }
   NOTREACHED();

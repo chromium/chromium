@@ -19,6 +19,7 @@
   self.accessibilityHint = nil;
   self.accessibilityValue = nil;
   self.accessibilityUserInputLabels = nil;
+  self.accessoryView = nil;
 }
 
 #pragma mark - Accessibility

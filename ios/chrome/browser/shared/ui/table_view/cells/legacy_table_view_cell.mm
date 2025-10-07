@@ -66,6 +66,7 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
   self.userInteractionEnabled = YES;
   self.accessibilityLabel = nil;
   self.accessibilityUserInputLabels = nil;
+  self.accessoryView = nil;
 }
 
 #pragma mark - Accessibility
@@ -76,6 +77,14 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
     accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
   return accessibilityTraits;
+}
+
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  NSObject* contentConfiguration = self.contentConfiguration;
+  if (contentConfiguration.accessibilityUserInputLabels) {
+    return contentConfiguration.accessibilityUserInputLabels;
+  }
+  return [super accessibilityUserInputLabels];
 }
 
 - (CGPoint)accessibilityActivationPoint {
