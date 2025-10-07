@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/launch.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/browser/posix_file_descriptor_info_impl.h"
@@ -302,6 +303,10 @@ void ChildProcessLauncherHelper::DumpProcessStack(
 void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
     base::Process process,
     const RenderProcessPriority& priority) {
+  TRACE_EVENT(
+      "content",
+      "ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread",
+      "pid", process.Handle());
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
   Java_ChildProcessLauncherHelperImpl_setPriority(
