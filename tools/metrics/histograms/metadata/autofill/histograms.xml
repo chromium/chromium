@@ -8830,7 +8830,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="WebDatabase.AutofillWebDataBackendImpl.OperationResult"
     enum="AutofillWebDataBackendImplOperationResult" expires_after="2026-03-01">
   <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records the success or failure of various database operations in
     autofill::AutofillWebDataBackendImpl.
@@ -8840,14 +8840,14 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="WebDatabase.DatabaseErrors" enum="SqliteLoggedResultCode"
     expires_after="2026-03-01">
   <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Records the errors reported by SQLite.</summary>
 </histogram>
 
 <histogram name="WebDatabase.FailedMigrationToVersion" units="version"
     expires_after="2026-02-22">
   <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     If a migration to a new WebDatabase schema fails, this histogram records the
     target version to which the migration failed.
@@ -8857,7 +8857,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="WebDatabase.InitResult" enum="WebDatabaseInitResult"
     expires_after="2026-02-22">
   <owner>battre@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records whether WebDatabase::Init succeeds or otherwise a failure reason.
   </summary>
