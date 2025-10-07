@@ -52,9 +52,10 @@ namespace enterprise_connectors {
 
 namespace {
 
+using Event = ::chrome::cros::reporting::proto::Event;
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-using Event = ::chrome::cros::reporting::proto::Event;
 using SecurityAgent = ::chrome::cros::reporting::proto::SecurityAgent;
 
 Event GetTestEvent(Event::EventCase event_case) {
@@ -523,4 +524,226 @@ INSTANTIATE_TEST_SUITE_P(,
                                          Event::kExtensionTelemetryEvent));
 
 #endif
+
+class RealtimeReportingClientUrlTruncationTest
+    : public RealtimeReportingClientTestBase,
+      public testing::WithParamInterface<Event::EventCase> {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      policy::kUploadRealtimeReportingEventsUsingProto};
+};
+
+TEST_P(RealtimeReportingClientUrlTruncationTest, TestUrlTruncation) {
+  RealtimeReportingClient* reporting_client =
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+          profile_);
+  reporting_client->SetBrowserCloudPolicyClientForTesting(client_.get());
+
+  ReportingSettings settings;
+  settings.per_profile = false;
+
+  Event event_variant;
+  Event::EventCase event_case = GetParam();
+
+  std::string long_url(4242, 'a');
+  std::string truncated_url(2048, 'a');
+
+  switch (event_case) {
+    case Event::kDangerousDownloadEvent: {
+      auto* event = event_variant.mutable_dangerous_download_event();
+      event->set_url(long_url);
+      event->set_tab_url(long_url);
+      event->mutable_url_info()->set_url(long_url);
+      event->mutable_tab_url_info()->set_url(long_url);
+      event->add_referral_urls(long_url);
+      event->add_referrers()->set_url(long_url);
+      event->add_iframe_urls(long_url);
+      break;
+    }
+    case Event::kUrlFilteringInterstitialEvent: {
+      auto* event = event_variant.mutable_url_filtering_interstitial_event();
+      event->set_url(long_url);
+      event->mutable_url_info()->set_url(long_url);
+      event->add_referrer_urls(long_url);
+      event->add_referrers()->set_url(long_url);
+      break;
+    }
+    case Event::kPasswordBreachEvent: {
+      auto* event = event_variant.mutable_password_breach_event();
+      event->add_identities()->set_url(long_url);
+      break;
+    }
+    case Event::kLoginEvent: {
+      auto* event = event_variant.mutable_login_event();
+      event->set_url(long_url);
+      event->set_federated_origin(long_url);
+      break;
+    }
+    case Event::kUnscannedFileEvent: {
+      auto* event = event_variant.mutable_unscanned_file_event();
+      event->set_url(long_url);
+      event->set_tab_url(long_url);
+      event->add_referral_urls(long_url);
+      break;
+    }
+    case Event::kSensitiveDataEvent: {
+      auto* event = event_variant.mutable_sensitive_data_event();
+      event->set_url(long_url);
+      event->set_tab_url(long_url);
+      event->mutable_url_info()->set_url(long_url);
+      event->add_referral_urls(long_url);
+      event->add_referrers()->set_url(long_url);
+      event->add_iframe_urls(long_url);
+      break;
+    }
+    case Event::kInterstitialEvent: {
+      auto* event = event_variant.mutable_interstitial_event();
+      event->set_url(long_url);
+      event->add_referral_urls(long_url);
+      event->mutable_url_info()->set_url(long_url);
+      event->add_referrers()->set_url(long_url);
+      break;
+    }
+    case Event::kPasswordReuseEvent: {
+      auto* event = event_variant.mutable_password_reuse_event();
+      event->set_url(long_url);
+      event->add_referral_urls(long_url);
+      break;
+    }
+    default:
+      GTEST_SKIP() << "Event type not yet supported for this test.";
+  }
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
+      .WillOnce(
+          [event_case, truncated_url, &run_loop](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            ASSERT_EQ(request.events_size(), 1);
+            const auto& reported_event = request.events(0);
+            ASSERT_EQ(reported_event.event_case(), event_case);
+
+            switch (event_case) {
+              case Event::kDangerousDownloadEvent: {
+                const auto& event = reported_event.dangerous_download_event();
+                EXPECT_EQ(event.url(), truncated_url);
+                EXPECT_EQ(event.tab_url(), truncated_url);
+                EXPECT_EQ(event.url_info().url(), truncated_url);
+                EXPECT_EQ(event.tab_url_info().url(), truncated_url);
+                ASSERT_EQ(event.referral_urls_size(), 1);
+                EXPECT_EQ(event.referral_urls(0), truncated_url);
+                ASSERT_EQ(event.referrers_size(), 1);
+                EXPECT_EQ(event.referrers(0).url(), truncated_url);
+                ASSERT_EQ(event.iframe_urls_size(), 1);
+                EXPECT_EQ(event.iframe_urls(0), truncated_url);
+                break;
+              }
+              case Event::kUrlFilteringInterstitialEvent: {
+                const auto& event =
+                    reported_event.url_filtering_interstitial_event();
+                EXPECT_EQ(event.url(), truncated_url);
+                EXPECT_EQ(event.url_info().url(), truncated_url);
+                ASSERT_EQ(event.referrer_urls_size(), 1);
+                EXPECT_EQ(event.referrer_urls(0), truncated_url);
+                ASSERT_EQ(event.referrers_size(), 1);
+                EXPECT_EQ(event.referrers(0).url(), truncated_url);
+                break;
+              }
+              case Event::kPasswordBreachEvent: {
+                const auto& event = reported_event.password_breach_event();
+                ASSERT_EQ(event.identities_size(), 1);
+                EXPECT_EQ(event.identities(0).url(), truncated_url);
+                break;
+              }
+              case Event::kLoginEvent: {
+                const auto& event = reported_event.login_event();
+                EXPECT_EQ(event.url(), truncated_url);
+                EXPECT_EQ(event.federated_origin(), truncated_url);
+                break;
+              }
+              case Event::kUnscannedFileEvent: {
+                const auto& event = reported_event.unscanned_file_event();
+                EXPECT_EQ(event.url(), truncated_url);
+                EXPECT_EQ(event.tab_url(), truncated_url);
+                ASSERT_EQ(event.referral_urls_size(), 1);
+                EXPECT_EQ(event.referral_urls(0), truncated_url);
+                break;
+              }
+              case Event::kSensitiveDataEvent: {
+                const auto& event = reported_event.sensitive_data_event();
+                EXPECT_EQ(event.url(), truncated_url);
+                EXPECT_EQ(event.tab_url(), truncated_url);
+                EXPECT_EQ(event.url_info().url(), truncated_url);
+                ASSERT_EQ(event.referral_urls_size(), 1);
+                EXPECT_EQ(event.referral_urls(0), truncated_url);
+                ASSERT_EQ(event.referrers_size(), 1);
+                EXPECT_EQ(event.referrers(0).url(), truncated_url);
+                ASSERT_EQ(event.iframe_urls_size(), 1);
+                EXPECT_EQ(event.iframe_urls(0), truncated_url);
+                break;
+              }
+              case Event::kInterstitialEvent: {
+                const auto& event = reported_event.interstitial_event();
+                EXPECT_EQ(event.url(), truncated_url);
+                ASSERT_EQ(event.referral_urls_size(), 1);
+                EXPECT_EQ(event.referral_urls(0), truncated_url);
+                EXPECT_EQ(event.url_info().url(), truncated_url);
+                ASSERT_EQ(event.referrers_size(), 1);
+                EXPECT_EQ(event.referrers(0).url(), truncated_url);
+                break;
+              }
+              case Event::kPasswordReuseEvent: {
+                const auto& event = reported_event.password_reuse_event();
+                EXPECT_EQ(event.url(), truncated_url);
+                ASSERT_EQ(event.referral_urls_size(), 1);
+                EXPECT_EQ(event.referral_urls(0), truncated_url);
+                break;
+              }
+              default:
+                break;
+            }
+            std::move(callback).Run(
+                policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
+            run_loop.Quit();
+          });
+  reporting_client->ReportEvent(std::move(event_variant), std::move(settings));
+  run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllEventTypes,
+    RealtimeReportingClientUrlTruncationTest,
+    testing::Values(Event::kDangerousDownloadEvent,
+                    Event::kUrlFilteringInterstitialEvent,
+                    Event::kPasswordBreachEvent,
+                    Event::kLoginEvent,
+                    Event::kUnscannedFileEvent,
+                    Event::kSensitiveDataEvent,
+                    Event::kInterstitialEvent,
+                    Event::kPasswordReuseEvent),
+    [](const testing::TestParamInfo<Event::EventCase>& info) {
+      switch (info.param) {
+        case Event::kDangerousDownloadEvent:
+          return "DangerousDownloadEvent";
+        case Event::kUrlFilteringInterstitialEvent:
+          return "UrlFilteringInterstitialEvent";
+        case Event::kPasswordBreachEvent:
+          return "PasswordBreachEvent";
+        case Event::kLoginEvent:
+          return "LoginEvent";
+        case Event::kUnscannedFileEvent:
+          return "UnscannedFileEvent";
+        case Event::kSensitiveDataEvent:
+          return "SensitiveDataEvent";
+        case Event::kInterstitialEvent:
+          return "InterstitialEvent";
+        case Event::kPasswordReuseEvent:
+          return "PasswordReuseEvent";
+        default:
+          return "UnknownEvent";
+      }
+    });
+
 }  // namespace enterprise_connectors

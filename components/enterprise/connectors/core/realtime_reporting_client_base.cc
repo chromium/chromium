@@ -279,6 +279,7 @@ void RealtimeReportingClientBase::FinishUploadSecurityEvent(
     ::chrome::cros::reporting::proto::Event event,
     policy::CloudPolicyClient* client,
     const ReportingSettings& settings) {
+  MaybeTruncateLongUrls(event);
   auto event_type =
       enterprise_connectors::GetUmaEnumFromEventCase(event.event_case());
   ::chrome::cros::reporting::proto::UploadEventsRequest request =

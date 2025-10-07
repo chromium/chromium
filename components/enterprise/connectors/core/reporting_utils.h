@@ -207,6 +207,9 @@ void AddFrameUrlChainToEvent(
     const google::protobuf::RepeatedPtrField<std::string>& frame_url_chain,
     base::Value::Dict& event);
 
+void MaybeTruncateLongUrls(
+    ::chrome::cros::reporting::proto::Event& event_variant);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_UTILS_H_
