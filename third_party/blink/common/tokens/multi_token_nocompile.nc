@@ -20,11 +20,11 @@ void NoTokenType() {
 }
 
 void OneTokenType() {
-  MultiToken<FooToken> token;  // expected-error {{constraints not satisfied for class template 'MultiToken' [with Tokens = <base::TokenType<blink::FooTokenTag>>]}}
+  MultiToken<FooToken> token;  // expected-error-re {{constraints not satisfied for class template 'MultiToken' [with Tokens = <{{FooToken|base::TokenType<blink::FooTokenTag>}}>]}}
 }
 
 void DuplicateTokenType() {
-  MultiToken<FooToken, FooToken> token;  // expected-error {{constraints not satisfied for class template 'MultiToken' [with Tokens = <base::TokenType<blink::FooTokenTag>, base::TokenType<blink::FooTokenTag>>]}}
+  MultiToken<FooToken, FooToken> token;  // expected-error-re {{constraints not satisfied for class template 'MultiToken' [with Tokens = <{{FooToken, FooToken|base::TokenType<blink::FooTokenTag>, base::TokenType<blink::FooTokenTag>}}>]}}
 }
 
 void NonCompatibleMultiTokenConstruction() {
