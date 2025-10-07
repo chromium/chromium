@@ -354,11 +354,6 @@ BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
 BASE_FEATURE(kAutofillEnableEmailOrLoyaltyCardsFilling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the Blink renderer extracts forms only on admissible URLs.
-// TODO(crbug.com/409401613): Remove after M142 branch point (2025-09-29).
-BASE_FEATURE(kAutofillExtractOnlyOnAdmissibleUrls,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.
 // "Extracted" means that FormFieldData::child_frames is populated, which is

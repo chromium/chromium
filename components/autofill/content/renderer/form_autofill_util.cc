@@ -222,8 +222,7 @@ bool IsAdmissibleUrl(const blink::WebURL& url) {
   if (url.ProtocolIs("about") && GURL(url).IsAboutSrcdoc()) {
     return true;
   }
-  return !base::FeatureList::IsEnabled(
-      features::kAutofillExtractOnlyOnAdmissibleUrls);
+  return false;
 }
 
 // Returns the form's |name| attribute if non-empty; otherwise the form's |id|
