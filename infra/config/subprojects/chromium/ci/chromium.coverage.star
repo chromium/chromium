@@ -1219,6 +1219,9 @@ coverage_builder(
             short_name = "lnx-fuzz",
         ),
     ],
+    # TODO(crbug.com/449026537): Remove elevated timeout once performance
+    # improves.
+    execution_timeout = 32 * time.hour,
     notifies = ["chrome-fuzzing-core"],
     properties = {
         "collect_fuzz_coverage": True,
@@ -1271,6 +1274,9 @@ coverage_builder(
         ),
     ],
     contact_team_email = "chrome-fuzzing-core@google.com",
+    # TODO(crbug.com/449026537): Remove elevated timeout once performance
+    # improves.
+    execution_timeout = 24 * time.hour,
     notifies = ["chrome-fuzzing-core"],
     properties = {
         "collect_fuzz_coverage": True,
