@@ -143,14 +143,14 @@ TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnAddedUpdate) {
       url::Origin::Create(GURL("https://example.net")),
       /*has_origin_wildcard=*/true));
   SetupPageWithScopeExtensions(scope, std::move(scope_extensions));
-  base::test::TestFuture<ManifestSilentUpdateCheckResult>
+  base::test::TestFuture<ManifestSilentUpdateCompletionInfo>
       manifest_silent_update_future;
   fake_provider().scheduler().ScheduleManifestSilentUpdate(
-      *web_contents(), manifest_silent_update_future.GetCallback());
+      *web_contents(), /*previous_time_for_silent_icon_update=*/std::nullopt,
+      manifest_silent_update_future.GetCallback());
   ASSERT_TRUE(manifest_silent_update_future.Wait());
-  EXPECT_EQ(
-      manifest_silent_update_future.Get<ManifestSilentUpdateCheckResult>(),
-      ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_EQ(manifest_silent_update_future.Take().result,
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
 
   // Wait for the scope change to be observed.
   ASSERT_TRUE(future.Wait());
@@ -183,14 +183,14 @@ TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnRemovedUpdate) {
 
   // Do the update.
   SetupPageNoScopeExtensions(scope);
-  base::test::TestFuture<ManifestSilentUpdateCheckResult>
+  base::test::TestFuture<ManifestSilentUpdateCompletionInfo>
       manifest_silent_update_future;
   fake_provider().scheduler().ScheduleManifestSilentUpdate(
-      *web_contents(), manifest_silent_update_future.GetCallback());
+      *web_contents(), /*previous_time_for_silent_icon_update=*/std::nullopt,
+      manifest_silent_update_future.GetCallback());
   ASSERT_TRUE(manifest_silent_update_future.Wait());
-  EXPECT_EQ(
-      manifest_silent_update_future.Get<ManifestSilentUpdateCheckResult>(),
-      ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_EQ(manifest_silent_update_future.Take().result,
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
 
   // Wait for the scope change to be observed.
   ASSERT_TRUE(future.Wait());

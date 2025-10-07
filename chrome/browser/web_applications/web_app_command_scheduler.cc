@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -232,11 +233,12 @@ void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
 
 void WebAppCommandScheduler::ScheduleManifestSilentUpdate(
     content::WebContents& contents,
+    std::optional<base::Time> previous_time_for_silent_icon_update,
     ManifestSilentUpdateCommand::CompletedCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<ManifestSilentUpdateCommand>(contents,
-                                                    std::move(callback)),
+      std::make_unique<ManifestSilentUpdateCommand>(
+          contents, previous_time_for_silent_icon_update, std::move(callback)),
       location);
 }
 

@@ -72,7 +72,26 @@ bool IsAppUpdated(ManifestSilentUpdateCheckResult result);
 // Declare the logging operator before the command declaration, so the templated
 // completion method can use it to log the result.
 std::ostream& operator<<(std::ostream& os,
-                         ManifestSilentUpdateCheckResult stage);
+                         ManifestSilentUpdateCheckResult result);
+
+// Returns all the information necessary for a manifest's silent update to have
+// finished running, including the result of a silent update command and the
+// timestamp of a silent icon update if that happened.
+struct ManifestSilentUpdateCompletionInfo {
+  ManifestSilentUpdateCompletionInfo();
+  explicit ManifestSilentUpdateCompletionInfo(
+      ManifestSilentUpdateCheckResult result);
+  ~ManifestSilentUpdateCompletionInfo() = default;
+  base::Value::Dict ToDebugValue();
+
+  // Move operation only for simplicity.
+  ManifestSilentUpdateCompletionInfo(ManifestSilentUpdateCompletionInfo&&);
+  ManifestSilentUpdateCompletionInfo& operator=(
+      ManifestSilentUpdateCompletionInfo&&);
+
+  ManifestSilentUpdateCheckResult result;
+  std::optional<base::Time> time_for_icon_diff_check;
+};
 
 // Downloads a currently linked manifest in the given web contents. Non-security
 // -sensitive manifest members are updated immediately. Security sensitive
@@ -93,14 +112,16 @@ std::ostream& operator<<(std::ostream& os,
 //   image diff) or store it as a PendingUpdateInfo (>10% image diff).
 // - Finalize silent update of icon (if needed) and destroy command.
 class ManifestSilentUpdateCommand
-    : public WebAppCommand<NoopLock, ManifestSilentUpdateCheckResult>,
+    : public WebAppCommand<NoopLock, ManifestSilentUpdateCompletionInfo>,
       public content::WebContentsObserver {
  public:
   using CompletedCallback =
-      base::OnceCallback<void(ManifestSilentUpdateCheckResult check_result)>;
+      base::OnceCallback<void(ManifestSilentUpdateCompletionInfo check_result)>;
 
-  ManifestSilentUpdateCommand(content::WebContents& web_contents,
-                              CompletedCallback callback);
+  ManifestSilentUpdateCommand(
+      content::WebContents& web_contents,
+      std::optional<base::Time> previous_time_for_silent_icon_update,
+      CompletedCallback callback);
 
   ~ManifestSilentUpdateCommand() override;
 
@@ -224,6 +245,11 @@ class ManifestSilentUpdateCommand
   // Debug info.
   ManifestSilentUpdateCommandStage stage_ =
       ManifestSilentUpdateCommandStage::kFetchingNewManifestData;
+
+  // Stores the last time a silent icon update was triggered for `app_id_` if
+  // that happened.
+  std::optional<base::Time> previous_time_for_silent_icon_update_;
+  ManifestSilentUpdateCompletionInfo completion_info_;
 
   base::WeakPtrFactory<ManifestSilentUpdateCommand> weak_factory_{this};
 };

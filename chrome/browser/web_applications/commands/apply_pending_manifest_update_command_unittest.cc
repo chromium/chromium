@@ -79,13 +79,14 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
   }
 
   ManifestSilentUpdateCheckResult RunManifestSilentUpdateAndGetResult() {
-    base::test::TestFuture<ManifestSilentUpdateCheckResult>
+    base::test::TestFuture<ManifestSilentUpdateCompletionInfo>
         manifest_silent_update_future;
     fake_provider().scheduler().ScheduleManifestSilentUpdate(
-        *web_contents(), manifest_silent_update_future.GetCallback());
+        *web_contents(), /*previous_time_for_silent_icon_update=*/std::nullopt,
+        manifest_silent_update_future.GetCallback());
 
     EXPECT_TRUE(manifest_silent_update_future.Wait());
-    return manifest_silent_update_future.Get();
+    return manifest_silent_update_future.Take().result;
   }
 
   ApplyPendingManifestUpdateResult RunManifestApplyPendingUpdateAndGetResult(

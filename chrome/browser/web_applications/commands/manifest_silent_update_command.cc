@@ -11,6 +11,7 @@
 #include <ostream>
 
 #include "base/barrier_closure.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/functional/concurrent_closures.h"
@@ -117,6 +118,34 @@ void CopyIconsToPendingUpdateInfo(
     }
   }
 }
+
+constexpr base::TimeDelta kDelayForTenPercentIconDiffSilentUpdate =
+    base::Days(1);
+constexpr const char kBypassSmallIconDiffThrottle[] =
+    "bypass-small-icon-diff-throttle";
+
+// Returns whether the throttle for less than 10% icon diffs will be applied.
+// This returns true if:
+// 1. This is the first silent icon update that might be triggered.
+// 2. The command line flag to skip the throttle has been applied.
+// 3. If more than 24 hours has passed since the last update was applied for an
+// icon that was less than 10% different.
+bool NoThrottleForSilentIconUpdates(
+    std::optional<base::Time> previous_time_for_silent_icon_update,
+    base::Time new_icon_check_time) {
+  if (!previous_time_for_silent_icon_update.has_value()) {
+    return true;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kBypassSmallIconDiffThrottle)) {
+    return true;
+  }
+
+  return (new_icon_check_time > (*previous_time_for_silent_icon_update +
+                                 kDelayForTenPercentIconDiffSilentUpdate));
+}
+
 }  // namespace
 
 bool IsAppUpdated(ManifestSilentUpdateCheckResult result) {
@@ -217,20 +246,47 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
+ManifestSilentUpdateCompletionInfo::ManifestSilentUpdateCompletionInfo() =
+    default;
+ManifestSilentUpdateCompletionInfo::ManifestSilentUpdateCompletionInfo(
+    ManifestSilentUpdateCheckResult result)
+    : result(result) {}
+ManifestSilentUpdateCompletionInfo::ManifestSilentUpdateCompletionInfo(
+    ManifestSilentUpdateCompletionInfo&&) = default;
+ManifestSilentUpdateCompletionInfo&
+ManifestSilentUpdateCompletionInfo::operator=(
+    ManifestSilentUpdateCompletionInfo&&) = default;
+
+base::Value::Dict ManifestSilentUpdateCompletionInfo::ToDebugValue() {
+  return base::Value::Dict()
+      .Set("result", base::ToString(result))
+      .Set("time_for_icon_diff_check",
+           time_for_icon_diff_check.has_value()
+               ? base::TimeFormatShortDateAndTime(
+                     time_for_icon_diff_check.value())
+               : base::EmptyString16());
+}
+
 ManifestSilentUpdateCommand::ManifestSilentUpdateCommand(
     content::WebContents& web_contents,
+    std::optional<base::Time> previous_time_for_silent_icon_update,
     CompletedCallback callback)
-    : WebAppCommand<NoopLock, ManifestSilentUpdateCheckResult>(
+    : WebAppCommand<NoopLock, ManifestSilentUpdateCompletionInfo>(
           "ManifestSilentUpdateCommand",
           NoopLockDescription(),
-          base::BindOnce([](ManifestSilentUpdateCheckResult result) {
+          base::BindOnce([](ManifestSilentUpdateCompletionInfo
+                                completion_info) {
             base::UmaHistogramEnumeration(
-                "Webapp.Update.ManifestSilentUpdateCheckResult", result);
-            return result;
+                "Webapp.Update.ManifestSilentUpdateCheckResult",
+                completion_info.result);
+            return completion_info;
           }).Then(std::move(callback)),
           /*args_for_shutdown=*/
-          std::make_tuple(ManifestSilentUpdateCheckResult::kSystemShutdown)),
-      web_contents_(web_contents.GetWeakPtr()) {
+          ManifestSilentUpdateCompletionInfo(
+              ManifestSilentUpdateCheckResult::kSystemShutdown)),
+      web_contents_(web_contents.GetWeakPtr()),
+      previous_time_for_silent_icon_update_(
+          previous_time_for_silent_icon_update) {
   Observe(web_contents_.get());
   SetStage(ManifestSilentUpdateCommandStage::kNotStarted);
 }
@@ -771,9 +827,19 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
 
   // TODO(crbug.com/437379182): HasMoreThanTenPercentImageDiff() should happen
   // in a different thread.
+  // TODO(crbug.com/448891020): Measure the throttle as a reason for silent
+  // updates as a different check result.
+  base::Time current_time = app_lock_->clock().Now();
+  bool should_update_icons_silently =
+      !HasMoreThanTenPercentImageDiff(&old_trusted_icon, &new_trusted_icon) &&
+      NoThrottleForSilentIconUpdates(previous_time_for_silent_icon_update_,
+                                     current_time);
+  if (should_update_icons_silently) {
+    completion_info_.time_for_icon_diff_check = current_time;
+  }
+
   // Case: The icons are being set in the PendingUpdateInfo to be updated later.
-  if (old_trusted_icon.empty() ||
-      HasMoreThanTenPercentImageDiff(&old_trusted_icon, &new_trusted_icon)) {
+  if (old_trusted_icon.empty() || !should_update_icons_silently) {
     if (!pending_update_info.has_value()) {
       pending_update_info = proto::PendingUpdateInfo();
     }
@@ -952,6 +1018,11 @@ void ManifestSilentUpdateCommand::WritePendingUpdateInfoThenComplete(
 
 void ManifestSilentUpdateCommand::WritePendingUpdateToWebApp(
     std::optional<proto::PendingUpdateInfo> pending_update) {
+  // The tracking of time for the icon diff check should not happen if there are
+  // icons populated in the `PendingUpdateInfo`.
+  if (pending_update.has_value() && !pending_update->trusted_icons().empty()) {
+    CHECK(!completion_info_.time_for_icon_diff_check.has_value());
+  }
   web_app::ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
   web_app::WebApp* app_to_update = update->UpdateApp(app_id_);
   CHECK(app_to_update);
@@ -961,7 +1032,6 @@ void ManifestSilentUpdateCommand::WritePendingUpdateToWebApp(
 void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
     base::Location location,
     ManifestSilentUpdateCheckResult check_result) {
-  GetMutableDebugValue().Set("result", base::ToString(check_result));
   Observe(nullptr);
 
   bool record_update;
@@ -1002,7 +1072,11 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
         app_id_, /*pending_update_available=*/true,
         base::PassKey<ManifestSilentUpdateCommand>());
   }
-  CompleteAndSelfDestruct(command_result, check_result, location);
+  completion_info_.result = check_result;
+  GetMutableDebugValue().Set("completion_info",
+                             completion_info_.ToDebugValue());
+  CompleteAndSelfDestruct(command_result, std::move(completion_info_),
+                          location);
 }
 
 bool ManifestSilentUpdateCommand::IsWebContentsDestroyed() {

@@ -2,11 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <vector>
 
+#include "base/base_paths.h"
+#include "base/command_line.h"
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,8 +27,10 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -28,9 +41,51 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace web_app {
+
+namespace {
+
+const base::FilePath kBlueIcon{
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-192.png")};
+const base::FilePath kBlueRedIcon{
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-red-192.png")};
+const base::FilePath kBlueWhiteIcon{
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-white-192.png")};
+
+constexpr int kIconSizeToTest = 192;
+
+constexpr const char kBypassSmallIconDiffThrottle[] =
+    "bypass-small-icon-diff-throttle";
+
+// TODO(crbug.com/449023267): Have a single implementation instead of
+// duplicating this everywhere.
+SkBitmap LoadTestPNG(const base::FilePath& path) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath data_root;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_root);
+  base::FilePath image_path = data_root.Append(path);
+  std::optional<std::vector<uint8_t>> png_data =
+      base::ReadFileToBytes(image_path);
+  CHECK(png_data.has_value());
+  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(*png_data))
+      .AsBitmap();
+}
+
+SkBitmap GetBitmapForInstalledAppOnDisk(const webapps::AppId& app_id,
+                                        WebAppIconManager& icon_manager) {
+  base::test::TestFuture<IconMetadataFromDisk> future;
+  icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
+      app_id, {kIconSizeToTest}, IconPurpose::ANY, future.GetCallback());
+  web_app::SizeToBitmap icon_bitmaps = std::move(future.Take().icons_map);
+  CHECK(!icon_bitmaps.empty());
+  return icon_bitmaps[kIconSizeToTest];
+}
+
+}  // namespace
 
 class ManifestSilentUpdateCommandBrowserTest : public WebAppBrowserTestBase {
  public:
@@ -170,6 +225,228 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       https_server()->GetURL("/web_apps/scope_updating/out-of-scope.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope_url));
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
+                       SilentUpdateTenPercentIconDiffThrottled) {
+  // First install the app.
+  clock_->SetNow(base::Time::Now());
+  const GURL app_url =
+      https_server()->GetURL("/web_apps/updating/index_blue.html");
+  const webapps::AppId app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  // TODO(crbug.com/442643377): Delete this wait after the update runs for every
+  // navigation.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // Second, trigger an update to an app that has an icon of diff less than 10%.
+  // Verify app gets updated silently.
+  const GURL update_url =
+      https_server()->GetURL("/web_apps/updating/index_blue_white.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
+      clock_->Now());
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueWhiteIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // Forward time by 12 hours, trigger another silent update, this time of a
+  // different icon that is still <10% diff away. Verify that the icon doesn't
+  // get applied automatically, and that the pending icon info is stored in the
+  // web app instead.
+  clock_->Advance(base::Hours(12));
+  const GURL update_url2 =
+      https_server()->GetURL("/web_apps/updating/index_blue_red.html");
+  const GURL pending_update_icon =
+      https_server()->GetURL("/web_apps/updating/blue-red-192.png");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url2));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+
+  // The pending update info is silently "stored" on the web app, and the
+  // start_url is updated, so the manifest update is "still" counted.
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
+      clock_->Now());
+
+  // The app icons on the disk have not been updated, so assert that the old
+  // icons still remain.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueWhiteIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // The silent icons should be stored in the web_app as a pending update.
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_NE(nullptr, web_app);
+  ASSERT_TRUE(web_app->pending_update_info().has_value());
+  EXPECT_EQ(1, web_app->pending_update_info()->trusted_icons().size());
+  EXPECT_EQ(pending_update_icon,
+            web_app->pending_update_info()->trusted_icons().begin()->url());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
+                       BypassIconThrottleAndUpdateAfter24Hours) {
+  // First install the app.
+  clock_->SetNow(base::Time::Now());
+  const GURL app_url =
+      https_server()->GetURL("/web_apps/updating/index_blue.html");
+  const webapps::AppId app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  // TODO(crbug.com/442643377): Delete this wait after the update runs for every
+  // navigation.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // Second, trigger an update to an app that has an icon of diff less than 10%.
+  // Verify app gets updated silently.
+  const GURL update_url =
+      https_server()->GetURL("/web_apps/updating/index_blue_white.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
+      clock_->Now());
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueWhiteIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // Forward time by more than 24 hours, trigger another silent update, this
+  // time of a different icon that is still <10% diff away. Verify that the
+  // update succeeds silently, and a pending update info is not stored.
+  clock_->Advance(base::Hours(28));
+  const GURL update_url2 =
+      https_server()->GetURL("/web_apps/updating/index_blue_red.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url2));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
+      clock_->Now());
+
+  // The app icons on the disk should be updated now.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueRedIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // The silent icons should not be stored in the web_app as a pending update.
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_NE(nullptr, web_app);
+  ASSERT_FALSE(web_app->pending_update_info().has_value());
+}
+
+// Used to verify that if the `kBypassSmallIconDiffThrottle` flag is used,
+// the throttle for limiting silent icon updates of small diffs to once per day
+// can be bypassed.
+class ManifestSilentUpdateCommandLineTests
+    : public ManifestSilentUpdateCommandBrowserTest {
+ public:
+  ManifestSilentUpdateCommandLineTests() = default;
+  ~ManifestSilentUpdateCommandLineTests() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(kBypassSmallIconDiffThrottle);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
+                       ThrottleBypassViaCmdLine) {
+  // First install the app.
+  clock_->SetNow(base::Time::Now());
+  const GURL app_url =
+      https_server()->GetURL("/web_apps/updating/index_blue.html");
+  const webapps::AppId app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  // TODO(crbug.com/442643377): Delete this wait after the update runs for every
+  // navigation.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // Second, trigger an update to an app that has an icon of diff less than 10%.
+  // Verify app gets updated silently.
+  const GURL update_url =
+      https_server()->GetURL("/web_apps/updating/index_blue_white.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
+      clock_->Now());
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueWhiteIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // Forward time by less than 24 hours, trigger another silent update, this
+  // time of a different icon that is still <10% diff away. Verify that the
+  // update succeeds silently, and a pending update info is not stored.
+  clock_->Advance(base::Hours(12));
+  const GURL update_url2 =
+      https_server()->GetURL("/web_apps/updating/index_blue_red.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url2));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
+      clock_->Now());
+
+  // The app icons on the disk should be updated now.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      LoadTestPNG(kBlueRedIcon),
+      GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
+      /*max_deviation=*/3));
+
+  // The silent icons should not be stored in the web_app as a pending update.
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_NE(nullptr, web_app);
+  ASSERT_FALSE(web_app->pending_update_info().has_value());
 }
 
 }  // namespace web_app
