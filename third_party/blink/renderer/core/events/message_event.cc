@@ -347,6 +347,8 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
 
     case MessageEvent::kDataTypeSerializedScriptValue:
       if (data_as_serialized_script_value_) {
+        static constexpr size_t kSlowDeserializationSizeThresholdBytes =
+            16 * 1024;
         // The data is put on the V8 GC heap here, and therefore the V8 GC does
         // the accounting from here on. We unregister the registered memory to
         // avoid double accounting.
@@ -357,7 +359,9 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
         options.slow_mode =
             RuntimeEnabledFeatures::
                 MaskDeserializationTimeForCrossOriginMessagesEnabled() &&
-            data_is_from_untrusted_source_;
+            data_is_from_untrusted_source_ &&
+            data_as_serialized_script_value_->Value()->DataLengthInBytes() >=
+                kSlowDeserializationSizeThresholdBytes;
         value = data_as_serialized_script_value_->Deserialize(isolate, options);
       } else {
         value = v8::Null(isolate);
