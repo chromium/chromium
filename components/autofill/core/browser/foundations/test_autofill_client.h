@@ -382,6 +382,10 @@ class TestAutofillClientTemplate : public T {
     return autofill_payment_methods_enabled_;
   }
 
+  bool IsImportingToWalletEnabled() const override {
+    return import_to_wallet_enabled_;
+  }
+
   bool IsAutocompleteEnabled() const override { return true; }
 
   bool IsPasswordManagerEnabled() const override { return true; }
@@ -486,6 +490,10 @@ class TestAutofillClientTemplate : public T {
       // Credit card data is refreshed when this pref is changed.
       GetPersonalDataManager().test_payments_data_manager().ClearCreditCards();
     }
+  }
+
+  void SetImportingToWalletEnabled(bool import_to_wallet_enabled) {
+    import_to_wallet_enabled_ = import_to_wallet_enabled;
   }
 
   // Sets up prefs and identity state to simulate an opted-in AutofillAI user.
@@ -680,6 +688,7 @@ class TestAutofillClientTemplate : public T {
 
   bool autofill_profile_enabled_ = true;
   bool autofill_payment_methods_enabled_ = true;
+  bool import_to_wallet_enabled_ = true;
 
   // NULL by default.
   std::unique_ptr<test::AutofillTestingPrefService> prefs_;

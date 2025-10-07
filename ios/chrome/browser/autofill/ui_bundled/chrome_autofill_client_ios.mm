@@ -383,6 +383,10 @@ bool ChromeAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
   return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
 }
 
+bool ChromeAutofillClientIOS::IsImportingToWalletEnabled() const {
+  return false;
+}
+
 bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }

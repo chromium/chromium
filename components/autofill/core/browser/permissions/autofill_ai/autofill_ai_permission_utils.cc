@@ -272,9 +272,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return policy_pref_enabled && user_opted_in;
     case AutofillAiAction::kImportToWallet:
-      // TODO(crbug.com/441742849): This should also check for the specific
-      // wallet pref.
-      return policy_pref_enabled && user_opted_in;
+      return policy_pref_enabled && user_opted_in &&
+             client.IsImportingToWalletEnabled();
     case AutofillAiAction::kIphForOptIn:
       // The IPH should only show if the user has not opted in yet.
       return policy_pref_enabled && !user_opted_in;

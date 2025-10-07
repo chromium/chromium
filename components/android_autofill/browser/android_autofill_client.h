@@ -126,6 +126,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillPaymentMethodsEnabled() const final;
+  bool IsImportingToWalletEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
   void DidFillForm(autofill::AutofillTriggerSource trigger_source,

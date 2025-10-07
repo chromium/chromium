@@ -231,6 +231,10 @@ bool AndroidAutofillClient::IsAutofillPaymentMethodsEnabled() const {
   NOTREACHED();
 }
 
+bool AndroidAutofillClient::IsImportingToWalletEnabled() const {
+  return false;
+}
+
 bool AndroidAutofillClient::IsAutocompleteEnabled() const {
   return false;
 }

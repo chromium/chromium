@@ -565,13 +565,23 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatusMetrics) {
 }
 
 TEST_F(AutofillAiMayPerformActionTest, ImportToWallet_TrueWhenSyncingWallet) {
+  client().SetImportingToWalletEnabled(true);
   EXPECT_TRUE(MayPerformAutofillAiAction(client(),
                                          AutofillAiAction::kImportToWallet,
                                          EntityType(EntityTypeName::kVehicle)));
 }
 
 TEST_F(AutofillAiMayPerformActionTest,
+       ImportToWallet_FalseWhenWalletPrefDisabled) {
+  client().SetImportingToWalletEnabled(false);
+  EXPECT_FALSE(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
+                                 EntityType(EntityTypeName::kVehicle)));
+}
+
+TEST_F(AutofillAiMayPerformActionTest,
        ImportToWallet_FalseEntityTypeIsNotWalletable) {
+  client().SetImportingToWalletEnabled(true);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kPassport)));
@@ -581,6 +591,7 @@ TEST_F(AutofillAiMayPerformActionTest, ImportToWallet_FalseWhenFeatureIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillAiWalletVehicleRegistration);
+  client().SetImportingToWalletEnabled(true);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kPassport)));
@@ -590,6 +601,7 @@ TEST_F(AutofillAiMayPerformActionTest,
        ImportToWallet_FalseWhenNotSyncingWallet) {
   client().GetSyncService()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPayments, false);
+  client().SetImportingToWalletEnabled(true);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kVehicle)));
