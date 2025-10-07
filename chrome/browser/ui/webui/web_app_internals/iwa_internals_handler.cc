@@ -8,6 +8,8 @@
 
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
@@ -29,6 +31,9 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/browser/file_select_listener.h"
@@ -36,6 +41,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/base_window.h"
 
 namespace web_app {
 
@@ -472,6 +478,15 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
       continue;
     }
 
+    auto signed_web_bundle_id =
+        web_package::SignedWebBundleId::Create(app.manifest_id().host());
+    CHECK(signed_web_bundle_id.has_value())
+        << "Invalid host in manifest_id for IWA: " << app.app_id()
+        << " with manifest_id: " << app.manifest_id();
+
+    IwaOrigin iwa_origin(*signed_web_bundle_id);
+    std::string web_bundle_id = iwa_origin.web_bundle_id().id();
+
     const web_app::IsolationData& isolation_data = *app.isolation_data();
     std::optional<std::string> pinned_version;
     if (auto* version_entry =
@@ -483,7 +498,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
         absl::Overload{
             [&](const IwaSourceBundleDevMode& source) {
               dev_mode_apps.emplace_back(::mojom::IwaDevModeAppInfo::New(
-                  app.app_id(), app.untranslated_name(),
+                  app.app_id(), web_bundle_id, app.untranslated_name(),
                   ::mojom::IwaDevModeLocation::NewBundlePath(source.path()),
                   app.isolation_data()->version().GetString(),
                   /*update_info=*/isolation_data.update_manifest_url()
@@ -497,7 +512,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
             },
             [&](const IwaSourceProxy& source) {
               dev_mode_apps.emplace_back(::mojom::IwaDevModeAppInfo::New(
-                  app.app_id(), app.untranslated_name(),
+                  app.app_id(), web_bundle_id, app.untranslated_name(),
                   ::mojom::IwaDevModeLocation::NewProxyOrigin(
                       source.proxy_url()),
                   app.isolation_data()->version().GetString(),
@@ -672,6 +687,41 @@ void IwaInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
     return;
   }
   app_ids_allowing_downgrades_.insert(app_id);
+}
+
+void IwaInternalsHandler::DeleteIsolatedWebApp(
+    const webapps::AppId& app_id,
+    Handler::DeleteIsolatedWebAppCallback callback) {
+  auto* provider = WebAppProvider::GetForWebApps(profile());
+
+  // Native Window required for the dialog box
+  gfx::NativeWindow native_window = GetHostingNativeWindow();
+
+  provider->ui_manager().PresentUserUninstallDialog(
+      app_id, webapps::WebappUninstallSource::kAppsPage, native_window,
+      base::BindOnce([](webapps::UninstallResultCode code) {
+        return webapps::UninstallSucceeded(code);
+      }).Then(std::move(callback)));
+}
+
+gfx::NativeWindow IwaInternalsHandler::GetHostingNativeWindow() {
+  content::WebContents* web_contents = web_ui_->GetWebContents();
+
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  CHECK(tab_interface);
+
+  BrowserWindowInterface* browser_window_interface =
+      tab_interface->GetBrowserWindowInterface();
+  CHECK(browser_window_interface);
+
+  ui::BaseWindow* base_window = browser_window_interface->GetWindow();
+  CHECK(base_window);
+
+  gfx::NativeWindow native_window = base_window->GetNativeWindow();
+  CHECK(native_window);
+
+  return native_window;
 }
 
 void IwaInternalsHandler::OnInstalledIsolatedWebAppInDevModeFromWebBundle(

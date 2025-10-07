@@ -79,6 +79,8 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void SetAllowDowngradesForIsolatedWebApp(
       bool allow_downgrades,
       const webapps::AppId& app_id) override;
+  void DeleteIsolatedWebApp(const webapps::AppId& app_id,
+                            DeleteIsolatedWebAppCallback callback) override;
 
  private:
   const raw_ref<content::WebUI> web_ui_;

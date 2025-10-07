@@ -519,3 +519,11 @@ void WebAppInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
     iwa_handler_->SetAllowDowngradesForIsolatedWebApp(allow_downgrades, app_id);
   }
 }
+
+void WebAppInternalsHandler::DeleteIsolatedWebApp(
+    const webapps::AppId& app_id,
+    DeleteIsolatedWebAppCallback callback) {
+  if (iwa_handler_) {
+    iwa_handler_->DeleteIsolatedWebApp(app_id, std::move(callback));
+  }
+}

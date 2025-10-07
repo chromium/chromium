@@ -41,6 +41,7 @@
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -564,6 +565,60 @@ IN_PROC_BROWSER_TEST_F(
   handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_error());
+}
+
+// Tests the Isolated Web App deletion flow through the internals page handler.
+IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
+                       DeleteIsolatedWebApp) {
+  // Install a test IWA.
+  auto bundle = IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(auto url_info, bundle->Install(profile()));
+  webapps::AppId app_id = url_info.app_id();
+
+  EXPECT_NE(provider().registrar_unsafe().GetAppById(app_id), nullptr);
+
+  auto* handler = OpenWebAppInternals();
+
+  // Auto-accept the uninstall dialog.
+  extensions::ScopedTestDialogAutoConfirm auto_accept(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+
+  // Call the delete method on the handler.
+  base::test::TestFuture<bool> delete_future;
+  handler->DeleteIsolatedWebApp(app_id, delete_future.GetCallback());
+
+  // Verify the deletion was successful and the app is no longer registered.
+  EXPECT_TRUE(delete_future.Get());
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppById(app_id), nullptr);
+}
+
+// Tests the Isolated Web App deletion flow through the internals page handler
+// when the dialog box is cancelled.
+IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
+                       DeleteIsolatedWebAppCancelled) {
+  // Install a test IWA.
+  auto bundle = IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(auto url_info, bundle->Install(profile()));
+  webapps::AppId app_id = url_info.app_id();
+
+  EXPECT_NE(provider().registrar_unsafe().GetAppById(app_id), nullptr);
+
+  auto* handler = OpenWebAppInternals();
+
+  // Auto-cancel the uninstall dialog.
+  extensions::ScopedTestDialogAutoConfirm auto_cancel(
+      extensions::ScopedTestDialogAutoConfirm::CANCEL);
+
+  // Call the delete method on the handler.
+  base::test::TestFuture<bool> delete_future;
+  handler->DeleteIsolatedWebApp(app_id, delete_future.GetCallback());
+
+  // Verify the deletion was not successful because it was cancelled.
+  EXPECT_FALSE(delete_future.Get());
+
+  // Verify the app is still registered.
+  EXPECT_NE(provider().registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 }  // namespace web_app

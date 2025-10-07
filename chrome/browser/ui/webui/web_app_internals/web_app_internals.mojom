@@ -35,6 +35,7 @@ union IwaDevModeLocation {
 
 struct IwaDevModeAppInfo {
   string app_id;
+  string web_bundle_id;
   string name;
   IwaDevModeLocation location;
   string installed_version;
@@ -100,6 +101,10 @@ interface WebAppInternalsHandler {
   // Triggers an update for a manifest-installed dev mode app.
   // Returns a string containing a success or error message.
   UpdateManifestInstalledIsolatedWebApp(string app_id) => (string result);
+
+  // Deletes the IWA.
+  // Returns a boolean indicating success or failure of delete operation.
+  DeleteIsolatedWebApp(string app_id) => (bool success);
 
   // Sets `web_app.isolation_data.update_channel` to `update_channel` for this
   // `app_id`.

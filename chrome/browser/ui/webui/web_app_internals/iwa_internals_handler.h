@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
@@ -89,6 +90,9 @@ class IwaInternalsHandler {
   void SetAllowDowngradesForIsolatedWebApp(bool allow_downgrades,
                                            const webapps::AppId& app_id);
 
+  void DeleteIsolatedWebApp(const webapps::AppId& app_id,
+                            Handler::DeleteIsolatedWebAppCallback callback);
+
  private:
   class IsolatedWebAppDevBundleSelectListener;
   class IwaManifestInstallUpdateHandler;
@@ -123,6 +127,8 @@ class IwaInternalsHandler {
       const webapps::AppId& app_id,
       base::optional_ref<const web_app::IwaSourceDevModeWithFileOp> location,
       base::OnceCallback<void(const std::string&)> callback);
+
+  gfx::NativeWindow GetHostingNativeWindow();
 
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<Profile> profile_;
