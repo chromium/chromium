@@ -343,8 +343,6 @@ bool PaintImage::IsTextureBacked() const {
 }
 
 void PaintImage::FlushPendingSkiaOps() {
-  if (texture_backing_)
-    texture_backing_->FlushPendingSkiaOps();
 }
 
 gfx::Size PaintImage::GetSize(AuxImage aux_image) const {

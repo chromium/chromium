@@ -970,8 +970,6 @@ class VideoTextureBacking : public cc::TextureBacking {
                                    /*plane_index=*/0, dst_pixels);
   }
 
-  void FlushPendingSkiaOps() override {}
-
   const gpu::SyncToken& sync_token() { return sync_token_; }
   void UpdateSyncToken(const gpu::SyncToken& sync_token) {
     sync_token_ = sync_token;
@@ -1793,13 +1791,7 @@ PaintCanvasVideoRenderer::Cache::~Cache() = default;
 
 bool PaintCanvasVideoRenderer::Cache::Recycle() {
   paint_image = cc::PaintImage();
-  if (!texture_backing->unique()) {
-    return false;
-  }
-
-  // Flush any pending GPU work using this texture.
-  texture_backing->FlushPendingSkiaOps();
-  return true;
+  return texture_backing->unique();
 }
 
 bool PaintCanvasVideoRenderer::UpdateLastImage(

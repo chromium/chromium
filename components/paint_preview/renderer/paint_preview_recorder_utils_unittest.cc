@@ -363,7 +363,6 @@ class FakeTextureBacking : public cc::TextureBacking {
                   int srcY) override {
     return false;
   }
-  void FlushPendingSkiaOps() override {}
 
  private:
   gpu::Mailbox mailbox_;
