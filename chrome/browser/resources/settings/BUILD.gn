@@ -420,6 +420,7 @@ build_webui("build") {
     # subfolder files
     "autofill_page/passwords_shared.css",
     "autofill_page/screen_reader_only.css",
+    "autofill_page/your_saved_info_shared.css",
     "privacy_page/cr_lottie.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_page/search_engine_entry.css",

@@ -15,6 +15,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
+import './your_saved_info_shared.css.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import './address_edit_dialog.js';
@@ -60,6 +61,10 @@ declare global {
     'save-address': CustomEvent<chrome.autofillPrivate.AddressEntry>;
   }
 }
+
+// TODO(crbug.com/447113309): This file along with all of its dependencies
+// should be moved to .../settings/your_saved_info_page directory after
+// full release of the `Your Saved Info` page.
 
 export interface SettingsAutofillSectionElement {
   $: {
@@ -115,6 +120,16 @@ export class SettingsAutofillSectionElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('plusAddressEnabled'),
       },
+
+      /**
+       * Indicates if this element is used as a Your saved info subpage. Causes
+       * slight adjustments like different title, no page shadow, cards being
+       * visible.
+       */
+      isYourSavedInfoSubpage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableYourSavedInfoSettingsPage'),
+      },
     };
   }
 
@@ -126,6 +141,7 @@ export class SettingsAutofillSectionElement extends
   declare private showAddressRemoveConfirmationDialog_: boolean;
   declare private isGoogleProfileAddress: boolean;
   declare private isPlusAddressEnabled_: boolean;
+  declare private isYourSavedInfoSubpage_: boolean;
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
@@ -180,6 +196,15 @@ export class SettingsAutofillSectionElement extends
     this.autofillManager_.removePersonalDataManagerListener(
         this.setPersonalDataListener_!);
     this.setPersonalDataListener_ = null;
+  }
+
+  private getMultiCardClass_(): string {
+    return this.isYourSavedInfoSubpage_ ? 'multi-card' : '';
+  }
+
+  private getPageTitleLabel_(): string {
+    return this.i18n(
+        this.isYourSavedInfoSubpage_ ? 'contactInfoTitle' : 'addressesTitle');
   }
 
   /**
