@@ -37,6 +37,20 @@ BnplIssuerContext::~BnplIssuerContext() = default;
 
 bool BnplIssuerContext::operator==(const BnplIssuerContext&) const = default;
 
+bool BnplIssuerContext::IsEligible() const {
+  switch (eligibility) {
+    case BnplIssuerEligibilityForPage::kUndefined:
+      NOTREACHED();
+    case BnplIssuerEligibilityForPage::kIsEligible:
+      return true;
+    case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:
+    case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow:
+    case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh:
+      return false;
+  }
+  NOTREACHED();
+}
+
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,
     const std::string& app_locale,
@@ -70,14 +84,29 @@ std::u16string GetBnplIssuerSelectionOptionText(
       switch (issuer_id) {
         case BnplIssuer::IssuerId::kBnplAffirm:
         case BnplIssuer::IssuerId::kBnplAfterpay:
+#if BUILDFLAG(IS_ANDROID)
+          return l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_AFFIRM_BOTTOM_SHEET);
+#else
           return l10n_util::GetStringUTF16(
               IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY);
+#endif  // BUILDFLAG(IS_ANDROID)
         case BnplIssuer::IssuerId::kBnplZip:
+#if BUILDFLAG(IS_ANDROID)
+          return l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_ZIP_BOTTOM_SHEET);
+#else
           return l10n_util::GetStringUTF16(
               IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP);
+#endif  // BUILDFLAG(IS_ANDROID)
         case BnplIssuer::IssuerId::kBnplKlarna:
+#if BUILDFLAG(IS_ANDROID)
+          return l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_KLARNA_BOTTOM_SHEET);
+#else
           return l10n_util::GetStringUTF16(
               IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA);
+#endif  // BUILDFLAG(IS_ANDROID)
       }
       NOTREACHED();
     case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:

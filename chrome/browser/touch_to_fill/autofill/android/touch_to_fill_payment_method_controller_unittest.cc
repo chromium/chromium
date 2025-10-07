@@ -16,11 +16,11 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
@@ -65,9 +65,10 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
   MOCK_METHOD(bool,
               ShowProgressScreen,
               (TouchToFillPaymentMethodViewController * controller));
-  MOCK_METHOD(bool,
-              ShowBnplIssuers,
-              (base::span<const BnplIssuer> bnpl_issuers_to_suggest));
+  MOCK_METHOD(
+      bool,
+      ShowBnplIssuers,
+      (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts));
   MOCK_METHOD(bool,
               ShowErrorScreen,
               (TouchToFillPaymentMethodViewController * controller,
@@ -192,8 +193,18 @@ class TouchToFillPaymentMethodControllerTest
           credit_cards_[1].CardNameForAutofillDisplay(),
           credit_cards_[1].ObfuscatedNumberWithVisibleLastFourDigits(),
           /*has_deactivated_style=*/false)};
-  const std::vector<BnplIssuer> bnpl_issuers_ = {
-      test::GetTestLinkedBnplIssuer(), test::GetTestUnlinkedBnplIssuer()};
+  const std::vector<payments::BnplIssuerContext> bnpl_issuer_contexts_ = {
+      payments::BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
+                                  payments::BnplIssuerEligibilityForPage::
+                                      kNotEligibleIssuerDoesNotSupportMerchant),
+      payments::BnplIssuerContext(
+          test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
+          payments::BnplIssuerEligibilityForPage::
+              kNotEligibleCheckoutAmountTooLow),
+      payments::BnplIssuerContext(
+          test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAfterpay),
+          payments::BnplIssuerEligibilityForPage::
+              kNotEligibleCheckoutAmountTooHigh)};
   std::unique_ptr<MockTouchToFillPaymentMethodViewImpl> mock_view_;
 
   void OnBeforeAskForValuesToFill() {
@@ -399,14 +410,15 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
                                  /*should_show_scan_credit_card=*/true));
-  EXPECT_CALL(*mock_view_, ShowBnplIssuers(ElementsAreArray(bnpl_issuers_)))
+  EXPECT_CALL(*mock_view_,
+              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_)))
       .WillOnce(Return(true));
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   payment_method_controller().ShowBnplIssuers(ttf_delegate().GetWeakPointer(),
-                                              bnpl_issuers_);
+                                              bnpl_issuer_contexts_);
   OnAfterAskForValuesToFill();
 }
 
@@ -416,7 +428,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowBnplIssuers(ttf_delegate().GetWeakPointer(),
-                                              bnpl_issuers_);
+                                              bnpl_issuer_contexts_);
   OnAfterAskForValuesToFill();
 }
 

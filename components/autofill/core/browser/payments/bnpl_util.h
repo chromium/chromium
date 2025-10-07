@@ -38,6 +38,9 @@ struct BnplIssuerContext {
   ~BnplIssuerContext();
   bool operator==(const BnplIssuerContext&) const;
 
+  // Returns the eligibility based on the `BnplIssuerEligibilityForPage`.
+  bool IsEligible() const;
+
   // The BNPL issuer to display.
   BnplIssuer issuer;
 

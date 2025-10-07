@@ -33,10 +33,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_ICON_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_LINKED;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_NAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ON_ISSUER_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.APPLY_ISSUER_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_LINKED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_SELECTION_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
@@ -116,7 +118,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuer;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuerContext;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
@@ -359,36 +361,70 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* shouldDisplayTermsAvailable= */ false,
                     /* guid= */ "",
                     /* isLocalPaymentsMethod= */ false);
-    private static final BnplIssuer BNPL_ISSUER_AFFIRM_LINKED =
-            new BnplIssuer(
-                    /* displayName= */ "Affirm",
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
+            new BnplIssuerContext(
                     /* iconId= */ R.drawable.affirm_linked,
-                    /* isLinked= */ true);
-    private static final BnplIssuer BNPL_ISSUER_AFFIRM_UNLINKED =
-            new BnplIssuer(
                     /* displayName= */ "Affirm",
+                    /* selectionText= */ "Monthly or 4 installments",
+                    /* isLinked= */ true,
+                    /* isEligible= */ true);
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED =
+            new BnplIssuerContext(
                     /* iconId= */ R.drawable.affirm_unlinked,
-                    /* isLinked= */ false);
-    private static final BnplIssuer BNPL_ISSUER_KLARNA_LINKED =
-            new BnplIssuer(
-                    /* displayName= */ "Klarna",
+                    /* displayName= */ "Affirm",
+                    /* selectionText= */ "Monthly or 4 installments",
+                    /* isLinked= */ false,
+                    /* isEligible= */ true);
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_LINKED =
+            new BnplIssuerContext(
                     /* iconId= */ R.drawable.klarna_linked,
-                    /* isLinked= */ true);
-    private static final BnplIssuer BNPL_ISSUER_KLARNA_UNLINKED =
-            new BnplIssuer(
                     /* displayName= */ "Klarna",
+                    /* selectionText= */ "Pay in low monthly installments",
+                    /* isLinked= */ true,
+                    /* isEligible= */ true);
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED =
+            new BnplIssuerContext(
                     /* iconId= */ R.drawable.klarna_unlinked,
-                    /* isLinked= */ false);
-    private static final BnplIssuer BNPL_ISSUER_ZIP_LINKED =
-            new BnplIssuer(
-                    /* displayName= */ "Zip",
+                    /* displayName= */ "Klarna",
+                    /* selectionText= */ "Pay in low monthly installments",
+                    /* isLinked= */ false,
+                    /* isEligible= */ true);
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_LINKED =
+            new BnplIssuerContext(
                     /* iconId= */ R.drawable.zip_linked,
-                    /* isLinked= */ true);
-    private static final BnplIssuer BNPL_ISSUER_ZIP_UNLINKED =
-            new BnplIssuer(
                     /* displayName= */ "Zip",
+                    /* selectionText= */ "Pay in easy installments",
+                    /* isLinked= */ true,
+                    /* isEligible= */ true);
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_UNLINKED =
+            new BnplIssuerContext(
                     /* iconId= */ R.drawable.zip_unlinked,
-                    /* isLinked= */ false);
+                    /* displayName= */ "Zip",
+                    /* selectionText= */ "Pay in easy installments",
+                    /* isLinked= */ false,
+                    /* isEligible= */ true);
+    private static final BnplIssuerContext
+            BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT =
+                    new BnplIssuerContext(
+                            /* iconId= */ R.drawable.affirm_linked,
+                            /* displayName= */ "Affirm",
+                            /* selectionText= */ "Not supported by merchant",
+                            /* isLinked= */ true,
+                            /* isEligible= */ false);
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW =
+            new BnplIssuerContext(
+                    /* iconId= */ R.drawable.klarna_linked,
+                    /* displayName= */ "Klarna",
+                    /* selectionText= */ "Purchase must be over $50.00",
+                    /* isLinked= */ true,
+                    /* isEligible= */ false);
+    private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH =
+            new BnplIssuerContext(
+                    /* iconId= */ R.drawable.zip_unlinked,
+                    /* displayName= */ "Zip",
+                    /* selectionText= */ "Purchase must be under $10,000.00",
+                    /* isLinked= */ false,
+                    /* isEligible= */ false);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -780,9 +816,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .getMediatorForTesting()
                 .showBnplIssuers(
                         List.of(
-                                BNPL_ISSUER_AFFIRM_LINKED,
-                                BNPL_ISSUER_KLARNA_LINKED,
-                                BNPL_ISSUER_ZIP_LINKED));
+                                BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
+                                BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
+                                BNPL_ISSUER_CONTEXT_ZIP_LINKED));
 
         assertThat(
                 mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
@@ -805,40 +841,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
 
-        Optional<PropertyModel> bnplIssuerModel =
-                getBnplIssuerModel(itemList, BNPL_ISSUER_AFFIRM_LINKED);
-        assertTrue(bnplIssuerModel.isPresent());
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_NAME),
-                is(BNPL_ISSUER_AFFIRM_LINKED.getDisplayName()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_ICON_ID),
-                is(BNPL_ISSUER_AFFIRM_LINKED.getIconId()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_LINKED), is(BNPL_ISSUER_AFFIRM_LINKED.isLinked()));
-        assertNotNull(bnplIssuerModel.get().get(ON_ISSUER_CLICK_ACTION));
-
-        bnplIssuerModel = getBnplIssuerModel(itemList, BNPL_ISSUER_KLARNA_LINKED);
-        assertTrue(bnplIssuerModel.isPresent());
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_NAME),
-                is(BNPL_ISSUER_KLARNA_LINKED.getDisplayName()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_ICON_ID),
-                is(BNPL_ISSUER_KLARNA_LINKED.getIconId()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_LINKED), is(BNPL_ISSUER_KLARNA_LINKED.isLinked()));
-        assertNotNull(bnplIssuerModel.get().get(ON_ISSUER_CLICK_ACTION));
-
-        bnplIssuerModel = getBnplIssuerModel(itemList, BNPL_ISSUER_ZIP_LINKED);
-        assertTrue(bnplIssuerModel.isPresent());
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_NAME),
-                is(BNPL_ISSUER_ZIP_LINKED.getDisplayName()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_ICON_ID), is(BNPL_ISSUER_ZIP_LINKED.getIconId()));
-        assertThat(bnplIssuerModel.get().get(ISSUER_LINKED), is(BNPL_ISSUER_ZIP_LINKED.isLinked()));
-        assertNotNull(bnplIssuerModel.get().get(ON_ISSUER_CLICK_ACTION));
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_AFFIRM_LINKED);
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_LINKED);
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_LINKED);
     }
 
     @Test
@@ -847,9 +852,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .getMediatorForTesting()
                 .showBnplIssuers(
                         List.of(
-                                BNPL_ISSUER_AFFIRM_UNLINKED,
-                                BNPL_ISSUER_KLARNA_UNLINKED,
-                                BNPL_ISSUER_ZIP_UNLINKED));
+                                BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED,
+                                BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED,
+                                BNPL_ISSUER_CONTEXT_ZIP_UNLINKED));
 
         assertThat(
                 mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
@@ -872,44 +877,48 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
 
-        Optional<PropertyModel> bnplIssuerModel =
-                getBnplIssuerModel(itemList, BNPL_ISSUER_AFFIRM_UNLINKED);
-        assertTrue(bnplIssuerModel.isPresent());
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_NAME),
-                is(BNPL_ISSUER_AFFIRM_UNLINKED.getDisplayName()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_ICON_ID),
-                is(BNPL_ISSUER_AFFIRM_UNLINKED.getIconId()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_LINKED),
-                is(BNPL_ISSUER_AFFIRM_UNLINKED.isLinked()));
-        assertNotNull(bnplIssuerModel.get().get(ON_ISSUER_CLICK_ACTION));
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED);
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED);
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_UNLINKED);
+    }
 
-        bnplIssuerModel = getBnplIssuerModel(itemList, BNPL_ISSUER_KLARNA_UNLINKED);
-        assertTrue(bnplIssuerModel.isPresent());
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_NAME),
-                is(BNPL_ISSUER_KLARNA_UNLINKED.getDisplayName()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_ICON_ID),
-                is(BNPL_ISSUER_KLARNA_UNLINKED.getIconId()));
-        assertThat(
-                bnplIssuerModel.get().get(ISSUER_LINKED),
-                is(BNPL_ISSUER_KLARNA_UNLINKED.isLinked()));
-        assertNotNull(bnplIssuerModel.get().get(ON_ISSUER_CLICK_ACTION));
+    @Test
+    public void testShowBnplIssuerSelectionScreenWithIneligibleIssuers() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(
+                        List.of(
+                                BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT,
+                                BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW,
+                                BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH));
 
-        bnplIssuerModel = getBnplIssuerModel(itemList, BNPL_ISSUER_ZIP_UNLINKED);
-        assertTrue(bnplIssuerModel.isPresent());
         assertThat(
-                bnplIssuerModel.get().get(ISSUER_NAME),
-                is(BNPL_ISSUER_ZIP_UNLINKED.getDisplayName()));
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
         assertThat(
-                bnplIssuerModel.get().get(ISSUER_ICON_ID),
-                is(BNPL_ISSUER_ZIP_UNLINKED.getIconId()));
+                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_content_description));
         assertThat(
-                bnplIssuerModel.get().get(ISSUER_LINKED), is(BNPL_ISSUER_ZIP_UNLINKED.isLinked()));
-        assertNotNull(bnplIssuerModel.get().get(ON_ISSUER_CLICK_ACTION));
+                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_half_height));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_full_height));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_closed));
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
+
+        assertBnplIssuerContextModelMatches(
+                itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT);
+        assertBnplIssuerContextModelMatches(
+                itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW);
+        assertBnplIssuerContextModelMatches(
+                itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH);
     }
 
     @Test
@@ -1806,19 +1815,48 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .map(item -> item.model);
     }
 
-    private static Optional<PropertyModel> getBnplIssuerModel(
-            ModelList items, BnplIssuer bnplIssuer) {
+    private static Optional<PropertyModel> getBnplIssuerContextModel(
+            ModelList items, BnplIssuerContext issuerContext) {
         return StreamSupport.stream(items.spliterator(), false)
                 .filter(
                         item ->
                                 item.type == BNPL_ISSUER
                                         && item.model
                                                 .get(ISSUER_NAME)
-                                                .equals(bnplIssuer.getDisplayName())
-                                        && item.model.get(ISSUER_ICON_ID) == bnplIssuer.getIconId()
-                                        && item.model.get(ISSUER_LINKED) == bnplIssuer.isLinked())
+                                                .equals(issuerContext.getDisplayName())
+                                        && item.model
+                                                .get(ISSUER_SELECTION_TEXT)
+                                                .equals(issuerContext.getSelectionText())
+                                        && item.model.get(ISSUER_ICON_ID)
+                                                == issuerContext.getIconId()
+                                        && item.model.get(ISSUER_LINKED) == issuerContext.isLinked()
+                                        && item.model.get(APPLY_ISSUER_DEACTIVATED_STYLE)
+                                                != issuerContext.isEligible())
                 .findFirst()
                 .map(item -> item.model);
+    }
+
+    private void assertBnplIssuerContextModelMatches(
+            ModelList itemList, BnplIssuerContext expectedBnplIssuerContext) {
+        Optional<PropertyModel> bnplIssuerContextModel =
+                getBnplIssuerContextModel(itemList, expectedBnplIssuerContext);
+        assertTrue(bnplIssuerContextModel.isPresent());
+        assertThat(
+                bnplIssuerContextModel.get().get(ISSUER_NAME),
+                is(expectedBnplIssuerContext.getDisplayName()));
+        assertThat(
+                bnplIssuerContextModel.get().get(ISSUER_SELECTION_TEXT),
+                is(expectedBnplIssuerContext.getSelectionText()));
+        assertThat(
+                bnplIssuerContextModel.get().get(ISSUER_ICON_ID),
+                is(expectedBnplIssuerContext.getIconId()));
+        assertThat(
+                bnplIssuerContextModel.get().get(ISSUER_LINKED),
+                is(expectedBnplIssuerContext.isLinked()));
+        assertNotNull(bnplIssuerContextModel.get().get(ON_ISSUER_CLICK_ACTION));
+        assertThat(
+                bnplIssuerContextModel.get().get(APPLY_ISSUER_DEACTIVATED_STYLE),
+                is(!expectedBnplIssuerContext.isEligible()));
     }
 
     private static Optional<PropertyModel> getIbanModelByAutofillName(ModelList items, Iban iban) {

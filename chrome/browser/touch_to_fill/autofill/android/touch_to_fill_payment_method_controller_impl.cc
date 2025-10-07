@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/android/window_android.h"
@@ -171,8 +172,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowProgressScreen(
 
 bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuers(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const BnplIssuer> bnpl_issuers_to_suggest) {
-  if (!view_ || !view_->ShowBnplIssuers(bnpl_issuers_to_suggest)) {
+    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts) {
+  if (!view_ || !view_->ShowBnplIssuers(bnpl_issuer_contexts)) {
     ResetJavaObject();
     return false;
   }

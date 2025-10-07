@@ -1429,6 +1429,15 @@
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_BOTTOM_SHEET_BENEFITS_TERMS_LABEL" desc="The label for the card benefits terms appears on the bottom sheet when at least one of the cards has benefits." formatter_data="android_java">
       Terms apply for card benefits
     </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_AFFIRM_BOTTOM_SHEET" desc="Text for the payment option button in the BNPL select provider bottomsheet, explaining that users can pay monthly or in installments. It is specifically for Affirm options.">
+        Monthly or 4 installments
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_ZIP_BOTTOM_SHEET" desc="Text for the payment option button in the BNPL select provider bottomsheet, explaining that users can pay monthly or in installments. It is specifically for Zip options.">
+        Pay in easy installments
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_KLARNA_BOTTOM_SHEET" desc="Text for the payment option button in the BNPL select provider bottomsheet, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
+        Pay in low monthly installments
+    </message>
   </if>
 
   <!-- Mandatory Reauth related strings -->

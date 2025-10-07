@@ -35,7 +35,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuer;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuerContext;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -125,8 +125,8 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
-    public void showBnplIssuers(List<BnplIssuer> bnplIssuers) {
-        mMediator.showBnplIssuers(bnplIssuers);
+    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts) {
+        mMediator.showBnplIssuers(bnplIssuerContexts);
     }
 
     @Override

@@ -33,7 +33,6 @@ class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
-class BnplIssuer;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class AutofillProgressDialogController;
@@ -61,6 +60,7 @@ enum class WebauthnDialogCallbackType;
 
 namespace payments {
 
+struct BnplIssuerContext;
 class BnplStrategy;
 class BnplUiDelegate;
 class MandatoryReauthManager;
@@ -642,7 +642,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // on those platforms.
   virtual bool ShowTouchToFillBnplIssuers(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const BnplIssuer> bnpl_issuers_to_suggest) = 0;
+      base::span<const BnplIssuerContext> bnpl_issuer_contexts) = 0;
 
   // Shows the BNPL error screen, if possible, returning `true` on success.
   // Should be called only on Android if the feature is supported by the

@@ -19,6 +19,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 #include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -191,22 +192,23 @@ bool TouchToFillPaymentMethodViewImpl::ShowProgressScreen(
 }
 
 bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
-    base::span<const autofill::BnplIssuer> bnpl_issuers_to_suggest) {
+    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts) {
   if (!java_object_) {
     return false;
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> issuers_array;
-  issuers_array.reserve(bnpl_issuers_to_suggest.size());
-  for (const autofill::BnplIssuer& issuer : bnpl_issuers_to_suggest) {
-    issuers_array.push_back(
-        PersonalDataManagerAndroid::CreateJavaBnplIssuerFromNative(env,
-                                                                   issuer));
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> issuer_context_array;
+  issuer_context_array.reserve(bnpl_issuer_contexts.size());
+  for (const payments::BnplIssuerContext& issuer_context :
+       bnpl_issuer_contexts) {
+    issuer_context_array.push_back(
+        PersonalDataManagerAndroid::CreateJavaBnplIssuerContextFromNative(
+            env, issuer_context));
   }
 
   Java_TouchToFillPaymentMethodViewBridge_showBnplIssuers(
-      env, java_object_, std::move(issuers_array));
+      env, java_object_, std::move(issuer_context_array));
   return true;
 }
 

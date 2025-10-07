@@ -31,13 +31,13 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -985,10 +985,10 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillProgress(
 
 bool ChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::BnplIssuer> bnpl_issurs_to_suggest) {
+    base::span<const BnplIssuerContext> bnpl_issuer_contexts) {
 #if BUILDFLAG(IS_ANDROID)
   return GetTouchToFillPaymentMethodController()->ShowBnplIssuers(
-      delegate, bnpl_issurs_to_suggest);
+      delegate, bnpl_issuer_contexts);
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();

@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
@@ -847,19 +848,26 @@ jboolean PersonalDataManagerAndroid::IsCardEligibleForBenefits(
 
 // static
 ScopedJavaLocalRef<jobject>
-PersonalDataManagerAndroid::CreateJavaBnplIssuerFromNative(
+PersonalDataManagerAndroid::CreateJavaBnplIssuerContextFromNative(
     JNIEnv* env,
-    const BnplIssuer& bnpl_issuer) {
+    const payments::BnplIssuerContext& bnpl_issuer_context) {
   // For now, Android only uses the `LightModeImageId`.
   const std::pair<BnplIssuer::LightModeImageId, BnplIssuer::DarkModeImageId>
       image_ids = GetBnplIssuerIconIds(
-          bnpl_issuer.issuer_id(),
-          /*issuer_linked=*/bnpl_issuer.payment_instrument().has_value());
-  // TOOD(crbug.com/430575808): Provide the selection text to the Java
-  // BnplIssuer object.
-  return Java_BnplIssuer_createBnplIssuer(
-      env, bnpl_issuer.GetDisplayName(), image_ids.first.value(),
-      bnpl_issuer.payment_instrument().has_value());
+          bnpl_issuer_context.issuer.issuer_id(),
+          /*issuer_linked=*/bnpl_issuer_context.issuer.payment_instrument()
+              .has_value());
+
+  const std::u16string selection_text =
+      payments::GetBnplIssuerSelectionOptionText(
+          bnpl_issuer_context.issuer.issuer_id(),
+          g_browser_process->GetApplicationLocale(), {bnpl_issuer_context});
+
+  return Java_BnplIssuerContext_createBnplIssuerContext(
+      env, image_ids.first.value(), bnpl_issuer_context.issuer.GetDisplayName(),
+      selection_text,
+      bnpl_issuer_context.issuer.payment_instrument().has_value(),
+      bnpl_issuer_context.IsEligible());
 }
 
 }  // namespace autofill

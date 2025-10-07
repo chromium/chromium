@@ -142,11 +142,11 @@ interface TouchToFillPaymentMethodComponent {
     /**
      * Displays a new BNPL issuers bottom sheet.
      *
-     * @param bnplIssuers A list of {@link PersonalDataManager.BnplIssuer} objects, each
-     *     representing a BNPL issuer, to be displayed on the bottom sheet for the user to select
-     *     from.
+     * @param bnplIssuerContexts A list of {@link PersonalDataManager.BnplIssuerContext} objects,
+     *     each representing a BNPL issuer context, to be displayed on the bottom sheet for the user
+     *     to select from.
      */
-    void showBnplIssuers(List<PersonalDataManager.BnplIssuer> bnplIssuers);
+    void showBnplIssuers(List<PersonalDataManager.BnplIssuerContext> bnplIssuerContexts);
 
     /**
      * Displays an error screen bottom sheet.

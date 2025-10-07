@@ -293,21 +293,30 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for a BNPL issuer entry in the TouchToFill sheet for payments. */
-    static class BnplIssuerProperties {
+    static class BnplIssuerContextProperties {
         static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("issuer_name");
+        static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_SELECTION_TEXT =
+                new PropertyModel.ReadableObjectPropertyKey<>("issuer_selection_text");
         static final PropertyModel.ReadableIntPropertyKey ISSUER_ICON_ID =
                 new PropertyModel.ReadableIntPropertyKey("issuer_icon_id");
         static final PropertyModel.ReadableBooleanPropertyKey ISSUER_LINKED =
                 new PropertyModel.ReadableBooleanPropertyKey("issuer_linked");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_ISSUER_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_issuer_click_action");
+        static final PropertyModel.ReadableBooleanPropertyKey APPLY_ISSUER_DEACTIVATED_STYLE =
+                new PropertyModel.ReadableBooleanPropertyKey("apply_issuer_deactivated_style");
 
-        static final PropertyKey[] NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS = {
-            ISSUER_NAME, ISSUER_ICON_ID, ISSUER_LINKED, ON_ISSUER_CLICK_ACTION
+        static final PropertyKey[] NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS = {
+            ISSUER_NAME,
+            ISSUER_SELECTION_TEXT,
+            ISSUER_ICON_ID,
+            ISSUER_LINKED,
+            ON_ISSUER_CLICK_ACTION,
+            APPLY_ISSUER_DEACTIVATED_STYLE
         };
 
-        private BnplIssuerProperties() {}
+        private BnplIssuerContextProperties() {}
     }
 
     /**

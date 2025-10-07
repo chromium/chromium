@@ -14,7 +14,10 @@
 
 namespace autofill {
 
-class BnplIssuer;
+namespace payments {
+struct BnplIssuerContext;
+}  // namespace payments
+
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -79,14 +82,15 @@ class TouchToFillPaymentMethodController
       std::unique_ptr<TouchToFillPaymentMethodView> view,
       base::WeakPtr<TouchToFillDelegate> delegate) = 0;
 
-  // Shows the Touch To Fill BNPL issuer selection screen. `delegate` will
-  // provide the BNPL issuers and be notified of the user's decision. Returns
+  // Shows the Touch To Fill BNPL issuer selection screen. `delegate` will be
+  // notified of the user's decision. `bnpl_issuer_contexts` provides the BNPL
+  // issuers to suggest and the context needed to render them in the UI. Returns
   // whether the surface was successfully shown.
   // TODO(crbug.com/430575808): Pass in an `on_bnpl_flow_dismissed_by_user_`
   // callback to be called whenever the BNPL UI is dismissed.
   virtual bool ShowBnplIssuers(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const BnplIssuer> bnpl_issuers_to_suggest) = 0;
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts) = 0;
 
   // Shows the Touch To Fill error screen. If the TTF surface is already being
   // shown when this is called, `view` is optional and will override the

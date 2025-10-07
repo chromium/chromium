@@ -69,6 +69,7 @@ class VirtualCardEnrollmentManager;
 
 namespace payments {
 
+struct BnplIssuerContext;
 class BnplStrategy;
 class BnplUiDelegate;
 class MandatoryReauthManager;
@@ -211,7 +212,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::WeakPtr<TouchToFillDelegate> delegate) override;
   bool ShowTouchToFillBnplIssuers(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::BnplIssuer> bnpl_issurs_to_suggest) override;
+      base::span<const BnplIssuerContext> bnpl_issuer_contexts) override;
   bool ShowTouchToFillError(base::WeakPtr<TouchToFillDelegate> delegate,
                             const AutofillErrorDialogContext& context) override;
   void HideTouchToFillPaymentMethod() override;

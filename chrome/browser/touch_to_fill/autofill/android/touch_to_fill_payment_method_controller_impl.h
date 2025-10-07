@@ -19,7 +19,10 @@
 
 namespace autofill {
 
-class BnplIssuer;
+namespace payments {
+struct BnplIssuerContext;
+}  // namespace payments
+
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -59,9 +62,9 @@ class TouchToFillPaymentMethodControllerImpl
                                bool is_amount_supported_by_any_issuer) override;
   bool ShowProgressScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
                           base::WeakPtr<TouchToFillDelegate> delegate) override;
-  bool ShowBnplIssuers(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const BnplIssuer> bnpl_issuers_to_suggest) override;
+  bool ShowBnplIssuers(base::WeakPtr<TouchToFillDelegate> delegate,
+                       base::span<const payments::BnplIssuerContext>
+                           bnpl_issuer_contexts) override;
   bool ShowErrorScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
                        base::WeakPtr<TouchToFillDelegate> delegate,
                        const std::u16string& title,

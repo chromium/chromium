@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -690,23 +691,39 @@ public class PersonalDataManager implements Destroyable {
         }
     }
 
-    /** Autofill BNPL issuer information. */
-    public static class BnplIssuer {
+    /** Autofill BNPL issuer context information. */
+    public static class BnplIssuerContext {
+        private final @DrawableRes int mIconId;
         private final String mDisplayName;
-        private final int mIconId;
+        private final String mSelectionText;
         private final boolean mIsLinked;
+        private final boolean mIsEligible;
 
         /**
-         * Constructs a new BnplIssuer.
+         * Constructs a new BnplIssuerContext.
          *
-         * @param displayName The name of the issuer to be displayed.
          * @param iconId The resource ID of the issuer's icon.
+         * @param displayName The name of the issuer to be displayed.
+         * @param selectionText The selection text of the issuer to be displayed.
          * @param isLinked Whether the issuer is linked or not.
+         * @param isEligible Whether the issuer is eligible to be selected.
          */
-        public BnplIssuer(String displayName, int iconId, boolean isLinked) {
-            mDisplayName = displayName;
+        public BnplIssuerContext(
+                @DrawableRes int iconId,
+                String displayName,
+                String selectionText,
+                boolean isLinked,
+                boolean isEligible) {
             mIconId = iconId;
+            mDisplayName = displayName;
+            mSelectionText = selectionText;
             mIsLinked = isLinked;
+            mIsEligible = isEligible;
+        }
+
+        /** Returns the resource ID of the issuer's icon. */
+        public @DrawableRes int getIconId() {
+            return mIconId;
         }
 
         /** Returns the name of the issuer to be displayed. */
@@ -714,9 +731,9 @@ public class PersonalDataManager implements Destroyable {
             return mDisplayName;
         }
 
-        /** Returns the resource ID of the issuer's icon. */
-        public int getIconId() {
-            return mIconId;
+        /** Returns the selection text of the issuer to be displayed. */
+        public String getSelectionText() {
+            return mSelectionText;
         }
 
         /** Returns {@code true} if the issuer is linked. */
@@ -724,10 +741,19 @@ public class PersonalDataManager implements Destroyable {
             return mIsLinked;
         }
 
-        @CalledByNative("BnplIssuer")
-        private static BnplIssuer createBnplIssuer(
-                @JniType("std::u16string") String displayName, int iconId, boolean isLinked) {
-            return new BnplIssuer(displayName, iconId, isLinked);
+        /** Returns {@code true} if the issuer is eligible to be selected. */
+        public boolean isEligible() {
+            return mIsEligible;
+        }
+
+        @CalledByNative("BnplIssuerContext")
+        private static BnplIssuerContext createBnplIssuerContext(
+                int iconId,
+                @JniType("std::u16string") String displayName,
+                @JniType("std::u16string") String selectionText,
+                boolean isLinked,
+                boolean isEligible) {
+            return new BnplIssuerContext(iconId, displayName, selectionText, isLinked, isEligible);
         }
     }
 

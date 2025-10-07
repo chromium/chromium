@@ -17,6 +17,29 @@ namespace {
 constexpr std::string_view kPaymentSettingsLinkText = "payment settings";
 }  // namespace
 
+TEST(BnplUtilTest, IsEligible_ReturnsTrueForEligibleIssuers) {
+  BnplIssuerContext issuer_context(test::GetTestLinkedBnplIssuer(),
+                                   BnplIssuerEligibilityForPage::kIsEligible);
+  EXPECT_TRUE(issuer_context.IsEligible());
+}
+
+TEST(BnplUtilTest, IsEligible_ReturnsFalseForIneligibleIssuers) {
+  BnplIssuerContext issuer_context_merchant(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant);
+  EXPECT_FALSE(issuer_context_merchant.IsEligible());
+
+  BnplIssuerContext issuer_context_low_amount(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow);
+  EXPECT_FALSE(issuer_context_low_amount.IsEligible());
+
+  BnplIssuerContext issuer_context_high_amount(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh);
+  EXPECT_FALSE(issuer_context_high_amount.IsEligible());
+}
+
 struct EligibleBnplIssuerParams {
   BnplIssuer::IssuerId issuer_id;
   int expected_issuer_selection_text_id;
@@ -29,6 +52,18 @@ class BnplUtilEligibleTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     BnplUtilEligibleTest,
+#if BUILDFLAG(IS_ANDROID)
+    testing::Values(
+        EligibleBnplIssuerParams{
+            BnplIssuer::IssuerId::kBnplAffirm,
+            IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_AFFIRM_BOTTOM_SHEET},
+        EligibleBnplIssuerParams{
+            BnplIssuer::IssuerId::kBnplKlarna,
+            IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_KLARNA_BOTTOM_SHEET},
+        EligibleBnplIssuerParams{
+            BnplIssuer::IssuerId::kBnplZip,
+            IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_ZIP_BOTTOM_SHEET}));
+#else
     testing::Values(
         EligibleBnplIssuerParams{
             BnplIssuer::IssuerId::kBnplAffirm,
@@ -42,6 +77,7 @@ INSTANTIATE_TEST_SUITE_P(
         EligibleBnplIssuerParams{
             BnplIssuer::IssuerId::kBnplZip,
             IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP}));
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(BnplUtilEligibleTest, GetBnplIssuerSelectionOptionText) {
   const EligibleBnplIssuerParams& params = GetParam();

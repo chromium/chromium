@@ -310,7 +310,7 @@ bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillProgress(
 
 bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillBnplIssuers(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const BnplIssuer> bnpl_issuers_to_suggest) {
+    base::span<const BnplIssuerContext> bnpl_issuer_contexts) {
   return false;
 }
 

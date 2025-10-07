@@ -17,7 +17,10 @@ class WebContents;
 
 namespace autofill {
 
-class BnplIssuer;
+namespace payments {
+struct BnplIssuerContext;
+}  // namespace payments
+
 class Iban;
 class LoyaltyCard;
 struct Suggestion;
@@ -52,8 +55,8 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
                                bool is_amount_supported_by_any_issuer) override;
   bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) override;
-  bool ShowBnplIssuers(
-      base::span<const BnplIssuer> bnpl_issuers_to_suggest) override;
+  bool ShowBnplIssuers(base::span<const payments::BnplIssuerContext>
+                           bnpl_issuer_contexts) override;
   bool ShowErrorScreen(TouchToFillPaymentMethodViewController* controller,
                        const std::u16string& title,
                        const std::u16string& description) override;

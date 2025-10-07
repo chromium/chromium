@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_ICON_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_LINKED;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_NAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ON_ISSUER_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.APPLY_ISSUER_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_LINKED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_SELECTION_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -90,7 +92,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuer;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuerContext;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
@@ -244,7 +246,7 @@ class TouchToFillPaymentMethodMediator {
     private List<Iban> mIbans;
     private List<LoyaltyCard> mAffiliatedLoyaltyCards;
     private List<LoyaltyCard> mAllLoyaltyCards;
-    private List<BnplIssuer> mBnplIssuers;
+    private List<BnplIssuerContext> mBnplIssuerContexts;
     private Function<LoyaltyCard, Drawable> mValuableImageFunction;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
     private boolean mShouldShowScanCreditCard;
@@ -276,7 +278,7 @@ class TouchToFillPaymentMethodMediator {
         mAffiliatedLoyaltyCards = null;
         mAllLoyaltyCards = null;
         mValuableImageFunction = null;
-        mBnplIssuers = null;
+        mBnplIssuerContexts = null;
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
 
@@ -361,7 +363,7 @@ class TouchToFillPaymentMethodMediator {
         mValuableImageFunction = null;
         mShouldShowScanCreditCard = false;
         mCardImageFunction = null;
-        mBnplIssuers = null;
+        mBnplIssuerContexts = null;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -418,7 +420,7 @@ class TouchToFillPaymentMethodMediator {
         mIbans = null;
         mShouldShowScanCreditCard = false;
         mCardImageFunction = null;
-        mBnplIssuers = null;
+        mBnplIssuerContexts = null;
 
         mModel.set(
                 SHEET_ITEMS,
@@ -542,13 +544,13 @@ class TouchToFillPaymentMethodMediator {
      *
      * <p>This method shows a bottom sheet listing the provided BNPL issuers.
      *
-     * @param bnplIssuers A list of {@link BnplIssuer} to be displayed.
+     * @param bnplIssuerContexts A list of {@link BnplIssuerContext} to be displayed.
      */
-    public void showBnplIssuers(List<BnplIssuer> bnplIssuers) {
+    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts) {
         mInputProtector.markShowTime();
 
-        assert bnplIssuers != null;
-        mBnplIssuers = bnplIssuers;
+        assert bnplIssuerContexts != null;
+        mBnplIssuerContexts = bnplIssuerContexts;
         mIbans = null;
         mAffiliatedLoyaltyCards = null;
         mAllLoyaltyCards = null;
@@ -559,12 +561,11 @@ class TouchToFillPaymentMethodMediator {
 
         sheetItems.add(buildHeaderForBnplSelectionProgress(/* isBackButtonEnabled= */ true));
 
-        for (BnplIssuer issuer : mBnplIssuers) {
-            sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerModel(issuer)));
+        for (BnplIssuerContext issuerContext : mBnplIssuerContexts) {
+            sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerContextModel(issuerContext)));
         }
 
-        // TODO(crbug.com/438784993): Add header, footer, and linked status UI to BNPL issuer
-        // selection screen.
+        // TODO(crbug.com/438784993): Add footer to BNPL issuer selection screen.
 
         mModel.set(
                 SHEET_CONTENT_DESCRIPTION_ID,
@@ -843,19 +844,15 @@ class TouchToFillPaymentMethodMediator {
         return bnplSuggestionModelBuilder.build();
     }
 
-    private PropertyModel createBnplIssuerModel(BnplIssuer issuer) {
-        // TODO(crbug.com/430575808): `ISSUER_SELECTION_TEXT` will be set once
-        // the Java `BnplIssuer` begins accepting the selection text from the
-        // native side.
-        // TODO(crbug.com/430575808): `APPLY_ISSUER_DEACTIVATED_STYLE` will be
-        // set once the Java `BnplIssuer` begins accepting this value from the
-        // native side.
+    private PropertyModel createBnplIssuerContextModel(BnplIssuerContext issuerContext) {
         PropertyModel.Builder bnplIssuerModelBuilder =
-                new PropertyModel.Builder(NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS)
-                        .with(ISSUER_NAME, issuer.getDisplayName())
-                        .with(ISSUER_ICON_ID, issuer.getIconId())
-                        .with(ISSUER_LINKED, issuer.isLinked())
-                        .with(ON_ISSUER_CLICK_ACTION, this::onAcceptedBnplIssuer);
+                new PropertyModel.Builder(NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS)
+                        .with(ISSUER_NAME, issuerContext.getDisplayName())
+                        .with(ISSUER_SELECTION_TEXT, issuerContext.getSelectionText())
+                        .with(ISSUER_ICON_ID, issuerContext.getIconId())
+                        .with(ISSUER_LINKED, issuerContext.isLinked())
+                        .with(ON_ISSUER_CLICK_ACTION, this::onAcceptedBnplIssuer)
+                        .with(APPLY_ISSUER_DEACTIVATED_STYLE, !issuerContext.isEligible());
         return bnplIssuerModelBuilder.build();
     }
 
