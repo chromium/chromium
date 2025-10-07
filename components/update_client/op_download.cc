@@ -206,7 +206,14 @@ base::OnceClosure DownloadOperation(
           },
           get_available_space),
       base::BindOnce(&HandleAvailableSpace, config, id, cancellation,
-                     is_foreground, urls, size, hash, progress_callback,
+                     is_foreground, urls, size, hash,
+                     base::BindRepeating(
+                         [](CrxDownloader::ProgressCallback progress_callback,
+                            int64_t file_size, int64_t downloaded_bytes,
+                            int64_t /*content_length*/) {
+                           progress_callback.Run(downloaded_bytes, file_size);
+                         },
+                         progress_callback, size),
                      event_adder, std::move(callback)));
   return base::BindOnce(&Cancellation::Cancel, cancellation);
 }
