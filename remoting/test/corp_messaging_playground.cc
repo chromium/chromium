@@ -31,6 +31,14 @@
 
 namespace remoting {
 
+namespace {
+// Squirrel-related messaging constants.
+constexpr char kSquirrel[] = "🐿️";
+constexpr int kSquirrelCount = 1000000;
+constexpr char kSquirrelMsgStart[] = "Ready for lots of squirrels? -> ";
+constexpr char kSquirrelMsgEnd[] = " -> Wow! That was nuts!!!";
+}  // namespace
+
 class CorpMessagingPlayground::Core {
  public:
   using OnInputCallback = base::RepeatingCallback<void(char)>;
@@ -60,6 +68,7 @@ void CorpMessagingPlayground::Core::Start() {
   std::cout << "Press '3' to send a burst of 100 messages to the client."
             << std::endl;
   std::cout << "Press '4' to start a ping-pong exchange." << std::endl;
+  std::cout << "Press '5' to send a large message." << std::endl;
   std::cout << "Press 'x' to quit." << std::endl << std::endl;
 
   while (true) {
@@ -174,6 +183,9 @@ void CorpMessagingPlayground::OnCharacterInput(char c) {
     case '4':
       StartPingPongMatch();
       break;
+    case '5':
+      SendLargeMessage();
+      break;
     case 'x':
       run_loop_->Quit();
       break;
@@ -201,6 +213,24 @@ void CorpMessagingPlayground::StartPingPongMatch() {
   last_ping_sent_time_ = base::Time::Now();
   client_->SendMessage(last_sender_id_, CreatePingMessage(1),
                        base::DoNothing());
+}
+
+void CorpMessagingPlayground::SendLargeMessage() {
+  if (last_sender_id_.username.empty()) {
+    LOG(WARNING) << "No message received yet, destination ID is unknown.";
+    return;
+  }
+
+  std::string payload(kSquirrelMsgStart);
+  payload.reserve((sizeof(kSquirrelMsgStart) - 1) +
+                  (sizeof(kSquirrelMsgEnd) - 1) +
+                  (sizeof(kSquirrel) - 1) * kSquirrelCount);
+  for (int i = 0; i < kSquirrelCount; i++) {
+    payload += kSquirrel;
+  }
+  payload += kSquirrelMsgEnd;
+
+  client_->SendMessage(last_sender_id_, payload, base::DoNothing());
 }
 
 }  // namespace remoting

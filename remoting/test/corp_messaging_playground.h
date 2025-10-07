@@ -42,6 +42,7 @@ class CorpMessagingPlayground {
   void OnCharacterInput(char c);
   void SendMessage(int count = 1);
   void StartPingPongMatch();
+  void SendLargeMessage();
 
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
