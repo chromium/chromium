@@ -898,9 +898,9 @@ void OneTimeMessageHandlerGarbageCollectionTest::RunTest(
       .WillOnce(base::test::RunClosure(close_port_run_loop.QuitClosure()));
   message_handler()->DeliverMessage(script_context(), message, port_id);
   EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
-  EXPECT_EQ(
-      pending_callbacks_before_collection,
-      message_handler()->GetPendingCallbackCountForTest(script_context()));
+  EXPECT_EQ(pending_callbacks_before_collection,
+            message_handler()->GetPendingCallbackCountForTest(script_context(),
+                                                              port_id));
 
   // The listener didn't retain the reply callback, and if it returned a
   // promise, it never settled. The JS callbacks should be garbage collected,
@@ -911,8 +911,8 @@ void OneTimeMessageHandlerGarbageCollectionTest::RunTest(
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
-  EXPECT_EQ(
-      0, message_handler()->GetPendingCallbackCountForTest(script_context()));
+  EXPECT_EQ(0, message_handler()->GetPendingCallbackCountForTest(
+                   script_context(), port_id));
 }
 
 // Tests that when a listener indicates an asynchronous response by returning

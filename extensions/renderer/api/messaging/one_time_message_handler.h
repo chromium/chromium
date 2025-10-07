@@ -30,6 +30,7 @@ enum class ChannelType;
 }
 
 class NativeExtensionBindingsSystem;
+class NativeRendererMessagingService;
 class ScriptContext;
 struct Message;
 struct MessageTarget;
@@ -130,9 +131,10 @@ class OneTimeMessageHandler {
                   const PortId& port_id,
                   const std::string& error_message);
 
-  // Gets the number of pending callbacks on the associated per context data for
-  // testing purposes.
-  int GetPendingCallbackCountForTest(ScriptContext* script_context);
+  // Gets the number of pending callbacks for the `port_id` on the associated
+  // per context data for testing purposes.
+  int GetPendingCallbackCountForTest(ScriptContext* script_context,
+                                     PortId port_id);
 
  private:
   // Helper methods to deliver a message to an opener/receiver.
@@ -148,6 +150,17 @@ class OneTimeMessageHandler {
   bool DisconnectOpener(ScriptContext* script_context,
                         const PortId& port_id,
                         const std::string& error_message);
+
+  // Closes the receiver message port and cleans up all the port's state if
+  // `close_channel` is false. If `close_channel` is true, then we request the
+  // entire channel to close. `error` can be provided to provide an error to the
+  // message sender when closing the channel.
+  void CloseReceiverMessagePortOrChannel(
+      ScriptContext* script_context,
+      const PortId& port_id,
+      bool close_channel,
+      std::optional<std::string> error,
+      NativeRendererMessagingService* messaging_service);
 
   // Triggered when a receiver responds to a message.
   void OnOneTimeMessageResponse(const PortId& port_id,
@@ -172,8 +185,8 @@ class OneTimeMessageHandler {
   // `cleanup_on_collection` true means that, if `context` is still valid when
   // the v8::Function that is created to call `callback` is garbage collected by
   // v8, we'll remove `callback` from
-  // `GetPerContextData<OneTimeMessageContextData>::pending_callbacks` and close
-  // the message port.
+  // `GetPerContextData<OneTimeMessageContextData>::pending_receiver_callbacks`
+  // and close the message port.
   v8::Local<v8::Function> CreateDelayedOneTimeMessageCallback(
       v8::Isolate* isolate,
       v8::Local<v8::Context> context,
