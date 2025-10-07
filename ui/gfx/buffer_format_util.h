@@ -9,66 +9,13 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(ENABLE_VULKAN)
-#include <vulkan/vulkan_core.h>
-#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 namespace gfx {
 
 // Returns a span containing all buffer formats.
 COMPONENT_EXPORT(GFX)
 base::span<const BufferFormat> GetBufferFormatsForTesting();
-
-// Returns the number of planes for |format|.
-COMPONENT_EXPORT(GFX)
-size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format);
-
-// Returns the subsampling factor applied to the given zero-indexed |plane| of
-// |format| both horizontally and vertically.
-COMPONENT_EXPORT(GFX)
-size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane);
-
-// Returns the number of bytes used to store a row of the given zero-indexed
-// |plane| of |format|.
-COMPONENT_EXPORT(GFX)
-size_t RowSizeForBufferFormat(size_t width, BufferFormat format, size_t plane);
-[[nodiscard]] COMPONENT_EXPORT(GFX) bool RowSizeForBufferFormatChecked(
-    size_t width,
-    BufferFormat format,
-    size_t plane,
-    size_t* size_in_bytes);
-
-// Returns the height in pixels of the given zero-indexed |plane| of |format|.
-[[nodiscard]] COMPONENT_EXPORT(GFX) bool PlaneHeightForBufferFormatChecked(
-    size_t width,
-    BufferFormat format,
-    size_t plane,
-    size_t* height_in_pixels);
-
-// Returns the number of bytes used to the plane of a given |format|.
-[[nodiscard]] COMPONENT_EXPORT(GFX) bool PlaneSizeForBufferFormatChecked(
-    const Size& size,
-    BufferFormat format,
-    size_t plane,
-    size_t* size_in_bytes);
-
-// Returns the number of bytes used to store all the planes of a given |format|.
-COMPONENT_EXPORT(GFX)
-size_t BufferSizeForBufferFormat(const Size& size, BufferFormat format);
-
-[[nodiscard]] COMPONENT_EXPORT(GFX) bool BufferSizeForBufferFormatChecked(
-    const Size& size,
-    BufferFormat format,
-    size_t* size_in_bytes);
-
-COMPONENT_EXPORT(GFX)
-size_t BufferOffsetForBufferFormat(const Size& size,
-                                   BufferFormat format,
-                                   size_t plane);
 
 // Returns the name of |format| as a string.
 COMPONENT_EXPORT(GFX) const char* BufferFormatToString(BufferFormat format);
