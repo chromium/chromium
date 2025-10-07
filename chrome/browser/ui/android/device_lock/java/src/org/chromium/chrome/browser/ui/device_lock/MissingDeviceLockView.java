@@ -17,8 +17,6 @@ import android.widget.TextView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 
 /**
  * View shown to a user who has removed the device lock to inform them that their private data will
@@ -52,11 +50,6 @@ public class MissingDeviceLockView extends LinearLayout {
         mDescription = findViewById(R.id.missing_device_lock_description);
         mCheckBox = findViewById(R.id.missing_device_lock_remove_local_data);
 
-        int buttonWidth =
-                SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)
-                        ? ViewGroup.LayoutParams.MATCH_PARENT
-                        : ViewGroup.LayoutParams.WRAP_CONTENT;
-
         mCreateDeviceLockButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(),
@@ -64,7 +57,8 @@ public class MissingDeviceLockView extends LinearLayout {
                         getResources().getString(R.string.device_lock_create_lock_button),
                         null);
         mCreateDeviceLockButton.setLayoutParams(
-                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mContinueButton =
                 DualControlLayout.createButtonForLayout(
@@ -73,7 +67,8 @@ public class MissingDeviceLockView extends LinearLayout {
                         getResources().getString(R.string.delete_and_continue),
                         null);
         mContinueButton.setLayoutParams(
-                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);
@@ -83,28 +78,20 @@ public class MissingDeviceLockView extends LinearLayout {
         MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
         int illustrationTopMargin;
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
-            illustration.setBackgroundColor(Color.TRANSPARENT);
-            illustrationParams.height =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_height);
-            illustrationTopMargin =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.device_lock_dialog_illustration_top_margin);
-            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.STACK);
-            DeviceLockUtils.updateDialogSubviewMargins(mButtonBar);
-            DeviceLockUtils.updateDialogSubviewMargins(mTitle);
-            DeviceLockUtils.updateDialogSubviewMargins(mDescription);
-            DeviceLockUtils.updateDialogSubviewMargins(mCheckBox);
-        } else {
-            illustration.setBackgroundColor(
-                    getContext().getColor(R.color.signin_header_animation_background));
-            illustrationTopMargin = 0;
-            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
-        }
+        illustration.setBackgroundColor(Color.TRANSPARENT);
+        illustrationParams.height =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_height);
+        illustrationTopMargin =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_top_margin);
+        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.STACK);
+        DeviceLockUtils.updateDialogSubviewMargins(mButtonBar);
+        DeviceLockUtils.updateDialogSubviewMargins(mTitle);
+        DeviceLockUtils.updateDialogSubviewMargins(mDescription);
+        DeviceLockUtils.updateDialogSubviewMargins(mCheckBox);
         illustrationParams.setMargins(
                 illustrationParams.leftMargin,
                 illustrationTopMargin,

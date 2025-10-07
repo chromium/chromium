@@ -3535,9 +3535,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DEVICE_LOCK_CREATE_LOCK_BUTTON" desc="Text for the button that navigates the user to create a profile lock on the device.">
         Create a car profile lock
       </message>
-      <message name="IDS_DIALOG_NOT_NOW" desc="Label for the negative ('not now') button of a dialog that prompts user action. Clicking on this button dismisses the dialog without further actions.">
-        Not now
-      </message>
 
       <!-- Strings for a missing device lock. -->
       <message name="IDS_MISSING_DEVICE_LOCK_TITLE" desc="Title shown on the missing profile lock page if a user has removed a profile lock that used to be present on the device.">

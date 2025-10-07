@@ -3914,7 +3914,6 @@ const flags_ui::FeatureEntry::FeatureVariation
 
 // UnoPhase2FollowUp flags.
 const char kFastFollowFeatures[] =
-    "UnoForAuto,"
     "UnoPhase2FollowUp";
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
