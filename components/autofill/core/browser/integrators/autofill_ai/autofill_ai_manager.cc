@@ -162,6 +162,15 @@ void AutofillAiManager::OnSuggestionsShown(
     ukm::SourceId ukm_source_id) {
   logger_.OnSuggestionsShown(form, field, suggested_entity_types,
                              ukm_source_id);
+  auto it = user_suggestion_interactions_per_form.Get(form.global_id());
+  // Do not overwrite cases in which a suggestion was previously accepted.
+  if (it == user_suggestion_interactions_per_form.end() ||
+      !it->second.entity_type_accepted) {
+    user_suggestion_interactions_per_form.Put(
+        {form.global_id(),
+         {.suggested_entity_types = suggested_entity_types,
+          .entity_type_accepted = std::nullopt}});
+  }
 }
 
 void AutofillAiManager::OnFormSeen(const FormStructure& form) {
@@ -204,6 +213,10 @@ void AutofillAiManager::OnDidFillSuggestion(
     return;
   }
   entity_manager->RecordEntityUsed(entity.guid(), base::Time::Now());
+  auto it = user_suggestion_interactions_per_form.Get(form.global_id());
+  if (it != user_suggestion_interactions_per_form.end()) {
+    it->second.entity_type_accepted = entity.type();
+  }
 }
 
 bool AutofillAiManager::MaybeUpstreamEntityToWallet(
@@ -270,8 +283,30 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
   //
   // Cases 1# and 2# are handled by `MaybeImportForm()`, case is 3# is handled
   // by `MaybeUpstreamEntityToWallet()`.
-  return MaybeImportForm(form, ukm_source_id) ||
-         MaybeUpstreamEntityToWallet(form, ukm_source_id);
+  const bool form_imported = MaybeImportForm(form, ukm_source_id) ||
+                             MaybeUpstreamEntityToWallet(form, ukm_source_id);
+  // Importing a form can already lead to a survey, therefore only show the
+  // filling hats survey if no save or update prompt is shown.
+  if (!form_imported) {
+    auto it = user_suggestion_interactions_per_form.Peek(form.global_id());
+    if (it == user_suggestion_interactions_per_form.end()) {
+      return false;
+    }
+    if (it->second.entity_type_accepted) {
+      client_->TriggerAutofillAiFillingJourneySurvey(
+          /*suggestion_accepted=*/true,
+          it->second.entity_type_accepted.value());
+    } else {
+      CHECK(!it->second.suggested_entity_types.empty());
+      // Normally only one entity type is shown to users. However, in the case
+      // where more than one type is shown and the user did not accept the
+      // suggestion, use the first type as the survey type.
+      client_->TriggerAutofillAiFillingJourneySurvey(
+          /*suggestion_accepted=*/false,
+          *(it->second.suggested_entity_types.begin()));
+    }
+  }
+  return form_imported;
 }
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form,

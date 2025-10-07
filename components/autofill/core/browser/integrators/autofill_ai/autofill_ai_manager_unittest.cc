@@ -129,6 +129,10 @@ class MockAutofillClient : public TestAutofillClient {
               TriggerAutofillAiSavePromptSurvey,
               (bool prompt_accepted),
               (override));
+  MOCK_METHOD(void,
+              TriggerAutofillAiFillingJourneySurvey,
+              (bool suggestion_accepted, EntityType type),
+              (override));
 };
 class AutofillAiManagerTest : public testing::Test {
  public:
@@ -151,6 +155,24 @@ class AutofillAiManagerTest : public testing::Test {
     autofill_client().set_sync_service(&sync_service_);
     autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPayments, true);
+  }
+
+  std::u16string GetValueFromEntity(const EntityInstance entity,
+                                    AttributeType attribute,
+                                    const std::string& app_locale = "") {
+    return entity.attribute(attribute)->GetCompleteInfo(app_locale);
+  }
+
+  std::u16string GetValueFromEntityForAttributeTypeName(
+      const EntityInstance entity,
+      AttributeTypeName type,
+      const std::string& app_locale) {
+    AttributeType attribute_type = AttributeType(type);
+    base::optional_ref<const AttributeInstance> instance =
+        entity.attribute(attribute_type);
+    CHECK(instance);
+    return instance->GetInfo(attribute_type.field_type(), app_locale,
+                             /*format_string=*/std::nullopt);
   }
 
   // Given a `FormStructure` sets `field_types_predictions` for each field in
@@ -314,6 +336,93 @@ TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphOnUnrelatedField) {
 
   EXPECT_FALSE(
       manager().ShouldDisplayIph(form_structure, form.fields()[1].global_id()));
+}
+
+TEST_F(AutofillAiManagerTest,
+       FillingMomentSurvey_SuggestionAccepted_ShowSurvey) {
+  EntityInstance passport_entity = test::GetPassportEntityInstance();
+  AddOrUpdateEntityInstance(passport_entity);
+
+  test::FormDescription form_description = {.fields = {{}, {}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure,
+                                {{NAME_FULL}, {PASSPORT_NUMBER}});
+  form_structure.field(0)->set_value(GetValueFromEntityForAttributeTypeName(
+      passport_entity, AttributeTypeName::kPassportName, /*app_locale=*/""));
+  form_structure.field(1)->set_value(GetValueFromEntityForAttributeTypeName(
+      passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+
+  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
+                               {EntityType(EntityTypeName::kPassport)}, {});
+  manager().OnDidFillSuggestion(passport_entity, form_structure,
+                                *form_structure.field(0),
+                                /*filled_fiekds*/ {}, {});
+
+  EXPECT_CALL(autofill_client(),
+              TriggerAutofillAiFillingJourneySurvey(
+                  /*suggestion_accepted=*/true, passport_entity.type()));
+  ASSERT_FALSE(manager().OnFormSubmitted(form_structure, /*ukm_source_id=*/{}));
+}
+
+TEST_F(AutofillAiManagerTest,
+       FillingMomentSurvey_SuggestionDeclined_ShowSurvey) {
+  EntityInstance passport_entity = test::GetPassportEntityInstance();
+  AddOrUpdateEntityInstance(passport_entity);
+
+  test::FormDescription form_description = {.fields = {{}, {}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure,
+                                {{NAME_FULL}, {PASSPORT_NUMBER}});
+  form_structure.field(0)->set_value(GetValueFromEntityForAttributeTypeName(
+      passport_entity, AttributeTypeName::kPassportName, /*app_locale=*/""));
+  form_structure.field(1)->set_value(GetValueFromEntityForAttributeTypeName(
+      passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+
+  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
+                               {EntityType(EntityTypeName::kPassport)}, {});
+
+  EXPECT_CALL(autofill_client(),
+              TriggerAutofillAiFillingJourneySurvey(
+                  /*suggestion_accepted=*/false, passport_entity.type()));
+  ASSERT_FALSE(manager().OnFormSubmitted(form_structure, /*ukm_source_id=*/{}));
+}
+
+// Tests that surveys are only shown if no save (or update) prompts are shown.
+TEST_F(
+    AutofillAiManagerTest,
+    FillingMomentSurvey_SuggestionAccepted_SavePromptShown_SurveyIsNotShown) {
+  EntityInstance passport_entity = test::GetPassportEntityInstance();
+  AddOrUpdateEntityInstance(passport_entity);
+
+  test::FormDescription form_description = {.fields = {{}, {}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure,
+                                {{NAME_FULL}, {PASSPORT_NUMBER}});
+  form_structure.field(0)->set_value(GetValueFromEntityForAttributeTypeName(
+      passport_entity, AttributeTypeName::kPassportName, /*app_locale=*/""));
+  // Fill the passport number with a different value to trigger a save prompt
+  // survey.
+  form_structure.field(1)->set_value(u"12345");
+
+  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
+                               {EntityType(EntityTypeName::kPassport)}, {});
+  manager().OnDidFillSuggestion(passport_entity, form_structure,
+                                *form_structure.field(0),
+                                /*filled_fiekds*/ {}, {});
+
+  EXPECT_CALL(autofill_client(), TriggerAutofillAiFillingJourneySurvey)
+      .Times(0);
+  std::optional<EntityInstance> new_entity;
+  std::optional<EntityInstance> old_entity;
+  AutofillClient::EntitySaveOrUpdatePromptResultCallback save_callback;
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
+      .WillOnce(DoAll(SaveArg<0>(&new_entity), SaveArg<1>(&old_entity)));
+  EXPECT_TRUE(manager().OnFormSubmitted(form_structure, /*ukm_source_id=*/{}));
+  ASSERT_FALSE(old_entity);
+  ASSERT_TRUE(new_entity);
 }
 
 class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
