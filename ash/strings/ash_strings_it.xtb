@@ -192,7 +192,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="158838227375272121">Sito web Google Classroom</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
-<translation id="1597880963776148053">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Le app bloccate e aperte si trovano nella barra delle app nella parte inferiore dello schermo. Premi Alt + Maiusc + L, quindi premi Tab per impostare lo stato attivo sugli elementi della barra.</translation>
+<translation id="1597880963776148053">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Le app fissate e aperte si trovano nella barra delle app nella parte inferiore dello schermo. Premi Alt + Maiusc + L, quindi premi Tab per impostare lo stato attivo sugli elementi della barra.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + Freccia giù</translation>
 <translation id="1604857178818051494">Metti in pausa i contenuti multimediali</translation>
 <translation id="1607312127821884567">Chiudi la configurazione della visualizzazione di app dello smartphone</translation>
@@ -264,7 +264,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1816896987747843206">Consente l'accesso alla fotocamera per tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Attiva l'accesso alla posizione</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> è stato sbloccato</translation>
+<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> è stato staccato</translation>
 <translation id="1831565490995294689">Seleziona per aprire <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">Impostazioni della modalità Non disturbare</translation>
 <translation id="1838895407229022812">Luminosità notturna non attiva.</translation>
@@ -379,7 +379,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2303600792989757991">Attiva/disattiva panoramica finestra</translation>
 <translation id="2304702218354340897">Disattivare i controlli con il volto?</translation>
 <translation id="2305738328104302723">Elenco Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
-<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: acquisizioni schermo recenti, download e file bloccati</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: acquisizioni schermo recenti, download e file fissati</translation>
 <translation id="2318576281648121272">Oggi, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, categoria di risultati di ricerca</translation>
 <translation id="2322173485024759474">Indietro per lettera</translation>
@@ -605,7 +605,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3033912566804961911">Combina con <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Batteria dello stilo: <ph name="PERCENTAGE" /> percento.</translation>
 <translation id="304097922505898963">Apri l'app Key Shortcuts</translation>
-<translation id="304417730895741346">Le app bloccate e aperte si trovano nella barra delle app. Per bloccare un'app sulla barra delle app, fai clic con il tasto destro del mouse su un'app o tocca il touchpad con due dita.</translation>
+<translation id="304417730895741346">Le app fissate e aperte si trovano nella barra delle app. Per fissare un'app sulla barra delle app, fai clic con il tasto destro del mouse su un'app o tocca il touchpad con due dita.</translation>
 <translation id="3045488863354895414">Buon pomeriggio,</translation>
 <translation id="3045670165536837541">Punto di manipolazione in alto a destra selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="3047761520276763270">Prova a dire:</translation>
@@ -756,7 +756,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3545224667633138205">Tasti mouse ripristinati</translation>
 <translation id="3552189655002856821">Il Wi-Fi non è attivo</translation>
 <translation id="3554215588514239132">Mostra o nascondi il riquadro Strumenti per sviluppatori</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato bloccato</translation>
+<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato fissato</translation>
 <translation id="3554928024630051016">Per aggiungere altri dispositivi USB, prova a rimuoverne uno e quindi a collegarne uno nuovo</translation>
 <translation id="3558768885091059911">Vuoi attivare l'accesso alla fotocamera e al microfono?</translation>
 <translation id="3560174576767922131">Registra video</translation>
@@ -1475,7 +1475,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5774295353725270860">Apri l'applicazione File</translation>
 <translation id="5775936059231769503">Attiva/disattiva l'hotspot. L'hotspot è disattivato.</translation>
 <translation id="5777841717266010279">Interrompere la condivisione dello schermo?</translation>
-<translation id="5779721926447984944">File bloccati</translation>
+<translation id="5779721926447984944">File fissati</translation>
 <translation id="5785221443435874078">Rimuovi questo suggerimento</translation>
 <translation id="5787431783058088906">Ricevi vantaggio</translation>
 <translation id="5788127256798019331">File Google Play</translation>

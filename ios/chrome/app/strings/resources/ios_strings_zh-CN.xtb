@@ -512,7 +512,7 @@
 <translation id="2931440415625410757">显示说明</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
-<translation id="2965594942405840553">此操作无法撤消</translation>
+<translation id="2965594942405840553">此操作无法撤销</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
 <translation id="2975761176769946178">必须提供网址</translation>
 <translation id="297667759942911166">在标签页分组中协作</translation>
@@ -1644,7 +1644,7 @@
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
 <translation id="7369285139974632858">添加到书签</translation>
 <translation id="7380220816562673297">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
-<translation id="7380698179418029202">选择您导出的 Safari <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 文件</translation>
+<translation id="7380698179418029202">选择您从 Safari 导出的 <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 文件</translation>
 <translation id="739101637685146669">您想为哪个网址添加书签？</translation>
 <translation id="7393747756726387725">放大</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 个网站}other{# 个网站}}</translation>
