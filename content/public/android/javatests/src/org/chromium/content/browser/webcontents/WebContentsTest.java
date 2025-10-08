@@ -496,6 +496,7 @@ public class WebContentsTest {
 
         final AtomicBoolean onDiscardedCalled = new AtomicBoolean(false);
         final AtomicBoolean onRenderProcessGone = new AtomicBoolean(false);
+        final AtomicBoolean wasDiscarded = new AtomicBoolean(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -506,6 +507,11 @@ public class WebContentsTest {
                                         @TerminationStatus int terminationStatus) {
                                     onRenderProcessGone.set(true);
                                 }
+
+                                @Override
+                                public void wasDiscarded() {
+                                    wasDiscarded.set(true);
+                                }
                             };
                     webContents.discard(() -> onDiscardedCalled.set(true));
                 });
@@ -514,6 +520,8 @@ public class WebContentsTest {
                 () -> onDiscardedCalled.get(), "onDiscarded not called.");
         CriteriaHelper.pollInstrumentationThread(
                 () -> onRenderProcessGone.get(), "primaryMainFrameRenderProcessGone not called.");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> wasDiscarded.get(), "wasDiscarded not called.");
 
         Assert.assertFalse(isWebContentsDestroyed(webContents));
     }

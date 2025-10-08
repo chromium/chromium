@@ -313,6 +313,9 @@ public abstract class WebContentsObserver {
     /** Called when the WebContents is muted/unmuted. */
     public void didUpdateAudioMutingState(boolean muted) {}
 
+    /** Called when the WebContents is discarded. */
+    public void wasDiscarded() {}
+
     /**
      * Called when {@link #getWebContents()} is being destroyed.
      *

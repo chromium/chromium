@@ -570,6 +570,17 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    public void wasDiscarded() {
+        handleObserverCall();
+        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
+        for (; observersIterator.hasNext(); ) {
+            observersIterator.next().wasDiscarded();
+        }
+        finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
     public void webContentsDestroyed() {
         ThreadUtils.assertOnUiThread();
         RewindableIterator<WebContentsObserver> observersIterator = mObservers.rewindableIterator();
