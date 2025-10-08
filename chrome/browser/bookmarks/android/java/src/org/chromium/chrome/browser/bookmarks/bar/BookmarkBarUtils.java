@@ -152,7 +152,7 @@ public class BookmarkBarUtils {
      * therefore if the feature should be exposed to the user. If true, user flows such as keyboard
      * shortcuts, IPH, settings toggles, device policies, etc should be present. This value should
      * always return the same value for a device. Compatible devices include Desktop, large tablets,
-     * and foldables.
+     * and (unfolded) foldables.
      *
      * <p>Check this value when determining which user actions to expose to users for the Bookmark
      * Bar.
@@ -170,8 +170,7 @@ public class BookmarkBarUtils {
             return sDeviceBookmarkBarCompatibleForTesting;
         }
         return ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
-                && (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                        || DeviceInfo.isFoldable());
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**
