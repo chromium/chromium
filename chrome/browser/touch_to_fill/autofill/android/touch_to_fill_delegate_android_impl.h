@@ -8,6 +8,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -139,6 +140,8 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
 
+  void SetCancelCallback(base::OnceClosure cancel_callback) override;
+
   base::WeakPtr<TouchToFillDelegateAndroidImpl> GetWeakPtr();
 
  private:
@@ -203,6 +206,10 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_ = false;
+
+  // The callback that should be run when the bottom sheet surface is dismissed
+  // by the user.
+  base::OnceClosure cancel_callback_;
 
   base::WeakPtrFactory<TouchToFillDelegateAndroidImpl> weak_ptr_factory_{this};
 };

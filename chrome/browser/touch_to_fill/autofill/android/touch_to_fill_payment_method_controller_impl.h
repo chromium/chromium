@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
@@ -61,7 +62,7 @@ class TouchToFillPaymentMethodControllerImpl
   bool UpdateBnplPaymentMethod(std::optional<uint64_t> extracted_amount,
                                bool is_amount_supported_by_any_issuer) override;
   bool ShowProgressScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
-                          base::WeakPtr<TouchToFillDelegate> delegate) override;
+                          base::OnceClosure cancel_callback) override;
   bool ShowBnplIssuers(base::WeakPtr<TouchToFillDelegate> delegate,
                        base::span<const payments::BnplIssuerContext>
                            bnpl_issuer_contexts) override;

@@ -535,7 +535,7 @@ bool IOSChromePaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
 }
 
 bool IOSChromePaymentsAutofillClient::ShowTouchToFillProgress(
-    base::WeakPtr<TouchToFillDelegate> delegate) {
+    base::OnceClosure cancel_callback) {
   return false;
 }
 

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -632,9 +633,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Shows the BNPL progress screen, if possible, returning `true` on success.
   // Should be called only on Android if the feature is supported by the
-  // platform. If `delegate` is present, it will be notified of events.
-  virtual bool ShowTouchToFillProgress(
-      base::WeakPtr<TouchToFillDelegate> delegate) = 0;
+  // platform. `cancel_callback` will be run if the screen is dismissed by the
+  // user. This function is not implemented on iOS and iOS WebView, and should
+  // not be used on those platforms.
+  virtual bool ShowTouchToFillProgress(base::OnceClosure cancel_callback) = 0;
 
   // Shows the Touch To Fill surface with BNPL issuer information, if possible,
   // returning `true` on success. `delegate` will be notified of events. This

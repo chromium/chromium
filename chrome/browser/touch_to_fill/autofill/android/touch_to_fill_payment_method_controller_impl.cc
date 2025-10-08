@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
@@ -151,7 +152,7 @@ bool TouchToFillPaymentMethodControllerImpl::UpdateBnplPaymentMethod(
 
 bool TouchToFillPaymentMethodControllerImpl::ShowProgressScreen(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
-    base::WeakPtr<TouchToFillDelegate> delegate) {
+    base::OnceClosure cancel_callback) {
   if (view) {
     // If there is a view already being shown, reset it and use the new provided
     // view.
@@ -166,7 +167,10 @@ bool TouchToFillPaymentMethodControllerImpl::ShowProgressScreen(
     return false;
   }
 
-  delegate_ = delegate;
+  if (delegate_) {
+    delegate_->SetCancelCallback(std::move(cancel_callback));
+  }
+
   return true;
 }
 

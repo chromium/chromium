@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 
@@ -76,11 +77,12 @@ class TouchToFillPaymentMethodController
   // Shows the Touch To Fill progress screen. If the TTF surface is already
   // being shown when this is called, `view` is optional and will override the
   // existing view when present. Otherwise, if the TTF surface is not already
-  // being shown, `view` is required. If provided, `delegate` will be notified
-  // of the user's actions. Returns whether the surface was successfully shown.
+  // being shown, `view` is required. `cancel_callback` will be run if the
+  // screen is dismissed by the user. Returns whether the surface was
+  // successfully shown.
   virtual bool ShowProgressScreen(
       std::unique_ptr<TouchToFillPaymentMethodView> view,
-      base::WeakPtr<TouchToFillDelegate> delegate) = 0;
+      base::OnceClosure cancel_callback) = 0;
 
   // Shows the Touch To Fill BNPL issuer selection screen. `delegate` will be
   // notified of the user's decision. `bnpl_issuer_contexts` provides the BNPL

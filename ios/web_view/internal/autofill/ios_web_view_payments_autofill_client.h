@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -155,8 +156,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   bool UpdateTouchToFillBnplPaymentMethod(
       std::optional<uint64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer) override;
-  bool ShowTouchToFillProgress(
-      base::WeakPtr<TouchToFillDelegate> delegate) override;
+  bool ShowTouchToFillProgress(base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillBnplIssuers(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const BnplIssuerContext> bnpl_issuer_contexts) override;

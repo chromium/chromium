@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
@@ -63,7 +64,7 @@ class MockTouchToFillPaymentMethodController
   MOCK_METHOD(bool,
               ShowProgressScreen,
               (std::unique_ptr<TouchToFillPaymentMethodView> view,
-               base::WeakPtr<TouchToFillDelegate> delegate),
+               base::OnceClosure cancel_callback),
               (override));
   MOCK_METHOD(bool,
               ShowBnplIssuers,

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
@@ -972,11 +973,11 @@ bool ChromePaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
 }
 
 bool ChromePaymentsAutofillClient::ShowTouchToFillProgress(
-    base::WeakPtr<TouchToFillDelegate> delegate) {
+    base::OnceClosure cancel_callback) {
 #if BUILDFLAG(IS_ANDROID)
   // TTF should already be shown, so pass nullptr for `view`.
   return GetTouchToFillPaymentMethodController()->ShowProgressScreen(
-      /*view=*/nullptr, delegate);
+      /*view=*/nullptr, std::move(cancel_callback));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
@@ -1143,7 +1144,7 @@ BnplStrategy* ChromePaymentsAutofillClient::GetBnplStrategy() {
 BnplUiDelegate* ChromePaymentsAutofillClient::GetBnplUiDelegate() {
   if (!bnpl_ui_delegate_) {
 #if BUILDFLAG(IS_ANDROID)
-    bnpl_ui_delegate_ = std::make_unique<AndroidBnplUiDelegate>();
+    bnpl_ui_delegate_ = std::make_unique<AndroidBnplUiDelegate>(this);
 #else   // !BUILDFLAG(IS_ANDROID)
     bnpl_ui_delegate_ = std::make_unique<DesktopBnplUiDelegate>(&client_.get());
 #endif  // BUILDFLAG(IS_ANDROID)

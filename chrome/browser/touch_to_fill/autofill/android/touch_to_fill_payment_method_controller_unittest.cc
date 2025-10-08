@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
@@ -359,7 +360,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   payment_method_controller().ShowProgressScreen(
-      /*view=*/nullptr, ttf_delegate().GetWeakPointer());
+      /*view=*/nullptr, /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 }
 
@@ -369,7 +370,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ShowProgressScreenOnNewView) {
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowProgressScreen(
-      std::move(mock_view_), ttf_delegate().GetWeakPointer());
+      std::move(mock_view_), /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 }
 
@@ -379,7 +380,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowProgressScreen(
-      /*view=*/nullptr, ttf_delegate().GetWeakPointer());
+      /*view=*/nullptr, /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 }
 
@@ -400,7 +401,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   payment_method_controller().ShowProgressScreen(
-      std::move(new_mock_view), ttf_delegate().GetWeakPointer());
+      std::move(new_mock_view), /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 }
 
@@ -515,6 +516,40 @@ TEST_F(TouchToFillPaymentMethodControllerTest, OnDismissedIsCalled) {
 
   EXPECT_CALL(ttf_delegate(), OnDismissed);
   payment_method_controller().OnDismissed(nullptr, true);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       OnDismissedPassesDismissedByUserToDelegate) {
+  EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(ttf_delegate(), OnDismissed(/*dismissed_by_user=*/true));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  payment_method_controller().ShowProgressScreen(
+      /*view=*/nullptr,
+      /*cancel_callback=*/base::DoNothing());
+  OnAfterAskForValuesToFill();
+
+  payment_method_controller().OnDismissed(nullptr, /*dismissed_by_user=*/true);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       OnDismissedPassesNotDismissedByUserToDelegate) {
+  EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(ttf_delegate(), OnDismissed(/*dismissed_by_user=*/false));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  payment_method_controller().ShowProgressScreen(
+      /*view=*/nullptr,
+      /*cancel_callback=*/base::DoNothing());
+  OnAfterAskForValuesToFill();
+
+  payment_method_controller().OnDismissed(nullptr, /*dismissed_by_user=*/false);
 }
 
 }  // namespace

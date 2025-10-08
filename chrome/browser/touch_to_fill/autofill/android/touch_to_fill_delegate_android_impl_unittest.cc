@@ -4,9 +4,11 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -451,6 +453,26 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
   touch_to_fill_delegate_->OnDismissed(false);
 
   EXPECT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       OnDismissedRunsCancelCallbackWhenDismissedByUser) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+  base::MockCallback<base::OnceClosure> mock_cancel_callback;
+  touch_to_fill_delegate_->SetCancelCallback(mock_cancel_callback.Get());
+
+  EXPECT_CALL(mock_cancel_callback, Run());
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true);
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       OnDismissedDoesNotRunCancelCallbackWhenDismissedBySystem) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+  base::MockCallback<base::OnceClosure> mock_cancel_callback;
+  touch_to_fill_delegate_->SetCancelCallback(mock_cancel_callback.Get());
+
+  EXPECT_CALL(mock_cancel_callback, Run()).Times(0);
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false);
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,

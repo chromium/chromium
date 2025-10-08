@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -187,8 +188,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool UpdateTouchToFillBnplPaymentMethod(
       std::optional<uint64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer) override;
-  bool ShowTouchToFillProgress(
-      base::WeakPtr<TouchToFillDelegate> delegate) override;
+  bool ShowTouchToFillProgress(base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillBnplIssuers(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const BnplIssuerContext> bnpl_issuer_contexts) override;

@@ -19,6 +19,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
@@ -886,6 +887,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MOCK_METHOD(void,
               LogMetricsAfterSubmission,
               (const FormStructure&),
+              (override));
+  MOCK_METHOD(void,
+              SetCancelCallback,
+              (base::OnceClosure cancel_callback),
               (override));
 };
 

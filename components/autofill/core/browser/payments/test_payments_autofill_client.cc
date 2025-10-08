@@ -371,7 +371,7 @@ bool TestPaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
 }
 
 bool TestPaymentsAutofillClient::ShowTouchToFillProgress(
-    base::WeakPtr<TouchToFillDelegate> delegate) {
+    base::OnceClosure cancel_callback) {
   return false;
 }
 

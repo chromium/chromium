@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/check_deref.h"
+#import "base/functional/callback.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -304,7 +305,7 @@ bool IOSWebViewPaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
 }
 
 bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillProgress(
-    base::WeakPtr<TouchToFillDelegate> delegate) {
+    base::OnceClosure cancel_callback) {
   return false;
 }
 
