@@ -24,8 +24,6 @@ source_set("user_policy_scene_agent") {
   sources = [
     "signin_policy_scene_agent.h",
     "signin_policy_scene_agent.mm",
-    "user_policy_scene_agent.h",
-    "user_policy_scene_agent.mm",
   ]
   deps = [
     "//base",

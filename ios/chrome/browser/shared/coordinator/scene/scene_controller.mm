@@ -117,7 +117,6 @@
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/signin_policy_scene_agent.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy_scene_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -1343,27 +1342,6 @@ void OnListFamilyMembersResponse(
                     applicationCommandsHandler:applicationCommandsHandler
                    policyChangeCommandsHandler:policyChangeCommandsHandler]];
 
-  PrefService* prefService = profile->GetPrefs();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-
-  policy::UserCloudPolicyManager* userPolicyManager =
-      profile->GetUserCloudPolicyManager();
-  if (IsUserPolicyNotificationNeeded(authService, prefService,
-                                     userPolicyManager)) {
-    policy::UserPolicySigninService* userPolicyService =
-        policy::UserPolicySigninServiceFactory::GetForProfile(profile);
-    [sceneState
-        addAgent:[[UserPolicySceneAgent alloc]
-                        initWithSceneUIProvider:self
-                                    authService:authService
-                     applicationCommandsHandler:applicationCommandsHandler
-                                    prefService:prefService
-                                    mainBrowser:mainBrowser
-                                  policyService:userPolicyService
-                              userPolicyManager:userPolicyManager]];
-  }
-
   enterprise_idle::IdleService* idleService =
       enterprise_idle::IdleServiceFactory::GetForProfile(profile);
   id<SnackbarCommands> snackbarCommandsHandler =
@@ -1418,6 +1396,9 @@ void OnListFamilyMembersResponse(
                            initWithPromosManager:promosManager]];
 
   if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(profile);
+    PrefService* prefService = profile->GetPrefs();
     [sceneState
         addAgent:
             [[FullscreenSigninPromoSceneAgent alloc]
