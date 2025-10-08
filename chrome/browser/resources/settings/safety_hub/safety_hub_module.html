@@ -189,9 +189,11 @@
 </template>
 
 <div id="header-wrapper">
-  <cr-icon id="header-icon"
-    icon="[[headerIcon]]" class$="[[headerIconColor]]">
-  </cr-icon>
+  <template is="dom-if" if="[[headerIcon]]">
+    <cr-icon id="header-icon"
+      icon="[[headerIcon]]" class$="[[headerIconColor]]">
+    </cr-icon>
+  </template>
   <div id="header-text-wrapper">
     <h3 id="header">[[header]]</h3>
     <div id="subheader" class="cr-secondary-text">[[subheader]]</div>

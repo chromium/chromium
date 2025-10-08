@@ -77,14 +77,13 @@ export class SettingsSafetyHubModuleElement extends
       // The string for the subheader label.
       subheader: String,
 
-      // The icon for the module.
+      // The icon for the module. Optional.
       headerIcon: {
         String,
-        value: 'cr:error',
         observer: 'onHeaderIconChanged_',
       },
 
-      // The color of the header-icon.
+      // The color of the header-icon. Optional.
       headerIconColor: String,
 
       // The icon for the button of the list item.

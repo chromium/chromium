@@ -86,9 +86,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
       // Text below primary header label.
       subheaderString_: String,
 
-      // The icon next to primary header label.
-      headerIconString_: String,
-
       // Most recent site permissions the user has allowed again.
       lastUnusedSitePermissionsAllowedAgain_: {
         type: Object,
@@ -136,7 +133,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
   declare private headerString_: string;
   declare private subheaderString_: string|null;
-  declare private headerIconString_: string;
   declare private toastText_: string|null;
   declare private sites_: UnusedSitePermissionsDisplay[]|null;
   declare private shouldShowCompletionInfo_: boolean;
@@ -355,7 +351,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     assert(this.headerString_);
     this.headerString_ = this.toastText_!;
     this.subheaderString_ = '';
-    this.headerIconString_ = 'cr:check';
     this.$.bulkUndoButton.focus();
   }
 
@@ -386,7 +381,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.subheaderString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyHubRevokedPermissionsSecondaryLabel', this.sites_.length);
-    this.headerIconString_ = 'privacy:page-info';
   }
 
   private onUndoClick_(e: Event) {
