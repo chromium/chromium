@@ -119,6 +119,33 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Offscreen) {
                     "50"));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_DOMNodeId) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/drag_dom_node_id.html");
+
+  auto drag_provider = base::BindLambdaForTesting([this]() {
+    int32_t from_node_id = SearchAnnotatedPageContent("fromTarget");
+    int32_t to_node_id = SearchAnnotatedPageContent("toTarget");
+    content::RenderFrameHost* frame =
+        tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+    Actions action =
+        actor::MakeDragAndRelease(*frame, from_node_id, to_node_id);
+    action.set_task_id(task_id_.value());
+    return EncodeActionProto(action);
+  });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      CheckJsResult(kNewActorTabId, "() => event_log.join(',')", ""),
+      ExecuteAction(std::move(drag_provider)),
+      CheckJsResult(kNewActorTabId, "() => event_log.join(',')",
+                    "mousemove#fromTarget,mousedown#fromTarget,"
+                    "mousemove#toTarget,mouseup#toTarget"));
+}
+
 }  // namespace
 
 }  // namespace glic::test

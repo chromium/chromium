@@ -193,6 +193,7 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
       annotated_page_content_;
 
+  // Label corresponds to the aria-label on the element in the page.
   int32_t SearchAnnotatedPageContent(std::string_view label);
 
  private:

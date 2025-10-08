@@ -112,6 +112,10 @@ optimization_guide::proto::Actions MakeDragAndRelease(
     tabs::TabHandle tab_handle,
     const gfx::Point& from_point,
     const gfx::Point& to_point);
+optimization_guide::proto::Actions MakeDragAndRelease(
+    content::RenderFrameHost& rfh,
+    int from_node_id,
+    int to_node_id);
 optimization_guide::proto::Actions MakeWait();
 optimization_guide::proto::Actions MakeAttemptLogin();
 optimization_guide::proto::Actions MakeScriptTool(

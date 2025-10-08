@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
@@ -74,16 +75,11 @@ ToolBase::ToolBase(content::RenderFrame& frame,
 
 ToolBase::~ToolBase() = default;
 
-base::expected<ToolBase::ResolvedTarget, mojom::ActionResultPtr>
-ToolBase::ValidateAndResolveTarget() const {
-  if (!target_) {
-    return base::unexpected(MakeResult(mojom::ActionResultCode::kOk));
-  }
-
+ToolBase::ResolveResult ToolBase::ResolveTarget(
+    const mojom::ToolTarget& target) const {
   ResolvedTarget resolved_target;
-
-  if (target_->is_coordinate()) {
-    const gfx::PointF coordinate_point(target_->get_coordinate());
+  if (target.is_coordinate()) {
+    const gfx::PointF coordinate_point(target.get_coordinate());
     if (!IsPointWithinViewport(coordinate_point, frame_.get())) {
       return base::unexpected(MakeResult(
           mojom::ActionResultCode::kCoordinatesOutOfBounds,
@@ -97,8 +93,8 @@ ToolBase::ValidateAndResolveTarget() const {
         frame_->GetWebFrame()->FrameWidget()->HitTestResultAt(
             resolved_target.point);
     resolved_target.node = hit_test_result.GetNode();
-  } else if (target_->is_dom_node_id()) {
-    int32_t dom_node_id = target_->get_dom_node_id();
+  } else if (target.is_dom_node_id()) {
+    int32_t dom_node_id = target.get_dom_node_id();
     resolved_target.node = GetNodeFromId(frame_.get(), dom_node_id);
     if (resolved_target.node.IsNull()) {
       return base::unexpected(
@@ -115,9 +111,31 @@ ToolBase::ValidateAndResolveTarget() const {
                                      base::ToString(resolved_target.node))));
     }
     resolved_target.point = *node_interaction_point;
+  } else {
+    NOTREACHED();
   }
 
-  return ValidateTimeOfUse(resolved_target);
+  return resolved_target;
+}
+
+ToolBase::ResolveResult ToolBase::ValidateAndResolveTarget() const {
+  if (!target_) {
+    // TODO(b/450027252): This should return a non-OK error code.
+    return base::unexpected(MakeResult(mojom::ActionResultCode::kOk));
+  }
+
+  ResolveResult resolved_target = ResolveTarget(*target_);
+  if (!resolved_target.has_value()) {
+    return base::unexpected(std::move(resolved_target.error()));
+  }
+
+  mojom::ActionResultPtr validation =
+      ValidateTimeOfUse(resolved_target.value());
+  if (!IsOk(*validation)) {
+    return base::unexpected(std::move(validation));
+  }
+
+  return resolved_target.value();
 }
 
 void ToolBase::EnsureTargetInView() {
@@ -140,8 +158,8 @@ void ToolBase::EnsureTargetInView() {
   }
 }
 
-base::expected<ToolBase::ResolvedTarget, mojom::ActionResultPtr>
-ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
+mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
+    const ResolvedTarget& resolved_target) const {
   const blink::WebNode& target_node = resolved_target.node;
 
   // For coordinate target, check the observed node matches the live DOM hit
@@ -154,7 +172,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
                               TimeOfUseResult::kNoValidApcNode);
       // TODO(crbug.com/445210509): return error for no apc found.
-      return resolved_target;
+      return MakeOkResult();
     }
 
     const blink::WebNode& observed_target_node =
@@ -173,10 +191,10 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                   "Observed target at coordinate is not present in live DOM")
               .Build());
       if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
-        return base::unexpected(MakeResult(
+        return MakeResult(
             mojom::ActionResultCode::kObservedTargetElementDestroyed,
             /*requires_page_stabilization=*/false,
-            "The observed element at the target location is destroyed"));
+            "The observed element at the target location is destroyed");
       }
     }
 
@@ -196,13 +214,13 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
                               TimeOfUseResult::kWrongNodeAtCoordinate);
       if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
-        return base::unexpected(
-            MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
-                       /*requires_page_stabilization=*/false,
-                       "The element at the target location is not the same as "
-                       "the one observed."));
+        return MakeResult(
+            mojom::ActionResultCode::kObservedTargetElementChanged,
+            /*requires_page_stabilization=*/false,
+            "The element at the target location is not the same as "
+            "the one observed.");
       } else {
-        return resolved_target;
+        return MakeOkResult();
       }
     }
   } else {
@@ -228,10 +246,10 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       UmaHistogramEnumeration(
           kTimeOfUseValidationHistogram,
           TimeOfUseResult::kTargetNodeInteractionPointObscured);
-      return base::unexpected(MakeResult(
+      return MakeResult(
           mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
           /*requires_page_stabilization=*/false,
-          "The element's interaction point is obscured by other elements."));
+          "The element's interaction point is obscured by other elements.");
     }
 
     if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
@@ -241,7 +259,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
                               TimeOfUseResult::kNoValidApcNode);
       // TODO(crbug.com/445210509): return error for no apc found.
-      return resolved_target;
+      return MakeOkResult();
     }
 
     if (!observed_target_->node_attribute->geometry) {
@@ -257,7 +275,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       // is landed.
       UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
                               TimeOfUseResult::kTargetNodeMissingGeometry);
-      return resolved_target;
+      return MakeOkResult();
     }
 
     // Check that the interaction point is inside the observed target bounding
@@ -276,13 +294,13 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       // is landed.
       UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
                               TimeOfUseResult::kTargetPointOutsideBoundingBox);
-      return resolved_target;
+      return MakeOkResult();
     }
   }
 
   UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
                           TimeOfUseResult::kValid);
-  return resolved_target;
+  return MakeOkResult();
 }
 
 }  // namespace actor
