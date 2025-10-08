@@ -19,7 +19,7 @@ import promptfoo_installation
 import workers
 
 sys.path.append(str(constants.CHROMIUM_SRC))
-from agents.extensions import install
+from agents.common import gemini_helpers
 
 TESTCASE_EXTENSION = '.promptfoo.yaml'
 _SHARD_INDEX_ENV_VAR = 'GTEST_SHARD_INDEX'
@@ -207,7 +207,7 @@ def _fetch_sandbox_image() -> bool:
     logging.info('Pre-fetching sandbox image. This may take a minute...')
     image = ''
     try:
-        version = install.get_gemini_version()
+        version = gemini_helpers.get_gemini_version()
         if not version:
             logging.error('Failed to get gemini version.')
             return False

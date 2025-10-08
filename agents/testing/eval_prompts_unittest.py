@@ -437,7 +437,7 @@ class FetchSandboxImageUnittest(unittest.TestCase):
         self.addCleanup(self.subprocess_run_patcher.stop)
 
         self.get_gemini_version_patcher = mock.patch(
-            'eval_prompts.install.get_gemini_version')
+            'eval_prompts.gemini_helpers.get_gemini_version')
         self.mock_get_gemini_version = self.get_gemini_version_patcher.start()
         self.addCleanup(self.get_gemini_version_patcher.stop)
 

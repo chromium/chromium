@@ -7,7 +7,6 @@
 
 import io
 from pathlib import Path
-import subprocess
 import unittest
 import unittest.mock
 
@@ -379,55 +378,9 @@ class InstallTest(fake_filesystem_unittest.TestCase):
 
     def test_get_project_root(self):
         """Tests the get_project_root function."""
-        with unittest.mock.patch('install.__file__', self.install_script_path):
+        with unittest.mock.patch('install._PROJECT_ROOT', self.project_root):
             project_root = install.get_project_root()
             self.assertEqual(project_root, self.project_root)
-
-    def test_get_project_root_error(self):
-        """Tests the get_project_root function when an error occurs."""
-        with unittest.mock.patch('install.__file__', Path('invalid/path')):
-            with unittest.mock.patch('sys.stderr',
-                                     new_callable=io.StringIO) as mock_stderr:
-                project_root = install.get_project_root()
-                self.assertIsNone(project_root)
-                self.assertIn('Could not determine project root',
-                              mock_stderr.getvalue())
-
-    @unittest.mock.patch('subprocess.run')
-    def test_get_gemini_version_success(self, mock_run):
-        """Test that we can successfully get the gemini version."""
-        mock_run.return_value.stdout = '0.5.1'
-        self.assertEqual(install.get_gemini_version(), '0.5.1')
-
-    @unittest.mock.patch('subprocess.run', side_effect=FileNotFoundError)
-    def test_get_gemini_version_file_not_found(self, _mock_run):
-        """Test that we return none when gemini is not found."""
-        self.assertIsNone(install.get_gemini_version())
-
-    @unittest.mock.patch('subprocess.run',
-                         side_effect=subprocess.CalledProcessError(1, 'cmd'))
-    def test_get_gemini_version_called_process_error(self, _mock_run):
-        """Test that we return none when there is a process error."""
-        self.assertIsNone(install.get_gemini_version())
-
-    # pylint: disable=protected-access
-    @unittest.mock.patch('shutil.which')
-    def test_get_gemini_executable(self, mock_which):
-        """Tests the _get_gemini_executable function."""
-        # Test when gemini is in PATH
-        gemini_in_path = Path('/usr/bin/gemini')
-        mock_which.return_value = str(gemini_in_path)
-        self.assertEqual(install._get_gemini_executable(), str(gemini_in_path))
-
-        # Test when gemini is not in PATH, but fallback exists
-        mock_which.return_value = None
-        fallback_path = Path('/google/bin/releases/gemini-cli/tools/gemini')
-        self.fs.create_file(fallback_path)
-        self.assertEqual(install._get_gemini_executable(), str(fallback_path))
-
-        # Test when gemini is not in PATH and fallback does not exist
-        self.fs.remove(fallback_path)
-        self.assertEqual(install._get_gemini_executable(), 'gemini')
 
 
 if __name__ == '__main__':

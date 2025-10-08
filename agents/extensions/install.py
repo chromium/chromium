@@ -9,24 +9,14 @@ This script is a wrapper around the `gemini extensions` commands.
 """
 
 import argparse
-import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
-
-def _get_gemini_executable() -> str:
-    """Finds the gemini executable."""
-    gemini_cmd = shutil.which('gemini')
-    if gemini_cmd:
-        return gemini_cmd
-
-    gemini_cmd_path = Path('/google/bin/releases/gemini-cli/tools/gemini')
-    if gemini_cmd_path.exists():
-        return str(gemini_cmd_path)
-
-    return 'gemini'
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(_PROJECT_ROOT))
+from agents.common import gemini_helpers
 
 
 def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
@@ -45,18 +35,9 @@ def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
     ]
 
 
-def get_project_root() -> Path | None:
+def get_project_root() -> Path:
     """Gets the project root."""
-    try:
-        # Derive the `chromium/src` directory from `__file__` because:
-        # 1. We can't assume a valid `git` environment (cogfs with Cider-G).
-        # 2. We can't assume a valid `gclient` environment (e.g., in a `git
-        #    worktree` created by the prompt evaluation script).
-        return Path(__file__).parents[2]
-    except IndexError:
-        print(f'Error: Could not determine project root for {__file__}.',
-              file=sys.stderr)
-        return None
+    return _PROJECT_ROOT
 
 
 def get_extensions_dirs(
@@ -154,7 +135,7 @@ def fix_extensions(project_root: Path | None) -> None:
     user_extensions_dir = get_global_extension_dir()
     source_dirs = get_extensions_dirs(project_root)
 
-    gemini_cmd = _get_gemini_executable()
+    gemini_cmd = gemini_helpers.get_gemini_executable()
     print('Found project-level extensions. Converting to the new model...')
     for extension in extensions:
         if (user_extensions_dir / extension).exists():
@@ -191,24 +172,6 @@ def fix_extensions(project_root: Path | None) -> None:
     print('Done.')
 
 
-def get_gemini_version() -> str | None:
-    """Gets the version of the Gemini CLI."""
-    try:
-        result = subprocess.run(
-            [_get_gemini_executable(), '--version'],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        output = result.stdout.strip()
-        match = re.search(r'\d+\.\d+\.\d+', output)
-        if match:
-            return match.group(0)
-        return None
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
-
-
 def _check_for_workspace_extensions(project_root: Path | None) -> None:
     """Prompts the user to run the fix command if necessary."""
     if not project_root:
@@ -224,7 +187,7 @@ def _check_for_workspace_extensions(project_root: Path | None) -> None:
 def check_gemini_version() -> None:
     """Checks if the Gemini CLI version is sufficient."""
     required_version = (0, 8, 0)
-    version_str = get_gemini_version()
+    version_str = gemini_helpers.get_gemini_version()
     if not version_str:
         print(
             'Error: Could not determine Gemini CLI version. Please ensure '
@@ -320,7 +283,7 @@ def main() -> None:
         parser.print_help()
         sys.exit(1)
 
-    gemini_cmd = _get_gemini_executable()
+    gemini_cmd = gemini_helpers.get_gemini_executable()
 
     if args.command == 'list':
         _run_command([gemini_cmd, 'extensions', 'list'])
