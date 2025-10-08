@@ -73,13 +73,6 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
       blink::ThrottlingURLLoader* url_loader) override;
 
-  // Continuation of MaybeCreateLoader() after querying the network service for
-  // the HSTS status for the hostname in the request.
-  void MaybeCreateLoaderOnHstsQueryCompleted(
-      const network::ResourceRequest& tentative_resource_request,
-      content::URLLoaderRequestInterceptor::LoaderCallback callback,
-      bool is_hsts_active_for_host);
-
   // Sets the ports used by the EmbeddedTestServer (which uses random ports)
   // to determine the correct port to upgrade/fallback to in tests.
   static void SetHttpsPortForTesting(int port);
@@ -88,6 +81,15 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
   static int GetHttpPortForTesting();
 
  private:
+  // Continuation of MaybeCreateLoader() after querying the network service for
+  // the HSTS status for the hostname in the request.
+  void MaybeCreateLoaderOnHstsQueryCompleted(
+      GURL url,
+      bool is_outermost_main_frame,
+      std::string method,
+      content::URLLoaderRequestInterceptor::LoaderCallback callback,
+      bool is_hsts_active_for_host);
+
   // network::mojom::URLLoader:
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,

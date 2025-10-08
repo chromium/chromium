@@ -407,8 +407,9 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // same navigation.
   auto query_complete_callback = base::BindOnce(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
-      weak_factory_.GetWeakPtr(), tentative_resource_request,
-      std::move(callback));
+      weak_factory_.GetWeakPtr(), tentative_resource_request.url,
+      tentative_resource_request.is_outermost_main_frame,
+      tentative_resource_request.method, std::move(callback));
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
 
@@ -423,7 +424,9 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 }
 
 void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
-    const network::ResourceRequest& tentative_resource_request,
+    GURL url,
+    bool is_outermost_main_frame,
+    std::string method,
     content::URLLoaderRequestInterceptor::LoaderCallback callback,
     bool is_hsts_active_for_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -456,8 +459,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   }
 
   // Only serve upgrade redirects for main frame, GET requests.
-  if (!tentative_resource_request.is_outermost_main_frame ||
-      tentative_resource_request.method != "GET") {
+  if (!is_outermost_main_frame || method != "GET") {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
@@ -482,8 +484,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // TODO(crbug.com/349860796): If this check is placed in `MaybeCreateLoader()`
   // above (before the async HSTS check), a few tests fail. Once the underlying
   // test issues are determined we can freely re-order this exemption check.
-  if (tentative_resource_request.url.has_port() &&
-      tentative_resource_request.url.IntPort() != GetHttpPortForTesting()) {
+  if (url.has_port() && url.IntPort() != GetHttpPortForTesting()) {
     // Record this as a fallback event so that we don't auto-enable HFM due to
     // the typically secure user heuristic and start showing interstitials on
     // it.
@@ -506,8 +507,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // Don't upgrade navigation if it is allowlisted.
   // First, check the enterprise policy HTTP allowlist.
   PrefService* prefs = profile->GetPrefs();
-  if (IsHostnameInHttpAllowlist(tentative_resource_request.url,
-                                profile->GetPrefs())) {
+  if (IsHostnameInHttpAllowlist(url, profile->GetPrefs())) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kAllowlisted);
     std::move(callback).Run({});
@@ -518,7 +518,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // `--unsafely-treat-insecure-origin-as-secure` command-line flag or
   // `OverrideSecurityRestrictionsOnInsecureOrigin` policy.
   if (network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
-          url::Origin::Create(tentative_resource_request.url))) {
+          url::Origin::Create(url))) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kAllowlisted);
     std::move(callback).Run({});
@@ -531,8 +531,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // interstitial for Engaged Sites. Strict HTTPS-First Mode ignores this
   // setting.
   if (!interstitial_state_->enabled_by_pref &&
-      DoesInsecureContentSettingDisableUpgrading(tentative_resource_request.url,
-                                                 profile)) {
+      DoesInsecureContentSettingDisableUpgrading(url, profile)) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kAllowlisted);
     std::move(callback).Run({});
@@ -551,15 +550,12 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // StatefulSSLHostStateDelegate can be null during tests.
   auto* storage_partition =
       web_contents->GetPrimaryMainFrame()->GetStoragePartition();
-  if (state &&
-      state->IsHttpAllowedForHost(tentative_resource_request.url.GetHost(),
-                                  storage_partition)) {
+  if (state && state->IsHttpAllowedForHost(url.GetHost(), storage_partition)) {
     // Renew the allowlist expiration for this host as the user is still
     // actively using it. This means that the allowlist entry will stay
     // valid until the user stops visiting this host for the entire
     // expiration period (one week).
-    state->AllowHttpForHost(tentative_resource_request.url.GetHost(),
-                            storage_partition);
+    state->AllowHttpForHost(url.GetHost(), storage_partition);
 
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kInsecure);
@@ -586,7 +582,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // entries.
   auto* entry = web_contents->GetController().GetPendingEntry();
   if (entry && entry->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK &&
-      tab_helper->has_failed_upgrade(tentative_resource_request.url)) {
+      tab_helper->has_failed_upgrade(url)) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
@@ -621,9 +617,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
 
-  if (state &&
-      state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
-                                   storage_partition) &&
+  if (state && state->IsHttpsEnforcedForUrl(url, storage_partition) &&
       !MustDisableSiteEngagementHeuristic(profile)) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname);
@@ -632,7 +626,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // If the request URL is in the set of URLs that HttpsUpgradesInterceptor has
   // already processed, skip upgrading and trigger fallback to HTTP to avoid a
   // redirect loop.
-  if (base::Contains(urls_seen_, tentative_resource_request.url)) {
+  if (base::Contains(urls_seen_, url)) {
     // Record failure type metrics for upgraded navigations.
     RecordHttpsFirstModeNavigation(Event::kUpgradeFailed, *interstitial_state_);
     RecordHttpsFirstModeNavigation(Event::kUpgradeRedirectLoop,
@@ -679,16 +673,16 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
   // Not a redirect loop. Add the current request URL to the set of URLs seen.
-  urls_seen_.insert(tentative_resource_request.url);
+  urls_seen_.insert(url);
 
   RecordNavigationRequestSecurityLevel(
       NavigationRequestSecurityLevel::kUpgraded);
 
   // Mark navigation as upgraded.
   tab_helper->set_is_navigation_upgraded(true);
-  tab_helper->set_fallback_url(tentative_resource_request.url);
+  tab_helper->set_fallback_url(url);
 
-  GURL https_url = UpgradeUrlToHttps(tentative_resource_request.url);
+  GURL https_url = UpgradeUrlToHttps(url);
   std::move(callback).Run(CreateRedirectHandler(https_url));
 }
 
