@@ -166,7 +166,7 @@ CreateInputDataFromAnnotatedPageContent(
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeImage];
   [_items addObject:item];
   [self updateConsumerItems];
-  base::UnguessableToken token = item.token;
+  const base::UnguessableToken token = item.token;
 
   __weak __typeof(self) weakSelf = self;
   // Load the preview image.
@@ -212,7 +212,7 @@ CreateInputDataFromAnnotatedPageContent(
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
   [_items addObject:item];
   [self updateConsumerItems];
-  base::UnguessableToken token = item.token;
+  const base::UnguessableToken token = item.token;
 
   // Read the data in the background then call `onDataReadForItem`.
   __weak __typeof(self) weakSelf = self;
@@ -449,7 +449,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 // Returns the item with the given `token` or nil if not found.
-- (AIMInputItem*)itemForToken:(const base::UnguessableToken&)token {
+- (AIMInputItem*)itemForToken:(base::UnguessableToken)token {
   for (AIMInputItem* item in _items) {
     if (item.token == token) {
       return item;
@@ -473,7 +473,7 @@ CreateInputDataFromAnnotatedPageContent(
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
   [_items addObject:item];
   [self updateConsumerItems];
-  __block base::UnguessableToken token = item.token;
+  const base::UnguessableToken token = item.token;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::move(pageContextResponse.value());
