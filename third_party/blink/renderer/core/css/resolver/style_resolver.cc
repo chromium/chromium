@@ -1708,13 +1708,13 @@ bool CanApplyInlineStyleIncrementally(Element* element,
 //   4. Apply all the found properties (C) in the correct order
 //      (ApplyPropertiesFromCascade(), using StyleCascade).
 //
-// However, the MatchedPropertiesCache can often give us A with the correct
-// parts of C pre-applied, or similar for B+C, or simply A+B+C (a full MPC hit).
-// Thus, after step 1, we look up the set of properties we've collected in the
-// MPC, and if we have a full MPC hit, we stop after step 1. (This is the reason
-// why step 1 needs to be first.) If we have a partial hit (we can use A+C
-// but not B+C, or the other way around), we use that as one of our sources
-// in step 3, and can skip the relevant properties in step 4.
+// However, the MatchedPropertiesCache can often give us A+B with the correct
+// parts of C pre-applied (an MPC hit). Thus, after step 1, we look up the
+// set of properties we've collected in the MPC, and if we have an MPC hit,
+// we use it for both A and B in step 2, and stop after step 3. (This is the
+// reason why step 1 needs to be first.) The MPC thus allows us to skip step 4,
+// but equally important, it allows us to reuse subgroups of ComputedStyle
+// so that we use less RAM.
 //
 // The base style is cached by the caller if possible (see ResolveStyle() on
 // the “base computed style optimization”).
