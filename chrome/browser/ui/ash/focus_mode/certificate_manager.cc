@@ -300,7 +300,7 @@ CertificateManager::Key::Key(const std::string& label, base::Time expiration)
 
 CertificateManager::Key::Key(const Key& key) = default;
 
-bool CertificateManager::Key::operator==(const Key& other) {
+bool CertificateManager::Key::operator==(const Key& other) const {
   return label == other.label && expiration == other.expiration;
 }
 

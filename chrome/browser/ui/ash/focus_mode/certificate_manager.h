@@ -35,7 +35,7 @@ class CertificateManager {
     explicit Key(const std::string& label, base::Time expiration);
     Key(const Key&);
 
-    bool operator==(const Key&);
+    bool operator==(const Key&) const;
 
     // Name of the certificate in attestationd. Used to lookup the key for
     // future signing requests.
