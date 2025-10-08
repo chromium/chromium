@@ -170,9 +170,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Control",
-                    "disable_features": [
-                        "AccessibilityDeprecateJavaNodecache"
+                    "name": "OptimizeScrollDisableCache",
+                    "params": {
+                        "disable_cache": "true",
+                        "optimize_scroll": "true"
+                    },
+                    "enable_features": [
+                        "AccessibilityDeprecateJavaNodeCache"
                     ]
                 },
                 {
@@ -194,13 +198,9 @@
                     ]
                 },
                 {
-                    "name": "OptimizeScrollDisableCache",
-                    "params": {
-                        "disable_cache": "true",
-                        "optimize_scroll": "true"
-                    },
-                    "enable_features": [
-                        "AccessibilityDeprecateJavaNodeCache"
+                    "name": "Control",
+                    "disable_features": [
+                        "AccessibilityDeprecateJavaNodecache"
                     ]
                 }
             ]
