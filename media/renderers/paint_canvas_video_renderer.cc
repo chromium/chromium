@@ -913,7 +913,7 @@ class VideoTextureBacking : public cc::TextureBacking {
   const scoped_refptr<gpu::ClientSharedImage>& GetSharedImage() const {
     return shared_image_;
   }
-  sk_sp<SkImage> GetAcceleratedSkImage() override { return sk_image_; }
+  sk_sp<SkImage> GetAcceleratedSkImage() override { return nullptr; }
   const scoped_refptr<viz::RasterContextProvider>& raster_context_provider()
       const {
     return raster_context_provider_;
@@ -949,22 +949,6 @@ class VideoTextureBacking : public cc::TextureBacking {
                   int src_y) override {
     gpu::raster::RasterInterface* ri =
         raster_context_provider_->RasterInterface();
-    if (sk_image_) {
-      GrGLTextureInfo texture_info;
-      GrBackendTexture texture;
-      if (!SkImages::GetBackendTextureFromImage(
-              sk_image_, &texture,
-              /*flushPendingGrContextIO=*/true)) {
-        DLOG(ERROR) << "Failed to get backend texture for VideoTextureBacking.";
-        return false;
-      }
-      if (!GrBackendTextures::GetGLTextureInfo(texture, &texture_info)) {
-        DLOG(ERROR) << "Failed to getGLTextureInfo for VideoTextureBacking.";
-        return false;
-      }
-      return sk_image_->readPixels(dst_info, dst_pixels, dst_row_bytes, src_x,
-                                   src_y);
-    }
     return ri->ReadbackImagePixels(shared_image_->mailbox(), dst_info,
                                    dst_info.minRowBytes(), src_x, src_y,
                                    /*plane_index=*/0, dst_pixels);
@@ -976,7 +960,6 @@ class VideoTextureBacking : public cc::TextureBacking {
   }
 
  private:
-  sk_sp<SkImage> sk_image_;
   SkImageInfo sk_image_info_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
