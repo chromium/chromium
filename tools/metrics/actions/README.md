@@ -124,11 +124,11 @@ for details.
 See also `chrome://metrics-internals` ([docs](https://chromium.googlesource.com/chromium/src/+/master/components/metrics/debug/README.md))
 for more thorough manual testing if needed.
 
-### Verify Action Suffixes
+### Verify Action Variants
 
-If you have <action-suffix> entries that need to be updated to match code,
-you can use
-[ActionSuffixReader](https://cs.chromium.org/chromium/src/base/test/metrics/action_suffix_reader.h)
+If you have actions with `<variant>` entries that need to be updated to match
+code, you can use functions from
+[`action_variants_reader.h`](https://cs.chromium.org/chromium/src/base/test/metrics/action_variants_reader.h)
 to read and verify the expected values in a unit test. This prevents a mismatch
 between code and action data from slipping through CQ.
 
