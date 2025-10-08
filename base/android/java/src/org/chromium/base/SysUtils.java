@@ -34,8 +34,25 @@ public class SysUtils {
 
     private static @Nullable Boolean sLowEndDevice;
     private static @Nullable Integer sAmountOfPhysicalMemoryKB;
+    private static @Nullable Boolean sHasCameraForTesting;
 
     private SysUtils() {}
+
+    /**
+     * Overrides the value of {@link #isLowEndDevice()} for testing.
+     */
+    public static void setIsLowEndDeviceForTesting(@Nullable Boolean isLowEndDevice) {
+        sLowEndDevice = isLowEndDevice;
+        ResettersForTesting.register(() -> sLowEndDevice = null);
+    }
+
+    /**
+     * Overrides the value of {@link #hasCamera(Context)} for testing.
+     */
+    public static void setHasCameraForTesting(@Nullable Boolean hasCamera) {
+        sHasCameraForTesting = hasCamera;
+        ResettersForTesting.register(() -> sHasCameraForTesting = null);
+    }
 
     /**
      * Return the amount of physical memory on this device in kilobytes.
@@ -88,8 +105,12 @@ public class SysUtils {
      * @return Whether or not this device should be considered a low end device.
      */
     public static boolean isLowEndDevice() {
-        // Do not cache in tests since command-line flags can change.
-        if (sLowEndDevice == null || BuildConfig.IS_FOR_TEST) {
+        if (sLowEndDevice == null) {
+            // Do not cache in tests since command-line flags can change.
+            if (BuildConfig.IS_FOR_TEST) {
+                return detectLowEndDevice();
+            }
+
             sLowEndDevice = detectLowEndDevice();
         }
         return sLowEndDevice;
@@ -126,6 +147,9 @@ public class SysUtils {
     }
 
     public static boolean hasCamera(final Context context) {
+        if (sHasCameraForTesting != null) {
+            return sHasCameraForTesting;
+        }
         final PackageManager pm = context.getPackageManager();
         return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }

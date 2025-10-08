@@ -5225,6 +5225,7 @@ if (is_android) {
       ":base_switches_java",
       ":command_line_java",
       ":log_java",
+      ":resetters_java",
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
