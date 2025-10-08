@@ -382,6 +382,38 @@ class SaveCardInfobarBannerOverlayMediatorMetricsTest
   }
 };
 
+// Tests that the "Shown" metrics for the save card prompt offer are correctly
+// recorded when the infobar banner is shown.
+TEST_P(SaveCardInfobarBannerOverlayMediatorMetricsTest, LogsOfferBannerShown) {
+  base::HistogramTester histogram_tester;
+  const auto& test_case = GetParam();
+  InitInfobar(test_case.is_for_upload, test_case.card_save_type);
+
+  std::string_view destination = test_case.is_for_upload ? ".Server" : ".Local";
+  std::string_view suffix;
+  switch (test_case.card_save_type) {
+    case autofill::payments::PaymentsAutofillClient::CardSaveType::
+        kCardSaveWithCvc:
+      suffix = ".SavingWithCvc";
+      break;
+    case autofill::payments::PaymentsAutofillClient::CardSaveType::
+        kCardSaveOnly:
+      suffix = "";
+      break;
+    case autofill::payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
+      FAIL() << "This test case shouldn't exist for the banner UI.";
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.SaveCreditCardPromptOffer.IOS", destination,
+                    ".Banner", suffix}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.SaveCreditCardPromptOffer.IOS", destination,
+                    ".Banner.NumStrikes.0.NoFixFlow", suffix}),
+      SaveCardPromptOffer::kShown, 1);
+}
+
 TEST_P(SaveCardInfobarBannerOverlayMediatorMetricsTest, LogsBannerShown) {
   base::HistogramTester histogram_tester;
   const auto& test_case = GetParam();

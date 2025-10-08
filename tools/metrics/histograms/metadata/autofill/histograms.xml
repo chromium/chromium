@@ -697,6 +697,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       summary="saving security code at the same time"/>
 </variants>
 
+<variants name="AutofillSaveCardWithCvcSituation">
+  <variant name="" summary="not saved with CVC"/>
+  <variant name=".SavingWithCvc" summary="saved with CVC"/>
+</variants>
+
 <!-- TODO(crbug.com/430588721): Replace use of AutofillSaveCreditCardPromptDestination with AutofillSaveCardDestination. -->
 
 <variants name="AutofillSaveCreditCardPromptDestination">
@@ -6419,31 +6424,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}"
+    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}{SaveCardWithCvcSituation}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
   <owner>kavitasoni@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs whether the save credit card prompt of the type {OverlayType} on iOS is
-    shown or not shown for a card to be saved as a {SaveDestination} card. Is
-    emitted whenever card save is offered or decision to not offer is made.
-  </summary>
-  <token key="OverlayType" variants="AutofillSaveCardPromptOverlayTypeForIos"/>
-  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
-</histogram>
-
-<histogram
-    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}"
-    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
-  <owner>kavitasoni@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs whether the save credit card prompt of the type {OverlayType} on iOS is
     shown or not shown for a card to be saved as a {SaveDestination} card, with
-    {Strikes} and which required {FixFlow}. Is emitted whenever card save is
-    offered or decision to not offer is made.
+    {Strikes} and which required {FixFlow}, and this card is
+    {SaveCardWithCvcSituation}. Is emitted whenever card save is offered or
+    decision to not offer is made.
   </summary>
   <token key="OverlayType" variants="AutofillSaveCardPromptOverlayTypeForIos"/>
   <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
@@ -6459,6 +6451,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="card holder name and expiry date"/>
     <variant name="RequestingExpiryDate" summary="only expiry date"/>
   </token>
+  <token key="SaveCardWithCvcSituation"
+      variants="AutofillSaveCardWithCvcSituation"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}{SaveCardWithCvcSituation}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt of the type {OverlayType} on iOS is
+    shown or not shown for a card to be saved as a {SaveDestination} card, and
+    this card is {SaveCardWithCvcSituation}. Is emitted whenever card save is
+    offered or decision to not offer is made.
+  </summary>
+  <token key="OverlayType" variants="AutofillSaveCardPromptOverlayTypeForIos"/>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+  <token key="SaveCardWithCvcSituation"
+      variants="AutofillSaveCardWithCvcSituation"/>
 </histogram>
 
 <histogram name="Autofill.SaveCreditCardPromptOffer.{SaveDestination}"
