@@ -41,6 +41,7 @@
 #import "components/network_time/network_time_tracker.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/popular_sites_impl.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
@@ -959,7 +960,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
                                 true);
   registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
+      ntp_tiles::prefs::kTabResumptionHomeModuleEnabled, true);
 
   safety_check_prefs::RegisterPrefs(registry);
 
@@ -1112,6 +1113,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
+
+  // Deprecated 10/2025. Use
+  // `ntp_tiles::prefs::kTabResumptionHomeModuleEnabled` instead.
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1291,6 +1297,11 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 10/2025.
   RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
+                    prefs);
+
+  // Added 10/2025.
+  RenameBooleanPref(ntp_tiles::prefs::kTabResumptionHomeModuleEnabled,
+                    prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
                     prefs);
 }
 

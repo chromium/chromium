@@ -25,6 +25,7 @@
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/optimization_guide/proto/common_types.pb.h"
 #import "components/optimization_guide/proto/hints.pb.h"
@@ -414,8 +415,7 @@ class TabResumptionMediatorProxy {
 
     _tabResumptionDisabled = [[PrefBackedBoolean alloc]
         initWithPrefService:_profilePrefs
-                   prefName:
-                       prefs::kHomeCustomizationMagicStackTabResumptionEnabled];
+                   prefName:ntp_tiles::prefs::kTabResumptionHomeModuleEnabled];
     [_tabResumptionDisabled setObserver:self];
 
     ProfileIOS* profile = _browser->GetProfile();

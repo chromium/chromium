@@ -8402,6 +8402,7 @@ test("unit_tests") {
       "//chrome/utility:unit_tests",
       "//components/autofill/core/browser",
       "//components/data_sharing:test_support",
+      "//components/ntp_tiles:pref_names",
       "//components/omnibox/composebox",
       "//components/omnibox/composebox:test_support",
       "//components/passage_embeddings",

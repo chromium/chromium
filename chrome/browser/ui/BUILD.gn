@@ -504,6 +504,7 @@ static_library("ui") {
     "//components/net_log",
     "//components/no_state_prefetch/browser",
     "//components/ntp_tiles",
+    "//components/ntp_tiles:pref_names",
     "//components/offline_pages/buildflags",
     "//components/omnibox/browser",
     "//components/omnibox/browser:vector_icons",

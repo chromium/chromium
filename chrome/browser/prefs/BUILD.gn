@@ -120,6 +120,7 @@ source_set("impl") {
     "//components/media_device_salt",
     "//components/metrics/demographics",
     "//components/network_time",
+    "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser",
     "//components/optimization_guide/core:features",
     "//components/password_manager/core/browser",

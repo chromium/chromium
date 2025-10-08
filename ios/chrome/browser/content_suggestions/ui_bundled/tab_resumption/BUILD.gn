@@ -23,6 +23,7 @@ source_set("tab_resumption") {
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core:utils",
+    "//components/ntp_tiles:pref_names",
     "//components/optimization_guide/core",
     "//components/page_image_service",
     "//components/payments/core:currency_formatter",

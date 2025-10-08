@@ -136,6 +136,7 @@
 #include "components/ntp_tiles/custom_links_manager_impl.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_manager_impl.h"
 #include "components/ntp_tiles/most_visited_sites.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -2484,6 +2485,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   // the policies logic is implemented.
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeBlocklist);
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeAllowlist);
+
+  registry->RegisterBooleanPref(
+      ntp_tiles::prefs::kTabResumptionHomeModuleEnabled, true);
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

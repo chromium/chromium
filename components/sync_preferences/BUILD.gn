@@ -65,6 +65,7 @@ source_set("common_syncable_prefs_database") {
     "//components/metrics",
     "//components/metrics/demographics",
     "//components/ntp_tiles",
+    "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser",
     "//components/password_manager/core/common",
     "//components/payments/core",

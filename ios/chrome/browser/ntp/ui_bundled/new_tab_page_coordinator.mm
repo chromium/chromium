@@ -17,6 +17,7 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/feed/feed_feature_list.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -1799,7 +1800,7 @@
       BOOL safetyCheckEnabled = prefService->GetBoolean(
           safety_check::prefs::kSafetyCheckHomeModuleEnabled);
       BOOL tabResumptionEnabled = prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
+          ntp_tiles::prefs::kTabResumptionHomeModuleEnabled);
       BOOL tipsEnabled = prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTipsEnabled);
       [self.NTPMetricsRecorder

@@ -9,6 +9,7 @@ source_set("tab_resumption_prefs") {
   ]
   deps = [
     "//base",
+    "//components/ntp_tiles:pref_names",
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",

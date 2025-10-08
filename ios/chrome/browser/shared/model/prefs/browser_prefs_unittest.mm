@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
+#import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -75,6 +76,11 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   pref_service_.SetBoolean(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, false);
 
+  // Set the old Tab Resumption module pref value to test its migration to the
+  // new name.
+  pref_service_.SetBoolean(
+      prefs::kHomeCustomizationMagicStackTabResumptionEnabled, false);
+
   // Bottom omnibox position
   local_state()->SetBoolean(prefs::kBottomOmnibox, true);
 
@@ -140,6 +146,13 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_TRUE(
       pref_service_
           .FindPreference(safety_check::prefs::kSafetyCheckHomeModuleEnabled)
+          ->IsDefaultValue());
+
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      prefs::kHomeCustomizationMagicStackTabResumptionEnabled));
+  EXPECT_TRUE(
+      pref_service_
+          .FindPreference(ntp_tiles::prefs::kTabResumptionHomeModuleEnabled)
           ->IsDefaultValue());
 
   // Check bottom omnibox position.
@@ -217,6 +230,15 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // now be false (the migrated value).
   EXPECT_FALSE(pref_service_.GetBoolean(
       safety_check::prefs::kSafetyCheckHomeModuleEnabled));
+
+  EXPECT_TRUE(pref_service_
+                  .FindPreference(
+                      prefs::kHomeCustomizationMagicStackTabResumptionEnabled)
+                  ->IsDefaultValue());
+  // The new pref `ntp_tiles::prefs::kTabResumptionHomeModuleEnabled` should
+  // now be false (the migrated value).
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      ntp_tiles::prefs::kTabResumptionHomeModuleEnabled));
 
   // Check bottom omnibox position.
   EXPECT_TRUE(

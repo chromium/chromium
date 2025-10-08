@@ -63,6 +63,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/feed/core/shared_prefs/pref_names.cc",
     "//components/history/core/common/pref_names.cc",
     "//components/language/core/browser/pref_names.h",
+    "//components/ntp_tiles/pref_names.h",
     "//components/omnibox/browser/omnibox_pref_names.h",
     "//components/password_manager/core/common/password_manager_pref_names.h",
     "//components/payments/core/payment_prefs.h",
