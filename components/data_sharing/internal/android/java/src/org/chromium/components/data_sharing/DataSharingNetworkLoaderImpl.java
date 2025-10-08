@@ -44,32 +44,11 @@ public class DataSharingNetworkLoaderImpl implements DataSharingNetworkLoader {
             Callback<DataSharingNetworkResult> callback) {
         ThreadUtils.postOnUiThread(
                 () -> {
-                    loadUrlOnUiThread(url, postData, requestType, callback);
+                    if (mNativePtr != 0) {
+                        DataSharingNetworkLoaderImplJni.get()
+                                .loadUrl(mNativePtr, url, postData, requestType, callback);
+                    }
                 });
-    }
-
-    @Override
-    public void loadUrl(
-            GURL url,
-            String[] scopes,
-            byte[] postData,
-            @DataSharingRequestType int requestType,
-            Callback<DataSharingNetworkResult> callback) {
-        ThreadUtils.postOnUiThread(
-                () -> {
-                    loadUrlOnUiThread(url, postData, requestType, callback);
-                });
-    }
-
-    private void loadUrlOnUiThread(
-            GURL url,
-            byte[] postData,
-            @DataSharingRequestType int dataSharingRequestType,
-            Callback<DataSharingNetworkResult> callback) {
-        if (mNativePtr != 0) {
-            DataSharingNetworkLoaderImplJni.get()
-                    .loadUrl(mNativePtr, url, postData, dataSharingRequestType, callback);
-        }
     }
 
     @NativeMethods

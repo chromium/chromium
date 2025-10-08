@@ -28,12 +28,4 @@ public interface DataSharingNetworkLoader {
             byte[] postData,
             @DataSharingRequestType int requestType,
             Callback<DataSharingNetworkResult> callback);
-
-    // TODO(crbug.com/425896213): Remove the constructor after internal cleanup.
-    void loadUrl(
-            GURL url,
-            String[] scopes,
-            byte[] postData,
-            @DataSharingRequestType int requestType,
-            Callback<DataSharingNetworkResult> callback);
 }
