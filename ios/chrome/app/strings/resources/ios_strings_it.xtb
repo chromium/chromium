@@ -8,7 +8,7 @@
 <translation id="1019990162050689579">Attività delle app Gemini</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Apri Gestore delle password</translation>
-<translation id="1035980983510608210">Se chiudi tutte le schede, verranno chiuse anche le schede bloccate.</translation>
+<translation id="1035980983510608210">Se chiudi tutte le schede, verranno chiuse anche le schede fissate.</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1041322626941363065">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="104491362976654916">Pagina offline</translation>
@@ -351,7 +351,7 @@
 <translation id="2299218006564889602">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google.</translation>
 <translation id="2306265833370324042">Mostra dettagli <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Chiudi scheda</translation>
-<translation id="2311077293164383652">Chiudi scheda bloccata</translation>
+<translation id="2311077293164383652">Chiudi scheda fissata</translation>
 <translation id="2316129865977710310">No, grazie</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
 <translation id="2321086116217818302">Preparazione delle password…</translation>
@@ -1870,7 +1870,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8209050860603202033">Apri immagine</translation>
 <translation id="8211030355252954494">Hai ricevuto password per <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">La connessione è sicura</translation>
-<translation id="8214293972734702249">Scheda bloccata: <ph name="TAB_TITLE" /></translation>
+<translation id="8214293972734702249">Scheda fissata: <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Visualizza versione offline in una nuova scheda</translation>
 <translation id="8221665793629393739">Il tuo promemoria per rivedere</translation>
 <translation id="8232956427053453090">Conserva i dati</translation>

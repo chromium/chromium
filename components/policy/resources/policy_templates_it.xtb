@@ -1236,7 +1236,7 @@ Questa policy non ha effetto se l'opzione per mantenere i dati di navigazione es
       L'ordine dell'elenco sarà uguale a quello nella sezione "Ordina le lingue in base alle tue preferenze" della pagina chrome://settings/languages. Gli utenti non potranno rimuovere o cambiare l'ordine delle lingue impostate nella policy, ma potranno aggiungere lingue sotto quelle impostate nella policy. Gli utenti avranno inoltre il pieno controllo della lingua dell'interfaccia utente del browser e delle impostazioni di traduzione/controllo ortografico, a meno che non vengano applicate da altre policy.
 
       Se la policy non viene configurata, gli utenti possono modificare l'intero elenco di lingue preferite.</translation>
-<translation id="1803646570632580723">Elenco di applicazioni bloccate da visualizzare in Avvio applicazioni</translation>
+<translation id="1803646570632580723">Lista di app fissate da visualizzare in Avvio applicazioni</translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
 <translation id="1810261428246410396">Consenti l'uso del tethering istantaneo.</translation>
 <translation id="1813638828646876133">Attiva l'invio automatico del PIN nella schermata di blocco e accesso</translation>
@@ -1879,13 +1879,13 @@ Se la policy viene disattivata o se non viene configurata, gli utenti potranno t
 <translation id="22754818344448444">Gli utenti possono selezionare un layout di modelli di scrivanie da caricare</translation>
 <translation id="2277117728011250860">Non consentire l'uso del filtro delle prestazioni di accessibilità.</translation>
 <translation id="2279381650184876122">Disattiva il supporto degli URL di dati in SVGUseElement.</translation>
-<translation id="2281496157391382819"> Consente di controllare gli avvisi sulla privacy della sessione Ospite gestita su <ph name="PRODUCT_OS_NAME" />.
+<translation id="2281496157391382819">Consente di controllare gli avvisi sulla privacy della sessione Ospite gestita su <ph name="PRODUCT_OS_NAME" />.
 
       Se la policy è impostata su false, gli avvisi sulla privacy sulla schermata di accesso e la notifica sull'avvio automatico all'interno della sessione Ospite verranno disattivati.
 
       Questa policy non dovrebbe essere utilizzata per i dispositivi usati dal pubblico generale.
 
-      Se la policy è impostata su true o non configurata, la notifica di avviso sulla privacy nella sessione Ospite gestita con avvio automatico verrà bloccata finché l'utente non la ignorerà.</translation>
+      Se la policy è impostata su true o non configurata, la notifica di avviso sulla privacy nella sessione Ospite gestita con avvio automatico verrà fissata finché non viene chiusa dall'utente.</translation>
 <translation id="2281878365805647176">La configurazione della policy consente di attivare la funzionalità di accesso limitato di Chrome in <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> e di impedire agli utenti di modificare questa impostazione. Gli utenti possono accedere agli strumenti Google soltanto con gli account dei domini specificati (per consentire gli account Gmail o googlemail, aggiungi consumer_accounts all'elenco dei domini). Questa impostazione impedisce agli utenti di accedere a un account secondario e di aggiungerne uno su un dispositivo gestito che richiede l'autenticazione di Google, se tale account non appartiene a uno dei domini esplicitamente consentiti.
 
       Se questa impostazione viene lasciata vuota o se non viene configurata, gli utenti possono accedere a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> con qualsiasi account.
@@ -1905,7 +1905,7 @@ I valori predefiniti sono: Opacità riempimento a 4, Opacità contorno a 6 e Dim
 <translation id="2290270645214705008">Se questa policy viene impostata su Disattivata, non è possibile avviare o configurare il servizio host di accesso remoto per accettare le connessioni in arrivo.  Questa policy non influisce sugli scenari di assistenza remota.
 
           La policy non ha effetto se viene impostata su Attivata, se viene lasciata vuota o se non viene configurata.</translation>
-<translation id="2292482441027364457">La configurazione della policy consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app bloccate nella barra Avvio app e gli utenti non possono modificarli.
+<translation id="2292482441027364457">La configurazione della policy consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app fissate sulla barra Avvio app e gli utenti non possono modificarli.
 
 Specifica le app di Chrome tramite il relativo ID, come pjkljhegncpnkpknbcohdijeoejaedia;
 le app per Android tramite il relativo nome del pacchetto, ad esempio com.google.android.gm;
@@ -1913,7 +1913,7 @@ le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLI
 e le app web di sistema tramite il nome in snake case, ad esempio <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
 App web isolate tramite il relativo ID pacchetto web, ad esempio <ph name="PINNED_LAUNCHER_APPS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />.
 
-Se la policy non viene configurata, gli utenti possono modificare l'elenco di app bloccate in Avvio app.</translation>
+Se la policy non viene configurata, gli utenti possono modificare l'elenco di app fissate in Avvio app.</translation>
 <translation id="229322770310505679">Consenti il concetto di gruppi atomici di policy</translation>
 <translation id="22941467117331786">Se la policy è impostata su True, viene visualizzato un grande pulsante di disconnessione nella barra delle applicazioni durante le sessioni attive mentre la schermata non è bloccata.
 
@@ -4285,13 +4285,13 @@ possono essere inviati i report aziendali.
 <translation id="3997496219154877791">Disattiva l'integrazione di Lens</translation>
 <translation id="3997519162482760140">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione video su pagine di accesso SAML</translation>
 <translation id="4004523942550416237">Non mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
-<translation id="4007646377576030214"> Tieni presente che questa policy è stata deprecata nella versione M87 e verrà rimossa nella versione M89. Utilizza invece <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> per configurare gli avvisi sulla privacy delle sessioni Ospite gestite.
+<translation id="4007646377576030214">Tieni presente che questa policy è stata deprecata nella versione M87 e verrà rimossa nella versione M89. Utilizza invece <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> per configurare gli avvisi sulla privacy delle sessioni Ospite gestite.
 
       Controlla la notifica sull'avvio automatico della sessione Ospite gestita su <ph name="PRODUCT_OS_NAME" />.
 
       Se la policy viene impostata su True, la notifica di avviso sulla privacy viene chiusa dopo alcuni secondi.
 
-      Se la policy viene impostata su False o non viene impostata, la notifica di avviso sulla privacy viene bloccata finché non viene ignorata dall'utente.</translation>
+      Se la policy viene impostata su False o non viene impostata, la notifica di avviso sulla privacy viene fissata finché non viene chiusa dall'utente.</translation>
 <translation id="4008507541867797979">Se questa norma viene impostata su True o non viene configurata, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> verranno visualizzati gli utenti esistenti tra cui sarà possibile selezionare un utente.
 
       Se la norma è impostata su False, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> non verranno visualizzati gli utenti esistenti. Verrà visualizzata la normale schermata di accesso (richiesta di email utente e password o telefono) o la schermata interstiziale SAML (se attivata tramite la norma <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a meno che non sia stata configurata una sessione gestita. Quando viene configurata una sessione gestita, verranno visualizzati solo gli account della sessione gestita, consentendo di selezionarne uno.
@@ -9961,7 +9961,7 @@ Se la policy viene disattivata, nessuna origine viene isolata dal resto del sito
 Se la policy non viene configurata, il browser determina quali origini isolare e quando isolarle.</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7763650553214838209">L'impostazione di una scorciatoia per l'azione "Inserisci" è disattivata.</translation>
-<translation id="7763655314629932385">Specifica la versione che vuoi dell'IWA. Se viene fornita, il sistema tenterà di installare questa versione specifica e successivamente bloccherà eventuali ulteriori aggiornamenti. Per sbloccare l'app e abilitare nuovamente gli aggiornamenti, rimuovi questo campo. **Importante:** se la versione fornita non esiste, l'IWA rimane bloccata sulla versione installata al momento. Questo perché dopo aver tentato (e in questo caso senza successo) di eseguire l'aggiornamento alla versione bloccata, la limitazione degli aggiornamenti disabilita ulteriori aggiornamenti automatici.</translation>
+<translation id="7763655314629932385">Specifica la versione che vuoi dell'IWA. Se viene fornita, il sistema tenterà di installare questa versione specifica e successivamente bloccherà eventuali ulteriori aggiornamenti. Per staccare l'app e abilitare nuovamente gli aggiornamenti, rimuovi questo campo. **Importante:** se la versione fornita non esiste, l'IWA rimane bloccata sulla versione installata al momento. Questo perché dopo aver tentato (e in questo caso senza successo) di eseguire l'aggiornamento alla versione staccata, la limitazione degli aggiornamenti disabilita ulteriori aggiornamenti automatici.</translation>
 <translation id="776465643636059256">Disattiva insiemi di siti web correlati</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
 <translation id="7767066506143083523">Se la policy viene configurata, puoi impostare un elenco di pattern URL che possono usare la funzionalità di acquisizione schede.
