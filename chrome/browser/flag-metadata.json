@@ -4301,11 +4301,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "enable-run-on-os-login",
-    "owners": [ "sfiss@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-seamless-refresh-rate-switching",
     "owners": [ "ddavenport@chromium.org", "chromeos-gfx-display@google.com" ],
     "expiry_milestone": 120
