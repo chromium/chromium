@@ -15,22 +15,6 @@
 namespace blink {
 
 MailboxTextureBacking::MailboxTextureBacking(
-    sk_sp<SkImage> sk_image,
-    scoped_refptr<MailboxRef> mailbox_ref,
-    const gfx::Size& size,
-    const viz::SharedImageFormat& format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : sk_image_(std::move(sk_image)),
-      mailbox_ref_(std::move(mailbox_ref)),
-      sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
-                                       ToClosestSkColorType(format),
-                                       alpha_type,
-                                       color_space.ToSkColorSpace())),
-      context_provider_wrapper_(std::move(context_provider_wrapper)) {}
-
-MailboxTextureBacking::MailboxTextureBacking(
     const gpu::Mailbox& mailbox,
     scoped_refptr<MailboxRef> mailbox_ref,
     const gfx::Size& size,
@@ -70,7 +54,7 @@ gpu::Mailbox MailboxTextureBacking::GetMailbox() const {
 sk_sp<SkImage> MailboxTextureBacking::GetAcceleratedSkImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  return sk_image_;
+  return nullptr;
 }
 
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
@@ -96,8 +80,6 @@ sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
 
     return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
                                     sk_image_info_.minRowBytes());
-  } else if (sk_image_) {
-    return sk_image_->makeNonTextureImage();
   }
   return nullptr;
 }
@@ -117,9 +99,6 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
     return ri->ReadbackImagePixels(mailbox_, dst_info,
                                    static_cast<GLuint>(dst_info.minRowBytes()),
                                    src_x, src_y, /*plane_index=*/0, dst_pixels);
-  } else if (sk_image_) {
-    return sk_image_->readPixels(dst_info, dst_pixels, dst_row_bytes, src_x,
-                                 src_y);
   }
   return false;
 }
