@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
 
 #include <unicode/uchar.h>
@@ -119,11 +114,14 @@ class ScriptToFontMap {
  public:
   static constexpr UScriptCode kSize = USCRIPT_CODE_LIMIT;
 
-  FontMapping& operator[](UScriptCode script) { return mappings_[script]; }
+  FontMapping& operator[](UScriptCode script) {
+    return UNSAFE_TODO(mappings_[script]);
+  }
 
   void Set(base::span<const ScriptToFontFamilies> families) {
     for (const auto& family : families) {
-      mappings_[family.script].candidate_family_names = family.families;
+      UNSAFE_TODO(mappings_[family.script]).candidate_family_names =
+          family.families;
     }
   }
 
@@ -551,7 +549,7 @@ const AtomicString& GetFontFamilyForScript(
     std::optional<AtomicString> families[ScriptToFontMap::kSize];
   };
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicFamilies, families, ());
-  std::optional<AtomicString>& family = families.families[script];
+  std::optional<AtomicString>& family = UNSAFE_TODO(families.families[script]);
   if (family) {
     return *family;
   }
