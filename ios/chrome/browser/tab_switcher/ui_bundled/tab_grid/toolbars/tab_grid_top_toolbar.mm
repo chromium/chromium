@@ -569,8 +569,7 @@ CGFloat HorizontalMargin() {
         constraintEqualToAnchor:containerView.leadingAnchor
                        constant:HorizontalMargin()],
     [_pageControl.centerXAnchor
-        constraintEqualToAnchor:containerView.centerXAnchor
-                       constant:HorizontalMargin()],
+        constraintEqualToAnchor:containerView.centerXAnchor],
 
     centeredLabelConstraint,
     [_selectedTabsLabel.leadingAnchor
