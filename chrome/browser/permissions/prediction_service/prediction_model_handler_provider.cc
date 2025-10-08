@@ -75,17 +75,28 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
   if (embedder_metadata_provider) {
     embedder_metadata_observation_.Observe(embedder_metadata_provider);
   }
-  notification_prediction_model_handler_ =
-      std::make_unique<PredictionModelHandler>(
-          optimization_guide,
-          OptimizationTarget::
-              OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS);
 
-  geolocation_prediction_model_handler_ =
-      std::make_unique<PredictionModelHandler>(
-          optimization_guide,
-          OptimizationTarget::
-              OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
+  // This feature is enabled by default; we add the check here to fix internally
+  // failing tests.
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionOnDeviceNotificationPredictions)) {
+    notification_prediction_model_handler_ =
+        std::make_unique<PredictionModelHandler>(
+            optimization_guide,
+            OptimizationTarget::
+                OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS);
+  }
+
+  // This feature is enabled by default; we add the check here to fix internally
+  // failing tests.
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionOnDeviceGeolocationPredictions)) {
+    geolocation_prediction_model_handler_ =
+        std::make_unique<PredictionModelHandler>(
+            optimization_guide,
+            OptimizationTarget::
+                OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
+  }
 
   if (IsAiv4ModelAvailable()) {
     VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv4";

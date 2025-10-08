@@ -723,8 +723,13 @@ PredictionSource PermissionsAiUiSelector::GetPredictionTypeToUse(
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (request_type == permissions::RequestType::kNotifications ||
-      request_type == permissions::RequestType::kGeolocation) {
+  if ((request_type == permissions::RequestType::kNotifications &&
+       base::FeatureList::IsEnabled(
+           permissions::features::
+               kPermissionOnDeviceNotificationPredictions)) ||
+      (request_type == permissions::RequestType::kGeolocation &&
+       base::FeatureList::IsEnabled(
+           permissions::features::kPermissionOnDeviceGeolocationPredictions))) {
     VLOG(1) << "[CPSS] GetPredictionTypeToUse CPSSv1";
     return PredictionSource::kOnDeviceCpssV1Model;
   }
