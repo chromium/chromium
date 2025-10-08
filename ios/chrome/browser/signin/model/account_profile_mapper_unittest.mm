@@ -488,6 +488,9 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_CALL(mock_test1_observer, OnIdentitiesOnDeviceChanged());
   EXPECT_CALL(mock_test2_observer, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity2);
+
+  profile_initialized.Clear();
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests that `OnIdentityRefreshTokenUpdated()` is called when the refresh
