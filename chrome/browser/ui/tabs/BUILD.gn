@@ -678,7 +678,6 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
-      "//chrome/browser/favicon",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/keep_alive",

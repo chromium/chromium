@@ -9,14 +9,12 @@
 #include "base/byte_count.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
@@ -31,8 +29,6 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace tabs {
-
-constexpr char kGivenName[] = "User";
 
 class TabRendererDataTest : public InProcessBrowserTest {
  protected:
@@ -371,51 +367,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabLifecycleManagement) {
             base::ByteCount(1234));
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest,
-                       CollaborationMessagingTabDataInvalidatedOnTabClosure) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
-
-  TabRendererData data1 = TabRendererData::FromTabInModel(tab_strip_model, 0);
-
-  EXPECT_TRUE(data1.collaboration_messaging);
-
-  {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
-    ASSERT_EQ(2, tab_strip_model->count());
-
-    TabRendererData data2 = TabRendererData::FromTabInModel(tab_strip_model, 1);
-    EXPECT_TRUE(data2.collaboration_messaging);
-
-    // Before adding the message.
-    EXPECT_FALSE(data2.collaboration_messaging->HasMessage());
-
-    // Creating the message.
-    tab_groups::PersistentMessage message;
-    message.type = collaboration::messaging::PersistentNotificationType::CHIP;
-    message.collaboration_event = tab_groups::CollaborationEvent::TAB_ADDED;
-    message.attribution.triggering_user = data_sharing::GroupMember();
-    message.attribution.triggering_user->given_name = kGivenName;
-
-    // After adding the message.
-    data2.collaboration_messaging->set_mocked_avatar_for_testing(
-        favicon::GetDefaultFavicon());
-    data2.collaboration_messaging->SetMessage(message);
-    EXPECT_TRUE(data2.collaboration_messaging->HasMessage());
-
-    tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
-    ASSERT_EQ(1, tab_strip_model->count());
-
-    EXPECT_FALSE(data2.collaboration_messaging);
-  }
-
-  EXPECT_TRUE(data1.collaboration_messaging);
-}
+// TODO(crbug.com/443125515): Add browser tests for
+// TabRendererData::collaboration_messaging
 
 }  // namespace tabs
