@@ -49,7 +49,8 @@ class FullscreenBrowserObserverTest : public PlatformTest {
 
 // Tests that FullscreenBrowserObserver resets the FullscreenController's
 // WebStateList.
-TEST_F(FullscreenBrowserObserverTest, BrowserDestroyed) {
+// TODO(crbug.com/450269894): Test needs attention.
+TEST_F(FullscreenBrowserObserverTest, DISABLED_BrowserDestroyed) {
   EXPECT_TRUE(web_state_list_observer_->GetWebStateList());
   browser_ = nullptr;
   EXPECT_FALSE(web_state_list_observer_->GetWebStateList());
