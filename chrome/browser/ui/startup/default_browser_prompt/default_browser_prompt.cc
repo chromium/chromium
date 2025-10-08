@@ -89,8 +89,6 @@ void OnCheckIsDefaultBrowserFinished(
   } else if (state == shell_integration::NOT_DEFAULT &&
              shell_integration::CanSetAsDefaultBrowser() &&
              ShouldShowDefaultBrowserPromptForCurrentVersion()) {
-    chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile);
-
     // Only show the prompt if some other program is the user's default browser.
     // In particular, don't show it if another install mode is default (e.g.,
     // don't prompt for Chrome Beta if stable Chrome is the default).

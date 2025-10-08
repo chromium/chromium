@@ -30,7 +30,6 @@ class AppMenuIconController : public GlobalErrorObserver,
     NONE,
     UPGRADE_NOTIFICATION,
     GLOBAL_ERROR,
-    DEFAULT_BROWSER_PROMPT,
   };
   enum class Severity {
     NONE,

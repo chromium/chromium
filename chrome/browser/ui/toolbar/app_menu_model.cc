@@ -2142,10 +2142,7 @@ bool AppMenuModel::AddDefaultBrowserMenuItems() {
     return false;
   }
 
-  if ((app_menu_icon_controller_ &&
-       app_menu_icon_controller_->GetTypeAndSeverity().type ==
-           AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT) ||
-      (DefaultBrowserPromptManager::GetInstance()->show_app_menu_item())) {
+  if (DefaultBrowserPromptManager::GetInstance()->show_app_menu_item()) {
     AddItemWithIcon(
         IDC_SET_BROWSER_AS_DEFAULT,
         l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM),

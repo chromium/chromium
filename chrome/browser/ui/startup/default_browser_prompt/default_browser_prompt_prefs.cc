@@ -15,7 +15,6 @@ void chrome::startup::default_prompt::ResetPromptPrefs(Profile* profile) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
   local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
-  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
 }
 
 void chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
@@ -29,11 +28,4 @@ void chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
   local_state->SetInteger(
       prefs::kDefaultBrowserDeclinedCount,
       local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
-  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
-}
-
-void chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(
-    Profile* profile) {
-  g_browser_process->local_state()->ClearPref(
-      prefs::kDefaultBrowserFirstShownTime);
 }

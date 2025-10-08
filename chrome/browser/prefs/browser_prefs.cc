@@ -2659,6 +2659,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 09/2025
   local_state->ClearPref(kRendererCodeIntegrityEnabledNeedsDeletion);
 
+  // Added 10/2025
+#if !BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
+#endif
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 

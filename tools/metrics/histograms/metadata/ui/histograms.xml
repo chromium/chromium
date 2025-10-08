@@ -263,17 +263,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.AppMenu.TimesShownBeforeAccept" units="count"
-    expires_after="2025-11-16">
-  <owner>agale@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Times the default browser app menu chip has been shown before the user
-    accepted the prompt. This is emitted each time a user accepts the prompt by
-    clicking the chip and then the associated menu item.
-  </summary>
-</histogram>
-
 <histogram name="DefaultBrowser.InfoBar.TimesShownBeforeAccept" units="count"
     expires_after="2026-01-18">
   <owner>agale@chromium.org</owner>

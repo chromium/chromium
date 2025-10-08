@@ -18,11 +18,6 @@ void ResetPromptPrefs(Profile* profile);
 // before re-prompting.
 void UpdatePrefsForDismissedPrompt(Profile* profile);
 
-// If enough time has passed since the first show time, the app menu should
-// implicitly be dismissed, in which case prompts will not be shown when
-// `MaybeShowPrompt()` is called.
-void MaybeResetAppMenuPromptPrefs(Profile* profile);
-
 }  // namespace chrome::startup::default_prompt
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_PREFS_H_
