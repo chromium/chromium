@@ -55,6 +55,7 @@ function init() {
   var layer_height = 20;
   var layer_count = qs['layer_count'];
   var visible_layers = qs['visible_layers'];
+  var testMode = qs['test_mode'] || 'willChange';
 
 	for (var i = 0; i < layer_count; i ++) {
     if (i == visible_layers) {
@@ -94,8 +95,63 @@ function get_random_color_string() {
 var toggle_state = false;
 
 function draw() {
+  var testMode = qs['test_mode'] || 'willChange';
+  var target = document.getElementById("myDiv0");
+  var container = document.body;
+
   toggle_state = !toggle_state;
-  document.getElementById("myDiv0").style.willChange = toggle_state ? 'transform' : 'unset';
+
+  // This switch allows toggling different properties that cause structural
+  // property tree changes based on the 'test_mode' URL parameter.
+  switch (testMode) {
+    // Default case, causes layerization
+    case 'willChange':
+    default:
+      target.style.willChange = toggle_state ? 'transform' : 'unset';
+      break;
+
+    // Transform-Inducing Properties
+    case 'transform': // Direct transform node creation/destruction
+      target.style.transform = toggle_state ? 'translateX(1px)' : 'none';
+      break;
+    case 'transform3d': // Toggles 3D rendering context
+      target.style.transform = toggle_state ? 'translateZ(1px)' : 'translateX(1px)';
+      break;
+    case 'perspective': // Creates a perspective transform node on a container
+      container.style.perspective = toggle_state ? '500px' : 'none';
+      break;
+    case 'positionSticky': // Creates special sticky/paint offset transform nodes
+      target.style.position = toggle_state ? 'sticky' : 'static';
+      target.style.top = toggle_state ? '10px' : 'auto';
+      break;
+
+    // Effect-Inducing Properties
+    case 'opacity': // Toggles effect node creation at the 1.0 boundary
+      target.style.opacity = toggle_state ? '0.99' : '1';
+      break;
+    case 'filter': // Creates an effect node and a RenderSurface
+      target.style.filter = toggle_state ? 'blur(5px)' : 'none';
+      break;
+    case 'mixBlendMode': // Creates an effect node for blending
+      target.style.mixBlendMode = toggle_state ? 'screen' : 'normal';
+      break;
+    case 'shadow': // Toggles a box-shadow, which can affect layerization
+      target.style.boxShadow = toggle_state ? '10px 10px 5px grey' : 'none';
+      break;
+
+    // Clip-Inducing Properties
+    case 'overflow': // Creates an OverflowClip node
+      target.style.overflow = toggle_state ? 'hidden' : 'visible';
+      break;
+    case 'clipPath': // Creates a ClipPathClip node (potentially with effects)
+      target.style.clipPath = toggle_state ? 'circle(50%)' : 'none';
+      break;
+
+    // Fast paths for simple properties, should not induce full property tree updates
+    case 'opacityFast': // Toggles opacity below the effect inducing boundary
+      target.style.opacity = toggle_state ? '0.5' : '0.75';
+      break;
+  }
 };
 </script>
 <body id="body"></body>
