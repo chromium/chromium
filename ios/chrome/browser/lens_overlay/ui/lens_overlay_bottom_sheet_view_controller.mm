@@ -35,8 +35,14 @@ const CGFloat kRubberBandCoefficient = 8.0;
 // Approximate average time until the bottom sheet settles after user release.
 const CGFloat kTimeToSteadyStateAfterRelease = 0.3;
 
+// The increase caused by the keyboard beign shown, in the largest detent.
+const CGFloat kKeyboardSheetHeightIncrease = 40.0;
+
 // The identifier of the default detent.
 NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
+
+// Whether the keyboard is currently shown.
+BOOL _keyboardShown;
 
 }  // namespace
 
@@ -212,11 +218,26 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
 
   [self animateBottomSheetHeight:restHeight
                       completion:^{
-                        [self.panTracker startTracking];
+                        [self bottomSheetDidPresent];
                         if (completion) {
                           completion();
                         }
                       }];
+}
+
+- (void)bottomSheetDidPresent {
+  [self.panTracker startTracking];
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(keyboardWillHide:)
+             name:UIKeyboardWillHideNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(keyboardWillShow:)
+             name:UIKeyboardWillShowNotification
+           object:nil];
 }
 
 - (void)dismissAnimated:(BOOL)animated completion:(ProceduralBlock)completion {
@@ -266,6 +287,8 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
 
   [self.sheetDelegate lensOverlayBottomSheetDidDismiss:self
                                          gestureDriven:gestureDriven];
+  _bottomSheet = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   if (completion) {
     completion();
@@ -352,8 +375,7 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
       minimumDetentValue = detent.value;
     }
     if ([detent.identifier isEqualToString:self.selectedDetentIdentifier]) {
-      return std::clamp<CGFloat>(detent.value, 0,
-                                 [self bottomSheetContainerHeight]);
+      return [self heightWithOptionalKeyboardIncrease:detent.value];
     }
   }
 
@@ -449,6 +471,7 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
 // Called when the tracker ended recognizing a pan gesture.
 - (void)lensOverlayPanTracker:(LensOverlayPanTracker*)panTracker
     didEndPanGestureWithVelocity:(CGPoint)velocity {
+  [self.view endEditing:YES];
   for (UIScrollView* (^scrollViewProvider)() in _disabledScrollViews) {
     UIScrollView* scrollView = scrollViewProvider();
     scrollView.scrollEnabled = YES;
@@ -461,7 +484,8 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
 
   LensOverlayBottomSheetDetent* restDetent =
       [self bottomSheetRestDetentWithVelocity:sheetVelocity];
-  CGFloat futureHeight = restDetent.value;
+  CGFloat futureHeight =
+      [self heightWithOptionalKeyboardIncrease:restDetent.value];
   _selectedDetentIdentifier = restDetent.identifier;
 
   __weak __typeof(self) weakSelf = self;
@@ -580,6 +604,35 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
   // Forward touches that fall outside the bottom sheet frame to the view
   // behind.
   return CGRectContainsPoint(_bottomSheet.view.frame, point);
+}
+
+#pragma mark - Keyboard Notifications
+
+- (void)keyboardWillShow:(NSNotification*)notification {
+  _keyboardShown = YES;
+  if (!self.panTracker.isPanning) {
+    [self setSelectedDetentIdentifier:self.selectedDetentIdentifier
+                             animated:YES];
+  }
+}
+
+- (void)keyboardWillHide:(NSNotification*)notification {
+  _keyboardShown = NO;
+  if (!self.panTracker.isPanning) {
+    [self setSelectedDetentIdentifier:self.selectedDetentIdentifier
+                             animated:YES];
+  }
+}
+
+// Optionally adds a small increase in the height if the keyboard is shown and
+// the largest detent is selected.
+- (CGFloat)heightWithOptionalKeyboardIncrease:(CGFloat)height {
+  CGFloat result = height;
+  if ([self isInLargestDetent] && _keyboardShown) {
+    result = height + kKeyboardSheetHeightIncrease;
+  }
+
+  return std::clamp<CGFloat>(result, 0, [self bottomSheetContainerHeight]);
 }
 
 @end
