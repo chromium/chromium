@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
+#include "chrome/browser/ash/login/saml/saml_test_utils.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -202,6 +203,8 @@ constexpr char kDeviceTrustMatchHistogramName[] =
     "Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints";
 constexpr char kDeviceTrustAttestationFunnelStep[] =
     "Enterprise.DeviceTrust.Attestation.Funnel";
+constexpr char kSamlRedirectDuringLoginHistogram[] =
+    "ChromeOS.SAML.Login.SamlRedirectUsage";
 
 constexpr char kSAMLLink[] = "link";
 constexpr char kSAMLLinkedPageURLPattern[] =
@@ -1646,6 +1649,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_SamlReauthWithSamlRedirect) {
 // Checks Gaia path used by the Gaia screen during online reauth with device
 // policy set to navigate directly to the SAML login page.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlReauthWithSamlRedirect) {
+  base::HistogramTester histogram_tester;
   // Set device policy to navigate directly to SAML page during online sign-in
   SetLoginBehaviorPolicyToSAMLInterstitial();
 
@@ -1665,6 +1669,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlReauthWithSamlRedirect) {
   // Since this is a reauth of existing user, we expect them to use reauth
   // endpoint regardless of LoginAuthenticationBehavior policy.
   EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kReauth);
+  histogram_tester.ExpectTotalCount(kSamlRedirectDuringLoginHistogram, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_PRE_TransferCookiesAffiliated) {
@@ -1767,6 +1772,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TransferCookiesUnaffiliated) {
 // policy is set to SAML_INTERSTITIAL, and when the user clicks the "Enter
 // Google Account info" button, we go to the default GAIA signin screen.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
+  base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   SetLoginBehaviorPolicyToSAMLInterstitial();
   WaitForSigninScreen();
@@ -1775,6 +1781,8 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
 
   // Verify Gaia path used by the Gaia screen.
   EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
+  histogram_tester.ExpectUniqueSample(kSamlRedirectDuringLoginHistogram,
+                                      SamlRedirectEvent::kStartWithDomain, 1);
 
   // Adding a cookie to the signin profile.
   // After the "Enter Google Account info" button is pressed, all the
@@ -1811,6 +1819,9 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
                                    {"gaia-signin"}, false);
 
   EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kDefault);
+  histogram_tester.ExpectBucketCount(
+      kSamlRedirectDuringLoginHistogram,
+      SamlRedirectEvent::kChangeToDefaultGoogleSignIn, 1);
 
   // Make sure that cookies were deleted after pressing the EGAI button.
   GetCookies(profile);
@@ -2088,6 +2099,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest,
 // Tests that we land on 3P IdP page corresponding to sso_profile from the
 // device policy blob during "add user" flow.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInAddNewUserFlow) {
+  base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   // Set wrong redirect url for domain-based SAML redirection. This ensures that
@@ -2107,6 +2119,9 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInAddNewUserFlow) {
   test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
   // Verify Gaia path used by the Gaia screen.
   EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
+  histogram_tester.ExpectUniqueSample(kSamlRedirectDuringLoginHistogram,
+                                      SamlRedirectEvent::kStartWithSsoProfile,
+                                      1);
   // Expect email field to be visible on IdP page - this guarantees that we've
   // navigated to the IdP page based on SSO profile since we've set domain-based
   // redirection to not work above.

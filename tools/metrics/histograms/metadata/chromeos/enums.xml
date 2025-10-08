@@ -1929,6 +1929,22 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="8" label="API error: no sync token in Get response."/>
 </enum>
 
+<!-- LINT.IfChange(SamlRedirectEvent) -->
+
+<enum name="SamlRedirectEvent">
+  <summary>
+    Track the usage of /samlredirect Gaia endpoint: whether it is supplied with
+    an SSO profile or only domain at the start of online auth flow, and whether
+    users switch from their default 3P IdP page to the default Google sign-in
+    page during the flow.
+  </summary>
+  <int value="0" label="Start on default 3P IdP page based on an SSO profile."/>
+  <int value="1" label="Start on default 3P IdP page based on a domain."/>
+  <int value="2" label="User switched to the default Google sign-in."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/chromeos/login/components/online_auth_utils.ts:SamlRedirectEvent, //chrome/browser/ash/login/saml/saml_test_utils.h:SamlRedirectEvent) -->
+
 <enum name="SecagentdAuthFactor">
 <!--
 Enum values follow AuthFactor in secagentd proto.

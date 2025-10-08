@@ -82,6 +82,7 @@ static_library("test_support") {
     "lockscreen_reauth_dialog_test_helper.h",
     "mock_lock_handler.cc",
     "mock_lock_handler.h",
+    "saml_test_utils.h",
     "security_token_saml_test.cc",
     "security_token_saml_test.h",
     "test_client_cert_saml_idp_mixin.cc",

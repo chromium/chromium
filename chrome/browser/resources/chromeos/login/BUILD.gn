@@ -198,6 +198,7 @@ build_webui("build") {
     "components/long_touch_detector.ts",
     "components/mixins/login_screen_mixin.ts",
     "components/mixins/multi_step_mixin.ts",
+    "components/online_auth_utils.ts",
     "components/mixins/oobe_base_mixin.ts",
     "components/mixins/oobe_dialog_host_mixin.ts",
     "components/mixins/oobe_focus_mixin.ts",
