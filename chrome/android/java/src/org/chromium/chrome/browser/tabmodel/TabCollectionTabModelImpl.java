@@ -1711,7 +1711,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             mPendingTabClosureManager.resetState();
         }
 
-        if (ChromeFeatureList.sTabFreezeOnUndoableClosureKillSwitch.isEnabled() && pauseMedia) {
+        if (pauseMedia) {
             for (Tab tab : tabsToRemove) {
                 if (!TabUtils.isCapturingForMedia(tab)) continue;
                 // If media is being captured freeze the tab to disconnect it.

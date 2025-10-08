@@ -953,9 +953,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         // Deferred until another tab is selected. Otherwise the compositor may try to re-navigate
         // the tab.
-        if (ChromeFeatureList.sTabFreezeOnUndoableClosureKillSwitch.isEnabled()
-                && pauseMedia
-                && TabUtils.isCapturingForMedia(tab)) {
+        if (pauseMedia && TabUtils.isCapturingForMedia(tab)) {
             // If media is being captured freeze the tab to disconnect it.
             tab.freeze();
         }

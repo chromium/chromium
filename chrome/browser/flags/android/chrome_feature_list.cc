@@ -415,7 +415,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabArchivalDragDropAndroid,
     &kTabClosureMethodRefactor,
     &kTabCollectionAndroid,
-    &kTabFreezeOnUndoableClosureKillSwitch,
     &kTabFreezingUsesDiscard,
     &kTabGroupAndroidVisualDataCleanup,
     &kTabGroupEntryPointsAndroid,
@@ -1041,9 +1040,6 @@ BASE_FEATURE(kTabArchivalDragDropAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabClosureMethodRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabCollectionAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabFreezingUsesDiscard, base::FEATURE_DISABLED_BY_DEFAULT);
 

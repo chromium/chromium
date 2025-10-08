@@ -643,8 +643,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_ARCHIVAL_DRAG_DROP_ANDROID = "TabArchivalDragDropAndroid";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_COLLECTION_ANDROID = "TabCollectionAndroid";
-    public static final String TAB_FREEZE_ON_UNDOABLE_CLOSURE_KILL_SWITCH =
-            "TabFreezeOnUndoableClosureKillSwitch";
     public static final String TAB_FREEZING_USES_DISCARD = "TabFreezingUsesDiscard";
     public static final String TAB_GROUP_ANDROID_VISUAL_DATA_CLEANUP =
             "TabGroupAndroidVisualDataCleanup";
@@ -1365,9 +1363,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_ARCHIVAL_DRAG_DROP_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabCollectionAndroid =
             newMutableFlagWithSafeDefault(TAB_COLLECTION_ANDROID, false);
-    // Default value will only ever be reached in tests.
-    public static final MutableFlagWithSafeDefault sTabFreezeOnUndoableClosureKillSwitch =
-            newMutableFlagWithSafeDefault(TAB_FREEZE_ON_UNDOABLE_CLOSURE_KILL_SWITCH, true);
     public static final MutableFlagWithSafeDefault sTabFreezingUsesDiscard =
             newMutableFlagWithSafeDefault(TAB_FREEZING_USES_DISCARD, false);
     public static final MutableFlagWithSafeDefault sTabGroupAndroidVisualDataCleanup =
