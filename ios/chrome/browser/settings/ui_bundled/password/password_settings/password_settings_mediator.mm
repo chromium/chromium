@@ -70,11 +70,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
       _passwordsPresenterObserver;
 
   // Service which gives us a view on users' saved passwords.
-  raw_ptr<password_manager::SavedPasswordsPresenter, DanglingUntriaged>
-      _savedPasswordsPresenter;
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 
   // Allows reading and writing user preferences.
-  raw_ptr<PrefService, DanglingUntriaged> _prefService;
+  raw_ptr<PrefService> _prefService;
 
   // Provides status of Chrome as iOS AutoFill credential provider (i.e.,
   // whether or not Chrome passwords can currently be used in other apps).
@@ -85,14 +84,13 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
       _identityManagerObserver;
 
   // Service providing information about sync status.
-  raw_ptr<syncer::SyncService, DanglingUntriaged> _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
 
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 
   // Used to retrieve information about user's passkey security domain.
-  raw_ptr<TrustedVaultClientBackend, DanglingUntriaged>
-      _trustedVaultClientBackend;
+  raw_ptr<TrustedVaultClientBackend> _trustedVaultClientBackend;
 
   // Identity of the user. Can be nil if there is no primary account.
   id<SystemIdentity> _identity;
@@ -174,6 +172,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 - (void)setConsumer:(id<PasswordSettingsConsumer>)consumer {
   _consumer = consumer;
+  if (!_consumer) {
+    return;
+  }
+
   // Now that the consumer is set, ensure that the consumer starts out with the
   // correct initial value for `canExportPasswords` or else the export button
   // will not behave correctly on load.
@@ -250,9 +252,12 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
   _prefObserverBridge.reset();
   _prefChangeRegistrar.reset();
-
   _identityManagerObserver.reset();
   _syncObserver.reset();
+  _savedPasswordsPresenter = nullptr;
+  _prefService = nullptr;
+  _syncService = nullptr;
+  _trustedVaultClientBackend = nullptr;
 }
 
 - (CredentialCounts)passwordAndPasskeyCounts {
