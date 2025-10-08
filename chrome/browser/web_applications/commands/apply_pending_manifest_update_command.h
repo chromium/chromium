@@ -17,6 +17,7 @@
 namespace web_app {
 
 // This enum is recorded by UMA, the numeric values must not change.
+// LINT.IfChange(ApplyPendingManifestUpdateResult)
 enum class ApplyPendingManifestUpdateResult {
   kSystemShutdown = 0,
   kAppNotInstalled = 1,
@@ -26,6 +27,7 @@ enum class ApplyPendingManifestUpdateResult {
   kFailedToRemovePendingIconsFromDisk = 5,
   kMaxValue = kFailedToRemovePendingIconsFromDisk
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppApplyPendingManifestUpdateResult)
 
 std::ostream& operator<<(std::ostream& os,
                          ApplyPendingManifestUpdateResult stage);

@@ -412,6 +412,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failed to commit update to jump list"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppApplyPendingManifestUpdateResult) -->
+
 <enum name="WebAppApplyPendingManifestUpdateResult">
   <int value="0" label="System shutdown"/>
   <int value="1" label="App not installed"/>
@@ -420,6 +422,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="App has no pending updates"/>
   <int value="5" label="Failed to remove pending icon directories"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h:ApplyPendingManifestUpdateResult) -->
 
 <enum name="WebAppIconDownloaderResult">
   <int value="0" label="Success"/>
