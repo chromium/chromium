@@ -2947,7 +2947,6 @@
       keywords: ["none", "strict", "content", "size", "layout", "style", "paint", "inline-size", "block-size", "view-transition"],
       typedom_types: ["Keyword"],
       computable: false,
-      valid_for_permission_element: true,
       invalidate: ["layout"],
     },
     {
