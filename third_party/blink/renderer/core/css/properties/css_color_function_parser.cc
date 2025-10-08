@@ -106,46 +106,6 @@ bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
   return false;
 }
 
-// If the CSSValue is an absolute color, return the corresponding Color.
-std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
-  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
-    return color_value->Value();
-  }
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    // We can resolve <named-color> and 'transparent' at parse-time.
-    CSSValueID value_id = identifier_value->GetValueID();
-    if ((value_id >= CSSValueID::kAqua && value_id <= CSSValueID::kYellow) ||
-        (value_id >= CSSValueID::kAliceblue &&
-         value_id <= CSSValueID::kYellowgreen) ||
-        value_id == CSSValueID::kTransparent || value_id == CSSValueID::kGrey) {
-      // We're passing 'light' as the color-scheme, but nothing above should
-      // depend on that value (i.e it's a dummy argument). Ditto for the null
-      // color provider.
-      return StyleColor::ColorFromKeyword(
-          value_id, mojom::blink::ColorScheme::kLight, nullptr,
-          /*is_in_web_app_scope=*/false);
-    }
-    return std::nullopt;
-  }
-  if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    auto color1 = TryResolveAtParseTime(color_mix_value->Color1());
-    auto color2 = TryResolveAtParseTime(color_mix_value->Color2());
-    if (!color1 || !color2) {
-      return std::nullopt;
-    }
-    // We can only mix with percentages being numeric literals from here,
-    // as we don't have a length conversion data to resolve against yet.
-    if ((!color_mix_value->Percentage1() ||
-         color_mix_value->Percentage1()->IsNumericLiteralValue()) &&
-        (!color_mix_value->Percentage2() ||
-         color_mix_value->Percentage2()->IsNumericLiteralValue())) {
-      return color_mix_value->Mix(
-          *color1, *color2, CSSToLengthConversionData(/*element=*/nullptr));
-    }
-  }
-  return std::nullopt;
-}
-
 CSSValue* ConsumeRelativeColorChannel(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -234,16 +194,14 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
   function_metadata_ = &ColorFunction::MetadataForColorSpace(color_space_);
 
   if (unresolved_origin_color_) {
-    origin_color_ = TryResolveAtParseTime(*unresolved_origin_color_);
-      // If the origin color is not resolvable at parse time, fill out the map
-      // with just the valid channel names. We still need that information to
-      // parse the remainder of the color function.
-      color_channel_map_ = {
-          {function_metadata_->channel_name[0], std::nullopt},
-          {function_metadata_->channel_name[1], std::nullopt},
-          {function_metadata_->channel_name[2], std::nullopt},
-          {CSSValueID::kAlpha, std::nullopt},
-      };
+    // Fill out the map with the valid channel names. We need that information
+    // to parse the remainder of the color function.
+    color_channel_map_ = {
+        {function_metadata_->channel_name[0], std::nullopt},
+        {function_metadata_->channel_name[1], std::nullopt},
+        {function_metadata_->channel_name[2], std::nullopt},
+        {CSSValueID::kAlpha, std::nullopt},
+    };
   }
   return true;
 }
@@ -427,107 +385,53 @@ void ColorFunctionParser::MakePerColorSpaceAdjustments(
 
 namespace {
 
-const CSSNumericLiteralValue* GetNumericLiteralValue(const CSSValue* value) {
-  auto* literal_value = DynamicTo<CSSNumericLiteralValue>(value);
+const CSSNumericLiteralValue& GetNumericLiteralValue(const CSSValue& value) {
   // We can reach here with calc(NumericLiteral) as per ChannelIsResolvable.
   if (auto* math_value = DynamicTo<CSSMathFunctionValue>(value)) {
-    DCHECK(math_value->ExpressionNode()->IsNumericLiteral());
-    literal_value = MakeGarbageCollected<CSSNumericLiteralValue>(
-        math_value->ExpressionNode()->DoubleValue(),
-        math_value->ExpressionNode()->ResolvedUnitType());
+    const CSSMathExpressionNode* expression = math_value->ExpressionNode();
+    DCHECK(expression->IsNumericLiteral());
+    return *MakeGarbageCollected<CSSNumericLiteralValue>(
+        expression->DoubleValue(), expression->ResolvedUnitType());
   }
-  return literal_value;
+  return To<CSSNumericLiteralValue>(value);
 }
 
 double ResolveColorChannelForNumericLiteral(
-    const CSSNumericLiteralValue* value,
+    const CSSNumericLiteralValue& value,
     ColorFunctionParser::ChannelType channel_type,
     double percentage_base) {
   using ChannelType = ColorFunctionParser::ChannelType;
   switch (channel_type) {
     case ChannelType::kNumber:
-      if (value->IsAngle()) {
-        return value->ComputeDegrees();
+      if (value.IsAngle()) {
+        return value.ComputeDegrees();
       } else {
-        return value->DoubleValue();
+        return value.DoubleValue();
       }
     case ChannelType::kPercentage:
-      return (value->ClampedDoubleValue() / 100.0) * percentage_base;
-    default:
+      return (value.ClampedDoubleValue() / 100.0) * percentage_base;
+    case ChannelType::kRelative:
+    case ChannelType::kNone:
       NOTREACHED();
   }
 }
 
 double ResolveAlphaForNumericLiteral(
-    const CSSNumericLiteralValue* value,
+    const CSSNumericLiteralValue& value,
     ColorFunctionParser::ChannelType channel_type) {
   using ChannelType = ColorFunctionParser::ChannelType;
   switch (channel_type) {
     case ChannelType::kNumber:
-      return ClampTo<double>(value->ClampedDoubleValue(), 0.0, 1.0);
+      return ClampTo<double>(value.ClampedDoubleValue(), 0.0, 1.0);
     case ChannelType::kPercentage:
-      return ClampTo<double>(value->ClampedDoubleValue() / 100.0, 0.0, 1.0);
-    default:
+      return ClampTo<double>(value.ClampedDoubleValue() / 100.0, 0.0, 1.0);
+    case ChannelType::kRelative:
+    case ChannelType::kNone:
       NOTREACHED();
   }
 }
 
 }  // namespace
-
-double ColorFunctionParser::ResolveColorChannel(
-    const CSSValue* value,
-    ChannelType channel_type,
-    double percentage_base,
-    const CSSColorChannelMap& color_channel_map) {
-  if (value->IsPrimitiveValue() && channel_type != ChannelType::kRelative) {
-    return ResolveColorChannelForNumericLiteral(GetNumericLiteralValue(value),
-                                                channel_type, percentage_base);
-  }
-  return ResolveRelativeChannelValue(value, channel_type, percentage_base,
-                                     color_channel_map);
-}
-
-double ColorFunctionParser::ResolveAlpha(
-    const CSSValue* value,
-    ChannelType channel_type,
-    const CSSColorChannelMap& color_channel_map) {
-  if (value->IsPrimitiveValue() && channel_type != ChannelType::kRelative) {
-    return ResolveAlphaForNumericLiteral(GetNumericLiteralValue(value),
-                                         channel_type);
-  }
-  return ResolveRelativeChannelValue(
-      value, channel_type, /*percentage_base=*/1.0, color_channel_map);
-}
-
-double ColorFunctionParser::ResolveRelativeChannelValue(
-    const CSSValue* value,
-    ChannelType channel_type,
-    double percentage_base,
-    const CSSColorChannelMap& color_channel_map) {
-  if (const CSSIdentifierValue* identifier_value =
-          DynamicTo<CSSIdentifierValue>(value)) {
-    // This is for just single variable swaps without calc(). e.g. The "l" in
-    // "lab(from cyan l 0.5 0.5)".
-    if (auto it = color_channel_map.find(identifier_value->GetValueID());
-        it != color_channel_map.end()) {
-      return it->value.value();
-    }
-  }
-
-  auto* literal_value = GetNumericLiteralValue(value);
-  switch (To<CSSMathFunctionValue>(value)->Category()) {
-    case kCalcNumber:
-      return literal_value->ClampedDoubleValue();
-    case kCalcPercent:
-      return literal_value->ClampedDoubleValue() / 100 * percentage_base;
-    case kCalcAngle:
-      return literal_value->ComputeDegrees();
-    default:
-      NOTREACHED();
-  }
-
-  NOTREACHED();
-}
 
 bool ColorFunctionParser::IsRelativeColor() const {
   return !!unresolved_origin_color_;
@@ -540,8 +444,7 @@ static bool ChannelIsResolvable(const CSSValue* channel,
     return true;
   }
 
-  const CSSPrimitiveValue* color = DynamicTo<CSSPrimitiveValue>(channel);
-  if (color && color->IsNumericLiteralValue()) {
+  if (IsA<CSSNumericLiteralValue>(channel)) {
     // Numeric literals.
     return true;
   }
@@ -593,7 +496,6 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     context.Count(WebFeature::kCSSColorFunction);
   }
 
-  std::optional<Color> resolved_color;
   bool has_alpha = false;
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
@@ -705,37 +607,33 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
   // For non-relative colors, resolve channel values at parse time.
   // For relative colors, always defer resolution until used-value time.
-  if (AllChannelsAreResolvable() && !IsRelativeColor()) {
+  std::optional<Color> resolved_color;
+  if (!IsRelativeColor() && AllChannelsAreResolvable()) {
     // Resolve channel values.
     std::array<std::optional<double>, 3> channels;
     for (int i = 0; i < 3; i++) {
       if (channel_types_[i] != ChannelType::kNone) {
-        channels[i] = ResolveColorChannel(
-            unresolved_channels_[i], channel_types_[i],
-            function_metadata_->channel_percentage[i], color_channel_map_);
+        channels[i] = ResolveColorChannelForNumericLiteral(
+            GetNumericLiteralValue(*unresolved_channels_[i]), channel_types_[i],
+            function_metadata_->channel_percentage[i]);
       }
     }
 
     std::optional<double> alpha = 1.0;
     if (has_alpha) {
       if (alpha_channel_type_ != ChannelType::kNone) {
-        alpha = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
-                             color_channel_map_);
+        alpha = ResolveAlphaForNumericLiteral(
+            GetNumericLiteralValue(*unresolved_alpha_), alpha_channel_type_);
       } else {
         alpha.reset();
       }
-    } else if (IsRelativeColor()) {
-      alpha = color_channel_map_.at(CSSValueID::kAlpha);
     }
 
-    MakePerColorSpaceAdjustments(IsRelativeColor(), is_legacy_syntax_,
+    MakePerColorSpaceAdjustments(/*is_relative_color=*/false, is_legacy_syntax_,
                                  color_space_, channels, alpha);
 
     resolved_color = Color::FromColorSpace(color_space_, channels[0],
                                            channels[1], channels[2], alpha);
-    if (IsRelativeColor() && Color::IsLegacyColorSpace(color_space_)) {
-      resolved_color->ConvertToColorSpace(Color::ColorSpace::kSRGB);
-    }
   }
 
   if (IsRelativeColor()) {
