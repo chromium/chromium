@@ -4936,11 +4936,6 @@
       depends_on: ["TextareaLineEndingsAsBr"],
     },
     {
-      // crbug.com/341564372
-      name: "TextareaSplitText",
-      status: "stable",
-    },
-    {
       // crbug.com/435186193
       name: "TextDecorationOmitCurrentColor",
       status: "stable",
