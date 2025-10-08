@@ -39,6 +39,8 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -107,6 +109,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
     private TopControlsStacker mTopControlsStacker;
     private ToolbarDataProvider mToolbarDataProvider;
+    private BrowserControlsStateProvider mBrowserControls;
 
     /**
      * Constructs a new control container.
@@ -381,6 +384,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      * @param layoutStateProviderSupplier Used to check the current layout type.
      * @param fullscreenManager Used to check whether in fullscreen.
      * @param topControlsStacker The TopControlsStacker for |this| to query layer states.
+     * @param browserControlsStateProvider BrowserControlsStateProvider to provide control position.
      */
     @Initializer
     public void setPostInitializationDependencies(
@@ -395,11 +399,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             FullscreenManager fullscreenManager,
             TopControlsStacker topControlsStacker,
-            ToolbarDataProvider toolbarDataProvider) {
+            ToolbarDataProvider toolbarDataProvider,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mToolbar = toolbar;
         mIncognito = isIncognito;
         mTopControlsStacker = topControlsStacker;
         mToolbarDataProvider = toolbarDataProvider;
+        mBrowserControls = browserControlsStateProvider;
         mToolbarDataProvider.addToolbarDataProviderObserver(this);
 
         BooleanSupplier isVisible = () -> this.getVisibility() == View.VISIBLE;
@@ -987,6 +993,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     public int getTopControlVisibility() {
         // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
         return isToolbarContainerFullyVisible()
+                        && mBrowserControls.getControlsPosition() == ControlsPosition.TOP
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;
     }

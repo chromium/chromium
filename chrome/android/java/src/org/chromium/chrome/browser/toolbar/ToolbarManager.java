@@ -1275,7 +1275,10 @@ public class ToolbarManager
 
         mProgressBarCoordinator =
                 new LoadProgressCoordinator(
-                        mActivityTabProvider, mToolbar.getProgressBar(), topControlsStacker);
+                        mActivityTabProvider,
+                        mToolbar.getProgressBar(),
+                        topControlsStacker,
+                        mBrowserControlsSizer);
         mToolbar.setToolbarColorObserver(statusBarColorController);
 
         mActivityTabTabObserver =
@@ -1950,7 +1953,8 @@ public class ToolbarManager
                                 ? mHomePageButtonsCoordinator
                                 : mHomeButtonCoordinator,
                         mExtensionToolbarCoordinator,
-                        topControlsStacker);
+                        topControlsStacker,
+                        mBrowserControlsSizer);
 
         mHomepageStateListener =
                 () -> {

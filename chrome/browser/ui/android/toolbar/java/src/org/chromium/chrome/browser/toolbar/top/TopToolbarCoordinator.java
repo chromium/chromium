@@ -21,6 +21,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -152,6 +153,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
      *     home button(s). Should be null on custom tabs.
      * @param topControlsStacker The TopControlsStacker for child objects to check state from.
+     * @param browserControlsStateProvider BrowserControlsStateProvider instance.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -188,7 +190,8 @@ public class TopToolbarCoordinator implements Toolbar {
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
             @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
-            TopControlsStacker topControlsStacker) {
+            TopControlsStacker topControlsStacker,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mControlContainer = controlContainer;
@@ -244,7 +247,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 layoutStateProviderSupplier,
                 fullscreenManager,
                 topControlsStacker,
-                toolbarDataProvider);
+                toolbarDataProvider,
+                browserControlsStateProvider);
         mToolbarLayout.initialize(
                 toolbarDataProvider,
                 tabController,

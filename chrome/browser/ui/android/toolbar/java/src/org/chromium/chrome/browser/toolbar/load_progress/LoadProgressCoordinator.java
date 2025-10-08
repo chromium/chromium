@@ -9,6 +9,8 @@ import android.view.View;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
@@ -25,17 +27,21 @@ public class LoadProgressCoordinator implements TopControlLayer {
     private final ToolbarProgressBar mProgressBarView;
     private final LoadProgressViewBinder mLoadProgressViewBinder;
     private final TopControlsStacker mTopControlsStacker;
+    private final BrowserControlsStateProvider mBrowserControls;
 
     /**
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param progressBarView Toolbar progress bar view.
      * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
+     * @param browserControlsStateProvider BrowserControlsStateProvider to provide control position.
      */
     public LoadProgressCoordinator(
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ToolbarProgressBar progressBarView,
-            TopControlsStacker topControlsStacker) {
+            TopControlsStacker topControlsStacker,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mProgressBarView = progressBarView;
+        mBrowserControls = browserControlsStateProvider;
         mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
         mMediator = new LoadProgressMediator(tabSupplier, mModel);
         mLoadProgressViewBinder = new LoadProgressViewBinder();
@@ -85,6 +91,7 @@ public class LoadProgressCoordinator implements TopControlLayer {
     public int getTopControlVisibility() {
         // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
         return mProgressBarView.getVisibility() == View.VISIBLE
+                        && mBrowserControls.getControlsPosition() == ControlsPosition.TOP
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;
     }
