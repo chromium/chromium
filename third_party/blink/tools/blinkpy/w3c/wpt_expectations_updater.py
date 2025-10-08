@@ -719,7 +719,7 @@ class WPTExpectationsUpdater:
         for test in tests_to_rebaseline:
             _log.info('  %s', test)
 
-        builders = ', '.join(self.options.builders)
+        builders = ','.join(self.options.builders)
         args = [
             '--no-trigger-jobs',
             # The importer should have already updated the manifests.
