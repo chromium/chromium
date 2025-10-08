@@ -272,20 +272,74 @@ const char kSecondURLText[] = "You've arrived";
 
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
 // Test that code for opening URLs from Search widgets loads the NTP with the
-// Omnibox focused and switches to the correct account.
-- (void)testOpenSearchWidgetForMultiprofile {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+// Omnibox focused and switches to the correct account (in the same profile).
+- (void)testOpenSearchWidgetWithoutProfileSwitch {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+
+  // Test sign-out from unmanaged identity.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   [ChromeEarlGrey
       sceneOpenURL:
           GURL("chromewidgetkit://search-widget/search?gaia_id=No account")];
-
-  GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
 
+  // Test sign-in to unmanaged identity.
   [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
                                     "search?gaia_id=foo1_gmail.com_GAIAID")];
-  GREYAssertTrue(![SigninEarlGrey isSignedOut], @"Failed to sign-in.");
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+
+  // Test switch account in the same profile.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity2];
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
+                                    "search?gaia_id=foo1_gmail.com_GAIAID")];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+}
+
+// Test that code for opening URLs from Search widgets loads the NTP with the
+// Omnibox focused and switches to the correct profile and account.
+- (void)testOpenSearchWidgetWithProfileSwitch {
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+
+  // Test sign-out from managed identity.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  [ChromeEarlGrey
+      sceneOpenURL:
+          GURL("chromewidgetkit://search-widget/search?gaia_id=No account")];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
+
+  // Test sign-in to managed identity.
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
+                                    "search?gaia_id=foo_google.com_GAIAID")];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
+
+  // Test sign-in from managed to unmanaged identity.
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
+                                    "search?gaia_id=foo1_gmail.com_GAIAID")];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Test sign-in from unmanaged to managed identity.
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
+                                    "search?gaia_id=foo_google.com_GAIAID")];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
 }
 
 // Test that code for opening URLs from Dino Widget opens the dino game and
