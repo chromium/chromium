@@ -292,8 +292,13 @@ bool GestureRecognizerImpl::ProcessTouchEventPreDispatch(
 
 void GestureRecognizerImpl::SetupTargets(const TouchEvent& event,
                                          GestureConsumer* target) {
-  event_to_gesture_provider_[event.unique_event_id()] =
-      GetGestureProviderForConsumer(target);
+  if (event.type() == ui::EventType::kTouchReleased ||
+      event.type() == ui::EventType::kTouchCancelled ||
+      event.type() == ui::EventType::kTouchPressed) {
+    event_to_gesture_provider_[event.unique_event_id()] =
+        GetGestureProviderForConsumer(target);
+  }
+
   if (event.type() == ui::EventType::kTouchReleased ||
       event.type() == ui::EventType::kTouchCancelled) {
     touch_id_target_.erase(event.pointer_details().id);
