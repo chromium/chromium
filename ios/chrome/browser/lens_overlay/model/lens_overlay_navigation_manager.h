@@ -86,7 +86,7 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
       return sub_navigations_;
     }
 
-    bool operator==(const LensResultItem& rhs) {
+    bool operator==(const LensResultItem& rhs) const {
       return this->lens_result_.isTextSelection ==
                  rhs.lens_result_.isTextSelection &&
              CGRectEqualToRect(this->lens_result_.selectionRect,
