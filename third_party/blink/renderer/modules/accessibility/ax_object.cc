@@ -7101,7 +7101,6 @@ void AXObject::SetScrollOffset(const gfx::Point& offset,
     return;
 
   // TODO(bokan): This should potentially be a UserScroll.
-  // TODO(crbug.com/414556050): Pass the correct `ScrollSourceType`.
   area->SetScrollOffset(ScrollOffset(offset.OffsetFromOrigin()),
                         mojom::blink::ScrollType::kProgrammatic, source_type);
 }
