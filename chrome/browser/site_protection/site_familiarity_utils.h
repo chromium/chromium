@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_UTILS_H_
 #define CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_UTILS_H_
 
-class PrefService;
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
+
+class Profile;
 
 namespace site_protection {
 
-// Returns whether v8-optimizations are disabled on sites which are unfamiliar
-// to the user. Site familiarity is computed using a heuristic based on the
-// user's navigation history.
-bool AreV8OptimizationsDisabledOnUnfamiliarSites(const PrefService& prefs);
+// Computes the default Javascript-Optimizer setting. Ignores content-setting
+// exceptions.
+content_settings::JavascriptOptimizerSetting
+ComputeDefaultJavascriptOptimizerSetting(Profile* profile);
 
 }  // namespace site_protection
 

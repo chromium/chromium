@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -141,7 +142,9 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
 
 void SiteProtectionMetricsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!AreV8OptimizationsDisabledOnUnfamiliarSites(*profile_->GetPrefs())) {
+  if (ComputeDefaultJavascriptOptimizerSetting(profile_) !=
+      content_settings::JavascriptOptimizerSetting::
+          kBlockedForUnfamiliarSites) {
     return;
   }
 
