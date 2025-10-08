@@ -24,7 +24,9 @@ void StubSpeculationHost::OnConnectionLost() {
     std::move(done_closure_).Run();
 }
 
-void StubSpeculationHost::UpdateSpeculationCandidates(Candidates candidates) {
+void StubSpeculationHost::UpdateSpeculationCandidates(
+    Candidates candidates,
+    bool enable_cross_origin_prerender_iframes) {
   candidates_ = std::move(candidates);
   if (candidates_updated_callback_) {
     candidates_updated_callback_.Run(candidates_);

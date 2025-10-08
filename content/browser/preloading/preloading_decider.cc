@@ -437,7 +437,8 @@ void PreloadingDecider::ClearStandbyCandidates() {
 }
 
 void PreloadingDecider::UpdateSpeculationCandidates(
-    std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
+    std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+    bool enable_cross_origin_prerender_iframes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_for_testing_) {
     observer_for_testing_->UpdateSpeculationCandidates(candidates);
@@ -573,7 +574,8 @@ void PreloadingDecider::UpdateSpeculationCandidates(
 
   prefetcher_.ProcessCandidatesForPrefetch(candidates);
 
-  prerenderer_->ProcessCandidatesForPrerender(candidates);
+  prerenderer_->ProcessCandidatesForPrerender(
+      candidates, enable_cross_origin_prerender_iframes);
 }
 
 void PreloadingDecider::OnLCPPredicted() {

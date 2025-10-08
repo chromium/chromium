@@ -3775,6 +3775,14 @@
       status: "stable",
     },
     {
+      // Used to allow prerender cross-origin iframes with an opt-in response
+      // header.
+      // https://chromestatus.com/feature/5112398709129216
+      // https://crbug.com/440387014
+      name: "Prerender2CrossOriginIframes",
+      origin_trial_feature_name: "Prerender2CrossOriginIframes",
+    },
+    {
       name: "PrerenderUntilScript",
       public: true,
       status: "test",

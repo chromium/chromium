@@ -41,7 +41,9 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
   bool is_bound() const { return receiver_.is_bound(); }
 
   // mojom::blink::SpeculationHost.
-  void UpdateSpeculationCandidates(Candidates candidates) override;
+  void UpdateSpeculationCandidates(
+      Candidates candidates,
+      bool enable_cross_origin_prerender_iframes) override;
   void OnLCPPredicted() override {}
   void InitiatePreview(const KURL& url) override;
 

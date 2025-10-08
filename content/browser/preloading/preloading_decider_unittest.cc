@@ -56,8 +56,8 @@ class MockPrerenderer : public Prerenderer {
   ~MockPrerenderer() override = default;
 
   void ProcessCandidatesForPrerender(
-      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
-      override {
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+      bool enable_cross_origin_prerender_iframes = false) override {
     for (const auto& candidate : candidates) {
       // Immediate candidates are enacted by the same predictor that creates
       // them.

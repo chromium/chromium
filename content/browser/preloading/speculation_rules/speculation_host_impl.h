@@ -36,7 +36,8 @@ class CONTENT_EXPORT SpeculationHostImpl final
   ~SpeculationHostImpl() override;
 
   void UpdateSpeculationCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
+      std::vector<blink::mojom::SpeculationCandidatePtr> candidates,
+      bool enable_cross_origin_prerender_iframes) override;
   void OnLCPPredicted() override;
   void InitiatePreview(const GURL& url) override;
 };

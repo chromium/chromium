@@ -184,8 +184,6 @@ NavigationThrottle::ThrottleCheckResult PrerenderSubframeNavigationThrottle::
   }
 
   if (prerender_host->AllowCrossOriginSubframeNavigation()) {
-    CHECK(
-        base::FeatureList::IsEnabled(features::kPrerender2CrossOriginIframes));
     return NavigationThrottle::PROCEED;
   }
 

@@ -90,7 +90,8 @@ SpeculationHostImpl::SpeculationHostImpl(
 SpeculationHostImpl::~SpeculationHostImpl() = default;
 
 void SpeculationHostImpl::UpdateSpeculationCandidates(
-    std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates,
+    bool enable_cross_origin_prerender_iframes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!CandidatesAreValid(candidates))
     return;
@@ -103,7 +104,8 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->UpdateSpeculationCandidates(candidates);
+  preloading_decider->UpdateSpeculationCandidates(
+      candidates, enable_cross_origin_prerender_iframes);
 }
 
 void SpeculationHostImpl::OnLCPPredicted() {

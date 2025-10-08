@@ -4124,6 +4124,26 @@
     "expires": "Apr 1, 2026"
   },
   {
+    "prefix": "speculation-rules-prerender-wpt-internal",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "wpt_internal/origin_trials/prerender/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=Prerender2AllowActivationInBackground"
+    ],
+    "owners": [
+      "nhiroki@chromium.org",
+      "yoichio@chromium.org"
+    ],
+    "expires": "Apr 1, 2026"
+  },
+  {
     "prefix": "speech-with-unified-autoplay",
     "owners": [
       "media-dev@chromium.org",

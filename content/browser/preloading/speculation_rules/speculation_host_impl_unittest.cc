@@ -136,7 +136,9 @@ TEST_F(SpeculationHostImplTest, StartPrerender) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
 
-  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote->UpdateSpeculationCandidates(
+      std::move(candidates),
+      /*enable_cross_origin_prerender_iframes=*/false);
   remote.FlushForTesting();
   EXPECT_EQ(1u, observer.candidates_.size());
   EXPECT_EQ(kPrerenderingUrl, observer.candidates_[0]->url);
@@ -164,7 +166,9 @@ TEST_F(SpeculationHostImplTest, ReportNonHttpMessage) {
   const GURL kPrerenderingUrl = GURL("blob:https://bar");
   candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
 
-  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote->UpdateSpeculationCandidates(
+      std::move(candidates),
+      /*enable_cross_origin_prerender_iframes=*/false);
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "SH_NON_HTTP");
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
@@ -199,7 +203,9 @@ TEST_F(SpeculationHostImplTest,
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(std::move(candidate));
 
-  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote->UpdateSpeculationCandidates(
+      std::move(candidates),
+      /*enable_cross_origin_prerender_iframes=*/false);
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "SH_TARGET_HINT_ON_PREFETCH");
 }
@@ -229,7 +235,9 @@ TEST_F(SpeculationHostImplTest,
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(std::move(candidate));
 
-  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote->UpdateSpeculationCandidates(
+      std::move(candidates),
+      /*enable_cross_origin_prerender_iframes=*/false);
   remote.FlushForTesting();
   EXPECT_EQ("SH_INVALID_REQUIRES_ANONYMOUS_CLIENT_IP_WHEN_CROSS_ORIGIN",
             bad_message_error);
@@ -259,7 +267,9 @@ TEST_F(SpeculationHostImplTest, ReportEmptySpeculationRulesTags) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(std::move(candidate));
 
-  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote->UpdateSpeculationCandidates(
+      std::move(candidates),
+      /*enable_cross_origin_prerender_iframes=*/false);
   remote.FlushForTesting();
   EXPECT_EQ("SH_EMPTY_TAGS", bad_message_error);
 }
@@ -316,7 +326,9 @@ TEST_F(SpeculationHostImplTest, AllCandidatesProcessedByDelegate) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
 
-  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote->UpdateSpeculationCandidates(
+      std::move(candidates),
+      /*enable_cross_origin_prerender_iframes=*/false);
   remote.FlushForTesting();
 
   // Since SpeculationHostDelegate has removed all candidates,

@@ -20,7 +20,8 @@ class Prerenderer {
   virtual ~Prerenderer() = default;
 
   virtual void ProcessCandidatesForPrerender(
-      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) = 0;
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+      bool enable_cross_origin_prerender_iframes = false) = 0;
 
   // Called when LCP is predicted.
   // This is used to defer starting prerenders until LCP timing and is only

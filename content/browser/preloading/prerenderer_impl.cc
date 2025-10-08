@@ -134,7 +134,8 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
 // about making preloading decisions and could be moved to PreloadingDecider
 // class.
 void PrerendererImpl::ProcessCandidatesForPrerender(
-    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
+    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+    bool enable_cross_origin_prerender_iframes) {
   if (!registry_)
     return;
 
@@ -150,6 +151,8 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
                                         candidate.Clone());
     }
   }
+  enable_cross_origin_prerender_iframes_ |=
+      enable_cross_origin_prerender_iframes;
 
   std::ranges::stable_sort(
       prerender_candidates, std::less<>(),
@@ -396,6 +399,8 @@ bool PrerendererImpl::MaybePrerender(
           /*planned_max_preloading_type=*/
           ConvertSpeculationActionToPreloadingType(candidate->action)),
       /*allow_reuse=*/false);
+  attributes.enable_cross_origin_prerender_iframes =
+      enable_cross_origin_prerender_iframes_;
 
   PreloadingTriggerType trigger_type =
       PreloadingTriggerTypeFromSpeculationInjectionType(

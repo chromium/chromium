@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+Tests for cross-origin iframes `document.prerendering` state with
+`Supports-Loading-Mode: prerender-cross-origin-frames` header.
+-->
+<title>Load a cross-origin document in a prerendered iframe</title>
+<meta name="variant" content="?target_hint=_self">
+<meta name="variant" content="?target_hint=_blank">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script src="/speculation-rules/resources/utils.js"></script>
+
+<body>
+<script>
+setup(() => assertSpeculationRulesIsSupported());
+
+promise_test(async t => {
+  const uid = token();
+  const bc = new PrerenderChannel('test-channel', uid);
+
+  const gotMessage = new Promise(resolve => {
+    bc.addEventListener('message', e => {
+      resolve(e.data);
+    }, {
+      once: true
+    });
+  });
+  const url = `/speculation-rules/prerender/resources/cross-origin-iframe-prerender.html?uid=${uid}&target_hint=${getTargetHint()}`
+  // Token generated with:
+  // tools/origin_trials/generate_token.py https://web-platform.test:8444/
+  // Prerender2CrossOriginIframes --expire-timestamp=2000000000
+  + "&pipe=header(Origin-Trial,A7QjLJQAQ8vtYYjhQ%2bHZzly5f%2bGXSsCNBaOGq7TXBokFW9dhghHw6K6/kmnBZVlFxrz3zuNJnpBjNX8caaaKOAMAAABteyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiUHJlcmVuZGVyMkNyb3NzT3JpZ2luSWZyYW1lcyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==)";
+  window.open(url, '_blank', 'noopener');
+
+  const result = await gotMessage;
+  assert_equals(result, 'iframe prerender finished correctly.');
+
+  bc.close();
+
+  // Send a close signal to PrerenderEventCollector on the prerendered page.
+  new PrerenderChannel('close', uid).postMessage('');
+}, `cross-origin iframes should be prerendered with prerender-cross-origin-frame header.`);
+</script>

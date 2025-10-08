@@ -691,7 +691,10 @@ void PrerenderHost::ReadyToCommitNavigation(
       MaybeSetNoVarySearch(*parsed_headers->no_vary_search_with_parse_error);
     }
 
-    if (base::FeatureList::IsEnabled(features::kPrerender2CrossOriginIframes) &&
+    const bool is_prerender_2_cross_origin_iframes_enabled =
+        attributes_.enable_cross_origin_prerender_iframes ||
+        base::FeatureList::IsEnabled(features::kPrerender2CrossOriginIframes);
+    if (is_prerender_2_cross_origin_iframes_enabled &&
         base::Contains(
             parsed_headers->supports_loading_mode,
             network::mojom::LoadingMode::kPrerenderCrossOriginFrames)) {
@@ -826,8 +829,6 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
       GetFrameTree()->root()->render_manager()->TakePrerenderedPage();
   CHECK(page);
   if (allow_cross_origin_subframe_navigation_) {
-    CHECK(
-        base::FeatureList::IsEnabled(features::kPrerender2CrossOriginIframes));
     page->render_frame_host()
         ->GetPage()
         .NotifyCrossOriginSubframePrerenderIsAllowed();

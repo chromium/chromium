@@ -21,7 +21,14 @@ import "url/mojom/url.mojom";
 interface SpeculationHost {
   // Pushes a new set of speculation candidates, which replaces any previously
   // sent.
-  UpdateSpeculationCandidates(array<SpeculationCandidate> candidates);
+  // `enable_cross_origin_prerender_iframes` is enabled via OT token and
+  // overrides features::kPrerender2CrossOriginIframes.
+  // Once this is true for the page, kPrerender2CrossOriginIframes never been
+  // false to avoid confusing.
+  // TODO(https://crbug.com/440387014): Remove the flag param once OT
+  // is finished.
+  UpdateSpeculationCandidates(array<SpeculationCandidate> candidates,
+                              bool enable_cross_origin_prerender_iframes);
 
   // Called when LCP is predicted.
   OnLCPPredicted();

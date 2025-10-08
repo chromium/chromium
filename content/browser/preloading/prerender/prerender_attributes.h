@@ -153,6 +153,11 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // Whether the created prerender host can be reused for future navigations.
   bool allow_reuse = false;
 
+  // Enabled the feature for the speculation rules sent from the
+  // renderer process.
+  // TODO(https://crbug.com/440387014): Remove this field once OT is finished.
+  bool enable_cross_origin_prerender_iframes = false;
+
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<base::UnguessableToken> initiator_devtools_navigation_token;
 

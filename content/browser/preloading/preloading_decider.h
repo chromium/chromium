@@ -77,7 +77,8 @@ class CONTENT_EXPORT PreloadingDecider
 
   // Processes the received speculation rules candidates list.
   void UpdateSpeculationCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+      bool enable_cross_origin_prerender_iframes = false);
 
   // Called when LCP is predicted.
   // This is used to defer starting prerenders until LCP timing and is only

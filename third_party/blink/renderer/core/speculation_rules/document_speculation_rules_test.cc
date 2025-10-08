@@ -28,7 +28,8 @@ class MockSpeculationHost : public mojom::blink::SpeculationHost {
   ~MockSpeculationHost() override = default;
 
   void UpdateSpeculationCandidates(
-      Vector<mojom::blink::SpeculationCandidatePtr> candidates) override {
+      Vector<mojom::blink::SpeculationCandidatePtr> candidates,
+      bool enable_cross_origin_prerender_iframes) override {
     last_candidates_ = std::move(candidates);
   }
   void OnLCPPredicted() override {}
