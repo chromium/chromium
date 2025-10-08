@@ -42,7 +42,7 @@ void Initialize(PrefService* local_state,
 
   auto* impl = new InputMethodManagerImpl(
       local_state, application_locale_storage,
-      std::make_unique<InputMethodDelegateImpl>(),
+      std::make_unique<InputMethodDelegateImpl>(local_state),
       std::make_unique<ComponentExtensionIMEManagerDelegateImpl>(),
       !g_disable_extension_loading, std::move(ime_keyboard));
   InputMethodManager::Initialize(impl);

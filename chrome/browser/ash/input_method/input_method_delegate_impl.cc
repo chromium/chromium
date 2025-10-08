@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ash/input_method/input_method_delegate_impl.h"
 
-#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,14 +14,13 @@
 namespace ash {
 namespace input_method {
 
-InputMethodDelegateImpl::InputMethodDelegateImpl() = default;
+InputMethodDelegateImpl::InputMethodDelegateImpl(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 InputMethodDelegateImpl::~InputMethodDelegateImpl() = default;
 
 std::string InputMethodDelegateImpl::GetHardwareKeyboardLayouts() const {
-  PrefService* local_state = g_browser_process->local_state();
-  CHECK(local_state);
-  return local_state->GetString(prefs::kHardwareKeyboardLayout);
+  return local_state_->GetString(prefs::kHardwareKeyboardLayout);
 }
 
 std::u16string InputMethodDelegateImpl::GetLocalizedString(

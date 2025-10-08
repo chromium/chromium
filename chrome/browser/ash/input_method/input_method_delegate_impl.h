@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
+
+class PrefService;
 
 namespace ash {
 namespace input_method {
@@ -16,7 +19,8 @@ namespace input_method {
 // BrowserProcess.
 class InputMethodDelegateImpl : public InputMethodDelegate {
  public:
-  InputMethodDelegateImpl();
+  // `local_state` must be non-null, and must outlive `this`.
+  explicit InputMethodDelegateImpl(PrefService* local_state);
 
   InputMethodDelegateImpl(const InputMethodDelegateImpl&) = delete;
   InputMethodDelegateImpl& operator=(const InputMethodDelegateImpl&) = delete;
@@ -27,6 +31,9 @@ class InputMethodDelegateImpl : public InputMethodDelegate {
   std::string GetHardwareKeyboardLayouts() const override;
   std::u16string GetLocalizedString(int resource_id) const override;
   void SetHardwareKeyboardLayoutForTesting(const std::string& layout) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace input_method
