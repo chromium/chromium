@@ -280,14 +280,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const VideoFrameLayout& layout,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      const uint8_t* data,
-      size_t data_size,
-      base::TimeDelta timestamp);
-
-  static scoped_refptr<VideoFrame> WrapExternalDataWithLayout(
-      const VideoFrameLayout& layout,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
       base::span<const uint8_t> data,
       base::TimeDelta timestamp);
 

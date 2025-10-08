@@ -72,7 +72,9 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
         gfx::Size(scoped_mapping->Stride(0), scoped_mapping->Size().height()));
     mapped_frame = VideoFrame::WrapExternalDataWithLayout(
         video_frame->layout(), video_frame->visible_rect(),
-        video_frame->natural_size(), plane_addrs[0], buffer_size,
+        video_frame->natural_size(),
+        // TODO(crbug.com/40285824): spanify this usage.
+        UNSAFE_TODO(base::span(plane_addrs[0], buffer_size)),
         video_frame->timestamp());
   }
 

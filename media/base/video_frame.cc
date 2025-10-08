@@ -604,21 +604,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    const uint8_t* data,
-    size_t data_size,
-    base::TimeDelta timestamp) {
-  // TODO(crbug.com/338570700): Remove this function and migrate to the
-  // version accepting a span.
-  auto data_span = UNSAFE_TODO(base::span(data, data_size));
-  return WrapExternalDataWithLayout(layout, visible_rect, natural_size,
-                                    data_span, timestamp);
-}
-
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
-    const VideoFrameLayout& layout,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
     base::span<const uint8_t> data,
     base::TimeDelta timestamp) {
   StorageType storage_type = STORAGE_UNOWNED_MEMORY;

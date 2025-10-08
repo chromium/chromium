@@ -413,7 +413,11 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureLibYuv(
       return false;
     }
   }
-  auto* const data = static_cast<uint8_t*>(scoped_image->va_buffer()->data());
+  uint8_t* data_ptr = static_cast<uint8_t*>(scoped_image->va_buffer()->data());
+  // SAFETY: We take the size and the data pointer from the same `VAImage`
+  // It is responsibility of VA API for them to be valid.
+  auto data_span = UNSAFE_BUFFERS(base::span(data_ptr, image->data_size));
+
   scoped_refptr<VideoFrame> src_frame;
   switch (image->format.fourcc) {
     case VA_FOURCC_YUY2:
@@ -426,8 +430,7 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureLibYuv(
       }
       src_frame = VideoFrame::WrapExternalDataWithLayout(
           *layout, crop_rect, crop_rect.size(),
-          UNSAFE_TODO(data + image->offsets[0]),
-          base::strict_cast<size_t>(image->data_size), base::TimeDelta());
+          data_span.subspan(image->offsets[0]), base::TimeDelta());
       break;
     }
     case VA_FOURCC_I420: {
@@ -439,9 +442,9 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureLibYuv(
       }
       src_frame = VideoFrame::WrapExternalYuvDataWithLayout(
           *layout, crop_rect, crop_rect.size(),
-          UNSAFE_TODO(data + image->offsets[0]),
-          UNSAFE_TODO(data + image->offsets[1]),
-          UNSAFE_TODO(data + image->offsets[2]), base::TimeDelta());
+          data_span.subspan(image->offsets[0]),
+          data_span.subspan(image->offsets[1]),
+          data_span.subspan(image->offsets[2]), base::TimeDelta());
       break;
     }
     default:

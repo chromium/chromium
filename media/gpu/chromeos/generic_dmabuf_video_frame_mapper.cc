@@ -57,8 +57,10 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
         plane_addrs[1], plane_addrs[2], src_video_frame->timestamp());
   } else if (VideoFrame::NumPlanes(layout.format()) == 1) {
     video_frame = VideoFrame::WrapExternalDataWithLayout(
-        layout, visible_rect, visible_rect.size(), plane_addrs[0],
-        layout.planes()[0].size, src_video_frame->timestamp());
+        layout, visible_rect, visible_rect.size(),
+        // TODO(crbug.com/40285824): spanify this usage.
+        UNSAFE_TODO(base::span(plane_addrs[0], layout.planes()[0].size)),
+        src_video_frame->timestamp());
   }
   if (!video_frame) {
     MunmapBuffers(chunks, /*video_frame=*/nullptr);
