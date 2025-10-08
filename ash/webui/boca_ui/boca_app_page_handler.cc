@@ -650,6 +650,7 @@ void BocaAppHandler::EndViewScreenSession(
     std::move(callback).Run(std::nullopt);
     return;
   }
+  GetSessionManager()->EndSpotlightSession(base::DoNothing());
   EndViewScreenSessionInternal(id, std::move(callback));
 }
 
@@ -774,7 +775,11 @@ void BocaAppHandler::PresentStudentScreen(
       &BocaAppHandler::OnEndViewScreenResponseForPresentStudentScreen,
       weak_ptr_factory_.GetWeakPtr(), session->session_id(), std::move(student),
       receiver_id, std::move(callback));
-  EndViewScreenSessionInternal(student_id, std::move(end_view_screen_cb));
+  auto end_spotlight_cb =
+      base::BindOnce(&BocaAppHandler::EndViewScreenSessionInternal,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(student_id),
+                     std::move(end_view_screen_cb));
+  GetSessionManager()->EndSpotlightSession(std::move(end_spotlight_cb));
 }
 
 void BocaAppHandler::StopPresentingStudentScreen(
@@ -1339,10 +1344,6 @@ void BocaAppHandler::EndViewScreenSessionInternal(
     EndViewScreenSessionCallback callback) {
   CHECK(spotlight_service_);
 
-  if (ash::features::IsBocaSpotlightRobotRequesterEnabled()) {
-    GetSessionManager()->EndSpotlightSession();
-  }
-
   spotlight_service_->UpdateViewScreenState(
       id, ::boca::ViewScreenConfig::INACTIVE, base_url_,
       base::BindOnce(
@@ -1402,17 +1403,8 @@ void BocaAppHandler::OnEndViewScreenResponseForPresentStudentScreen(
     std::move(callback).Run(false);
     return;
   }
-  // Delay presentation to increase the likelihood the host receives the
-  // inactive connection notification and can accept the new one.
-  // TODO(crbug.com/445259545): The race condition is still there even with the
-  // delay. Update the host side to allow new connection even if the previous
-  // one is ongoing and then remove this delay.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BocaAppHandler::PresentStudentScreenInternal,
-                     weak_ptr_factory_.GetWeakPtr(), session_id,
-                     std::move(student), receiver_id, std::move(callback)),
-      base::Seconds(5));
+  PresentStudentScreenInternal(session_id, std::move(student), receiver_id,
+                               std::move(callback));
 }
 
 TeacherScreenPresenter* BocaAppHandler::teacher_screen_presenter() {

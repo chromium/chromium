@@ -315,6 +315,7 @@ class MockSessionManager : public BocaSessionManager {
               GetStudentActiveDeviceId,
               (std::string_view),
               (override));
+  MOCK_METHOD(void, EndSpotlightSession, (base::OnceClosure), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -2626,6 +2627,7 @@ TEST_F(BocaAppPageHandlerProducerTest, TestPrefGetterAndSetter) {
 
 TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionSucceeded) {
   const std::string student_id = "123";
+  EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(1);
   EXPECT_CALL(
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
@@ -2649,6 +2651,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
   ON_CALL(*session_manager(), GetStudentScreenPresenter)
       .WillByDefault(Return(student_screen_presenter.get()));
   ON_CALL(*student_screen_presenter, IsPresenting).WillByDefault(Return(true));
+  EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(0);
   EXPECT_CALL(*spotlight_service(), UpdateViewScreenState).Times(0);
 
   boca_app_handler()->EndViewScreenSession("student-id", future.GetCallback());
@@ -2659,6 +2662,7 @@ TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionFailed) {
   base::HistogramTester histogram_tester;
   const std::string student_id = "123";
 
+  EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(1);
   EXPECT_CALL(
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
@@ -3103,6 +3107,8 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
   EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
       .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
                    std::string, ViewScreenRequestCallback callback) {
@@ -3123,7 +3129,6 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
   boca_app_handler()->PresentStudentScreen(student_identity_mojom->Clone(),
                                            kReceiverId,
                                            success_future.GetCallback());
-  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_TRUE(success_future.Get());
   EXPECT_EQ(student_identity.gaia_id(), student_identity_mojom->id);
   EXPECT_EQ(student_identity.full_name(), student_identity_mojom->name);
@@ -3145,6 +3150,8 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
   EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
       .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
                    std::string, ViewScreenRequestCallback callback) {
@@ -3163,7 +3170,6 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {
       mojom::Identity::New(kActiveStudentId, "student name",
                            "student@email.com", std::nullopt),
       kReceiverId, success_future.GetCallback());
-  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(success_future.Get());
 }
 
@@ -3178,6 +3184,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
   EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
       .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
                    std::string, ViewScreenRequestCallback callback) {
@@ -3198,15 +3206,21 @@ TEST_F(BocaAppPageHandlerProducerTest,
       std::make_unique<MockStudentScreenPresenter>();
   ON_CALL(*session_manager(), GetStudentScreenPresenter)
       .WillByDefault(Return(student_screen_presenter.get()));
+  ON_CALL(*session_manager(), GetStudentActiveDeviceId)
+      .WillByDefault(Return(kStudentDeviceId));
   base::test::TestFuture<bool> success_future;
+  ViewScreenRequestCallback view_screen_update_cb;
   ::boca::Session session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
   EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
-      .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
-                   std::string, ViewScreenRequestCallback callback) {
-        std::move(callback).Run(true);
+      .WillOnce([&view_screen_update_cb](
+                    std::string, ::boca::ViewScreenConfig::ViewScreenState,
+                    std::string, ViewScreenRequestCallback callback) {
+        view_screen_update_cb = std::move(callback);
       });
   EXPECT_CALL(*student_screen_presenter, Start).Times(0);
   boca_app_handler()->PresentStudentScreen(
@@ -3214,7 +3228,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                            "student@email.com", std::nullopt),
       kReceiverId, success_future.GetCallback());
   session.set_session_state(::boca::Session::PAST);
-  task_environment()->FastForwardBy(base::Seconds(5));
+  std::move(view_screen_update_cb).Run(true);
   EXPECT_FALSE(success_future.Get());
 }
 
@@ -3228,6 +3242,8 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenNoDeviceFound) {
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
+  EXPECT_CALL(*session_manager(), EndSpotlightSession)
+      .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
   EXPECT_CALL(*spotlight_service(), UpdateViewScreenState)
       .WillOnce([](std::string, ::boca::ViewScreenConfig::ViewScreenState,
                    std::string, ViewScreenRequestCallback callback) {
@@ -3240,7 +3256,6 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenNoDeviceFound) {
       mojom::Identity::New(kActiveStudentId, "student name",
                            "student@email.com", std::nullopt),
       kReceiverId, success_future.GetCallback());
-  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(success_future.Get());
 }
 

@@ -246,7 +246,7 @@ class BocaSessionManager
 
   // Calls the `SpotlightRemotingClientManager` to try and stop an existing
   // session and then free up any remaining resources.
-  void EndSpotlightSession();
+  virtual void EndSpotlightSession(base::OnceClosure on_stopped_callback);
 
   virtual std::string GetDeviceRobotEmail();
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
@@ -424,9 +425,10 @@ void BocaSessionManager::StartCrdClient(
       std::move(frame_received_callback), std::move(crd_state_callback));
 }
 
-void BocaSessionManager::EndSpotlightSession() {
+void BocaSessionManager::EndSpotlightSession(
+    base::OnceClosure on_stopped_callback) {
   CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
-  remoting_client_manager_->StopCrdClient(base::DoNothing());
+  remoting_client_manager_->StopCrdClient(std::move(on_stopped_callback));
 }
 
 std::string BocaSessionManager::GetDeviceRobotEmail() {
