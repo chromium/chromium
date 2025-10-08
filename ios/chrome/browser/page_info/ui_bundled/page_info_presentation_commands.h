@@ -32,6 +32,9 @@
 // Method invoked when the user wants to send us a feedback report.
 - (void)showSendFeedbackPageForSender:(UserFeedbackSender)sender;
 
+// Method invoked to open the tracking protection settings page.
+- (void)showTrackingProtectionSettingsPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PAGE_INFO_UI_BUNDLED_PAGE_INFO_PRESENTATION_COMMANDS_H_

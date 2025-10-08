@@ -314,7 +314,7 @@ const char kTrackingProtectionSettingsURL[] =
   if (URL.gurl == GURL(kPageInfoHelpCenterURL)) {
     [self.pageInfoPresentationHandler showSecurityHelpPage];
   } else if (URL.gurl == GURL(kTrackingProtectionSettingsURL)) {
-    // TODO(crbug.com/442799468): Add logic to open the Settings page.
+    [self.pageInfoPresentationHandler showTrackingProtectionSettingsPage];
   }
 }
 

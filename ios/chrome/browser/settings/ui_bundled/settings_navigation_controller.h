@@ -190,6 +190,12 @@ extern NSString* const kSettingsDoneButtonId;
                        delegate:
                            (id<SettingsNavigationControllerDelegate>)delegate;
 
++ (instancetype)
+    trackingProtectionControllerForBrowser:(Browser*)browser
+                                  delegate:
+                                      (id<SettingsNavigationControllerDelegate>)
+                                          delegate;
+
 // Creates a new AutofillCreditCardCollectionViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil.

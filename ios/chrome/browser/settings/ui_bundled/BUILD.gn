@@ -187,6 +187,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/settings/ui_bundled/privacy",
     "//ios/chrome/browser/settings/ui_bundled/privacy:ui",
     "//ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing:safe_browsing_promo_delegate",
+    "//ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections",
     "//ios/chrome/browser/settings/ui_bundled/resources",
     "//ios/chrome/browser/settings/ui_bundled/safety_check",
     "//ios/chrome/browser/settings/ui_bundled/safety_check:constants",

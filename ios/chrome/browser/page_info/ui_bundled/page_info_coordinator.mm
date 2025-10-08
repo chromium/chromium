@@ -263,6 +263,21 @@
                                                    sender:sender];
 }
 
+// Closes PageInfo sheet and opens Incognito Tracking Protection Settings page.
+- (void)showTrackingProtectionSettingsPage {
+  __weak PageInfoCoordinator* weakSelf = self;
+  __weak id<ApplicationCommands> weakApplicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf stop];
+                           [weakApplicationHandler
+                               showTrackingProtectionSettingsFromViewController:
+                                   weakSelf.baseViewController];
+                         }];
+}
+
 #pragma mark - HistoryCoordinatorDelegate
 
 - (void)closeHistoryWithCompletion:(ProceduralBlock)completion {

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/tracking_protections_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller_constants.h"
@@ -96,6 +97,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     PrivacySafeBrowsingCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
+    TrackingProtectionsCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
 
@@ -109,6 +111,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // Privacy settings coordinator.
 @property(nonatomic, strong) PrivacyCoordinator* privacySettingsCoordinator;
+
+@property(nonatomic, strong)
+    TrackingProtectionsCoordinator* trackingProtectionsCoordinator;
 
 // Sync settings coordinator.
 @property(nonatomic, strong)
@@ -435,6 +440,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
+    trackingProtectionControllerForBrowser:(Browser*)browser
+                                  delegate:
+                                      (id<SettingsNavigationControllerDelegate>)
+                                          delegate {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showTrackingProtectionSettings];
+  return navigationController;
+}
+
++ (instancetype)
     addressDetailsControllerForBrowser:(Browser*)browser
                               delegate:
                                   (id<SettingsNavigationControllerDelegate>)
@@ -700,6 +719,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopSafetyCheckCoordinator];
   [self stopPrivacySafeBrowsingCoordinator];
   [self stopPrivacySettingsCoordinator];
+  [self stopTrackingProtectionsCoordinator];
   [self stopInactiveTabSettingsCoordinator];
   [self stopPasswordDetailsCoordinator];
   [self stopAutofillProfileEditCoordinator];
@@ -803,6 +823,15 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.privacySettingsCoordinator start];
 }
 
+// Starts PrivacyCoordinator and opens TrackingProtection Settings.
+- (void)showTrackingProtectionSettings {
+  self.trackingProtectionsCoordinator = [[TrackingProtectionsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.trackingProtectionsCoordinator.delegate = self;
+  [self.trackingProtectionsCoordinator start];
+}
+
 - (void)showSyncServices {
   if ([self.topViewController
           isKindOfClass:[ManageSyncSettingsCoordinator class]]) {
@@ -870,6 +899,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)stopPrivacySettingsCoordinator {
   [self.privacySettingsCoordinator stop];
   self.privacySettingsCoordinator = nil;
+}
+
+// Stops the tracking protections coordinator if it exists.
+- (void)stopTrackingProtectionsCoordinator {
+  [self.trackingProtectionsCoordinator stop];
+  self.trackingProtectionsCoordinator = nil;
 }
 
 // Stops the underlying Sync settings coordinator if it exists.
@@ -984,6 +1019,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (PrivacyCoordinator*)coordinator {
   DCHECK_EQ(self.privacySettingsCoordinator, coordinator);
   [self stopPrivacySettingsCoordinator];
+}
+
+#pragma mark - TrackingProtectionsCoordinatorDelegate
+
+- (void)trackingProtectionsCoordinatorDidRemove:
+    (TrackingProtectionsCoordinator*)coordinator {
+  DCHECK_EQ(self.trackingProtectionsCoordinator, coordinator);
+  [self stopTrackingProtectionsCoordinator];
 }
 
 #pragma mark - ManageSyncSettingsCoordinatorDelegate

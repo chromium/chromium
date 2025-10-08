@@ -106,6 +106,10 @@ enum class TabGridOpeningMode {
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController;
 
+// Shows the Tracking Protection Settings UI.
+- (void)showTrackingProtectionSettingsFromViewController:
+    (UIViewController*)baseViewController;
+
 // Shows the Report an Issue UI, presenting from `baseViewController`.
 - (void)showReportAnIssueFromViewController:
             (UIViewController*)baseViewController
