@@ -25,10 +25,7 @@ tests:
         files:
         - components/viz/common/surfaces/region_capture_bounds_unittest.cc
     - type: python
-      value: |
-        import subprocess
-        result = subprocess.run(['out/Default/viz_unittests'],
-                            capture_output=True,
-                            check=True,
-                            text=True)
-        return 'RegionCaptureBoundsTest' in result.stdout
+      value: file://../../../testing/asserts/check_gtests.py
+      config:
+        binary: viz_unittests
+        filter: 'RegionCaptureBoundsTest.*'

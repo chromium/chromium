@@ -11,11 +11,7 @@ providers:
 tests:
   - assert:
     - type: python
-      value: |
-        import subprocess
-        result = subprocess.run(['out/Default/blink_unittests', '--gtest_filter=*DummyTest*'],
-                            capture_output=True,
-                            check=True,
-                            text=True)
-        return (result.returncode == 0 and
-                'CSSCalculationValue.DummyTest' in result.stdout)
+      value: file://../../../testing/asserts/check_gtests.py
+      config:
+        binary: blink_unittests
+        filter: CSSCalculationValue.DummyTest
