@@ -66,6 +66,7 @@ class SmartCardPermissionContext
 
   void RevokeEphemeralPermissions();
   void RevokeAllPermissions();
+  bool RevokeObjectPermissions(const url::Origin& origin) override;
 
   // Checks whether |origin|'s value of |guard_content_settings_type_| is both:
   // - set to "allow"
@@ -105,7 +106,7 @@ class SmartCardPermissionContext
                                      const std::string& reader_name);
 
   void RevokeEphemeralPermissionsForReader(const std::string& reader_name);
-  void RevokeEphemeralPermissionsForOrigin(const url::Origin& origin);
+  bool RevokeEphemeralPermissionsForOrigin(const url::Origin& origin);
 
   void OnTrackingStarted(
       std::optional<std::vector<SmartCardReaderTracker::ReaderInfo>>);
