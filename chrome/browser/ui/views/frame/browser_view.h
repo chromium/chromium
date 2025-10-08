@@ -1132,29 +1132,44 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription chip_visibility_subscription_;
 
   // BrowserView layout (LTR one is pictured here).
-  //
-  // ---------------------------------------------------------------------
-  // | MainContainer (main_container_)                                   |
-  // |  ---------------------------------------------------------------  |
-  // |  | TopContainerView (top_container)                            |  |
-  // |  |  ------------------------------------------------------------  |
-  // |  |  | Web App toolbar and title (web_app_frame_toolbar_)       |  |
-  // |  |  |----------------------------------------------------------|  |
-  // |  |  | Tabs (tabstrip_)                                         |  |
-  // |  |  |----------------------------------------------------------|  |
-  // |  |  | Navigation buttons, address bar, menu (toolbar_)         |  |
-  // |  |  |----------------------------------------------------------|  |
-  // |  |  | Bookmarks (bookmark_bar_view_)                           |  |
-  // |  |  ------------------------------------------------------------  |
-  // |  |-------------------------------------------------------------|  |
-  // |  | All infobars (infobar_container_)                           |  |
-  // |  |-------------------------------------------------------------|  |
-  // |  | Contents container (contents_container_)                    |  |
-  // |  |  ------------------------------------------------------------  |
-  // |  |  |  contents_web_view_ (or multi_contents_view_ if defined) |  |
-  // |  |  ------------------------------------------------------------  |
-  // |  ---------------------------------------------------------------  |
-  // |-------------------------------------------------------------------|
+  // ----------------------------------------------------------------------
+  // | MainRegion (main_region_)                                           |
+  // |  ----------------------------------------------------------------   |
+  // |  | MainContainer (main_container_)                               |  |
+  // |  |  ------------------------------------------------------------ |  |
+  // |  |  | TopContainerView (top_container)                           |  |
+  // |  |  |  --------------------------------------------------------- |  |
+  // |  |  |  | Web App toolbar and title (web_app_frame_toolbar_)      |  |
+  // |  |  |  |-------------------------------------------------------- |  |
+  // |  |  |  | Tabs (tabstrip_)                                        |  |
+  // |  |  |  |-------------------------------------------------------- |  |
+  // |  |  |  | Navigation buttons, address bar, menu (toolbar_)        |  |
+  // |  |  |  |-------------------------------------------------------- |  |
+  // |  |  |  | Bookmarks (bookmark_bar_view_)                          |  |
+  // |  |  |  --------------------------------------------------------- |  |
+  // |  |  |----------------------------------------------------------- |  |
+  // |  |  | All infobars (infobar_container_)                          |  |
+  // |  |  |----------------------------------------------------------- |  |
+  // |  |  | Contents container (contents_container_)                   |  |
+  // |  |  |  --------------------------------------------------------- |  |
+  // |  |  |  |  contents_web_view_ (or multi_contents_view_ if defined)|  |
+  // |  |  |  --------------------------------------------------------- |  |
+  // |  |  |----------------------------------------------------------- |  |
+  // |  |  | ContentHeightSidePanel (contents_height_side_panel_)       |  |
+  // |  |  |----------------------------------------------------------- |  |
+  // |  ----------------------------------------------------------------   |
+  // |  | ToolbarHeightSidePanel ()                                     |  |
+  // |  |---------------------------------------------------------------|  |
+  // ----------------------------------------------------------------------
+
+  // The view that contains the MainContainer and the toolbar height side panel
+  // when it is implemented.
+  raw_ptr<views::View> main_region_ = nullptr;
+
+  // The view that contains the primary UI (Toolbar, BookmarksBar, InfoBar,
+  // WebContents, and Side panel).
+  raw_ptr<views::View> main_container_ = nullptr;
+
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
   // bar. Stacked top in the view hiearachy so it can be used to slide out
   // the top views in immersive fullscreen.
@@ -1232,12 +1247,6 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains all visible WebContents.
   raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
-
-  // The view that contains the main views of the browser not added to top
-  // container (WebContents, SidePanel, DevTools, etc.).
-  // TODO(crbug.com/445446905): Eventually this should include all views other
-  // than the TabStripRegionView such as the Toolbar, BookmarksBar, and InfoBar.
-  raw_ptr<views::View> main_container_ = nullptr;
 
   // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
   // that is shown on top of the web contents. It therefore must always have the

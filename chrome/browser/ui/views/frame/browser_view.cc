@@ -792,7 +792,11 @@ BrowserView::BrowserView(Browser* browser)
 
   browser_->tab_strip_model()->AddObserver(this);
 
-  main_container_ = AddChildView(std::make_unique<MainContainerView>());
+  main_region_ = AddChildView(std::make_unique<views::View>());
+
+  main_container_ =
+      main_region_->AddChildView(std::make_unique<MainContainerView>());
+
   top_container_ =
       main_container_->AddChildView(std::make_unique<TopContainerView>(this));
 
@@ -964,6 +968,7 @@ BrowserView::~BrowserView() {
   // These are raw pointers to child views, so they need to be set to null
   // before `RemoveAllChildViews()` is called to avoid dangling.
   browser_widget_ = nullptr;
+  main_region_ = nullptr;
   top_container_ = nullptr;
   web_app_frame_toolbar_ = nullptr;
   web_app_window_title_ = nullptr;
@@ -5151,10 +5156,10 @@ void BrowserView::AddedToWidget() {
   BrowserViewLayout* browser_view_layout =
       SetLayoutManager(std::make_unique<BrowserViewLayout>(
           BrowserViewLayoutDelegateImplBase::CreateDelegate(*this), this,
-          window_scrim_view_, top_container_, web_app_frame_toolbar_,
-          web_app_window_title_, tab_strip_region_view_,
+          window_scrim_view_, main_region_, main_container_, top_container_,
+          web_app_frame_toolbar_, web_app_window_title_, tab_strip_region_view_,
           vertical_tab_strip_container_, toolbar_, infobar_container_,
-          main_container_, contents_container_, multi_contents_view_,
+          contents_container_, multi_contents_view_,
           left_aligned_side_panel_separator_, contents_height_side_panel_,
           right_aligned_side_panel_separator_, side_panel_rounded_corner_,
           top_container_separator_));

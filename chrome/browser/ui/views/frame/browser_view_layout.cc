@@ -237,6 +237,8 @@ BrowserViewLayout::BrowserViewLayout(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     BrowserView* browser_view,
     views::View* window_scrim,
+    views::View* main_region,
+    views::View* main_container,
     views::View* top_container,
     WebAppFrameToolbarView* web_app_frame_toolbar,
     views::Label* web_app_window_title,
@@ -244,7 +246,6 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* vertical_tab_strip_container,
     views::View* toolbar,
     InfoBarContainerView* infobar_container,
-    views::View* main_container,
     views::View* contents_container,
     MultiContentsView* multi_contents_view,
     views::View* left_aligned_side_panel_separator,
@@ -255,6 +256,8 @@ BrowserViewLayout::BrowserViewLayout(
     : delegate_(std::move(delegate)),
       browser_view_(browser_view),
       window_scrim_(window_scrim),
+      main_region_(main_region),
+      main_container_(main_container),
       top_container_(top_container),
       web_app_frame_toolbar_(web_app_frame_toolbar),
       web_app_window_title_(web_app_window_title),
@@ -262,7 +265,6 @@ BrowserViewLayout::BrowserViewLayout(
       vertical_tab_strip_container_(vertical_tab_strip_container),
       toolbar_(toolbar),
       infobar_container_(infobar_container),
-      main_container_(main_container),
       contents_container_(contents_container),
       multi_contents_view_(multi_contents_view),
       contents_height_side_panel_(contents_height_side_panel),
@@ -359,6 +361,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
     LayoutVerticalTabStrip(available_bounds);
   }
 
+  main_region_->SetBoundsRect(available_bounds);
   main_container_->SetBoundsRect(available_bounds);
   gfx::Rect main_container_bounds = main_container_->GetLocalBounds();
   main_container_bounds.set_y(available_bounds.y() +
@@ -428,6 +431,12 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
     latest_dialog_bounds_in_screen_ = dialog_bounds_in_screen;
     dialog_host_->NotifyPositionRequiresUpdate();
   }
+
+  // When WindowControlsOverlay is enabled, we need to make sure the
+  // `top_container_` is painted on top of the `contents_container_`.
+  if (delegate_->IsWindowControlsOverlayEnabled()) {
+    main_container_->ReorderChildView(top_container_, -1);
+  }
 }
 
 gfx::Size BrowserViewLayout::GetPreferredSize(
@@ -444,30 +453,7 @@ gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
 
 std::vector<raw_ptr<views::View, VectorExperimental>>
 BrowserViewLayout::GetChildViewsInPaintOrder(const views::View* host) const {
-  std::vector<raw_ptr<views::View, VectorExperimental>> result =
-      views::LayoutManager::GetChildViewsInPaintOrder(host);
-  // Make sure `top_container_` is after `contents_container_` in paint order
-  // when this is a window using WindowControlsOverlay, to make sure the window
-  // controls are in fact drawn on top of the web contents.
-  if (delegate_->IsWindowControlsOverlayEnabled()) {
-    auto top_container_iter = std::ranges::find(result, top_container_);
-
-    // TODO(crbug.com/445446905): For now `main_container_` only holds
-    // `contents_container_` and side panel related views. Once we are further
-    // along in the ToolbarHeightSidePanel effort, this function should be
-    // revisited and updated accordingly.
-    auto contents_container_iter = std::ranges::find(result, main_container_);
-    CHECK(contents_container_iter != result.end());
-    // When in Immersive Fullscreen `top_container_` might not be one of our
-    // children at all. While Window Controls Overlay shouldn't be enabled in
-    // fullscreen either, during the transition there is a moment where both
-    // could be true at the same time.
-    if (top_container_iter != result.end()) {
-      std::rotate(top_container_iter, top_container_iter + 1,
-                  contents_container_iter + 1);
-    }
-  }
-  return result;
+  return views::LayoutManager::GetChildViewsInPaintOrder(host);
 }
 
 int BrowserViewLayout::GetMinWebContentsWidthForTesting() const {

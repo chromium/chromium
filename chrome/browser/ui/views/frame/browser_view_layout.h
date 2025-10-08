@@ -53,6 +53,8 @@ class BrowserViewLayout : public views::LayoutManager {
   BrowserViewLayout(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
                     BrowserView* browser_view,
                     views::View* window_scrim,
+                    views::View* main_region,
+                    views::View* main_container,
                     views::View* top_container,
                     WebAppFrameToolbarView* web_app_frame_toolbar,
                     views::Label* web_app_window_title,
@@ -60,7 +62,6 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* vertical_tab_strip_container,
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
-                    views::View* main_container,
                     views::View* contents_container,
                     MultiContentsView* multi_contents_view,
                     views::View* left_aligned_side_panel_separator,
@@ -158,6 +159,8 @@ class BrowserViewLayout : public views::LayoutManager {
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
   const raw_ptr<views::View> window_scrim_ = nullptr;
+  const raw_ptr<views::View> main_region_ = nullptr;
+  const raw_ptr<views::View> main_container_ = nullptr;
   const raw_ptr<views::View> top_container_ = nullptr;
   const raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
   const raw_ptr<views::Label> web_app_window_title_ = nullptr;
@@ -165,7 +168,6 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<views::View> vertical_tab_strip_container_ = nullptr;
   const raw_ptr<views::View> toolbar_ = nullptr;
   const raw_ptr<InfoBarContainerView> infobar_container_ = nullptr;
-  const raw_ptr<views::View> main_container_ = nullptr;
   const raw_ptr<views::View> contents_container_ = nullptr;
   const raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
   const raw_ptr<views::View> contents_height_side_panel_ = nullptr;

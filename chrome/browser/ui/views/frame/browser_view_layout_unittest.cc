@@ -168,12 +168,16 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    browser_view_ = CreateFixedSizeView(gfx::Size(kBaseWidth, 600));
+    browser_view_ = CreateFixedSizeView(kDefaultViewSize);
 
     immersive_mode_controller_ =
         std::make_unique<MockImmersiveModeController>();
+    main_region_ =
+        browser_view_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
+    main_container_ =
+        main_region_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
 
-    top_container_ = browser_view_->AddChildView(
+    top_container_ = main_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(kBaseWidth, 60)));
     auto tab_strip = std::make_unique<TabStrip>(
         std::make_unique<FakeBaseTabStripController>());
@@ -190,8 +194,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     infobar_container_ = browser_view_->AddChildView(
         std::make_unique<InfoBarContainerView>(nullptr));
 
-    main_container_ =
-        browser_view_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
     left_aligned_side_panel_separator_ =
         main_container_->AddChildView(std::make_unique<views::Separator>());
     right_aligned_side_panel_separator_ =
@@ -222,11 +224,12 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     delegate_ = delegate.get();
     auto layout = std::make_unique<BrowserViewLayout>(
         std::move(delegate),
-        /*browser_view=*/nullptr, /*window_scrim=*/nullptr, top_container_,
+        /*browser_view=*/nullptr, /*window_scrim=*/nullptr, main_region_,
+        main_container_, top_container_,
         /*web_app_frame_toolbar=*/nullptr,
         /*web_app_window_title=*/nullptr, tab_strip_region_view_,
         /*vertical_tab_strip_container=*/nullptr, toolbar_, infobar_container_,
-        /*main_contents_region=*/main_container_, contents_container_,
+        contents_container_,
         /*multi_contents_view=*/nullptr, left_aligned_side_panel_separator_,
         /*contents_height_side_panel=*/nullptr,
         right_aligned_side_panel_separator_, side_panel_rounded_corner_,
@@ -246,12 +249,13 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     // The other views are children of |browser_view_| and will be destroyed
     // along with it after TearDown(). Null out the pointers to avoid them
     // dangling.
+    main_region_ = nullptr;
+    main_container_ = nullptr;
     top_container_ = nullptr;
     webui_tab_strip_ = nullptr;
     toolbar_ = nullptr;
     separator_ = nullptr;
     infobar_container_ = nullptr;
-    main_container_ = nullptr;
     left_aligned_side_panel_separator_ = nullptr;
     right_aligned_side_panel_separator_ = nullptr;
     side_panel_rounded_corner_ = nullptr;
@@ -279,6 +283,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   std::unique_ptr<views::View> browser_view_;
 
   // Views owned by |browser_view_|.
+  raw_ptr<views::View> main_region_;
   raw_ptr<views::View> top_container_;
   raw_ptr<TabStripRegionView> tab_strip_region_view_;
   raw_ptr<views::View> webui_tab_strip_;
