@@ -7,7 +7,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 mojom_component("base") {
   generate_java = true
-  generate_rust = true
   sources = [
     "absl_status.mojom",
     "application_state.mojom",

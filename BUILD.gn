@@ -27,7 +27,6 @@ import("//extensions/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
-import("//mojo/public/rust/rust.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
@@ -850,13 +849,6 @@ group("all_rust") {
     deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
   }
 
-  if (enable_rust_mojo) {
-    deps += [
-      "//mojo/public/rust:mojo_rust",
-      "//mojo/public/rust:mojo_rust_integration_unittests",
-      "//mojo/public/rust:mojo_rust_unittests",
-    ]
-  }
   if (!is_cronet_build) {
     deps += [ "//skia" ]
   }

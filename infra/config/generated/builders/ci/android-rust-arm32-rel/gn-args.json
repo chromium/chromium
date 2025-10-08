@@ -4,8 +4,6 @@
     "dcheck_always_on": true,
     "debuggable_apks": false,
     "enable_r8_tracerefs": true,
-    "enable_rust_mojo": true,
-    "enable_rust_mojom_bindings": true,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,
