@@ -285,7 +285,7 @@
 - (void)showSnackbar:(NSString*)messageText {
   SnackbarMessage* message =
       [[SnackbarMessage alloc] initWithTitle:messageText];
-  message.duration = kIdleTimeoutSnackbarDuration;
+  message.duration = kIdleTimeoutSnackbarDuration.InSeconds();
   message.accessibilityLabel = messageText;
   [_snackbarHandler showSnackbarMessage:message];
 }
