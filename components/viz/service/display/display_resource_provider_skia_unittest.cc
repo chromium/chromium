@@ -136,9 +136,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
-      {id1}, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      {id1}, &list, child_context_provider_->SharedImageInterface());
   ASSERT_EQ(1u, list.size());
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
 
@@ -198,9 +199,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
-      {id1}, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      {id1}, &list, child_context_provider_->SharedImageInterface());
   ASSERT_EQ(1u, list.size());
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
 
@@ -336,9 +338,10 @@ TEST_F(DisplayResourceProviderSkiaTest,
 
     // Transfer resources to the parent.
     std::vector<TransferableResource> list;
+
+    CHECK(child_context_provider_);
     child_resource_provider_->PrepareSendToParent(
-        {id1, id2}, &list,
-        static_cast<RasterContextProvider*>(child_context_provider_.get()));
+        {id1, id2}, &list, child_context_provider_->SharedImageInterface());
     ASSERT_EQ(2u, list.size());
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id2));
@@ -442,9 +445,10 @@ TEST_F(DisplayResourceProviderSkiaTest, ResourceFenceDestroyChild) {
 
     // Transfer resources to the parent.
     std::vector<TransferableResource> list;
+
+    CHECK(child_context_provider_);
     child_resource_provider_->PrepareSendToParent(
-        {id1, id2}, &list,
-        static_cast<RasterContextProvider*>(child_context_provider_.get()));
+        {id1, id2}, &list, child_context_provider_->SharedImageInterface());
     ASSERT_EQ(2u, list.size());
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id2));
@@ -539,9 +543,10 @@ TEST_F(DisplayResourceProviderSkiaTest, ResourceFenceOutlivesResourceProvider) {
 
   // Transfer resources to the parent.
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
-      {id1, id2}, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      {id1, id2}, &list, child_context_provider_->SharedImageInterface());
   ASSERT_EQ(2u, list.size());
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id2));
@@ -624,9 +629,11 @@ TEST_F(DisplayResourceProviderSkiaTest,
       ids, UNSAFE_TODO(ids + kTotalResources));
 
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
       resource_ids_to_transfer, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      child_context_provider_->SharedImageInterface());
   ASSERT_EQ(kTotalResources, list.size());
   for (const auto& id : ids)
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id));

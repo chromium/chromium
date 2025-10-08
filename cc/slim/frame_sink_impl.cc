@@ -338,7 +338,8 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
 
     resource_provider_.PrepareSendToParent(
         std::move(viz_resource_ids).extract(), &frame.resource_list,
-        context_provider_.get());
+        context_provider_ ? context_provider_->SharedImageInterface()
+                          : nullptr);
 
     bool send_new_hit_test_region_list = false;
     if (!hit_test_region_list_ ||

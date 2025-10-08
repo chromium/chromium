@@ -339,8 +339,10 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   // Transfer resource to the parent.
   std::vector<viz::TransferableResource> list;
-  child_resource_provider->PrepareSendToParent(resource_ids_to_transfer, &list,
-                                               child_context_provider);
+  child_resource_provider->PrepareSendToParent(
+      resource_ids_to_transfer, &list,
+      child_context_provider ? child_context_provider->SharedImageInterface()
+                             : nullptr);
   resource_provider->ReceiveFromChild(child_id, list);
 
   // Delete them in the child so they won't be leaked, and will be released once

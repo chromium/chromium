@@ -145,8 +145,9 @@ std::vector<viz::TransferableResource>
 VideoFrameResourceProvider::PrepareSendToParent(
     const std::vector<viz::ResourceId>& resource_ids) {
   std::vector<viz::TransferableResource> resources_list;
-  resource_provider_->PrepareSendToParent(resource_ids, &resources_list,
-                                          context_provider_);
+  resource_provider_->PrepareSendToParent(
+      resource_ids, &resources_list,
+      context_provider_ ? context_provider_->SharedImageInterface() : nullptr);
   return resources_list;
 }
 
