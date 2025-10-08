@@ -293,7 +293,8 @@ class CORE_EXPORT InspectorNetworkAgent final
           matches) override;
 
   protocol::Response setBlockedURLs(
-      std::unique_ptr<protocol::Array<String>> url_patterns,
+      std::unique_ptr<protocol::Array<protocol::Network::BlockPattern>>
+          url_patterns,
       std::unique_ptr<protocol::Array<String>> urls) override;
   protocol::Response replayXHR(const String& request_id) override;
   protocol::Response streamResourceContent(
@@ -390,8 +391,15 @@ class CORE_EXPORT InspectorNetworkAgent final
       frame_navigation_initiator_map_;
 
   HashSet<String> streaming_request_ids_;
-  Vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
-      blocked_pattern_matchers_;
+
+  struct URLPatternMatcher {
+    std::unique_ptr<::url_pattern::SimpleUrlPatternMatcher> matcher;
+    bool block;
+
+    static URLPatternMatcher Create(const String& pattern, bool block);
+  };
+
+  Vector<URLPatternMatcher> blocked_pattern_matchers_;
 
   HeapHashSet<Member<XMLHttpRequest>> replay_xhrs_;
   InspectorAgentState::Boolean enabled_;

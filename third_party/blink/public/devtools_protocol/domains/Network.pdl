@@ -1267,12 +1267,21 @@ domain Network
       # List of search matches.
       array of Debugger.SearchMatch result
 
+  experimental type BlockPattern extends object
+    properties
+      # URL pattern to match. Patterns use the URLPattern constructor string syntax
+      # (https://urlpattern.spec.whatwg.org/) and must be absolute. Example: `*://*:*/*.css`.
+      string urlPattern
+      # Whether or not to block the pattern. If false, a matching request will not be blocked even if it matches a later
+      # `BlockPattern`.
+      boolean block
+
   # Blocks URLs from loading.
   experimental command setBlockedURLs
     parameters
-      # URL patterns to block. Patterns use the URLPattern constructor string syntax
-      # (https://urlpattern.spec.whatwg.org/) and must be absolute. Example: `*://*:*/*.css`.
-      optional array of string urlPatterns
+      # Patterns to match in the order in which they are given. These patterns
+      # also take precedence over any wildcard patterns defined in `urls`.
+      optional array of BlockPattern urlPatterns
       # URL patterns to block. Wildcards ('*') are allowed.
       deprecated optional array of string urls
 

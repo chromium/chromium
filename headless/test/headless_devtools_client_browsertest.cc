@@ -204,7 +204,10 @@ class HeadlessDevToolsNetworkBlockedUrlTest
     SendCommandSync(devtools_client_, "Page.enable");
 
     base::Value::List urls;
-    urls.Append("*://*:*/hello.html");
+    base::Value::Dict url_pattern;
+    url_pattern.Set("urlPattern", "*://*:*/hello.html");
+    url_pattern.Set("block", true);
+    urls.Append(std::move(url_pattern));
     devtools_client_.SendCommand("Network.setBlockedURLs",
                                  Param("urlPatterns", std::move(urls)));
 

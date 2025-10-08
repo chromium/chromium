@@ -807,17 +807,27 @@ SourceTypeEnum SourceTypeFromString(const String& type) {
 
 }  // namespace
 
-static std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>
-BuildURLPatternMatcher(const String& pattern) {
-  return url_pattern::SimpleUrlPatternMatcher::Create(pattern.Utf8(), nullptr)
-      .value_or(std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>());
+// static
+InspectorNetworkAgent::URLPatternMatcher
+InspectorNetworkAgent::URLPatternMatcher::Create(const String& pattern,
+                                                 bool block) {
+  return {
+      .matcher =
+          ::url_pattern::SimpleUrlPatternMatcher::Create(pattern.Utf8(),
+                                                         /*base_url=*/nullptr)
+              .value_or(
+                  std::unique_ptr<::url_pattern::SimpleUrlPatternMatcher>()),
+      .block = block,
+  };
 }
 
 void InspectorNetworkAgent::Restore() {
   if (enabled_.Get())
     Enable();
   for (const String& pattern : blocked_patterns_.Keys()) {
-    if (auto matcher = BuildURLPatternMatcher(pattern)) {
+    if (auto matcher =
+            URLPatternMatcher::Create(pattern, blocked_patterns_.Get(pattern));
+        matcher.matcher) {
       blocked_pattern_matchers_.emplace_back(std::move(matcher));
     }
   }
@@ -1237,8 +1247,10 @@ void InspectorNetworkAgent::ShouldBlockRequest(const KURL& url, bool* result) {
 
   GURL gurl(url);
   for (const auto& matcher : blocked_pattern_matchers_) {
-    if (matcher->Match(gurl)) {
-      *result = true;
+    if (matcher.matcher->Match(gurl)) {
+      if (matcher.block) {
+        *result = true;
+      }
       return;
     }
   }
@@ -2422,31 +2434,34 @@ void InspectorNetworkAgent::getResponseBody(
 }
 
 protocol::Response InspectorNetworkAgent::setBlockedURLs(
-    std::unique_ptr<protocol::Array<String>> url_patterns,
+    std::unique_ptr<protocol::Array<protocol::Network::BlockPattern>>
+        url_patterns,
     std::unique_ptr<protocol::Array<String>> urls) {
-  blocked_urls_.Clear();
-  blocked_patterns_.Clear();
-  blocked_pattern_matchers_.clear();
-  Vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
-      blocked_pattern_matchers;
+  Vector<URLPatternMatcher> blocked_pattern_matchers;
 
   if (url_patterns) {
-    for (const String& pattern : *url_patterns) {
-      if (auto matcher = BuildURLPatternMatcher(pattern)) {
+    for (auto& pattern : *url_patterns) {
+      if (auto matcher = URLPatternMatcher::Create(pattern->getUrlPattern(),
+                                                   pattern->getBlock());
+          matcher.matcher) {
         blocked_pattern_matchers.emplace_back(std::move(matcher));
       } else {
         return protocol::Response::InvalidParams(
-            "Pattern \"" + pattern.Utf8() +
+            "Pattern \"" + pattern->getUrlPattern().Utf8() +
             "\" failed to parse as a URLPattern.");
       }
     }
-
-    for (const String& pattern : *url_patterns) {
-      blocked_patterns_.Set(pattern, true);
-    }
   }
 
+  blocked_urls_.Clear();
+  blocked_patterns_.Clear();
   std::swap(blocked_pattern_matchers_, blocked_pattern_matchers);
+
+  if (url_patterns) {
+    for (auto& pattern : *url_patterns) {
+      blocked_patterns_.Set(pattern->getUrlPattern(), pattern->getBlock());
+    }
+  }
 
   if (urls) {
     for (const String& url : *urls) {
