@@ -4207,13 +4207,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "enable-prevent-close",
-    "owners": [
-      "simonha@chromium.org"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-printing-margins-and-scale",
     "owners": [ "msisov@igalia.com", "nmuggli@google.com", "poromov@chromium.org" ],
     "expiry_milestone": 145

@@ -9339,10 +9339,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"enable-prevent-close", flag_descriptions::kPreventCloseName,
-     flag_descriptions::kPreventCloseDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kDesktopPWAsPreventClose)},
-
     {"enable-cloud-identifiers",
      flag_descriptions::kFileSystemAccessGetCloudIdentifiersName,
      flag_descriptions::kFileSystemAccessGetCloudIdentifiersDescription,
