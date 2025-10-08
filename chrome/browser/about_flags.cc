@@ -3913,8 +3913,7 @@ const flags_ui::FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_ANDROID)
 
 // UnoPhase2FollowUp flags.
-const char kFastFollowFeatures[] =
-    "UnoPhase2FollowUp";
+const char kFastFollowFeatures[] = "UnoPhase2FollowUp";
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
@@ -6220,6 +6219,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-collection-android", flag_descriptions::kTabCollectionAndroidName,
      flag_descriptions::kTabCollectionAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabCollectionAndroid)},
+
+    {"tab-freezing-uses-discard",
+     flag_descriptions::kTabFreezingUsesDiscardName,
+     flag_descriptions::kTabFreezingUsesDiscardDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabFreezingUsesDiscard)},
 
     {"toolbar-phone-animation-refactor",
      flag_descriptions::kToolbarPhoneAnimationRefactorName,

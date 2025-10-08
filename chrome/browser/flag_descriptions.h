@@ -2288,6 +2288,9 @@ extern const char kTabArchivalDragDropAndroidDescription[];
 extern const char kTabCollectionAndroidName[];
 extern const char kTabCollectionAndroidDescription[];
 
+extern const char kTabFreezingUsesDiscardName[];
+extern const char kTabFreezingUsesDiscardDescription[];
+
 extern const char kTabGroupEntryPointsAndroidName[];
 extern const char kTabGroupEntryPointsAndroidDescription[];
 
@@ -3677,7 +3680,6 @@ extern const char kAlwaysEnableHdcpType1[];
 
 extern const char kApnRevampName[];
 extern const char kApnRevampDescription[];
-
 
 extern const char kArcEnableAttestationName[];
 extern const char kArcEnableAttestationDescription[];

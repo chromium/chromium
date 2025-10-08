@@ -250,6 +250,7 @@ BASE_DECLARE_FEATURE(kTabArchivalDragDropAndroid);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
 BASE_DECLARE_FEATURE(kTabCollectionAndroid);
 BASE_DECLARE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch);
+BASE_DECLARE_FEATURE(kTabFreezingUsesDiscard);
 BASE_DECLARE_FEATURE(kTabGroupAndroidVisualDataCleanup);
 BASE_DECLARE_FEATURE(kTabGroupEntryPointsAndroid);
 BASE_DECLARE_FEATURE(kTabGroupParityBottomSheetAndroid);
@@ -326,17 +327,17 @@ constexpr base::FeatureParam<int>
         "read_aloud_audio_overviews_speed_addition_percentage",
         /* default_value=*/20);
 
-constexpr base::FeatureParam<bool>
-    kShouldConsiderLanguageInOverviewReadability(
-        &kReadAloudAudioOverviews,
-        "read_aloud_audio_overviews_should_consider_language_in_overview_readability",
-        /* default_value=*/false);
+constexpr base::FeatureParam<bool> kShouldConsiderLanguageInOverviewReadability(
+    &kReadAloudAudioOverviews,
+    "read_aloud_audio_overviews_should_consider_language_in_overview_"
+    "readability",
+    /* default_value=*/false);
 
 constexpr base::FeatureParam<int>
-  kReadAloudAudioReadabilityDelayMsAfterPageLoad(
-      &kReadAloud,
-      "read_aloud_readability_delay_ms_after_page_load",
-      /* default_value=*/3000);
+    kReadAloudAudioReadabilityDelayMsAfterPageLoad(
+        &kReadAloud,
+        "read_aloud_readability_delay_ms_after_page_load",
+        /* default_value=*/3000);
 
 constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
     &kQuickDeleteAndroidSurvey,

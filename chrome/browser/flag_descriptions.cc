@@ -4001,6 +4001,10 @@ const char kTabCollectionAndroidDescription[] =
     "A data layer refactoring to use tab collections rather than a list to "
     "store tabs on Chrome Android.";
 
+const char kTabFreezingUsesDiscardName[] = "Tab Freezing Uses Discard";
+const char kTabFreezingUsesDiscardDescription[] =
+    "When enabled, tab freezing will use discarding instead of freezing.";
+
 const char kTabGroupEntryPointsAndroidName[] = "Tab Group Entry Points";
 const char kTabGroupEntryPointsAndroidDescription[] =
     "Enables additional entry points for creating tab groups";
