@@ -132,7 +132,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private ChromeBasePreference mManageSync;
     private ObservableSupplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
-    // TODO(crbug.com/343933167): This should be removed when the snackbar issue is addressed.
+    // TODO(crbug.com/354927682): This should be removed when the snackbar issue is addressed.
     // Will be true if `onSignedOut()` was called when the current activity state is not
     // `Lifecycle.State.STARTED`.
     private boolean mShouldShowSnackbar;
@@ -345,6 +345,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
         ChromeBasePreference chromeBasePreference = (ChromeBasePreference) mAllPreferences.get(key);
         assumeNonNull(chromeBasePreference);
         chromeBasePreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+    }
+
+    private void maybeUpdatePreferences() {
+        // `updatePreferences()` should be called only if the fragment is in the `STARTED` state,
+        // otherwise it will be called in `onStart()`.
+        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            updatePreferences();
+        }
     }
 
     private void updatePreferences() {
@@ -630,9 +638,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
     // SigninManager.SignInStateObserver implementation.
     @Override
     public void onSignedIn() {
-        // After signing in or out of a managed account, preferences may change or become enabled
-        // or disabled.
-        new Handler().post(() -> updatePreferences());
+        // After signing in or out of a managed account, preferences may change or become enabled or
+        // disabled.
+        new Handler().post(() -> maybeUpdatePreferences());
     }
 
     @Override
