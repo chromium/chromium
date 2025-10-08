@@ -9406,7 +9406,7 @@ be describing additional metrics about the same event.
 
 <event name="Feedback.HappinessTrackingSurvey">
   <owner>zhouzj@google.com</owner>
-  <owner>fjacky@google.com</owner>
+  <owner>msramek@google.com</owner>
   <summary>
     Recorded when a user completes a HaTS survey.
   </summary>

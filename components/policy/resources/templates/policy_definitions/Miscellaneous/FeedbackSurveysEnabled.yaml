@@ -1,5 +1,5 @@
 owners:
-- fjacky@chromium.org
+- msramek@chromium.org
 - permissions-core@google.com
 - file://components/policy/OWNERS
 caption: Specifies whether in-product <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> surveys are shown to users.

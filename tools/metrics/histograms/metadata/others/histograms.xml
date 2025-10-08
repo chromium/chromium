@@ -4882,7 +4882,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.HappinessTrackingSurvey.SurveyCompleted"
     enum="Boolean" expires_after="2026-03-15">
   <owner>ravjit@google.com</owner>
-  <owner>fjacky@google.com</owner>
+  <owner>msramek@google.com</owner>
   <summary>
     Recorded whenever a Happiness Tracking Survey (HaTS) survey is completed.
     Only recorded the survey is fully completed.
@@ -4892,7 +4892,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.HappinessTrackingSurvey.{SurveyName}"
     enum="HappinessTrackingSurvey" expires_after="2026-01-04">
   <owner>zhouzj@google.com</owner>
-  <owner>fjacky@google.com</owner>
+  <owner>msramek@google.com</owner>
   <summary>
     Records the responses for HaTS questions. Emitted during the lifecycle of a
     survey and when a user answers any question on a HaTS survey.
