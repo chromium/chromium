@@ -62,8 +62,7 @@ class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& field_data,
       const FormStructure* form,
       const AutofillField* field,
-      const std::vector<
-          std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
+      const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
@@ -89,8 +88,7 @@ class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& field_data,
       const FormStructure* form,
       const AutofillField* field,
-      const std::vector<
-          std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
+      const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 

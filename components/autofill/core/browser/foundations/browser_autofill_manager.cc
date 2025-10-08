@@ -140,6 +140,7 @@
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
@@ -1235,9 +1236,15 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                              &form_structure, &autofill_field);
 
+  auto all_suggestion_data =
+      base::MakeFlatMap<SuggestionGenerator::SuggestionDataSource,
+                        std::vector<SuggestionGenerator::SuggestionData>>(
+          suggestion_data);
+
   for (const auto& suggestion_generator : suggestion_generators_) {
-    suggestion_generator->GenerateSuggestions(form, field,
-        form_structure, autofill_field, suggestion_data, barrier_callback);
+    suggestion_generator->GenerateSuggestions(
+        form, field, form_structure, autofill_field, all_suggestion_data,
+        barrier_callback);
   }
 }
 

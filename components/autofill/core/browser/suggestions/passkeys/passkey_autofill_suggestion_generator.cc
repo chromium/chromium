@@ -61,21 +61,21 @@ void PasskeyAutofillSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& field_data,
     const FormStructure* form,
     const AutofillField* field,
-    const std::vector<
-        std::pair<SuggestionDataSource,
-                  std::vector<SuggestionGenerator::SuggestionData>>>&
+    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  std::vector<Suggestion> suggestions;
-  const std::vector<SuggestionData>& passkey_data =
-      ExtractSuggestionDataForSource(all_suggestion_data,
-                                     SuggestionDataSource::kPasskey);
+  auto it = all_suggestion_data.find(SuggestionDataSource::kPasskey);
+  std::vector<SuggestionData> passkey_data =
+      it != all_suggestion_data.end() ? it->second
+                                      : std::vector<SuggestionData>();
 
+  std::vector<Suggestion> suggestions;
   if (!passkey_data.empty()) {
     CHECK_EQ(passkey_data.size(), 1u);
     CHECK(std::holds_alternative<HybridPasskeyAvailability>(passkey_data[0]));
     CHECK(std::get<HybridPasskeyAvailability>(passkey_data[0]).value());
 
+    // TODO(crbug.com/409962888): Ensure this generates a suggestion.
     if (auto suggestion =
             password_manager_delegate_
                 ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
