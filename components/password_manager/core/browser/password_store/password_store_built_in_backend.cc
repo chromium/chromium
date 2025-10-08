@@ -58,11 +58,6 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
       std::move(metrics_reporter));
 }
 
-std::unique_ptr<os_crypt_async::Encryptor> ConvertToUniquePtr(
-    os_crypt_async::Encryptor encryptor) {
-  return std::make_unique<os_crypt_async::Encryptor>(std::move(encryptor));
-}
-
 // Records in a pref that passwords were deleted via sync. The pref is used to
 // report metrics.
 std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
@@ -92,6 +87,7 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     os_crypt_async::OSCryptAsync* os_crypt_async)
     : pref_service_(prefs), os_crypt_async_(os_crypt_async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(os_crypt_async_);
 
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
@@ -172,14 +168,9 @@ void PasswordStoreBuiltInBackend::InitBackend(
       weak_ptr_factory_.GetWeakPtr(), std::move(remote_form_changes_received),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
-  if (!os_crypt_async_) {
-    std::move(init_database_callback).Run(nullptr);
-    return;
-  }
   os_crypt_async_->GetInstance(
       metrics_util::TimeCallback(
-          base::BindOnce(&ConvertToUniquePtr)
-              .Then(std::move(init_database_callback)),
+          std::move(init_database_callback),
           "PasswordManager.OsCryptAsync.GetInstanceTime"),
       os_crypt_async::Encryptor::Option::kNone);
 }
@@ -430,10 +421,10 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion,
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+    os_crypt_async::Encryptor encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramBoolean("PasswordManager.OnEncryptorReceived.Success",
-                            !encryptor);
+                            true);
 
   // Piggyback on |remote_form_changes_received| to record password deletion
   // coming from sync.

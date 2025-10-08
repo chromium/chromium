@@ -15,7 +15,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
@@ -90,8 +89,6 @@ class UndoPasswordChangeControllerTest : public testing::Test {
   UndoPasswordChangeControllerTest() = default;
 
   void SetUp() override {
-    // PasswordFormManager::OnFetchCompleted makes a call to OSCrypt.
-    OSCryptMocker::SetUp();
     ON_CALL(driver_, GetPasswordManager)
         .WillByDefault(Return(&password_manager_));
     ON_CALL(password_manager_, GetPasswordFormCache)
@@ -140,8 +137,6 @@ class UndoPasswordChangeControllerTest : public testing::Test {
     controller_.OnNavigation(url::Origin::Create(GURL("https://example.com")),
                              ukm::UkmRecorder::GetNewSourceID());
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   // Creates a form manager and triggers parsing by calling
   // `form_fetcher_.NotifyFetchCompleted()`.

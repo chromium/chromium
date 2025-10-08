@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector_impl.h"
@@ -163,10 +162,6 @@ class PasswordReuseManagerImplTest : public testing::Test {
   ~PasswordReuseManagerImplTest() override = default;
 
   void SetUp() override {
-    // Mock OSCrypt. There is a call to OSCrypt on initializling
-    // PasswordReuseDetector, so it should be mocked.
-    OSCryptMocker::SetUp();
-
     prefs_.registry()->RegisterBooleanPref(prefs::kWereOldGoogleLoginsRemoved,
                                            false);
     prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
@@ -210,7 +205,6 @@ class PasswordReuseManagerImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    OSCryptMocker::TearDown();
     reuse_manager_.Shutdown();
     profile_store_->ShutdownOnUIThread();
     account_store_->ShutdownOnUIThread();

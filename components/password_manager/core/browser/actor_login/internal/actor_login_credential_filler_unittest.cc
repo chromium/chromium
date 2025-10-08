@@ -16,7 +16,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -140,9 +139,6 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
   ~ActorLoginCredentialFillerTest() override = default;
 
   void SetUp() override {
-    // Used by `PasswordFormManager`.
-    OSCryptMocker::SetUp();
-
     ON_CALL(mock_client_, GetPasswordManager)
         .WillByDefault(Return(&mock_password_manager_));
     ON_CALL(mock_password_manager_, GetPasswordFormCache())
@@ -156,8 +152,6 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
     ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
         .WillByDefault(Return(false));
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   std::unique_ptr<PasswordFormManager> CreateFormManagerWithParsedForm(
       const url::Origin& origin,

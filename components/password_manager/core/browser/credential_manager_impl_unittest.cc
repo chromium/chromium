@@ -47,10 +47,6 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#endif
-
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
@@ -123,7 +119,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
     prefs_->registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnhanced,
                                             false);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    OSCryptMocker::SetUp();
     prefs_->registry()->RegisterIntegerPref(
         password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
 #endif

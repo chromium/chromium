@@ -29,7 +29,7 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -175,13 +175,13 @@ class PasswordStoreTest : public testing::Test {
   PasswordStoreTest& operator=(const PasswordStoreTest&) = delete;
 
  protected:
-  PasswordStoreTest() = default;
+  PasswordStoreTest() {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    // Mock OSCrypt. There is a call to OSCrypt on initializling
-    // PasswordReuseDetector, so it should be mocked.
-    OSCryptMocker::SetUp();
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
     pref_service_.registry()->RegisterBooleanPref(
@@ -193,7 +193,7 @@ class PasswordStoreTest : public testing::Test {
 #endif
   }
 
-  void TearDown() override { OSCryptMocker::TearDown(); }
+  void TearDown() override {}
 
   void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
@@ -205,7 +205,8 @@ class PasswordStoreTest : public testing::Test {
     return new PasswordStore(std::make_unique<PasswordStoreBuiltInBackend>(
         std::make_unique<LoginDatabase>(
             test_login_db_file_path(), password_manager::IsAccountStore(false)),
-        syncer::WipeModelUponSyncDisabledBehavior::kNever, &pref_service_));
+        syncer::WipeModelUponSyncDisabledBehavior::kNever, &pref_service_,
+        os_crypt_async_.get()));
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
@@ -217,6 +218,7 @@ class PasswordStoreTest : public testing::Test {
  private:
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 

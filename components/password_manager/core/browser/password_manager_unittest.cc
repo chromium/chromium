@@ -91,10 +91,6 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#endif
-
 using ::autofill::FieldGlobalId;
 using ::autofill::FieldRendererId;
 using ::autofill::FieldType;
@@ -505,7 +501,6 @@ class PasswordManagerTestBase : public testing::Test {
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    OSCryptMocker::SetUp();
     prefs_->registry()->RegisterIntegerPref(
         password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
 #endif

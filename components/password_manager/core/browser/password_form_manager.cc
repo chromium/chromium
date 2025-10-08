@@ -67,10 +67,6 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/os_crypt.h"
-#endif
-
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormData;
@@ -945,7 +941,7 @@ void PasswordFormManager::OnFetchCompleted() {
           form_fetcher_->GetProfileStoreBackendError())) {
     client_->NotifyKeychainError();
   } else {
-    if (OSCrypt::IsEncryptionAvailable() && client_->GetPrefs()) {
+    if (client_->GetPrefs()) {
       client_->GetPrefs()->SetInteger(
           password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
     }

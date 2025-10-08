@@ -74,7 +74,7 @@ bool PasswordNotesTable::MigrateTable(int current_version,
 
 #if BUILDFLAG(IS_IOS)
   if (current_version < 40) {
-    // In version 39 passwords encryption on iOS was migrated to OSCrypt.
+    // In version 39 passwords encryption on iOS was migrated to os_crypt_async.
     // In version 40 password notes encryption on iOS is migrated as well.
     sql::Statement get_notes_statement(
         db_->GetUniqueStatement("SELECT id, value FROM password_notes"));
@@ -106,7 +106,7 @@ bool PasswordNotesTable::MigrateTable(int current_version,
         // Stop migration with any other error.
         return false;
       } else {
-        // Encrypt note using OSCrypt.
+        // Encrypt note using os_crypt_async.
         std::string encrypted_note;
         if (encrypt_decrypt_interface_->EncryptedString(plaintext_note,
                                                        &encrypted_note) !=

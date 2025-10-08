@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
 namespace password_manager {
@@ -33,9 +32,8 @@ void RecordPasswordDecryptionResult(PasswordDecryptionResult result) {
 EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
     std::string* cipher_text) const {
-  bool result = encryptor_
-                    ? encryptor_->EncryptString16(plain_text, cipher_text)
-                    : OSCrypt::EncryptString16(plain_text, cipher_text);
+  bool result =
+      encryptor_ && encryptor_->EncryptString16(plain_text, cipher_text);
   return result ? EncryptionResult::kSuccess
                 : EncryptionResult::kServiceFailure;
 }
@@ -64,8 +62,7 @@ EncryptionResult LoginDatabase::DecryptedString(
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
   bool decryption_success =
-      encryptor_ ? encryptor_->DecryptString16(cipher_text, plain_text)
-                 : OSCrypt::DecryptString16(cipher_text, plain_text);
+      encryptor_ && encryptor_->DecryptString16(cipher_text, plain_text);
 #if BUILDFLAG(IS_CHROMEOS)
   // If decryption failed, we assume it was because the value was actually a
   // plain-text password which started with "v10".

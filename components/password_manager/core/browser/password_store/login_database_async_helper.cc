@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
@@ -50,11 +49,10 @@ void LoginDatabaseAsyncHelper::CreateSyncBackend() {
 
   // Sync bridge must be constructed immediately to accommodate
   // GetSyncControllerDelegate() call.
-  password_sync_bridge_ =
-          std::make_unique<PasswordSyncBridge>(
-              std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-                  syncer::PASSWORDS, base::DoNothing()),
-              wipe_model_upon_sync_disabled_behavior_);
+  password_sync_bridge_ = std::make_unique<PasswordSyncBridge>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+          syncer::PASSWORDS, base::DoNothing()),
+      wipe_model_upon_sync_disabled_behavior_);
 }
 
 bool LoginDatabaseAsyncHelper::Initialize(
@@ -63,11 +61,13 @@ bool LoginDatabaseAsyncHelper::Initialize(
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::RepeatingCallback<void(password_manager::IsAccountStore)>
         on_undecryptable_passwords_removed,
-    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+    os_crypt_async::Encryptor encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   remote_forms_changes_received_callback_ =
       std::move(remote_form_changes_received);
+
+  is_encryption_available_ = encryptor.IsEncryptionAvailable();
 
   bool success = true;
   if (!login_db_->Init(std::move(on_undecryptable_passwords_removed),
@@ -101,7 +101,7 @@ bool LoginDatabaseAsyncHelper::Initialize(
 // unlock the Keychain.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Check that the backend works.
-  if (success && !OSCrypt::IsEncryptionAvailable()) {
+  if (success && !is_encryption_available_) {
     success = false;
     LOG(ERROR) << "Encryption is not available.";
   }
@@ -148,7 +148,7 @@ LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
         !login_db_->GetLogins(form, include_psl, &matched_forms)) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       return PasswordStoreBackendError(
-          OSCrypt::IsEncryptionAvailable()
+          is_encryption_available_
               ? PasswordStoreBackendErrorType::kUncategorized
               : PasswordStoreBackendErrorType::kKeychainError);
 #else

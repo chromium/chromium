@@ -45,12 +45,11 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
-  PasswordStoreBuiltInBackend(
-      std::unique_ptr<LoginDatabase> login_db,
-      syncer::WipeModelUponSyncDisabledBehavior
-          wipe_model_upon_sync_disabled_behavior,
-      PrefService* prefs,
-      os_crypt_async::OSCryptAsync* os_crypt_async = nullptr);
+  PasswordStoreBuiltInBackend(std::unique_ptr<LoginDatabase> login_db,
+                              syncer::WipeModelUponSyncDisabledBehavior
+                                  wipe_model_upon_sync_disabled_behavior,
+                              PrefService* prefs,
+                              os_crypt_async::OSCryptAsync* os_crypt_async);
 
   ~PasswordStoreBuiltInBackend() override;
 
@@ -119,11 +118,10 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       LoginsOrErrorReply callback,
       LoginsResultOrError forms_or_error);
 
-  void OnEncryptorReceived(
-      RemoteChangesReceived remote_form_changes_received,
-      base::RepeatingClosure sync_enabled_or_disabled_cb,
-      base::OnceCallback<void(bool)> completion,
-      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+  void OnEncryptorReceived(RemoteChangesReceived remote_form_changes_received,
+                           base::RepeatingClosure sync_enabled_or_disabled_cb,
+                           base::OnceCallback<void(bool)> completion,
+                           os_crypt_async::Encryptor encryptor);
 
   void WritePasswordRemovalReasonPrefs(IsAccountStore is_account_store);
 

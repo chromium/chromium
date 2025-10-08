@@ -13,8 +13,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -52,19 +53,17 @@ class InsecureCredentialsTableTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    OSCryptMocker::SetUp();
+    test_oscrypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
     ReloadDatabase();
   }
 
-  void TearDown() override {
-    login_db_.reset();
-    OSCryptMocker::TearDown();
-  }
+  void TearDown() override { login_db_.reset(); }
 
   void ReloadDatabase() {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
     login_db_ = std::make_unique<LoginDatabase>(file, IsAccountStore(false));
-    ASSERT_TRUE(login_db_->Init(base::NullCallback(), nullptr));
+    ASSERT_TRUE(login_db_->Init(base::NullCallback(), CreateEncryptor()));
   }
 
   std::vector<int> GetParentIds(
@@ -84,10 +83,19 @@ class InsecureCredentialsTableTest : public testing::Test {
   }
   LoginDatabase* login_db() { return login_db_.get(); }
 
+  os_crypt_async::Encryptor CreateEncryptor() {
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+
+    test_oscrypt_async_->GetInstance(future.GetCallback(),
+                                     os_crypt_async::Encryptor::Option::kNone);
+    return future.Take();
+  }
+
  private:
   base::ScopedTempDir temp_dir_;
   // Required for iOS.
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> test_oscrypt_async_;
   std::unique_ptr<LoginDatabase> login_db_;
   InsecureCredential test_data_{
       kTestDomain,           kUsername,      base::Time::FromTimeT(1),

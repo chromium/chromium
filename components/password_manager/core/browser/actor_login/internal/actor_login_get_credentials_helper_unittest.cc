@@ -8,7 +8,6 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -79,9 +78,6 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   ActorLoginGetCredentialsHelperTest() = default;
 
   void SetUp() override {
-    // Used by `PasswordFormManager`.
-    OSCryptMocker::SetUp();
-
     client_.profile_store()->Init(/*affiliated_match_helper=*/nullptr);
     client_.account_store()->Init(/*affiliated_match_helper=*/nullptr);
     ON_CALL(password_manager_, GetPasswordFormCache())
@@ -93,8 +89,6 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   void TearDown() override {
     client_.profile_store()->ShutdownOnUIThread();
     client_.account_store()->ShutdownOnUIThread();
-
-    OSCryptMocker::TearDown();
   }
 
  protected:

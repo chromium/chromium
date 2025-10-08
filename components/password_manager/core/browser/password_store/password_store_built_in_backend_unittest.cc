@@ -23,7 +23,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -107,7 +107,7 @@ class BadLoginDatabase : public LoginDatabase {
   // LoginDatabase:
   bool Init(base::RepeatingCallback<void(password_manager::IsAccountStore)>
                 on_undecryptable_passwords_removed,
-            std::unique_ptr<os_crypt_async::Encryptor> encryptor) override {
+            os_crypt_async::Encryptor encryptor) override {
     return false;
   }
 };
@@ -134,7 +134,6 @@ class PasswordStoreBuiltInBackendBaseTest : public testing::Test {
   PasswordStoreBuiltInBackendBaseTest() = default;
 
   void SetUp() override {
-    OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
@@ -155,7 +154,6 @@ class PasswordStoreBuiltInBackendBaseTest : public testing::Test {
         [](std::unique_ptr<PasswordStoreBackend> backend) { backend.reset(); },
         std::move(store_)));
     RunUntilIdle();
-    OSCryptMocker::TearDown();
     ASSERT_TRUE(temp_dir_.Delete());
   }
 
@@ -194,7 +192,10 @@ class PasswordStoreBuiltInBackendTest
     : public testing::WithParamInterface<bool>,
       public PasswordStoreBuiltInBackendBaseTest {
  public:
-  PasswordStoreBuiltInBackendTest() = default;
+  PasswordStoreBuiltInBackendTest() {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
+  }
 
   PasswordStoreBackend* CreateBackend(
       std::unique_ptr<LoginDatabase> database = nullptr) {
@@ -206,7 +207,7 @@ class PasswordStoreBuiltInBackendTest
 
     store_ = std::make_unique<PasswordStoreBuiltInBackend>(
         std::move(database), syncer::WipeModelUponSyncDisabledBehavior::kNever,
-        pref_service());
+        pref_service(), os_crypt_async_.get());
     return store_.get();
   }
 
@@ -219,6 +220,9 @@ class PasswordStoreBuiltInBackendTest
                          /*completion=*/base::DoNothing());
     RunUntilIdle();
   }
+
+ private:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 TEST_P(PasswordStoreBuiltInBackendTest, NonASCIIData) {
@@ -876,7 +880,10 @@ class PasswordStoreBuiltInBackendPasswordLossMetricsTest
     : public testing::WithParamInterface<PasswordLossMetricsTestCase>,
       public PasswordStoreBuiltInBackendBaseTest {
  public:
-  PasswordStoreBuiltInBackendPasswordLossMetricsTest() = default;
+  PasswordStoreBuiltInBackendPasswordLossMetricsTest() {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
+  }
 
   PasswordStoreBackend* Initialize() {
     std::unique_ptr<LoginDatabase> database = std::make_unique<LoginDatabase>(
@@ -889,7 +896,7 @@ class PasswordStoreBuiltInBackendPasswordLossMetricsTest
 
     store_ = std::make_unique<PasswordStoreBuiltInBackend>(
         std::move(database), syncer::WipeModelUponSyncDisabledBehavior::kNever,
-        pref_service());
+        pref_service(), os_crypt_async_.get());
     PasswordStoreBackend* backend = store_.get();
     backend->InitBackend(&mock_affiliated_match_helper,
                          /*remote_form_changes_received=*/base::DoNothing(),
@@ -903,6 +910,9 @@ class PasswordStoreBuiltInBackendPasswordLossMetricsTest
   base::PassKey<class PasswordStoreBuiltInBackendPasswordLossMetricsTest>
       pass_key = base::PassKey<
           class PasswordStoreBuiltInBackendPasswordLossMetricsTest>();
+
+ private:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 TEST_P(PasswordStoreBuiltInBackendPasswordLossMetricsTest,

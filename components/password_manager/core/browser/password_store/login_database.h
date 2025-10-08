@@ -75,7 +75,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   // should be called.
   virtual bool Init(
       OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
-      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+      os_crypt_async::Encryptor encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -223,8 +223,8 @@ class LoginDatabase : public EncryptDecryptInterface {
   struct PrimaryKeyAndPassword;
   class SyncMetadataStore : public PasswordStoreSync::MetadataStore {
    public:
-    // |db| must be not null and must outlive |this|.
-    explicit SyncMetadataStore(sql::Database* db);
+    // `login_db` must be not null and must outlive `this`.
+    explicit SyncMetadataStore(LoginDatabase* login_db);
     SyncMetadataStore(const SyncMetadataStore&) = delete;
     SyncMetadataStore& operator=(const SyncMetadataStore&) = delete;
     ~SyncMetadataStore() override;
@@ -271,7 +271,7 @@ class LoginDatabase : public EncryptDecryptInterface {
         base::RepeatingCallback<void(bool)> callback) override;
     bool HasUnsyncedPasswordDeletions() override;
 
-    raw_ptr<sql::Database> const db_;
+    const raw_ptr<LoginDatabase> login_db_;
     // A callback to be invoked whenever all pending deletions have been
     // processed
     // by Sync - see
@@ -283,6 +283,11 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseSyncMetadataTest,
                            GetSyncEntityMetadataForStorageKey);
+  FRIEND_TEST_ALL_PREFIXES(
+      LoginDatabaseUndecryptableLoginsTest,
+      DontDeleteUndecryptableLoginsIfEncryptionNotAvailiableTest);
+  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseUndecryptableLoginsTest,
+                           KeychainLockedTest);
 
   void ReportNumberOfAccountsMetrics(bool custom_passphrase_sync_enabled);
   void ReportTimesPasswordUsedMetrics(bool custom_passphrase_sync_enabled);
@@ -366,7 +371,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   StatisticsTable stats_table_;
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
-  SyncMetadataStore password_sync_metadata_store_{&db_};
+  SyncMetadataStore password_sync_metadata_store_{this};
   std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
 
   std::optional<bool> were_undecryptable_logins_deleted_;

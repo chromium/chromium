@@ -56,7 +56,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       base::RepeatingClosure sync_enabled_or_disabled_cb,
       base::RepeatingCallback<void(password_manager::IsAccountStore)>
           on_undecryptable_passwords_removed,
-      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+      os_crypt_async::Encryptor encryptor);
 
   // Synchronous implementation of PasswordStoreBackend interface.
   LoginsResultOrError GetAllLogins();
@@ -136,6 +136,8 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   // Ensures that all methods, excluding construction, are called on the same
   // sequence.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  bool is_encryption_available_ = false;
 
   // The login SQL database. The LoginDatabase instance is received via the
   // constructor. It is passed in an uninitialized state, to allow injecting

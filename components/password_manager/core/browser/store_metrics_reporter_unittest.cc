@@ -15,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
@@ -158,10 +157,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
   ~StoreMetricsReporterTest() override = default;
 
   void SetUp() override {
-    // Mock OSCrypt. There is a call to OSCrypt inside HashPasswordManager so it
-    // should be mocked.
-    OSCryptMocker::SetUp();
-
     prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            false);
     prefs_.registry()->RegisterBooleanPref(
@@ -189,8 +184,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
         prefs::kBiometricAuthenticationBeforeFilling, false);
 #endif
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   PrefService* pref_service() { return &prefs_; }
 
