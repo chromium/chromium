@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol SafariDataImportChildCoordinatorDelegate;
+enum class SafariDataImportStage;
 
 /// Coordinator for the safari data import screen.
 @interface SafariDataImportImportCoordinator : ChromeCoordinator
@@ -15,6 +16,9 @@
 /// Delegate object that handles Safari import events.
 @property(nonatomic, weak) id<SafariDataImportChildCoordinatorDelegate>
     delegate;
+
+/// The current stage of import.
+@property(nonatomic, readonly) SafariDataImportStage importStage;
 
 /// Coordinator should be initialized with a base navigation view controller.
 - (instancetype)initWithBaseNavigationController:

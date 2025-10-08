@@ -5441,6 +5441,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SafariImport.Import.TapBackOnStage"
+    enum="SafariDataImportStage" expires_after="2026-03-29">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Logs the import stage when the user taps the &quot;back&quot; button import
+    screen. Should only be applicable for &quot;not started&quot; and
+    &quot;ready to import&quot; stages.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SafeBrowsing.Enhanced.Infobar.Interaction"
     enum="IOSEnhancedSafeBrowseringInfobarInteraction"
     expires_after="2026-06-26">
