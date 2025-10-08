@@ -164,6 +164,15 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     tab_strip_action_container()->OnTabStripNudgeButtonTimeout(button);
   }
 
+  gfx::SlideAnimation* GetExpansionAnimation(TabStripNudgeButton* button) {
+    if (tab_strip_action_container()->ButtonOwnsAnimation(button)) {
+      return button->GetExpansionAnimationForTesting();
+    }
+    return tab_strip_action_container()
+        ->animation_session_for_testing()
+        ->expansion_animation();
+  }
+
   void SetLockedExpansionMode(LockedExpansionMode mode,
                               TabStripNudgeButton* button) {
     tab_strip_action_container()->SetLockedExpansionMode(mode, button);
@@ -444,24 +453,19 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ImmediatelyHidesWhenGlicNudgeButtonDismissed) {
   ShowTabStripNudgeButton(GlicNudgeButton());
-  ResetAnimation(1);
+  GetExpansionAnimation(GlicNudgeButton())->Reset(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
 
   OnButtonDismissed(GlicNudgeButton());
-
-  EXPECT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
+  EXPECT_TRUE(GetExpansionAnimation(GlicNudgeButton())->IsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicNudgeButtonClicked) {
   ShowTabStripNudgeButton(GlicNudgeButton());
 
-  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   OnButtonClicked(GlicNudgeButton());
@@ -513,8 +517,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ShowAndHideGlicButtonWhenGlicNudgeButtonShows) {
   ShowTabStripNudgeButton(GlicNudgeButton());
-
-  ResetAnimation(1);
+  GetExpansionAnimation(GlicNudgeButton())->Reset(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(1, tab_strip_action_container()
@@ -524,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   OnButtonDismissed(GlicNudgeButton());
 
-  ResetAnimation(0);
+  GetExpansionAnimation(GlicNudgeButton())->Reset(0);
   EXPECT_EQ(0, tab_strip_action_container()
                    ->GetGlicButton()
                    ->width_factor_for_testing());

@@ -11,6 +11,10 @@
 
 class TabStripController;
 
+namespace gfx {
+class SlideAnimation;
+}
+
 class TabStripNudgeButton : public TabStripControlButton {
   METADATA_HEADER(TabStripNudgeButton, TabStripControlButton)
 
@@ -42,6 +46,8 @@ class TabStripNudgeButton : public TabStripControlButton {
   virtual void SetIsShowingNudge(bool is_showing);
 
   bool GetIsShowingNudge() { return is_showing_nudge_; }
+
+  virtual gfx::SlideAnimation* GetExpansionAnimationForTesting();
 
  protected:
   // TabStripControlButton:

@@ -90,14 +90,6 @@ constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
 #endif  // !BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-bool ButtonOwnsAnimation() {
-#if BUILDFLAG(ENABLE_GLIC)
-  return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 TabStripActionContainer::TabStripNudgeAnimationSession::
@@ -431,6 +423,9 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonMouseDown,
                               base::Unretained(this)),
+          base::BindRepeating(
+              &TabStripActionContainer::OnGlicButtonAnimationEnded,
+              base::Unretained(this)),
           tooltip_text);
 
   glic_button->SetProperty(views::kCrossAxisAlignmentKey,
@@ -614,6 +609,16 @@ void TabStripActionContainer::OnGlicButtonMouseDown() {
     instance->host().instance_delegate().FetchZeroStateSuggestions(
         /*is_first_run=*/false, /*supported_tools=*/std::nullopt,
         base::DoNothing());
+  }
+}
+
+void TabStripActionContainer::OnGlicButtonAnimationEnded() {
+  if (!glic_button_->GetIsShowingNudge()) {
+    scoped_tab_strip_modal_ui_.reset();
+
+    if (locked_expansion_button_) {
+      locked_expansion_button_->SetIsShowingNudge(false);
+    }
   }
 }
 
@@ -901,7 +906,7 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
   scoped_tab_strip_modal_ui_.reset();
   scoped_tab_strip_modal_ui_ = tab_strip_controller_->ShowModalUI();
 
-  if (!ButtonOwnsAnimation()) {
+  if (!ButtonOwnsAnimation(button)) {
     animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
         button, this, TabStripNudgeAnimationSession::AnimationSessionType::SHOW,
         base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
@@ -934,7 +939,8 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
   // Since the glic button is still visible in it's hidden state we need to have
   // a special case to query if it's in its Hide state.
 #if BUILDFLAG(ENABLE_GLIC)
-  if (button == glic_button_ && button->GetWidthFactor() == 0.0) {
+  if (button == glic_button_ && button->GetWidthFactor() == 0.0 &&
+      !ButtonOwnsAnimation(button)) {
     return;
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -943,7 +949,7 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
   // Stop the timer since the chip might be getting hidden on user actions like
   // dismissal or click and not timeout.
   hide_tab_strip_nudge_timer_.Stop();
-  if (!ButtonOwnsAnimation()) {
+  if (!ButtonOwnsAnimation(button)) {
     animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
         button, this, TabStripNudgeAnimationSession::AnimationSessionType::HIDE,
         base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
@@ -1106,6 +1112,16 @@ void TabStripActionContainer::DidBecomeActive(BrowserWindowInterface* browser) {
 void TabStripActionContainer::DidBecomeInactive(
     BrowserWindowInterface* browser) {
   separator_->SetColorId(kColorTabDividerFrameInactive);
+}
+
+bool TabStripActionContainer::ButtonOwnsAnimation(
+    const TabStripNudgeButton* button) const {
+#if BUILDFLAG(ENABLE_GLIC)
+  return button == glic_button_ &&
+         base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
+#else
+  return false;
+#endif
 }
 
 BEGIN_METADATA(TabStripActionContainer)

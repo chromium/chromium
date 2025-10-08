@@ -130,6 +130,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                        PressedCallback close_pressed_callback,
                        base::RepeatingClosure hovered_callback,
                        base::RepeatingClosure mouse_down_callback,
+                       base::RepeatingClosure expansion_animation_done_callback,
                        const std::u16string& tooltip)
     : TabStripNudgeButton(tab_strip_controller,
                           std::move(pressed_callback),
@@ -143,6 +144,8 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
       tab_strip_controller_(tab_strip_controller),
       hovered_callback_(std::move(hovered_callback)),
       mouse_down_callback_(std::move(mouse_down_callback)),
+      expansion_animation_done_callback_(
+          std::move(expansion_animation_done_callback)),
       normal_icon_(GetNormalIcon()),
       icon_for_highlight_(GetIconForHighlight()) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
@@ -367,6 +370,17 @@ void GlicButton::AnimationProgressed(const gfx::Animation* animation) {
   }
 }
 
+void GlicButton::AnimationEnded(const gfx::Animation* animation) {
+  if (animation == expansion_animation_.get()) {
+    AnimationProgressed(animation);
+    expansion_animation_done_callback_.Run();
+  }
+}
+
+void GlicButton::AnimationCanceled(const gfx::Animation* animation) {
+  AnimationEnded(animation);
+}
+
 bool GlicButton::IsContextMenuShowingForTest() {
   return menu_runner_ && menu_runner_->IsRunning();
 }
@@ -582,8 +596,10 @@ void GlicButton::StartExpansionAnimations(
 
   // Button width animation updates width_factor_, used in
   // CalculatePreferredSize().
-  expansion_animation_ = std::make_unique<gfx::SlideAnimation>(this);
-  expansion_animation_->SetTweenType(kTween);
+  if (!expansion_animation_) {
+    expansion_animation_ = std::make_unique<gfx::SlideAnimation>(this);
+    expansion_animation_->SetTweenType(kTween);
+  }
   expansion_animation_->SetSlideDuration(overall_duration);
   if (show) {
     expansion_animation_->Show();
@@ -664,6 +680,10 @@ void GlicButton::SetCloseButtonVisible(bool visible) {
                                           highlight_margins);
 
   PreferredSizeChanged();
+}
+
+gfx::SlideAnimation* GlicButton::GetExpansionAnimationForTesting() {
+  return expansion_animation_.get();
 }
 
 BEGIN_METADATA(GlicButton)

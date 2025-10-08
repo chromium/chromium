@@ -36,6 +36,7 @@ class GlicButton : public TabStripNudgeButton,
                       PressedCallback close_pressed_callback,
                       base::RepeatingClosure hovered_callback,
                       base::RepeatingClosure mouse_down_callback,
+                      base::RepeatingClosure expansion_animation_done_callback,
                       const std::u16string& tooltip);
   GlicButton(const GlicButton&) = delete;
   GlicButton& operator=(const GlicButton&) = delete;
@@ -75,6 +76,8 @@ class GlicButton : public TabStripNudgeButton,
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
 
   bool IsContextMenuShowingForTest();
 
@@ -86,6 +89,8 @@ class GlicButton : public TabStripNudgeButton,
 
   // Called when the slide animation finishes.
   void OnAnimationEnded();
+
+  gfx::SlideAnimation* GetExpansionAnimationForTesting() override;
 
  private:
   // views::LabelButton:
@@ -162,6 +167,9 @@ class GlicButton : public TabStripNudgeButton,
   // Callback which is invoked when there is a mouse down event on the button
   // (i.e., the user is very likely to interact with it soon).
   base::RepeatingClosure mouse_down_callback_;
+
+  // Invoked when the button hide animation finishes.
+  base::RepeatingClosure expansion_animation_done_callback_;
 
   // Cached widths for animating label changes.
   int initial_width_ = 0;
