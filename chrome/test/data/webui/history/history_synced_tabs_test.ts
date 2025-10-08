@@ -256,6 +256,10 @@ suite('<history-synced-device-manager>', function() {
     assertTrue(element.$.menu.getIfExists()!.open);
   });
 
+  // <if expr="is_chromeos">
+  // On ChromeOS only, the kReplaceSyncPromosWithSignInPromos flag is false and
+  // this promo may be shown. For other platforms, the flag is true so this
+  // promo is not shown (checked in other tests below).
   test('show sign in promo', async () => {
     element.configureSignInForTest({
       signInState: HistorySignInState.SIGNED_OUT,
@@ -272,6 +276,7 @@ suite('<history-synced-device-manager>', function() {
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
   });
+  // </if>
 
   test('no synced tabs message', async () => {
     // When user is not logged in, there is no synced tabs.
@@ -404,6 +409,27 @@ suite('<history-sync-optin>', function() {
     assertTrue(isChildVisible(element, '#account-name'));
     assertTrue(isChildVisible(element, '#account-email'));
     assertTrue(isChildVisible(element, '#profile-icon'));
+  });
+
+   test('check elements in signed out state', async () => {
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_OUT,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+    // Should not be visible with kReplaceSyncPromosWithSignInPromos enabled.
+    assertFalse(isChildVisible(element, '#sign-in-guide'));
+    // The other states promo elements should not be visible.
+    assertFalse(isChildVisible(element, '#signed-in-sync-history-promo-desc'));
+    assertFalse(isChildVisible(element, '#verify-its-you-button'));
+    assertFalse(isChildVisible(
+        element, '#sign-in-pending-sync-history-promo-desc-sync-history-on'));
+    assertFalse(isChildVisible(element, '#sign-in-pending-avatar'));
+
+    // The history sync promo elements for SIGNED_OUT state are shown correctly.
+    assertTrue(isChildVisible(element, '#sync-history-button'));
+    assertTrue(isChildVisible(element, '#signed-out-sync-history-promo-desc'));
   });
 
   test('check elements in pending signin without tabs sync state', async () => {

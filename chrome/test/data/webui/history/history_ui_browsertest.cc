@@ -51,6 +51,10 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, RoutingWithQueryParam) {
   RunTest("history/history_routing_with_query_param_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryTest, SyncedTabs) {
+  RunTest("history/history_synced_tabs_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryTest, Toolbar) {
   RunTest("history/history_toolbar_test.js", "mocha.run()");
 }
@@ -65,24 +69,6 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryEmbeddingsPromo) {
 
 IN_PROC_BROWSER_TEST_F(HistoryTest, HistorySideBarFooter) {
   RunTest("history/history_side_bar_footer_test.js", "mocha.run()");
-}
-
-// TODO(crbug.com/444617758): Fix the test to work with the feature enabled and
-// move it back to HistoryTest.
-class HistoryTestWithoutReplaceSyncPromosWithSignInPromos : public HistoryTest {
- public:
-  HistoryTestWithoutReplaceSyncPromosWithSignInPromos() {
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(HistoryTestWithoutReplaceSyncPromosWithSignInPromos,
-                       SyncedTabs) {
-  RunTest("history/history_synced_tabs_test.js", "mocha.run()");
 }
 
 class HistoryListTest : public HistoryUIBrowserTest {
