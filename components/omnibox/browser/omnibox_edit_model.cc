@@ -750,7 +750,9 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
-  std::u16string query_text = current_match_.contents;
+  std::u16string query_text =
+      AutocompleteMatch::IsSearchType(current_match_.type) ?
+      current_match_.contents : u"";
   RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
