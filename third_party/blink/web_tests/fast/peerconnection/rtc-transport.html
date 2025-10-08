@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  const transport = new RtcTransport({
+    name: 'transport',
+    iceServers: [],
+    iceControlling: true,
+  });
+
+  assert_equals(transport.getReceivedPackets().length, 0);
+}, 'RtcTransport can be created');
+</script>
