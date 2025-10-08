@@ -443,7 +443,8 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         @Override
         int getNextTabIndexOnDragExit() {
             if (getInteractingView() instanceof StripLayoutTab stripTab) {
-                return mStripUpdateDelegate.getNextIndexAfterClose(stripTab.getTabId());
+                return mStripUpdateDelegate.getNextIndexAfterClose(
+                        Collections.singletonList(stripTab));
             }
             return TabModel.INVALID_TAB_INDEX;
         }

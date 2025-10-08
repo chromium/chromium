@@ -2875,7 +2875,7 @@ public class StripLayoutHelper
         // none exists, we'll default to the normal auto-selection behavior (i.e. selecting the
         // closest collapsed tab, or opening the GTS if none exist).
         if (mModel != null && getSelectedTabId() == tab.getTabId()) {
-            int nextIndex = getNextIndexAfterClose(tab.getTabId());
+            int nextIndex = getNextIndexAfterClose(Collections.singleton(tab));
             if (nextIndex != TabModel.INVALID_TAB_INDEX) TabModelUtils.setIndex(mModel, nextIndex);
         }
     }
@@ -3790,8 +3790,9 @@ public class StripLayoutHelper
 
         finishAnimations();
         groupTitle.setCollapsed(isCollapsed);
-        for (StripLayoutTab tab :
-                StripLayoutUtils.getGroupedTabs(mModel, mStripTabs, groupTitle.getTabGroupId())) {
+        List<StripLayoutTab> groupedTabs =
+                StripLayoutUtils.getGroupedTabs(mModel, mStripTabs, groupTitle.getTabGroupId());
+        for (StripLayoutTab tab : groupedTabs) {
             if (collapseAnimationList != null) {
                 Animator animator = updateTabCollapsed(tab, isCollapsed, true);
                 if (animator != null) collapseAnimationList.add(animator);
@@ -3840,7 +3841,7 @@ public class StripLayoutHelper
             Tab selectedTab = getTabById(getSelectedTabId());
             if (selectedTab != null
                     && groupTitle.getTabGroupId().equals(selectedTab.getTabGroupId())) {
-                int nextIndex = getNearbyExpandedTabIndexPreferBefore();
+                int nextIndex = getNearbyTabIndex(groupedTabs);
                 if (nextIndex != TabModel.INVALID_TAB_INDEX && mModel != null) {
                     TabModelUtils.setIndex(mModel, nextIndex);
                 } else if (mTabCreator != null) {
@@ -3869,69 +3870,71 @@ public class StripLayoutHelper
     }
 
     @Override
-    public int getNextIndexAfterClose(int id) {
-        int nearbyExpandedTabIndex = getNearbyExpandedTabIndex();
-        if (nearbyExpandedTabIndex != TabModel.INVALID_TAB_INDEX) return nearbyExpandedTabIndex;
-        assumeNonNull(mModel);
-        return mModel.indexOf(mModel.getNextTabIfClosed(id, /* uponExit= */ false));
+    public int getNextIndexAfterClose(Collection<StripLayoutTab> closingTabs) {
+        // Intentionally kept separate from #getNearbyNotClosingTabIndex, to have more specific
+        // javadocs for each method.
+        return getNearbyTabIndex(closingTabs);
     }
 
     /**
-     * Returns The index of the nearby expanded tab to the selected tab. Prioritizes tabs in a
-     * certain direction based on {@link ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE}.
+     * Wrapper for {@link #getNearbyTabIndex(Collection, Collection)}. Prioritizes tabs in a certain
+     * direction based on {@link ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE}.
      */
-    private int getNearbyExpandedTabIndex() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
-                ? getNearbyExpandedTabIndexPreferAfter()
-                : getNearbyExpandedTabIndexPreferBefore();
-    }
-
-    /**
-     * Returns The index of the nearby expanded tab to the selected tab. Prioritizes tabs before the
-     * selected tab. If none are found, return an invalid index.
-     */
-    private int getNearbyExpandedTabIndexPreferBefore() {
-        int index = getSelectedStripTabIndex();
-
-        int expandedIndexBefore = getExpandedIndexBeforeSelectedTab(index);
-        if (expandedIndexBefore != TabModel.INVALID_TAB_INDEX) return expandedIndexBefore;
-
-        return getExpandedIndexAfterSelectedTab(index);
-    }
-
-    /**
-     * Returns The index of an expanded tab that is "near" the selected tab. Unlike other tab
-     * closures, this prioritizes tabs after the selected tab, to make repeated mouse closures
-     * easier, since the next tab to hover the cursor will likely be selected. If none are found,
-     * return an invalid index.
-     */
-    private int getNearbyExpandedTabIndexPreferAfter() {
-        int index = getSelectedStripTabIndex();
-
-        int expandedIndexAfter = getExpandedIndexAfterSelectedTab(index);
-        if (expandedIndexAfter != TabModel.INVALID_TAB_INDEX) return expandedIndexAfter;
-
-        return getExpandedIndexBeforeSelectedTab(index);
-    }
-
-    /**
-     * Returns the index of an expanded tab before the selected tab, or {@link
-     * TabModel#INVALID_TAB_INDEX} if none are found.
-     */
-    private int getExpandedIndexBeforeSelectedTab(int selectedTabIndex) {
-        for (int i = selectedTabIndex - 1; i >= 0; --i) {
-            if (!mStripTabs[i].isCollapsed()) return i;
+    private int getNearbyTabIndex(Collection<StripLayoutTab> excludedTabs) {
+        // Have to create a copy of the list, so that the reverse doesn't affect the original array.
+        List<StripLayoutTab> allTabs = new ArrayList<>(Arrays.asList(mStripTabs));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)) {
+            // If the flag is enabled, reverse the order of tabs to prefer picking a nearby tab
+            // after (as opposed to before) the excluded tabs.
+            Collections.reverse(allTabs);
         }
-        return TabModel.INVALID_TAB_INDEX;
+        return getNearbyTabIndex(allTabs, excludedTabs);
     }
 
     /**
-     * Returns the index of an expanded tab after the selected tab, or {@link
-     * TabModel#INVALID_TAB_INDEX} if none are found.
+     * Wrapper for {@link #getNearbyTabIndex(Collection, Collection, boolean)}. Prioritizes expanded
+     * tabs, if possible.
      */
-    private int getExpandedIndexAfterSelectedTab(int selectedTabIndex) {
-        for (int i = selectedTabIndex + 1; i < mStripTabs.length; ++i) {
-            if (!mStripTabs[i].isCollapsed()) return i;
+    private int getNearbyTabIndex(
+            Collection<StripLayoutTab> allTabs, Collection<StripLayoutTab> excludedTabs) {
+        int nearbyIndex = getNearbyTabIndex(allTabs, excludedTabs, /* ignoreCollapsedTabs= */ true);
+        if (nearbyIndex != TabModel.INVALID_TAB_INDEX) return nearbyIndex;
+        return getNearbyTabIndex(allTabs, excludedTabs, /* ignoreCollapsedTabs= */ false);
+    }
+
+    /**
+     * Returns The index of a tab nearest to the excluded tabs. Can include or ignore collapsed
+     * tabs. Prioritizes tabs before the {@code excludedTabs} in {@code allTabs}, though the
+     * ordering of {@param allTabs} does not necessarily reflect that of the {@link TabModel}.
+     *
+     * @param allTabs All of the {@link StripLayoutTab}s. Ordered to either prefer picking tabs
+     *     before or after the excluded tabs, in the {@link TabModel}.
+     * @param excludedTabs The excluded {@link StripLayoutTab}s.
+     * @param ignoreCollapsedTabs Whether we should include collapsed tabs or not.
+     */
+    private int getNearbyTabIndex(
+            Collection<StripLayoutTab> allTabs,
+            Collection<StripLayoutTab> excludedTabs,
+            boolean ignoreCollapsedTabs) {
+        StripLayoutTab nearbyTab = null;
+        boolean seenExcludedTab = false;
+        for (StripLayoutTab tab : allTabs) {
+            // 1. If we encounter an excluded tab and already have a nearby tab, return its index.
+            if (excludedTabs.contains(tab)) {
+                if (nearbyTab != null) return findIndexForTab(nearbyTab.getTabId());
+                seenExcludedTab = true;
+                continue;
+            }
+            // 2. Potentially ignore collapsed tabs.
+            if (tab.isCollapsed() && ignoreCollapsedTabs) continue;
+            // 3. Process the current tab as a candidate nearby tab.
+            if (seenExcludedTab) {
+                // If we didn't return a tab when we saw the first closing tab, it means there's
+                // none before the excluded tabs. Return the closest tab after them instead.
+                return findIndexForTab(tab.getTabId());
+            } else {
+                nearbyTab = tab;
+            }
         }
         return TabModel.INVALID_TAB_INDEX;
     }

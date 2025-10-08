@@ -416,7 +416,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         int startingIndex = mModel.index();
 
         // Update reorder - drag out of strip and fake next selection index.
-        when(mStripUpdateDelegate.getNextIndexAfterClose(mInteractingTab.getTabId())).thenReturn(1);
+        when(mStripUpdateDelegate.getNextIndexAfterClose(any())).thenReturn(1);
         dragOutOfStrip();
         assertNotEquals("Expected de-select on drag exit", startingIndex, mModel.index());
 

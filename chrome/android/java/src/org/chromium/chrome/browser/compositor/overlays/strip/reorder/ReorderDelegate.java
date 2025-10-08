@@ -33,6 +33,7 @@ import org.chromium.ui.base.LocalizationUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -105,16 +106,16 @@ public class ReorderDelegate {
         void setCompositorButtonsVisible(boolean visible);
 
         /**
-         * Returns the next index to select when the tab with the given ID is closed. This is
+         * Returns the next index to select when the provided list of tabs is closed. This is
          * different from the default {@link TabModel} behavior, as tab strip closures prefer
-         * expanded tabs, and also tabs in after (as opposed to before) the closed tab if the
-         * feature flag {@link ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE} is enabled.
+         * expanded tabs, and also tabs after (as opposed to before) the closed tab if the feature
+         * flag {@link ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE} is enabled.
          *
-         * @param id The ID of the closing tab.
+         * @param closingTabs The closing {@link StripLayoutTab}s.
          * @return The next index to select. {@link TabModel#INVALID_TAB_INDEX} if no valid index
          *     found.
          */
-        int getNextIndexAfterClose(int id);
+        int getNextIndexAfterClose(Collection<StripLayoutTab> closingTabs);
     }
 
     // Tab State.
