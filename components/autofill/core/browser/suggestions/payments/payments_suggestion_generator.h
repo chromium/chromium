@@ -74,6 +74,10 @@ std::vector<const CreditCard*> GetCreditCardsToSuggest(
 // of a card number that will be used for suggestion filtering. This is used to
 // avoid showing suggestions that is unrelated to the cards that have already
 // been autofilled in the form. Can be empty if no filtering should happen.
+// `is_card_number_field_empty` indicates whether the card number field is empty
+// after the value inside of it is sanitized. This is used to decide whether the
+// BNPL suggestion should be appended together with the credit card suggestions.
+// TODO(crbug.com/448688721): Consolidate the input parameters.
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     AutofillClient& client,
     const FormFieldData& trigger_field,
@@ -82,7 +86,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool is_complete_form,
     bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering);
+    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
+    bool is_card_number_field_empty);
 
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type` and `trigger_field`. `summary` contains metadata about
@@ -90,7 +95,11 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
 // set of card number last four that will be used for suggestion filtering. This
 // is used to avoid showing suggestions that is unrelated to the cards that have
 // already been autofilled in the form.
+// `is_card_number_field_empty` indicates whether the card number field is empty
+// after the value inside of it is sanitized. This is used to decide whether the
+// BNPL suggestion should be appended together with the credit card suggestions.
 // TODO(crbug.com/40916587): Implement last four extraction from the DOM.
+// TODO(crbug.com/448688721): Consolidate the input parameters.
 std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
@@ -98,7 +107,8 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
-    CreditCardSuggestionSummary& summary);
+    CreditCardSuggestionSummary& summary,
+    bool is_card_number_field_empty);
 
 // Generates suggestions for standalone CVC fields. These only apply to
 // virtual cards that are saved on file to a merchant. In these cases,
@@ -214,6 +224,8 @@ Suggestion CreateCreditCardSuggestionForTest(
 
 // Exposes `GetCreditCardFooterSuggestions` in tests.
 std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
+    const AutofillClient& client,
+    bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo);

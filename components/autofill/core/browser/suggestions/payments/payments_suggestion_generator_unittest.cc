@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -1275,7 +1276,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   ASSERT_EQ(suggestions.size(), 5U);
   // The suggestion with card linked offer available should be ranked to the
@@ -1352,7 +1354,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   ASSERT_EQ(suggestions.size(), 3U);
   EXPECT_TRUE(summary.with_cvc);
@@ -1373,7 +1376,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   // There are 3 suggestions, 1 for card info retrieval enrolled card
   // suggestions, followed by a separator, and followed by "Manage payment
@@ -1402,7 +1406,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*four_digit_combinations_in_dom=*/{},
         /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
         CREDIT_CARD_NUMBER,
-        /*should_show_scan_credit_card=*/false, summary);
+        /*should_show_scan_credit_card=*/false, summary,
+        /*is_card_number_field_empty=*/false);
 
     EXPECT_EQ(suggestions.size(), 4U);
     EXPECT_THAT(suggestions,
@@ -1429,7 +1434,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*four_digit_combinations_in_dom=*/{},
         /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
         CREDIT_CARD_NUMBER,
-        /*should_show_scan_credit_card=*/false, summary);
+        /*should_show_scan_credit_card=*/false, summary,
+        /*is_card_number_field_empty=*/false);
 
     EXPECT_EQ(suggestions.size(), 4U);
     EXPECT_THAT(suggestions,
@@ -1459,7 +1465,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*four_digit_combinations_in_dom=*/{},
         /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
         CREDIT_CARD_NUMBER,
-        /*should_show_scan_credit_card=*/false, summary);
+        /*should_show_scan_credit_card=*/false, summary,
+        /*is_card_number_field_empty=*/false);
 
     EXPECT_EQ(suggestions.size(), 3U);
     EXPECT_THAT(suggestions,
@@ -1475,7 +1482,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/true, summary);
+      /*should_show_scan_credit_card=*/true, summary,
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -1488,7 +1496,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/true, summary);
+      /*should_show_scan_credit_card=*/true, summary,
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0],
@@ -1513,7 +1522,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
@@ -1551,6 +1561,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
 TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
   std::vector<Suggestion> footer_suggestions =
       GetCreditCardFooterSuggestionsForTest(
+          autofill_client(), /*should_show_bnpl_suggestion*/ false,
           /*should_show_scan_credit_card=*/true, /*is_autofilled=*/true,
           /*with_gpay_logo=*/true);
 
@@ -1575,7 +1586,8 @@ class PaymentsSuggestionGeneratorBnplTest
         {features::kAutofillEnableAmountExtraction,
          features::kAutofillEnableBuyNowPayLater,
          features::kAutofillEnableBuyNowPayLaterSyncing},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            features::kAutofillEnableAiBasedAmountExtraction});
   }
 
  private:
@@ -1620,7 +1632,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   uint64_t extracted_amount_in_micros = 50'000'000;
 
@@ -1708,7 +1721,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   uint64_t extracted_amount_in_micros = 50'000'000;
 
@@ -1872,6 +1886,150 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$35");
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Ensures that pay over time option is added if `ShouldAppendBnplOption`
+// returns true.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       MaybeAppendDesktopSuggestionsWithBnpl_ShouldAppendBnplOption) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+
+  payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  // Setup a scenario where BNPL suggestion should be appended to the credit
+  // card suggestions.
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kBnplEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageCreditCard)));
+}
+
+// Ensures that pay over time option is not added if the card number field is
+// not empty.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       MaybeAppendDesktopSuggestionsWithBnpl_CardNumberFieldNotEmpty) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+
+  payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  // Setup a scenario where BNPL suggestion should be appended to the credit
+  // card suggestions.
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageCreditCard)));
+}
+
+// Ensures that pay over time option is not added if `ShouldAppendBnplOption`
+// returns false.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       MaybeAppendDesktopSuggestionsWithBnpl_ShouldNotAppendBnplOption) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+
+  payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  // Setup a scenario where BNPL suggestion should NOT be appended to the credit
+  // card suggestions. More specifically, here put CVC field as the triggereing
+  // field, which should NOT trigger BNPL option appending.
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_VERIFICATION_CODE,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+
+  EXPECT_THAT(suggestions, testing::IsEmpty());
+}
+
+// Ensures that pay over time option is not added if the feature flag
+// `kAutofillEnableAiBasedAmountExtraction` is disabled.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       MaybeAppendDesktopSuggestionsWithBnpl_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater},
+      /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction});
+
+  payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  // Setup a scenario where BNPL suggestion should be appended to the credit
+  // card suggestions.
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageCreditCard)));
+}
+#endif
+
 // Ensures that the pay over time option is not added if the suggestion list
 // is empty.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
@@ -1898,13 +2056,14 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateDesktopSuggestionsWithBnpl(
           suggestions, payments_data().GetBnplIssuers(),
           /*extracted_amount_in_micros=*/50'000'000);
 
-  ASSERT_THAT(update_suggestions_result.suggestions,
+  EXPECT_THAT(update_suggestions_result.suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
                           EqualsSuggestion(SuggestionType::kBnplEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
@@ -1929,7 +2088,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateDesktopSuggestionsWithBnpl(
           suggestions, payments_data().GetBnplIssuers(),
@@ -1966,7 +2126,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateDesktopSuggestionsWithBnpl(
           suggestions, payments_data().GetBnplIssuers(),
@@ -2003,7 +2164,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateDesktopSuggestionsWithBnpl(
           suggestions, payments_data().GetBnplIssuers(),
@@ -2040,7 +2202,8 @@ TEST_F(
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateDesktopSuggestionsWithBnpl(
           suggestions, payments_data().GetBnplIssuers(),
@@ -2404,7 +2567,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2442,7 +2606,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2472,7 +2637,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   ASSERT_GE(suggestions.size(), 0ul);
 }
@@ -2500,7 +2666,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_EQ(suggestions.size(), 3ul);
   EXPECT_THAT(suggestions[0],
@@ -2529,7 +2696,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2557,7 +2725,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2575,7 +2744,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2607,7 +2777,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2639,7 +2810,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(
       suggestions,
@@ -3046,7 +3218,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           /*four_digit_combinations_in_dom=*/{},
           /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
           CREDIT_CARD_VERIFICATION_CODE,
-          /*should_show_scan_credit_card=*/false, summary);
+          /*should_show_scan_credit_card=*/false, summary,
+          /*is_card_number_field_empty=*/false);
 
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
@@ -3091,7 +3264,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           /*four_digit_combinations_in_dom=*/{},
           /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
           CREDIT_CARD_VERIFICATION_CODE,
-          /*should_show_scan_credit_card=*/false, summary);
+          /*should_show_scan_credit_card=*/false, summary,
+          /*is_card_number_field_empty=*/false);
 
   // No suggestions should be returned in an iOS WebView for a CVC field.
   EXPECT_THAT(suggestions, IsEmpty());
@@ -3114,7 +3288,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           /*four_digit_combinations_in_dom=*/{},
           /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
           CREDIT_CARD_VERIFICATION_CODE,
-          /*should_show_scan_credit_card=*/false, summary);
+          /*should_show_scan_credit_card=*/false, summary,
+          /*is_card_number_field_empty=*/false);
 
   // Only 1 suggestion + footer should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 3U);
@@ -3139,7 +3314,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           /*four_digit_combinations_in_dom=*/{},
           /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
           CREDIT_CARD_VERIFICATION_CODE,
-          /*should_show_scan_credit_card=*/false, summary);
+          /*should_show_scan_credit_card=*/false, summary,
+          /*is_card_number_field_empty=*/false);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 4U);
@@ -3178,7 +3354,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           /*four_digit_combinations_in_dom=*/{},
           /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
           CREDIT_CARD_VERIFICATION_CODE,
-          /*should_show_scan_credit_card=*/false, summary);
+          /*should_show_scan_credit_card=*/false, summary,
+          /*is_card_number_field_empty=*/false);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 4U);
@@ -3755,7 +3932,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
         /*four_digit_combinations_in_dom=*/{},
         /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
         CREDIT_CARD_NUMBER,
-        /*should_show_scan_credit_card=*/false, summary);
+        /*should_show_scan_credit_card=*/false, summary,
+        /*is_card_number_field_empty=*/false);
 
     EXPECT_TRUE(summary.metadata_logging_context
                     .instruments_with_metadata_available.empty());
@@ -3790,7 +3968,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
         /*four_digit_combinations_in_dom=*/{},
         /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
         CREDIT_CARD_NUMBER,
-        /*should_show_scan_credit_card=*/false, summary);
+        /*should_show_scan_credit_card=*/false, summary,
+        /*is_card_number_field_empty=*/false);
 
     EXPECT_TRUE(
         summary.metadata_logging_context.instruments_with_metadata_available
@@ -3835,7 +4014,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   // Suggestions in `suggestions` are persisted in order of their presentation
   // to the user in the Autofill dropdown and currently virtual cards are shown
@@ -3970,7 +4150,8 @@ TEST_F(
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(
       suggestions,
@@ -4141,7 +4322,8 @@ TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"1111",
       get_trigger_field_type(),
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
       !IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
@@ -4192,7 +4374,8 @@ TEST_P(GetFilteredCardsToSuggestTest, EmptyFilteringSet) {
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       get_trigger_field_type(),
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
       !IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
@@ -4227,7 +4410,8 @@ TEST_P(GetFilteredCardsToSuggestTest, TriggerFieldIsNotCvc) {
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"1111",
       FieldType::CREDIT_CARD_NUMBER,
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
 
   // There are 6 suggestions, 4 for card suggestions, followed by a separator,
   // and followed by "Manage payment methods..." which redirects to the Chrome
@@ -4257,7 +4441,8 @@ TEST_P(GetFilteredCardsToSuggestTest, NoMatchCard) {
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       u"9999", get_trigger_field_type(),
-      /*should_show_scan_credit_card=*/false, summary);
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
   if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
       !IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
@@ -4360,7 +4545,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   if (IsCvcStorageStandaloneFormEnhancementEnabled() &&
       IsCvcSavingSupported()) {
@@ -4396,7 +4582,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1113"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
-      u"1111");
+      u"1111", /*is_card_number_field_empty=*/false);
   if (!IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
     return;
@@ -4424,7 +4610,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4440,7 +4627,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4463,7 +4651,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
   EXPECT_EQ(suggestions.size(), 0U);
 }
 
@@ -4496,7 +4685,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      /*is_card_number_field_empty=*/false);
 
   EXPECT_THAT(
       suggestions,
