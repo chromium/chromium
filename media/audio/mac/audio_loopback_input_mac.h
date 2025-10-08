@@ -37,8 +37,7 @@ AudioInputStream* MEDIA_EXPORT CreateCatapAudioInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     AudioManager::LogCallback log_callback,
-    base::OnceCallback<void(AudioInputStream*)> close_callback,
-    const std::string& default_output_device_id);
+    base::OnceCallback<void(AudioInputStream*)> close_callback);
 
 }  // namespace media
 

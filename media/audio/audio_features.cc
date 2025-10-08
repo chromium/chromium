@@ -71,6 +71,15 @@ BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
 // end result will give users the option to change modes on their Airpods (Off,
 // Fixed, Head Tracking).
 BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If this feature is enabled, and CATap is capturing the default output device,
+// the CATap implementation will handle default output device changes by
+// restarting the system audio capture. The changes we listen for are if
+// default output device is changed to another device, or if the sample rate of
+// the default output device is changed. If the feature is disabled, CATap will
+// keep capturing the same device when default output device is changed, and
+// will report an error if the sample rate is changed.
+BASE_FEATURE(kMacCatapRestartOnDeviceChange, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features

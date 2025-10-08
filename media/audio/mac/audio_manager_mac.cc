@@ -902,8 +902,7 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
       return CreateCatapAudioInputStream(
           params, device_id, log_callback,
           base::BindOnce(&AudioManagerBase::ReleaseInputStream,
-                         base::Unretained(this)),
-          GetDefaultOutputDeviceID());
+                         base::Unretained(this)));
     }
 
     screen_capture_kit_swizzler_ = SwizzleScreenCaptureKit();

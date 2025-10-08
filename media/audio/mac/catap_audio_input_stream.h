@@ -27,26 +27,19 @@ namespace media {
 class CatapApi;
 class PropertyListenerHelper;
 
-// Implementation of AudioInputStream using the CoreAudio API for macOS 14.2
-// and later. The current implementation supports mono and stereo capture system
-// audio loopback capture.
-//
-// Overview of operation:
-// - An instance of CatapAudioInputStream is created by AudioManagerMac.
-// - Open() is called, creating the underlying audio tap and aggregate device.
-// - Start(sink) is called, causing the stream to start delivering samples.
-// - Audio samples are being received by OnCatapSample() and forwarded to the
-//   sink. The audio tap is setup to forward audio from all audio output devices
-//   unless kMacCatapCaptureDefaultDevice is enabled, where we only capture the
-//   default output device.
-// - Stop() is called, causing the stream to stop.
-// - Close() is called, causing the stream output to be removed and the stream
-//   to be destroyed.
-class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
-    : public AgcAudioStream<AudioInputStream> {
-  using NotifyOnCloseCallback = base::OnceCallback<void(AudioInputStream*)>;
-
+// Captures audio loopback using the CoreAudio API for macOS 14.2
+// and later. Used in a `CatapAudioInputStream` to provide the audio stream.
+// The current implementation supports mono and stereo capture.
+class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
  public:
+  // Interface for listening to audio property changes. It's safe to call delete
+  // on the `CatapAudioInputStreamSource` in the callbacks.
+  class AudioPropertyChangeCallback {
+   public:
+    virtual void OnSampleRateChange() = 0;
+    virtual void OnDefaultDeviceChange() = 0;
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class OpenStatus {
@@ -60,7 +53,8 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
     kErrorConfiguringSampleRate = 7,
     kErrorConfiguringFramesPerBuffer = 8,
     kErrorCreatingTapDescription = 9,
-    kMaxValue = kErrorCreatingTapDescription
+    kGetDefaultDeviceUidEmpty = 10,
+    kMaxValue = kGetDefaultDeviceUidEmpty
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -75,38 +69,51 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
 
   // Only mono or stereo channels are supported for loopback device
   // compatibility.
-  CatapAudioInputStream(std::unique_ptr<CatapApi> catap_api,
-                        const AudioParameters& params,
-                        const std::string& device_id,
-                        const AudioManager::LogCallback log_callback,
-                        const NotifyOnCloseCallback close_callback,
-                        const std::string& default_output_device_id);
+  CatapAudioInputStreamSource(const raw_ptr<CatapApi> catap_api,
+                              const AudioParameters& params,
+                              const std::string& device_id,
+                              const AudioManager::LogCallback log_callback,
+                              const raw_ptr<AudioPropertyChangeCallback>
+                                  audio_property_change_callback);
 
-  CatapAudioInputStream(const CatapAudioInputStream&) = delete;
-  CatapAudioInputStream(CatapAudioInputStream&&) = delete;
-  CatapAudioInputStream(const CatapAudioInputStream&&) = delete;
-  CatapAudioInputStream& operator=(const CatapAudioInputStream&) = delete;
-  CatapAudioInputStream& operator=(CatapAudioInputStream&&) = delete;
-  CatapAudioInputStream& operator=(const CatapAudioInputStream&&) = delete;
+  CatapAudioInputStreamSource(const CatapAudioInputStreamSource&) = delete;
+  CatapAudioInputStreamSource(CatapAudioInputStreamSource&&) = delete;
+  CatapAudioInputStreamSource(const CatapAudioInputStreamSource&&) = delete;
+  CatapAudioInputStreamSource& operator=(const CatapAudioInputStreamSource&) =
+      delete;
+  CatapAudioInputStreamSource& operator=(CatapAudioInputStreamSource&&) =
+      delete;
+  CatapAudioInputStreamSource& operator=(const CatapAudioInputStreamSource&&) =
+      delete;
 
-  ~CatapAudioInputStream() override;
+  ~CatapAudioInputStreamSource();
 
-  // AudioInputStream:: implementation.
-  AudioInputStream::OpenOutcome Open() override;
-  void Start(AudioInputCallback* callback) override;
-  void Stop() override;
-  void Close() override;
-  double GetMaxVolume() override;
-  void SetVolume(double volume) override;
-  double GetVolume() override;
-  bool IsMuted() override;
-  void SetOutputDeviceForAec(const std::string& output_device_id) override;
+  // Implements the contract of AudioInputStream::Open() (including return
+  // values). Prepares the `CatapAudioInputStreamSource` for recording and must
+  // be called before Start().
+  // `default_output_device_uid` is the unique ID (UID) for the default
+  // output device. If the caller is unable to retrieve the UID, it can call
+  // Open() with nullopt. In that case Open() will fail unless
+  // the `CatapAudioInputStreamSource` captures from all output devices.
+  AudioInputStream::OpenOutcome Open(
+      std::optional<std::string> default_output_device_uid);
+
+  // Starts the capture of system audio. The OnData callback is called when
+  // audio data is available.
+  void Start(AudioInputStream::AudioInputCallback* callback);
+
+  // Stops the audio capture. When this returns, it's guaranteed that no more
+  // calls to 'AudioInputCallback' will occur. The stream can be restarted
+  // with a call to Start(). Stop() must be called before the destructor.
+  void Stop();
 
   void OnCatapSample(const AudioBuffer* input_buffer,
                      const AudioTimeStamp* input_time);
   void OnError();
 
  private:
+  void Close();
+
   // Returns all CoreAudio process audio device IDs that belong to the specified
   // process ID.
   NSArray<NSNumber*>* GetProcessAudioDeviceIds(pid_t chrome_process_id);
@@ -138,7 +145,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   void ReportAndResetStats();
 
   // Interface used to access the CoreAudio framework.
-  const std::unique_ptr<CatapApi> catap_api_;
+  const raw_ptr<CatapApi> catap_api_;
 
   // Audio parameters passed to the constructor.
   const AudioParameters params_;
@@ -152,9 +159,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   // One of AudioDeviceDescription::kLoopback*.
   const std::string device_id_;
 
-  // True if the capturer is configured to capture the default device. In this
-  // case, the stream will be stopped with an error if the default output device
-  // is changed.
+  // True if the capturer is configured to capture the default device.
   const bool capture_default_device_;
 
   // Audio bus used to pass audio samples to sink_.
@@ -164,7 +169,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   // Start() and must not be modified until Stop() is called where the audio
   // capture is stopped. While the capture is running, sink_ is accessed on a
   // thread that is associated with the capturer.
-  raw_ptr<AudioInputCallback> sink_;
+  raw_ptr<AudioInputStream::AudioInputCallback> sink_;
 
   // The next expected capture time is used as a fallback if the metadata in the
   // callback is missing a host time stamp. Only accessed from the capture
@@ -201,13 +206,11 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   // Callback to send log messages to the client.
   AudioManager::LogCallback log_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Called when the stream is closed and can be safely deleted.
-  NotifyOnCloseCallback close_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  const std::string default_output_device_id_
+  std::unique_ptr<PropertyListenerHelper> property_listener_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<PropertyListenerHelper> property_listener_
+  // Callback called on audio device property changes.
+  raw_ptr<AudioPropertyChangeCallback> audio_property_change_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   AudioObjectID aggregate_device_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
@@ -222,7 +225,114 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<CatapAudioInputStream> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CatapAudioInputStreamSource> weak_ptr_factory_{this};
+};
+
+// `AudioInputStream` implementation that streams system output audio, that is
+// captured by a `CatapAudioInputStreamSource`. This stream is responsible for
+// providing a seamless stream to the listener, even if there are changes to the
+// default output device, achieved by reinitializing the
+// `CatapAudioInputStreamSource` as needed.
+//
+// Overview of operation:
+// - An instance of `CatapAudioInputStream` is created by `AudioManagerMac`.
+// - Open() is called. An `CatapAudioInputStreamSource` is created and opened,
+//   creating the underlying audio tap and aggregate device.
+// - Start(sink) is called, causing the stream to start delivering samples.
+// - Audio samples are being received by
+//   CatapAudioInputStreamSource::OnCatapSample() and forwarded to the
+//   AudioInputCallback::OnData(). The audio tap is setup to capture audio from
+//   the default output audio device unless the device ID is
+//   kLoopbackAllDevicesId or the feature kMacCatapCaptureAllDevices is
+//   enabled, in which case all output devices are captured.
+// - Stop() is called, causing the stream to stop.
+// - Close() is called, causing the stream output to be removed and the stream
+//   to be destroyed.
+class API_AVAILABLE(macos(14.2)) CatapAudioInputStream
+    : public AgcAudioStream<AudioInputStream>,
+      public CatapAudioInputStreamSource::AudioPropertyChangeCallback {
+  using NotifyOnCloseCallback = base::OnceCallback<void(AudioInputStream*)>;
+  using GetDefaultDeviceUniqueIdCallback =
+      base::RepeatingCallback<std::optional<std::string>()>;
+
+ public:
+  CatapAudioInputStream(
+      std::unique_ptr<CatapApi> catap_api,
+      GetDefaultDeviceUniqueIdCallback get_default_device_uid_callback,
+      const AudioParameters& params,
+      const std::string& device_id,
+      AudioManager::LogCallback log_callback,
+      const NotifyOnCloseCallback close_callback);
+
+  // AudioInputStream:: implementation.
+  AudioInputStream::OpenOutcome Open() override;
+  void Start(AudioInputCallback* callback) override;
+  void Stop() override;
+  void Close() override;
+  double GetMaxVolume() override;
+  void SetVolume(double volume) override;
+  double GetVolume() override;
+  bool IsMuted() override;
+  void SetOutputDeviceForAec(const std::string& output_device_id) override;
+
+  // CatapAudioInputStreamSource::AudioPropertyChangeCallback implementation
+  void OnSampleRateChange() override;
+  void OnDefaultDeviceChange() override;
+
+  ~CatapAudioInputStream() override;
+
+ private:
+  // Logs an error message and call OnError() on the `AudioInputCallback`.
+  void OnError();
+
+  // Restarts the `CatapAudioInputStreamSource`, and make sure the new Source
+  // is put in the correct state.
+  void RestartStream();
+
+  // Send log messages to the client.
+  void SendLogMessage(const char* format, ...);
+
+  // Interface used to access the CoreAudio framework.
+  const std::unique_ptr<CatapApi> catap_api_;
+
+  // Audio parameters passed to the constructor. The parameters are only used
+  // by `CatapAudioInputStreamSource`. `CatapAudioInputStream` keeps a copy to
+  // be able to provide it to a new `CatapAudioInputStreamSource`, if `source_`
+  // needs to be reinitialized.
+  const AudioParameters params_;
+
+  // One of AudioDeviceDescription::kLoopback*.
+  const std::string device_id_;
+
+  const bool restart_on_device_change_;
+
+  // Called when the stream is closed and can be safely deleted.
+  NotifyOnCloseCallback close_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Callback to send log messages to the client.
+  AudioManager::LogCallback log_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Function that provide default audio output device UID.
+  GetDefaultDeviceUniqueIdCallback get_default_device_uid_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Receives the processed audio data and errors. `audio_input_callback_` is
+  // set in the call to Start() and is passed on to the
+  // `CatapAudioInputSource`. `CatapAudioInputStream` keeps a copy to be able
+  // to reinitialze `CatapAudioInputSource` if needed, and to be able to report
+  // errors. Set to nullptr by Stop(). If `audio_input_callback_` is
+  // non-nullptr, the stream is in Started state.
+  raw_ptr<AudioInputStream::AudioInputCallback> audio_input_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The `CatapAudioInputStreamSource` that captures system audio that the
+  // `CatapAudioInputStream` streams. `CatapAudioInputStream` may reinitialze
+  // `source_` on default devices changes. If `source_` is non-nullptr, the
+  // stream is in Open or Started state.
+  std::unique_ptr<CatapAudioInputStreamSource> source_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 API_AVAILABLE(macos(14.2))
@@ -231,8 +341,9 @@ AudioInputStream* MEDIA_EXPORT CreateCatapAudioInputStreamForTesting(
     const std::string& device_id,
     AudioManager::LogCallback log_callback,
     base::OnceCallback<void(AudioInputStream*)> close_callback,
-    const std::string& default_output_device_id,
-    std::unique_ptr<CatapApi> catap_api);
+    std::unique_ptr<CatapApi> catap_api,
+    base::RepeatingCallback<std::optional<std::string>()>
+        get_default_device_uid_callback);
 
 }  // namespace media
 

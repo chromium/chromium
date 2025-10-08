@@ -26,6 +26,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioStereoInputStreamParameters);
 
 #if BUILDFLAG(IS_MAC)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacAVFoundationPlayback);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartOnDeviceChange);
 #endif
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);

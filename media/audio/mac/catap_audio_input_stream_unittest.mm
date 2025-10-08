@@ -54,6 +54,8 @@ constexpr AudioDeviceIOProcID kTapIoProcId = AudioDeviceIoProcIdFunction;
 constexpr AudioObjectID kAggregateDeviceId = 17;
 constexpr AudioObjectID kTap = 23;
 
+constexpr std::string kDefaultOutputUID = "default_output_uid";
+
 const AudioObjectPropertyAddress kDeviceIsAliveAddress = {
     kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
@@ -133,8 +135,12 @@ class FakeCatapApi : public CatapApi {
   OSStatus AudioHardwareCreateAggregateDevice(
       CFDictionaryRef in_device_properties,
       AudioDeviceID* out_device) override {
+    if (should_fail_create_aggregate_device) {
+      return -1;
+    }
     created_aggregate_device = true;
     *out_device = kAggregateDeviceId;
+    ++create_aggregate_device_count;
     return noErr;
   }
   OSStatus AudioDeviceCreateIOProcID(
@@ -254,6 +260,7 @@ class FakeCatapApi : public CatapApi {
                                       AudioDeviceIOProcID in_proc_id) override {
     destroyed_io_proc_id_for_device = in_device;
     destroyed_io_proc_id = in_proc_id;
+    client_data = nullptr;
     return noErr;
   }
   OSStatus AudioHardwareDestroyAggregateDevice(
@@ -326,7 +333,8 @@ class FakeCatapApi : public CatapApi {
   // is also the value that is returned by `AudioObjectGetPropertyData()` when
   // the sample rate is requested.
   std::optional<Float64> last_set_sample_rate;
-  // The last frames per buffer that was set with `AudioObjectSetPropertyData()`.
+  // The last frames per buffer that was set with
+  // `AudioObjectSetPropertyData()`.
   std::optional<UInt32> last_set_frames_per_buffer;
   // The last tap description passed to `AudioHardwareCreateProcessTap()`.
   // It's an ARC-managed object that is also returned by
@@ -344,6 +352,8 @@ class FakeCatapApi : public CatapApi {
   // Counter for how many property listener blocks are currently active.
   // This should be 0 when the stream is closed.
   int property_listener_block_count = 0;
+  // Counter for how many times an aggregate device is created.
+  int create_aggregate_device_count = 0;
   // The last property listener block that was added with
   // `AudioObjectAddPropertyListenerBlock()`.
   AudioObjectPropertyListenerBlock property_listener_block = nil;
@@ -353,6 +363,8 @@ class FakeCatapApi : public CatapApi {
   // The address of the last property listener that was removed with
   // `AudioObjectRemovePropertyListenerBlock()`.
   AudioObjectPropertyAddress last_removed_property_listener_address;
+  // If the call to `AudioHardwareCreateAggregateDevice()` will fail.
+  bool should_fail_create_aggregate_device = false;
 };
 
 }  // namespace
@@ -362,21 +374,27 @@ class CatapAudioInputStreamTest : public testing::Test {
   CatapAudioInputStreamTest() = default;
   ~CatapAudioInputStreamTest() override = default;
 
-  void CreateStream(bool with_permissions = true,
-                    const std::string& device_id =
-                        media::AudioDeviceDescription::kLoopbackInputDeviceId) {
+  void CreateStream(
+      bool with_permissions = true,
+      const std::string& device_id =
+          media::AudioDeviceDescription::kLoopbackInputDeviceId,
+      const std::optional<std::string> default_device_uid = kDefaultOutputUID) {
     if (@available(macOS 14.2, *)) {
       auto fake_catap_api_object = std::make_unique<FakeCatapApi>();
       fake_catap_api_object->with_permissions = with_permissions;
       fake_catap_api_ = fake_catap_api_object.get();
+
+      auto returning_lambda = [](const std::optional<std::string>& uid)
+          -> std::optional<std::string> { return uid; };
+      auto device_uid_callback =
+          base::BindRepeating(returning_lambda, default_device_uid);
 
       stream_ = CreateCatapAudioInputStreamForTesting(
           AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                           ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
                           kCatapLoopbackDefaultFramesPerBuffer),
           device_id, base::BindRepeating(LogToStderr), base::DoNothing(),
-          media::AudioDeviceDescription::kDefaultDeviceId,
-          std::move(fake_catap_api_object));
+          std::move(fake_catap_api_object), std::move(device_uid_callback));
       EXPECT_TRUE(stream_);
     }
   }
@@ -385,7 +403,6 @@ class CatapAudioInputStreamTest : public testing::Test {
     if (@available(macOS 14.2, *)) {
       EXPECT_EQ(fake_catap_api()->io_proc_id_created_for_device,
                 kAggregateDeviceId);
-      EXPECT_EQ(fake_catap_api()->client_data, stream_);
       EXPECT_EQ(fake_catap_api()->set_sample_rate_count, 1);
       EXPECT_FLOAT_EQ(fake_catap_api()->last_set_sample_rate.value(),
                       kLoopbackSampleRate);
@@ -393,6 +410,34 @@ class CatapAudioInputStreamTest : public testing::Test {
       EXPECT_FLOAT_EQ(fake_catap_api()->last_set_frames_per_buffer.value(),
                       kCatapLoopbackDefaultFramesPerBuffer);
       EXPECT_EQ(fake_catap_api()->set_tap_description_count, 1);
+    }
+  }
+
+  void EnsureStreamIsActive() {
+    if (@available(macOS 14.2, *)) {
+      ASSERT_NE(fake_catap_api()->audio_proc, nullptr);
+      const AudioTimeStamp* in_now = nullptr;
+      const uint32_t data_byte_size =
+          kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+      std::vector<uint8_t> data_buffer(data_byte_size);
+
+      AudioBufferList input_data;
+      input_data.mNumberBuffers = 1;
+      AudioBuffer& input_buffer = input_data.mBuffers[0];
+      input_buffer.mNumberChannels = 2;
+      input_buffer.mDataByteSize = data_byte_size;
+      input_buffer.mData = data_buffer.data();
+
+      AudioTimeStamp input_time;
+      input_time.mFlags = kAudioTimeStampHostTimeValid;
+      input_time.mHostTime = mach_absolute_time();
+      AudioBufferList* output_data = nullptr;
+      const AudioTimeStamp* output_time = nullptr;
+
+      fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                   output_data, output_time,
+                                   fake_catap_api()->client_data);
+      EXPECT_GE(fake_callback_.on_data_call_count(), 1);
     }
   }
 
@@ -432,7 +477,7 @@ TEST_F(CatapAudioInputStreamTest, CreateAndInitializeWithPermissions) {
     CheckSuccessfulOpen();
     EXPECT_EQ(std::string(base::SysNSStringToUTF8(
                   [fake_catap_api()->last_tap_description deviceUID])),
-              media::AudioDeviceDescription::kDefaultDeviceId);
+              kDefaultOutputUID);
     EXPECT_EQ([[fake_catap_api()->last_tap_description stream] intValue], 0);
     EXPECT_EQ([fake_catap_api()->last_tap_description isMuted], CATapUnmuted);
   }
@@ -484,7 +529,8 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
     const AudioTimeStamp* output_time = nullptr;
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
-                                 output_data, output_time, stream_);
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
     EXPECT_GE(fake_callback_.on_data_call_count(), 1);
 
     stream_->Stop();
@@ -522,7 +568,8 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioDataMissingHostTime) {
     const AudioTimeStamp* output_time = nullptr;
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
-                                 output_data, output_time, stream_);
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
 
     // Simulate one more captured frame without a host timestamp. Expect the
     // timestamp of the next OnData() call to be incremented by one buffer
@@ -533,7 +580,8 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioDataMissingHostTime) {
     input_time.mHostTime = 0;
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
-                                 output_data, output_time, stream_);
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
 
     base::TimeDelta kExpectedBufferDuration = base::Milliseconds(
         1000 * kCatapLoopbackDefaultFramesPerBuffer / kLoopbackSampleRate);
@@ -619,24 +667,6 @@ TEST_F(CatapAudioInputStreamTest, ErrorIfDeviceIsAliveChanges) {
   }
 }
 
-TEST_F(CatapAudioInputStreamTest, ErrorIfSampleRateOfAggregateDeviceChanges) {
-  if (@available(macOS 14.2, *)) {
-    CreateStream();
-    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
-    stream_->Start(&fake_callback_);
-
-    // No error expected if the sample rate is unchanged.
-    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
-    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
-    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
-
-    // Simulate that the sample rate of the aggregate device changes.
-    fake_catap_api()->last_set_sample_rate = 16000;
-    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
-    EXPECT_EQ(fake_callback_.on_error_call_count(), 1);
-  }
-}
-
 TEST_F(CatapAudioInputStreamTest, NoErrorIfDefaultOutputDeviceChanges) {
   if (@available(macOS 14.2, *)) {
     CreateStream();
@@ -693,7 +723,8 @@ TEST_F(CatapAudioInputStreamTest, ChannelCountChangeIsIgnored) {
     const AudioTimeStamp* output_time = nullptr;
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
-                                 output_data, output_time, stream_);
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
     EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
 
@@ -702,7 +733,8 @@ TEST_F(CatapAudioInputStreamTest, ChannelCountChangeIsIgnored) {
     input_time.mHostTime = mach_absolute_time();
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
-                                 output_data, output_time, stream_);
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
 
     // OnData should not be called again, and no error should be reported.
     EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
@@ -740,7 +772,8 @@ TEST_F(CatapAudioInputStreamTest, FramesPerBufferChangeIsIgnored) {
     const AudioTimeStamp* output_time = nullptr;
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
-                                 output_data, output_time, stream_);
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
     EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
 
@@ -749,13 +782,179 @@ TEST_F(CatapAudioInputStreamTest, FramesPerBufferChangeIsIgnored) {
     input_time.mHostTime = mach_absolute_time();
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
-                                 output_data, output_time, stream_);
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
 
     // OnData should not be called again, and no error should be reported.
     EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
 
     stream_->Stop();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, ReopensOnDeviceChangeForOpenStream) {
+  if (@available(macOS 14.2, *)) {
+    int expected_create_aggregate_device_count = 0;
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    ++expected_create_aggregate_device_count;
+
+    // An aggregated device is created once in Open()
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Check if catap was recreated on default device change.
+    fake_catap_api()->property_listener_block(
+        1, &kDefaultOutputDevicePropertyAddress);
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    stream_->Start(&fake_callback_);
+
+    // Check if the catap stream still calls the OnData() callback.
+    EnsureStreamIsActive();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, RestartsOnDeviceChangeForStartedStream) {
+  if (@available(macOS 14.2, *)) {
+    int expected_create_aggregate_device_count = 0;
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    ++expected_create_aggregate_device_count;
+
+    // An aggregated device is created once in Open()
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    stream_->Start(&fake_callback_);
+
+    // Check if catap was recreated on default device change.
+    fake_catap_api()->property_listener_block(
+        1, &kDefaultOutputDevicePropertyAddress);
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Check if the catap stream still calls the OnData() callback.
+    EnsureStreamIsActive();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, ReopensOnSamplerateChange) {
+  if (@available(macOS 14.2, *)) {
+    int expected_create_aggregate_device_count = 0;
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    ++expected_create_aggregate_device_count;
+
+    // An aggregated device is created once in Open()
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // No change on sample rate notifications if sample rate haven't changed.
+    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Check if catap was recreated on real sampe rate change.
+    fake_catap_api()->last_set_sample_rate = 16000;
+    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, RestartFailingForStartedStream) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&fake_callback_);
+
+    // Trigger a restart that fails
+    fake_catap_api()->should_fail_create_aggregate_device = true;
+    fake_catap_api()->property_listener_block(
+        1, &kDefaultOutputDevicePropertyAddress);
+
+    // Failed restart should trigger an OnError() call.
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 1);
+
+    stream_->Stop();
+    stream_->Close();
+    fake_catap_api_ = nullptr;
+    stream_.ClearAndDelete();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, NoDefaultDevice) {
+  if (@available(macOS 14.2, *)) {
+    // Not providing an UID for default device should cause Open() to fail with
+    // unless device id == kLoopbackAllDevicesId.
+    CreateStream(
+        /*with_permissions=*/true,
+        /*device_id=*/media::AudioDeviceDescription::kLoopbackInputDeviceId,
+        /*default_device_uid=*/std::nullopt);
+    EXPECT_NE(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count, 0);
+    stream_->Close();
+    fake_catap_api_ = nullptr;
+    stream_.ClearAndDelete();
+
+    // If device id == kLoopbackAllDevicesId it doesn't need an UID for default
+    // device, and kSuccess from Open() is expected.
+    CreateStream(
+        /*with_permissions=*/true,
+        /*device_id=*/media::AudioDeviceDescription::kLoopbackAllDevicesId,
+        /*default_device_uid=*/std::nullopt);
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count, 1);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, ReopensStreamSeveralTimes) {
+  if (@available(macOS 14.2, *)) {
+    int expected_create_aggregate_device_count = 0;
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    ++expected_create_aggregate_device_count;
+
+    // An aggregated device is created once in Open()
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Check if catap was recreated on default device change.
+    fake_catap_api()->property_listener_block(
+        1, &kDefaultOutputDevicePropertyAddress);
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    stream_->Start(&fake_callback_);
+
+    // Check if catap was recreated on default device change after Start().
+    fake_catap_api()->property_listener_block(
+        1, &kDefaultOutputDevicePropertyAddress);
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // No change on sample rate notifications if sample rate haven't changed.
+    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Check if catap was recreated on real sampe rate change.
+    fake_catap_api()->last_set_sample_rate = 16000;
+    fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Check if the catap stream still calls the OnData() callback.
+    EnsureStreamIsActive();
   }
 }
 
