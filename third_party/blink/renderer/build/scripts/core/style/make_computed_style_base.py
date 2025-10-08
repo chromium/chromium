@@ -299,6 +299,8 @@ def _create_property_field(property_):
         derived_from=property_.derived_from,
         reset_on_new_style=property_.reset_on_new_style,
         custom_compare=property_.custom_compare,
+        highlight_style_comes_from_originating_element=property_.
+        highlight_style_comes_from_originating_element,
         mutable=property_.mutable,
         getter_method_name=property_.getter,
         setter_method_name=property_.setter,
@@ -332,6 +334,7 @@ def _create_inherited_flag_field(property_):
         invalidate=[],
         reset_on_new_style=False,
         custom_compare=False,
+        highlight_style_comes_from_originating_element=False,
         mutable=False,
         getter_method_name=name_source.to_function_name(),
         setter_method_name=name_source.to_function_name(prefix='set'),

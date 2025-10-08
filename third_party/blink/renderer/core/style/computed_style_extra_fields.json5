@@ -88,6 +88,9 @@
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
       invalidate: ["border-visual", "paint"],
+      // highlight_style_comes_from_originating_element should nominally
+      // be true here, but this propagation happens in a different place
+      // from all the other such properties, so we treat it as a separate case.
     },
     {
       name: "InForcedColorsMode",
@@ -96,6 +99,7 @@
       default_value: "false",
       type_name: "bool",
       inherited: true,
+      highlight_style_comes_from_originating_element: true,
     },
     // Style has a property with attr() values.
     {
@@ -392,6 +396,7 @@
       default_value: "MakeGarbageCollected<Font>()",
       wrapper_pointer_name: "Member",
       invalidate: ["reshape"],
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "ContainerFont",
@@ -525,6 +530,9 @@
       default_value: "StyleInheritedVariables()",
       field_group: "inherited",
       computed_style_custom_functions: ["getter", "setter"],
+      // Highlight Pseudos may use var() references but those must be resolved
+      // against the originating element.
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "HighlightData",
@@ -653,6 +661,9 @@
       default_value: "StyleNonInheritedVariables()",
       include_paths: ["third_party/blink/renderer/core/style/style_non_inherited_variables.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      // Highlight Pseudos may use var() references but those must be resolved
+      // against the originating element.
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "PageSizeType",
@@ -957,6 +968,7 @@
       custom_compare: true,
       inherited: true,
       invalidate: ["accent-color", "border-visual", "currentcolor", "paint"],
+      highlight_style_comes_from_originating_element: true,
     },
     {
       // This flag is set if both the computed value of color-scheme is 'normal'

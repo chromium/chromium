@@ -1505,23 +1505,19 @@ void StyleResolver::InitStyle(Element& element,
                               const ComputedStyle* parent_style,
                               StyleResolverState& state) {
   if (state.IsForHighlight()) {
-    // When resolving highlight styles for children, we need to default all
-    // properties (whether or not defined as inherited) to parent values.
-
-    // Sadly, ComputedStyle creation is unavoidable until ElementRuleCollector
-    // and friends stop relying on ComputedStyle mutation. The good news is that
-    // if the element has no rules for this highlight pseudo, we skip resolution
-    // entirely (leaving the optional unset). The bad news is that if
-    // the element has rules but no matched properties, we currently clone.
+    // When resolving highlight styles, the spec requires that we default
+    // all properties (whether or not defined as inherited) to parent values.
+    //
+    // NOTE: If we don't have any matched properties, and none of the
+    // Set*() calls below do anything, then we could in theory just reuse
+    // the ComputedStyle wholesale instead of cloning its top level.
+    // (The groups are reused in any case.) This probably isn't worth it,
+    // since the most common case if so is that there are no matching rules
+    // either (not even those that are empty), in which case we skip
+    // resolution entirely.
     state.CreateNewClonedStyle(*parent_style);
-
-    // Highlight Pseudos may use var() references but those must be resolved
-    // against the originating element. Share the variables from the originating
-    // style and remove any from the highlight chain.
-    state.StyleBuilder().SetInheritedVariablesFrom(
-        state.OriginatingElementStyle());
-    state.StyleBuilder().SetNonInheritedVariablesFrom(
-        state.OriginatingElementStyle());
+    state.StyleBuilder().CopyHighlightPropertiesFrom(
+        *state.OriginatingElementStyle());
   } else {
     state.CreateNewStyle(source_for_noninherited, *parent_style,
                          (!IsForPseudoElement(element, style_request) &&
@@ -1533,25 +1529,6 @@ void StyleResolver::InitStyle(Element& element,
     state.StyleBuilder().SetStyleType(element.GetPseudoIdForStyling());
   } else {
     state.StyleBuilder().SetStyleType(style_request.pseudo_id);
-  }
-
-  // For highlight inheritance, propagate link visitedness, forced-colors
-  // status, the font and the line height from the originating element. The
-  // font and line height are necessary to correctly resolve font relative
-  // units.
-  if (state.IsForHighlight()) {
-    state.StyleBuilder().SetInForcedColorsMode(
-        style_request.originating_element_style->InForcedColorsMode());
-    state.StyleBuilder().SetForcedColorAdjust(
-        style_request.originating_element_style->ForcedColorAdjust());
-    state.StyleBuilder().SetDarkColorScheme(
-        style_request.originating_element_style->DarkColorScheme());
-    state.StyleBuilder().SetFont(
-        style_request.originating_element_style->GetFont());
-    state.StyleBuilder().SetLineHeight(
-        style_request.originating_element_style->LineHeight());
-    state.StyleBuilder().SetWritingMode(
-        style_request.originating_element_style->GetWritingMode());
   }
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {

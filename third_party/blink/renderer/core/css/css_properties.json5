@@ -822,6 +822,17 @@
       default: false,
       valid_type: "bool",
     },
+
+    // - highlight_style_comes_from_originating_element: true
+    //
+    // ::highlight pseudo styles have different inheritance rules, where almost
+    // all properties (even non-inherited ones) come from the parent style.
+    // A couple of styles and fields are different in that they come from the
+    // originating element's style instead, and those are marked as 'true' here.
+    highlight_style_comes_from_originating_element: {
+      default: false,
+      valid_type: "bool",
+    },
   },
 
   // Members in the data objects should appear in the same order as in the
@@ -1701,6 +1712,7 @@
       default_value: "auto",
       computable: false,
       valid_for_permission_element: true,
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "field-sizing",
@@ -1777,6 +1789,7 @@
       // the font.
       supports_incremental_style: false,
       invalidate: ["layout", "paint"],
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "-webkit-writing-mode",
@@ -3857,6 +3870,9 @@
       valid_for_page_context: true,
       affected_by_zoom: true,
       invalidate: ["layout", "paint"],
+      // The font and line height are necessary to correctly resolve font relative
+      // units.
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "list-style-image",

@@ -303,6 +303,8 @@ class ComputedStyleBuilderBase {
 
   void PropagateIndependentInheritedProperties(const ComputedStyleBase& parent_style);
 
+  void CopyHighlightPropertiesFrom(const ComputedStyleBase& originating_element_style);
+
   {% for field in computed_style_builder.all_fields|rejectattr('mutable')|sort(attribute='name') %}
   // {{field.property_name}}
   {{field_templates[field.field_template].decl_protected_methods(field)|indent(2)}}

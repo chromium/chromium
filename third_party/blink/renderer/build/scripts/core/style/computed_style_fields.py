@@ -125,8 +125,9 @@ class Field(object):
     def __init__(self, field_role, name_for_methods, property_name, type_name,
                  wrapper_pointer_name, field_template, size, default_value,
                  derived_from, invalidate, reset_on_new_style, custom_compare,
-                 mutable, getter_method_name, setter_method_name,
-                 initial_method_name, computed_style_custom_functions,
+                 highlight_style_comes_from_originating_element, mutable,
+                 getter_method_name, setter_method_name, initial_method_name,
+                 computed_style_custom_functions,
                  computed_style_protected_functions, **kwargs):
         name_source = NameStyleConverter(name_for_methods)
         self.name = name_source.to_class_data_member()
@@ -145,6 +146,7 @@ class Field(object):
         self.needs_diff = bool(invalidate)
         self.reset_on_new_style = reset_on_new_style
         self.custom_compare = custom_compare
+        self.highlight_style_comes_from_originating_element = highlight_style_comes_from_originating_element
         self.mutable = mutable
         self.group = None
 
