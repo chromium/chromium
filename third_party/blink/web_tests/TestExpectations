@@ -1089,10 +1089,6 @@ crbug.com/1176323 external/wpt/css/css-counter-styles/counter-style-at-rule/symb
 crbug.com/1168277 external/wpt/css/css-counter-styles/counter-style-at-rule/disclosure-styles.html [ Failure ]
 crbug.com/1176315 external/wpt/css/css-counter-styles/counter-style-at-rule/symbols-function.html [ Failure ]
 
-# [css-overflow]
-# Incorrect WPT tests.
-crbug.com/993813 [ Mac ] external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-025.html [ Failure ]
-
 # Maybe WontFix according to the bug
 crbug.com/750992 external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
 
@@ -8715,8 +8711,7 @@ crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-024.h
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-025.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-027.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-028.html [ Failure ]
-crbug.com/40336192 [ Linux ] external/wpt/css/css-overflow/line-clamp/block-ellipsis-029.html [ Failure ]
-crbug.com/40336192 [ Win ] external/wpt/css/css-overflow/line-clamp/block-ellipsis-029.html [ Failure ]
+crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-029.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-030.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-repaint-003.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-024.html [ Failure ]
