@@ -23,8 +23,16 @@ import android.util.Size;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
@@ -52,6 +60,11 @@ public class PinnedTabStripMediator {
     private final GridLayoutManager mTabGridListLayoutManager;
     private final PropertyModel mStripPropertyModel;
     private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
+    private final TabModelObserver mTabModelObserver;
+    private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
+
+    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
 
     /**
      * The current width of a tab list item in the main tab grid. This is used to calculate the
@@ -68,6 +81,7 @@ public class PinnedTabStripMediator {
      * @param tabGridListModel The model for the main tab grid.
      * @param pinnedTabsModelList The model for the pinned tabs strip.
      * @param stripPropertyModel The property model for the pinned tabs strip.
+     * @param tabGroupModelFilterSupplier The supplier of the current {@link TabGroupModelFilter}.
      */
     public PinnedTabStripMediator(
             Context context,
@@ -75,7 +89,8 @@ public class PinnedTabStripMediator {
             TabListCoordinator tabListCoordinator,
             TabListModel tabGridListModel,
             TabListModel pinnedTabsModelList,
-            PropertyModel stripPropertyModel) {
+            PropertyModel stripPropertyModel,
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         mContext = context;
         mTabGridListLayoutManager = tabGridListLayoutManager;
         mTabGridListModel = tabGridListModel;
@@ -84,6 +99,22 @@ public class PinnedTabStripMediator {
         mTabLisCoordinator = tabListCoordinator;
         mTabListItemSizeChangedObserver = this::onTabGridListItemSizeChanged;
         mTabLisCoordinator.addTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
+        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didSelectTab(Tab tab, int type, int lastId) {
+                        int oldIndex = mPinnedTabsModelList.indexFromTabId(lastId);
+                        if (oldIndex != TabModel.INVALID_TAB_INDEX) {
+                            mPinnedTabsModelList.get(oldIndex).model.set(IS_SELECTED, false);
+                        }
+                        int newIndex = mPinnedTabsModelList.indexFromTabId(tab.getId());
+                        if (newIndex != TabModel.INVALID_TAB_INDEX) {
+                            mPinnedTabsModelList.get(newIndex).model.set(IS_SELECTED, true);
+                        }
+                    }
+                };
+        mTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(mOnTabGroupModelFilterChanged);
     }
 
     /**
@@ -241,7 +272,18 @@ public class PinnedTabStripMediator {
         mStripPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, shouldBeVisible);
     }
 
+    private void onTabGroupModelFilterChanged(
+            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+        if (oldFilter != null) {
+            oldFilter.removeObserver(mTabModelObserver);
+        }
+        if (newFilter != null) {
+            newFilter.addObserver(mTabModelObserver);
+        }
+    }
+
     void destroy() {
         mTabLisCoordinator.removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
+        mTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
     }
 }

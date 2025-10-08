@@ -29,7 +29,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
@@ -51,6 +53,7 @@ public class PinnedTabStripCoordinatorTest {
     @Mock private TabListRecyclerView mTabGridListRecyclerView;
     @Mock private GridLayoutManager mLayoutManager;
     @Mock private PinnedTabStripMediator mMediator;
+    @Mock private ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
 
     private PinnedTabStripCoordinator mCoordinator;
 
@@ -69,7 +72,8 @@ public class PinnedTabStripCoordinatorTest {
     private void onActivity(TestActivity activity) {
         FrameLayout parentView = new FrameLayout(activity);
         mCoordinator =
-                new PinnedTabStripCoordinator(activity, parentView, mTabListCoordinator) {
+                new PinnedTabStripCoordinator(
+                        activity, parentView, mTabListCoordinator, mTabGroupModelFilterSupplier) {
                     @Override
                     PinnedTabStripMediator createMediator(
                             Activity activity,
@@ -77,7 +81,8 @@ public class PinnedTabStripCoordinatorTest {
                             TabListCoordinator tabListCoordinator,
                             TabListModel tabListModel,
                             TabListModel pinnedTabsModelList,
-                            PropertyModel stripPropertyModel) {
+                            PropertyModel stripPropertyModel,
+                            ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
                         return mMediator;
                     }
                 };

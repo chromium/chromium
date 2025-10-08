@@ -14,8 +14,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
@@ -38,9 +41,14 @@ public class PinnedTabStripCoordinator {
      *
      * @param activity The current activity.
      * @param parentView The parent view to attach the pinned tabs strip to.
+     * @param tabListCoordinator The coordinator for the main tab grid.
+     * @param tabGroupModelFilterSupplier The supplier of the current {@link TabGroupModelFilter}.
      */
     public PinnedTabStripCoordinator(
-            Activity activity, ViewGroup parentView, TabListCoordinator tabListCoordinator) {
+            Activity activity,
+            ViewGroup parentView,
+            TabListCoordinator tabListCoordinator,
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         mPinnedTabsRecyclerView =
                 (TabListRecyclerView)
                         LayoutInflater.from(activity)
@@ -81,7 +89,8 @@ public class PinnedTabStripCoordinator {
                         tabListCoordinator,
                         tabListModel,
                         pinnedTabsModelList,
-                        pinnedTabStripPropertyModel);
+                        pinnedTabStripPropertyModel,
+                        tabGroupModelFilterSupplier);
 
         tabGridListRecyclerView.addOnScrollListener(
                 new RecyclerView.OnScrollListener() {
@@ -103,7 +112,8 @@ public class PinnedTabStripCoordinator {
             TabListCoordinator tabListCoordinator,
             TabListModel tabListModel,
             TabListModel pinnedTabsModelList,
-            PropertyModel stripPropertyModel) {
+            PropertyModel stripPropertyModel,
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         GridLayoutManager tabGridListLayoutManager =
                 (GridLayoutManager) tabGridListRecyclerView.getLayoutManager();
         assumeNonNull(tabGridListLayoutManager);
@@ -113,7 +123,8 @@ public class PinnedTabStripCoordinator {
                 tabListCoordinator,
                 tabListModel,
                 pinnedTabsModelList,
-                stripPropertyModel);
+                stripPropertyModel,
+                tabGroupModelFilterSupplier);
     }
 
     private static PinnedTabStripItemView createPinnedTabStripItemView(

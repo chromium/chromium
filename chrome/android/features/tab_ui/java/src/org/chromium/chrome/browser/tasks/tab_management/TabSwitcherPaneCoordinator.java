@@ -413,7 +413,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 // a sibling of the regular tab list. The pinned tab strip will be positioned above
                 // the regular tab list.
                 mPinnedTabsCoordinator =
-                        new PinnedTabStripCoordinator(mActivity, parentView, tabListCoordinator);
+                        new PinnedTabStripCoordinator(
+                                mActivity,
+                                parentView,
+                                tabListCoordinator,
+                                mTabGroupModelFilterSupplier);
 
                 TabListRecyclerView pinnedTabStripRecyclerView =
                         mPinnedTabsCoordinator.getPinnedTabsRecyclerView();

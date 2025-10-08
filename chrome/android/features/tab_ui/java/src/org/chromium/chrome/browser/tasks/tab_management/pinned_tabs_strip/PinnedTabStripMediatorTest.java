@@ -9,6 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,16 +18,22 @@ import android.util.Size;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -45,8 +52,19 @@ public class PinnedTabStripMediatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+            new ObservableSupplierImpl<>();
+
     @Mock private GridLayoutManager mLayoutManager;
     @Mock private TabListCoordinator mTabListCoordinator;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
+
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+
     private TabListModel mTabListModel;
     private TabListModel mPinnedTabsModelList;
     private PropertyModel mStripPropertyModel;
@@ -76,13 +94,17 @@ public class PinnedTabStripMediatorTest {
                         mTabListCoordinator,
                         mTabListModel,
                         mPinnedTabsModelList,
-                        mStripPropertyModel);
+                        mStripPropertyModel,
+                        mTabGroupModelFilterSupplier);
 
         ArgumentCaptor<TabListItemSizeChangedObserver> observerCaptor =
                 ArgumentCaptor.forClass(TabListItemSizeChangedObserver.class);
         verify(mTabListCoordinator).addTabListItemSizeChangedObserver(observerCaptor.capture());
         mTabListItemSizeChangedObserver = observerCaptor.getValue();
         when(mLayoutManager.getSpanCount()).thenReturn(2);
+
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        verify(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
     }
 
     @Test
@@ -255,6 +277,121 @@ public class PinnedTabStripMediatorTest {
     }
 
     @Test
+    public void testDidSelectTab_OldIndexValid() {
+        addTabToPinnedModel(1, true);
+        addTabToPinnedModel(2, false);
+        when(mTab2.getId()).thenReturn(2);
+
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab2, 0, 1);
+
+        // Verify old tab is deselected.
+        PropertyModel model1 = mPinnedTabsModelList.get(0).model;
+        Assert.assertFalse(model1.get(TabProperties.IS_SELECTED));
+
+        // Verify new tab is selected.
+        PropertyModel model2 = mPinnedTabsModelList.get(1).model;
+        Assert.assertTrue(model2.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testDidSelectTab_NewIndexValid() {
+        addTabToPinnedModel(1, false);
+        addTabToPinnedModel(2, false);
+        when(mTab1.getId()).thenReturn(1);
+
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab1, 0, 2);
+
+        // Verify new tab is selected.
+        PropertyModel model1 = mPinnedTabsModelList.get(0).model;
+        Assert.assertTrue(model1.get(TabProperties.IS_SELECTED));
+
+        // Verify other tab remains deselected.
+        PropertyModel model2 = mPinnedTabsModelList.get(1).model;
+        Assert.assertFalse(model2.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testDidSelectTab_BothIndicesValid() {
+        addTabToPinnedModel(1, true);
+        addTabToPinnedModel(2, false);
+        addTabToPinnedModel(3, false);
+        when(mTab2.getId()).thenReturn(2);
+
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab2, 0, 1);
+
+        // Verify old tab is deselected.
+        PropertyModel model1 = mPinnedTabsModelList.get(0).model;
+        Assert.assertFalse(model1.get(TabProperties.IS_SELECTED));
+
+        // Verify new tab is selected.
+        PropertyModel model2 = mPinnedTabsModelList.get(1).model;
+        Assert.assertTrue(model2.get(TabProperties.IS_SELECTED));
+
+        // Verify other tab remains deselected.
+        PropertyModel model3 = mPinnedTabsModelList.get(2).model;
+        Assert.assertFalse(model3.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testDidSelectTab_OldIndexInvalid() {
+        addTabToPinnedModel(1, false);
+        addTabToPinnedModel(2, false);
+        when(mTab1.getId()).thenReturn(1);
+
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab1, 0, 99); // oldId=99 is not in model
+
+        // Verify new tab is selected.
+        PropertyModel model1 = mPinnedTabsModelList.get(0).model;
+        Assert.assertTrue(model1.get(TabProperties.IS_SELECTED));
+
+        // Verify other tab remains deselected.
+        PropertyModel model2 = mPinnedTabsModelList.get(1).model;
+        Assert.assertFalse(model2.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testDidSelectTab_NewIndexInvalid() {
+        addTabToPinnedModel(1, true);
+        addTabToPinnedModel(2, false);
+        when(mTab3.getId()).thenReturn(3);
+
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(mTab3, 0, 1); // new tab with id=3 is not in model
+
+        // Verify old tab is deselected.
+        PropertyModel model1 = mPinnedTabsModelList.get(0).model;
+        Assert.assertFalse(model1.get(TabProperties.IS_SELECTED));
+
+        // Verify other tab remains deselected.
+        PropertyModel model2 = mPinnedTabsModelList.get(1).model;
+        Assert.assertFalse(model2.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testDidSelectTab_BothIndicesInvalid() {
+        addTabToPinnedModel(1, false);
+        addTabToPinnedModel(2, false);
+        when(mTab3.getId()).thenReturn(3);
+
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab3, 0, 99);
+
+        // Verify no tabs are selected.
+        PropertyModel model1 = mPinnedTabsModelList.get(0).model;
+        Assert.assertFalse(model1.get(TabProperties.IS_SELECTED));
+        PropertyModel model2 = mPinnedTabsModelList.get(1).model;
+        Assert.assertFalse(model2.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testChangingTabGroupModelFilters() {
+        mTabGroupModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+
+        verify(mTabGroupModelFilter).removeObserver(any());
+        verify(mIncognitoTabGroupModelFilter).addObserver(any());
+    }
+
+    @Test
     public void testDestroy() {
         mMediator.destroy();
         verify(mTabListCoordinator)
@@ -271,5 +408,14 @@ public class PinnedTabStripMediatorTest {
                                 TabListModel.CardProperties.ModelType.TAB)
                         .build();
         return new ListItem(0, model);
+    }
+
+    private void addTabToPinnedModel(int tabId, boolean isSelected) {
+        PropertyModel model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, tabId)
+                        .with(TabProperties.IS_SELECTED, isSelected)
+                        .build();
+        mPinnedTabsModelList.add(new ListItem(TabProperties.UiType.TAB, model));
     }
 }
