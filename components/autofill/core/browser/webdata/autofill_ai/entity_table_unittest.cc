@@ -65,6 +65,17 @@ TEST_F(EntityTableTest, BasicWriteThenRead) {
   EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, dl));
 }
 
+// Tests that AddOrUpdateEntityInstance() correctly adds entities with an id
+// that's not formatted as GUID.
+TEST_F(EntityTableTest, BasicWriteNonGuidFormatId) {
+  EntityInstance vr = test::GetVehicleEntityInstanceWithRandomGuid(
+      {.guid = "non-guid-format",
+       .record_type = EntityInstance::RecordType::kServerWallet});
+
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(vr));
+  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(vr));
+}
+
 // Tests that the entity table preserves read only flag between write and read.
 TEST_F(EntityTableTest, BasicWriteThenRead_ReadOnlyInstance) {
   EntityInstance pp =

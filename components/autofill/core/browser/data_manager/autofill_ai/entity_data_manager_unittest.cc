@@ -179,6 +179,22 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 }
 
+// Tests that AddOrUpdateEntityInstance() correctly adds entities with an id
+// that's not formatted as GUID.
+TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstanceNonGuidFormatId) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
+  EntityInstance vr = test::GetVehicleEntityInstanceWithRandomGuid(
+      {.guid = "non-guid-format",
+       .record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(AtLeast(1));
+  entity_data_manager().AddOrUpdateEntityInstance(vr);
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(vr));
+}
+
 // Tests that recording an entity being used calls for a database entity update.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, RecordEntityUsed) {
   // TODO(crbug.com/402616006): This test should re-read the entity from the db
