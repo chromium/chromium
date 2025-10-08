@@ -24,7 +24,7 @@ source_set("saved_tab_groups") {
     "session_service_tab_group_sync_observer.h",
     "shared_tab_group_feedback_controller.h",
     "tab_group_action_context_desktop.h",
-    "tab_group_menu_action.h",
+    "tab_group_menu_utils.h",
     "tab_group_sync_delegate_desktop.h",
   ]
   public_deps = [
@@ -78,7 +78,7 @@ source_set("impl") {
     "session_service_tab_group_sync_observer.cc",
     "shared_tab_group_feedback_controller.cc",
     "tab_group_action_context_desktop.cc",
-    "tab_group_menu_action.cc",
+    "tab_group_menu_utils.cc",
     "tab_group_sync_delegate_desktop.cc",
   ]
   deps = [
@@ -159,6 +159,7 @@ source_set("unit_tests") {
     "collaboration_messaging_page_action_controller_unittest.cc",
     "collaboration_messaging_tab_data_unittest.cc",
     "instant_message_queue_processor_unittest.cc",
+    "tab_group_menu_utils_unittest.cc",
   ]
   deps = [
     ":saved_tab_groups",

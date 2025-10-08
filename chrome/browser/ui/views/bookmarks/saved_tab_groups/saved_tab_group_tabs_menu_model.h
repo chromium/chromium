@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/uuid.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_action.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"

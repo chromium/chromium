@@ -86,11 +86,6 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel(
       TabGroupSyncService* tab_group_service);
 
-  // Returns sorted saved tab groups with the most recently created as the
-  // first, filtering out empty groups.
-  std::vector<base::Uuid> GetGroupsForDisplaySortedByCreationTime(
-      TabGroupSyncService* wrapper_service);
-
   // Because all the menu items (i.e. tab group items in the Everything menu -
   // primary menu and their submenus - secondary menu) need to be recognized and
   // invoked from the 3-dot menu so they follow the same pattern to get their

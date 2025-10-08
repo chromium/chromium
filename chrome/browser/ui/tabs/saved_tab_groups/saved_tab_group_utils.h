@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/uuid.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_action.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"

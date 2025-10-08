@@ -124,37 +124,7 @@ base::Uuid STGEverythingMenu::GetTabGroupIdFromCommandId(int command_id) {
   return sorted_non_empty_tab_groups_.at(idx_in_sorted_tab_group);
 }
 
-std::vector<base::Uuid>
-STGEverythingMenu::GetGroupsForDisplaySortedByCreationTime(
-    TabGroupSyncService* tab_group_service) {
-  CHECK(tab_group_service);
-  std::vector<base::Uuid> sorted_tab_groups;
-  for (const SavedTabGroup& group : tab_group_service->GetAllGroups()) {
-    if (group.saved_tabs().empty()) {
-      continue;
-    }
 
-    sorted_tab_groups.push_back(group.saved_guid());
-  }
-  auto compare_by_creation_time = [=](const base::Uuid& a,
-                                      const base::Uuid& b) {
-    const std::optional<SavedTabGroup> saved_tab_group_a =
-        tab_group_service->GetGroup(a);
-    const std::optional<SavedTabGroup> saved_tab_group_b =
-        tab_group_service->GetGroup(b);
-
-    // If either gets deleted while creating the model, ignore the order.
-    if (!saved_tab_group_a.has_value() || !saved_tab_group_b.has_value()) {
-      return false;
-    }
-
-    return saved_tab_group_a->creation_time() >
-           saved_tab_group_b->creation_time();
-  };
-  std::sort(sorted_tab_groups.begin(), sorted_tab_groups.end(),
-            compare_by_creation_time);
-  return sorted_tab_groups;
-}
 
 std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
     TabGroupSyncService* tab_group_service) {
@@ -173,7 +143,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
   }
 
   sorted_non_empty_tab_groups_ =
-      GetGroupsForDisplaySortedByCreationTime(tab_group_service);
+      TabGroupMenuUtils::GetGroupsForDisplaySortedByCreationTime(
+          tab_group_service);
 
   const auto* const color_provider = browser_->window()->GetColorProvider();
   for (size_t i = 0; i < sorted_non_empty_tab_groups_.size(); ++i) {
@@ -186,12 +157,7 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
     const auto color_id = GetTabGroupDialogColorId(tab_group->color());
     const auto group_icon = ui::ImageModel::FromVectorIcon(
         kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
-    auto title = tab_group->title();
-    if (title.empty()) {
-      title = l10n_util::GetPluralStringFUTF16(
-          IDS_SAVED_TAB_GROUP_TABS_COUNT,
-          static_cast<int>(tab_group->saved_tabs().size()));
-    }
+    auto title = tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(*tab_group);
     // For saved tab group items, use the indice in `sorted_tab_groups_` as the
     // command ids.
     const int command_id = GenerateTabGroupCommandID(i);

@@ -12,7 +12,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/ui/cocoa/main_menu_item.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_action.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 using TabGroupMenuAction = tab_groups::TabGroupMenuAction;

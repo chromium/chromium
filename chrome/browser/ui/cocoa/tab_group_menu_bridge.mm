@@ -108,15 +108,24 @@ void TabGroupMenuBridge::BuildMenu() {
     return;
   }
 
+  std::vector<base::Uuid> group_ids =
+      tab_groups::TabGroupMenuUtils::GetGroupsForDisplaySortedByCreationTime(
+          tab_group_service_);
+  if (group_ids.empty()) {
+    return;
+  }
+
   [menu addItem:[NSMenuItem separatorItem]];
 
-  for (const tab_groups::SavedTabGroup& group :
-       tab_group_service_->GetAllGroups()) {
+  for (const base::Uuid& uuid : group_ids) {
+    const std::optional<tab_groups::SavedTabGroup> group =
+        tab_group_service_->GetGroup(uuid);
+    if (!group) {
+      continue;
+    }
+
     NSString* title = base::SysUTF16ToNSString(
-        group.title().empty() ? l10n_util::GetPluralStringFUTF16(
-                                    IDS_SAVED_TAB_GROUP_TABS_COUNT,
-                                    static_cast<int>(group.saved_tabs().size()))
-                              : group.title());
+        tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(*group));
 
     // Add menu item for each group.
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
@@ -125,28 +134,27 @@ void TabGroupMenuBridge::BuildMenu() {
     // Set the icon of the group to the group color circle.
     const auto& color_provider =
         [AppController.sharedController lastActiveColorProvider];
-    const ui::ColorId color_id = GetTabGroupContextMenuColorId(group.color());
+    const ui::ColorId color_id = GetTabGroupContextMenuColorId(group->color());
     gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
         kTabGroupIcon, gfx::kFaviconSize, color_provider.GetColor(color_id));
     item.image = NSImageFromImageSkia(group_icon);
 
     NSMenu* submenu = [[NSMenu alloc] init];
-    base::Uuid uuid = group.saved_guid();
     // Add static menu items for submenu.
     [submenu addItem:CreateStaticSubmenuItem(
                          IDS_OPEN_GROUP_IN_BROWSER_MENU,
                          TabGroupMenuAction::Type::OPEN_IN_BROWSER, uuid)];
     [submenu
         addItem:CreateStaticSubmenuItem(
-                    group.local_group_id().has_value()
+                    group->local_group_id().has_value()
                         ? IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW
                         : IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW,
                     TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW,
                     uuid)];
     [submenu
         addItem:CreateStaticSubmenuItem(
-                    group.is_pinned() ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
-                                      : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
+                    group->is_pinned() ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
+                                       : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
                     TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, uuid)];
     bool is_owner =
         tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(profile_, uuid);
@@ -159,15 +167,17 @@ void TabGroupMenuBridge::BuildMenu() {
     [submenu addItem:[NSMenuItem separatorItem]];
 
     // Add menu items for each tab in submenu.
-    for (const tab_groups::SavedTabGroupTab& tab : group.saved_tabs()) {
+    for (const tab_groups::SavedTabGroupTab& tab : group->saved_tabs()) {
       NSMenuItem* tab_menu_item = [[NSMenuItem alloc]
-          initWithTitle:base::SysUTF16ToNSString(tab.title())
+          initWithTitle:base::SysUTF16ToNSString(
+                            tab_groups::TabGroupMenuUtils::GetMenuTextForTab(
+                                tab))
                  action:@selector(onMenuItem:)
           keyEquivalent:@""];
       tab_menu_item.target = menu_listener_;
 
       const ui::ImageModel image = favicon::GetDefaultFaviconModel(
-          GetTabGroupBookmarkColorId(group.color()));
+          GetTabGroupBookmarkColorId(group->color()));
       tab_menu_item.image =
           NSImageFromImageSkia(image.Rasterize(&color_provider));
 
