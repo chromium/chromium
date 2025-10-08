@@ -390,4 +390,8 @@ public class PageZoomUtils {
         sShouldShowMenuItemForTesting = isEnabled;
         ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = null);
     }
+
+    public static long getReadableZoomLevel(double zoomFactor) {
+        return Math.round(100 * convertZoomFactorToZoomLevel(zoomFactor));
+    }
 }

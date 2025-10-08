@@ -1133,6 +1133,13 @@
       <message name="IDS_PAGE_ZOOM_IPH_MESSAGE" desc="Text for in-product help bubble that appears to alert user of the new Zoom option in the main menu">
         You can zoom in or out on sites you visit
       </message>
+      <!-- Zoom Indicator -->
+      <message name="IDS_ZOOM_BUTTON_CONTENT_DESCRIPTION" desc="Content description for the zoom indicator on the location bar.">
+        {ZOOM_PERCENTAGE, plural,
+          =1 {Zoom}
+          other {Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER">%1$d<ex>120</ex></ph>%%}
+        }
+      </message>
 
       <!-- Search resumption module strings -->
       <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE" desc="Title of the search resumption module on NTP or Start surface.">

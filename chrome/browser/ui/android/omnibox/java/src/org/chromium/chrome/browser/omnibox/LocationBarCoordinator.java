@@ -57,6 +57,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
+import org.chromium.components.browser_ui.accessibility.PageZoomManager;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -88,6 +91,7 @@ public class LocationBarCoordinator
 
     private final DeferredIMEWindowInsetApplicationCallback
             mDeferredIMEWindowInsetApplicationCallback;
+
     private OmniboxSuggestionsDropdownEmbedderImpl mOmniboxDropdownEmbedderImpl;
 
     /** Identifies coordinators with methods specific to a device type. */
@@ -108,12 +112,14 @@ public class LocationBarCoordinator
     private final WindowAndroid mWindowAndroid;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
+    private View mZoomButton;
     private @Nullable View mDeleteButton;
     private @Nullable View mMicButton;
     private @Nullable View mLensButton;
     private @Nullable View mComposeplateButton;
     private @Nullable View mBookmarksButton;
     private @Nullable View mInstallButton;
+    private @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
     private CallbackController mCallbackController = new CallbackController();
     private boolean mDestroyed;
 
@@ -166,6 +172,7 @@ public class LocationBarCoordinator
      *     suggestions list draws edge to edge when appropriate. This should only be used when the
      *     soft keyboard is not visible.
      * @param onLongClickListener for the url bar.
+     * @param pageZoomManager The {@link PageZoomManager} for managing the page zoom.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -202,7 +209,8 @@ public class LocationBarCoordinator
             Supplier<Integer> bottomWindowPaddingSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
-            boolean isToolbarPositionCustomizationEnabled) {
+            boolean isToolbarPositionCustomizationEnabled,
+            @Nullable PageZoomManager pageZoomManager) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -239,6 +247,15 @@ public class LocationBarCoordinator
                         mLocationBarLayout,
                         profileObservableSupplier,
                         locationBarDataProvider);
+
+        mPageZoomIndicatorCoordinator =
+                pageZoomManager != null
+                        ? new PageZoomIndicatorCoordinator(() -> mZoomButton, pageZoomManager)
+                        : null;
+
+        if (mPageZoomIndicatorCoordinator != null) {
+            mPageZoomIndicatorCoordinator.setOnZoomLevelChangedCallback(this::onZoomLevelChanged);
+        }
         // TODO(crbug.com/40733049): Inject LocaleManager instance to LocationBarCoordinator instead
         // of using the singleton.
         mLocationBarMediator =
@@ -261,7 +278,8 @@ public class LocationBarCoordinator
                         tabModelSelectorSupplier,
                         browserControlsStateProvider,
                         modalDialogManagerSupplier,
-                        mNavigationAttachmentsCoordinator.getNavigationFulfillmentTypeSupplier());
+                        mNavigationAttachmentsCoordinator.getNavigationFulfillmentTypeSupplier(),
+                        mPageZoomIndicatorCoordinator);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
@@ -332,6 +350,9 @@ public class LocationBarCoordinator
             mComposeplateButton = mLocationBarLayout.findViewById(R.id.composeplate_button);
             mComposeplateButton.setOnClickListener(mLocationBarMediator::composeplateButtonClicked);
         }
+
+        mZoomButton = mLocationBarLayout.findViewById(R.id.zoom_button);
+        mZoomButton.setOnClickListener(mLocationBarMediator::zoomButtonClicked);
 
         mInstallButton = mLocationBarLayout.findViewById(R.id.install_button);
         mInstallButton.setOnClickListener(mLocationBarMediator::installButtonClicked);
@@ -410,6 +431,8 @@ public class LocationBarCoordinator
             mComposeplateButton = null;
         }
 
+        mZoomButton.setOnClickListener(null);
+
         mInstallButton.setOnClickListener(null);
         mInstallButton = null;
 
@@ -446,6 +469,12 @@ public class LocationBarCoordinator
         mLocationBarMediator = null;
         GeolocationHeader.stopListeningForLocationUpdates();
 
+        if (mPageZoomIndicatorCoordinator != null) {
+            mPageZoomIndicatorCoordinator.setOnZoomLevelChangedCallback(null);
+            mPageZoomIndicatorCoordinator.destroy();
+            mPageZoomIndicatorCoordinator = null;
+        }
+
         mDestroyed = true;
     }
 
@@ -458,6 +487,9 @@ public class LocationBarCoordinator
         mUrlCoordinator.onFinishNativeInitialization();
         mAutocompleteCoordinator.onNativeInitialized();
         mStatusCoordinator.onNativeInitialized();
+        if (mPageZoomIndicatorCoordinator != null) {
+            mPageZoomIndicatorCoordinator.onNativeInitialized();
+        }
         mNativeInitialized = true;
     }
 
@@ -930,6 +962,21 @@ public class LocationBarCoordinator
     public ObservableSupplier<@NavigationFulfillmentType Integer>
             getNavigationFulfillmentTypeSupplier() {
         return mLocationBarMediator.getNavigationFulfillmentTypeSupplier();
+    }
+
+    @Override
+    public void onZoomLevelChanged(double zoomLevel) {
+        long readableZoomLevel = PageZoomUtils.getReadableZoomLevel(zoomLevel);
+        Context context = mLocationBarLayout.getContext();
+        String zoomString =
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.zoom_button_content_description,
+                                (int) readableZoomLevel,
+                                (int) readableZoomLevel);
+        mZoomButton.setContentDescription(zoomString);
+        mZoomButton.setTooltipText(zoomString);
+        mLocationBarMediator.onZoomLevelChanged();
     }
 
     /**

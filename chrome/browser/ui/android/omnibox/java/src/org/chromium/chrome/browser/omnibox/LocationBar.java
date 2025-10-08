@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 
 /** Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}. */
 @NullMarked
@@ -132,6 +133,17 @@ public interface LocationBar {
      * the NTP.
      */
     default void maybeShowOrClearCursorInLocationBar() {}
+
+    /**
+     * Called when the zoom level of the page has changed. Note: The zoom level value is not
+     * represented as a percentage (e.g., 100.0) or a fraction (e.g., 1.0). Instead, it uses an
+     * internal table where a value of `0.0` corresponds to 100% zoom. The default zoom level can
+     * differ if the user has set a preference. For the complete mapping of values to zoom
+     * percentages, see the zoom table variable. Read more at {@link PageZoomUtils}
+     *
+     * @param zoomLevel The new zoom level.
+     */
+    default void onZoomLevelChanged(double zoomLevel) {}
 
     /** Destroys the LocationBar. */
     void destroy();

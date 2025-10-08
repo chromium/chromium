@@ -62,6 +62,13 @@ found in the LICENSE file.
             android:tooltipText="@string/app_banner_install" />
 
         <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/zoom_button"
+            style="@style/LocationBarActionButton.AdaptiveDensity"
+            android:src="@drawable/ic_zoom"
+            android:visibility="gone"
+            android:tooltipText="@string/page_zoom_menu_title"/>
+
+        <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/bookmark_button"
             style="@style/LocationBarActionButton.AdaptiveDensity"
             android:visibility="gone"

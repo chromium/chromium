@@ -45,6 +45,9 @@ android_library("lib_java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarCoordinatorDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarMediator.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarViewBinder.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomIndicatorCoordinator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomIndicatorMediator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomIndicatorViewBinder.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManager.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManagerDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMenuItemCoordinator.java",
@@ -54,6 +57,7 @@ android_library("lib_java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomSeekbarPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomSliderPreference.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/ZoomEventsObserver.java",
   ]
 
   deps = [
@@ -104,6 +108,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_zoom.xml",
     "java/res/drawable/page_zoom_background.xml",
     "java/res/drawable/page_zoom_ripple.xml",
+    "java/res/layout/page_zoom_indicator_view.xml",
     "java/res/layout/page_zoom_legacy_preference.xml",
     "java/res/layout/page_zoom_preference.xml",
     "java/res/layout/page_zoom_slider.xml",
@@ -126,6 +131,7 @@ robolectric_library("junit") {
 
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarMediatorUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomIndicatorMediatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManagerUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMenuItemMediatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtilsUnitTest.java",

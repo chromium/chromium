@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -217,6 +218,7 @@ public class LocationBarMediatorTest {
     @Mock private LoadUrlResult mLoadUrlResult;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private AddToHomescreenCoordinator mAddToHomescreenCoordinator;
+    @Mock private PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
 
     @Mock private LensController mLensController;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -302,7 +304,8 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT));
+                        new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT),
+                        mPageZoomIndicatorCoordinator);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
@@ -327,7 +330,8 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT));
+                        new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT),
+                        mPageZoomIndicatorCoordinator);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ShadowUrlUtilities.sIsNtp = false;
@@ -1091,7 +1095,8 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT));
+                        new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT),
+                        mPageZoomIndicatorCoordinator);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -1765,6 +1770,72 @@ public class LocationBarMediatorTest {
         doReturn(null).when(mLocationBarDataProvider).getTab();
         mMediator.hintZeroSuggestRefresh();
         verify(mAutocompleteCoordinator).prefetchZeroSuggestResults(null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    public void testZoomButtonClicked() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        mMediator.zoomButtonClicked(null);
+        verify(mPageZoomIndicatorCoordinator).show(mWebContents);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    public void testShouldShowZoomButton_featureEnabledAndNotDefaultZoom() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(false);
+        verify(mLocationBarLayout, never()).setZoomButtonVisibility(true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    public void testShouldShowZoomButton_featureEnabledAndDefaultZoom() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(true);
+        verify(mLocationBarLayout, never()).setZoomButtonVisibility(false);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    public void testShouldShowZoomButton_featureDisabled() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(false);
+        verify(mLocationBarLayout, never()).setZoomButtonVisibility(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    public void testShouldShowZoomButton_nullWebContents() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(null).when(mTab).getWebContents();
+        verify(mLocationBarLayout, never()).setZoomButtonVisibility(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    public void testUpdateZoomButtonVisibility_popupShowing() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(true);
+        when(mPageZoomIndicatorCoordinator.isPopupWindowShowing()).thenReturn(true);
+        mMediator.updateZoomButtonVisibilityForTesting();
+        verify(mLocationBarLayout).setZoomButtonVisibility(true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    public void testUpdateZoomButtonVisibility_hideButton() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(true);
+        when(mPageZoomIndicatorCoordinator.isPopupWindowShowing()).thenReturn(false);
+        mMediator.updateZoomButtonVisibilityForTesting();
+        verify(mLocationBarLayout).setZoomButtonVisibility(false);
     }
 
     @Test

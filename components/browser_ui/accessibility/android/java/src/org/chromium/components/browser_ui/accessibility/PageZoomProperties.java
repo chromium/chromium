@@ -61,4 +61,14 @@ public class PageZoomProperties {
         DEFAULT_ZOOM_FACTOR,
         ZOOM_PERCENT_TEXT
     };
+
+    public static final PropertyKey[] ALL_KEYS_FOR_INDICATOR = {
+        DECREASE_ZOOM_CALLBACK,
+        INCREASE_ZOOM_CALLBACK,
+        DECREASE_ZOOM_ENABLED,
+        INCREASE_ZOOM_ENABLED,
+        DEFAULT_ZOOM_FACTOR,
+        ZOOM_PERCENT_TEXT,
+        RESET_ZOOM_CALLBACK
+    };
 }

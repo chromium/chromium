@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl;
@@ -169,6 +170,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomBarCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomBarCoordinatorDelegate;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomManagerDelegate;
+import org.chromium.components.browser_ui.accessibility.ZoomEventsObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -346,7 +348,7 @@ public class RootUiCoordinator
     protected final TopControlsStacker mTopControlsStacker;
     @NonNull protected final ObservableSupplier<Integer> mOverviewColorSupplier;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
-    @Nullable private PageZoomBarCoordinator mPageZoomCoordinator;
+    @Nullable private PageZoomBarCoordinator mPageZoomBarCoordinator;
     @Nullable private ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private AppMenuObserver mAppMenuObserver;
 
@@ -583,9 +585,28 @@ public class RootUiCoordinator
                             public BrowserContextHandle getBrowserContextHandle() {
                                 return mProfileSupplier.get().getOriginalProfile();
                             }
+
+                            @Override
+                            public void addZoomEventsObserver(ZoomEventsObserver observer) {
+                                HostZoomListenerFactory.getForProfile(
+                                                mProfileSupplier.get().getOriginalProfile())
+                                        .addObserver(observer);
+                            }
+
+                            @Override
+                            public void removeZoomEventsObserver(ZoomEventsObserver observer) {
+                                // HostZoomListenerFactory stores each HostZoomListener object in a
+                                // ProfileKeyedMap. When the profile is destroyed, each
+                                // HostZoomFactory will be destroyed, removing all observers stored.
+                                if (mProfileSupplier.get() != null) {
+                                    HostZoomListenerFactory.getForProfile(
+                                                    mProfileSupplier.get().getOriginalProfile())
+                                            .removeObserver(observer);
+                                }
+                            }
                         });
 
-        mPageZoomCoordinator =
+        mPageZoomBarCoordinator =
                 new PageZoomBarCoordinator(
                         new PageZoomBarCoordinatorDelegate() {
                             @Override
@@ -786,9 +807,9 @@ public class RootUiCoordinator
             mIncognitoReauthController.destroy();
         }
 
-        if (mPageZoomCoordinator != null) {
-            mPageZoomCoordinator.destroy();
-            mPageZoomCoordinator = null;
+        if (mPageZoomBarCoordinator != null) {
+            mPageZoomBarCoordinator.destroy();
+            mPageZoomBarCoordinator = null;
         }
 
         if (mBrowserControlsObserver != null) {
@@ -1220,8 +1241,8 @@ public class RootUiCoordinator
                 new MessageContainerObserver() {
                     @Override
                     public void onShowMessageContainer() {
-                        if (mPageZoomCoordinator != null) {
-                            mPageZoomCoordinator.hide();
+                        if (mPageZoomBarCoordinator != null) {
+                            mPageZoomBarCoordinator.hide();
                         }
                     }
 
@@ -1414,7 +1435,7 @@ public class RootUiCoordinator
             Tab tab = mActivityTabProvider.get();
             TrackerFactory.getTrackerForProfile(tab.getProfile())
                     .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
-            mPageZoomCoordinator.show(tab.getWebContents());
+            mPageZoomBarCoordinator.show(tab.getWebContents());
         } else if (id == R.id.open_with_id) {
             Tab tab = mActivityTabProvider.get();
             assert tab != null && tab.isNativePage() && tab.getNativePage() instanceof PdfPage;
@@ -1484,10 +1505,10 @@ public class RootUiCoordinator
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        if (!hasFocus && mPageZoomCoordinator != null) {
+        if (!hasFocus && mPageZoomBarCoordinator != null) {
             // If the window loses focus, dismiss the slider so two windows cannot modify the same
             // value simultaneously.
-            mPageZoomCoordinator.hide();
+            mPageZoomBarCoordinator.hide();
         }
     }
 
@@ -1513,9 +1534,9 @@ public class RootUiCoordinator
                                 mFindToolbarManager.hideToolbar(false);
                             }
 
-                            if (mPageZoomCoordinator != null) {
+                            if (mPageZoomBarCoordinator != null) {
                                 // On show overlay panel, hide page zoom dialog
-                                mPageZoomCoordinator.hide();
+                                mPageZoomBarCoordinator.hide();
                             }
                         }
 
@@ -1684,7 +1705,8 @@ public class RootUiCoordinator
                             getMenuButtonVisibilityDelegate(),
                             mTopControlsStacker,
                             mTopInsetCoordinatorSupplier,
-                            mXrSpaceModeObservableSupplier);
+                            mXrSpaceModeObservableSupplier,
+                            mPageZoomManager);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
@@ -1817,9 +1839,9 @@ public class RootUiCoordinator
                     new AppMenuObserver() {
                         @Override
                         public void onMenuVisibilityChanged(boolean isVisible) {
-                            if (isVisible && mPageZoomCoordinator != null) {
+                            if (isVisible && mPageZoomBarCoordinator != null) {
                                 // On show app menu, hide page zoom dialog
-                                mPageZoomCoordinator.hide();
+                                mPageZoomBarCoordinator.hide();
                             }
                         }
 
@@ -2166,7 +2188,7 @@ public class RootUiCoordinator
                                 }
 
                                 // On visible bottom sheet, hide page zoom dialog
-                                mPageZoomCoordinator.hide();
+                                mPageZoomBarCoordinator.hide();
                                 break;
                             case SheetState.HIDDEN:
                                 mOpened = false;
@@ -2187,9 +2209,9 @@ public class RootUiCoordinator
                 .isShowingSupplier()
                 .addObserver(
                         (Boolean isShowing) -> {
-                            if (isShowing && mPageZoomCoordinator != null) {
+                            if (isShowing && mPageZoomBarCoordinator != null) {
                                 // On show snackbar, hide page zoom dialog
-                                mPageZoomCoordinator.hide();
+                                mPageZoomBarCoordinator.hide();
                             }
                         });
     }
@@ -2204,7 +2226,7 @@ public class RootUiCoordinator
                     @Override
                     public void onBottomControlsHeightChanged(
                             int bottomControlsHeight, int bottomControlsMinHeight) {
-                        mPageZoomCoordinator.onBottomControlsHeightChanged(bottomControlsHeight);
+                        mPageZoomBarCoordinator.onBottomControlsHeightChanged(bottomControlsHeight);
                     }
                 };
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);

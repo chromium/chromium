@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -200,6 +201,7 @@ class LocationBarMediator
     private final Rect mRootViewBounds = new Rect();
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
+    private final @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
@@ -255,7 +257,8 @@ class LocationBarMediator
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             ObservableSupplier<@NavigationFulfillmentType Integer>
-                    navigationFulfillmentTypeSupplier) {
+                    navigationFulfillmentTypeSupplier,
+            @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -282,6 +285,10 @@ class LocationBarMediator
         mNavigationFulfillmentTypeSupplier = navigationFulfillmentTypeSupplier;
         mNavigationFulfillmentTypeSupplier.addObserver(
                 mCallbackController.makeCancelable((v) -> updateButtonVisibility()));
+        mPageZoomIndicatorCoordinator = pageZoomIndicatorCoordinator;
+        if (mPageZoomIndicatorCoordinator != null) {
+            mPageZoomIndicatorCoordinator.setOnDismissCallbacks(this::updateZoomButtonVisibility);
+        }
         AppBannerManager.addObserver(this);
 
         mBookmarkButtonToolbarWidthConsumer =
@@ -342,6 +349,9 @@ class LocationBarMediator
         mLocationBarDataProvider.removeObserver(this);
         mDeferredNativeRunnables.clear();
         mUrlFocusChangeListeners.clear();
+        if (mPageZoomIndicatorCoordinator != null) {
+            mPageZoomIndicatorCoordinator.setOnDismissCallbacks(null);
+        }
         AppBannerManager.removeObserver(this);
     }
 
@@ -825,6 +835,13 @@ class LocationBarMediator
 
         tab.loadUrl(new LoadUrlParams(url));
         ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
+    }
+
+    /* package */ void zoomButtonClicked(View view) {
+        WebContents webContents = getWebContentsForCurrentTab();
+        if (mPageZoomIndicatorCoordinator == null || webContents == null) return;
+        assert ChromeFeatureList.sAndroidZoomIndicator.isEnabled();
+        mPageZoomIndicatorCoordinator.show(webContents);
     }
 
     /* package */ void setAddToHomescreenCoordinatorForTesting( // IN-TEST
@@ -1312,6 +1329,30 @@ class LocationBarMediator
         mLocationBarLayout.setDeleteButtonVisibility(shouldShowDeleteButton());
     }
 
+    /* package */ void onZoomLevelChanged() {
+        updateZoomButtonVisibility();
+    }
+
+    private boolean shouldShowZoomButton() {
+        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()
+                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                || mPageZoomIndicatorCoordinator == null
+                || getWebContentsForCurrentTab() == null) {
+            return false;
+        }
+        return !mPageZoomIndicatorCoordinator.isZoomLevelDefault();
+    }
+
+    private void updateZoomButtonVisibility() {
+        if (mPageZoomIndicatorCoordinator == null) return;
+        mLocationBarLayout.setZoomButtonVisibility(
+                shouldShowZoomButton() || mPageZoomIndicatorCoordinator.isPopupWindowShowing());
+    }
+
+    public void updateZoomButtonVisibilityForTesting() {
+        updateZoomButtonVisibility();
+    }
+
     private @Nullable WebContents getWebContentsForCurrentTab() {
         Tab currentTab = mLocationBarDataProvider.getTab();
         if (currentTab == null) return null;
@@ -1357,6 +1398,7 @@ class LocationBarMediator
     private void updateTabletButtonsVisibility() {
         assert mIsTablet;
         updateBookmarkButtonVisibility();
+        updateZoomButtonVisibility();
     }
 
     private void updateBookmarkButtonVisibility() {

@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.accessibility.ZoomEventsObserver;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
 
@@ -47,7 +48,7 @@ public class HostZoomListenerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock private HostZoomListener.ZoomEventsObserver mObserver;
+    @Mock private ZoomEventsObserver mObserver;
     @Captor private ArgumentCaptor<String> mHostCaptor;
     @Captor private ArgumentCaptor<Double> mZoomLevelCaptor;
 

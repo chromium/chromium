@@ -106,6 +106,26 @@ public class PageZoomManager {
         HostZoomMap.setZoomLevel(mDelegate.getWebContents(), newZoomLevel);
     }
 
+    /**
+     * Adds a zoom events observer to the HostZoomListener for the current Profile. This is used to
+     * listen for zoom level changes from the native HostZoomMap.
+     *
+     * @param observer The zoom events observer to add.
+     */
+    public void addZoomEventsObserver(ZoomEventsObserver observer) {
+        mDelegate.addZoomEventsObserver(observer);
+    }
+
+    /**
+     * Removes a zoom events observer from the HostZoomListener for the current Profile. This is
+     * used to stop listening for zoom level changes from the native HostZoomMap.
+     *
+     * @param observer The zoom events observer to remove.
+     */
+    public void removeZoomEventsObserver(ZoomEventsObserver observer) {
+        mDelegate.removeZoomEventsObserver(observer);
+    }
+
     // Snaps the zoom level of the current WebContents to the zoom factor at the given index in the
     // cached available values.
     @VisibleForTesting

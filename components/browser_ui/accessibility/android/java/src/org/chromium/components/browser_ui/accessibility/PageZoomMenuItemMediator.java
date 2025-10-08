@@ -83,8 +83,7 @@ class PageZoomMenuItemMediator {
     }
 
     private void updateZoomPercentageText(double newZoomFactor) {
-        long readableZoomLevel =
-                Math.round(100 * PageZoomUtils.convertZoomFactorToZoomLevel(newZoomFactor));
+        long readableZoomLevel = PageZoomUtils.getReadableZoomLevel(newZoomFactor);
         mModel.set(
                 PageZoomProperties.ZOOM_PERCENT_TEXT,
                 String.format(Locale.US, "%d%%", readableZoomLevel));

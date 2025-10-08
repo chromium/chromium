@@ -41,6 +41,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
     protected ImageButton mLensButton;
+    protected ImageButton mZoomButton;
     protected ImageButton mInstallButton;
     protected ImageButton mComposeplateButton;
     protected UrlBar mUrlBar;
@@ -81,6 +82,7 @@ public class LocationBarLayout extends ConstraintLayout {
         mUrlBar = findViewById(R.id.url_bar);
         mMicButton = findViewById(R.id.mic_button);
         mLensButton = findViewById(R.id.lens_camera_button);
+        mZoomButton = findViewById(R.id.zoom_button);
         mInstallButton = findViewById(R.id.install_button);
         mComposeplateButton = findViewById(R.id.composeplate_button);
         mUrlActionContainer = findViewById(R.id.url_action_container);
@@ -246,6 +248,11 @@ public class LocationBarLayout extends ConstraintLayout {
     /** Sets the visibility of the lens button. */
     /* package */ void setLensButtonVisibility(boolean shouldShow) {
         mLensButton.setVisibility(shouldShow ? VISIBLE : GONE);
+    }
+
+    /** Sets the visibility of the zoom button. */
+    /* package */ void setZoomButtonVisibility(boolean shouldShow) {
+        mZoomButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }
 
     /** Sets the visibility of the install button. */

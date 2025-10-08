@@ -9,9 +9,8 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.accessibility.ZoomEventsObserver;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
@@ -28,8 +27,9 @@ import org.chromium.content_public.browser.SiteZoomInfo;
  *
  * <p>This class's lifecycle is tied to a {@link Profile}. Instances are created and managed by
  * {@link HostZoomListenerFactory} to ensure that there is only one instance per profile. The
- * factory is responsible for calling {@link #destroy()} when the profile is destroyed, which is
- * crucial for releasing the native observer and preventing resource leaks.
+ * factory is responsible for calling {@link #destroy()} when the profile is destroyed. We also do
+ * not mind if this class ends up leaky, as it is meant to live for as long as the browser process
+ * does.
  *
  * <p>The same HostZoomListener instance is shared between a regular profile and its corresponding
  * incognito profile. This is because zoom level settings are not separated for incognito mode; they
@@ -47,21 +47,8 @@ import org.chromium.content_public.browser.SiteZoomInfo;
 @NullMarked
 public class HostZoomListener implements Destroyable {
 
-    /** Interface for observing zoom level changes. */
-    @FunctionalInterface
-    public interface ZoomEventsObserver {
-        /**
-         * Called when the zoom level for a host has changed.
-         *
-         * @param host The host for which the zoom level changed.
-         * @param zoomLevel The new zoom level.
-         */
-        void onZoomLevelChanged(String host, double zoomLevel);
-    }
-
     private final BrowserContextHandle mBrowserContextHandle;
     private final ObserverList<ZoomEventsObserver> mObservers = new ObserverList();
-    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private long mNativeHostZoomLevelListenerKey;
 
     /**
@@ -82,8 +69,6 @@ public class HostZoomListener implements Destroyable {
             mNativeHostZoomLevelListenerKey = 0;
         }
         mObservers.clear();
-        // Ensure that destroy() is called before the object is GC'ed.
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
     // Java observer methods.
