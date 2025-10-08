@@ -3903,9 +3903,12 @@ if (!is_robolectric && enable_java_templates) {
     # as otherwise _use_native_activity and _android_manifest would not be used.
     assert(_use_native_activity != "" && _android_manifest != "")
 
+    # allow_cleartext_traffic only works with the default manifest.
+    _allow_cleartext_traffic = defined(invoker.allow_cleartext_traffic) &&
+                               invoker.allow_cleartext_traffic
+    assert(!defined(invoker.android_manifest) || !_allow_cleartext_traffic)
+
     if (!defined(invoker.android_manifest)) {
-      _allow_cleartext_traffic = defined(invoker.allow_cleartext_traffic) &&
-                                 invoker.allow_cleartext_traffic
       jinja_template("${target_name}_manifest") {
         _native_library_name = get_label_info(invoker.shared_library, "name")
         if (defined(invoker.android_manifest_template)) {
@@ -3945,6 +3948,9 @@ if (!is_robolectric && enable_java_templates) {
         ":${target_name}__secondary_abi_shared_library_list",
         ":${target_name}__shared_library_list",
       ]
+      if (_allow_cleartext_traffic) {
+        deps += [ "//testing/android/native_test:cleartext_traffic_resources" ]
+      }
     }
   }
 

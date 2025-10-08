@@ -232,6 +232,7 @@ android_resources("webview_instrumentation_apk_resources") {
     "shell/res/raw/resource_icon.png",
     "shell/res/values/config.xml",
     "shell/res/values/strings.xml",
+    "shell/res/xml/network_security_config.xml",
     "shell/res/xml/provider_paths.xml",
   ]
 }

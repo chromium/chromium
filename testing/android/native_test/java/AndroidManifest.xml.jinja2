@@ -35,7 +35,7 @@ found in the LICENSE file.
          https://developer.android.com/training/data-storage/compatibility. -->
     {% if allow_cleartext_traffic == 'true' %}
     <application android:label="NativeTests"
-            android:usesCleartextTraffic="true"
+            android:networkSecurityConfig="@xml/allow_cleartext_traffic"
             android:requestLegacyExternalStorage="true"
             android:memtagMode="sync"
             android:name="org.chromium.native_test.NativeTestApplication">
