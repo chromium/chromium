@@ -2954,11 +2954,11 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
 
       <!-- Status tray charging strings. -->
-      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_TITLE" desc="The title of a notification indicating that an incompatible charger has been connected, and no charging will occur." translateable="false">
-        Incompatible charger
+      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_TITLE" desc="The title of a notification indicating that an incompatible charger has been connected, and no charging will occur.">
+        Can't charge device
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_MESSAGE" desc="The message body of a notification indicating that an incompatible charger has been connected, and that the user needs to connect a more powerful one." translateable="false">
-        Connect an adapter with more watts (W) to charge your device.
+      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_MESSAGE" desc="The message body of a notification indicating that an incompatible charger has been connected, and that the user needs to connect a more powerful one.">
+        Try a charger with more watts (W) or use your original charger.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE" desc="The title of a notification indicating that a low-current USB charger has been connected.">
         Low-power charger connected
@@ -3117,8 +3117,8 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE_ACCESSIBLE" desc="The message used by accessibility to indicate that battery charging is unreliable.">
         Plugged in to a low-power charger. Battery charging may not be reliable.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_INCOMPATIBLE_CHARGER_ACCESSIBLE" desc="The message used by accessibility to announce that an incompatible charger is connected." translateable="false">
-        Plugged in to an incompatible charger. Connect the original charger (or a similar wattage charger) to charge your device.
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_INCOMPATIBLE_CHARGER_ACCESSIBLE" desc="The message used by accessibility to announce that an incompatible charger is connected.">
+        Device plugged in, but not charging. Try a charger with more watts (W) or use your original charger.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR" desc="The separator symbol between battery percentage string and battery remaining time string">
         ''' - '''
