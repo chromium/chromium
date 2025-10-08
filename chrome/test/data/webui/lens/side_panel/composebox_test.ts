@@ -135,6 +135,10 @@ suite('Composebox', () => {
     const composebox =
         lensSidePanelElement.shadowRoot!.querySelector('ntp-composebox');
     assertTrue(!!composebox);
+
+    testBrowserProxy.page.setIsOverlayShowing(false);
+    await waitAfterNextRender(lensSidePanelElement);
+
     return composebox;
   }
 
@@ -178,9 +182,8 @@ suite('Composebox', () => {
         composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
     assertTrue(!!lensButton);
 
-    // The button should not be visible initially while the composebox is
-    // collapsed.
-    assertFalse(isTrulyVisible(lensButton));
+    // The button should be visible.
+    assertTrue(isTrulyVisible(lensButton));
 
     // Grab the input to focus it.
     const input = composebox.shadowRoot!.querySelector<HTMLTextAreaElement>(
@@ -197,7 +200,7 @@ suite('Composebox', () => {
     input.focus();
     await expandPromise;
 
-    // The button should be visible now that the composebox is expanded.
+    // The button should still be visible now that the composebox is expanded.
     assertTrue(isTrulyVisible(lensButton));
   });
 
@@ -643,20 +646,47 @@ suite('Composebox', () => {
         composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
 
-    // The button should not be visible initially while the composebox is
-    // collapsed.
-    assertFalse(isTrulyVisible(lensButton));
-
-    // Focusing the input should expand the composebox.
-    const expandPromise =
-        getTransitionEndPromise(animatedElement, 'max-height');
-    input.focus();
-    await expandPromise;
-
+    // The button should be visible.
     assertTrue(isTrulyVisible(lensButton));
 
     lensButton.click();
     await mockPageHandler.whenCalled('handleLensButtonClick');
     assertEquals(1, mockPageHandler.getCallCount('handleLensButtonClick'));
+  });
+
+  test('LensButtonDisabledChangesOnOverlayState', async () => {
+    loadTimeData.overrideValues(
+        {enableAimSearchbox: true, showLensButton: true});
+    const composebox = await setupTest();
+
+    const lensButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+    assertTrue(!!lensButton);
+
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+
+    // The button should be visible.
+    assertTrue(isTrulyVisible(lensButton));
+
+    // The Lens button is in an enabled state by default.
+    assertFalse(lensButton.hasAttribute('disabled'));
+
+    // Setting the overlay to not showing should make the button enabled.
+    testBrowserProxy.page.setIsOverlayShowing(true);
+    await waitAfterNextRender(lensSidePanelElement);
+
+    assertTrue(lensButton.hasAttribute('disabled'));
+
+    // Setting the overlay to showing should make the button disabled again.
+    testBrowserProxy.page.setIsOverlayShowing(false);
+    await waitAfterNextRender(lensSidePanelElement);
+
+    assertFalse(lensButton.hasAttribute('disabled'));
   });
 });

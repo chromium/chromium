@@ -117,6 +117,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      lensButtonDisabled_: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -146,6 +150,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor showContextMenuDescription_: boolean = true;
   protected accessor inputsDisabled_: boolean = false;
+  protected accessor lensButtonDisabled_: boolean = false;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -422,6 +427,14 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected onLensClick_() {
     this.pageHandler_.handleLensButtonClick();
+  }
+
+  protected onLensIconMouseDown_(e: MouseEvent) {
+    // Prevent the composebox from expanding due to being focused by capturing
+    // the mousedown event. This is needed to allow the Lens icon to be
+    // clicked when the composebox does not have focus without expanding the
+    // composebox.
+    e.preventDefault();
   }
 
   protected setDeepSearchMode_(e: CustomEvent<{inDeepSearchMode: boolean}>) {

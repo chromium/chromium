@@ -224,6 +224,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Number,
         value: 0,
       },
+      isOverlayShowing: {
+        type: Boolean,
+        value: true,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -301,6 +306,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // Whether the results in the iframe are currently on the AIM UI.
   declare private isOnAimResults: boolean;
   declare private composeboxHeight_: number;
+  // Whether the visual selection overlay is currently showing.
+  declare private isOverlayShowing: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   // Watches for changes in the height of the composebox.
   private composeboxResizeObserver_: ResizeObserver|null = null;
@@ -351,6 +358,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.onAimResultsChanged.bind(this)),
       this.browserProxy.callbackRouter.focusResultsFrame.addListener(
           this.focusResultsFrame.bind(this)),
+      this.browserProxy.callbackRouter.setIsOverlayShowing.addListener(
+          this.setIsOverlayShowing.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
@@ -653,6 +662,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onAimResultsChanged(onAim: boolean) {
     this.isOnAimResults = onAim;
+  }
+
+  private setIsOverlayShowing(isShowing: boolean) {
+    this.isOverlayShowing = isShowing;
   }
 
   private focusResultsFrame() {

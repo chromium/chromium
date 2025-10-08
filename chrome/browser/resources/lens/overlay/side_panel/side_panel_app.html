@@ -9,18 +9,20 @@
   /* Light mode not on AIM results */
   :host(:not([is-on-aim-results]):not([dark-mode])) {
     --ntp-composebox-background-color: #f3f5f6;
+    --color-new-tab-page-composebox-cancel-button: #0a0a0a;
     --color-new-tab-page-composebox-font: #0a0a0a;
     --color-new-tab-page-composebox-hover: #e9ebf0;
-    --color-new-tab-page-composebox-cancel-button: #0a0a0a;
+    --color-new-tab-page-composebox-lens-button: #0a0a0a;
     --search-background-color: white;
   }
 
   /* Light mode on AIM results */
   :host([is-on-aim-results]:not([dark-mode])) {
     --ntp-composebox-background-color: #f3f5f6;
+    --color-new-tab-page-composebox-cancel-button: #0a0a0a;
     --color-new-tab-page-composebox-font: #0a0a0a;
     --color-new-tab-page-composebox-hover: #e9ebf0;
-    --color-new-tab-page-composebox-cancel-button: #0a0a0a;
+    --color-new-tab-page-composebox-lens-button: #0a0a0a;
     --search-background-color: white;
   }
 
@@ -30,6 +32,7 @@
     --color-new-tab-page-composebox-cancel-button: #bfbfbf;
     --color-new-tab-page-composebox-hover: #3e3f43;
     --color-new-tab-page-composebox-font: #e6e8f0;
+    --color-new-tab-page-composebox-lens-button: #bfbfbf;
     --search-background-color: #1f1f1f;
   }
 
@@ -39,6 +42,7 @@
     --color-new-tab-page-composebox-font: #e6e8f0;
     --color-new-tab-page-composebox-hover: #3e3f43;
     --color-new-tab-page-composebox-cancel-button: #bfbfbf;
+    --color-new-tab-page-composebox-lens-button: #bfbfbf;
     --search-background-color: #101218;
   }
 
@@ -528,6 +532,7 @@
     is-collapsible
     hide-file-inputs_
     style$="--composebox-height: [[composeboxHeight_]]px;"
+    lens-button-disabled_$="[[isOverlayShowing]]"
   >
   </ntp-composebox>
 </div>

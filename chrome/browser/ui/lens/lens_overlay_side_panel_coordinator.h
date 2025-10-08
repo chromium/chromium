@@ -197,6 +197,9 @@ class LensOverlaySidePanelCoordinator
   // open a new tab.
   void SetLatestPageUrlWithResponse(const GURL& url);
 
+  // Sets whether the lens overlay is showing in the side panel WebUI.
+  virtual void SetIsOverlayShowing(bool is_showing);
+
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
     // This is the default state. This is the state when the side panel is not
