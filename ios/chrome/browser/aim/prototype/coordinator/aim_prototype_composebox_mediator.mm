@@ -220,13 +220,9 @@ CreateInputDataFromAnnotatedPageContent(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadDataFromURL, PDFFileURL),
       base::BindPostTaskToCurrentDefault(base::BindOnce(^(NSData* data) {
-        AIMPrototypeComposeboxMediator* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [strongSelf onDataReadForItemWithToken:token
-                                       fromURL:PDFFileURL
-                                      withData:data];
+        [weakSelf onDataReadForItemWithToken:token
+                                     fromURL:PDFFileURL
+                                    withData:data];
       })));
 }
 
@@ -567,11 +563,7 @@ CreateInputDataFromAnnotatedPageContent(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GeneratePDFPreview, data),
       base::BindPostTaskToCurrentDefault(base::BindOnce(^(UIImage* preview) {
-        AIMPrototypeComposeboxMediator* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [strongSelf didLoadPreviewImage:preview forItemWithToken:token];
+        [weakSelf didLoadPreviewImage:preview forItemWithToken:token];
       })));
 }
 
