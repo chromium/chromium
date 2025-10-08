@@ -210,10 +210,9 @@ INSTANTIATE_TEST_SUITE_P(
                                              version_info::Channel::STABLE))));
 
 TEST_P(ExpectedFieldTrialGroupBetaStableTest, MigrateFromSeedFileToLocalState) {
-  // Assign client to SeedFiles group.
-  SetUpSeedFileTrial(std::string(kSeedFilesGroup));
   // Write seed to seed file.
-  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  const std::string variations_seed = CreateVariationsSeed();
+  const std::string compressed_seed = Gzip(variations_seed);
   ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
 
   // Initialize seed_reader_writer with test thread and timer.
@@ -230,17 +229,53 @@ TEST_P(ExpectedFieldTrialGroupBetaStableTest, MigrateFromSeedFileToLocalState) {
 
   // Verify that the seed file was deleted.
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+
+  // Verify that the seed data is loaded correctly.
+  std::string stored_seed_data;
+  std::string stored_signature;
+  LoadSeedResult read_seed_result = seed_reader_writer.ReadSeedDataOnStartup(
+      &stored_seed_data, &stored_signature);
+  EXPECT_EQ(read_seed_result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(stored_seed_data, variations_seed);
+}
+
+TEST_P(ExpectedFieldTrialGroupBetaStableTest,
+       MigrateFromSeedFileToLocalStateWithSameSeedSentinel) {
+  // Write seed to seed file.
+  const std::string compressed_seed = kIdenticalToSafeSeedSentinel;
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
+
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  file_writer_thread_.FlushForTesting();
+
+  // Verify that the seed was written into local state.
+  std::string encoded_seed = base::Base64Encode(compressed_seed);
+  EXPECT_EQ(local_state_.GetString(GetParam().seed_fields_prefs.seed),
+            kIdenticalToSafeSeedSentinel);
+
+  // Verify that the seed file was deleted.
+  EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+
+  // Verify that the seed data is loaded correctly.
+  std::string stored_seed_data;
+  std::string stored_signature;
+  LoadSeedResult read_seed_result = seed_reader_writer.ReadSeedDataOnStartup(
+      &stored_seed_data, &stored_signature);
+  EXPECT_EQ(read_seed_result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(stored_seed_data, kIdenticalToSafeSeedSentinel);
 }
 
 // If no seed file exists, the seed in local state should not be overwritten.
 TEST_P(ExpectedFieldTrialGroupBetaStableTest, NoSeedFile) {
-  // Assign client to SeedFiles group.
-  SetUpSeedFileTrial(std::string(kSeedFilesGroup));
   // No seed file.
   ASSERT_FALSE(base::PathExists(temp_seed_file_path_));
   // Seed in local state that shouldn't be overwritten.
-  const std::string encoded_seed =
-      base::Base64Encode(CreateCompressedVariationsSeed());
+  const std::string variations_seed = CreateVariationsSeed();
+  const std::string encoded_seed = base::Base64Encode(Gzip(variations_seed));
   local_state_.SetString(GetParam().seed_fields_prefs.seed, encoded_seed);
   ASSERT_EQ(local_state_.GetString(GetParam().seed_fields_prefs.seed),
             encoded_seed);
@@ -257,6 +292,14 @@ TEST_P(ExpectedFieldTrialGroupBetaStableTest, NoSeedFile) {
             encoded_seed);
   // Verify that the seed file was not created.
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+
+  // Verify that the seed data is loaded correctly.
+  std::string stored_seed_data;
+  std::string stored_signature;
+  LoadSeedResult read_seed_result = seed_reader_writer.ReadSeedDataOnStartup(
+      &stored_seed_data, &stored_signature);
+  EXPECT_EQ(read_seed_result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(stored_seed_data, variations_seed);
 }
 
 class SeedReaderWriterGroupTest
