@@ -33,6 +33,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -438,8 +439,22 @@ tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url, int index) {
 }
 
 void TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  if (!base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    return;
+  }
+
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  // For now just don't discard the activated tab. This ruleset could be refined
+  // in the future.
+  if (!tab_android || tab_android->IsActivated()) {
+    return;
+  }
+
+  content::WebContents* web_contents = tab_android->web_contents();
+  if (!web_contents) {
+    return;
+  }
+  web_contents->Discard(base::DoNothing());
 }
 
 tabs::TabInterface* TabModelJniBridge::DuplicateTab(tabs::TabHandle tab) {
