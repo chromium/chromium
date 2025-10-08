@@ -56,8 +56,7 @@ void TabStateStorageService::Save(const TabInterface* tab) {
     return;
   }
 
-  packager_->Package(tab);
-  std::unique_ptr<StoragePackage> package = packager_->ReleasePackage();
+  std::unique_ptr<StoragePackage> package = packager_->Package(tab);
   DCHECK(package) << "Packager should return a package";
 
   int storage_id = GetStorageId(tab);
@@ -69,8 +68,8 @@ void TabStateStorageService::Save(const TabCollection* collection) {
     return;
   }
 
-  packager_->Package(collection, *this);
-  std::unique_ptr<StoragePackage> package = packager_->ReleasePackage();
+  std::unique_ptr<StoragePackage> package =
+      packager_->Package(collection, *this);
   DCHECK(package) << "Packager should return a package";
 
   int storage_id = GetStorageId(collection);

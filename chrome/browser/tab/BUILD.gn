@@ -232,6 +232,7 @@ source_set("impl") {
     "tab_state_storage_database.cc",
     "tab_state_storage_service.cc",
     "tab_storage_package.cc",
+    "tab_storage_packager.cc",
     "tab_storage_util.cc",
     "web_contents_state.cc",
   ]

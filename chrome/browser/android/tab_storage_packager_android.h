@@ -15,10 +15,8 @@
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
-class StorageIdMapping;
 class StoragePackage;
 class TabInterface;
-class TabCollection;
 
 // This class is the Android implementation of the TabStoragePackager.
 class TabStoragePackagerAndroid : public TabStoragePackager {
@@ -30,11 +28,8 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   TabStoragePackagerAndroid& operator=(const TabStoragePackagerAndroid&) =
       delete;
 
-  // TabStoragePackager overrides:
-  void Package(const TabInterface* tab) override;
-  void Package(const TabCollection* collection,
-               StorageIdMapping& mapping) override;
-  std::unique_ptr<StoragePackage> ReleasePackage() override;
+  // TabStoragePackager override:
+  std::unique_ptr<StoragePackage> Package(const TabInterface* tab) override;
 
   void ConsolidatePackageData(
       JNIEnv* env,
@@ -48,9 +43,11 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
-  std::unique_ptr<StoragePackage> package_;
+  std::unique_ptr<StoragePackage> ReleasePackage();
+
   // A reference to the Java version of this class.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+  std::unique_ptr<StoragePackage> package_;
 };
 
 }  // namespace tabs
