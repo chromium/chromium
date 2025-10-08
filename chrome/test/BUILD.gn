@@ -1369,6 +1369,7 @@ source_set("platform_browser_tests") {
     "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
     "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
     "../browser/fingerprinting_protection/fingerprinting_protection_filter_browsertest.cc",
+    "../browser/fingerprinting_protection/fingerprinting_protection_filter_parametrized_browsertest.cc",
     "../browser/fingerprinting_protection/fingerprinting_protection_filter_ruleset_browsertest.cc",
     "../browser/loadtimes_extension_bindings_browsertest.cc",
     "../browser/metrics/metrics_log_browsertest.cc",
