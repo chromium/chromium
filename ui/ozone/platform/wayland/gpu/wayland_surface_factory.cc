@@ -27,7 +27,7 @@
 #include "ui/ozone/public/native_pixmap_usage_utils.h"
 
 #if defined(WAYLAND_GBM)
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_device.h"  // nogncheck
 #include "ui/ozone/platform/wayland/gpu/gbm_pixmap_wayland.h"
