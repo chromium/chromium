@@ -112,6 +112,8 @@ blink_core_sources_layout = [
   "flex/flex_break_token_data.h",
   "flex/flex_child_iterator.cc",
   "flex/flex_child_iterator.h",
+  "flex/flex_gap_accumulator.h",
+  "flex/flex_gap_accumulator.cc",
   "flex/flex_item.h",
   "flex/flex_item_iterator.cc",
   "flex/flex_item_iterator.h",
