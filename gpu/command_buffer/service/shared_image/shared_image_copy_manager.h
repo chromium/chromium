@@ -17,8 +17,13 @@ namespace gpu {
 class SharedImageCopyStrategy;
 
 // Manages copy strategies and performs copies between shared image backings.
+// SharedImageBacking can be created and destroyed in different threads. Since
+// CompoundImageBacking has a ref to SharedImageCopyManager, it is
+// made RefCountedThreadSafe to allow it to be created and destroyed on
+// different threads. The |strategies_| does not need locks because they are
+// assumed to be added during initialization and not modified afterward.
 class GPU_GLES2_EXPORT SharedImageCopyManager
-    : public base::RefCounted<SharedImageCopyManager> {
+    : public base::RefCountedThreadSafe<SharedImageCopyManager> {
  public:
   SharedImageCopyManager();
 
@@ -34,7 +39,7 @@ class GPU_GLES2_EXPORT SharedImageCopyManager
                  SharedImageBacking* dst_backing);
 
  private:
-  friend class base::RefCounted<SharedImageCopyManager>;
+  friend class base::RefCountedThreadSafe<SharedImageCopyManager>;
   ~SharedImageCopyManager();
 
   std::vector<std::unique_ptr<SharedImageCopyStrategy>> strategies_;
