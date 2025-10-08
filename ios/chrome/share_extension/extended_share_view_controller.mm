@@ -15,6 +15,7 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/extension_open_url.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/share_extension/account_info.h"
 #import "ios/chrome/share_extension/share_extension_delegate.h"
 #import "ios/chrome/share_extension/share_extension_sheet.h"
@@ -387,7 +388,9 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 - (void)moveShareSheet {
   [self addChildViewController:self.shareSheet];
+  self.shareSheet.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.shareSheet.view];
+  AddSameConstraints(self.view, self.shareSheet.view);
   [self.shareSheet didMoveToParentViewController:self];
 }
 

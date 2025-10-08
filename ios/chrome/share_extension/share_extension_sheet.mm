@@ -39,8 +39,6 @@ CGFloat const kTextStackSpacing = 30.0;
 // The horizontal spacing between image preview and the URL stack.
 CGFloat const kInnerViewSpacing = 30;
 
-CGFloat const kSharedImageHeight = 181;
-
 // Custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
 
@@ -411,7 +409,6 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
   innerView.translatesAutoresizingMaskIntoConstraints = NO;
   mainView.translatesAutoresizingMaskIntoConstraints = NO;
-
   [NSLayoutConstraint activateConstraints:@[
     [innerView.widthAnchor constraintEqualToAnchor:mainView.widthAnchor
                                           constant:-kInnerViewWidthPadding],
@@ -419,7 +416,6 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
         constraintGreaterThanOrEqualToAnchor:innerView.heightAnchor
                                     constant:kMainViewHeightPadding],
   ]];
-
   AddSameCenterConstraints(mainView, innerView);
 
   return mainView;
@@ -489,11 +485,15 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   sharedImageView.backgroundColor = [UIColor clearColor];
 
   sharedImageView.layer.cornerRadius = kMainViewCornerRadius;
-  sharedImageView.contentMode = UIViewContentModeScaleAspectFill;
+  sharedImageView.contentMode = UIViewContentModeScaleAspectFit;
+  [sharedImageView
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
+  [sharedImageView setContentHuggingPriority:UILayoutPriorityRequired
+                                     forAxis:UILayoutConstraintAxisVertical];
+  sharedImageView.clipsToBounds = YES;
   sharedImageView.layer.masksToBounds = YES;
   sharedImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [sharedImageView.heightAnchor constraintEqualToConstant:kSharedImageHeight]
-      .active = YES;
   return sharedImageView;
 }
 
