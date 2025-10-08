@@ -328,7 +328,7 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    AutofillSuggestionTriggerSource trigger_source) {
+    bool is_plus_address_manually_triggered) {
   if (!IsPlusAddressFillingEnabled(origin)) {
     return {};
   }
@@ -341,7 +341,8 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
                                   std::move(origin))
           .GetSuggestions(plus_addresses, is_creation_enabled, focused_form,
                           focused_field, form_field_type_groups,
-                          focused_form_classification, trigger_source);
+                          focused_form_classification,
+                          is_plus_address_manually_triggered);
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 

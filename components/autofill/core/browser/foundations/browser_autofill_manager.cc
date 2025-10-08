@@ -1489,7 +1489,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
             *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
             client().IsOffTheRecord(), form, field,
             GetFieldTypeGroupsFromFormStructure(form_structure),
-            password_form_classification, trigger_source);
+            password_form_classification,
+            IsPlusAddressesManuallyTriggered(trigger_source));
 
     MixPlusAddressAndAddressSuggestions(
         std::move(plus_address_suggestions), std::move(suggestions),
@@ -1562,7 +1563,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
             *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
             client().IsOffTheRecord(), form, field,
             GetFieldTypeGroupsFromFormStructure(form_structure),
-            password_form_classification, trigger_source);
+            password_form_classification,
+            IsPlusAddressesManuallyTriggered(trigger_source));
   }
 
   auto on_single_field_suggestions_callback = base::BindOnce(

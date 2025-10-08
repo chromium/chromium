@@ -93,10 +93,10 @@ class AutofillPlusAddressDelegate {
 
   // Returns the suggestions to show for the given list of
   // `plus_addresses`, `origin` and the `focused_field_id` in `focused_form`.
-  // If `trigger_source` indicates that this is a manual fallback (e.g. the
-  // suggestions were triggered from the context menu on Desktop), then
-  // information about the focused form and field is ignored. Otherwise, only
-  // suggestions whose prefix matches the value in the focused field are shown.
+  // If `is_plus_address_manually_triggered` is true (e.g. the suggestions were
+  // triggered from the context menu on Desktop), then information about the
+  // focused form and field is ignored. Otherwise, only suggestions whose prefix
+  // matches the value in the focused field are shown.
   virtual std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
       const std::vector<std::string>& plus_addresses,
       const url::Origin& origin,
@@ -105,7 +105,7 @@ class AutofillPlusAddressDelegate {
       const FormFieldData& focused_field,
       const base::flat_map<FieldGlobalId, FieldTypeGroupSet>& form_field_types,
       const PasswordFormClassification& focused_form_classification,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+      bool is_plus_address_manually_triggered) = 0;
 
   // Returns the "Manage plus addresses..." suggestion which redirects the user
   // to the plus address management page.

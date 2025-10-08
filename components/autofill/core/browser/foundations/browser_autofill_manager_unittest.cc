@@ -9233,11 +9233,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
   using enum PasswordFormClassification::Type;
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(std::vector<std::string>{}));
-  EXPECT_CALL(
-      plus_address_delegate(),
-      GetSuggestionsFromPlusAddresses(
-          _, _, _, _, _, _, _,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses))
+  EXPECT_CALL(plus_address_delegate(),
+              GetSuggestionsFromPlusAddresses(_, _, _, _, _, _, _, true))
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   EXPECT_CALL(plus_address_delegate(),

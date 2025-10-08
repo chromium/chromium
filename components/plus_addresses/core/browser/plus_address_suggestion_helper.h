@@ -49,7 +49,7 @@ class PlusAddressSuggestionHelper final {
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::FieldTypeGroupSet>& form_field_type_groups,
       const autofill::PasswordFormClassification& focused_form_classification,
-      autofill::AutofillSuggestionTriggerSource trigger_source);
+      bool is_plus_address_manually_triggered);
 
   // Updates `suggestion` with a refreshed plus address by setting a new
   // payload.

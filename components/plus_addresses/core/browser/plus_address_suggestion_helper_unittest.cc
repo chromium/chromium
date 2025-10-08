@@ -114,7 +114,7 @@ TEST_F(PlusAddressSuggestionHelperTest,
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, form, form.fields()[0],
                   /*form_field_type_groups=*/{}, PasswordFormClassification(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               ElementsAre(IsCreateInlineSuggestion(
                   /*suggested_plus_address=*/std::nullopt)));
 }
@@ -132,7 +132,7 @@ TEST_F(PlusAddressSuggestionHelperTest,
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, form, form.fields()[0],
                   /*form_field_type_groups=*/{}, PasswordFormClassification(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               ElementsAre(IsCreateInlineSuggestion(
                   /*suggested_plus_address=*/base::UTF8ToUTF16(
                       *test::CreatePlusProfile().plus_address))));
@@ -225,7 +225,7 @@ TEST_F(PlusAddressSuggestionHelperTest,
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, form, focused_field,
                   /*form_field_type_groups=*/{}, PasswordFormClassification(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               ElementsAre(IsCreateInlineSuggestion(
                   /*suggested_plus_address=*/std::nullopt)));
 
@@ -237,7 +237,7 @@ TEST_F(PlusAddressSuggestionHelperTest,
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, form, focused_field,
                   /*form_field_type_groups=*/{}, PasswordFormClassification(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               ElementsAre(IsCreateInlineSuggestion(
                   /*suggested_plus_address=*/std::nullopt)));
 }
@@ -258,7 +258,7 @@ TEST_F(PlusAddressSuggestionHelperTest, FirstTimeCreateSuggestion) {
           /*affiliated_plus_addresses=*/{},
           /*is_creation_enabled=*/true, form, form.fields()[0],
           /*form_field_type_groups=*/{}, PasswordFormClassification(),
-          AutofillSuggestionTriggerSource::kFormControlElementClicked),
+          /*is_plus_address_manually_triggered=*/false),
       ElementsAre(AllOf(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
                         Field(&Suggestion::labels, IsEmpty()))));
 }
@@ -285,7 +285,7 @@ TEST_F(PlusAddressSuggestionHelperTest, NoSuggestionsOnLoginForm) {
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, login_form, focused_field,
                   form_field_type_groups, classification,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               IsEmpty());
 }
 
@@ -320,7 +320,7 @@ TEST_F(PlusAddressSuggestionHelperTest, SuggestionsOnLoginFormWithNameFields) {
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, form, focused_field,
                   form_field_type_groups, classification,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               test::IsSingleCreatePlusAddressSuggestion());
 }
 
@@ -347,7 +347,7 @@ TEST_F(PlusAddressSuggestionHelperTest,
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, form, focused_field,
                   /*form_field_type_groups=*/{}, classification,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               test::IsSingleCreatePlusAddressSuggestion());
 }
 
@@ -367,7 +367,7 @@ TEST_F(PlusAddressSuggestionHelperTest,
                   /*affiliated_plus_addresses=*/{plus_address},
                   /*is_creation_enabled=*/true, form, focused_field,
                   /*form_field_type_groups=*/{}, PasswordFormClassification(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               test::IsSingleFillPlusAddressSuggestion(plus_address));
 
   // Field got autofilled. The values does not prefix-match any plus address.
@@ -378,7 +378,7 @@ TEST_F(PlusAddressSuggestionHelperTest,
                   /*affiliated_plus_addresses=*/{plus_address},
                   /*is_creation_enabled=*/true, form, focused_field,
                   /*form_field_type_groups=*/{}, PasswordFormClassification(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+                  /*is_plus_address_manually_triggered=*/false),
               test::IsSingleFillPlusAddressSuggestion(plus_address));
 }
 }  // namespace

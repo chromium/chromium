@@ -41,6 +41,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/core/browser/blocked_facets.pb.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
@@ -189,7 +190,8 @@ class PlusAddressServiceTest : public ::testing::Test {
         affiliated_plus_addresses, origin, is_off_the_record, form,
         focused_field,
         /*form_field_type_groups=*/{}, focused_form_classification,
-        trigger_source);
+        trigger_source == autofill::mojom::AutofillSuggestionTriggerSource::
+                              kManualFallbackPlusAddresses);
   }
 
  protected:

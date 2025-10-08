@@ -179,7 +179,7 @@ std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
+    bool is_plus_address_manually_triggered) {
   using enum autofill::AutofillSuggestionTriggerSource;
   const std::u16string normalized_field_value =
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
@@ -199,7 +199,7 @@ std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
 
     // Do not offer creation on non-empty fields and certain form types (e.g.
     // login forms).
-    if (trigger_source != kManualFallbackPlusAddresses &&
+    if (!is_plus_address_manually_triggered &&
         (!is_field_empty_or_autofilled ||
          !ShouldOfferPlusAddressCreationOnForm(
              focused_form, form_field_type_groups, focused_form_classification,
@@ -216,8 +216,7 @@ std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
     std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_address);
     // Only suggest filling a plus address whose prefix matches the field's
     // value.
-    if (trigger_source == kManualFallbackPlusAddresses ||
-        is_field_empty_or_autofilled ||
+    if (is_plus_address_manually_triggered || is_field_empty_or_autofilled ||
         // Apply prefix matching if the field is not empty and not autofilled.
         plus_address.starts_with(normalized_field_value)) {
       suggestions.push_back(

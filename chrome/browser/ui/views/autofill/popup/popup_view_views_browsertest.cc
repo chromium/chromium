@@ -599,7 +599,7 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
         affiliated_plus_addresses,
         /*is_creation_enabled=*/true, form, form.fields()[0],
         /*form_field_type_groups=*/{}, PasswordFormClassification(),
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        /*is_plus_address_manually_triggered=*/false);
   }
 
  private:

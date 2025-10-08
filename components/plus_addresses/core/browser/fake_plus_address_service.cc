@@ -57,7 +57,7 @@ FakePlusAddressService::GetSuggestionsFromPlusAddresses(
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
+    bool is_plus_address_manually_triggered) {
   if (IsPlusAddressCreationEnabled(last_committed_primary_main_frame_origin,
                                    is_off_the_record)) {
     Suggestion suggestion(
