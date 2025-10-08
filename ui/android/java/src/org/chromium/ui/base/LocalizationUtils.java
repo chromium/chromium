@@ -74,10 +74,6 @@ public class LocalizationUtils {
     /** Returns whether navigation gestures should be mirrored due to the UI language. */
     @CalledByNative
     public static boolean shouldMirrorBackForwardGestures() {
-        if (!UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL)) {
-            return false;
-        }
-
         return LocalizationUtils.isLayoutRtl();
     }
 

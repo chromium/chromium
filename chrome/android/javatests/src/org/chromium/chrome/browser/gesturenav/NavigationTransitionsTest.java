@@ -69,7 +69,6 @@ import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
-import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -205,14 +204,14 @@ public class NavigationTransitionsTest {
         BackPressManager backPressManager =
                 mActivityTestRule.getActivity().getBackPressManagerForTesting();
 
-        boolean three_button_mode = mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON;
+        boolean threeButtonMode = mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     GestureNavigationTestUtils utils =
                             new GestureNavigationTestUtils(mActivityTestRule::getActivity);
-                    utils.enableGestureNavigationForTesting(three_button_mode);
+                    utils.enableGestureNavigationForTesting(threeButtonMode);
                 });
-        backPressManager.setIsGestureNavEnabledSupplier(() -> !three_button_mode);
+        backPressManager.setIsGestureNavEnabledSupplier(() -> !threeButtonMode);
 
         mScreenshotCallback = new ScreenshotCallback();
         mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(mScreenshotCallback);
@@ -238,26 +237,26 @@ public class NavigationTransitionsTest {
         assertThat(edge).isAnyOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT);
 
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
-            float width_px =
+            float widthPx =
                     getWebContents().getWidth()
                             * Coordinates.createFor(getWebContents()).getDeviceScaleFactor();
 
             // Drag far enough to cause the back gesture to invoke.
             float fromEdgeStart = 5.0f;
-            float dragDistance = width_px - 10.0f;
+            float dragDistance = widthPx - 10.0f;
 
             // if EDGE_LEFT
             float fromX = fromEdgeStart;
             float toX = fromEdgeStart + dragDistance;
             if (edge == BackEventCompat.EDGE_RIGHT) {
-                fromX = width_px - fromEdgeStart;
-                toX = width_px - fromEdgeStart - dragDistance;
+                fromX = widthPx - fromEdgeStart;
+                toX = widthPx - fromEdgeStart - dragDistance;
             }
 
             assertThat(fromX).isGreaterThan(0);
-            assertThat(fromX).isLessThan(width_px);
+            assertThat(fromX).isLessThan(widthPx);
             assertThat(toX).isGreaterThan(0);
-            assertThat(toX).isLessThan(width_px);
+            assertThat(toX).isLessThan(widthPx);
 
             // These are arbitrary values that drag far enough to cause the back gesture to invoke.
             //
@@ -292,25 +291,25 @@ public class NavigationTransitionsTest {
     private ReleaseController performNavigationTransitionAndHold(
             String expectedUrl, @BackGestureEventSwipeEdge int edge) {
         assertThat(edge).isAnyOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT);
-        final float width_px =
+        final float widthPx =
                 getWebContents().getWidth()
                         * Coordinates.createFor(getWebContents()).getDeviceScaleFactor();
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
             // Drag far enough to cause the back gesture to invoke.
             float fromEdgeStart = 5.0f;
-            float dragDistance = width_px / 2;
+            float dragDistance = widthPx / 2;
 
             final float fromX =
-                    edge == BackEventCompat.EDGE_LEFT ? fromEdgeStart : width_px - fromEdgeStart;
+                    edge == BackEventCompat.EDGE_LEFT ? fromEdgeStart : widthPx - fromEdgeStart;
             final float toX =
                     edge == BackEventCompat.EDGE_LEFT
                             ? fromEdgeStart + dragDistance
-                            : width_px - fromEdgeStart - dragDistance;
+                            : widthPx - fromEdgeStart - dragDistance;
 
             assertThat(fromX).isGreaterThan(0);
-            assertThat(fromX).isLessThan(width_px);
+            assertThat(fromX).isLessThan(widthPx);
             assertThat(toX).isGreaterThan(0);
-            assertThat(toX).isLessThan(width_px);
+            assertThat(toX).isLessThan(widthPx);
 
             long downTime = TimeUtils.currentTimeMillis();
             TouchCommon.dragStart(mActivityTestRule.getActivity(), fromX, 400.0f, downTime);
@@ -328,7 +327,7 @@ public class NavigationTransitionsTest {
                                 mActivityTestRule.getActivity().getBackPressManagerForTesting();
                         var backEvent = new BackEventCompat(0, 0, 0, edge);
                         manager.getCallback().handleOnBackStarted(backEvent);
-                        backEvent = new BackEventCompat(width_px / 2, 0, .8f, edge);
+                        backEvent = new BackEventCompat(widthPx / 2, 0, .8f, edge);
                         manager.getCallback().handleOnBackProgressed(backEvent);
                     });
             mRelease =
@@ -555,7 +554,6 @@ public class NavigationTransitionsTest {
     @MediumTest
     @EnableFeatures({
         ChromeFeatureList.RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV,
-        UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL
     })
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testRightEdgeGoesForwardInGestureNavModeInRTL() throws Throwable {
@@ -657,7 +655,6 @@ public class NavigationTransitionsTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL})
     public void testBackNavInRTL() throws Throwable {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;

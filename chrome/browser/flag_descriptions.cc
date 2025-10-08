@@ -1825,13 +1825,6 @@ const char kMemlogStackModeDescription[] =
 const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 
-const char kMirrorBackForwardGesturesInRTLName[] =
-    "Mirror back forward gestures in RTL";
-const char kMirrorBackForwardGesturesInRTLDescription[] =
-    "When the OS UI language is right-to-left, the back-forward gesture "
-    "directions are flipped so that the left edge is considered forward and "
-    "right is considered back.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kEnableDevtoolsDeepLinkViaExtensibilityApiName[] =
     "Extensibility API support for deep-links within DevTools";

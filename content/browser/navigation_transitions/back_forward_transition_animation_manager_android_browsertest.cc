@@ -654,8 +654,7 @@ class BackForwardTransitionAnimationManagerBothEdgeBrowserTest
     scoped_feature_list_.Reset();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {blink::features::kBackForwardTransitions,
-         {{"min-required-physical-ram-mb", "0"}}},
-        {ui::kMirrorBackForwardGesturesInRTL, {}}};
+         {{"min-required-physical-ram-mb", "0"}}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         /*disabled_features=*/{});

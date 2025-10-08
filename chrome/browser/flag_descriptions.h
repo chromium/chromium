@@ -996,9 +996,6 @@ extern const char kMemlogStackModeDescription[];
 extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
 
-extern const char kMirrorBackForwardGesturesInRTLName[];
-extern const char kMirrorBackForwardGesturesInRTLDescription[];
-
 extern const char kEnableFencedFramesDeveloperModeName[];
 extern const char kEnableFencedFramesDeveloperModeDescription[];
 

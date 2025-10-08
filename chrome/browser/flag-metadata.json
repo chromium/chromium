@@ -6872,11 +6872,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "mirror-back-forward-gestures-in-rtl",
-    "owners": ["bokan@chromium.org", "lazzzis@google.com", "acondor@google.com", "clank-performance-team@google.com", "chrome-seamless-core@google.com"],
-    "expiry_milestone": 142
-  },
-  {
     "name": "mixed-content-autoupgrade-ios",
     "owners": [ "meacer@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 114
