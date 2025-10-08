@@ -1,0 +1,28 @@
+{
+  "name": "Readability Test Extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "scripting",
+    "tabs",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "Readability-readerable.js",
+        "readability_checker.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
