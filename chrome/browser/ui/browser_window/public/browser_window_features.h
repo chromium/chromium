@@ -49,6 +49,7 @@ class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
 class DevtoolsUIController;
+class EmbedderBrowserWindowFeatures;
 class ExtensionKeybindingRegistryViews;
 class ExclusiveAccessManager;
 class FindBarController;
@@ -745,6 +746,11 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<omnibox::AiModePageActionController>
       ai_mode_page_action_controller_;
+
+  // Keep this member last to ensure embedder features are torn down first, in
+  // reverse order of initialization.
+  std::unique_ptr<EmbedderBrowserWindowFeatures>
+      embedder_browser_window_features_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

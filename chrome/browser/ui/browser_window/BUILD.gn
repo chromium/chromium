@@ -22,6 +22,7 @@ source_set("browser_window") {
       "public/browser_window_features.h",
       "public/desktop_browser_window_capabilities.h",
       "public/desktop_browser_window_capabilities_delegate.h",
+      "public/embedder_browser_window_features.h",
     ]
     public_deps += [
       "//base",

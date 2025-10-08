@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/embedder_browser_window_features.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
@@ -391,6 +392,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               session_restore_infobar::SessionRestoreInfobarController>(
               *browser, browser);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  // Initialize embedder features last.
+  embedder_browser_window_features_ =
+      GetUserDataFactory().CreateInstance<EmbedderBrowserWindowFeatures>(
+          *browser, browser);
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
@@ -610,6 +616,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
             extension_keybinding_delegate_.get());
   }
+
+  // Initialize post-window dependent embedder features last.
+  embedder_browser_window_features_->InitPostWindowConstruction(browser);
 }
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
@@ -755,9 +764,16 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   user_education_->Init(browser_view);
 
   find_bar_owner_ = std::make_unique<FindBarOwnerViews>(browser_view);
+
+  // Initialize post-BrowserView-dependent embedder features last.
+  embedder_browser_window_features_->InitPostBrowserViewConstruction(
+      browser_view);
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
+  // Tear down embedder features first, in reverse order of initialization.
+  embedder_browser_window_features_->TearDownPreBrowserWindowDestruction();
+
   accelerator_provider_ = nullptr;
   extension_keybinding_registry_.reset();
   contents_border_controller_.reset();
