@@ -11,6 +11,9 @@
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "name": "base_unittests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -34,6 +37,9 @@
         ],
         "dut_pool": "vmlab",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "tast"
+        },
         "shard_level_retries_on_ctp": 1,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
@@ -47,6 +53,9 @@
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "name": "chromeos_integration_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -65,6 +74,9 @@
         "cros_board": "brya",
         "cros_model": "kano",
         "name": "base_unittests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -88,6 +100,9 @@
           "dep:no_chrome_dcheck"
         ],
         "name": "chrome_all_tast_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "tast"
+        },
         "shard_level_retries_on_ctp": 1,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
@@ -101,6 +116,9 @@
         "cros_board": "brya",
         "cros_model": "kano",
         "name": "chromeos_integration_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -118,6 +136,9 @@
         "autotest_name": "chromium",
         "cros_board": "jacuzzi",
         "name": "base_unittests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -140,6 +161,9 @@
           "dep:no_chrome_dcheck"
         ],
         "name": "chrome_all_tast_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "tast"
+        },
         "shard_level_retries_on_ctp": 1,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
@@ -152,6 +176,9 @@
         "autotest_name": "chromium",
         "cros_board": "jacuzzi",
         "name": "chromeos_integration_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -170,6 +197,9 @@
         "cros_board": "reven-vmtest",
         "dut_pool": "vmlab",
         "name": "base_unittests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -193,6 +223,9 @@
         ],
         "dut_pool": "vmlab",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "tast"
+        },
         "shard_level_retries_on_ctp": 1,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
@@ -209,6 +242,9 @@
         "cros_board": "reven-vmtest",
         "dut_pool": "vmlab",
         "name": "chromeos_integration_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -226,6 +262,9 @@
         "autotest_name": "chromium",
         "cros_board": "volteer",
         "name": "base_unittests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -248,6 +287,9 @@
           "dep:no_chrome_dcheck"
         ],
         "name": "chrome_all_tast_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "tast"
+        },
         "shard_level_retries_on_ctp": 1,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
@@ -260,6 +302,9 @@
         "autotest_name": "chromium",
         "cros_board": "volteer",
         "name": "chromeos_integration_tests RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",

@@ -1411,6 +1411,7 @@ targets.bundle(
                 "tfc-exclude-public",
                 # jacuzzi is slow. So that we use run fewer tests per shard.
                 "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1421,6 +1422,7 @@ targets.bundle(
             mixins = [
                 "chromeos-tast-public-builder",
                 "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1432,6 +1434,7 @@ targets.bundle(
                 "chromeos-tast-public-builder",
                 "tfc-run-public",
                 "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1441,6 +1444,9 @@ targets.bundle(
         # be tried to be replaced with 'chromeos_system_friendly_gtests'.
         targets.bundle(
             targets = "chromeos_device_only_gtests",
+            mixins = [
+                "skylab-rdb-gtest",
+            ],
             variants = [
                 "CROS_PUBLIC_LKGM",
             ],
@@ -1471,6 +1477,7 @@ targets.bundle(
                 "chromeos-tast-public-builder",
                 "tfc-exclude-public",
                 "skylab-50-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1481,6 +1488,7 @@ targets.bundle(
             mixins = [
                 "chromeos-tast-public-builder",
                 "skylab-50-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1492,6 +1500,7 @@ targets.bundle(
                 "chromeos-tast-public-builder",
                 "tfc-run-public",
                 "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1501,6 +1510,9 @@ targets.bundle(
         # be tried to be replaced with 'chromeos_system_friendly_gtests'.
         targets.bundle(
             targets = "chromeos_device_only_gtests",
+            mixins = [
+                "skylab-rdb-gtest",
+            ],
             variants = [
                 "CROS_PUBLIC_LKGM",
             ],

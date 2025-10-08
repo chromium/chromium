@@ -22,8 +22,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
         "name": "context_lost_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -57,8 +56,7 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -82,8 +80,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "gpu_process_launch_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -107,8 +104,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "hardware_accelerated_feature_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -136,8 +132,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
         "name": "info_collection_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -171,8 +166,7 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -197,8 +191,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
         "name": "screenshot_sync_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -222,8 +215,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "trace_test JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -247,8 +239,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "webcodecs_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -274,8 +265,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=gles --force_high_performance_gpu",
         "name": "webgl2_conformance_gles_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "shards": 20,
         "test": "telemetry_gpu_integration_test",
@@ -301,8 +291,7 @@
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-angle=gles --use-cmd-decoder=passthrough --use-gl=angle --force_high_performance_gpu",
         "name": "webgl_conformance_gles_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+          "result_format": "native"
         },
         "shards": 6,
         "test": "telemetry_gpu_integration_test",
@@ -334,6 +323,9 @@
         "dut_pool": "chrome-gpu",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "noop_sleep_tests GPU_BRYA_RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "native"
+        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -363,6 +355,9 @@
         "dut_pool": "chrome-gpu",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "noop_sleep_tests GPU_CORSOLA_RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "native"
+        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -392,6 +387,9 @@
         "dut_pool": "chrome-gpu",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "noop_sleep_tests GPU_SKYRIM_RELEASE_LKGM",
+        "resultdb": {
+          "result_format": "native"
+        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,

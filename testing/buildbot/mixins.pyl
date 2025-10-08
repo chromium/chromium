@@ -791,6 +791,21 @@
       'cros_test_max_in_shard': 50
     },
   },
+  'skylab-rdb-gtest': {
+    'resultdb': {
+      'result_format': 'gtest',
+    },
+  },
+  'skylab-rdb-native': {
+    'resultdb': {
+      'result_format': 'native',
+    },
+  },
+  'skylab-rdb-tast': {
+    'resultdb': {
+      'result_format': 'tast',
+    },
+  },
   'swarming_containment_auto': {
     'fail_if_unused': False,
     'swarming': {

@@ -537,6 +537,27 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "skylab-rdb-tast",
+    resultdb = targets.resultdb(
+        result_format = "tast",
+    ),
+)
+
+targets.mixin(
+    name = "skylab-rdb-gtest",
+    resultdb = targets.resultdb(
+        result_format = "gtest",
+    ),
+)
+
+targets.mixin(
+    name = "skylab-rdb-native",
+    resultdb = targets.resultdb(
+        result_format = "native",
+    ),
+)
+
+targets.mixin(
     name = "tfc-exclude-public",
     generate_pyl_entry = False,
     skylab = targets.skylab(
